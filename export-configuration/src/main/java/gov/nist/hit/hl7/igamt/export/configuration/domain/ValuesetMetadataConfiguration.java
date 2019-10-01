@@ -24,18 +24,19 @@ public class ValuesetMetadataConfiguration {
   private boolean contentDefinition = true;
   private boolean oid = true;
   private boolean type = true;
+  private boolean url = true;
 
   public ValuesetMetadataConfiguration() {
     super();
   }
 
   public ValuesetMetadataConfiguration(boolean stability, boolean extensibility,
-      boolean contentDefinition, boolean oid, boolean type) {
+      boolean contentDefinition, boolean url, boolean type) {
     super();
     this.stability = stability;
     this.extensibility = extensibility;
     this.contentDefinition = contentDefinition;
-    this.oid = oid;
+    this.url = url;
     this.type = type;
   }
 
@@ -47,7 +48,15 @@ public class ValuesetMetadataConfiguration {
     this.stability = stability;
   }
 
-  public boolean isExtensibility() {
+  public boolean isUrl() {
+	return url;
+}
+
+public void setUrl(boolean url) {
+	this.url = url;
+}
+
+public boolean isExtensibility() {
     return extensibility;
   }
 

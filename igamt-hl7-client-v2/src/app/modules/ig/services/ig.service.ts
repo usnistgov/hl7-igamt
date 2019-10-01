@@ -188,6 +188,7 @@ export class IgService {
     form.style.display = 'none';
     document.body.appendChild(form);
     form.submit();
+    console.log(decision);
   }
 
   private prepareUrl(igId: string, type: string): string {

@@ -70,7 +70,6 @@ ConstraintSerializationService constraintSerializationService;
 //	        }
 //	      }
 	      if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
-	    	  System.out.println("BOOM");
     	  Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
 	        if (constraints != null) {
           segmentElement.appendChild(constraints);

@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.export.configuration.newModel;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.export.configuration.domain.CoConstraintExportMode;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ColumnsConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.MetadataConfiguration;
@@ -21,6 +22,8 @@ public class DatatypeExportConfiguration extends ResourceExportConfiguration{
 	  private List<NameAndPositionAndPresence> columns;
 	  private MetadataConfiguration metadataConfig;
 	  private boolean includeVaries = false;
+	  private CoConstraintExportMode coConstraintExportMode;
+
 	  
 	  public DatatypeExportConfiguration(ExportConfiguration exportConfiguration) {
 		    this.includeDatatypeTable = exportConfiguration.isIncludeDatatypeTable();
@@ -46,7 +49,12 @@ public class DatatypeExportConfiguration extends ResourceExportConfiguration{
 		    return exportConfiguration;
 		  }
 
-		  public DatatypeExportConfiguration(boolean includeDatatypeTable,
+		  public DatatypeExportConfiguration() {
+			super();
+			// TODO Auto-generated constructor stub
+		}
+
+		public DatatypeExportConfiguration(boolean includeDatatypeTable,
 		      UsageConfiguration datatypesExport, UsageConfiguration componentExport,
 		      List<NameAndPositionAndPresence> columns, MetadataConfiguration metadataConfig,
 		      boolean includeVaries) {

@@ -47,12 +47,13 @@ export class ExportConfigurationDialogComponent implements OnInit {
         break;
       }
       case Type.DATATYPE: {
+        console.log("datatype");
         if (this.filter.overiddedDatatypesMap[node.id]) {
           this.current = this.filter.overiddedDatatypesMap[node.id];
         } else {
           this.current = _.cloneDeep(this.defaultConfig.datatypeExportConfiguration);
         }
-
+        this.loading = false;
         break;
       }
       case Type.CONFORMANCEPROFILE: {
@@ -61,8 +62,8 @@ export class ExportConfigurationDialogComponent implements OnInit {
         } else {
           this.current = _.cloneDeep(this.defaultConfig.conformamceProfileExportConfiguration);
         }
-
-        break;
+        this.loading = false;
+    break;
       }
       case Type.VALUESET: {
         if (this.filter.overiddedValueSetMap[node.id]) {
@@ -70,6 +71,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
         } else {
           this.current = _.cloneDeep(this.defaultConfig.valueSetExportConfiguration);
         }
+        this.loading = false;
         break;
       }
       default: {
@@ -79,13 +81,32 @@ export class ExportConfigurationDialogComponent implements OnInit {
   }
 
   applyChange(event: any) {
-    this.filter.overiddedSegmentMap[this.selected.id] = event;
+    switch (this.type) {
+      case Type.SEGMENT: {
+        this.filter.overiddedSegmentMap[this.selected.id] = event;
+        break;
+      }
+      case Type.DATATYPE: {
+        this.filter.overiddedDatatypesMap[this.selected.id] = event;
+        break;
+      }
+      case Type.CONFORMANCEPROFILE: {
+        this.filter.overiddedConformanceProfileMap[this.selected.id] = event;
+        break;
+      }
+      case Type.VALUESET: {
+        this.filter.overiddedValueSetMap[this.selected.id] = event;
+        break;
+      }
+    }
   }
+
   ngOnInit() {
   }
+
   submit() {
-    console.log(this.data.decision);
-    this.dialogRef.close(this.data.decision);
+    console.log(this.filter);
+    this.dialogRef.close(this.filter);
   }
   cancel() {
     this.dialogRef.close();

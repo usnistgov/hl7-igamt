@@ -1,4 +1,4 @@
-<p-checkbox binary="true" label="Include Valueset Table Options"></p-checkbox>
+<!-- <p-checkbox binary="true" label="Include Valueset Table Options"></p-checkbox> -->
 <table class="table table-sm table-striped">
   <tr>
     <th>Usages</th>
@@ -20,19 +20,19 @@
   </tr>
   <tr>
     <td>
-      <p-checkbox label="R" binary="true"></p-checkbox><br>
-      <p-checkbox label="P" binary="true"></p-checkbox><br>
-      <p-checkbox label="E" binary="true"></p-checkbox><br>
+      <p-checkbox label="R" binary="true" [(ngModel)]="config.codesExport.r" (onChange)="triggerChange()"></p-checkbox><br>
+      <p-checkbox label="P" binary="true" [(ngModel)]="config.codesExport.p" (onChange)="triggerChange()"></p-checkbox><br>
+      <p-checkbox label="E" binary="true" [(ngModel)]="config.codesExport.e" (onChange)="triggerChange()"></p-checkbox><br>
     </td>
   </tr>
-  <tr>
+  <!-- <tr>
     <th>
       Max Number of Codes to Export
     </th>
   </tr>
   <tr>
-    <td><input type="number" class="form-control"></td>
-  </tr>
+    <td><input type="number" class="form-control" [(ngModel)]="config.maxCodeNumber" (onChange)="triggerChange()"></td>
+  </tr> -->
   <tr>
     <th>Metadata</th>
   </tr>
@@ -40,23 +40,23 @@
     <div layout="column">
       <div class="config-checkbox">
         <p-checkbox
-            label="Stability" binary="true"></p-checkbox>
+            label="Stability" binary="true" [(ngModel)]="config.stability" (onChange)="triggerChange()"></p-checkbox>
       </div>
       <div class="config-checkbox">
         <p-checkbox
-          label="Extensibility" binary="true"></p-checkbox>
+          label="Extensibility" binary="true" [(ngModel)]="config.extensibility" (onChange)="triggerChange()"></p-checkbox>
       </div>
       <div class="config-checkbox">
         <p-checkbox
-          label="Content Definition" binary="true"></p-checkbox>
+          label="Content Definition" binary="true" [(ngModel)]="config.contentDefinition" (onChange)="triggerChange()"></p-checkbox>
       </div>
       <div class="config-checkbox">
         <p-checkbox
-            label="URL" binary="true"></p-checkbox>
+            label="URL" binary="true" [(ngModel)]="config.url" (onChange)="triggerChange()"></p-checkbox>
       </div>
       <div class="config-checkbox">
         <p-checkbox
-          label="Type Internal/External" binary="true"></p-checkbox>
+          label="Type Internal/External" binary="true" [(ngModel)]="config.type" (onChange)="triggerChange()"></p-checkbox>
       </div>
     </div>
   </tr>

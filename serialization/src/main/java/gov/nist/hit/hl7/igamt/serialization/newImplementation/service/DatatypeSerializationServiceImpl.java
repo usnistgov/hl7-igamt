@@ -14,6 +14,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
@@ -65,9 +66,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 //	        }
 //	      }
 	      if (datatype instanceof ComplexDatatype) {
-	        datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel);
+	        datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel,datatypeExportConfiguration);
 	      } else if (datatype instanceof DateTimeDatatype) {
-	        datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel);
+	        datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel, datatypeExportConfiguration);
 	      }
 	      if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
 	    	  System.out.println("BOOM");
@@ -90,9 +91,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
 
 	@Override
-	public Element serializeComplexDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel) throws SubStructElementSerializationException {
+	public Element serializeComplexDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel, DatatypeExportConfiguration datatypeExportConfiguration) throws SubStructElementSerializationException {
 	    ComplexDatatype complexDatatype = (ComplexDatatype) datatypeDataModel.getModel();
 	    for (Component component : complexDatatype.getComponents()) {
+            if (component != null && ExportTools.CheckUsage(datatypeExportConfiguration.getComponentExport(), component.getUsage())) {
 //	      if(this.bindedComponents.contains(component.getId())) {
 	        try {
 	          Element componentElement = new Element("Component");
@@ -137,12 +139,13 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	        }
 //	      }
 	    }
+	}
 	    return datatypeElement;
 	  
 	}
 
 	@Override
-	public Element serializeDateTimeDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel) {
+	public Element serializeDateTimeDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel, DatatypeExportConfiguration datatypeExportConfiguration) {
 	    DateTimeDatatype dateTimeDatatype =  (DateTimeDatatype) datatypeDataModel.getModel();
 	    for (DateTimeComponentDefinition dateTimeComponentDefinition : dateTimeDatatype
 	        .getDateTimeConstraints().getDateTimeComponentDefinitions()) {

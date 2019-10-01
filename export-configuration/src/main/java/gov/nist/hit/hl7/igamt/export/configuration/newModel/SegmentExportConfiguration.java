@@ -31,12 +31,33 @@ public class SegmentExportConfiguration extends ResourceExportConfiguration{
 		  this.fieldsExport=defaultConfiguration.getFieldsExport();
 		  this.columns=defaultConfiguration.getSegmentColumn().getColumns();
 		  this.coConstraintExportMode=defaultConfiguration.getCoConstraintExportMode();
-		  this.metadataConfig=defaultConfiguration.getSegmentMetadataConfig();
-		  
+		  this.metadataConfig=defaultConfiguration.getSegmentMetadataConfig();  
 	  }
 	  
 	  
-	  public ExportConfiguration populateExportConfiguration(ExportConfiguration exportConfiguration) {
+	  public SegmentExportConfiguration(Boolean dynamicMappingInfo, Boolean binding,
+			ConstraintExportConfiguration constraintExportConfiguration, boolean includeSegmentTable,
+			boolean greyOutOBX2FlavorColumn, UsageConfiguration segmentsExport, UsageConfiguration fieldsExport,
+			CoConstraintExportMode coConstraintExportMode, List<NameAndPositionAndPresence> columns,
+			MetadataConfiguration metadataConfig) {
+		super();
+		this.dynamicMappingInfo = dynamicMappingInfo;
+		this.binding = binding;
+		this.constraintExportConfiguration = constraintExportConfiguration;
+		this.includeSegmentTable = includeSegmentTable;
+		this.greyOutOBX2FlavorColumn = greyOutOBX2FlavorColumn;
+		this.segmentsExport = segmentsExport;
+		this.fieldsExport = fieldsExport;
+		this.coConstraintExportMode = coConstraintExportMode;
+		this.columns = columns;
+		this.metadataConfig = metadataConfig;
+	}
+	  
+	  public SegmentExportConfiguration() {
+			super();
+		}
+
+	public ExportConfiguration populateExportConfiguration(ExportConfiguration exportConfiguration) {
 	    exportConfiguration.setIncludeSegmentTable(this.includeSegmentTable);
 	    exportConfiguration.setSegmentsExport(this.segmentsExport);
 	    exportConfiguration.setFieldsExport(this.fieldsExport);
@@ -62,13 +83,7 @@ public class SegmentExportConfiguration extends ResourceExportConfiguration{
 	    this.coConstraintExportMode = coConstraintExportMode;
 	    this.columns = columns;
 	    this.metadataConfig = metadataConfig;
-	  }
-
-	  
-
-	
-
-	
+	  }	
 
 	public ConstraintExportConfiguration getConstraintExportConfiguration() {
 		return constraintExportConfiguration;

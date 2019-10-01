@@ -11,6 +11,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
@@ -66,6 +67,9 @@ private ConstraintSerializationService constraintSerializationService;
 	        if (conformanceProfile.getChildren() != null
 	            && conformanceProfile.getChildren().size() > 0) {
 	          for (MsgStructElement msgStructElm : conformanceProfile.getChildren()) {
+	            	System.out.println("HERE1 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
+		            if (msgStructElm != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), msgStructElm.getUsage())) {
+		            	System.out.println("HERE2 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
 	            if (msgStructElm != null) {
 //	              if(this.bindedGroupsAndSegmentRefs.contains(msgStructElm.getId())) {
 	                Element msgStructElement = this.serializeMsgStructElement(igDataModel, msgStructElm, 0);
@@ -73,6 +77,7 @@ private ConstraintSerializationService constraintSerializationService;
 	                  conformanceProfileElement.appendChild(msgStructElement);
 	                }
 	              }
+		            }
 //	            }
 	          }
 	        }

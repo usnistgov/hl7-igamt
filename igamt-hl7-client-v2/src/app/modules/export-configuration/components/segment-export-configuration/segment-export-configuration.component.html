@@ -1,10 +1,8 @@
 <div style="width: 100%; display: flex; align-items: flex-start;">
-  <div style="width: 50%;">
+  <div style="width: 100%;">
     <table class="table table-sm table-striped">
       <tr>
-        <th>Usages
-          <button (click)="print()">print</button>
-        </th>{{config.fieldsExport.x}}
+        <th>Usages</th>
       </tr>
       <tr>
         <td>Fields to export</td>
@@ -29,41 +27,81 @@
       <tr>
         <div layout="column">
           <div class="config-checkbox">
-            <p-checkbox label="HL7 Version" binary="true"></p-checkbox>
+            <p-checkbox label="HL7 Version" binary="true" [(ngModel)]="config.version" (onChange)="triggerChange()"></p-checkbox>
+          </div>
+          <!-- <div class="config-checkbox">
+            <p-checkbox label="Publication Date" binary="true" [(ngModel)]="config.metadataConfig.publicationDate" (onChange)="triggerChange()"></p-checkbox>
           </div>
           <div class="config-checkbox">
-            <p-checkbox label="Publication Date" binary="true"></p-checkbox>
+            <p-checkbox label="Publication Version" binary="true" [(ngModel)]="config.metadataConfig.publicationVersion" (onChange)="triggerChange()"></p-checkbox>
           </div>
           <div class="config-checkbox">
-            <p-checkbox label="Publication Version" binary="true"></p-checkbox>
-          </div>
+            <p-checkbox label="Scope" binary="true" [(ngModel)]="config.metadataConfig.scope" (onChange)="triggerChange()"></p-checkbox>
+          </div> -->
           <div class="config-checkbox">
-            <p-checkbox label="Scope" binary="true"></p-checkbox>
-          </div>
+              <p-checkbox label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox label="Usage Notes " binary="true" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox>
+            </div>
         </div>
       </tr>
+      <tr>
+          <th>Constraints</th>
+        </tr>
+        <tr>
+          <div layout="column">
+            <div class="config-checkbox">
+              <p-checkbox label="Conditional Predicates" binary="true" [(ngModel)]="config.constraintExportConfiguration.predicate" (onChange)="triggerChange()"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox label="Conformance Statments" binary="true" [(ngModel)]="config.constraintExportConfiguration.conformanceStatement"
+                (onChange)="triggerChange()"></p-checkbox>
+            </div>
+          </div>
+        </tr>
+        
       <tr>
         <th>Co-Constraints</th>
       </tr>
-      <tr>
+      <!-- <tr>
         <td>
           <p-checkbox binary="true" label="Grey out OBX-2 Flavor column"></p-checkbox>
         </td>
-      </tr>
+      </tr> -->
       <tr>
-        <th>Display</th>
+        <td>Display</td>
       </tr>
       <tr>
         <div>
-          <p-radioButton name="coConstraintExportMode" value="COMPACT" label="Compact"></p-radioButton>
+          <p-radioButton name="coConstraintExportMode" value="COMPACT" label="Compact" [(ngModel)]="config.coConstraintExportMode.COMPACT" (onChange)="triggerChange()"></p-radioButton>
         </div>
         <div>
-          <p-radioButton name="coConstraintExportMode" value="VERBOSE" label="Verbose"></p-radioButton>
+          <p-radioButton name="coConstraintExportMode" value="VERBOSE" label="Verbose" [(ngModel)]="config.coConstraintExportMode.VERBOSE" (onChange)="triggerChange()" ></p-radioButton>
         </div>
       </tr>
+      <tr>
+          <th>Comments & Definition Text</th>
+        </tr>
+      <tr>
+          <div layout="column">
+            <div class="config-checkbox">
+              <p-checkbox label="Comments" binary="false" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox label="Definition Text" binary="false" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox>
+            </div>
+          </div>
+        </tr>
     </table>
   </div>
-  <div style="width: 50%;">
+  <div style="width: 50%;" *ngIf = "false">
     <table class="table table-sm table-striped">
       <tr>
         <th>Columns</th>

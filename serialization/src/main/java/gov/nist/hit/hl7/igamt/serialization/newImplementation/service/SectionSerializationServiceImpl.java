@@ -17,6 +17,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
@@ -150,10 +151,17 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 					if (!datatypeRegistry.getChildren().isEmpty()) {
 						for (Link datatypeLink : datatypeRegistry.getChildren()) {
 							if( exportFilterDecision != null && exportFilterDecision.getDatatypesFilterMap()!=null &&  exportFilterDecision.getDatatypesFilterMap().containsKey(datatypeLink.getId()) && exportFilterDecision.getDatatypesFilterMap().get(datatypeLink.getId())) {
-
 							DatatypeDataModel datatypeDataModel = igDataModel.getDatatypes().stream().filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny().orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId()));
-							Element datatypeElement = datatypeSerializationService
-									.serializeDatatype(datatypeDataModel, level + 1, exportConfiguration.getDatatypeExportConfiguration());
+							Element datatypeElement;
+							if(exportFilterDecision != null && exportFilterDecision.getOveriddedDatatypesMap() != null && exportFilterDecision.getOveriddedDatatypesMap().containsKey(datatypeLink.getId())) {
+								datatypeElement = datatypeSerializationService.serializeDatatype(datatypeDataModel, level+1, exportFilterDecision.getOveriddedDatatypesMap().get(datatypeLink.getId()));
+							}else {
+								if(exportConfiguration == null) { System.out.println("ExportConfiguration li din mo nulle f datatyperegistry class");}
+								if(exportConfiguration.getDatatypeExportConfiguration() == null) { System.out.println("ExportConfiguration li din mo nulle f datatyperegistry class fdatatype :" + datatypeDataModel.getModel().getName());}
+								if(exportConfiguration.getDatatypeExportConfiguration() instanceof DatatypeExportConfiguration) {System.out.println("hya hadik");} else { System.out.println("machi hya hadik");}
+								datatypeElement = datatypeSerializationService.serializeDatatype(datatypeDataModel, level+1, exportConfiguration.getDatatypeExportConfiguration());
+						
+							}
 							if (datatypeElement != null) {
 								datatypeRegistryElement.appendChild(datatypeElement);
 							}			 
@@ -178,10 +186,14 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 					if (!valuesetRegistry.getChildren().isEmpty()) {
 						for (Link valuesetLink : valuesetRegistry.getChildren()) {
 							if( exportFilterDecision != null && exportFilterDecision.getValueSetFilterMap() !=null &&  exportFilterDecision.getValueSetFilterMap().containsKey(valuesetLink.getId()) && exportFilterDecision.getValueSetFilterMap().get(valuesetLink.getId())) {
-
 							ValuesetDataModel valuesetDataModel = igDataModel.getValuesets().stream().filter(vs -> valuesetLink.getId().equals(vs.getModel().getId())).findAny().orElseThrow(() -> new ValuesetNotFoundException(valuesetLink.getId()));
 							//	                SerializableValuesetStructure serializableValuesetStructure = valuesetsMap.get(valuesetLink.getId());
-							Element valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel, level+1, exportConfiguration.getValueSetExportConfiguration());
+							Element valuesetElement;
+							if(exportFilterDecision != null && exportFilterDecision.getOveriddedValueSetMap().keySet().contains(valuesetLink.getId())) {
+								valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel, level+1, exportFilterDecision.getOveriddedValueSetMap().get(valuesetLink.getId()));
+							}else {
+								valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel, level+1, exportConfiguration.getValueSetExportConfiguration());
+							}
 							if (valuesetElement != null) {
 								valuesetRegistryElement.appendChild(valuesetElement);
 							}
@@ -208,7 +220,12 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 						for (Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
 							if( exportFilterDecision != null && exportFilterDecision.getConformanceProfileFilterMap() !=null &&  exportFilterDecision.getConformanceProfileFilterMap().containsKey(conformanceProfileLink.getId()) && exportFilterDecision.getConformanceProfileFilterMap().get(conformanceProfileLink.getId())) {
 							ConformanceProfileDataModel conformanceProfileDataModel = igDataModel.getConformanceProfiles().stream().filter(cp -> conformanceProfileLink.getId().equals(cp.getModel().getId())).findAny().orElseThrow(() -> new ConformanceProfileNotFoundException(conformanceProfileLink.getId()));
-							Element conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel,igDataModel, level+1, exportConfiguration.getConformamceProfileExportConfiguration());
+							Element conformanceProfileElement;
+							if(exportFilterDecision != null && exportFilterDecision.getOveriddedConformanceProfileMap().keySet().contains(conformanceProfileLink.getId())) {
+								conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel, igDataModel, level+1, exportFilterDecision.getOveriddedConformanceProfileMap().get(conformanceProfileLink.getId()));
+							}else {
+								conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel, igDataModel, level+1,exportConfiguration.getConformamceProfileExportConfiguration());
+							}
 							if (conformanceProfileElement != null) {
 								conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
 							}
@@ -236,7 +253,6 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							if(exportFilterDecision != null && exportFilterDecision.getSegmentFilterMap().containsKey(segmentLink.getId()) && exportFilterDecision.getSegmentFilterMap().get(segmentLink.getId())) {
 							SegmentDataModel segmentDataModel = igDataModel.getSegments().stream().filter(seg -> segmentLink.getId().equals(seg.getModel().getId())).findAny().orElseThrow(() -> new SegmentNotFoundException(segmentLink.getId()));
 							Segment segment = segmentDataModel.getModel();
-							System.out.println("Segment Id is : " + segment.getId() + " And name is : " + segment.getName());
 							Element segmentElement;
 							if(exportFilterDecision != null && exportFilterDecision.getOveriddedSegmentMap().keySet().contains(segmentLink.getId())) {
 								segmentElement = segmentSerializationService.serializeSegment(igDataModel, segmentDataModel,level+1,exportFilterDecision.getOveriddedSegmentMap().get(segmentLink.getId()));

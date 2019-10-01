@@ -23,6 +23,12 @@ public class ValueSetExportConfiguration extends ResourceExportConfiguration{
 	  private boolean phinvadsUpdateEmailNotification;
 	  private int codeNumber;
 	  private int maxCodeNumber;
+	  private boolean stability;
+	  private boolean extensibility;
+	  private boolean contentDefinition;
+	  private boolean uRL;
+	  private boolean type;
+	  
 
 	  public ValueSetExportConfiguration(ExportConfiguration exportConfiguration) {
 	    this.includeValuesetsTable = exportConfiguration.isIncludeValuesetsTable();
@@ -42,6 +48,7 @@ public class ValueSetExportConfiguration extends ResourceExportConfiguration{
 	   * @return
 	   */
 	  
+	  
 	  public ExportConfiguration populateExportConfiguration(ExportConfiguration exportConfiguration) {
 	    exportConfiguration.setIncludeValuesetsTable(this.includeValuesetsTable);
 	    exportConfiguration.setValuesetsExport(this.valuesetsExport);
@@ -55,24 +62,79 @@ public class ValueSetExportConfiguration extends ResourceExportConfiguration{
 	    return exportConfiguration;
 	  }
 
-	  public ValueSetExportConfiguration(boolean includeValuesetsTable,
-	      UsageConfiguration valuesetsExport, CodeUsageConfiguration codesExport,
-	      List<NameAndPositionAndPresence> columns, ValuesetMetadataConfiguration metadataConfig,
-	      boolean unboundHL7, boolean unboundCustom, boolean phinvadsUpdateEmailNotification,
-	      int codeNumber, int maxCodeNumber) {
-	    this.includeValuesetsTable = includeValuesetsTable;
-	    this.valuesetsExport = valuesetsExport;
-	    this.codesExport = codesExport;
-	    this.columns = columns;
-	    this.metadataConfig = metadataConfig;
-	    this.unboundHL7 = unboundHL7;
-	    this.unboundCustom = unboundCustom;
-	    this.phinvadsUpdateEmailNotification = phinvadsUpdateEmailNotification;
-	    this.codeNumber = codeNumber;
-	    this.maxCodeNumber = maxCodeNumber;
-	  }
+	  public ValueSetExportConfiguration() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
 
-	  public boolean isIncludeValuesetsTable() {
+
+	
+	
+
+	  public ValueSetExportConfiguration(boolean includeValuesetsTable, UsageConfiguration valuesetsExport,
+			CodeUsageConfiguration codesExport, List<NameAndPositionAndPresence> columns,
+			ValuesetMetadataConfiguration metadataConfig, boolean unboundHL7, boolean unboundCustom,
+			boolean phinvadsUpdateEmailNotification, int codeNumber, int maxCodeNumber, boolean stability,
+			boolean extensibility, boolean contentDefinition, boolean uRL, boolean type) {
+		super();
+		this.includeValuesetsTable = includeValuesetsTable;
+		this.valuesetsExport = valuesetsExport;
+		this.codesExport = codesExport;
+		this.columns = columns;
+		this.metadataConfig = metadataConfig;
+		this.unboundHL7 = unboundHL7;
+		this.unboundCustom = unboundCustom;
+		this.phinvadsUpdateEmailNotification = phinvadsUpdateEmailNotification;
+		this.codeNumber = codeNumber;
+		this.maxCodeNumber = maxCodeNumber;
+		this.stability = stability;
+		this.extensibility = extensibility;
+		this.contentDefinition = contentDefinition;
+		this.uRL = uRL;
+		this.type = type;
+	}
+
+	public boolean isStability() {
+		return stability;
+	}
+
+	public void setStability(boolean stability) {
+		this.stability = stability;
+	}
+
+	public boolean isExtensibility() {
+		return extensibility;
+	}
+
+	public void setExtensibility(boolean extensibility) {
+		this.extensibility = extensibility;
+	}
+
+	public boolean isContentDefinition() {
+		return contentDefinition;
+	}
+
+	public void setContentDefinition(boolean contentDefinition) {
+		this.contentDefinition = contentDefinition;
+	}
+
+	public boolean isuRL() {
+		return uRL;
+	}
+
+	public void setuRL(boolean uRL) {
+		this.uRL = uRL;
+	}
+
+	public boolean isType() {
+		return type;
+	}
+
+	public void setType(boolean type) {
+		this.type = type;
+	}
+
+	public boolean isIncludeValuesetsTable() {
 	    return includeValuesetsTable;
 	  }
 
