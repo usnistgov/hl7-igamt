@@ -126,6 +126,10 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
     });
   }
 
+  getArray(): FormArray {
+    return this.formGroup.get('profileIdentifier') as FormArray;
+  }
+
   addIdentifier(profileIdentifier: FormArray) {
     profileIdentifier.push(this.formBuilder.group({
       entityIdentifier: [''],

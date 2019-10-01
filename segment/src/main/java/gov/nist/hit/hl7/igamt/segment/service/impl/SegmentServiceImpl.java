@@ -25,6 +25,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import gov.nist.hit.hl7.igamt.common.binding.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,11 +53,6 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
-import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
-import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
@@ -769,8 +766,8 @@ public class SegmentServiceImpl implements SegmentService {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-				item.setOldPropertyValue(seb.getExternalSingleCode());
-				seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
+				item.setOldPropertyValue(seb.getInternalSingleCode());
+				seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
 			} else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
 				Field f = this.findFieldById(s, item.getLocation());
 				if (f != null) {
@@ -894,17 +891,17 @@ public class SegmentServiceImpl implements SegmentService {
 	 */
 	private Set<ValuesetBinding> convertDisplayValuesetBinding(
 			HashSet<DisplayValuesetBinding> displayValuesetBindings) {
-//		if (displayValuesetBindings != null) {
-//			Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
-//			for (DisplayValuesetBinding dvb : displayValuesetBindings) {
-//				ValuesetBinding vb = new ValuesetBinding();
-//				vb.setStrength(dvb.getStrength());
-//				vb.setValuesetId(dvb.getValuesetId());
-//				vb.setValuesetLocations(dvb.getValuesetLocations());
-//				result.add(vb);
-//			}
-//			return result;
-//		}
+		if (displayValuesetBindings != null) {
+			Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
+			for (DisplayValuesetBinding dvb : displayValuesetBindings) {
+				ValuesetBinding vb = new ValuesetBinding();
+				vb.setStrength(dvb.getStrength());
+				vb.setValueSets(dvb.getValueSets());
+				vb.setValuesetLocations(dvb.getValuesetLocations());
+				result.add(vb);
+			}
+			return result;
+		}
 		return null;
 	}
 

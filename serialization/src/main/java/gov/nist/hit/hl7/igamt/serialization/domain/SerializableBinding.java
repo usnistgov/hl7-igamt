@@ -165,7 +165,7 @@ public class SerializableBinding extends SerializableElement {
 
       if (structureElementBinding.getInternalSingleCode() != null) {
         structureElementBindingElement.addAttribute(new Attribute("singleCodeId",
-            structureElementBinding.getInternalSingleCode().getCodeId()));
+            structureElementBinding.getInternalSingleCode().getCode()));
       }
 
       if (structureElementBinding.getPredicateId() != null) {

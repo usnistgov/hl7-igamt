@@ -4,6 +4,7 @@ import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayValuesetBinding;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class DeltaValueSetBinding {
@@ -12,6 +13,13 @@ public class DeltaValueSetBinding {
     private Set<DisplayValuesetBinding> updated;
     private Set<DisplayValuesetBinding> added;
     private Set<DisplayValuesetBinding> removed;
+
+    public DeltaValueSetBinding() {
+        unchanged = new HashSet<>();
+        updated = new HashSet<>();
+        added = new HashSet<>();
+        removed = new HashSet<>();
+    }
 
     public Set<DisplayValuesetBinding> getUnchanged() {
         return unchanged;

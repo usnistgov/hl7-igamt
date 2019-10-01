@@ -178,32 +178,6 @@ export class Hl7V2TreeService {
     return node ? (node.parent && node.parent.data.type === Type.COMPONENT) ? Type.SUBCOMPONENT : node.data.type : undefined;
   }
 
-  getBindingsForContext<T>(context: IBindingContext, bindings: Array<IBinding<T>>): IBinding<T> {
-    for (const binding of bindings) {
-      if (binding.context.resource === context.resource && binding.context.element === context.element) {
-        return binding;
-      }
-    }
-    return undefined;
-  }
-
-  getBindingsAfterContext<T>(context: IBindingContext, bindings: Array<IBinding<T>>): IBinding<T> {
-    const bindingsClone = [...bindings].sort((a, b) => {
-      return a.level - b.level;
-    });
-    const binding = this.getBindingsForContext<T>(context, bindingsClone);
-    if (!binding && bindings.length > 0) {
-      return bindings[0];
-    } else {
-      for (const bd of bindingsClone) {
-        if (bd.level > binding.level) {
-          return bd;
-        }
-      }
-    }
-    return undefined;
-  }
-
   concatPath(pre: IPath, post: IPath): IPath {
     const path = pre ? {
       elementId: pre.elementId,
@@ -264,8 +238,6 @@ export class Hl7V2TreeService {
     };
     return loop(elm);
   }
-
-  // this.bindingService.getBingdingInfo('2.3.1', 'HD', 1, Type.DATATYPE, this.bindingConfig)
 
   getChildrenListFromResource(resource: IResource, repository: AResourceRepositoryService): Observable<NamedChildrenList> {
     const toListItem = (leafs) => (field) => {
@@ -461,7 +433,7 @@ export class Hl7V2TreeService {
     };
   }
 
-  mergeBindings(fromParent: IBindingNode[], elementId, context: IBindingContext, elementBindings: IStructureElementBinding[], parentLevel: number): IElementBinding {
+  mergeBindings(fromParent: IBindingNode[], elementId: string, context: IBindingContext, elementBindings: IStructureElementBinding[], parentLevel: number): IElementBinding {
     const elementBinding = elementBindings.find((elm) => elm.elementId === elementId);
     const fromNodeChildrenBindings = elementBinding ? elementBinding.children.map((elm) => {
       return {
@@ -524,6 +496,7 @@ export class Hl7V2TreeService {
     };
 
     pick('valuesetBindings', (property) => property.valuesetBindings.length > 0);
+    pick('internalSingleCode', (property) => true);
     return values;
   }
 

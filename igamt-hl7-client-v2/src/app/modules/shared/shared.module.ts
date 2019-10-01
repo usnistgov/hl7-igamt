@@ -17,7 +17,7 @@ import {
 } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
-import {AlertsContainerComponent} from '../core/components/alerts-container/alerts-container.component';
+import { AlertsContainerComponent } from '../core/components/alerts-container/alerts-container.component';
 import { MessageService } from '../core/services/message.service';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
@@ -258,7 +258,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExportToolComponent,
     AlertsContainerComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent , ExportToolComponent, BindingSelectorComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent],
 
 })
 export class SharedModule {

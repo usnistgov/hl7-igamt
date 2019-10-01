@@ -6,26 +6,31 @@ import gov.nist.diff.annotation.DeltaField;
 
 public class InternalSingleCode implements Serializable{
 
-  @DeltaField
-  private String codeSystemId;
-  @DeltaField
-  private String codeId;
+  private String valueSetId;
+  private String code;
+  private String codeSystem;
 
-  public String getCodeSystemId() {
-    return codeSystemId;
+  public String getValueSetId() {
+    return valueSetId;
   }
 
-  public void setCodeSystemId(String codeSystemId) {
-    this.codeSystemId = codeSystemId;
+  public void setValueSetId(String valueSetId) {
+    this.valueSetId = valueSetId;
   }
 
-  public String getCodeId() {
-    return codeId;
+  public String getCode() {
+    return code;
   }
 
-  public void setCodeId(String codeId) {
-    this.codeId = codeId;
+  public void setCode(String code) {
+    this.code = code;
   }
 
+  public String getCodeSystem() {
+    return codeSystem;
+  }
 
+  public void setCodeSystem(String codeSystem) {
+    this.codeSystem = codeSystem;
+  }
 }
