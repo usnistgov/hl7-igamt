@@ -2,7 +2,6 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import {Observable} from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
-import {FroalaAdapterComponent} from '../../../shared/components/froala-adapter/froala-adapter.component';
 import {FroalaService} from '../../../shared/services/froala.service';
 import { INarrative } from '../ig-section-editor/ig-section-editor.component';
 

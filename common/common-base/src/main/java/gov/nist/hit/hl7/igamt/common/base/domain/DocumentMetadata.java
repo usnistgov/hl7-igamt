@@ -29,6 +29,8 @@ public class DocumentMetadata implements Serializable{
   private String orgName;
   private String coverPicture;
   private String subTitle;
+  private String specificationName;
+  
   public DocumentMetadata() {
     super();
     // TODO Auto-generated constructor stub
@@ -109,6 +111,18 @@ public List<String> getHl7Versions() {
 
 public void setHl7Versions(List<String> hl7Versions) {
 	this.hl7Versions = hl7Versions;
+}
+
+/**
+ * @return
+ */
+public String getSpecificationName() {
+  // TODO Auto-generated method stub
+  return null;
+}
+
+public void setSpecificationName(String specificationName) {
+  this.specificationName = specificationName;
 }
 
 }

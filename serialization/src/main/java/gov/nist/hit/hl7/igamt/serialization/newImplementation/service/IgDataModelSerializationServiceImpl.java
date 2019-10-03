@@ -64,8 +64,8 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 				metadata.getSpecificationName() != null ? metadata.getSpecificationName() : ""));
 		metadataElement.addAttribute(
 				new Attribute("identifier", metadata.getIdentifier() != null ? metadata.getIdentifier() : ""));
-		metadataElement.addAttribute(new Attribute("implementationNotes",
-				metadata.getImplementationNotes() != null ? metadata.getImplementationNotes() : ""));
+//		metadataElement.addAttribute(new Attribute("implementationNotes",
+//				metadata.getImplementationNotes() != null ? metadata.getImplementationNotes() : ""));
 		metadataElement
 		.addAttribute(new Attribute("orgName", metadata.getOrgName() != null ? metadata.getOrgName() : ""));
 		metadataElement.addAttribute(

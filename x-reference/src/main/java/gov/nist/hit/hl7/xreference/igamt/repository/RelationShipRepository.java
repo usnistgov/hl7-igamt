@@ -15,7 +15,7 @@ public interface RelationShipRepository extends CrudRepository<RelationShip, Str
  List<RelationShip> findByParentId(String id);
  void deleteByParentId(String id);
  void deleteByChildId(String id);
- List<RelationShip> findByPath(String path);
+// List<RelationShip> findByPath(String path);
  
  
 

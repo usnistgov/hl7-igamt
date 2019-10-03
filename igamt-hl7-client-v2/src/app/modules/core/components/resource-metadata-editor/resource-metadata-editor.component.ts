@@ -18,7 +18,7 @@ import { AbstractEditorComponent } from '../abstract-editor-component/abstract-e
 export abstract class ResourceMetadataEditorComponent extends AbstractEditorComponent implements OnInit {
 
   metadataFormInput: IMetadataFormInput<IResourceMetadata>;
-  protected froalaConfig$: Observable<any>;
+  froalaConfig$: Observable<any>;
   constructor(
     readonly editor: IEditorMetadata,
     protected actions$: Actions,

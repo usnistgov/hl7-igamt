@@ -35,7 +35,6 @@ import { ExportToolComponent } from './components/export-tool/export-tool.compon
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
-import { FroalaAdapterComponent } from './components/froala-adapter/froala-adapter.component';
 import { CardinalityComponent } from './components/hl7-v2-tree/columns/cardinality/cardinality.component';
 import { CommentsComponent } from './components/hl7-v2-tree/columns/comments/comments.component';
 import { ConformanceLengthComponent } from './components/hl7-v2-tree/columns/conformance-length/conformance-length.component';
@@ -137,7 +136,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     BindingSelectorComponent,
     ExportToolComponent,
     AlertsContainerComponent,
-    FroalaAdapterComponent,
   ],
   providers: [
     StoreResourceRepositoryService,

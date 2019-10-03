@@ -1,9 +1,9 @@
 import {HttpClient} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
-import {map, withLatestFrom} from 'rxjs/operators';
-import * as froala from '../../../config/froala.json';
+import {combineLatest, Observable, pipe} from 'rxjs';
+import { map, withLatestFrom} from 'rxjs/operators';
+import {selectBindingConfig, selectFroalaConfig} from '../../../root-store/config/config.reducer';
 import {selectIgId, selectWorkspaceActive} from '../../../root-store/ig/ig-edit/ig-edit.selectors';
 
 @Injectable({
@@ -12,7 +12,7 @@ import {selectIgId, selectWorkspaceActive} from '../../../root-store/ig/ig-edit/
 export class FroalaService {
   config;
   constructor(private http: HttpClient, private store: Store<any>) {
-    const staticConfig = {key: froala.key};
+    const staticConfig = {};
     this.config = {...  staticConfig,
       placeholderText: '',
       imageAllowedTypes: ['jpeg', 'jpg', 'png', 'gif'],
@@ -45,11 +45,11 @@ export class FroalaService {
     };
   }
   getConfig(): Observable<any> {
-    return this.store.select(selectWorkspaceActive).pipe(
-      withLatestFrom(this.store.select(selectIgId)),
-      map(([active, igId]) => {
+    return combineLatest(this.store.select(selectWorkspaceActive), this.store.select(selectIgId), this.store.select(selectFroalaConfig)).pipe(
+      map(([active, igId, conf]) => {
           return {
             ...this.config,
+            key: conf.key,
             imageUploadURL: '/api/storage/upload/',
             imageManagerLoadURL: '/api/storage/file',
             imageUploadParams: {
@@ -65,7 +65,6 @@ export class FroalaService {
               },
             },
           };
-        }),
-      );
+        }));
   }
 }
