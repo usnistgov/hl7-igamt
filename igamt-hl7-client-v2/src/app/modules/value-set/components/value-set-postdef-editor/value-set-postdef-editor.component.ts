@@ -14,6 +14,7 @@ import {Type} from '../../../shared/constants/type.enum';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {EditorID} from '../../../shared/models/editor.enum';
 import {ChangeType, PropertyType} from '../../../shared/models/save-change';
+import {FroalaService} from '../../../shared/services/froala.service';
 import {ValueSetService} from '../../service/value-set.service';
 
 @Component({
@@ -29,14 +30,14 @@ export class ValueSetPostdefEditorComponent extends DefinitionEditorComponent im
     actions$: Actions,
     store: Store<any>,
     messageService: MessageService,
-    private valueSetService: ValueSetService) {
+    private valueSetService: ValueSetService, froalaService: FroalaService) {
     super({
         id: EditorID.POSTDEF,
         resourceType: Type.VALUESET,
         title: 'post-definition',
       },
       PropertyType.POSTDEF,
-      actions$, store, messageService);
+      actions$, store, messageService, froalaService);
   }
 
   saveChange(elementId: string, igId: string, value: any, old: any, property: PropertyType): Observable<Action> {

@@ -51,9 +51,4 @@ public class RelationShipServiceImpl implements RelationShipService {
 		repo.deleteAll();
 	}
 
-	@Override
-	public List<RelationShip> findByPath(String path) {
-		return repo.findByPath(path);
-	}
-
 }

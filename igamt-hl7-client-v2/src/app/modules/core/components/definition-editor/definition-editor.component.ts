@@ -9,6 +9,7 @@ import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
 import { PropertyType } from '../../../shared/models/save-change';
+import {FroalaService} from '../../../shared/services/froala.service';
 import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
@@ -17,14 +18,16 @@ export abstract class DefinitionEditorComponent extends AbstractEditorComponent 
   definition: FormGroup;
   changeSubscription: Subscription;
   syncSubscription: Subscription;
+  protected froalaConfig$: Observable<any>;
 
   constructor(
     editorMetadata: IEditorMetadata,
     private propertyType: PropertyType,
     actions$: Actions,
     store: Store<any>,
-    protected messageService: MessageService) {
+    protected messageService: MessageService, protected froalaService: FroalaService) {
     super(editorMetadata, actions$, store);
+    this.froalaConfig$ = this.froalaService.getConfig();
 
     this.definition = new FormGroup({
       value: new FormControl(''),

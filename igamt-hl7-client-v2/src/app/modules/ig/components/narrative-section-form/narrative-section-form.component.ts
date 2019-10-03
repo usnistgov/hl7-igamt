@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {Observable} from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import {FroalaService} from '../../../shared/services/froala.service';
 import { INarrative } from '../ig-section-editor/ig-section-editor.component';
 
 @Component({
@@ -8,9 +10,10 @@ import { INarrative } from '../ig-section-editor/ig-section-editor.component';
   templateUrl: './narrative-section-form.component.html',
   styleUrls: ['./narrative-section-form.component.scss'],
 })
-export class NarrativeSectionFormComponent implements OnInit {
+export class NarrativeSectionFormComponent implements OnInit  {
 
   sectionForm: FormGroup;
+  froalaConfig$: Observable<any>;
   @Output()
   form: EventEmitter<FormGroup>;
   @Input()
@@ -20,7 +23,7 @@ export class NarrativeSectionFormComponent implements OnInit {
     this.sectionForm.patchValue(data, { emitEvent: false });
   }
 
-  constructor() {
+  constructor(private froalaService: FroalaService) {
     this.form = new EventEmitter<FormGroup>();
     this.sectionForm = new FormGroup({
       id: new FormControl(''),
@@ -34,10 +37,10 @@ export class NarrativeSectionFormComponent implements OnInit {
       .pipe(debounceTime(200))
       .subscribe(
         (change) => {
-          console.log('X');
           this.form.emit(this.sectionForm);
         },
       );
+    this.froalaConfig$ = this.froalaService.getConfig();
   }
 
 }

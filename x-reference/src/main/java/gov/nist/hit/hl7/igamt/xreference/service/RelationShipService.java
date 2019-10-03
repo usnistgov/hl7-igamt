@@ -15,7 +15,5 @@ public interface RelationShipService {
   public List<RelationShip> findAll();
   public void deleteAll();
   public void saveAll(Set<RelationShip> relations);
-  List<RelationShip> findByPath(String path);
-
 
 }

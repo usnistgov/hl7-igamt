@@ -8,11 +8,8 @@
       </ng-container>
       <ng-container *ngSwitchCase="'RICH'">
         <label [for]="field.data.id"><strong>{{field.data.label}}</strong></label>
-        <div *ngIf="!viewOnly && !field.data.disabled" [id]="field.data.id" [froalaEditor]="{
-          autofocus: false,
-          placeholder: field.data.placeholder
-        }" [formControlName]="field.key" style="flex-grow: 1; display: flex; flex-direction: column;"></div>
-        <div *ngIf="(viewOnly || field.data.disabled) && metadataForm[field.key]" [froalaView]="metadataForm[field.key]"></div>
+        <div *ngIf="!viewOnly && !field.data.disabled" [id]="field.data.id" [froalaEditor]="froalaConfig" [formControlName]="field.key" style="flex-grow: 1; display: flex; flex-direction: column;"></div>
+        <div *ngIf="(viewOnly || field.data.disabled) && metadataForm[field.key]" [froalaView]="metadataForm[field.key]" [froalaEditor]="froalaConfig" ></div>
       </ng-container>
       <ng-container *ngSwitchCase="'SELECT'">
         <div class="form-group">
@@ -27,7 +24,7 @@
       <ng-container *ngSwitchCase="'STRING_LIST'">
         <div class="form-group">
           <label [for]="field.data.id" class="form-label-lg">{{field.data.label}}</label>
-          <p-chips *ngIf="!viewOnly && !field.data.disabled" [styleClass]="'string-list'" [formControlName]=" field.key"
+          <p-chips *ngIf="!viewOnly && !field.data.disabled" [styleClass]="'string-list'" [formControlName]="field.key"
             [placeholder]="field.data.placeholder">
           </p-chips>
           <span *ngIf="viewOnly || field.data.disabled">

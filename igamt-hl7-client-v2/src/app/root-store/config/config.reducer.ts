@@ -45,6 +45,12 @@ export const selectBindingConfig = createSelector(
     return state.valueSetBindingConfig;
   },
 );
+export const selectFroalaConfig = createSelector(
+  getHl7ConfigState,
+  (state) => {
+    return state.froalaConfig;
+  },
+);
 
 export const selectExternalTools = createSelector(
   getHl7ConfigState,

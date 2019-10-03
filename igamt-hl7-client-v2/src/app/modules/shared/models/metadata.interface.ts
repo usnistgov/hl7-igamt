@@ -5,9 +5,11 @@ export interface IMetadata {
   topics: string;
   specificationName: string;
   identifier?: any;
+  authors: string[];
   implementationNotes?: any;
-  orgName: string;
+  orgName?: string;
   coverPicture?: any;
   subTitle: string;
   scope?: any;
+  authorNotes?: any;
 }
