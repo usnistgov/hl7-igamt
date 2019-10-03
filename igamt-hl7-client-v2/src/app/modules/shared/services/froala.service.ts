@@ -35,11 +35,6 @@ export class FroalaService {
           console.log(response);
           console.log($img);
         },
-        'froalaEditor.image.replaced': ($img, response) => {
-          console.log('froalaEditor.image.replaced');
-          console.log(response);
-          console.log($img);
-        },
         'image.error': (error, response) => {
           console.log(error);
           console.log(response);
