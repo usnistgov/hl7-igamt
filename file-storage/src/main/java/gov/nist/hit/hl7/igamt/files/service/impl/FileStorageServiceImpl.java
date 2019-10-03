@@ -43,12 +43,30 @@ public class FileStorageServiceImpl implements FileStorageService {
   public GridFSFile findOneByFilename(String fileName) {
     return gridFsTemplate.findOne(new Query(Criteria.where("filename").is(fileName)));
   }
+  
 
+  @Override
+  public void delete(String fileName) {
+    gridFsTemplate.delete(new Query(Criteria.where("filename").is(fileName)));
+  }
 
   @Override
   public List findAll() {
     return null;
   }
+
+@Override
+public GridFSFile findByIgAndTypeAndId(String s, String igId, String type) {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+@Override
+public void save(GridFSFile dbFile) {
+	// TODO Auto-generated method stub
+	//gridFsTemplate.delete(new Ouery)
+}
+
 
 
 }

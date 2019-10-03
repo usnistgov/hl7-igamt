@@ -21,6 +21,28 @@ export interface IConformanceProfile extends IResource {
   messageType: string;
   event: string;
   structID: string;
+  profileType: ProfileType;
+  role: Role;
+  profileIdentifier: IMessageProfileIdentifier[];
   children: IMsgStructElement[];
   binding?: IResourceBinding;
+}
+
+export enum Role {
+  Sender = 'Sender',
+  Receiver = 'Receiver',
+  SenderAndReceiver = 'SenderAndReceiver',
+}
+
+export enum ProfileType {
+  HL7 = 'HL7',
+  Constrainable = 'Constrainable',
+  Implementation = 'Implementation',
+}
+
+export interface IMessageProfileIdentifier {
+  entityIdentifier: string;
+  namespaceId: string;
+  universalId: string;
+  universalIdType: string;
 }

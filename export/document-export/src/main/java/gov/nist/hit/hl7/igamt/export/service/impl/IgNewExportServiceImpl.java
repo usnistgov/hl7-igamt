@@ -256,9 +256,13 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			for (StructureElementBinding child : binding.getChildren()) {
 				if (child.getValuesetBindings() != null) {
 					for (ValuesetBinding vs : child.getValuesetBindings()) {
-						if (vs.getValuesetId() != null && bindedPaths.containsKey(child.getElementId())) {
-							decision.getValueSetFilterMap().put(vs.getValuesetId(), true);
+						
+						if (vs.getValueSets() != null && bindedPaths.containsKey(child.getElementId())) {
+							for(String s: vs.getValueSets()) {
+								decision.getValueSetFilterMap().put(s, true);
+							}
 						}
+						
 					}
 				}
 				if (child.getChildren() != null && !child.getChildren().isEmpty()) {
@@ -273,8 +277,10 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		for (StructureElementBinding child : structureElementBinding.getChildren()) {
 			if (child.getValuesetBindings() != null) {
 				for (ValuesetBinding vs : child.getValuesetBindings()) {
-					if (vs.getValuesetId() != null && bindedPaths.containsKey(path)) {
-						decision.getValueSetFilterMap().put(vs.getValuesetId(), true);
+					if (vs.getValueSets() != null && bindedPaths.containsKey(path)) {
+						for( String s: vs.getValueSets()) {
+						decision.getValueSetFilterMap().put(s, true);
+						}
 					}
 				}
 			}

@@ -25,6 +25,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import gov.nist.hit.hl7.igamt.common.binding.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,11 +53,6 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
-import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
-import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
@@ -84,7 +81,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.segment.domain.display.CodeInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplayDataModel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldStructureTreeModel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
@@ -95,9 +91,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
-import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
-import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -115,8 +109,8 @@ public class SegmentServiceImpl implements SegmentService {
 	@Autowired
 	private InMemoryDomainExtentionService domainExtention;
 
-//	@Autowired
-//	private CoConstraintService coConstraintService;
+	//	@Autowired
+	//	private CoConstraintService coConstraintService;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -129,7 +123,7 @@ public class SegmentServiceImpl implements SegmentService {
 
 	@Autowired
 	ValuesetService valueSetService;
-	
+
 	@Autowired
 	private ConformanceStatementRepository conformanceStatementRepository;
 
@@ -184,7 +178,7 @@ public class SegmentServiceImpl implements SegmentService {
 
 	@Override
 	public List<Segment> findByDomainInfoScope(String scope) {
-		return findByDomainInfoScope(scope);
+		return segmentRepository.findByDomainInfoScope(scope);
 	}
 
 	@Override
@@ -342,7 +336,7 @@ public class SegmentServiceImpl implements SegmentService {
 																scModel.setPredicate(op.get());
 																if (op.get().getIdentifier() != null)
 																	scModel.getPredicate()
-																			.setIdentifier(scModel.getIdPath());
+																	.setIdentifier(scModel.getIdPath());
 															}
 														}
 													}
@@ -391,7 +385,7 @@ public class SegmentServiceImpl implements SegmentService {
 
 													subComponentStructureTreeModel.setData(scModel);
 													componentStructureTreeModel
-															.addSubComponent(subComponentStructureTreeModel);
+													.addSubComponent(subComponentStructureTreeModel);
 												} else {
 													// TODO need to handle exception
 												}
@@ -435,31 +429,6 @@ public class SegmentServiceImpl implements SegmentService {
 	 * @param valuesetBindings
 	 * @return
 	 */
-	private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings,
-			HashMap<String, Valueset> valueSetsMap) {
-		if (valuesetBindings != null) {
-			Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
-			for (ValuesetBinding vb : valuesetBindings) {
-				Valueset vs = valueSetsMap.get(vb.getValuesetId());
-				if (vs == null) {
-					vs = this.valueSetService.findById(vb.getValuesetId());
-					valueSetsMap.put(vs.getId(), vs);
-				}
-				if (vs != null) {
-					DisplayValuesetBinding dvb = new DisplayValuesetBinding();
-					dvb.setLabel(vs.getBindingIdentifier());
-					dvb.setName(vs.getName());
-					dvb.setStrength(vb.getStrength());
-					dvb.setValuesetId(vb.getValuesetId());
-					dvb.setValuesetLocations(vb.getValuesetLocations());
-					dvb.setDomainInfo(vs.getDomainInfo());
-					result.add(dvb);
-				}
-			}
-			return result;
-		}
-		return null;
-	}
 
 	/**
 	 * @param childDt
@@ -611,7 +580,7 @@ public class SegmentServiceImpl implements SegmentService {
 		newLink.setDomainInfo(elm.getDomainInfo());
 		updateDependencies(elm, valuesetsMap, datatypesMap, username);
 		this.save(elm);
-//		updateCoConstraint(elm, obj, valuesetsMap, datatypesMap, username);
+		//		updateCoConstraint(elm, obj, valuesetsMap, datatypesMap, username);
 		return newLink;
 
 	}
@@ -640,11 +609,11 @@ public class SegmentServiceImpl implements SegmentService {
 
 	private void updateCoConstraint(Segment elm, Segment old, HashMap<String, String> valuesetsMap,
 			HashMap<String, String> datatypesMap, String username) {
-//		CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(old.getId());
-//		if (cc != null) {
-//			CoConstraintTable cc_ = coConstraintService.clone(valuesetsMap, datatypesMap, elm.getId(), cc);
-//			coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
-//		}
+		//		CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(old.getId());
+		//		if (cc != null) {
+		//			CoConstraintTable cc_ = coConstraintService.clone(valuesetsMap, datatypesMap, elm.getId(), cc);
+		//			coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
+		//		}
 
 	}
 
@@ -658,11 +627,15 @@ public class SegmentServiceImpl implements SegmentService {
 			for (StructureElementBinding child : binding.getChildren()) {
 				if (child.getValuesetBindings() != null) {
 					for (ValuesetBinding vs : child.getValuesetBindings()) {
-						if (vs.getValuesetId() != null) {
-							if (valuesetsMap.containsKey(vs.getValuesetId())) {
-								vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()));
+							if (vs.getValueSets() != null) {
+								for(String s: vs.getValueSets()) {
+									if (valuesetsMap.containsKey(s)) {
+										if(!vs.getValueSets().contains(s)) {
+											vs.getValueSets().add(valuesetsMap.get(s));
+										}
+									}
+								}
 							}
-						}
 					}
 				}
 			}
@@ -793,18 +766,18 @@ public class SegmentServiceImpl implements SegmentService {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-				item.setOldPropertyValue(seb.getExternalSingleCode());
-				seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
+				item.setOldPropertyValue(seb.getInternalSingleCode());
+				seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
 			} else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-			  Field f = this.findFieldById(s, item.getLocation());
-              if (f != null) {
-                  item.setOldPropertyValue(f.getConstantValue());
-                  if (item.getPropertyValue() == null) {
-                    f.setConstantValue(null);
-                } else {
-                    f.setConstantValue((String) item.getPropertyValue());
-                }
-              }
+				Field f = this.findFieldById(s, item.getLocation());
+				if (f != null) {
+					item.setOldPropertyValue(f.getConstantValue());
+					if (item.getPropertyValue() == null) {
+						f.setConstantValue(null);
+					} else {
+						f.setConstantValue((String) item.getPropertyValue());
+					}
+				}
 			} else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
 				Field f = this.findFieldById(s, item.getLocation());
 				if (f != null) {
@@ -816,13 +789,13 @@ public class SegmentServiceImpl implements SegmentService {
 					}
 				}
 			} else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
-			  ObjectMapper mapper = new ObjectMapper();
-              String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-              Field f = this.findFieldById(s, item.getLocation());
-              if (f != null) {
-                item.setOldPropertyValue(f.getComments());
-                f.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
-              }
+				ObjectMapper mapper = new ObjectMapper();
+				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+				Field f = this.findFieldById(s, item.getLocation());
+				if (f != null) {
+					item.setOldPropertyValue(f.getComments());
+					f.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+				}
 			} else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
@@ -923,7 +896,7 @@ public class SegmentServiceImpl implements SegmentService {
 			for (DisplayValuesetBinding dvb : displayValuesetBindings) {
 				ValuesetBinding vb = new ValuesetBinding();
 				vb.setStrength(dvb.getStrength());
-				vb.setValuesetId(dvb.getValuesetId());
+				vb.setValueSets(dvb.getValueSets());
 				vb.setValuesetLocations(dvb.getValuesetLocations());
 				result.add(vb);
 			}
@@ -1052,15 +1025,7 @@ public class SegmentServiceImpl implements SegmentService {
 	private BindingDisplay createBindingDisplay(StructureElementBinding seb, String sourceId, ViewScope sourceType,
 			int priority, HashMap<String, Valueset> valueSetsMap) {
 		BindingDisplay bindingDisplay = new BindingDisplay();
-		bindingDisplay.setSourceId(sourceId);
-		bindingDisplay.setSourceType(sourceType);
-		bindingDisplay.setPriority(priority);
-		bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
-		bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-		if (seb.getPredicateId() != null)
-			bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
-		bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
-
+		
 		return bindingDisplay;
 	}
 
@@ -1185,7 +1150,7 @@ public class SegmentServiceImpl implements SegmentService {
 													scModel.setIdPath(idPath + "-" + f.getId() + "-" + c.getId() + "-"
 															+ sc.getId());
 													scModel.setPath(path + "-" + f.getPosition() + "-" + c.getPosition()
-															+ "-" + sc.getPosition());
+													+ "-" + sc.getPosition());
 													scModel.setDatatypeLabel(
 															this.createDatatypeLabel(childChildChildDt));
 													StructureElementBinding childChildSeb = this
@@ -1250,7 +1215,7 @@ public class SegmentServiceImpl implements SegmentService {
 													}
 													subComponentStructureTreeModel.setData(scModel);
 													componentStructureTreeModel
-															.addSubComponent(subComponentStructureTreeModel);
+													.addSubComponent(subComponentStructureTreeModel);
 												} else {
 													// TODO need to handle exception
 												}

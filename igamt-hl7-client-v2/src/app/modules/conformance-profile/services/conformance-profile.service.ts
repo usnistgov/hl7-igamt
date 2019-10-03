@@ -5,6 +5,7 @@ import { Message } from '../../core/models/message/message.class';
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
 import { ICPConformanceStatementList } from '../../shared/models/cs-list.interface';
 import { IChange } from '../../shared/models/save-change';
+import { IConformanceProfileEditMetadata } from '../components/metadata-editor/metadata-editor.component';
 
 @Injectable()
 export class ConformanceProfileService {
@@ -27,5 +28,20 @@ export class ConformanceProfileService {
 
   getConformanceStatements(id: string, documentId: string): Observable<ICPConformanceStatementList> {
     return this.http.get<ICPConformanceStatementList>(this.URL + id + '/conformancestatement/' + documentId);
+  }
+
+  conformanceProfileToMetadata(conformanceProfile: IConformanceProfile): IConformanceProfileEditMetadata {
+    return {
+      name: conformanceProfile.name,
+      hl7Version: conformanceProfile.domainInfo.version,
+      organization: conformanceProfile.organization,
+      authors: conformanceProfile.authors,
+      messageType: conformanceProfile.messageType,
+      event: conformanceProfile.event,
+      structID: conformanceProfile.structID,
+      profileType: conformanceProfile.profileType,
+      role: conformanceProfile.role,
+      profileIdentifier: conformanceProfile.profileIdentifier || [],
+    };
   }
 }

@@ -1138,7 +1138,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 				ValuesetDataModel vsModel = null;
 				if (sModel.getValuesetMap().get("2") != null) {
 					for (ValuesetBindingDataModel m : sModel.getValuesetMap().get("2")) {
-						refValuesetId = m.getValuesetBinding().getValuesetId();
+						// TODO update value set binding export
+					  
+					  if (m.getValuesetBinding() != null && m.getValuesetBinding().getValueSets() != null && m.getValuesetBinding().getValueSets().size() == 1) {
+					    refValuesetId = m.getValuesetBinding().getValueSets().get(0);
+					  }
 					}
 				}
 				if (refValuesetId != null) {
@@ -1824,7 +1828,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		boolean atLeastOnce = false;
 		
 		String sPathStr = this.generatePath(assertion.getSubject().getPath(), targetId, level, context);
-		String cPathStr = this.generatePath(complement.getPath(), targetId, level, context);
+		String cPathStr = null;
+		if(complement.getPath() != null) {
+	        cPathStr = this.generatePath(complement.getPath(), targetId, level, context);		  
+		}
+
 		
 		if(assertion.getSubject().getOccurenceType() != null) {
 			if(assertion.getSubject().getOccurenceType().equals("atLeast")) {
@@ -1834,7 +1842,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			}		
 		}
 		
-		if(complement.getOccurenceType() != null) {
+		if(complement.getOccurenceType() != null && cPathStr != null) {
 			if(complement.getOccurenceType().equals("instance")) {
 				cPathStr.replaceFirst("//*", "" + complement.getOccurenceValue());
 			}		
@@ -1867,6 +1875,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		case notContainListValues:
 			result = "<NOT><StringList Path=\"" + sPathStr + "\" CSV=\""+ String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
 			break;
+		case containListValuesDesc:
+            result = "<StringList Path=\"" + sPathStr + "\" CSV=\"" + String.join(",", complement.getValues()) +"\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            break;
+		case notContainListValuesDesc:
+            result = "<NOT><StringList Path=\"" + sPathStr + "\" CSV=\"" + String.join(",", complement.getValues()) +"\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
+            break;
 		case containCode:
 			result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() +"\" IgnoreCase=\"" + false +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
 			break;

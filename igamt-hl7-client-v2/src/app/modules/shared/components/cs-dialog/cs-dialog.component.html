@@ -33,7 +33,7 @@
         }"
         [resourceType]="resourceType"
         [repository]="repository"
-        (selection)="selectContext($event)"
+        (selection)="selectContextNode($event)"
       ></app-structure-tree>
     </div>
   </div>
@@ -85,7 +85,7 @@
           [repository]="repository"
           [type]="'PROPOSITION'"
           [(value)]="cs.assertion.ifAssertion"
-          [collapsed]="true"
+          [collapsed]="false"
           (valueChange)="change()"
         ></app-cs-proposition>
       </tr>
@@ -103,7 +103,7 @@
           [repository]="repository"
           [type]="'STATEMENT'"
           [(value)]="cs.assertion.thenAssertion"
-          [collapsed]="true"
+          [collapsed]="false"
           (valueChange)="change()"
         ></app-cs-proposition>
       </tr>
@@ -132,7 +132,7 @@
             [repository]="repository"
             [type]="leaf.data.branch === 'D' ? 'STATEMENT' : 'PROPOSITION'"
             [(value)]="leaf.payload"
-            [collapsed]="true"
+            [collapsed]="false"
             (valueChange)="change()"
             ></app-cs-proposition>
           </tr>

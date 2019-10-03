@@ -235,7 +235,7 @@ public class DatatypeLibraryController {
       }
     }
     AddDatatypeResponseObject objects =
-        dataypeLibraryService.addDatatypes(savedIds, lib, lib.getMetadata().getScope());
+        dataypeLibraryService.addDatatypes(savedIds, lib, lib.getDomainInfo().getScope());
 
 
     return new ResponseMessage<AddDatatypeResponseDisplay>(Status.SUCCESS, "", "Datatype Library Created", id, false, lib.getUpdateDate(), displayConverterService.convertDatatypeResponseToDisplay(objects));
@@ -380,7 +380,7 @@ public class DatatypeLibraryController {
     Datatype clone = datatype.clone();
     clone.setUsername(username);
     DomainInfo info = new DomainInfo();
-    info.setScope(library.getMetadata().getScope());
+    info.setScope(library.getDomainInfo().getScope());
     info.setCompatibilityVersion(datatype.getDomainInfo().getCompatibilityVersion());
     info.setVersion(datatype.getDomainInfo().getVersion());
     clone.setDomainInfo(info);

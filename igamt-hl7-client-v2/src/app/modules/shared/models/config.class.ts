@@ -36,6 +36,6 @@ export interface IBindingInfo {
   allowedBindingLocations: IAllowedBindingLocationsMap;
 }
 export class Hl7Config {
-  constructor(readonly hl7Versions?: string[], readonly usages?: string[], readonly phinvadsUrl?: string, readonly connection?: IConnectingInfo[], readonly valueSetBindingConfig?: IValueSetBindingConfigMap) {
+  constructor(readonly hl7Versions?: string[], readonly usages?: string[], readonly phinvadsUrl?: string, readonly connection?: IConnectingInfo[], readonly valueSetBindingConfig?: IValueSetBindingConfigMap, readonly froalaConfig?: any) {
   }
 }

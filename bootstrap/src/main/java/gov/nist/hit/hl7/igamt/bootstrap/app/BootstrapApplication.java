@@ -28,7 +28,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
@@ -36,7 +42,12 @@ import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.domain.ConnectingInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.VersionRepresntation;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
 @SpringBootApplication
 //@EnableMongoAuditing
@@ -80,11 +91,18 @@ public class BootstrapApplication implements CommandLineRunner {
 
 //    @Autowired
 //    CoConstraintService ccService;
-	@Autowired
-	CoConstraintXmlGenerator ccXmlGen;
+  @Autowired
+  CoConstraintXmlGenerator ccXmlGen;
 //  
   @Autowired
   DatatypeService dataypeService;
+ 
+  @Autowired
+  SegmentService segmentService;
+  
+  @Autowired
+  ConformanceProfileService messageService;
+  
 //  
 //  @Autowired
 //  DatatypeClassificationService datatypeClassificationService;
@@ -182,7 +200,7 @@ public class BootstrapApplication implements CommandLineRunner {
 //   }
 //  
    //
-    @PostConstruct
+  @PostConstruct
    void createSharedConstant() {
     Config constant = new Config();
     this.sharedConstantService.deleteAll();
@@ -227,10 +245,24 @@ public class BootstrapApplication implements CommandLineRunner {
     
     constant.setValueSetBindingConfig(generateValueSetConfig(constant.getHl7Versions()));
     
-    
+    HashMap<String, Object> froalaConfig = new HashMap<>();
+    froalaConfig.put("key", "Rg1Wb2KYd1Td1WIh1CVc2F==");
+    constant.setFroalaConfig(froalaConfig);
     sharedConstantService.save(constant);
   
    }
+   
+  // @PostConstruct
+   void fixBindings() throws ValidationException {
+	   this.fixDatatypes(Scope.HL7STANDARD);
+	   this.fixMessages(Scope.HL7STANDARD);
+	   this.fixSegment(Scope.HL7STANDARD);
+   }
+   
+   
+   
+   
+   
   //
   // // @PostConstruct
   // void generateDatatypeLibrary()
@@ -431,5 +463,50 @@ public class BootstrapApplication implements CommandLineRunner {
 //
 //}
 
+	
+
+	public void fixMessages(Scope scope) {
+		List<ConformanceProfile> resources = messageService.findByDomainInfoScope(scope.getValue()); 
+		for(ConformanceProfile r : resources) {
+			if(r.getBinding() !=null) {
+				fixBinding(r.getBinding());
+				messageService.save(r);
+			}
+		}
+	}
+	public void fixDatatypes(Scope scope) {
+		List<Datatype> resources = this.dataypeService.findByDomainInfoScope(scope.getValue()); 
+		for(Datatype r : resources) {
+			if(r.getBinding() !=null) {
+				fixBinding(r.getBinding());
+				dataypeService.save(r);
+			}
+		}	
+	}
+	public void fixSegment(Scope scope) throws ValidationException {
+		List<Segment> resources = this.segmentService.findByDomainInfoScope(scope.getValue()); 
+		for(Segment r : resources) {
+			if(r.getBinding() !=null) {
+				fixBinding(r.getBinding());
+				segmentService.save(r);
+			}
+		}
+	}
+	
+	public void fixBinding(ResourceBinding binding) {
+//		if(binding.getChildren() !=null && !binding.getChildren().isEmpty()) {
+//			for(StructureElementBinding elm: binding.getChildren()) {	
+//				if(elm.getValuesetBindings() != null) {
+//					for(ValuesetBinding vs: elm.getValuesetBindings()) {
+//						if(vs.getValuesetId() !=null) {
+//							List<String> list = new ArrayList<String>();
+//							list.add(vs.getValuesetId());
+//							vs.setValueSets(list);
+//						}
+//					}
+//				}
+//			}
+//		}	
+	}
  
 }
