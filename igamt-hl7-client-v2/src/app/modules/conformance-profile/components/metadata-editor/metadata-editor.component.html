@@ -27,11 +27,11 @@
   </app-form-input>
 
   <div class="form-group">
-    <label for="author" class="form-label-lg"> Author </label>
-    <p-chips *ngIf="!(viewOnly$ | async)" [styleClass]="'string-list'" formControlName="author" [placeholder]="'Author'"></p-chips>
+    <label for="authors" class="form-label-lg"> Author </label>
+    <p-chips *ngIf="!(viewOnly$ | async)" [styleClass]="'string-list'" formControlName="authors" [placeholder]="'Authors'"></p-chips>
     <span *ngIf="viewOnly$ | async">
       <br>
-      <span *ngFor="let item of formGroup.controls.author.value" class="badge badge-secondary">
+      <span *ngFor="let item of formGroup.controls.authors.value" class="badge badge-secondary">
         {{item}}
       </span>
     </span>

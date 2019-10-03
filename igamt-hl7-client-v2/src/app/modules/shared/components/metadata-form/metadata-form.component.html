@@ -24,7 +24,7 @@
       <ng-container *ngSwitchCase="'STRING_LIST'">
         <div class="form-group">
           <label [for]="field.data.id" class="form-label-lg">{{field.data.label}}</label>
-          <p-chips *ngIf="!viewOnly && !field.data.disabled" [styleClass]="'string-list'" [formControlName]=" field.key"
+          <p-chips *ngIf="!viewOnly && !field.data.disabled" [styleClass]="'string-list'" [formControlName]="field.key"
             [placeholder]="field.data.placeholder">
           </p-chips>
           <span *ngIf="viewOnly || field.data.disabled">

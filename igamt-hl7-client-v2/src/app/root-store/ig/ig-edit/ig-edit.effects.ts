@@ -243,7 +243,7 @@ export class IgEditEffects {
                 title: ig.metadata.title,
                 subTitle: ig.metadata.subTitle,
                 version: ig.metadata.version,
-                organization: ig.organization,
+                organization: ig.metadata.orgName,
                 authors: ig.authors,
                 hl7Versions: ig.metadata.hl7Versions,
                 status: ig.status,

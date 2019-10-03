@@ -51,50 +51,7 @@ public class FileStorageController {
   @Autowired
   private GridFsOperations operations;
 
-
   @RequestMapping(value = "/api/storage/upload", method = RequestMethod.POST,
-      consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
-  public UploadFileResponse upload(@RequestPart("file") MultipartFile part, @RequestParam(value="ig", required=false) String ig, @RequestParam(value="type", required=false) String type,@RequestParam(value="id", required=false) String id,  
-      HttpServletRequest request, Authentication authentication) throws UploadImageFileException {
-    try {
-
-      String mime = part.getContentType();
-      String filename = part.getOriginalFilename();
-      String extension = FilenameUtils.getExtension(filename);
-      if (((mime.equals("text/plain") || (mime.equals("application/msword"))
-          || (mime.equals("text/xml")) || (mime.equals("application/x-pdf"))
-          || (mime.equals("application/pdf"))) || (mime.equals("image/jpeg"))
-          || (mime.equals("image/gif")) || (mime.equals("image/png")))
-          && FileStorageUtil.allowedExtensions.contains(extension.toLowerCase())) {
-
-        if (part.getSize() >= 1024 * 1024 * 10) {
-          throw new UploadImageFileException("fileSizeTooBig");
-        }
-        InputStream in = part.getInputStream();
-        Document metaData = new Document();
-        metaData.put("accountId", authentication.getPrincipal().toString());
-        Set<String> igs= new HashSet<String>();
-        igs.add(ig);
-        metaData.put("igs", igs);
-        Set<String> ids= new HashSet<String>();
-        ids.add(id);
-        metaData.put("type", type);
-        metaData.put(id, ids);
-        String generatedName = UUID.randomUUID().toString() + "." + extension;
-        ObjectId fsFile = storageService.store(in, generatedName, part.getContentType(), metaData);
-        GridFSFile dbFile = storageService.findOne(fsFile.toString());
-        return new UploadFileResponse(dbFile.getFilename());
-      }
-      throw new UploadImageFileException("fileTypeUnsupported");
-
-    } catch (RuntimeException e) {
-      throw new UploadImageFileException(e);
-    } catch (Exception e) {
-      throw new UploadImageFileException(e);
-    }
-  }
-  
-  @RequestMapping(value = "/api/storage/upload/froala", method = RequestMethod.POST,
 	      consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
 	  public UploadFileResponse uploadFroala(@RequestPart("file") MultipartFile part, @RequestParam(value="ig", required=false) String ig, @RequestParam(value="type", required=false) String type,@RequestParam(value="id", required=false) String id,  
 	      HttpServletRequest request, Authentication authentication) throws UploadImageFileException {
@@ -121,12 +78,11 @@ public class FileStorageController {
 	        Set<String> ids= new HashSet<String>();
 	        ids.add(id);
 	        metaData.put("type", type);
-	        metaData.put(id, ids);
+	        metaData.put("id", ids);
 	        String generatedName = UUID.randomUUID().toString() + "." + extension;
 	        ObjectId fsFile = storageService.store(in, generatedName, part.getContentType(), metaData);
 	        GridFSFile dbFile = storageService.findOne(fsFile.toString());
-	        UploadFileResponse response= new UploadFileResponse();
-	        response.setLink("/api/storage/file?name="+ dbFile.getFilename());
+	        UploadFileResponse response= new UploadFileResponse("/api/storage/file?name="+ dbFile.getFilename());
 	        return response;
 	      }
 	      throw new UploadImageFileException("fileTypeUnsupported");
@@ -153,20 +109,6 @@ public class FileStorageController {
     }
   }
   
-  
-  @ResponseBody
-  @RequestMapping(value = "/api/storage/file", method = RequestMethod.DELETE)
-  public void getFile(@RequestParam("name") String filename, @RequestParam("ig") String ig, @RequestParam("type") String type,@RequestParam("id") String id)
-      throws UploadImageFileException {
-    try {
-      GridFSFile dbFile = storageService.findOneByFilename(filename);   
-      storageService.save(dbFile);
-    } catch (RuntimeException e) {
-      throw new UploadImageFileException(e);
-    } catch (Exception e) {
-      throw new UploadImageFileException(e);
-    }
-  }
 
 
 

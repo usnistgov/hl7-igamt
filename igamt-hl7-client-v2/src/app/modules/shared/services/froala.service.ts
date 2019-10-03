@@ -55,7 +55,7 @@ export class FroalaService {
       map(([active, igId]) => {
           return {
             ...this.config,
-            imageUploadURL: '/api/storage/upload/froala',
+            imageUploadURL: '/api/storage/upload/',
             imageManagerLoadURL: '/api/storage/file',
             imageUploadParams: {
               ig: igId,
