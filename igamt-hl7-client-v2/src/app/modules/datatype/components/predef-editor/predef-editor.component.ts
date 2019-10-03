@@ -13,7 +13,7 @@ import { MessageService } from '../../../core/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { ChangeType, PropertyType } from '../../../shared/models/save-change';
-import {FroalaService} from "../../../shared/services/froala.service";
+import {FroalaService} from '../../../shared/services/froala.service';
 import { DatatypeService } from '../../services/datatype.service';
 
 @Component({

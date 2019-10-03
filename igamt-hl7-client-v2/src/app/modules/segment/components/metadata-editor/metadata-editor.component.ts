@@ -11,8 +11,8 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
-import { SegmentService } from '../../services/segment.service';
 import {FroalaService} from '../../../shared/services/froala.service';
+import { SegmentService } from '../../services/segment.service';
 
 @Component({
   selector: 'app-metadata-editor',

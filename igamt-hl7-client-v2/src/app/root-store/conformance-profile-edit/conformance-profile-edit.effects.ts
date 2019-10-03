@@ -152,7 +152,6 @@ export class ConformanceProfileEditEffects {
     private message: MessageService,
     private deltaService: DeltaService,
     private conformanceProfileService: ConformanceProfileService,
-    private editorHelper: OpenEditorService,
-  ) { }
+    private editorHelper: OpenEditorService) { }
 
 }

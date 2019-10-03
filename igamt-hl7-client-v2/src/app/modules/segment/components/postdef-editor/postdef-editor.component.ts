@@ -13,8 +13,8 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { ChangeType, PropertyType } from '../../../shared/models/save-change';
+import {FroalaService} from '../../../shared/services/froala.service';
 import { SegmentService } from '../../services/segment.service';
-import {FroalaService} from "../../../shared/services/froala.service";
 
 @Component({
   selector: 'app-predef-editor',
