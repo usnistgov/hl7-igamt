@@ -14,6 +14,7 @@ import { RxjsStoreHelperService } from '../../shared/services/rxjs-store-helper.
 import { IResourceMetadata } from '../components/resource-metadata-editor/resource-metadata-editor.component';
 import { MessageType, UserMessage } from '../models/message/message.class';
 import { MessageService } from './message.service';
+import {IDynamicMappingInfo} from "../../shared/models/segment.interface";
 
 @Injectable({
   providedIn: 'root',
@@ -201,6 +202,30 @@ export class OpenEditorService {
           editor: action.payload.editor,
           initial: {
             ...resource,
+          },
+        }));
+      },
+    );
+  }
+
+  openDynMappingEditor<A extends OpenEditorBase>(
+    _action: string,
+    displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
+    resource: (action: A) => Observable<any>,
+    notFoundMessage: string,
+  ): Observable<Action> {
+    return this.openEditor<any, A>(
+      _action,
+      displayElement$,
+      resource,
+      notFoundMessage,
+      (action: A, dynMapping: any, display: IDisplayElement) => {
+        return of(new OpenEditor({
+          id: action.payload.id,
+          element: display,
+          editor: action.payload.editor,
+          initial: {
+            ...dynMapping,
           },
         }));
       },

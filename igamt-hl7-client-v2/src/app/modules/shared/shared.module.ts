@@ -77,6 +77,7 @@ import { StoreResourceRepositoryService } from './services/resource-repository.s
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 
 @NgModule({
   declarations: [
@@ -136,6 +137,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     BindingSelectorComponent,
     ExportToolComponent,
     AlertsContainerComponent,
+    DynamicMappingComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -255,6 +257,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     BindingSelectorComponent,
     ExportToolComponent,
     AlertsContainerComponent,
+    DynamicMappingComponent,
   ],
   entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent],
 

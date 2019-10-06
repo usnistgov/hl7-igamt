@@ -395,7 +395,6 @@ public class CrudServiceImpl implements CrudService {
 		for (Link link : registry.getChildren()) {
 			link.setPosition(orderMap.get(link.getId()));
 		}
-
 	}
 
 

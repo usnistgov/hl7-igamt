@@ -47,6 +47,7 @@ import {
   selectSectionFromIgById,
   selectTableOfContentChanged,
 } from './ig-edit.selectors';
+import {ActivatedRoute, Router} from '@angular/router';
 
 @Injectable()
 export class IgEditEffects {
@@ -269,6 +270,15 @@ export class IgEditEffects {
       return this.message.actionFromError(action.error);
     }),
   );
+  @Effect()
+  copyResourceSuccess$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.CopyResourceSuccess),
+    map((action: CopyResourceSuccess) => {
+      const type = action.payload.display.type.toLowerCase();
+      this.router.navigate(['./' + type , action.payload.display.id], {relativeTo: this.activatedRoute});
+      return  this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource copied successfully ', null ));
+    }),
+  );
 
   @Effect()
   deleteResourceFailure$ = this.actions$.pipe(
@@ -407,6 +417,8 @@ export class IgEditEffects {
     private message: MessageService,
     private resourceService: ResourceService,
     private rxjsHelper: RxjsStoreHelperService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
   ) {
   }
 

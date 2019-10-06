@@ -18,11 +18,20 @@ import { LoadSelectedResource, OpenEditorBase } from '../ig/ig-edit/ig-edit.acti
 import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef, selectIgId } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import {
-  LoadSegment, LoadSegmentFailure, LoadSegmentSuccess,
-  OpenSegmentConformanceStatementEditor, OpenSegmentCrossRefEditor, OpenSegmentDeltaEditor,
-  OpenSegmentMetadataEditor, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor,
-  OpenSegmentStructureEditor, SegmentEditActionTypes,
+  LoadSegment,
+  LoadSegmentFailure,
+  LoadSegmentSuccess,
+  OpenSegmentConformanceStatementEditor,
+  OpenSegmentCrossRefEditor,
+  OpenSegmentDeltaEditor,
+  OpenSegmentDynamicMappingEditor,
+  OpenSegmentMetadataEditor,
+  OpenSegmentPostDefEditor,
+  OpenSegmentPreDefEditor,
+  OpenSegmentStructureEditor,
+  SegmentEditActionTypes,
 } from './segment-edit.actions';
+import {selectedSegment} from "src/app/root-store/ig/ig-edit/ig-edit.index";
 
 @Injectable()
 export class SegmentEditEffects {
@@ -124,6 +133,18 @@ export class SegmentEditEffects {
         mergeMap((igId) => {
           return this.segmentService.getConformanceStatements(action.payload.id, igId);
         }),
+      );
+    },
+    this.SegmentNotFound,
+  );
+
+  @Effect()
+  OpenSegmentDynamicMappingEditor$ = this.editorHelper.openDynMappingEditor<OpenSegmentDynamicMappingEditor>(
+    SegmentEditActionTypes.OpenSegmentDynamicMappingEditor,
+    fromIgEdit.selectSegmentsById,
+    (action: OpenSegmentDynamicMappingEditor) => {
+      return this.store.select(selectedSegment).pipe(
+        take(1),
       );
     },
     this.SegmentNotFound,
