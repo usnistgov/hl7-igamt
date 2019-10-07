@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { IPredicate } from '../../../../models/predicate.interface';
 import { PropertyType } from '../../../../models/save-change';
-import { PredicateService } from '../../../../service/predicate.service';
+import { PredicateService } from '../../../../services/predicate.service';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
 
 @Component({

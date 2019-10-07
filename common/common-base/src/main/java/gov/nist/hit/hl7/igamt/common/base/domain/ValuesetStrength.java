@@ -9,7 +9,6 @@ public enum ValuesetStrength {
   }
   
   public static ValuesetStrength fromValue(String v) {
-
     return !"".equals(v) && v != null ? valueOf(v) : ValuesetStrength.U;
   }
 

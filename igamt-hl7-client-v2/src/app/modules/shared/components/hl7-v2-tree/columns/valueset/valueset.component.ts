@@ -319,6 +319,8 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
                 break;
             }
           }
+        } else {
+          this.editable.next({ type: IBindingType.VALUESET, value: undefined });
         }
       },
     );

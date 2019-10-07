@@ -2,16 +2,17 @@ import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import { selectBindingConfig } from '../../../../root-store/config/config.reducer';
-import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { EditorSave, EditorUpdate, LoadResourceReferences } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
   selectAllDatatypes,
   selectAllSegments,
   selectedResourceHasOrigin,
   selectValueSetsNodes,
 } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
@@ -43,6 +44,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   resource$: Observable<T>;
   workspace_s: Subscription;
   hasOrigin$: Observable<boolean>;
+  igId: Observable<string>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -60,15 +62,19 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     this.valueSets = this.store.select(selectValueSetsNodes);
     this.username = this.store.select(fromAuth.selectUsername);
     this.bindingConfig = this.store.select(selectBindingConfig);
+    this.igId = this.store.select(selectIgId);
+
     this.bindingConfig.subscribe();
     this.resourceSubject = new ReplaySubject<T>(1);
     this.changes = new ReplaySubject<IStructureChanges>(1);
+
     this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
         this.resourceSubject.next({ ...current.resource });
         this.changes.next({ ...current.changes });
       }),
     ).subscribe();
+
     this.resource$ = this.resourceSubject.asObservable();
   }
 
@@ -103,7 +109,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
           mergeMap((message) => {
             return this.getById(id).pipe(
               flatMap((resource) => {
-                return [this.messageService.messageToAction(message), new this.LoadAction(id), new EditorUpdate({ value: { changes: {}, resource }, updateDate: false })];
+                return [this.messageService.messageToAction(message), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new EditorUpdate({ value: { changes: {}, resource }, updateDate: false })];
               }),
             );
           }),

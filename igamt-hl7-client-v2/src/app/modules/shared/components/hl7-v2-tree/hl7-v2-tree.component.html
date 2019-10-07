@@ -1,18 +1,35 @@
 <div>
-    <p-treeTable [value]="nodes" [columns]="selectedColumns" (onNodeExpand)="onNodeExpand($event)" [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy">
+    <p-treeTable [value]="nodes" [columns]="selectedColumns" (onNodeExpand)="onNodeExpand($event)" (onNodeCollapse)="onNodeCollapse($event)" [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy">
         <ng-template pTemplate="caption">
           <div style="text-align:left">
             <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
                         selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
           </div>
         </ng-template>
+        <!-- <ng-template pTemplate="colgroup" let-columns>
+          <colgroup>
+            <ng-container *ngFor="let col of columns" [ngSwitch]="col.field">
+              <col *ngSwitchCase="columnTypes.NAME" style="width: 380px;">
+              <col *ngSwitchCase="columnTypes.USAGE" style="width: 115px;">
+              <col *ngSwitchCase="columnTypes.DATATYPE" style="width: 210px;">
+              <col *ngSwitchCase="columnTypes.SEGMENT" style="width: 250px;">
+              <col *ngSwitchCase="columnTypes.VALUESET" style="width: 250px;">
+              <col *ngSwitchCase="columnTypes.CONSTANTVALUE" style="width: 180px;">
+              <col *ngSwitchCase="columnTypes.CARDINALITY" style="width: 150px;">
+              <col *ngSwitchCase="columnTypes.LENGTH" style="width: 180px;">
+              <col *ngSwitchCase="columnTypes.CONFLENGTH" style="width: 180px;">
+              <col *ngSwitchCase="columnTypes.COMMENT" style="width: 340px;">
+              <col *ngSwitchCase="columnTypes.TEXT" style="width: 135px;">
+            </ng-container>
+          </colgroup>
+        </ng-template> -->
         <ng-template pTemplate="header" let-columns>
             <tr>
               <ng-container *ngFor="let col of columns" [ngSwitch]="col.field">
                 <th *ngSwitchCase="columnTypes.NAME" style="width: 380px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
-                <th *ngSwitchCase="columnTypes.USAGE" style="width: 115px;" ttReorderableColumn ttResizableColumn>
+                <th *ngSwitchCase="columnTypes.USAGE" style="width: 250px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
                 <th *ngSwitchCase="columnTypes.DATATYPE" style="width: 210px;" ttReorderableColumn ttResizableColumn>
@@ -68,17 +85,26 @@
                 <ng-container *ngSwitchCase="columnTypes.USAGE">
                   <app-usage
                     [viewOnly]="viewOnly || !rowData.changeable"
+                    [globalViewOnly]="viewOnly"
+                    [name]="rowData.name"
+                    [resource]="resource$"
                     [location]="rowData.pathId"
+                    [repository]="repository"
                     [position]="rowData.position"
                     [value]="rowData.usage"
                     [anchor]="anchor"
-                    [predicate]="rowNode.node.$hl7V2TreeHelpers.predicate$ | async"
+                    [context]="type"
+                    [predicate]="{
+                      igId: igId,
+                      predicates: rowData.bindings?.values?.predicateId
+                    }"
                     (valueChange)="registerChange($event)"
                   ></app-usage>
                 </ng-container>
                 <ng-container *ngSwitchCase="columnTypes.CARDINALITY">
                   <app-cardinality
                     [viewOnly]="viewOnly || !rowData.changeable"
+                    [globalViewOnly]="viewOnly"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
                     [value]="rowData.cardinality"
@@ -89,6 +115,7 @@
                   <app-length
                     *ngIf="rowData.type !== types.SEGMENT && rowData.type !== types.GROUP"
                     [viewOnly]="viewOnly || !rowData.changeable"
+                    [globalViewOnly]="viewOnly"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
                     [value]="{
@@ -102,6 +129,7 @@
                 <ng-container *ngSwitchCase="columnTypes.CONFLENGTH">
                   <app-conformance-length
                     *ngIf="rowData.type !== types.SEGMENT && rowData.type !== types.GROUP"
+                    [globalViewOnly]="viewOnly"
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
@@ -117,6 +145,7 @@
                   <ng-container *ngIf="rowNode.node.$hl7V2TreeHelpers.ref$ | async as reference">
                     <app-datatype
                       *ngIf="reference.type === types.DATATYPE"
+                      [globalViewOnly]="viewOnly"
                       [viewOnly]="viewOnly || !rowData.changeable"
                       [location]="rowData.pathId"
                       [position]="rowData.position"
@@ -132,6 +161,7 @@
                       <app-segment
                         *ngIf="reference.type === types.SEGMENT"
                         [viewOnly]="viewOnly || !rowData.changeable"
+                        [globalViewOnly]="viewOnly"
                         [location]="rowData.pathId"
                         [position]="rowData.position"
                         [value]="reference"
@@ -144,6 +174,7 @@
                 <ng-container *ngSwitchCase="columnTypes.TEXT">
                   <app-text
                     [viewOnly]="viewOnly || !rowData.changeable"
+                    [globalViewOnly]="viewOnly"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
                     [value]="rowData.text"
@@ -154,6 +185,7 @@
                 <ng-container *ngSwitchCase="columnTypes.VALUESET">
                   <app-valueset
                     [viewOnly]="viewOnly || !rowData.changeable"
+                    [globalViewOnly]="viewOnly"
                     [context]="type"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
@@ -171,6 +203,7 @@
                 <ng-container *ngSwitchCase="columnTypes.COMMENT">
                   <app-comments
                     [viewOnly]="viewOnly || !rowData.changeable"
+                    [globalViewOnly]="viewOnly"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
                     [username]="username"
@@ -182,6 +215,7 @@
                 <ng-container *ngSwitchCase="columnTypes.CONSTANTVALUE">
                   <app-constant-value
                     [viewOnly]="viewOnly || !rowData.changeable"
+                    [globalViewOnly]="viewOnly"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
                     [value]="rowData.constantValue"

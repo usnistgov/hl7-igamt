@@ -78,7 +78,7 @@ export class OpenEditorService {
           },
         });
         this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
-        return this.rxjsHelper.listenAndReact(this.actions$, {
+        return RxjsStoreHelperService.listenAndReact(this.actions$, {
           [IgEditActionTypes.LoadResourceReferencesSuccess]: {
             do: (loadSuccess: LoadResourceReferencesSuccess) => {
               return of(openEditor);
@@ -139,7 +139,7 @@ export class OpenEditorService {
           },
         });
         this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
-        return this.rxjsHelper.listenAndReact(this.actions$, {
+        return RxjsStoreHelperService.listenAndReact(this.actions$, {
           [IgEditActionTypes.LoadResourceReferencesSuccess]: {
             do: (loadSuccess: LoadResourceReferencesSuccess) => {
               return of(openEditor);

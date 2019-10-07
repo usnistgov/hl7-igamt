@@ -136,7 +136,7 @@ export class IgEditEffects {
               id: ig.id,
             }));
 
-            return this.rxjsHelper.listenAndReact(this.actions$, {
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
               [IgEditActionTypes.TableOfContentSaveSuccess]: {
                 do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
                   return of(new EditorSave({
@@ -372,7 +372,7 @@ export class IgEditEffects {
               id: ig.id,
             }));
 
-            return this.rxjsHelper.listenAndReact(this.actions$, {
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
               [IgEditActionTypes.TableOfContentSaveSuccess]: {
                 do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
                   return toDoo;

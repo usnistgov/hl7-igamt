@@ -1,11 +1,13 @@
 <h2 mat-dialog-title>{{ title }}</h2>
-<form #csForm="ngForm">
+<form #csForm="ngForm" *ngIf="cs">
   <div style="display: flex; justify-content: space-between;">
     <label for="free" class="form-label-lg"> Assertion Type </label>
     <div style="border-radius: 5px; margin-left: 10px;">
       <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.FREE" (ngModelChange)="changeTab($event)" name="activeTab" /> Free
       <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.SIMPLE" (ngModelChange)="changeTab($event)" name="activeTab" /> Simple
-      <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.CONDITIONAL" (ngModelChange)="changeTab($event)" name="activeTab" /> Conditional
+      <ng-container *ngIf="!predicateMode" >
+        <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.CONDITIONAL" (ngModelChange)="changeTab($event)" name="activeTab" /> Conditional
+      </ng-container>
       <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.COMPLEX" (ngModelChange)="changeTab($event)" name="activeTab" /> Complex
     </div>
   </div>
@@ -13,6 +15,30 @@
     <label for="free" class="form-label-lg"> Identifier </label>
     <input type="text" class="form-control" id="id" name="id" placeholder="Assertion Identifier" required #identifier="ngModel" [(ngModel)]="cs.identifier">
   </div>
+  <table *ngIf="predicateMode" class="table table-sm table-bordered">
+    <tr>
+      <th style="text-align: center;">True Usage</th>
+      <th style="text-align: center;">False Usage</th>
+    </tr>
+    <tr>
+      <td style="text-align: center;">
+        <p-dropdown
+        [style]="{'min-width': '70px'}"
+        [options]="options"
+        name="trueUsage"
+        [(ngModel)]="cs.trueUsage"
+        [appendTo]="anchor" ></p-dropdown>
+      </td>
+      <td style="text-align: center;">
+        <p-dropdown
+        [style]="{'min-width': '70px'}"
+        [options]="options"
+        name="falseUsage"
+        [(ngModel)]="cs.falseUsage"
+        [appendTo]="anchor" ></p-dropdown>
+      </td>
+    </tr>
+  </table>
   <div class="form-group" *ngIf="resourceType === 'CONFORMANCEPROFILE'">
     <label for="free" class="form-label-lg"> Context </label>
     <span *ngIf="cs?.context" >
@@ -29,7 +55,8 @@
         [tree]="context"
         [filter]= "{
           primitive: false,
-          types: [ 'GROUP', 'CONFORMANCEPROFILE' ]
+          types: [ 'GROUP', 'CONFORMANCEPROFILE' ],
+          paths: excludePaths
         }"
         [resourceType]="resourceType"
         [repository]="repository"
@@ -62,11 +89,13 @@
   <div *ngIf="activeTab === tabType.SIMPLE">
     <app-cs-proposition
       [resourceType]="resourceType"
+      [excludePaths]="excludePaths"
+      [predicateMode]="predicateMode"
       [resource]="resource"
       [tree]="structure"
       [context]="cs.context"
       [repository]="repository"
-      [type]="'STATEMENT'"
+      [type]="predicateMode ? 'PROPOSITION' : 'STATEMENT'"
       [(value)]="cs.assertion"
       (valueChange)="change()"
     ></app-cs-proposition>
@@ -79,6 +108,7 @@
       <tr>
         <app-cs-proposition
           [resourceType]="resourceType"
+          [excludePaths]="excludePaths"
           [resource]="resource"
           [tree]="structure"
           [context]="cs.context"
@@ -97,6 +127,7 @@
       <tr>
         <app-cs-proposition
           [resourceType]="resourceType"
+          [excludePaths]="excludePaths"
           [resource]="resource"
           [tree]="structure"
           [context]="cs.context"
@@ -126,6 +157,8 @@
           <tr>
             <app-cs-proposition
             [resourceType]="resourceType"
+            [excludePaths]="excludePaths"
+            [predicateMode]="predicateMode"
             [resource]="resource"
             [tree]="structure"
             [context]="cs.context"
@@ -140,6 +173,7 @@
       </ng-container>
     </mat-dialog-content>
   </div>
+
 </form>
 <mat-dialog-actions style="justify-content: flex-end;">
   <button (click)="reset()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Reset</button>

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Assertion, BinaryOperator, LEFT, NaryOperator, Operator, Pattern, RIGHT, Statement, UnaryOperator } from '../components/pattern-dialog/cs-pattern.domain';
+import { Usage } from '../constants/usage.enum';
 import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, ISimpleAssertion, Operator as CsOperator } from '../models/cs.interface';
+import { IFreeTextPredicate } from '../models/predicate.interface';
 
 export interface IAssertionBag<T> {
   assertion: T;
@@ -19,6 +21,17 @@ export class ConformanceStatementService {
       identifier: '',
       freeText: '',
       assertionScript: null,
+      type: ConstraintType.FREE,
+    };
+  }
+
+  getFreePredicate(): IFreeTextPredicate {
+    return {
+      identifier: '',
+      freeText: '',
+      assertionScript: null,
+      trueUsage: Usage.R,
+      falseUsage: Usage.X,
       type: ConstraintType.FREE,
     };
   }
