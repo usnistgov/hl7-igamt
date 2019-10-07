@@ -125,7 +125,6 @@
 		<module>delta</module>
 		<module>diff-utils</module>
 		<module>bootstrap</module>
-		
 	</modules>
   
 </project>

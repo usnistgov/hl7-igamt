@@ -110,10 +110,8 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
     DocumentMetadata newMetaData = new DocumentMetadata();
     newMetaData.setIdentifier(ig.getMetaData().getIdentifier());
     newMetaData.setCoverPicture(ig.getMetaData().getCoverPicture());
-    newMetaData.setImplementationNotes(ig.getMetaData().getImplementationNotes());
     newMetaData.setOrgName(ig.getMetaData().getOrgName());
     newMetaData.setTopics(ig.getMetaData().getTopics());
-    newMetaData.setSpecificationName(ig.getMetaData().getSpecificationName());
     newMetaData.setSubTitle(ig.getMetaData().getSubTitle());
     newMetaData.setTitle(ig.getMetaData().getTitle());
     newIg.setMetadata(newMetaData);

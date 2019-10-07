@@ -12,6 +12,6 @@
       <img [src]="preview" height="200" />
   </div>
   <div *ngIf="url && url !== '' && !file" style="display: flex; align-items: center; flex-direction: column; border: 2px solid;">
-      <img [src]="'/api/storage/file?name=' + url" height="200"/>
+      <img [src]="url" height="200"/>
   </div>
 </div>

@@ -14,7 +14,6 @@ import { CoreModule } from './modules/core/core.module';
 import { reducers } from './root-store';
 import { ConfigEffects } from './root-store/config/config.effects';
 import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loader.effects';
-
 @NgModule({
   declarations: [
     AppComponent,

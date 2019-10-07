@@ -3,6 +3,11 @@
     "tslint:recommended",
     "tslint-sonarts"
   ],
+  "linterOptions": {
+    "exclude": [
+      "*.json"
+    ]
+  },
   "rulesDirectory": [
     "node_modules/codelyzer"
   ],

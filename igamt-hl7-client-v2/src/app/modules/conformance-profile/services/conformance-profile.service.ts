@@ -32,10 +32,10 @@ export class ConformanceProfileService {
 
   conformanceProfileToMetadata(conformanceProfile: IConformanceProfile): IConformanceProfileEditMetadata {
     return {
-      name: conformanceProfile.identifier,
+      name: conformanceProfile.name,
       hl7Version: conformanceProfile.domainInfo.version,
       organization: conformanceProfile.organization,
-      author: conformanceProfile.authors,
+      authors: conformanceProfile.authors,
       messageType: conformanceProfile.messageType,
       event: conformanceProfile.event,
       structID: conformanceProfile.structID,
