@@ -13,6 +13,7 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author ena3
@@ -21,16 +22,15 @@ import java.io.Serializable;
 public class DocumentMetadata implements Serializable{
 
   private String title;
-
+  private String version;
+  private List<String> hl7Versions;
   private String topics;
-  private String specificationName;
   private String identifier;
-  private String implementationNotes;
   private String orgName;
   private String coverPicture;
   private String subTitle;
-  private Scope scope;
-
+  private String specificationName;
+  
   public DocumentMetadata() {
     super();
     // TODO Auto-generated constructor stub
@@ -44,13 +44,6 @@ public class DocumentMetadata implements Serializable{
     this.topics = topics;
   }
 
-  public String getSpecificationName() {
-    return specificationName;
-  }
-
-  public void setSpecificationName(String specificationName) {
-    this.specificationName = specificationName;
-  }
 
   public String getIdentifier() {
     return identifier;
@@ -58,14 +51,6 @@ public class DocumentMetadata implements Serializable{
 
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
-  }
-
-  public String getImplementationNotes() {
-    return implementationNotes;
-  }
-
-  public void setImplementationNotes(String implementationNotes) {
-    this.implementationNotes = implementationNotes;
   }
 
   public String getOrgName() {
@@ -99,29 +84,45 @@ public class DocumentMetadata implements Serializable{
   public void setTitle(String title) {
     this.title = title;
   }
-
-  public Scope getScope() {
-    return scope;
-  }
-
-  public void setScope(Scope scope) {
-    this.scope = scope;
-  }
-
   @Override
   public DocumentMetadata clone() {
 
     DocumentMetadata clone = new DocumentMetadata();
     clone.setCoverPicture(coverPicture);
     clone.setIdentifier(identifier);
-    clone.setImplementationNotes(implementationNotes);
     clone.setOrgName(orgName);
-    clone.setSpecificationName(specificationName);
-    clone.setScope(scope);
     clone.setSubTitle(subTitle);
     clone.setTitle(title);
     clone.setTopics(topics);
     return clone;
   }
+
+public String getVersion() {
+	return version;
+}
+
+public void setVersion(String version) {
+	this.version = version;
+}
+
+public List<String> getHl7Versions() {
+	return hl7Versions;
+}
+
+public void setHl7Versions(List<String> hl7Versions) {
+	this.hl7Versions = hl7Versions;
+}
+
+/**
+ * @return
+ */
+public String getSpecificationName() {
+  // TODO Auto-generated method stub
+  return null;
+}
+
+public void setSpecificationName(String specificationName) {
+  this.specificationName = specificationName;
+}
 
 }

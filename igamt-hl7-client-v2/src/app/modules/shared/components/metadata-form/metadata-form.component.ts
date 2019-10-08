@@ -21,6 +21,8 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
   changesSubscription: Subscription;
   dataSubscription: Subscription;
   viewOnlySubscription: Subscription;
+  @Input()
+  froalaConfig: any;
 
   constructor() {
     this.dataChange = new EventEmitter<FormGroup>();
@@ -60,7 +62,10 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
       (vOnly) => this.viewOnly = vOnly,
     );
     this.dataSubscription = input.data.subscribe(
-      (data) => this.metadataForm.patchValue(data, { emitEvent: false }),
+      (data) => {
+        console.log(data);
+        this.metadataForm.patchValue(data, { emitEvent: false });
+      },
     );
     this.changesSubscription = this.metadataForm.valueChanges.subscribe(
       (change) => {

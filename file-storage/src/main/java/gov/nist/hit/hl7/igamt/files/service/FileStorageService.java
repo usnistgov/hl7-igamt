@@ -17,6 +17,15 @@ public interface FileStorageService {
   public com.mongodb.client.gridfs.model.GridFSFile findOne(String id);
 
   public GridFSFile findOneByFilename(String filename);
+  
+  public GridFSFile findByIgAndTypeAndId(String s, String igId, String type);
+  
+  public void delete(String filename);
+  
+  //public GridFSFile findByMetaData(String filename);
+
 
   public List findAll();
+
+public void save(GridFSFile dbFile);
 }

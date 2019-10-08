@@ -231,7 +231,7 @@ public class BindingHandler implements ConversionService{
               new gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding();
           newValuesetBinding
               .setStrength(this.mapValueSetStrength(oldValueSetBinding.getBindingStrength()));
-          newValuesetBinding.setValuesetId(oldValueSetBinding.getTableId());
+        //  newValuesetBinding.setValuesetId(oldValueSetBinding.getTableId());
 
           Datatype childDatatype = null;
 

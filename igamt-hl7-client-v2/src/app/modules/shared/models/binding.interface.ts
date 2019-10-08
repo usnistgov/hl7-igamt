@@ -1,5 +1,3 @@
-import { IComment } from './comment.interface';
-
 export enum LocationType {
   FIELD = 'FIELD', COMPONENT = 'COMPONENT', SUBCOMPONENT = 'SUBCOMPONENT', SEGREF = 'SEGREF', GROUP = 'GROUP',
 
@@ -11,19 +9,21 @@ export interface ILocationInfo {
 }
 
 export enum IValuesetStrength {
-  R = 'Required', S = 'Suggested', U = 'Unspecified',
+  R = 'R', S = 'S', U = 'U',
 }
 
 export interface IValuesetBinding {
-  valuesetId: string;
   strength: IValuesetStrength;
   valuesetLocations: number[];
+  valueSets: string[];
 }
 
 export interface InternalSingleCode {
-  codeId: string;
-  codeSystemId: string;
+  valueSetId: string;
+  codeSystem: string;
+  code: string;
 }
+
 export interface IExternalSingleCode {
   value: string;
   codeSystem: string;

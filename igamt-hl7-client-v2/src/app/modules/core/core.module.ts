@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EffectsModule } from '@ngrx/effects';
@@ -19,9 +19,11 @@ import { LoginComponent } from './components/login/login.component';
 import { NewPasswordComponent } from './components/new-password/new-password.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordRequestComponent } from './components/reset-password-request/reset-password-request.component';
+import { TimeoutLoginDialogComponent } from './components/timeout-login-dialog/timeout-login-dialog.component';
 import { UserManagementHeaderComponent } from './components/user-management-header/user-management-header.component';
 import { NewPasswordResolver } from './resolvers/new-password.resolver';
 import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard.guard';
+import { AuthInterceptor } from './services/logout-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -33,8 +35,8 @@ import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard
     ResetPasswordRequestComponent,
     NewPasswordComponent,
     HomeComponent,
-    AlertsContainerComponent,
     ErrorPageComponent,
+    TimeoutLoginDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -50,6 +52,7 @@ import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard
     NewPasswordResolver,
     AuthenticatedGuard,
     NotAuthenticatedGuard,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
   exports: [
     HeaderComponent,
@@ -62,6 +65,7 @@ import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard
     AlertsContainerComponent,
     ErrorPageComponent,
   ],
+  entryComponents: [TimeoutLoginDialogComponent],
 })
 export class CoreModule {
 }

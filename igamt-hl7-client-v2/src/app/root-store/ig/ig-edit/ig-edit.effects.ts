@@ -238,7 +238,17 @@ export class IgEditEffects {
               id: action.payload.id,
               element: this.igService.igToIDisplayElement(ig),
               editor: action.payload.editor,
-              initial: ig.metadata,
+              initial: {
+                coverPicture: ig.metadata.coverPicture,
+                title: ig.metadata.title,
+                subTitle: ig.metadata.subTitle,
+                version: ig.metadata.version,
+                organization: ig.metadata.orgName,
+                authors: ig.authors,
+                hl7Versions: ig.metadata.hl7Versions,
+                status: ig.status,
+                implementationNotes: ig.authorNotes,
+              },
             });
           }),
         );
@@ -267,6 +277,7 @@ export class IgEditEffects {
       return this.message.actionFromError(action.error);
     }),
   );
+
   @Effect()
   deleteResourceSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteResourceSuccess),
@@ -299,6 +310,7 @@ export class IgEditEffects {
       return this.finalizeAdd(doAdd);
     }),
   );
+
   @Effect()
   IgCopyResource$ = this.actions$.pipe(
     ofType(IgEditActionTypes.CopyResource),
@@ -323,6 +335,7 @@ export class IgEditEffects {
       return this.finalizeAdd(doAdd);
     }),
   );
+
   @Effect()
   igDeleteResource = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteResource),

@@ -1,25 +1,11 @@
-import {IContent} from '../../../shared/models/content.interface';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {IDomainInfo} from '../../../shared/models/domain-info.interface';
-import {IMetadata} from '../../../shared/models/metadata.interface';
-import {IRegistry} from '../../../shared/models/registry.interface';
+import { IAbstractDomain } from '../../../shared/models/abstract-domain.interface';
+import { IContent } from '../../../shared/models/content.interface';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { IDomainInfo } from '../../../shared/models/domain-info.interface';
+import { IMetadata } from '../../../shared/models/metadata.interface';
+import { IRegistry } from '../../../shared/models/registry.interface';
 
-export interface IgDocument {
-  id: string;
-  name?: any;
-  publicationInfo?: any;
-  domainInfo: IDomainInfo;
-  username: string;
-  comment?: any;
-  description?: any;
-  createdFrom?: any;
-  authorNotes?: any;
-  usageNotes?: any;
-  origin?: any;
-  creationDate: string;
-  updateDate: string;
-  from: string;
-  version: number;
+export interface IgDocument extends IAbstractDomain {
   metadata: IMetadata;
   content: IContent[];
   datatypeRegistry: IRegistry;

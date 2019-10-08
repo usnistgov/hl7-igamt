@@ -1,14 +1,17 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {of} from 'rxjs';
-import {catchError, concatMap, map, mergeMap} from 'rxjs/operators';
-import {Message} from 'src/app/modules/core/models/message/message.class';
-import {RxjsStoreHelperService} from 'src/app/modules/shared/services/rxjs-store-helper.service';
-import {TurnOnLoader} from '../loader/loader.actions';
-import {User} from './../../modules/core/models/user/user.class';
-import {AuthenticationService} from './../../modules/core/services/authentication.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap } from 'rxjs/operators';
+import { Message, UserMessage } from 'src/app/modules/core/models/message/message.class';
+import { RxjsStoreHelperService } from 'src/app/modules/shared/services/rxjs-store-helper.service';
+import { MessageType } from '../../modules/core/models/message/message.class';
+import { MessageService } from '../../modules/core/services/message.service';
+import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
+import { User } from './../../modules/core/models/user/user.class';
+import { AuthenticationService } from './../../modules/core/services/authentication.service';
 import {
   AuthenticationActions,
   AuthenticationActionTypes,
@@ -78,16 +81,33 @@ export class AuthenticationEffects {
       return new LogoutSuccess();
     }),
   );
+
+  @Effect()
+  unauthorizedRequest$ = this.actions$.pipe(
+    ofType(AuthenticationActionTypes.UnauthorizedRequest),
+    flatMap(() => {
+      this.router.navigate(['/home']);
+      return [
+        new TurnOffLoader(),
+        this.message.userMessageToAction(new UserMessage(MessageType.WARNING, 'Session timed out')),
+        new UpdateAuthStatus({
+          userInfo: null,
+          isLoggedIn: false,
+        })];
+    }),
+  );
+
   // Triggered when the logout is successful
   @Effect()
   logoutSuccess$ = this.actions$.pipe(
     ofType(AuthenticationActionTypes.LogoutSuccess),
-    map(() =>
-      new UpdateAuthStatus({
+    map(() => {
+      this.router.navigate(['/home']);
+      return new UpdateAuthStatus({
         userInfo: null,
         isLoggedIn: false,
-      }),
-    ),
+      });
+    }),
   );
   // Triggered when a reset password request is made
   @Effect()
@@ -184,6 +204,10 @@ export class AuthenticationEffects {
       message: (action: UpdatePasswordRequestSuccess): Message => {
         return action.payload;
       },
+      handler: (action: UpdatePasswordRequestSuccess): Action[] => {
+        this.router.navigate(['/login']);
+        return [];
+      },
     }),
   );
   @Effect()
@@ -214,6 +238,8 @@ export class AuthenticationEffects {
   constructor(
     private actions$: Actions<AuthenticationActions>,
     private store: Store<any>,
+    private router: Router,
+    private message: MessageService,
     private authService: AuthenticationService,
     private helper: RxjsStoreHelperService,
   ) {

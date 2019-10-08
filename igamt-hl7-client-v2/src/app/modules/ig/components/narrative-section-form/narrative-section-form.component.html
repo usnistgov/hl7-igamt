@@ -2,8 +2,8 @@
   <app-form-input [viewOnly]="viewOnly" name="Title" label="Title" id="title" type="text" formControlName="label" placeholder="Section title">
   </app-form-input>
   <label for="content"><strong>Content</strong></label>
-  <div id="content" *ngIf="!viewOnly" [froalaEditor]="{}"
+  <div id="content" *ngIf="!viewOnly" [froalaEditor]="froalaConfig$ | async"
     formControlName="description"
     style="flex-grow: 1; display: flex; flex-direction: column;"></div>
-  <div *ngIf="viewOnly && sectionForm['description']" [froalaView]="sectionForm['description']"></div>
+  <div *ngIf="viewOnly && sectionForm['description']" [froalaView]="sectionForm['description']"  [froalaEditor]="froalaConfig$ | async"></div>
 </form>

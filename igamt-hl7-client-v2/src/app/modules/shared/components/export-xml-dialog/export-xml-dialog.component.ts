@@ -15,14 +15,11 @@ export class ExportXmlDialogComponent implements OnInit {
               @Inject(MAT_DIALOG_DATA) public data: IExportXmlDialogData) {
 
   }
-
   ngOnInit() {
   }
-
   cancel() {
     this.dialogRef.close();
   }
-
   submit() {
     this.dialogRef.close(this.ids);
   }

@@ -165,7 +165,7 @@ public class SerializableBinding extends SerializableElement {
 
       if (structureElementBinding.getInternalSingleCode() != null) {
         structureElementBindingElement.addAttribute(new Attribute("singleCodeId",
-            structureElementBinding.getInternalSingleCode().getCodeId()));
+            structureElementBinding.getInternalSingleCode().getCode()));
       }
 
       if (structureElementBinding.getPredicateId() != null) {
@@ -226,21 +226,25 @@ public class SerializableBinding extends SerializableElement {
 	private Element serializeValuesetBinding(ValuesetBinding valuesetBinding, Map<String, String> valuesetNamesMap)
 			throws ValuesetNotFoundException {
 		if (valuesetNamesMap != null) {
-			if (!valuesetBinding.getValuesetId().isEmpty()) {
-				if (valuesetNamesMap != null && valuesetNamesMap.containsKey(valuesetBinding.getValuesetId())) {
+			if (valuesetBinding.getValueSets() !=null && !valuesetBinding.getValueSets().isEmpty()) {
+				 if (valuesetNamesMap != null ) {
 					Element valuesetBindingElement = new Element("ValuesetBinding");
-					valuesetBindingElement.addAttribute(new Attribute("id", valuesetBinding.getValuesetId()));
+					for(String s: valuesetBinding.getValueSets()) {
+
+					valuesetBindingElement.addAttribute(new Attribute("id", s));
+					if(valuesetNamesMap.containsKey(s)) {
 					valuesetBindingElement
-							.addAttribute(new Attribute("name", valuesetNamesMap.get(valuesetBinding.getValuesetId())));
+							.addAttribute(new Attribute("name", valuesetNamesMap.get(s)));
 					valuesetBindingElement.addAttribute(new Attribute("strength",
 							valuesetBinding.getStrength() != null ? valuesetBinding.getStrength().name() : ""));
 					valuesetBindingElement.addAttribute(new Attribute("strength",
 							valuesetBinding.getValuesetLocations() != null
 									? convertValuesetLocationsToString(valuesetBinding.getValuesetLocations())
 									: ""));
+					
 					return valuesetBindingElement;
-				} else {
-					throw new ValuesetNotFoundException(valuesetBinding.getValuesetId());
+					}else  throw new ValuesetNotFoundException(s);
+					}
 				}
 
 			}

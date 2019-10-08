@@ -4,17 +4,16 @@ import {Actions} from '@ngrx/effects';
 import {Action, MemoizedSelectorWithProps, Store} from '@ngrx/store';
 import {Observable, of, Subscription} from 'rxjs';
 import {catchError, flatMap} from 'rxjs/operators';
-import {LoadDatatype} from '../../../../root-store/datatype-edit/datatype-edit.actions';
 import {EditorSaveFailure} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import {selectDatatypesById, selectValueSetById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {selectValueSetById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import {LoadValueSet} from '../../../../root-store/value-set-edit/value-set-edit.actions';
 import {DefinitionEditorComponent} from '../../../core/components/definition-editor/definition-editor.component';
 import {MessageService} from '../../../core/services/message.service';
-import {DatatypeService} from '../../../datatype/services/datatype.service';
 import {Type} from '../../../shared/constants/type.enum';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {EditorID} from '../../../shared/models/editor.enum';
 import {ChangeType, PropertyType} from '../../../shared/models/save-change';
+import {FroalaService} from '../../../shared/services/froala.service';
 import {ValueSetService} from '../../service/value-set.service';
 
 @Component({
@@ -31,14 +30,14 @@ export class ValueSetPredefEditorComponent extends DefinitionEditorComponent imp
     actions$: Actions,
     store: Store<any>,
     messageService: MessageService,
-    private valueSetService: ValueSetService) {
+    private valueSetService: ValueSetService, froalaService: FroalaService) {
     super({
         id: EditorID.PREDEF,
         resourceType: Type.VALUESET,
         title: 'Pre-definition',
       },
       PropertyType.PREDEF,
-      actions$, store, messageService);
+      actions$, store, messageService, froalaService);
   }
 
   saveChange(elementId: string, igId: string, value: any, old: any, property: PropertyType): Observable<Action> {

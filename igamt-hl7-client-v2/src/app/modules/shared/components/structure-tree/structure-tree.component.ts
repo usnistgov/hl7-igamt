@@ -26,58 +26,28 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
   type: Type;
   structure: TreeNode[];
   selectedNode: TreeNode;
+  treeSubscriptions: Subscription[] = [];
+  s_resource: Subscription;
+
+  @Output()
+  selection = new EventEmitter<{
+    node: IHL7v2TreeNode,
+    path: IPath,
+  }>();
 
   @Input()
   configuration: {
     cardinality: boolean,
     usage: boolean,
   };
+
   @Input()
   repository: AResourceRepositoryService;
-  @Output()
-  selection = new EventEmitter<{
-    node: IHL7v2TreeNode,
-    path: IPath,
-  }>();
-  treeSubscriptions: Subscription[] = [];
-  s_resource: Subscription;
+
   @Input()
   restrictions: ITreeRestrictions = {
     primitive: true,
   };
-
-  constructor(private treeService: Hl7V2TreeService) {
-    this.configuration = {
-      cardinality: true,
-      usage: true,
-    };
-  }
-
-  @Input()
-  set filter(restrictions: ITreeRestrictions) {
-    this.restrictions = {
-      ...this.restrictions,
-      ...restrictions,
-    };
-
-    if (this.structure) {
-      this.evaluateTree(this.structure, this.restrictions);
-      this.structure = [
-        ...this.structure,
-      ];
-    }
-  }
-
-  evaluateTree(tree: TreeNode[], restrictions: ITreeRestrictions): void {
-    if (tree && tree.length > 0) {
-      tree.forEach((node) => {
-        this.evaluate(node as IHL7v2TreeNode, restrictions);
-        if (node.children) {
-          this.evaluateTree(node.children, restrictions);
-        }
-      });
-    }
-  }
 
   @Input()
   set resource(resource: IResource) {
@@ -110,10 +80,44 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
 
   @Input()
   set tree(str: TreeNode[]) {
-    this.evaluateTree(str, this.restrictions);
+    const clone = this.treeService.cloneViewTree(str);
+    this.evaluateTree(clone, this.restrictions);
     this.structure = [
-      ...str,
+      ...clone,
     ];
+  }
+
+  @Input()
+  set filter(restrictions: ITreeRestrictions) {
+    this.restrictions = {
+      ...this.restrictions,
+      ...restrictions,
+    };
+
+    if (this.structure) {
+      this.evaluateTree(this.structure, this.restrictions);
+      this.structure = [
+        ...this.structure,
+      ];
+    }
+  }
+
+  constructor(private treeService: Hl7V2TreeService) {
+    this.configuration = {
+      cardinality: true,
+      usage: true,
+    };
+  }
+
+  evaluateTree(tree: TreeNode[], restrictions: ITreeRestrictions): void {
+    if (tree && tree.length > 0) {
+      tree.forEach((node) => {
+        this.evaluate(node as IHL7v2TreeNode, restrictions);
+        if (node.children) {
+          this.evaluateTree(node.children, restrictions);
+        }
+      });
+    }
   }
 
   // tslint:disable-next-line: cognitive-complexity

@@ -17,6 +17,16 @@ export interface IAbstractDomain {
   createdFrom?: string;
   authorNotes?: string;
   usageNotes?: string;
+  organization: string;
+  authors: string[];
+  status: Status;
   from?: string;
   version?: number;
+}
+
+export enum Status {
+  DRAFT = 'DRAFT',
+  PUBLISHED = 'PUBLISHED',
+  SUPERSEDED = 'SUPERSEDED',
+  WITHDRAWN = 'WITHDRAWN',
 }
