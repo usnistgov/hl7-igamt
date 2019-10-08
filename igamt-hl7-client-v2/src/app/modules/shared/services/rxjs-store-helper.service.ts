@@ -26,20 +26,8 @@ export class RxjsStoreHelperService {
       }),
     );
   }
-  constructor(private messageService: MessageService) { }
 
-  static listenAndReact(actions$: Observable<Action>, map: IActionMap): Observable<Action> {
-    return actions$.pipe(
-      ofType(...Object.keys(map)),
-      filter((action: Action) => {
-        return !map[action.type].filter || map[action.type].filter(action);
-      }),
-      take(1),
-      mergeMap((action: Action) => {
-        return map[action.type].do(action);
-      }),
-    );
-  }
+  constructor(private messageService: MessageService) { }
 
   static actionChain(actions$: Observable<Action>, store: Store<any>, endWith: Action, chain: Array<{ send: Action, listen: string }>) {
     if (chain && chain.length > 0) {
