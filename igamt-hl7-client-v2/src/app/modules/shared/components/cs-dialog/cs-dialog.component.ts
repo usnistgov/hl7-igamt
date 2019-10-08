@@ -188,16 +188,19 @@ export class CsDialogComponent implements OnDestroy {
   }
 
   set conformanceStatement(cs: IAssertionConformanceStatement | IFreeTextConformanceStatement | IPredicate) {
-    if (cs.type === ConstraintType.ASSERTION) {
-      this.pattern = this.csService.getCsPattern((cs as IAssertionConformanceStatement).assertion);
-      this.activeTab = this.getTabForPattern(this.pattern);
+    if (cs) {
+      if (cs.type === ConstraintType.ASSERTION) {
+        this.pattern = this.csService.getCsPattern((cs as IAssertionConformanceStatement).assertion);
+        this.activeTab = this.getTabForPattern(this.pattern);
+      } else {
+        this.activeTab = CsTab.FREE;
+      }
+      this.cs = cs;
+      this.backUp = _.cloneDeep(cs);
+      this.setContext(cs.context);
     } else {
-      this.activeTab = CsTab.FREE;
+      this.activeTab = undefined;
     }
-    this.cs = cs;
-    this.backUp = _.cloneDeep(cs);
-    console.log(cs);
-    this.setContext(cs.context);
   }
 
   updateAssertionDescription(assertion: IAssertion) {
@@ -246,6 +249,7 @@ export class CsDialogComponent implements OnDestroy {
     }
   }
 
+  // tslint:disable-next-line: cognitive-complexity
   changeTab(item: CsTab) {
     this.statementsValidity = [];
     switch (item) {
@@ -253,16 +257,16 @@ export class CsDialogComponent implements OnDestroy {
         this.cs = {
           ...this.cs,
           ...this.csService.getFreeConformanceStatement(),
-          identifier: this.cs.identifier,
-          context: this.cs.context,
+          identifier: this.cs ? this.cs.identifier : undefined,
+          context: this.cs ? this.cs.context : undefined,
         };
         break;
       case CsTab.SIMPLE:
         this.cs = {
           ...this.cs,
           ...this.csService.getAssertionConformanceStatement(new Statement('D', 0, null, 0)).cs,
-          identifier: this.cs.identifier,
-          context: this.cs.context,
+          identifier: this.cs ? this.cs.identifier : undefined,
+          context: this.cs ? this.cs.context : undefined,
           freeText: undefined,
           assertionScript: undefined,
         };
@@ -271,14 +275,14 @@ export class CsDialogComponent implements OnDestroy {
         this.cs = {
           ...this.cs,
           ...this.csService.getAssertionConformanceStatement(this.ifThenPattern).cs,
-          identifier: this.cs.identifier,
-          context: this.cs.context,
+          identifier: this.cs ? this.cs.identifier : undefined,
+          context: this.cs ? this.cs.context : undefined,
           freeText: undefined,
           assertionScript: undefined,
         };
         break;
       case CsTab.COMPLEX:
-        if (this.cs.type === ConstraintType.ASSERTION) {
+        if (this.cs && this.cs.type === ConstraintType.ASSERTION) {
           (this.cs as IAssertionConformanceStatement).assertion.description = '';
         }
 
@@ -286,8 +290,8 @@ export class CsDialogComponent implements OnDestroy {
           this.cs = {
             ...this.cs,
             ...this.csService.getAssertionConformanceStatement(this.pattern.assertion).cs,
-            identifier: this.cs.identifier,
-            context: this.cs.context,
+            identifier: this.cs ? this.cs.identifier : undefined,
+            context: this.cs ? this.cs.context : undefined,
             freeText: undefined,
             assertionScript: undefined,
           };

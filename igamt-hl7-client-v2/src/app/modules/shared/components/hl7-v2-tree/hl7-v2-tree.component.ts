@@ -211,7 +211,6 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
 
   referenceChange(ref: IResourceRef, node: IHL7v2TreeNode, change: IChange) {
     node.data.ref.next(ref);
-    this.repository.fetchResource(ref.type, ref.id).subscribe();
     this.resolveReference(node);
     this.registerChange(change);
   }

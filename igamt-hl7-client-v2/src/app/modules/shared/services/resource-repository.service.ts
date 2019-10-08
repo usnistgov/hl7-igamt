@@ -51,6 +51,7 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
 
   fetchResource<T extends IResource>(type: Type, id: string): Observable<T> {
     return this.store.select(selectLoadedResourceById, { id }).pipe(
+      take(1),
       mergeMap((resource) => {
         if (!resource || !resource.type || resource.type !== type) {
           this.store.dispatch(new LoadResourceReferences({ resourceType: type, id }));

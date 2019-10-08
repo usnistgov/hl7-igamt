@@ -40,7 +40,7 @@
 </ng-template>
 
 <ng-template #predicateDisplay let-ctx="ctx" let-edit="editable" let-predicate>
-    <div class="btn-group" role="group" aria-label="Basic example" style="margin-left: 5px;" [pTooltip]="predicate.identifier + ' - ' + (predicate.assertion?.description || predicate.freeText)" disabled="true" tooltipPosition="top" >
+    <div class="btn-group" role="group" aria-label="Basic example" style="margin-left: 5px;" [pTooltip]="(predicate.assertion?.description || predicate.freeText)" disabled="true" tooltipPosition="top" >
       <button disabled="true" type="button" class="btn btn-sm btn-light" style="border: 1px solid #a6a6a6; display: flex; opacity: 1; align-items: center; cursor: initial;">
         <app-binding-badge [context]="ctx"></app-binding-badge>
         <strong style="margin-left: 3px;"> ({{ predicate.trueUsage }} / {{ predicate.falseUsage }})</strong>
