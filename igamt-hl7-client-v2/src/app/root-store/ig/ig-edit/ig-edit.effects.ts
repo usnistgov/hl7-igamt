@@ -55,7 +55,7 @@ export class IgEditEffects {
   @Effect()
   loadReferences$ = this.actions$.pipe(
     ofType(IgEditActionTypes.LoadResourceReferences),
-    switchMap((action: LoadResourceReferences) => {
+    concatMap((action: LoadResourceReferences) => {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));

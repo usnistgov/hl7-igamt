@@ -7,7 +7,11 @@ export abstract class HL7v2TreeColumnComponent<T> {
   @Input()
   location: string;
   @Input()
-  public viewOnly: string;
+  name: string;
+  @Input()
+  public viewOnly: boolean;
+  @Input()
+  public globalViewOnly: boolean;
   @Input()
   position: number;
   @Input()

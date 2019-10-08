@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TreeNode } from 'primeng/primeng';
 import { Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
 import { IPath } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
@@ -14,6 +15,7 @@ export interface ITreeRestrictions {
   repeat?: boolean;
   usages?: string[];
   types?: string[];
+  paths?: string[];
 }
 
 @Component({
@@ -122,7 +124,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
 
   // tslint:disable-next-line: cognitive-complexity
   evaluate(node: IHL7v2TreeNode, restrictions: ITreeRestrictions) {
-    let filter = true;
+    let keep = true;
     const node_has_children = !node.leaf;
     const node_has_datatype = node.data.type === Type.FIELD || node.data.type === Type.COMPONENT;
     const node_datatype = node_has_datatype ? node.data.ref.getValue().id : undefined;
@@ -130,32 +132,45 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
     const node_repeats = node.data.cardinality ? (node.data.cardinality.max === '*' || +node.data.cardinality.max > 1) : false;
     const node_usage = node.data.usage ? node.data.usage.value : undefined;
 
+    const pathIsProhibited = (path: string, list: string[]): boolean => {
+      return list.map((p) => {
+        return path.startsWith(p);
+      }).reduce((a, b) => {
+        return a || b;
+      }, false);
+    };
+
     // --- Primitive Filter
     if (restrictions.primitive !== undefined) {
-      filter = filter && (!restrictions.primitive || !node_has_children) && (restrictions.primitive || node_has_children);
+      keep = keep && (!restrictions.primitive || !node_has_children) && (restrictions.primitive || node_has_children);
     }
 
     // --- Datatypes Filter
     if (restrictions.datatypes !== undefined && restrictions.datatypes.length > 0) {
-      filter = filter && (!node_has_datatype || restrictions.datatypes.indexOf(node_datatype) !== -1);
+      keep = keep && (!node_has_datatype || restrictions.datatypes.indexOf(node_datatype) !== -1);
     }
 
     // --- Elm type Filter
     if (restrictions.types !== undefined && restrictions.types.length > 0) {
-      filter = filter && (restrictions.types.indexOf(node_type) !== -1);
+      keep = keep && (restrictions.types.indexOf(node_type) !== -1);
     }
 
     // --- Repeat Filter
     if (restrictions.repeat !== undefined) {
-      filter = filter && (!restrictions.repeat || node_repeats) && (restrictions.repeat || !node_repeats);
+      keep = keep && (!restrictions.repeat || node_repeats) && (restrictions.repeat || !node_repeats);
     }
 
     // --- Usage Filter
     if (restrictions.usages !== undefined && restrictions.usages.length > 0 && node.data.usage) {
-      filter = filter && (restrictions.usages.indexOf(node_usage) !== -1);
+      keep = keep && (restrictions.usages.indexOf(node_usage) !== -1);
     }
 
-    node.selectable = filter;
+    // --- Path Filter
+    if (restrictions.paths !== undefined && restrictions.paths.length > 0) {
+      keep = keep && (!pathIsProhibited(node.data.pathId, restrictions.paths));
+    }
+
+    node.selectable = keep;
 
     return node;
   }

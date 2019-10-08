@@ -72,6 +72,10 @@ export class CsPropositionComponent implements OnInit {
   }
 
   @Input()
+  excludePaths: string[];
+  @Input()
+  predicateMode: boolean;
+  @Input()
   resourceType: Type;
   @Input()
   collapsed = false;

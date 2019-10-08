@@ -1,19 +1,13 @@
-export interface IPredicate {
-  id: string;
-  identifier: string;
-  type: string;
-  trueUsage: string;
-  falseUsage: string;
-  context: any;
-  level: any;
-  structureId: string;
-  sourceIds: string[];
-  igDocumentId: string;
-  location: string;
-  assertion?: IAssertion;
-  freeText?: string;
+import { Usage } from '../constants/usage.enum';
+import { IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement } from './cs.interface';
+
+export interface IPredicate extends IConformanceStatement {
+  trueUsage: Usage;
+  falseUsage: Usage;
 }
 
-export interface IAssertion {
-  description: string;
+export interface IAssertionPredicate extends IPredicate, IAssertionConformanceStatement {
+}
+
+export interface IFreeTextPredicate extends IPredicate, IFreeTextConformanceStatement {
 }

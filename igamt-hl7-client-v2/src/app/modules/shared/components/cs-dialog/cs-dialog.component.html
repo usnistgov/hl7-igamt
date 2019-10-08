@@ -5,141 +5,179 @@
     <div style="border-radius: 5px; margin-left: 10px;">
       <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.FREE" (ngModelChange)="changeTab($event)" name="activeTab" /> Free
       <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.SIMPLE" (ngModelChange)="changeTab($event)" name="activeTab" /> Simple
-      <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.CONDITIONAL" (ngModelChange)="changeTab($event)" name="activeTab" /> Conditional
+      <ng-container *ngIf="!predicateMode" >
+        <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.CONDITIONAL" (ngModelChange)="changeTab($event)" name="activeTab" /> Conditional
+      </ng-container>
       <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.COMPLEX" (ngModelChange)="changeTab($event)" name="activeTab" /> Complex
     </div>
   </div>
-  <div class="form-group">
-    <label for="free" class="form-label-lg"> Identifier </label>
-    <input type="text" class="form-control" id="id" name="id" placeholder="Assertion Identifier" required #identifier="ngModel" [(ngModel)]="cs.identifier">
-  </div>
-  <div class="form-group" *ngIf="resourceType === 'CONFORMANCEPROFILE'">
-    <label for="free" class="form-label-lg"> Context </label>
-    <span *ngIf="cs?.context" >
-      <span style="margin-left: 5px;" ><app-entity-bagde [type]='structure[0].data.type' ></app-entity-bagde> {{ contextName }}</span>
-    </span>
-    <span *ngIf="!cs?.context" >
-        <span style="margin-left: 5px;" ><app-entity-bagde [type]='structure[0].data.type' ></app-entity-bagde> {{ structure[0].data.name }}</span>
+  <ng-container *ngIf="cs">
+    <div class="form-group" *ngIf="!predicateMode">
+      <label for="free" class="form-label-lg"> Identifier </label>
+      <input type="text" class="form-control" id="id" name="id" placeholder="Assertion Identifier" required #identifier="ngModel" [(ngModel)]="cs.identifier">
+    </div>
+    <table *ngIf="predicateMode" class="table table-sm table-bordered">
+      <tr>
+        <th style="text-align: center;">True Usage</th>
+        <th style="text-align: center;">False Usage</th>
+      </tr>
+      <tr>
+        <td style="text-align: center;">
+          <p-dropdown
+          [style]="{'min-width': '70px'}"
+          [options]="options"
+          name="trueUsage"
+          [(ngModel)]="cs.trueUsage"
+          [appendTo]="anchor" ></p-dropdown>
+        </td>
+        <td style="text-align: center;">
+          <p-dropdown
+          [style]="{'min-width': '70px'}"
+          [options]="options"
+          name="falseUsage"
+          [(ngModel)]="cs.falseUsage"
+          [appendTo]="anchor" ></p-dropdown>
+        </td>
+      </tr>
+    </table>
+    <div class="form-group" *ngIf="resourceType === 'CONFORMANCEPROFILE'">
+      <label for="free" class="form-label-lg"> Context </label>
+      <span *ngIf="cs?.context" >
+        <span style="margin-left: 5px;" ><app-entity-bagde [type]='structure[0].data.type' ></app-entity-bagde> {{ contextName }}</span>
       </span>
-    <button class="btn btn-primary" (click)="showContext = true;" style="margin-left: 10px;" *ngIf="!showContext">
-      <i class="fa fa-pencil"></i>
-    </button>
-    <div *ngIf="showContext" style="height: 100px;">
-      <app-structure-tree
-        [tree]="context"
-        [filter]= "{
-          primitive: false,
-          types: [ 'GROUP', 'CONFORMANCEPROFILE' ]
-        }"
-        [resourceType]="resourceType"
-        [repository]="repository"
-        (selection)="selectContextNode($event)"
-      ></app-structure-tree>
-    </div>
-  </div>
-  <div *ngIf="activeTab === tabType.FREE">
-    <div class="form-group">
-      <label for="free" class="form-label-lg"> Description </label>
-      <input type="text" class="form-control" id="free" name="free" placeholder="Assertion Free Text Description" required #description="ngModel" [(ngModel)]="cs.freeText">
-    </div>
-    <div style="margin-top: 30px; margin-bottom: 20px; cursor: pointer;" (click)="hideAdvanced = !hideAdvanced">
-      <hr style="margin-bottom: -14px; margin-left: 110px;"> <span style="margin-left: 5px; color: gray;"><i class="fa" [ngClass]="{'fa-chevron-down': hideAdvanced, 'fa-chevron-right': !hideAdvanced }"></i> Advanced </span>
-    </div>
-    <div class="form-group" *ngIf="hideAdvanced">
-      <label for="free" class="form-label-lg"> Script </label>
-      <textarea type="text" class="form-control" id="script" rows="6" name="script" placeholder="XML Script" [required]="required" [(ngModel)]="cs.assertionScript"></textarea>
-    </div>
-  </div>
-  <div *ngIf="cs.type === csType.ASSERTION">
-    <div class="form-group">
-      <label for="free" class="form-label-lg"> Description </label><br>
-      <div style="padding: 10px; background-color: #f7f7f7; border: 1px solid #e7e7e7; border-radius: 3px;">
-        <span>{{cs.assertion.description}}</span>
-      </div>
-    </div>
-  </div>
-
-  <div *ngIf="activeTab === tabType.SIMPLE">
-    <app-cs-proposition
-      [resourceType]="resourceType"
-      [resource]="resource"
-      [tree]="structure"
-      [context]="cs.context"
-      [repository]="repository"
-      [type]="'STATEMENT'"
-      [(value)]="cs.assertion"
-      (valueChange)="change()"
-    ></app-cs-proposition>
-  </div>
-  <div *ngIf="activeTab === tabType.CONDITIONAL">
-    <table class="table table-bordered table-sm">
-      <tr>
-        <td><strong> PROPOSITION </strong></td>
-      </tr>
-      <tr>
-        <app-cs-proposition
-          [resourceType]="resourceType"
-          [resource]="resource"
-          [tree]="structure"
-          [context]="cs.context"
-          [repository]="repository"
-          [type]="'PROPOSITION'"
-          [(value)]="cs.assertion.ifAssertion"
-          [collapsed]="false"
-          (valueChange)="change()"
-        ></app-cs-proposition>
-      </tr>
-    </table>
-    <table class="table table-bordered table-sm">
-      <tr>
-        <td><strong> DECLARATION </strong></td>
-      </tr>
-      <tr>
-        <app-cs-proposition
-          [resourceType]="resourceType"
-          [resource]="resource"
-          [tree]="structure"
-          [context]="cs.context"
-          [repository]="repository"
-          [type]="'STATEMENT'"
-          [(value)]="cs.assertion.thenAssertion"
-          [collapsed]="false"
-          (valueChange)="change()"
-        ></app-cs-proposition>
-      </tr>
-    </table>
-  </div>
-  <div *ngIf="activeTab === tabType.COMPLEX">
-    <div class="form-group">
-      <label for="free" class="form-label-lg"> Assertion Pattern </label>
-      <span *ngIf="pattern" style="margin-left: 5px;" [innerHTML]="html(pattern.assertion.write())"></span>
-      <button class="btn btn-primary" style="margin-left: 10px;" (click)="openPatternDialog()">
+      <span *ngIf="!cs?.context" >
+          <span style="margin-left: 5px;" ><app-entity-bagde [type]='structure[0].data.type' ></app-entity-bagde> {{ structure[0].data.name }}</span>
+        </span>
+      <button class="btn btn-primary" (click)="showContext = true;" style="margin-left: 10px;" *ngIf="!showContext">
         <i class="fa fa-pencil"></i>
       </button>
+      <div *ngIf="showContext" style="height: 100px;">
+        <app-structure-tree
+          [tree]="context"
+          [filter]= "{
+            primitive: false,
+            types: [ 'GROUP', 'CONFORMANCEPROFILE' ],
+            paths: excludePaths
+          }"
+          [resourceType]="resourceType"
+          [repository]="repository"
+          (selection)="selectContextNode($event)"
+        ></app-structure-tree>
+      </div>
     </div>
-    <mat-dialog-content>
-      <ng-container *ngIf="pattern" >
-        <table *ngFor="let leaf of pattern.leafs" class="table table-bordered table-sm">
-          <tr>
-            <td><strong [ngStyle]="{ color : leaf.data.color}">{{ leaf.name() }}</strong></td>
-          </tr>
-          <tr>
-            <app-cs-proposition
+    <div *ngIf="activeTab === tabType.FREE">
+      <div class="form-group">
+        <label for="free" class="form-label-lg"> Description </label>
+        <input type="text" class="form-control" id="free" name="free" placeholder="Assertion Free Text Description" required #description="ngModel" [(ngModel)]="cs.freeText">
+      </div>
+      <div style="margin-top: 30px; margin-bottom: 20px; cursor: pointer;" (click)="hideAdvanced = !hideAdvanced">
+        <hr style="margin-bottom: -14px; margin-left: 110px;"> <span style="margin-left: 5px; color: gray;"><i class="fa" [ngClass]="{'fa-chevron-down': hideAdvanced, 'fa-chevron-right': !hideAdvanced }"></i> Advanced </span>
+      </div>
+      <div class="form-group" *ngIf="hideAdvanced">
+        <label for="free" class="form-label-lg"> Script </label>
+        <textarea type="text" class="form-control" id="script" rows="6" name="script" placeholder="XML Script" [required]="required" [(ngModel)]="cs.assertionScript"></textarea>
+      </div>
+    </div>
+    <div *ngIf="cs.type === csType.ASSERTION">
+      <div class="form-group">
+        <label for="free" class="form-label-lg"> Description </label><br>
+        <div style="padding: 10px; background-color: #f7f7f7; border: 1px solid #e7e7e7; border-radius: 3px;">
+          <span>{{cs.assertion.description}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="activeTab === tabType.SIMPLE">
+      <app-cs-proposition
+        [resourceType]="resourceType"
+        [excludePaths]="excludePaths"
+        [predicateMode]="predicateMode"
+        [resource]="resource"
+        [tree]="structure"
+        [context]="cs.context"
+        [repository]="repository"
+        [type]="predicateMode ? 'PROPOSITION' : 'STATEMENT'"
+        [(value)]="cs.assertion"
+        (valueChange)="change()"
+      ></app-cs-proposition>
+    </div>
+    <div *ngIf="activeTab === tabType.CONDITIONAL">
+      <table class="table table-bordered table-sm">
+        <tr>
+          <td><strong> PROPOSITION </strong></td>
+        </tr>
+        <tr>
+          <app-cs-proposition
             [resourceType]="resourceType"
+            [excludePaths]="excludePaths"
             [resource]="resource"
             [tree]="structure"
             [context]="cs.context"
             [repository]="repository"
-            [type]="leaf.data.branch === 'D' ? 'STATEMENT' : 'PROPOSITION'"
-            [(value)]="leaf.payload"
+            [type]="'PROPOSITION'"
+            [(value)]="cs.assertion.ifAssertion"
             [collapsed]="false"
             (valueChange)="change()"
-            ></app-cs-proposition>
-          </tr>
-        </table>
-      </ng-container>
-    </mat-dialog-content>
-  </div>
+          ></app-cs-proposition>
+        </tr>
+      </table>
+      <table class="table table-bordered table-sm">
+        <tr>
+          <td><strong> DECLARATION </strong></td>
+        </tr>
+        <tr>
+          <app-cs-proposition
+            [resourceType]="resourceType"
+            [excludePaths]="excludePaths"
+            [resource]="resource"
+            [tree]="structure"
+            [context]="cs.context"
+            [repository]="repository"
+            [type]="'STATEMENT'"
+            [(value)]="cs.assertion.thenAssertion"
+            [collapsed]="false"
+            (valueChange)="change()"
+          ></app-cs-proposition>
+        </tr>
+      </table>
+    </div>
+    <div *ngIf="activeTab === tabType.COMPLEX">
+      <div class="form-group">
+        <label for="free" class="form-label-lg"> Assertion Pattern </label>
+        <span *ngIf="pattern" style="margin-left: 5px;" [innerHTML]="html(pattern.assertion.write())"></span>
+        <button class="btn btn-primary" style="margin-left: 10px;" (click)="openPatternDialog()">
+          <i class="fa fa-pencil"></i>
+        </button>
+      </div>
+      <mat-dialog-content>
+        <ng-container *ngIf="pattern" >
+          <table *ngFor="let leaf of pattern.leafs" class="table table-bordered table-sm">
+            <tr>
+              <td><strong [ngStyle]="{ color : leaf.data.color}">{{ leaf.name() }}</strong></td>
+            </tr>
+            <tr>
+              <app-cs-proposition
+              [resourceType]="resourceType"
+              [excludePaths]="excludePaths"
+              [predicateMode]="predicateMode"
+              [resource]="resource"
+              [tree]="structure"
+              [context]="cs.context"
+              [repository]="repository"
+              [type]="leaf.data.branch === 'D' ? 'STATEMENT' : 'PROPOSITION'"
+              [(value)]="leaf.payload"
+              [collapsed]="false"
+              (valueChange)="change()"
+              ></app-cs-proposition>
+            </tr>
+          </table>
+        </ng-container>
+      </mat-dialog-content>
+    </div>
+  </ng-container>
+
+
+
 </form>
 <mat-dialog-actions style="justify-content: flex-end;">
   <button (click)="reset()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Reset</button>

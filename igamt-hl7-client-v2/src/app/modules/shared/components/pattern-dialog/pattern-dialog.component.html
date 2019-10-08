@@ -2,9 +2,13 @@
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <strong>Drag Operators     <i class="fa fa-hand-o-right" aria-hidden="true" style="font-size: 1.2em;"></i></strong>
     <div class="btn-group" role="group" >
-      <button pDraggable="operator" type="button" class="btn btn-dark" *ngFor="let op of operatorList; let i = index"  (onDragStart)="dragStartOp($event,op)" (onDragEnd)="dragEndOp($event)">
-        {{op.data.type}}
-      </button>
+      <ng-container *ngFor="let op of operatorList; let i = index" >
+        <button pDraggable="operator" type="button" class="btn btn-dark" *ngIf="!condition || op.type !== 'IF-THEN'"  (onDragStart)="dragStartOp($event,op)" (onDragEnd)="dragEndOp($event)">
+          {{op.data.type}}
+        </button>
+      </ng-container>
+
+
     </div>
   </div>
   <p-organizationChart [style]="{'width' : '100%', 'background-color' : 'white', 'padding' : '20px', 'min-height' : '500px;', 'overflow' : 'scroll'}" [value]="[ pattern.assertion ]" styleClass="pattern" *ngIf="pattern && pattern.assertion" >
