@@ -14,6 +14,18 @@ import { MessageService } from './../../core/services/message.service';
 })
 export class RxjsStoreHelperService {
 
+  static listenAndReact(actions$: Observable<Action>, map: IActionMap): Observable<Action> {
+    return actions$.pipe(
+      ofType(...Object.keys(map)),
+      filter((action: Action) => {
+        return !map[action.type].filter || map[action.type].filter(action);
+      }),
+      take(1),
+      mergeMap((action: Action) => {
+        return map[action.type].do(action);
+      }),
+    );
+  }
   constructor(private messageService: MessageService) { }
 
   static listenAndReact(actions$: Observable<Action>, map: IActionMap): Observable<Action> {

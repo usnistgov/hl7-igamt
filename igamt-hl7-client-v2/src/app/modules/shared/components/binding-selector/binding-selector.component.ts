@@ -39,7 +39,6 @@ export class BindingSelectorComponent<T> implements OnInit {
   }
 
   submit() {
-
     let result: IBindingDataResult = { selectedBindingType: this.selectedBindingType };
     switch (this.selectedBindingType) {
       case IBindingType.SINGLECODE:

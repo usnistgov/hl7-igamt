@@ -22,7 +22,9 @@ import { IExportConfigurationGlobal } from './../../export-configuration/models/
   providedIn: 'root',
 })
 export class IgService {
-  export_end_point = '/api/export/ig/';
+
+  readonly EXPORT_URL = '/api/export/ig/';
+
   constructor(private http: HttpClient, private location: LocationStrategy) {
   }
 
@@ -136,7 +138,7 @@ export class IgService {
 
   exportXML(igId: string, selectedIds: ISelectedIds, xmlFormat) {
     const form = document.createElement('form');
-    form.action = this.export_end_point + igId + '/xml/validation';
+    form.action = this.EXPORT_URL + igId + '/xml/validation';
     form.method = 'POST';
     const json = document.createElement('input');
     json.type = 'hidden';
@@ -149,12 +151,22 @@ export class IgService {
   }
 
   exportAsWord(igId, decision: any) {
-    this.submitForm(igId, decision, this.export_end_point + igId + '/word');
+    const form = document.createElement('form');
+    form.action = this.EXPORT_URL + igId + '/word';
+    form.method = 'POST';
+    const json = document.createElement('input');
+    json.type = 'hidden';
+    json.name = 'json';
+    json.value = JSON.stringify(decision);
+    form.appendChild(json);
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
   }
 
   export(igId, decision: any, format: string) {
     const form = document.createElement('form');
-    form.action = this.export_end_point + igId + '/' + format;
+    form.action = this.EXPORT_URL + igId + '/' + format;
     form.method = 'POST';
     const json = document.createElement('input');
     json.type = 'hidden';
@@ -167,11 +179,12 @@ export class IgService {
   }
 
   exportAsHtml(igId, decision: any) {
-    this.submitForm(igId, decision, this.export_end_point + igId + '/html');
+    this.submitForm(igId, decision, this.EXPORT_URL + igId + '/html');
   }
+
   submitForm(igId, decision: any, end_point: string) {
     const form = document.createElement('form');
-    form.action = end_point;
+    form.action = this.EXPORT_URL + igId + '/html';
     form.method = 'POST';
     const json = document.createElement('input');
     json.type = 'hidden';

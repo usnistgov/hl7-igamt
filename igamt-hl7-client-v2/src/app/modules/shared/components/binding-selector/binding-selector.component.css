@@ -1,15 +1,26 @@
 .select-binding-container {
-  display: grid;
-  grid-template-areas: 'loaded selected';
-  grid-gap: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding:5px;
   height: 100%;
 }
 
 .selected {
-  grid-area: selected;
+  height: 100%;
 }
 
 .loaded {
-  grid-area: loaded;
+  height: 100%;
 
+}
+.single-code-info{
+  padding: 5px;
+  background-color: #eaeaea;
+  display: flex;
+  flex-direction: column;
+  border: 2px dashed;
+}
+.vs-binding {
+  min-height: 500px;
 }

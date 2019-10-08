@@ -9,6 +9,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import {TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
 import {ContextMenuComponent} from 'ngx-contextmenu';
 import {Scope} from '../../../shared/constants/scope.enum';
@@ -49,7 +50,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   addChild = new EventEmitter<IAddNewWrapper>();
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
-  constructor(private nodeHelperService: NodeHelperService, private cd: ChangeDetectorRef) {
+  constructor(private nodeHelperService: NodeHelperService, private cd: ChangeDetectorRef, private router: Router, private activatedRoute: ActivatedRoute) {
     this.options = {
       allowDrag: (node: TreeNode) => node.data.type === Type.TEXT ||
         node.data.type === Type.CONFORMANCEPROFILE ||
@@ -94,8 +95,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   copySection(node) {
-    this.nodeHelperService.cloneNode(node);
+    const id = this.nodeHelperService.cloneNode(node);
     this.update();
+    this.router.navigate(['./text', id], {relativeTo: this.activatedRoute});
+
   }
 
   deleteSection(section) {

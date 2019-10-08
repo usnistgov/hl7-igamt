@@ -13,13 +13,14 @@ export class NodeHelperService {
   constructor() {
   }
 
-  cloneNode(treeNode: TreeNode) {
+  cloneNode(treeNode: TreeNode): string {
 
     const newData: IDisplayElement = _.cloneDeep(treeNode.data);
     newData.id = Guid.create().toString();
     newData.variableName = newData.variableName + '-copy';
     this.changeIds(newData);
     treeNode.parent.data.children.push(newData);
+    return newData.id;
   }
 
   changeIds(newData: IDisplayElement) {

@@ -20,8 +20,8 @@ export function validConvention(scope: Scope, type: Type, ext: string): IConvent
       } else if (scope === Scope.USER && (type === Type.DATATYPE || type === Type.SEGMENT)) {
       if (!startWithLetter(ext)) {
         return {valid: false, error: 'User extension must start with a letter'};
-      } else if (ext.length !== 4) {
-        return {valid: false, error: 'User extension must contain 4 characters'};
+      } else if (ext.length > 4) {
+        return {valid: false, error: 'User extension is too long'};
       }
     }
   }
