@@ -1,12 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Actions, ofType} from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { $e } from 'codelyzer/angular/styles/chars';
-import { Observable } from 'rxjs';
+import {Observable, of} from 'rxjs';
 import { concatMap, filter, map, take, tap, withLatestFrom } from 'rxjs/operators';
+import {IgEditActionTypes} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
-  CopyResource,
+  CopyResource, CopyResourceSuccess,
   DeleteResource,
   IgEditTocAddResource,
   UpdateSections,
@@ -27,6 +30,7 @@ import { IUsages } from '../../../shared/models/cross-reference';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
 import { CrossReferencesService } from '../../../shared/services/cross-references.service';
+import {RxjsStoreHelperService} from '../../../shared/services/rxjs-store-helper.service';
 import { IAddNewWrapper, IAddWrapper } from '../../models/ig/add-wrapper.class';
 import { IGDisplayInfo } from '../../models/ig/ig-document.class';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
@@ -44,7 +48,8 @@ export class IgEditSidebarComponent implements OnInit {
   version$: Observable<string>;
   @ViewChild(IgTocComponent) toc: IgTocComponent;
 
-  constructor(private store: Store<IGDisplayInfo>, private dialog: MatDialog, private crossReferencesService: CrossReferencesService) {
+  constructor(private store: Store<IGDisplayInfo>, private dialog: MatDialog, private crossReferencesService: CrossReferencesService,
+              private router: Router, private activeRoute: ActivatedRoute, private actions: Actions) {
     this.nodes$ = store.select(fromIgDocumentEdit.selectToc);
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
@@ -129,6 +134,14 @@ export class IgEditSidebarComponent implements OnInit {
       filter((x) => x !== undefined),
       withLatestFrom(this.igId$),
       map(([result, igId]) => {
+        RxjsStoreHelperService.listenAndReact(this.actions, {
+          [IgEditActionTypes.CopyResourceSuccess]: {
+            do: (action: CopyResourceSuccess) => {
+              this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], {relativeTo: this.activeRoute});
+              return of();
+            },
+          },
+        }).subscribe();
         this.store.dispatch(new CopyResource({ documentId: igId, selected: result }));
       }),
     ).subscribe();

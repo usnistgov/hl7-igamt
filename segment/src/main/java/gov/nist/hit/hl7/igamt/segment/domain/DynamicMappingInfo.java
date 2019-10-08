@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.segment.domain;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,6 +32,9 @@ public class DynamicMappingInfo {
   private String variesFieldId;
 
   private Set<DynamicMappingItem> items;
+  
+  private HashMap<String, String> mapping = new HashMap<>();
+
 
   public DynamicMappingInfo() {
     super();
@@ -71,5 +75,13 @@ public class DynamicMappingInfo {
 
   public void setVariesFieldId(String variesFieldId) {
     this.variesFieldId = variesFieldId;
+  }
+
+  public HashMap<String, String> getMapping() {
+    return mapping;
+  }
+
+  public void setMapping(HashMap<String, String> mapping) {
+    this.mapping = mapping;
   }
 }
