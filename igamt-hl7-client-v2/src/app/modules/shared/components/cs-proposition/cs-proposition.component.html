@@ -241,7 +241,7 @@
       <span *ngIf="assertion.complement.path"> {{ compareName }} </span>
     </td>
 
-    <th *ngIf="csType === _csType.PROPOSITION"> then </th>
+    <th *ngIf="csType === _csType.PROPOSITION && !predicateMode"> then </th>
 
   </tr>
   <tr *ngIf="!collapsed">
@@ -262,6 +262,9 @@
       <div style="height: 200px; width: 250px;">
         <app-structure-tree
           [tree]="tree"
+          [filter]="{
+            paths : excludePaths
+          }"
           [resourceType]="resourceType"
           [repository]="repository"
           (selection)="targetElement($event)"
@@ -295,6 +298,9 @@
       <div style="height: 200px; width: 250px;">
         <app-structure-tree
           [tree]="tree"
+          [filter]="{
+            paths : excludePaths
+          }"
           [resourceType]="resourceType"
           [repository]="repository"
           (selection)=" comparativeElement($event)"
@@ -303,7 +309,7 @@
     </td>
 
 
-    <td *ngIf="csType === _csType.PROPOSITION"></td>
+    <td *ngIf="csType === _csType.PROPOSITION && !predicateMode"></td>
 
   </tr>
 </table>

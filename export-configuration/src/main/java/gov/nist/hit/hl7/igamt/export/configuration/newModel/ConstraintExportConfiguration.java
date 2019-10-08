@@ -21,6 +21,11 @@ public class ConstraintExportConfiguration {
 	public void setPredicate(Boolean predicate) {
 		this.predicate = predicate;
 	}
+	public ConstraintExportConfiguration() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	
 	
 	
 }

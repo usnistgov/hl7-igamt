@@ -11,7 +11,6 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
 
 public class SegmentExportConfiguration extends ResourceExportConfiguration{
 
-	  private Boolean ext;
 	  private Boolean dynamicMappingInfo;
 	  private Boolean binding;
 	  private ConstraintExportConfiguration constraintExportConfiguration;
@@ -25,8 +24,40 @@ public class SegmentExportConfiguration extends ResourceExportConfiguration{
 	  private List<NameAndPositionAndPresence> columns;
 	  private MetadataConfiguration metadataConfig;
 	  
+	  public SegmentExportConfiguration(ExportConfiguration defaultConfiguration) {
+		  this.includeSegmentTable = defaultConfiguration.isIncludeSegmentTable();
+		  this.greyOutOBX2FlavorColumn=defaultConfiguration.isGreyOutOBX2FlavorColumn();
+		  this.segmentsExport=defaultConfiguration.getSegmentsExport();
+		  this.fieldsExport=defaultConfiguration.getFieldsExport();
+		  this.columns=defaultConfiguration.getSegmentColumn().getColumns();
+		  this.coConstraintExportMode=defaultConfiguration.getCoConstraintExportMode();
+		  this.metadataConfig=defaultConfiguration.getSegmentMetadataConfig();  
+	  }
 	  
-	  public ExportConfiguration populateExportConfiguration(ExportConfiguration exportConfiguration) {
+	  
+	  public SegmentExportConfiguration(Boolean dynamicMappingInfo, Boolean binding,
+			ConstraintExportConfiguration constraintExportConfiguration, boolean includeSegmentTable,
+			boolean greyOutOBX2FlavorColumn, UsageConfiguration segmentsExport, UsageConfiguration fieldsExport,
+			CoConstraintExportMode coConstraintExportMode, List<NameAndPositionAndPresence> columns,
+			MetadataConfiguration metadataConfig) {
+		super();
+		this.dynamicMappingInfo = dynamicMappingInfo;
+		this.binding = binding;
+		this.constraintExportConfiguration = constraintExportConfiguration;
+		this.includeSegmentTable = includeSegmentTable;
+		this.greyOutOBX2FlavorColumn = greyOutOBX2FlavorColumn;
+		this.segmentsExport = segmentsExport;
+		this.fieldsExport = fieldsExport;
+		this.coConstraintExportMode = coConstraintExportMode;
+		this.columns = columns;
+		this.metadataConfig = metadataConfig;
+	}
+	  
+	  public SegmentExportConfiguration() {
+			super();
+		}
+
+	public ExportConfiguration populateExportConfiguration(ExportConfiguration exportConfiguration) {
 	    exportConfiguration.setIncludeSegmentTable(this.includeSegmentTable);
 	    exportConfiguration.setSegmentsExport(this.segmentsExport);
 	    exportConfiguration.setFieldsExport(this.fieldsExport);
@@ -41,7 +72,7 @@ public class SegmentExportConfiguration extends ResourceExportConfiguration{
 	      UsageConfiguration segmentsExport, UsageConfiguration fieldsExport,
 	      CoConstraintExportMode coConstraintExportMode, List<NameAndPositionAndPresence> columns,
 	      MetadataConfiguration metadataConfig) {
-		  this.ext=ext;
+//		  this.ext=ext;
 		  this.dynamicMappingInfo=dynamicMappingInfo;
 		  this.binding=binding;
 		  this.constraintExportConfiguration = new ConstraintExportConfiguration(true, true);
@@ -52,11 +83,7 @@ public class SegmentExportConfiguration extends ResourceExportConfiguration{
 	    this.coConstraintExportMode = coConstraintExportMode;
 	    this.columns = columns;
 	    this.metadataConfig = metadataConfig;
-	  }
-
-	  
-
-	
+	  }	
 
 	public ConstraintExportConfiguration getConstraintExportConfiguration() {
 		return constraintExportConfiguration;
@@ -66,13 +93,7 @@ public class SegmentExportConfiguration extends ResourceExportConfiguration{
 		this.constraintExportConfiguration = constraintExportConfiguration;
 	}
 
-	public Boolean getExt() {
-		return ext;
-	}
 
-	public void setExt(Boolean ext) {
-		this.ext = ext;
-	}
 
 	public Boolean getDynamicMappingInfo() {
 		return dynamicMappingInfo;

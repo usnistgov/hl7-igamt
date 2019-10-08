@@ -10,7 +10,7 @@ import { FieldType, IMetadataFormInput } from '../../../shared/components/metada
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
-import {FroalaService} from '../../../shared/services/froala.service';
+import { FroalaService } from '../../../shared/services/froala.service';
 import { Message } from '../../models/message/message.class';
 import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
@@ -143,12 +143,14 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
     return changes;
   }
 
+  abstract reloadResource(resourceId: string): Action;
+
   onEditorSave(action: EditorSave): Observable<Action> {
     return combineLatest(this.elementId$, this.initial$, this.current$, this.store.select(selectIgId)).pipe(
       take(1),
       concatMap(([id, old, current, igId]) => {
         return this.save(this.getChanges(id, current.data, old)).pipe(
-          flatMap((message) => [this.messageService.messageToAction(message), new IgEditResolverLoad(igId)]),
+          flatMap((message) => [this.messageService.messageToAction(message), this.reloadResource(id), new IgEditResolverLoad(igId)]),
           catchError((error) => of(this.messageService.actionFromError(error), new EditorSaveFailure())),
         );
       }),

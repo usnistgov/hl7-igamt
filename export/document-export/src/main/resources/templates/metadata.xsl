@@ -62,6 +62,12 @@
             <xsl:element name="br"/-->
             <xsl:element name="p">
                 <xsl:attribute name="style">
+                    <xsl:text>font-size:65%;</xsl:text>
+                </xsl:attribute>
+                <xsl:value-of select="@subTitle"></xsl:value-of>
+            </xsl:element>
+            <xsl:element name="p">
+                <xsl:attribute name="style">
                     <xsl:text>font-size:80%;</xsl:text>
                 </xsl:attribute>
                 <xsl:value-of select="@orgName"></xsl:value-of>

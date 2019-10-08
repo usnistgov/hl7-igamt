@@ -16,6 +16,7 @@ export class PatternDialogComponent implements OnInit {
   dragSta: Statement;
   pattern: Pattern = null;
   backUp: Pattern;
+  condition: boolean;
   operatorList = [
     new BinaryOperator('D', 'OR', null, 0),
     new BinaryOperator('D', 'AND', null, 0),
@@ -30,8 +31,11 @@ export class PatternDialogComponent implements OnInit {
     private sanitizer: DomSanitizer,
     public dialogRef: MatDialogRef<PatternDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
-    if (!this.pattern) {
+    this.condition = data.condition;
+    if (!data.pattern) {
       this.initPattern();
+    } else {
+      this.pattern = data.pattern;
     }
 
     this.backUp = this.pattern.clone();
@@ -56,7 +60,7 @@ export class PatternDialogComponent implements OnInit {
   }
 
   initPattern() {
-    const statement = new Statement('D', 0, null, 0);
+    const statement = new Statement(this.condition ? 'P' : 'D', 0, null, 0);
     this.pattern = new Pattern(statement);
   }
 
@@ -93,7 +97,7 @@ export class PatternDialogComponent implements OnInit {
     const that = node;
     const positionInParent = that.data.position;
     const op = this.dragOp.clone(that.parent);
-    op.data.branch = node.data.type;
+    op.data.branch = this.condition ? 'P' : node.data.type;
 
     const cloneOfThis = that.clone(op);
     if (op.data.type === 'IF-THEN') {

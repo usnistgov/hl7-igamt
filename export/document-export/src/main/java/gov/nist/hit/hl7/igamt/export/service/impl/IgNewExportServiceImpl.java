@@ -99,7 +99,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
 			String xmlContent =
 					igDataModelSerializationService.serializeIgDocument(igDataModel, exportConfiguration,decision).toXML();
-			//		      System.out.println("XML_EXPORT : " + xmlContent);
+//					      System.out.println("XML_EXPORT : " + xmlContent);
 			//		      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
@@ -142,7 +142,6 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 
 	private void processConformanceProfiles(Ig ig,ExportFilterDecision decision , ExportConfiguration config) {
-
 		Set<String> segmentIds = new HashSet<String>(); 
 		Set<String> datatypesIds = new HashSet<String>();
 		List<ConformanceProfile> profiles = conformanceProfileService

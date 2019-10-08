@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
 import { concatMap, switchMap, take } from 'rxjs/operators';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
 import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ResourceMetadataEditorComponent } from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
 import { Message } from '../../../core/models/message/message.class';
@@ -12,7 +13,7 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
-import {FroalaService} from '../../../shared/services/froala.service';
+import { FroalaService } from '../../../shared/services/froala.service';
 import { DatatypeService } from '../../services/datatype.service';
 
 @Component({
@@ -47,6 +48,10 @@ export class MetadataEditComponent extends ResourceMetadataEditorComponent imple
         return this.datatypeService.saveChanges(id, documentId, changes);
       }),
     );
+  }
+
+  reloadResource(resourceId: string): Action {
+    return new LoadDatatype(resourceId);
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {

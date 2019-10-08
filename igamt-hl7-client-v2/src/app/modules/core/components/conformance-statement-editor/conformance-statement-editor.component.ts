@@ -190,7 +190,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       data: {
         title: 'Edit Conformance Statement',
         resource: this.selectedResource$,
-        cs: _.cloneDeep(node.payload),
+        payload: _.cloneDeep(node.payload),
       },
     });
 
@@ -228,7 +228,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       data: {
         title: 'Create Conformance Statement',
         resource: this.selectedResource$,
-        cs: this.csService.getFreeConformanceStatement(),
+        payload: this.csService.getFreeConformanceStatement(),
       },
     });
 

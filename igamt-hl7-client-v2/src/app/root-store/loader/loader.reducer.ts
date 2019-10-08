@@ -1,14 +1,16 @@
-import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {LoaderActions, LoaderActionTypes} from './loader.actions';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { LoaderActions, LoaderActionTypes } from './loader.actions';
 
 export interface IState {
   isLoading: boolean;
   uiIsBlocked: boolean;
+  loading: number;
 }
 
 export const initialState: IState = {
   isLoading: false,
   uiIsBlocked: false,
+  loading: 0,
 };
 
 export function reducer(state = initialState, action: LoaderActions): IState {
@@ -18,11 +20,14 @@ export function reducer(state = initialState, action: LoaderActions): IState {
       return {
         isLoading: true,
         uiIsBlocked: action.payload.blockUI,
+        loading: state.loading + 1,
       };
     case LoaderActionTypes.TurnOffLoader:
+      const loading = state.loading - 1;
       return {
-        isLoading: false,
-        uiIsBlocked: false,
+        isLoading: loading > 0,
+        uiIsBlocked: (loading > 0) && state.uiIsBlocked,
+        loading: loading >= 0 ? loading : 0,
       };
     default:
       return state;

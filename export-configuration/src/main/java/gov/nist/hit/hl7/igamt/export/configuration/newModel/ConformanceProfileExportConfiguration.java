@@ -19,6 +19,7 @@ public class ConformanceProfileExportConfiguration extends ResourceExportConfigu
 	  private Boolean structID; // Message/@StructID private String identifier;
 //	  private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
 	  private Boolean binding;
+	  
 	
 	  private boolean includeMessageTable = true;
 	  private UsageConfiguration segmentORGroupsMessageExport;
@@ -39,7 +40,14 @@ public class ConformanceProfileExportConfiguration extends ResourceExportConfigu
 	  
 
 
-	  public ConformanceProfileExportConfiguration(boolean includeMessageTable,
+	  public ConformanceProfileExportConfiguration() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
+
+	public ConformanceProfileExportConfiguration(boolean includeMessageTable,
 	      UsageConfiguration segmentORGroupsMessageExport, List<NameAndPositionAndPresence> columns,
 	      MetadataConfiguration metadataConfig) {
 	    this.includeMessageTable = includeMessageTable;

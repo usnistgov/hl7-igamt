@@ -1,26 +1,25 @@
 import { Component, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
-import {Action, MemoizedSelectorWithProps, Store} from '@ngrx/store';
-import {combineLatest, Observable, of, Subscription} from 'rxjs';
-import {catchError, concatMap, flatMap, switchMap, take, tap} from 'rxjs/operators';
+import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import { combineLatest, Observable, of, Subscription } from 'rxjs';
+import { catchError, concatMap, flatMap, switchMap, take, tap } from 'rxjs/operators';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
-import {IgEditResolverLoad} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {EditorSaveFailure} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {selectMessagesById} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { IgEditResolverLoad } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { EditorSaveFailure } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { selectMessagesById } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {selectIgId} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { selectIgId } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { LoadConformanceProfile } from '../../../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import {IResourceMetadata} from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
-import {Message} from '../../../core/models/message/message.class';
-import {MessageService} from '../../../core/services/message.service';
-import {IConformanceProfile} from '../../../shared/models/conformance-profile.interface';
+import { Message } from '../../../core/models/message/message.class';
+import { MessageService } from '../../../core/services/message.service';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
-import {ChangeType, IChange, PropertyType} from '../../../shared/models/save-change';
-import {FroalaService} from '../../../shared/services/froala.service';
-import {ConformanceProfileService} from '../../services/conformance-profile.service';
+import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
+import { FroalaService } from '../../../shared/services/froala.service';
+import { ConformanceProfileService } from '../../services/conformance-profile.service';
 
 export interface IConformanceProfileEditMetadata {
   name: string;
@@ -231,8 +230,7 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
       concatMap(([id, old, current, igId]) => {
         return this.conformanceProfileService.saveChanges(id, igId, this.getChanges(id, current.data, old)).pipe(
           flatMap((message) => {
-            console.log(message);
-            return [this.messageService.messageToAction(message), new IgEditResolverLoad(igId)];
+            return [this.messageService.messageToAction(message), new LoadConformanceProfile(id), new IgEditResolverLoad(igId)];
           }),
           catchError((error) => of(this.messageService.actionFromError(error), new EditorSaveFailure())),
         );
@@ -243,10 +241,6 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
   saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message<any>> {
     return this.conformanceProfileService.saveChanges(id, igId, changes);
   }
-
-  // getById(id: string): Observable<IConformanceProfile> {
-  //   return this.conformanceProfileService.getById(id);
-  // }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
     return selectMessagesById;

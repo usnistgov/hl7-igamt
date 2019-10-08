@@ -10,9 +10,9 @@ import nu.xom.Element;
 
 public interface DatatypeSerializationService {
 	
-	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, DatatypeExportConfiguration datatypeExportConfiguration  ) throws SubStructElementSerializationException;
+	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration  ) throws SubStructElementSerializationException;
 
-	public Element serializeComplexDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel) throws SubStructElementSerializationException;
+	public Element serializeComplexDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel , DatatypeExportConfiguration datatypeExportConfiguration) throws SubStructElementSerializationException;
 
-	public Element serializeDateTimeDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel);
+	public Element serializeDateTimeDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel, DatatypeExportConfiguration datatypeExportConfiguration);
 }

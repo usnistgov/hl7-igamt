@@ -11,6 +11,8 @@ export class SelectResourceIdsComponent implements OnInit {
   @Input()
   conformanceProfiles: IDisplayElement[];
   compositeProfiles: IDisplayElement[];
+  @Input()
+  datatypes: IDisplayElement[];
   @Output()
   selected: EventEmitter<ISelectedIds> = new EventEmitter<ISelectedIds>();
   ids: ISelectedIds = {};
@@ -27,4 +29,5 @@ export class SelectResourceIdsComponent implements OnInit {
 export interface ISelectedIds {
   conformanceProfilesId?: string[];
   compositeProfilesId?: string[];
+  datatypes?: string[];
 }
