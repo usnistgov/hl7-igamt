@@ -1,24 +1,23 @@
 import { Component, OnInit } from '@angular/core';
-import {AbstractEditorComponent} from "../../../core/components/abstract-editor-component/abstract-editor-component.component";
-import {IDisplayElement} from "../../../shared/models/display-element.interface";
-import {EditorSave} from "../../../../root-store/ig/ig-edit/ig-edit.actions";
-import {Action, Store} from "@ngrx/store";
-import {Observable, of} from "rxjs";
-import * as fromIgEdit from "../../../../root-store/ig/ig-edit/ig-edit.index";
-import {Actions} from "@ngrx/effects";
-import {IgService} from "../../../ig/services/ig.service";
-import {MessageService} from "../../../core/services/message.service";
-import {FroalaService} from "../../../shared/services/froala.service";
-import {EditorID} from "../../../shared/models/editor.enum";
-import {Type} from "../../../shared/constants/type.enum";
-import {ISegment} from "../../../shared/models/segment.interface";
-import {setHebrewDay} from "@ng-bootstrap/ng-bootstrap/datepicker/hebrew/hebrew";
-import {IStructureElementBinding} from "../../../shared/models/binding.interface";
-import {IValueSet} from "../../../shared/models/value-set.interface";
-import {ValueSetService} from "../../../value-set/service/value-set.service";
-import {combineLatest} from "rxjs";
-import {selectAllDatatypes, selectIgId} from "../../../../root-store/ig/ig-edit/ig-edit.index";
-import {map, mergeMap, take} from "rxjs/operators";
+import {setHebrewDay} from '@ng-bootstrap/ng-bootstrap/datepicker/hebrew/hebrew';
+import {Actions} from '@ngrx/effects';
+import {Action, Store} from '@ngrx/store';
+import {combineLatest} from 'rxjs';
+import {Observable, of} from 'rxjs';
+import {map, mergeMap, take} from 'rxjs/operators';
+import {EditorSave} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
+import {selectAllDatatypes, selectIgId} from '../../../../root-store/ig/ig-edit/ig-edit.index';
+import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import {MessageService} from '../../../core/services/message.service';
+import {IgService} from '../../../ig/services/ig.service';
+import {Type} from '../../../shared/constants/type.enum';
+import {IStructureElementBinding} from '../../../shared/models/binding.interface';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {EditorID} from '../../../shared/models/editor.enum';
+import {IDynamicMappingInfo, ISegment} from '../../../shared/models/segment.interface';
+import {IValueSet} from '../../../shared/models/value-set.interface';
+import {ValueSetService} from '../../../value-set/service/value-set.service';
 
 @Component({
   selector: 'app-dynamic-mapping-editor',
@@ -72,4 +71,7 @@ export class DynamicMappingEditorComponent extends AbstractEditorComponent imple
     return undefined;
   }
 
+  onChange(data: IDynamicMappingInfo) {
+    this.editorChange(data, true);
+  }
 }

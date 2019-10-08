@@ -8,7 +8,7 @@ describe('DynamicMappingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DynamicMappingComponent ]
+      declarations: [ DynamicMappingComponent ],
     })
     .compileComponents();
   }));

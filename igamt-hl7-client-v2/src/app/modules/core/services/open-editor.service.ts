@@ -10,11 +10,11 @@ import { IUsages } from '../../shared/models/cross-reference';
 import { IDelta } from '../../shared/models/delta';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IResource } from '../../shared/models/resource.interface';
+import {IDynamicMappingInfo} from '../../shared/models/segment.interface';
 import { RxjsStoreHelperService } from '../../shared/services/rxjs-store-helper.service';
 import { IResourceMetadata } from '../components/resource-metadata-editor/resource-metadata-editor.component';
 import { MessageType, UserMessage } from '../models/message/message.class';
 import { MessageService } from './message.service';
-import {IDynamicMappingInfo} from "../../shared/models/segment.interface";
 
 @Injectable({
   providedIn: 'root',
@@ -79,7 +79,7 @@ export class OpenEditorService {
           },
         });
         this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
-        return this.rxjsHelper.listenAndReact(this.actions$, {
+        return RxjsStoreHelperService.listenAndReact(this.actions$, {
           [IgEditActionTypes.LoadResourceReferencesSuccess]: {
             do: (loadSuccess: LoadResourceReferencesSuccess) => {
               return of(openEditor);
@@ -140,7 +140,7 @@ export class OpenEditorService {
           },
         });
         this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
-        return this.rxjsHelper.listenAndReact(this.actions$, {
+        return RxjsStoreHelperService.listenAndReact(this.actions$, {
           [IgEditActionTypes.LoadResourceReferencesSuccess]: {
             do: (loadSuccess: LoadResourceReferencesSuccess) => {
               return of(openEditor);

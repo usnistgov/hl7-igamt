@@ -30,6 +30,7 @@ import { CsPropositionComponent } from './components/cs-proposition/cs-propositi
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
+import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
@@ -77,7 +78,6 @@ import { StoreResourceRepositoryService } from './services/resource-repository.s
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 
 @NgModule({
   declarations: [

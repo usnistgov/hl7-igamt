@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
@@ -47,7 +48,6 @@ import {
   selectSectionFromIgById,
   selectTableOfContentChanged,
 } from './ig-edit.selectors';
-import {ActivatedRoute, Router} from '@angular/router';
 
 @Injectable()
 export class IgEditEffects {
@@ -137,7 +137,7 @@ export class IgEditEffects {
               id: ig.id,
             }));
 
-            return this.rxjsHelper.listenAndReact(this.actions$, {
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
               [IgEditActionTypes.TableOfContentSaveSuccess]: {
                 do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
                   return of(new EditorSave({
@@ -274,8 +274,6 @@ export class IgEditEffects {
   copyResourceSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.CopyResourceSuccess),
     map((action: CopyResourceSuccess) => {
-      const type = action.payload.display.type.toLowerCase();
-      this.router.navigate(['./' + type , action.payload.display.id], {relativeTo: this.activatedRoute});
       return  this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource copied successfully ', null ));
     }),
   );
@@ -382,7 +380,7 @@ export class IgEditEffects {
               id: ig.id,
             }));
 
-            return this.rxjsHelper.listenAndReact(this.actions$, {
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
               [IgEditActionTypes.TableOfContentSaveSuccess]: {
                 do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
                   return toDoo;

@@ -8,7 +8,7 @@ describe('DynamicMappingEditorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DynamicMappingEditorComponent ]
+      declarations: [ DynamicMappingEditorComponent ],
     })
     .compileComponents();
   }));

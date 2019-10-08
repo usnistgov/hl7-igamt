@@ -1,31 +1,98 @@
+<div style="display: flex; flex-direction: row;">
 
-{{map|json}}
-<p-table #dt1 sortField="value"
-         [resizableColumns]="false" [value]="valueSet?.codes" selectionMode="checkbox">
-  <ng-template pTemplate="header">
-    <tr>
-      <th>Data Type</th>
-      <th>Description</th>
-      <th>Mapping</th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body" let-rowData>
-    <tr>
-      <td>{{rowData.value}}</td>
-      <td>{{rowData.description}}</td>
-      <td #anchor>
-        <p-dropdown [(ngModel)]="map[rowData.value]" (onShow)="getOptions(rowData)"
-                    [optionLabel]="'fixedName'" [options]="datatypesOptionsMap[rowData.value]" [appendTo]="anchor" placeholder="Default HL7" [style]="{'minWidth':'100%'}">
-          <ng-template let-item pTemplate="selectedItem">
-            <ng-container *ngIf="item.value">
-              <app-display-section [element]="item.value"></app-display-section>
-            </ng-container>
-          </ng-template>
-          <ng-template let-item pTemplate="item">
-            <app-display-section [element]="item.value"></app-display-section>
-          </ng-template>
-        </p-dropdown>
-    </tr>
-  </ng-template>
-</p-table>
+  <div class="default-mapping">
+  <p-table #dt1 [resizableColumns]="false" [globalFilterFields]="['value']"  sortField="value"
+           [value]="valueSet?.codes">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 20%">
+          Names
+        </th>
+        <th>Available Data Types</th>
+      </tr>
+    </ng-template>
 
+    <ng-template pTemplate="caption">
+      <div style="text-align: left">
+        <div class="input-group" style="margin-left: 10px;">
+          <div class="input-group-prepend" style="height: 35px;">
+            <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+          </div>
+          <input (input)="dt1.filterGlobal($event.target.value, 'contains')" class="form-control" placeholder="Search by name"
+                 style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
+        </div>
+      </div>
+    </ng-template>
+    <ng-template let-rowData pTemplate="body">
+      <tr style="width: 20%">
+        <td>{{rowData.value}}</td>
+        <td #anchor>
+          <ng-container *ngIf="namingMap[rowData.value]">
+          <div *ngFor="let dt  of namingMap[rowData.value]" style="display: flex; flex-direction: row">
+            <div style="display: flex">
+              <app-display-section [element]="dt" [hideDescription]="true"></app-display-section>
+            </div>
+            <div style="justify-content: flex-end;width: 100%;">
+              <button (click)="select(rowData.value, dt)" class="btn btn-primary btn-sm" style="float: right"><i
+                class="fa fa-plug"></i></button>
+            </div>
+          </div>
+          </ng-container>
+          <ng-container *ngIf="!namingMap[rowData.value]">
+            Default {{rowData.value}}
+          </ng-container>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  </div>
+
+  <div class="user-mapping">
+  <p-table #dt2 [resizableColumns]="false"
+           [value]="selectedDynamicMappingTable" sortField="value">
+
+    <ng-template pTemplate="caption">
+      <div style="text-align: left">
+        <div class="input-group" style="margin-left: 10px;">
+          <div class="input-group-prepend" style="height: 35px;">
+            <span class="input-group-text" id="inputGroupPrepend"><i class="fa fa-filter"></i></span>
+          </div>
+          <input (input)="dt2.filterGlobal($event.target.value, 'contains')" class="form-control" placeholder="Search by name"
+                 style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
+        </div>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Reference Value</th>
+        <th>User Mapping</th>
+        <th style="width: 20%"></th>
+      </tr>
+    </ng-template>
+    <ng-template let-rowData let-index pTemplate="body">
+      <tr>
+        <td>{{rowData.value}}</td>
+        <td #anchor>
+          <p-dropdown [(ngModel)]="map[rowData.value]" [appendTo]="anchor" [optionLabel]="'fixedName'"
+                      [options]="namingMap[rowData.value]" [style]="{'minWidth':'100%'}"
+                      placeholder="Default HL7" (onChange)="modelChange()">
+            <ng-template let-item pTemplate="selectedItem">
+              <ng-container *ngIf="item.value">
+                <app-display-section [element]="item.value" [hideDescription]="true"></app-display-section>
+              </ng-container>
+            </ng-template>
+            <ng-template let-item pTemplate="item">
+              <app-display-section [element]="item.value" [hideDescription]="true"></app-display-section>
+            </ng-template>
+          </p-dropdown>
+        </td>
+        <td style="width: 20%">
+          <button (click)="remove(rowData.value)" class="btn btn-danger btn-sm" style="float: right">
+            <i class="fa fa-remove"></i>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  </div>
+</div>

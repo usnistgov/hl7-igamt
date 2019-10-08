@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { catchError, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {selectedSegment} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { SegmentService } from '../../modules/segment/services/segment.service';
@@ -31,7 +32,6 @@ import {
   OpenSegmentStructureEditor,
   SegmentEditActionTypes,
 } from './segment-edit.actions';
-import {selectedSegment} from "src/app/root-store/ig/ig-edit/ig-edit.index";
 
 @Injectable()
 export class SegmentEditEffects {

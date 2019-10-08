@@ -29,7 +29,7 @@ export class SegmentService {
     });
   }
 
-  getSegmentDynamicMappingInfo(id: string, igId: string): Observable<any>{
+  getSegmentDynamicMappingInfo(id: string, igId: string): Observable<any> {
    return  this.http.get<any>(this.URL + id);
   }
 }
