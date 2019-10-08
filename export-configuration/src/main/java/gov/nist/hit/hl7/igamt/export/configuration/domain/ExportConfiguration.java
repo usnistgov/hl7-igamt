@@ -22,6 +22,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConstraintExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ResourceExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.SegmentExportConfiguration;
@@ -106,9 +107,7 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
 }
 
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue) {
-    ExportConfiguration defaultConfiguration = new ExportConfiguration();
-    
-    
+    ExportConfiguration defaultConfiguration = new ExportConfiguration();   
     defaultConfiguration.setCoConstraintExportMode(CoConstraintExportMode.COMPACT);
     defaultConfiguration.setDefaultType(true);
     defaultConfiguration.setUsername(null);
@@ -156,7 +155,7 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     defaultConfiguration.setValuesetsMetadata(valuesetMetadataConfig);
 
     MetadataConfiguration metadataDefaultConfig =
-        new MetadataConfiguration(false, false, false, false);
+        new MetadataConfiguration(true, true, true, true);
     defaultConfiguration.setDatatypeMetadataConfig(metadataDefaultConfig);
     defaultConfiguration.setSegmentMetadataConfig(metadataDefaultConfig);
     defaultConfiguration.setMessageMetadataConfig(metadataDefaultConfig);
@@ -227,11 +226,44 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     defaultConfiguration.setValuesetColumn(new ColumnsConfiguration(valuesetsDefaultList));
     defaultConfiguration.setMaxCodeNumber(MAX_CODE);
     
+    ConstraintExportConfiguration constraintExportConfiguration = new ConstraintExportConfiguration(true,true);
+    
+    //Setting AbstractDomainConfiguration
+    AbstractDomainExportConfiguration abstractDomainExportConfiguration = new AbstractDomainExportConfiguration(true, true, true, false, false, false, true, false, true, true, false, true, true, false, true, true);
+    
+    
     // Setting DatatypeExportConfiguration
+    DatatypeExportConfiguration datatypeExportConfiguration = new DatatypeExportConfiguration(defaultConfiguration);
+    datatypeExportConfiguration.setBinding(true);
+    datatypeExportConfiguration.setPurposeAndUse(true);
+    datatypeExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
+
+
+    // Setting SegmentExportConfiguration
+    SegmentExportConfiguration segmentExportConfiguration = new SegmentExportConfiguration(defaultConfiguration);
+    segmentExportConfiguration.setDynamicMappingInfo(true);
+    segmentExportConfiguration.setBinding(true);
+    segmentExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
+
     
+    // Setting ConformanceProfileExportConfiguration
+    ConformanceProfileExportConfiguration conformanceProfileExportConfiguration = new ConformanceProfileExportConfiguration(defaultConfiguration);
+    conformanceProfileExportConfiguration.setIdentifier(true);
+    conformanceProfileExportConfiguration.setEvent(true);
+    conformanceProfileExportConfiguration.setMessageType(true);
+    conformanceProfileExportConfiguration.setStructID(true);
+    conformanceProfileExportConfiguration.setBinding(true);
+    conformanceProfileExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
+
     
-    
-    
+    // Setting ValueSetExportConfiguration
+    ValueSetExportConfiguration valueSetExportConfiguration = new ValueSetExportConfiguration(defaultConfiguration);
+
+    defaultConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
+    defaultConfiguration.setConformamceProfileExportConfiguration(conformanceProfileExportConfiguration);
+    defaultConfiguration.setValueSetExportConfiguration(valueSetExportConfiguration);
+    defaultConfiguration.setSegmentExportConfiguration(segmentExportConfiguration);
+    defaultConfiguration.setAbstractDomainExportConfiguration(abstractDomainExportConfiguration);
     
     return defaultConfiguration;
   }

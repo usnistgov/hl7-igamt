@@ -13,105 +13,148 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class AbstractDomainExportConfiguration {
 
-	private Boolean creationDate;
-	private Boolean updateDate;
-	private Boolean name;
-	private Boolean type;
-	private Boolean origin;
-	private Boolean publicationInfo;
-	private Boolean domainInfo;
-	private Boolean comment;
-	private Boolean description;
-	private Boolean createdFrom;
-	private Boolean authorNotes;
-	private Boolean usageNotes;
-	private Boolean from;
-	private Boolean version;
+	private boolean creationDate;
+	private boolean updateDate;
+	private boolean name;
+	private boolean type ;
+	private boolean origin ;
+	private boolean publicationInfo  ;
+	private boolean publicationDate  ;
+	private boolean domainInfo;
+	private boolean comment;
+	private boolean description;
+	private boolean createdFrom;
+	private boolean authorNotes;
+	private boolean usageNotes;
+	private boolean from;
+	private boolean version;
+	private boolean domainCompatibilityVersion;
 	
-	public Boolean getCreationDate() {
+	
+	
+	
+	public AbstractDomainExportConfiguration(boolean creationDate, boolean updateDate, boolean name, boolean type,
+			boolean origin, boolean publicationInfo, boolean publicationDate, boolean domainInfo, boolean comment,
+			boolean description, boolean createdFrom, boolean authorNotes, boolean usageNotes, boolean from,
+			boolean version, boolean domainCompatibilityVersion) {
+		super();
+		this.creationDate = creationDate;
+		this.updateDate = updateDate;
+		this.name = name;
+		this.type = type;
+		this.origin = origin;
+		this.publicationInfo = publicationInfo;
+		this.publicationDate = publicationDate;
+		this.domainInfo = domainInfo;
+		this.comment = comment;
+		this.description = description;
+		this.createdFrom = createdFrom;
+		this.authorNotes = authorNotes;
+		this.usageNotes = usageNotes;
+		this.from = from;
+		this.version = version;
+		this.domainCompatibilityVersion = domainCompatibilityVersion;
+	}
+	public AbstractDomainExportConfiguration() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public boolean isCreationDate() {
 		return creationDate;
 	}
-	public void setCreationDate(Boolean creationDate) {
+	public void setCreationDate(boolean creationDate) {
 		this.creationDate = creationDate;
 	}
-	public Boolean getUpdateDate() {
+	public boolean isUpdateDate() {
 		return updateDate;
 	}
-	public void setUpdateDate(Boolean updateDate) {
+	public void setUpdateDate(boolean updateDate) {
 		this.updateDate = updateDate;
 	}
-	public Boolean getName() {
+	public boolean isName() {
 		return name;
 	}
-	public void setName(Boolean name) {
+	public void setName(boolean name) {
 		this.name = name;
 	}
-	public Boolean getType() {
+	public boolean isType() {
 		return type;
 	}
-	public void setType(Boolean type) {
+	public void setType(boolean type) {
 		this.type = type;
 	}
-	public Boolean getOrigin() {
+	public boolean isOrigin() {
 		return origin;
 	}
-	public void setOrigin(Boolean origin) {
+	public void setOrigin(boolean origin) {
 		this.origin = origin;
 	}
-	public Boolean getPublicationInfo() {
+	public boolean isPublicationInfo() {
 		return publicationInfo;
 	}
-	public void setPublicationInfo(Boolean publicationInfo) {
+	public void setPublicationInfo(boolean publicationInfo) {
 		this.publicationInfo = publicationInfo;
 	}
-	public Boolean getDomainInfo() {
+	public boolean isPublicationDate() {
+		return publicationDate;
+	}
+	public void setPublicationDate(boolean publicationDate) {
+		this.publicationDate = publicationDate;
+	}
+	public boolean isDomainInfo() {
 		return domainInfo;
 	}
-	public void setDomainInfo(Boolean domainInfo) {
+	public void setDomainInfo(boolean domainInfo) {
 		this.domainInfo = domainInfo;
 	}
-	public Boolean getComment() {
+	public boolean isComment() {
 		return comment;
 	}
-	public void setComment(Boolean comment) {
+	public void setComment(boolean comment) {
 		this.comment = comment;
 	}
-	public Boolean getDescription() {
+	public boolean isDescription() {
 		return description;
 	}
-	public void setDescription(Boolean description) {
+	public void setDescription(boolean description) {
 		this.description = description;
 	}
-	public Boolean getCreatedFrom() {
+	public boolean isCreatedFrom() {
 		return createdFrom;
 	}
-	public void setCreatedFrom(Boolean createdFrom) {
+	public void setCreatedFrom(boolean createdFrom) {
 		this.createdFrom = createdFrom;
 	}
-	public Boolean getAuthorNotes() {
+	public boolean isAuthorNotes() {
 		return authorNotes;
 	}
-	public void setAuthorNotes(Boolean authorNotes) {
+	public void setAuthorNotes(boolean authorNotes) {
 		this.authorNotes = authorNotes;
 	}
-	public Boolean getUsageNotes() {
+	public boolean isUsageNotes() {
 		return usageNotes;
 	}
-	public void setUsageNotes(Boolean usageNotes) {
+	public void setUsageNotes(boolean usageNotes) {
 		this.usageNotes = usageNotes;
 	}
-	public Boolean getFrom() {
+	public boolean isFrom() {
 		return from;
 	}
-	public void setFrom(Boolean from) {
+	public void setFrom(boolean from) {
 		this.from = from;
 	}
-	public Boolean getVersion() {
+	public boolean isVersion() {
 		return version;
 	}
-	public void setVersion(Boolean version) {
+	public void setVersion(boolean version) {
 		this.version = version;
 	}
-	
-	
+	public boolean isDomainCompatibilityVersion() {
+		return domainCompatibilityVersion;
+	}
+	public void setDomainCompatibilityVersion(boolean domainCompatibilityVersion) {
+		this.domainCompatibilityVersion = domainCompatibilityVersion;
+	}
 }
+	
+
