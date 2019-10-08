@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import * as _ from 'lodash'
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-conformance-profile-export-configuration',
@@ -8,7 +8,6 @@ import * as _ from 'lodash'
 })
 export class ConformanceProfileExportConfigurationComponent implements OnInit {
 
-  
   @Input()
   config: any;
   @Output()

@@ -9,6 +9,7 @@ import { selectIsLoggedIn } from '../../../../root-store/authentication/authenti
 import { selectExternalTools } from '../../../../root-store/config/config.reducer';
 import { selectFullScreen } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ExportConfigurationDialogComponent } from '../../../export-configuration/components/export-configuration-dialog/export-configuration-dialog.component';
+import { IExportConfigurationGlobal } from '../../../export-configuration/models/config.interface';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
@@ -16,7 +17,6 @@ import { IConnectingInfo } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IGDisplayInfo } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
-import { IExportConfigurationGlobal } from '../../../export-configuration/models/config.interface';
 
 @Component({
   selector: 'app-ig-edit-toolbar',

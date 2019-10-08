@@ -1,4 +1,4 @@
-export interface IExportConfigurationGlobal{
+export interface IExportConfigurationGlobal {
 exportConfiguration: any;
 exportFilterDecision: any;
 }
