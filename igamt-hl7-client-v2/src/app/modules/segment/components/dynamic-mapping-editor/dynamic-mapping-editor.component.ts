@@ -19,11 +19,11 @@ import {IDynamicMappingInfo, ISegment} from '../../../shared/models/segment.inte
 import {IValueSet} from '../../../shared/models/value-set.interface';
 import {ValueSetService} from '../../../value-set/service/value-set.service';
 
-@Component({
-  selector: 'app-dynamic-mapping-editor',
-  templateUrl: './dynamic-mapping-editor.component.html',
-  styleUrls: ['./dynamic-mapping-editor.component.css'],
-})
+// @Component({
+//   selector: 'app-dynamic-mapping-editor',
+//   templateUrl: './dynamic-mapping-editor.component.html',
+//   styleUrls: ['./dynamic-mapping-editor.component.css'],
+// })
 export class DynamicMappingEditorComponent extends AbstractEditorComponent implements OnInit  {
   table$: Observable<IValueSet>;
   datatypes$: Observable<IDisplayElement[]>;
