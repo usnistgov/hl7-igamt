@@ -39,9 +39,6 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		//		if(exportConfiguration.getAbstractDomainExportConfiguration() == null) {System.out.println("Export IG document export null ici");}
 		Ig igDocument = igDataModel.getModel();
 		Element igDocumentElement = serializeAbstractDomain(igDocument, Type.IGDOCUMENT, 1, igDocument.getName(), exportConfiguration.getAbstractDomainExportConfiguration());
-		if(exportConfiguration.getAbstractDomainExportConfiguration() == null) { 
-			System.out.println("Oui effectivement : xyz");
-		}
 		Element metadataElement = serializeDocumentMetadata(igDocument.getMetadata(), igDocument.getDomainInfo(),
 				igDocument.getPublicationInfo(), exportConfiguration.getDocumentMetadataConfiguration());
 		if (metadataElement != null) {
@@ -151,8 +148,8 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	}
 
 	@Override
-	public Element serializeResource(Resource resource, Type type, ResourceExportConfiguration resourceExportConfiguration) {
-		Element element = serializeAbstractDomain(resource,type,1, resource.getName(), resourceExportConfiguration);
+	public Element serializeResource(Resource resource, Type type, int position, ResourceExportConfiguration resourceExportConfiguration) {
+		Element element = serializeAbstractDomain(resource,type,position, resource.getName(), resourceExportConfiguration);
 		if (resource != null && element != null) {
 			if(resourceExportConfiguration.getPostDef()) {
 				element.addAttribute(new Attribute("postDef",
@@ -171,7 +168,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 
 
 	public Element getSectionElement(Element resourceElement, Resource resource, int level, AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
-		Element element = serializeAbstractDomain(resource, Type.SECTION, 1, resource.getName(), abstractDomainExportConfiguration);
+		Element element = serializeAbstractDomain(resource, Type.SECTION, level, resource.getName(), abstractDomainExportConfiguration);
 		element.addAttribute(new Attribute("h", String.valueOf(level)));
 		element.addAttribute(
 				new Attribute("title", resource.getLabel() != null ? resource.getLabel() : ""));

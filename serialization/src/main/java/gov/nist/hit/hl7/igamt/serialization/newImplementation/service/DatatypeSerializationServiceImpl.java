@@ -32,9 +32,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	private ConstraintSerializationService constraintSerializationService;
 	
 	@Override
-	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, DatatypeExportConfiguration datatypeExportConfiguration) throws SubStructElementSerializationException {
+	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration) throws SubStructElementSerializationException {
 //	    try {
-	      Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, datatypeExportConfiguration);
+	      Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
 	      Datatype datatype = datatypeDataModel.getModel();
 	      datatypeElement
 	          .addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
@@ -71,7 +71,6 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	        datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel, datatypeExportConfiguration);
 	      }
 	      if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
-	    	  System.out.println("BOOM");
 	      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), datatypeExportConfiguration.getConstraintExportConfiguration());
 	        if (constraints != null) {
 	        	datatypeElement.appendChild(constraints);
@@ -114,7 +113,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	              .addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
 	          if (datatypeDataModel != null && datatypeDataModel.getValuesetMap() != null && datatypeDataModel.getValuesetMap().containsKey(component.getPosition() + "")) {
 	        	String vs = datatypeDataModel.getValuesetMap().get(component.getPosition()+"").stream().map((element) -> {
-                	return element.getName();
+                	return element.getBindingIdentifier();
                 })
 	        	.collect(Collectors.joining(", "));
 	            componentElement

@@ -28,10 +28,10 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	private IgDataModelSerializationService igDataModelSerializationService;
 	
 	@Override
-	public Element serializeValueSet(ValuesetDataModel valuesetDataModel, int level,
+	public Element serializeValueSet(ValuesetDataModel valuesetDataModel, int level,int position,
 			ValueSetExportConfiguration valueSetExportConfiguration) throws ResourceSerializationException {
 	    try {
-		  Element valueSetElement = igDataModelSerializationService.serializeResource(valuesetDataModel.getModel(), Type.VALUESET, valueSetExportConfiguration);
+		  Element valueSetElement = igDataModelSerializationService.serializeResource(valuesetDataModel.getModel(), Type.VALUESET, position, valueSetExportConfiguration);
 	      Valueset valueSet = valuesetDataModel.getModel();
 	      valueSetElement.addAttribute(new Attribute("bindingIdentifier",
 	          valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
@@ -48,15 +48,15 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	          new Attribute("url", valueSet.getUrl() != null ? valueSet.getUrl().toString() : ""));}
 //	      valueSetElement.addAttribute(new Attribute("managedBy",
 //	          valueSet.getManagedBy() != null ? valueSet.getManagedBy().value : ""));
-	      if(valueSetExportConfiguration.isStability()) {
+//	      if(valueSetExportConfiguration.isStability()) {
 	      valueSetElement.addAttribute(new Attribute("stability",
-	          valueSet.getStability() != null ? valueSet.getStability().value : ""));}
-	      if(valueSetExportConfiguration.isExtensibility()) {
+	          valueSet.getStability() != null ? valueSet.getStability().value : ""));
+//	      if(valueSetExportConfiguration.isExtensibility()) {
 	      valueSetElement.addAttribute(new Attribute("extensibility",
-	          valueSet.getExtensibility() != null ? valueSet.getExtensibility().value : ""));}
-	      if(valueSetExportConfiguration.isContentDefinition()) {
+	          valueSet.getExtensibility() != null ? valueSet.getExtensibility().value : ""));
+//	      if(valueSetExportConfiguration.isContentDefinition()) {
 	      valueSetElement.addAttribute(new Attribute("contentDefinition",
-	          valueSet.getContentDefinition() != null ? valueSet.getContentDefinition().value : ""));}
+	          valueSet.getContentDefinition() != null ? valueSet.getContentDefinition().value : ""));
 	      valueSetElement.addAttribute(
 	          new Attribute("numberOfCodes", String.valueOf(valueSet.getNumberOfCodes())));
 	      valueSetElement.addAttribute(new Attribute("codeSystemIds",getCodSystemDispaly(valueSet.getCodeSystems())));

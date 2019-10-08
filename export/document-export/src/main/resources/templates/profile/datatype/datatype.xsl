@@ -236,7 +236,7 @@
         	<xsl:attribute name="href">
 	        	<xsl:value-of select="concat('#', @id)"></xsl:value-of>
         	</xsl:attribute>
-            <xsl:value-of select="concat(@Label,' - ',@Description)"></xsl:value-of>
+            <xsl:value-of select="concat(@Label,' - ',@description)"></xsl:value-of>
         </xsl:element>
     </xsl:template>
 </xsl:stylesheet>

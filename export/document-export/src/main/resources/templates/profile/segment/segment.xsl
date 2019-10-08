@@ -11,18 +11,22 @@
 	<xsl:import href="/templates/profile/commentList.xsl" />
 	<xsl:import href="/templates/profile/dynamicMapping.xsl" />
 	<xsl:import href="/templates/profile/metadata.xsl" />
+	
 	<xsl:template match="Segment" mode="toc">
 		<xsl:element name="a">
 			<xsl:attribute name="href">
                 <xsl:value-of select="concat('#{',@id,'}')" />
             </xsl:attribute>
 			<xsl:element name="br" />
-			<xsl:value-of select="concat(@Name,' - ',@Description)" />
+			<xsl:value-of select="concat(@name,' - ',@description)" />
 		</xsl:element>
 	</xsl:template>
 
 	<xsl:template match="Segment">
+	
 		<xsl:param name="inlineConstraint" />
+
+		
 		<xsl:call-template name="PreDef" />
 		<xsl:call-template name="VersionDisplay" />
 		<xsl:call-template name="UsageNotes"/>

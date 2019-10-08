@@ -33,12 +33,12 @@ private IgDataModelSerializationService igDataModelSerializationService;
 private ConstraintSerializationService constraintSerializationService;
 	
 	@Override
-	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level, 
+	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level,  int position,
 			ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) throws ResourceSerializationException {
 	    ConformanceProfile conformanceProfile = conformanceProfileDataModel.getModel();
 	    if (conformanceProfile != null) {
 	      try {
-			Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, conformanceProfileExportConfiguration);
+			Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, position, conformanceProfileExportConfiguration);
 			if(conformanceProfileExportConfiguration.getIdentifier()) {
 	        conformanceProfileElement.addAttribute(new Attribute("identifier",
 	            conformanceProfile.getIdentifier() != null ? conformanceProfile.getIdentifier() : ""));

@@ -27,7 +27,7 @@ public class ValueSetExportConfiguration extends ResourceExportConfiguration{
 	  private boolean extensibility;
 	  private boolean contentDefinition;
 	  private boolean uRL;
-	  private boolean type;
+	  private boolean vsType;
 	  
 
 	  public ValueSetExportConfiguration(ExportConfiguration exportConfiguration) {
@@ -91,7 +91,7 @@ public class ValueSetExportConfiguration extends ResourceExportConfiguration{
 		this.extensibility = extensibility;
 		this.contentDefinition = contentDefinition;
 		this.uRL = uRL;
-		this.type = type;
+		this.vsType = type;
 	}
 
 	public boolean isStability() {
@@ -127,11 +127,11 @@ public class ValueSetExportConfiguration extends ResourceExportConfiguration{
 	}
 
 	public boolean isType() {
-		return type;
+		return vsType;
 	}
 
 	public void setType(boolean type) {
-		this.type = type;
+		this.vsType = type;
 	}
 
 	public boolean isIncludeValuesetsTable() {

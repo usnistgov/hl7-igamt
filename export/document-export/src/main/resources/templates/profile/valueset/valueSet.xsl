@@ -58,10 +58,10 @@
 				<xsl:value-of select="@InfoForExternal" />
 			</xsl:element>
 		</xsl:if>
-		<xsl:if test="@sourceType!='EXTERNAL' and count(Codes/Code) &gt; 0">
+		<xsl:if test="count(Codes/Code) &gt; 0">
 			<xsl:apply-templates select="Codes"/>
 		</xsl:if>
-		<xsl:if test="@sourceType!='EXTERNAL' and count(CodeSystems/CodeSystem) &gt; 0">
+		<xsl:if test="count(CodeSystems/CodeSystem) &gt; 0">
 			<xsl:apply-templates select="CodeSystems"/>
 		</xsl:if>
 		<xsl:call-template name="PostDef" />
