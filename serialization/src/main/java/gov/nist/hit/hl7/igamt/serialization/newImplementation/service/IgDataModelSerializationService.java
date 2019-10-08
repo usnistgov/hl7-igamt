@@ -27,7 +27,7 @@ public interface IgDataModelSerializationService {
 		
 	public Element serializeSegment(Segment segment, ExportConfiguration exportConfiguration );
 	
-	public Element serializeResource(Resource resource, Type type, ResourceExportConfiguration ResourceExportConfiguration);
+	public Element serializeResource(Resource resource, Type type, int position, ResourceExportConfiguration ResourceExportConfiguration);
 
 	public Element getSectionElement(Element element, Resource resource, int level, AbstractDomainExportConfiguration abstracDomainExportConfiguration);
 

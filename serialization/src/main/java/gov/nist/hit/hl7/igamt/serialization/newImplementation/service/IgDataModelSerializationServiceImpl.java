@@ -36,6 +36,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 
 	@Override
 	public Element serializeIgDocument(IgDataModel igDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException {
+		//		if(exportConfiguration.getAbstractDomainExportConfiguration() == null) {System.out.println("Export IG document export null ici");}
 		Ig igDocument = igDataModel.getModel();
 		Element igDocumentElement = serializeAbstractDomain(igDocument, Type.IGDOCUMENT, 1, igDocument.getName(), exportConfiguration.getAbstractDomainExportConfiguration());
 		Element metadataElement = serializeDocumentMetadata(igDocument.getMetadata(), igDocument.getDomainInfo(),
@@ -52,8 +53,6 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		}
 		return igDocumentElement;
 	}
-
-
 
 	public Element serializeDocumentMetadata(DocumentMetadata metadata, DomainInfo domainInfo,
 			PublicationInfo publicationInfo, DocumentMetadataConfiguration documentMetadataConfiguration) {
@@ -94,18 +93,21 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		// TODO add appVersion
 		return metadataElement;
 	}
-	
+
 
 	public Element serializeAbstractDomain(AbstractDomain abstractDomain, Type type, int position, String title, AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
 		Element element = getElement(type, position, abstractDomain.getId(), title);
 		if (abstractDomain != null) {
 			if (abstractDomain.getComment() != null && !abstractDomain.getComment().isEmpty()) {
-				Element commentElement = new Element("Comment");
-				commentElement.appendChild(this.formatStringData(abstractDomain.getComment()));
-				element.appendChild(commentElement);
-			}
+				if(abstractDomainExportConfiguration.isComment()) {
+					Element commentElement = new Element("Comment");
+					commentElement.appendChild(this.formatStringData(abstractDomain.getComment()));
+					element.appendChild(commentElement);
+				}}
+						if(abstractDomainExportConfiguration.isCreatedFrom()) {
 			element.addAttribute(new Attribute("createdFrom",
-					abstractDomain.getCreatedFrom() != null ? abstractDomain.getCreatedFrom() : ""));
+					abstractDomain.getCreatedFrom() != null ? abstractDomain.getCreatedFrom() : ""));}
+						if(abstractDomainExportConfiguration.isPublicationDate()) {
 			element.addAttribute(
 					new Attribute("publicationDate",
 							abstractDomain.getPublicationInfo() != null
@@ -113,18 +115,13 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 							? this.formatStringData(
 									abstractDomain.getPublicationInfo().getPublicationDate().toString())
 									: "")
-									: ""));
-			element.addAttribute(new Attribute("description",
+									: ""));}
+						if(abstractDomainExportConfiguration.isDescription()) {
+			element.addAttribute(new Attribute("Description",
 					abstractDomain.getDescription() != null ? this.formatStringData(abstractDomain.getDescription())
-							: ""));
-			element.addAttribute(
-					new Attribute("version",
-							abstractDomain.getDomainInfo() != null
-							? (abstractDomain.getDomainInfo().getVersion() != null
-							? this.formatStringData(
-									abstractDomain.getDomainInfo().getCompatibilityVersion().toString())
-									: "")
-									: ""));
+							: ""));}
+
+						if(abstractDomainExportConfiguration.isVersion()) {
 			element.addAttribute(
 					new Attribute("domainCompatibilityVersion",
 							abstractDomain.getDomainInfo() != null
@@ -132,7 +129,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 							? this.formatStringData(
 									abstractDomain.getDomainInfo().getCompatibilityVersion().toString())
 									: "")
-									: ""));
+									: ""));}
 			element.addAttribute(
 					new Attribute("name", abstractDomain.getName() != null ? abstractDomain.getName() : ""));
 			element.addAttribute(new Attribute("id",
@@ -140,40 +137,48 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 
 			element.addAttribute(new Attribute("username",
 					abstractDomain.getUsername() != null ? abstractDomain.getUsername() : ""));
+						if(abstractDomainExportConfiguration != null && abstractDomainExportConfiguration.isAuthorNotes()) {
+			element.addAttribute(new Attribute("authorNotes",
+					abstractDomain.getAuthorNotes() != null ? abstractDomain.getAuthorNotes(): ""));}
+						if(abstractDomainExportConfiguration != null && abstractDomainExportConfiguration.isUsageNotes()) {
+			element.addAttribute(new Attribute("usageNotes",
+					abstractDomain.getUsageNotes() != null ? abstractDomain.getUsageNotes() : ""));}
 		}
 		return element;
 	}
-	
+
 	@Override
-	public Element serializeResource(Resource resource, Type type, ResourceExportConfiguration resourceExportConfiguration) {
-	    Element element = serializeAbstractDomain(resource,type,1, resource.getName(), resourceExportConfiguration);
-	    if (resource != null && element != null) {
-	      element.addAttribute(new Attribute("postDef",
-	          resource.getPostDef() != null && !resource.getPostDef().isEmpty()
-	              ? this.formatStringData(resource.getPostDef())
-	              : ""));
-	      element.addAttribute(new Attribute("preDef",
-	          resource.getPreDef() != null && !resource.getPreDef().isEmpty()
-	              ? this.formatStringData(resource.getPreDef())
-	              : ""));
-	      element.addAttribute(new Attribute("type", type.getValue()));
-	    }
-	    return element;
+	public Element serializeResource(Resource resource, Type type, int position, ResourceExportConfiguration resourceExportConfiguration) {
+		Element element = serializeAbstractDomain(resource,type,position, resource.getName(), resourceExportConfiguration);
+		if (resource != null && element != null) {
+			if(resourceExportConfiguration.getPostDef()) {
+				element.addAttribute(new Attribute("postDef",
+						resource.getPostDef() != null && !resource.getPostDef().isEmpty()
+						? this.formatStringData(resource.getPostDef())
+								: ""));}
+			if(resourceExportConfiguration.getPreDef()) {
+				element.addAttribute(new Attribute("preDef",
+						resource.getPreDef() != null && !resource.getPreDef().isEmpty()
+						? this.formatStringData(resource.getPreDef())
+								: ""));}
+			element.addAttribute(new Attribute("type", type.getValue()));
+		}
+		return element;
 	}
-	
-	
-	 public Element getSectionElement(Element resourceElement, Resource resource, int level, AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
-		    Element element = serializeAbstractDomain(resource, Type.SECTION, 1, resource.getName(), abstractDomainExportConfiguration);
-		    element.addAttribute(new Attribute("h", String.valueOf(level)));
-		    element.addAttribute(
-		        new Attribute("title", resource.getLabel() != null ? resource.getLabel() : ""));
-		    element.addAttribute(new Attribute("description",
-		        resource.getDescription() != null ? resource.getDescription() : ""));
-		    element.appendChild(resourceElement);
-		    return element;
-		  }
-	 
-	 
+
+
+	public Element getSectionElement(Element resourceElement, Resource resource, int level, AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
+		Element element = serializeAbstractDomain(resource, Type.SECTION, level, resource.getName(), abstractDomainExportConfiguration);
+		element.addAttribute(new Attribute("h", String.valueOf(level)));
+		element.addAttribute(
+				new Attribute("title", resource.getLabel() != null ? resource.getLabel() : ""));
+		element.addAttribute(new Attribute("description",
+				resource.getDescription() != null ? resource.getDescription() : ""));
+		element.appendChild(resourceElement);
+		return element;
+	}
+
+
 
 	public String formatStringData(String str) {
 		return FroalaSerializationUtil.cleanFroalaInput(str);
@@ -224,10 +229,6 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		element.addAttribute(new Attribute("title", title != null ? title : ""));
 		return element;
 	}
-
-
-
-
 
 	@Override
 	public Element serializeSegment(Segment segment, ExportConfiguration exportConfiguration) {

@@ -42,13 +42,21 @@ BindingSerializationService bindingSerializationService;
 ConstraintSerializationService constraintSerializationService;
 	
 	@Override
-	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, SegmentExportConfiguration segmentExportConfiguration) throws SerializationException {
-		Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, segmentExportConfiguration);
+	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration) throws SerializationException {
+		Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, position, segmentExportConfiguration);
 	      Segment segment = segmentDataModel.getModel();
 	      if(segment.getExt() != null) {
 	    segmentElement
 	          .addAttribute(new Attribute("ext", segment.getExt() != null ? segment.getExt() : ""));
 	      }
+	      if(segment.getDescription() != null) {
+	  	    segmentElement
+	  	          .addAttribute(new Attribute("description", segment.getDescription() != null ? segment.getDescription() : ""));
+	  	      }
+	      if(segment.getLabel() != null) {
+	  	    segmentElement
+	  	          .addAttribute(new Attribute("label", segment.getLabel() != null ? segment.getLabel() : ""));
+	  	      }
 	      if (segment.getDynamicMappingInfo() != null && segmentExportConfiguration.getDynamicMappingInfo()) {
 	        try {
 	          Element dynamicMappingElement =
@@ -70,7 +78,6 @@ ConstraintSerializationService constraintSerializationService;
 //	        }
 //	      }
 	      if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
-	    	  System.out.println("BOOM");
     	  Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
 	        if (constraints != null) {
           segmentElement.appendChild(constraints);
@@ -138,7 +145,7 @@ ConstraintSerializationService constraintSerializationService;
 		                  new Attribute("usage", field.getUsage() != null ? field.getUsage().name() : ""));
 		              if (segmentDataModel != null && segmentDataModel.getValuesetMap() != null && segmentDataModel.getValuesetMap().containsKey(field.getPosition() + "")) {
 		  	        	String vs = segmentDataModel.getValuesetMap().get(field.getPosition()+"").stream().map((element) -> {
-		                  	return element.getName();
+		                  	return element.getBindingIdentifier();
 		                  })
 		  	        	.collect(Collectors.joining(", "));
 		  	        	fieldElement

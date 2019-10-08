@@ -12,5 +12,5 @@ import nu.xom.Element;
 
 public interface SegmentSerializationService {
 
-	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, SegmentExportConfiguration segmentExportConfiguration) throws ResourceSerializationException, SubStructElementSerializationException, SerializationException;
+	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration) throws ResourceSerializationException, SubStructElementSerializationException, SerializationException;
 }

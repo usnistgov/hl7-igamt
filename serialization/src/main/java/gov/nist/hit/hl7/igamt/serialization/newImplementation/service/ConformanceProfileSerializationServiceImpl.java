@@ -11,6 +11,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
@@ -32,21 +33,26 @@ private IgDataModelSerializationService igDataModelSerializationService;
 private ConstraintSerializationService constraintSerializationService;
 	
 	@Override
-	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level, 
+	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level,  int position,
 			ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) throws ResourceSerializationException {
 	    ConformanceProfile conformanceProfile = conformanceProfileDataModel.getModel();
 	    if (conformanceProfile != null) {
 	      try {
-			Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, conformanceProfileExportConfiguration);
+			Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, position, conformanceProfileExportConfiguration);
+			if(conformanceProfileExportConfiguration.getIdentifier()) {
 	        conformanceProfileElement.addAttribute(new Attribute("identifier",
 	            conformanceProfile.getIdentifier() != null ? conformanceProfile.getIdentifier() : ""));
+			}
+			if(conformanceProfileExportConfiguration.getMessageType()) {
 	        conformanceProfileElement.addAttribute(new Attribute("messageType",
 	            conformanceProfile.getMessageType() != null ? conformanceProfile.getMessageType()
-	                : ""));
+	                : ""));}
+			if(conformanceProfileExportConfiguration.getEvent()) {
 	        conformanceProfileElement.addAttribute(new Attribute("event",
-	            conformanceProfile.getEvent() != null ? conformanceProfile.getEvent() : ""));
+	            conformanceProfile.getEvent() != null ? conformanceProfile.getEvent() : ""));}
+			if(conformanceProfileExportConfiguration.getStructID()) {
 	        conformanceProfileElement.addAttribute(new Attribute("structID",
-	            conformanceProfile.getStructID() != null ? conformanceProfile.getStructID() : ""));
+	            conformanceProfile.getStructID() != null ? conformanceProfile.getStructID() : ""));}
 //	        Element bindingElement = super.serializeResourceBinding(conformanceProfile.getBinding(), this.valuesetNamesMap);
 //	        if (bindingElement != null) {
 //	          conformanceProfileElement.appendChild(bindingElement);
@@ -61,6 +67,9 @@ private ConstraintSerializationService constraintSerializationService;
 	        if (conformanceProfile.getChildren() != null
 	            && conformanceProfile.getChildren().size() > 0) {
 	          for (MsgStructElement msgStructElm : conformanceProfile.getChildren()) {
+	            	System.out.println("HERE1 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
+		            if (msgStructElm != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), msgStructElm.getUsage())) {
+		            	System.out.println("HERE2 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
 	            if (msgStructElm != null) {
 //	              if(this.bindedGroupsAndSegmentRefs.contains(msgStructElm.getId())) {
 	                Element msgStructElement = this.serializeMsgStructElement(igDataModel, msgStructElm, 0);
@@ -68,6 +77,7 @@ private ConstraintSerializationService constraintSerializationService;
 	                  conformanceProfileElement.appendChild(msgStructElement);
 	                }
 	              }
+		            }
 //	            }
 	          }
 	        }
