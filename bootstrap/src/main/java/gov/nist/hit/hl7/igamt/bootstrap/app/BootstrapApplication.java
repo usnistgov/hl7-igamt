@@ -200,7 +200,7 @@ public class BootstrapApplication implements CommandLineRunner {
 //   }
 //  
    //
-  @PostConstruct
+ // @PostConstruct
    void createSharedConstant() {
     Config constant = new Config();
     this.sharedConstantService.deleteAll();
