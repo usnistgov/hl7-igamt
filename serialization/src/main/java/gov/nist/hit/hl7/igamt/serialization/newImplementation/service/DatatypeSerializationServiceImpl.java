@@ -14,6 +14,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
@@ -31,14 +32,16 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	private ConstraintSerializationService constraintSerializationService;
 	
 	@Override
-	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, DatatypeExportConfiguration datatypeExportConfiguration) throws SubStructElementSerializationException {
+	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration) throws SubStructElementSerializationException {
 //	    try {
-	      Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, datatypeExportConfiguration);
+	      Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
 	      Datatype datatype = datatypeDataModel.getModel();
 	      datatypeElement
 	          .addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
+	      if(datatypeExportConfiguration.getPurposeAndUse()) {
 	      datatypeElement.addAttribute(new Attribute("purposeAndUse",
 	          datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
+	      }
 //	      if (datatype.getBinding() != null) {
 //	        Element bindingElement =  
 //	            super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap);
@@ -63,16 +66,15 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 //	        }
 //	      }
 	      if (datatype instanceof ComplexDatatype) {
-	        datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel);
+	        datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel,datatypeExportConfiguration);
 	      } else if (datatype instanceof DateTimeDatatype) {
-	        datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel);
+	        datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel, datatypeExportConfiguration);
 	      }
 	      if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
-	    	  System.out.println("BOOM");
-//	      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), datatypeExportConfiguration.getConstraintExportConfiguration());
-//	        if (constraints != null) {
-//	        	datatypeElement.appendChild(constraints);
-//    }
+	      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), datatypeExportConfiguration.getConstraintExportConfiguration());
+	        if (constraints != null) {
+	        	datatypeElement.appendChild(constraints);
+    }
 	      }
 	      return igDataModelSerializationService.getSectionElement(datatypeElement, datatypeDataModel.getModel(), level, datatypeExportConfiguration);
 
@@ -88,9 +90,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
 
 	@Override
-	public Element serializeComplexDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel) throws SubStructElementSerializationException {
+	public Element serializeComplexDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel, DatatypeExportConfiguration datatypeExportConfiguration) throws SubStructElementSerializationException {
 	    ComplexDatatype complexDatatype = (ComplexDatatype) datatypeDataModel.getModel();
 	    for (Component component : complexDatatype.getComponents()) {
+            if (component != null && ExportTools.CheckUsage(datatypeExportConfiguration.getComponentExport(), component.getUsage())) {
 //	      if(this.bindedComponents.contains(component.getId())) {
 	        try {
 	          Element componentElement = new Element("Component");
@@ -110,7 +113,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	              .addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
 	          if (datatypeDataModel != null && datatypeDataModel.getValuesetMap() != null && datatypeDataModel.getValuesetMap().containsKey(component.getPosition() + "")) {
 	        	String vs = datatypeDataModel.getValuesetMap().get(component.getPosition()+"").stream().map((element) -> {
-                	return element.getName();
+                	return element.getBindingIdentifier();
                 })
 	        	.collect(Collectors.joining(", "));
 	            componentElement
@@ -135,12 +138,13 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	        }
 //	      }
 	    }
+	}
 	    return datatypeElement;
 	  
 	}
 
 	@Override
-	public Element serializeDateTimeDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel) {
+	public Element serializeDateTimeDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel, DatatypeExportConfiguration datatypeExportConfiguration) {
 	    DateTimeDatatype dateTimeDatatype =  (DateTimeDatatype) datatypeDataModel.getModel();
 	    for (DateTimeComponentDefinition dateTimeComponentDefinition : dateTimeDatatype
 	        .getDateTimeConstraints().getDateTimeComponentDefinitions()) {

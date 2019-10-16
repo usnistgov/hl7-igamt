@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TreeNode } from 'primeng/primeng';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { Type } from '../../constants/type.enum';
 import { IComment } from '../../models/comment.interface';
 import { IValueSetBindingConfigMap } from '../../models/config.class';
@@ -91,6 +91,8 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   columnTypes = HL7v2TreeColumnType;
   types = Type;
   @Input()
+  igId: string;
+  @Input()
   viewOnly: boolean;
   @Input()
   datatypes: IDisplayElement[];
@@ -104,13 +106,17 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   repository: AResourceRepositoryService;
   @Input()
   username: string;
+  resource$: Observable<IResource>;
+  treeExpandedNodes: string[];
 
   @Input()
   set resource(resource: IResource) {
     this.type = resource.type;
+    this.resource$ = of(resource);
     this.close(this.s_resource);
     this.s_resource = this.treeService.getTree(resource, this.repository, this.viewOnly, true, (value) => {
       this.nodes = [...value];
+      this.recoverExpandState(this.nodes, this.treeExpandedNodes);
     });
     switch (resource.type) {
       case Type.DATATYPE:
@@ -135,11 +141,12 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
     });
     this.selectedColumns = [...this.cols];
   }
+
   @Output()
   changes: EventEmitter<IChange>;
-
+  changes$: Observable<IChange>;
   type: Type;
-  nodes: TreeNode[];
+  nodes: IHL7v2TreeNode[];
   cols: ColumnOptions;
   selectedColumns: ColumnOptions;
   s_resource: Subscription;
@@ -155,7 +162,9 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
     private treeService: Hl7V2TreeService) {
     this.nodes = [];
     this.treeSubscriptions = [];
+    this.treeExpandedNodes = [];
     this.changes = new EventEmitter<IChange>();
+    this.changes$ = this.changes.asObservable();
   }
 
   close(s: Subscription) {
@@ -166,6 +175,21 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
 
   refreshTree() {
     this.nodes = [...this.nodes];
+  }
+
+  recoverExpandState(tree: IHL7v2TreeNode[], expanded: string[]) {
+    if (expanded && expanded.length > 0) {
+      tree.forEach((node) => {
+        if (this.treeExpandedNodes.includes(node.data.pathId)) {
+          node.expanded = true;
+          this.resolveReference(node, expanded.filter((x) => x.startsWith(node.data.pathId)));
+        }
+        if (node.children) {
+          this.recoverExpandState(node.children, expanded.filter((x) => x.startsWith(node.data.pathId)));
+        }
+      });
+    }
+
   }
 
   registerChange(change: IChange) {
@@ -188,7 +212,6 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
 
   referenceChange(ref: IResourceRef, node: IHL7v2TreeNode, change: IChange) {
     node.data.ref.next(ref);
-    this.repository.fetchResource(ref.type, ref.id).subscribe();
     this.resolveReference(node);
     this.registerChange(change);
   }
@@ -199,16 +222,25 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   }
 
   onNodeExpand(event) {
+    if (!this.treeExpandedNodes.includes(event.node.data.pathId)) {
+      this.treeExpandedNodes.push(event.node.data.pathId);
+    }
     this.resolveReference(event.node);
   }
 
-  print(x) {
-    console.log(x);
+  onNodeCollapse(event) {
+    const index = this.treeExpandedNodes.indexOf(event.node.data.pathId);
+    if (index !== -1) {
+      this.treeExpandedNodes.splice(index, 1);
+    }
   }
 
-  resolveReference(node: IHL7v2TreeNode) {
+  resolveReference(node: IHL7v2TreeNode, expanded?: string[]) {
     const subscription = this.treeService.resolveReference(node, this.repository, this.viewOnly, () => {
       this.nodes = [...this.nodes];
+    }, (children: IHL7v2TreeNode[]) => {
+      this.recoverExpandState(children, expanded);
+      return children;
     });
     if (subscription) {
       this.treeSubscriptions.push(subscription);

@@ -1,7 +1,10 @@
+import { Type } from '../constants/type.enum';
+
 export interface IConformanceStatement {
   id?: string;
   type: ConstraintType;
   identifier: string;
+  level?: Type;
   context?: IPath;
   structureId?: string;
   sourceIds?: string[];

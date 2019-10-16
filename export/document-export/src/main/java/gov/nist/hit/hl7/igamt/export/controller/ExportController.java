@@ -29,6 +29,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfigurationGlobal;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
@@ -96,7 +97,7 @@ public class ExportController {
 	
 
 	@RequestMapping(value = "/api/export/igdocuments/{id}/getFilteredDocument", method = RequestMethod.GET)
-	public @ResponseBody ExportFilterDecision getFilteredDocument(@PathVariable("id") String id,
+	public @ResponseBody ExportConfigurationGlobal getFilteredDocument(@PathVariable("id") String id,
 			HttpServletResponse response) throws ExportException, IGNotFoundException {
 
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -106,7 +107,11 @@ public class ExportController {
 			if (ig == null) {
 				throw  new IGNotFoundException(id);
 			} else {	
-				return igExportService.getExportFilterDecision(ig, config);
+				ExportConfigurationGlobal exportConfigurationGlobal = new ExportConfigurationGlobal();
+				ExportFilterDecision exportFilterDecision = igExportService.getExportFilterDecision(ig, config);
+				exportConfigurationGlobal.setExportConfiguration(config);
+				exportConfigurationGlobal.setExportFilterDecision(exportFilterDecision);
+				return exportConfigurationGlobal;
 			}
 		} else {
 			throw new AuthenticationCredentialsNotFoundException("No Authentication ");

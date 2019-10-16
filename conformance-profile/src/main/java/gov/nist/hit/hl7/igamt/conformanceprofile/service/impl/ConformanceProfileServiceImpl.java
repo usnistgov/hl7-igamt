@@ -23,16 +23,22 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
+
+import gov.nist.hit.hl7.igamt.common.binding.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
@@ -44,19 +50,14 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
-import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageProfileIdentifier;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
@@ -970,7 +971,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 		bindingDisplay.setSourceId(sourceId);
 		bindingDisplay.setSourceType(sourceType);
 		bindingDisplay.setPriority(priority);
-		bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
 		bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
 
 		if (seb.getPredicateId() != null) {
@@ -1067,11 +1067,42 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems, String documentId)
 			throws JsonProcessingException, IOException {
 		Collections.sort(cItems);
+		  ObjectMapper mapper = new ObjectMapper();
+	      mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
 		for (ChangeItemDomain item : cItems) {
-			if (item.getPropertyType().equals(PropertyType.PREDEF)) {
+	        if (item.getPropertyType().equals(PropertyType.NAME)) {
+              item.setOldPropertyValue(cp.getName());
+              cp.setName((String) item.getPropertyValue());
+             }
+	        else if (item.getPropertyType().equals(PropertyType.ORGANISATION)) {
+              item.setOldPropertyValue(cp.getOrganization());
+              cp.setOrganization((String) item.getPropertyValue());
+             } 
+	        else if (item.getPropertyType().equals(PropertyType.ROLE)) {
+              item.setOldPropertyValue(cp.getRole());
+              cp.setRole(Role.valueOf((String) item.getPropertyValue()));
+             } 
+	        else if (item.getPropertyType().equals(PropertyType.PROFILETYPE)) {
+              item.setOldPropertyValue(cp.getProfileType());
+              cp.setProfileType(ProfileType.valueOf((String) item.getPropertyValue()));
+             } 
+	        else if (item.getPropertyType().equals(PropertyType.AUTHORS)) {
+	          String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+              item.setOldPropertyValue(cp.getAuthors());
+              List<String> authors= mapper.readValue(jsonInString, new TypeReference<List<String>>() {});
+              cp.setAuthors(authors);
+             }	        
+	        else if (item.getPropertyType().equals(PropertyType.PROFILEIDENTIFIER)) {
+              String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+              item.setOldPropertyValue(cp.getAuthors());
+              List<MessageProfileIdentifier> profileIdentifier= mapper.readValue(jsonInString, new TypeReference<List<MessageProfileIdentifier>>() {});
+              cp.setProfileIdentifier(profileIdentifier);
+            
+             }	        
+	        else if (item.getPropertyType().equals(PropertyType.PREDEF)) {
 				item.setOldPropertyValue(cp.getPreDef());
 				cp.setPreDef((String) item.getPropertyValue());
-
 			} else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
 				item.setOldPropertyValue(cp.getPostDef());
 				cp.setPostDef((String) item.getPropertyValue());
@@ -1095,7 +1126,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 				if (srog != null && srog instanceof SegmentRef) {
 					SegmentRef sr = (SegmentRef) srog;
 					item.setOldPropertyValue(sr.getRef());
-					ObjectMapper mapper = new ObjectMapper();
 					String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 					sr.setRef(mapper.readValue(jsonInString, Ref.class));
 				}
@@ -1121,18 +1151,15 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 				}
 			} else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
 				System.out.println(item);
-				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
 				item.setOldPropertyValue(seb.getValuesetBindings());
 				seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
 						Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
 			} else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
-				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
-				item.setOldPropertyValue(seb.getExternalSingleCode());
-				seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
+				seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
 			} else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
 				SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
 				if (srog != null) {
@@ -1144,7 +1171,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 					}
 				}
 			} else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
-				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 				SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
 				if (srog != null) {
@@ -1153,7 +1179,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 							new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
 				}
 			} else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
-				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 				if (item.getChangeType().equals(ChangeType.ADD)) {
 					ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
@@ -1178,7 +1203,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 					cs = this.conformanceStatementRepository.save(cs);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
-				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
 				if (item.getChangeType().equals(ChangeType.ADD)) {
@@ -1261,17 +1285,17 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
 	private Set<ValuesetBinding> convertDisplayValuesetBinding(
 			HashSet<DisplayValuesetBinding> displayValuesetBindings) {
-//		if (displayValuesetBindings != null) {
-//			Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
-//			for (DisplayValuesetBinding dvb : displayValuesetBindings) {
-//				ValuesetBinding vb = new ValuesetBinding();
-//				vb.setStrength(dvb.getStrength());
-//				vb.setValuesetId(dvb.getValuesetId());
-//				vb.setValuesetLocations(dvb.getValuesetLocations());
-//				result.add(vb);
-//			}
-//			return result;
-//		}
+		if (displayValuesetBindings != null) {
+			Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
+			for (DisplayValuesetBinding dvb : displayValuesetBindings) {
+				ValuesetBinding vb = new ValuesetBinding();
+				vb.setStrength(dvb.getStrength());
+				vb.setValueSets(dvb.getValueSets());
+				vb.setValuesetLocations(dvb.getValuesetLocations());
+				result.add(vb);
+			}
+			return result;
+		}
 		return null;
 	}
 

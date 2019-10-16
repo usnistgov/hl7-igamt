@@ -1,5 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
@@ -54,7 +55,7 @@ export class IgEditEffects {
   @Effect()
   loadReferences$ = this.actions$.pipe(
     ofType(IgEditActionTypes.LoadResourceReferences),
-    switchMap((action: LoadResourceReferences) => {
+    concatMap((action: LoadResourceReferences) => {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
@@ -136,7 +137,7 @@ export class IgEditEffects {
               id: ig.id,
             }));
 
-            return this.rxjsHelper.listenAndReact(this.actions$, {
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
               [IgEditActionTypes.TableOfContentSaveSuccess]: {
                 do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
                   return of(new EditorSave({
@@ -243,7 +244,7 @@ export class IgEditEffects {
                 title: ig.metadata.title,
                 subTitle: ig.metadata.subTitle,
                 version: ig.metadata.version,
-                organization: ig.organization,
+                organization: ig.metadata.orgName,
                 authors: ig.authors,
                 hl7Versions: ig.metadata.hl7Versions,
                 status: ig.status,
@@ -267,6 +268,13 @@ export class IgEditEffects {
     ofType(IgEditActionTypes.CopyResourceFailure),
     map((action: CopyResourceFailure) => {
       return this.message.actionFromError(action.error);
+    }),
+  );
+  @Effect()
+  copyResourceSuccess$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.CopyResourceSuccess),
+    map((action: CopyResourceSuccess) => {
+      return  this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource copied successfully ', null ));
     }),
   );
 
@@ -372,7 +380,7 @@ export class IgEditEffects {
               id: ig.id,
             }));
 
-            return this.rxjsHelper.listenAndReact(this.actions$, {
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
               [IgEditActionTypes.TableOfContentSaveSuccess]: {
                 do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
                   return toDoo;
@@ -407,6 +415,8 @@ export class IgEditEffects {
     private message: MessageService,
     private resourceService: ResourceService,
     private rxjsHelper: RxjsStoreHelperService,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
   ) {
   }
 

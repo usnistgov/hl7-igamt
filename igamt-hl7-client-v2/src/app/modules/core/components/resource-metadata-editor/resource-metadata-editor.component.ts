@@ -10,6 +10,7 @@ import { FieldType, IMetadataFormInput } from '../../../shared/components/metada
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
+import { FroalaService } from '../../../shared/services/froala.service';
 import { Message } from '../../models/message/message.class';
 import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
@@ -17,13 +18,14 @@ import { AbstractEditorComponent } from '../abstract-editor-component/abstract-e
 export abstract class ResourceMetadataEditorComponent extends AbstractEditorComponent implements OnInit {
 
   metadataFormInput: IMetadataFormInput<IResourceMetadata>;
-
+  froalaConfig$: Observable<any>;
   constructor(
     readonly editor: IEditorMetadata,
     protected actions$: Actions,
     private messageService: MessageService,
-    protected store: Store<any>) {
+    protected store: Store<any>, protected froalaService: FroalaService) {
     super(editor, actions$, store);
+    this.froalaConfig$ = froalaService.getConfig();
     const authorNotes = 'Author Notes';
     const usageNotes = 'Usage Notes';
     this.metadataFormInput = {
@@ -83,7 +85,6 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
 
   getChanges(elementId: string, current: IResourceMetadata, old: IResourceMetadata): IChange[] {
     const changes: IChange[] = [];
-
     if (current.ext !== old.ext) {
       changes.push({
         location: elementId,
@@ -142,12 +143,14 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
     return changes;
   }
 
+  abstract reloadResource(resourceId: string): Action;
+
   onEditorSave(action: EditorSave): Observable<Action> {
     return combineLatest(this.elementId$, this.initial$, this.current$, this.store.select(selectIgId)).pipe(
       take(1),
       concatMap(([id, old, current, igId]) => {
         return this.save(this.getChanges(id, current.data, old)).pipe(
-          flatMap((message) => [this.messageService.messageToAction(message), new IgEditResolverLoad(igId)]),
+          flatMap((message) => [this.messageService.messageToAction(message), this.reloadResource(id), new IgEditResolverLoad(igId)]),
           catchError((error) => of(this.messageService.actionFromError(error), new EditorSaveFailure())),
         );
       }),

@@ -19,7 +19,6 @@ public class TextSection extends Section {
 
   public TextSection() {
     super();
-
   }
 
   public Set<TextSection> getChildren() {

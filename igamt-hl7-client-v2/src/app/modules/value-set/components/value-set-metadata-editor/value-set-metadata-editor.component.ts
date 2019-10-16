@@ -1,19 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import {Actions} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {combineLatest, Observable} from 'rxjs';
-import {concatMap, switchMap, take, tap} from 'rxjs/operators';
+import { Actions } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { combineLatest, Observable } from 'rxjs';
+import { concatMap, switchMap, take, tap } from 'rxjs/operators';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
-import {selectIgId} from '../../../../root-store/ig/ig-edit/ig-edit.index';
-import {ResourceMetadataEditorComponent} from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
-import {Message} from '../../../core/models/message/message.class';
-import {MessageService} from '../../../core/services/message.service';
-import {FieldType} from '../../../shared/components/metadata-form/metadata-form.component';
-import {Type} from '../../../shared/constants/type.enum';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {EditorID} from '../../../shared/models/editor.enum';
-import {IChange} from '../../../shared/models/save-change';
-import {ValueSetService} from '../../service/value-set.service';
+import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.index';
+import { LoadValueSet } from '../../../../root-store/value-set-edit/value-set-edit.actions';
+import { ResourceMetadataEditorComponent } from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
+import { Message } from '../../../core/models/message/message.class';
+import { MessageService } from '../../../core/services/message.service';
+import { FieldType } from '../../../shared/components/metadata-form/metadata-form.component';
+import { Type } from '../../../shared/constants/type.enum';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { EditorID } from '../../../shared/models/editor.enum';
+import { IChange } from '../../../shared/models/save-change';
+import { FroalaService } from '../../../shared/services/froala.service';
+import { ValueSetService } from '../../service/value-set.service';
 
 @Component({
   selector: 'app-metadata-edit',
@@ -26,7 +28,7 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
     store: Store<fromIgEdit.IState>,
     actions$: Actions,
     private valueSetService: ValueSetService,
-    messageService: MessageService) {
+    messageService: MessageService, froalaService: FroalaService) {
     super(
       {
         id: EditorID.VALUESET_METADATA,
@@ -36,6 +38,7 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
       actions$,
       messageService,
       store,
+      froalaService,
     );
     const authorNotes = 'Author notes';
     const usageNotes = 'Usage notes';
@@ -90,6 +93,10 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
         return this.valueSetService.saveChanges(id, documentId, changes);
       }),
     );
+  }
+
+  reloadResource(resourceId: string): Action {
+    return new LoadValueSet(resourceId);
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {

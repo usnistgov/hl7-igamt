@@ -21,6 +21,29 @@ public class ExportFilterDecision {
 	private Map<String, Boolean> valueSetFilterMap = new HashMap<String, Boolean>();
 	private Map<String, ValueSetExportConfiguration> OveriddedValueSetMap = new HashMap<String, ValueSetExportConfiguration>();
 	
+	
+	
+public ExportFilterDecision(Map<String, Boolean> datatypesFilterMap,
+			Map<String, DatatypeExportConfiguration> overiddedDatatypesMap, Map<String, Boolean> segmentFilterMap,
+			Map<String, SegmentExportConfiguration> overiddedSegmentMap,
+			Map<String, Boolean> conformanceProfileFilterMap,
+			Map<String, ConformanceProfileExportConfiguration> overiddedConformanceProfileMap,
+			Map<String, Boolean> valueSetFilterMap, Map<String, ValueSetExportConfiguration> overiddedValueSetMap) {
+		super();
+		this.datatypesFilterMap = datatypesFilterMap;
+		OveriddedDatatypesMap = overiddedDatatypesMap;
+		this.segmentFilterMap = segmentFilterMap;
+		OveriddedSegmentMap = overiddedSegmentMap;
+		this.conformanceProfileFilterMap = conformanceProfileFilterMap;
+		OveriddedConformanceProfileMap = overiddedConformanceProfileMap;
+		this.valueSetFilterMap = valueSetFilterMap;
+		OveriddedValueSetMap = overiddedValueSetMap;
+	}
+
+public ExportFilterDecision() {
+	super();
+}
+
 //	public static ExportFilterDecision CreateExportFilterDecision(ExportConfiguration exportConfiguration) {
 //		ExportFilterDecision exportFilterDecision = new ExportFilterDecision();
 //		Map<String, Boolean> segmentFilterMap = new HashMap<>();

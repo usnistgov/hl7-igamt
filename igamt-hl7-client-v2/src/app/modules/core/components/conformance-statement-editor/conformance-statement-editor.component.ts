@@ -190,7 +190,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       data: {
         title: 'Edit Conformance Statement',
         resource: this.selectedResource$,
-        cs: _.cloneDeep(node.payload),
+        payload: _.cloneDeep(node.payload),
       },
     });
 
@@ -201,7 +201,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
           node.changePrototype.propertyValue = changed;
           this.change({
             ...node.changePrototype,
-          }, ChangeType.UPDATE);
+          }, node.persisted ? ChangeType.UPDATE : ChangeType.ADD);
         }
       },
     );
@@ -228,8 +228,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       data: {
         title: 'Create Conformance Statement',
         resource: this.selectedResource$,
-        cs: this.csService.getFreeConformanceStatement()
-      }
+      },
     });
 
     dialogRef.afterClosed().subscribe(

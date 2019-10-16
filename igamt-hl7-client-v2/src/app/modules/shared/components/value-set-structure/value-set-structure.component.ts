@@ -98,7 +98,7 @@ export class ValueSetStructureComponent implements OnInit {
     }
     this.codeSystemOptions = this.getCodeSystemOptions();
     this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
-    this.updateAttribute(PropertyType.CODES, this.valueSet.codeSystems);
+    this.updateAttribute(PropertyType.CODESYSTEM, this.valueSet.codeSystems);
   }
 
   addCode() {

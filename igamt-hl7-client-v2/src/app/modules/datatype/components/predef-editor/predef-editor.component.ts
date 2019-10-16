@@ -13,6 +13,7 @@ import { MessageService } from '../../../core/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { ChangeType, PropertyType } from '../../../shared/models/save-change';
+import {FroalaService} from '../../../shared/services/froala.service';
 import { DatatypeService } from '../../services/datatype.service';
 
 @Component({
@@ -29,14 +30,14 @@ export class PredefEditorComponent extends DefinitionEditorComponent implements 
     actions$: Actions,
     store: Store<any>,
     messageService: MessageService,
-    private datatypeService: DatatypeService) {
+    private datatypeService: DatatypeService, froalaService: FroalaService) {
     super({
       id: EditorID.PREDEF,
       resourceType: Type.DATATYPE,
       title: 'Pre-definition',
     },
       PropertyType.PREDEF,
-      actions$, store, messageService);
+      actions$, store, messageService, froalaService);
   }
 
   saveChange(elementId: string, igId: string, value: any, old: any, property: PropertyType): Observable<Action> {

@@ -200,7 +200,7 @@ public class BootstrapApplication implements CommandLineRunner {
 //   }
 //  
    //
-   // @PostConstruct
+  //@PostConstruct
    void createSharedConstant() {
     Config constant = new Config();
     this.sharedConstantService.deleteAll();
@@ -245,7 +245,8 @@ public class BootstrapApplication implements CommandLineRunner {
     
     constant.setValueSetBindingConfig(generateValueSetConfig(constant.getHl7Versions()));
     
-    
+    HashMap<String, Object> froalaConfig = new HashMap<>();
+    constant.setFroalaConfig(froalaConfig);
     sharedConstantService.save(constant);
   
    }

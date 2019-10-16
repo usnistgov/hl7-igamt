@@ -1,13 +1,24 @@
 import { EventEmitter, Input, Output } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { Type } from '../../../constants/type.enum';
 import { ChangeType, IChange, PropertyType } from '../../../models/save-change';
 
 export abstract class HL7v2TreeColumnComponent<T> {
 
   @Input()
+  type: Type;
+  @Input()
+  changeEvent: Observable<IChange>;
+  @Input()
   location: string;
   @Input()
-  public viewOnly: string;
+  name: string;
+  @Input()
+  level: number;
+  @Input()
+  public viewOnly: boolean;
+  @Input()
+  public globalViewOnly: boolean;
   @Input()
   position: number;
   @Input()

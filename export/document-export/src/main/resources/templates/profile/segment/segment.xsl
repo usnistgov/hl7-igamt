@@ -1,6 +1,9 @@
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="/templates/profile/resource/preDef.xsl" />
+	<xsl:import href="/templates/profile/resource/usageNotes.xsl" />
+	<xsl:import href="/templates/profile/resource/authorNotes.xsl" />
+	<xsl:import href="/templates/profile/resource/VersionDisplay.xsl" />
 	<xsl:import href="/templates/profile/resource/postDef.xsl" />
 	<xsl:import href="/templates/profile/constraint.xsl" />
 	<xsl:import href="/templates/profile/segment/segmentField.xsl" />
@@ -8,19 +11,27 @@
 	<xsl:import href="/templates/profile/commentList.xsl" />
 	<xsl:import href="/templates/profile/dynamicMapping.xsl" />
 	<xsl:import href="/templates/profile/metadata.xsl" />
+	
 	<xsl:template match="Segment" mode="toc">
 		<xsl:element name="a">
 			<xsl:attribute name="href">
                 <xsl:value-of select="concat('#{',@id,'}')" />
             </xsl:attribute>
 			<xsl:element name="br" />
-			<xsl:value-of select="concat(@Name,' - ',@Description)" />
+			<xsl:value-of select="concat(@name,' - ',@description)" />
 		</xsl:element>
 	</xsl:template>
 
 	<xsl:template match="Segment">
+	
 		<xsl:param name="inlineConstraint" />
+
+		
 		<xsl:call-template name="PreDef" />
+		<xsl:call-template name="VersionDisplay" />
+		<xsl:call-template name="UsageNotes"/>
+		<xsl:call-template name="AuthorNotes" />
+
 		<xsl:if test="$segmentMetadata.display = 'true'">
 			<xsl:apply-templates select="Metadata">
 				<xsl:with-param name="hl7Version">
@@ -163,45 +174,43 @@
 				</xsl:element>
 			</xsl:element>
 		</xsl:element>
- 		<xsl:if test="count(Constraints/ConformanceStatement)  &gt; 0">
-		
-<!-- 			<xsl:if test="count(./Constraint[@Type='cs']) &gt; 0">
- -->			
-				<xsl:element name="br" />
-				<xsl:call-template name="Constraint">
-					<xsl:with-param name="title">
-						<xsl:text>Conformance Statements</xsl:text>
-					</xsl:with-param>
-					<xsl:with-param name="constraintMode">
-						<xsl:text>standalone</xsl:text>
-					</xsl:with-param>
-					<xsl:with-param name="type">
-						<xsl:text>cs</xsl:text>
-					</xsl:with-param>
-					<xsl:with-param name="headerLevel">
-						<xsl:text>h4</xsl:text>
-					</xsl:with-param>
-				</xsl:call-template>
-			</xsl:if>
- 		<xsl:if test="count(Constraints/Predicate)  &gt; 0">
-				<xsl:element name="br" />
-				<xsl:call-template name="Constraint">
-					<xsl:with-param name="title">
-						<xsl:text>Conditional Predicates</xsl:text>
-					</xsl:with-param>
-					<xsl:with-param name="constraintMode">
-						<xsl:text>standalone</xsl:text>
-					</xsl:with-param>
-					<xsl:with-param name="type">
-						<xsl:text>pre</xsl:text>
-					</xsl:with-param>
-					<xsl:with-param name="headerLevel">
-						<xsl:text>h4</xsl:text>
-					</xsl:with-param>
-				</xsl:call-template>
-			</xsl:if>
-<!-- 		</xsl:if>
- -->
+		<xsl:if test="count(Constraints/ConformanceStatement)  &gt; 0">
+
+			<!-- <xsl:if test="count(./Constraint[@Type='cs']) &gt; 0"> -->
+			<xsl:element name="br" />
+			<xsl:call-template name="Constraint">
+				<xsl:with-param name="title">
+					<xsl:text>Conformance Statements</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="constraintMode">
+					<xsl:text>standalone</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="type">
+					<xsl:text>cs</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="headerLevel">
+					<xsl:text>h4</xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+		</xsl:if>
+		<xsl:if test="count(Constraints/Predicate)  &gt; 0">
+			<xsl:element name="br" />
+			<xsl:call-template name="Constraint">
+				<xsl:with-param name="title">
+					<xsl:text>Conditional Predicates</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="constraintMode">
+					<xsl:text>standalone</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="type">
+					<xsl:text>pre</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="headerLevel">
+					<xsl:text>h4</xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+		</xsl:if>
+		<!-- </xsl:if> -->
 		<xsl:apply-templates select="./coconstraints" />
 		<xsl:apply-templates select="./Binding/ValueSetBindingList" />
 		<xsl:apply-templates select="./DynamicMapping" />

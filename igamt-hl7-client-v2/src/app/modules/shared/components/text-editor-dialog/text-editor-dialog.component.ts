@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { interval } from 'rxjs';
+import { Observable} from 'rxjs';
+import {FroalaService} from '../../services/froala.service';
 
 @Component({
   selector: 'app-text-editor-dialog',
@@ -10,10 +11,11 @@ import { interval } from 'rxjs';
 export class TextEditorDialogComponent implements OnInit {
 
   text;
+  froalaConfig$: Observable<any>;
   constructor(
     public dialogRef: MatDialogRef<TextEditorDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ITextEditorDialog,
-  ) {
+    @Inject(MAT_DIALOG_DATA) public data: ITextEditorDialog, froalaService: FroalaService) {
+    this.froalaConfig$ = froalaService.getConfig();
   }
 
   ngOnInit() {

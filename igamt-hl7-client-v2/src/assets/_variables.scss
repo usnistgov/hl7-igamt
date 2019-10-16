@@ -32,6 +32,7 @@ $subcomponent_color: #87abf5;
 $datatype_color: rgb(240, 10, 10);
 $valueset_color: rgb(255, 0, 200);
 $comformance_profile_color: rgb(167, 90, 1);
+$predicate_color: rgb(85, 173, 255);
 
 // Scope Badge Colors
 $hl7_scope_color: rgb(253, 150, 150);
@@ -40,6 +41,9 @@ $preloaded_scope_color: rgb(125, 218, 255);
 $phinvads_color: white;
 
 $phinvads_scope_color: gray;
+
+$vs_binding_color: rgb(127, 255, 212);
+$single_code_binding_color: rgb(138, 43, 226);
 
 
 .entity-badge-ig {
@@ -76,6 +80,10 @@ $phinvads_scope_color: gray;
 
 .entity-badge-conformance-profile {
   background-color: $comformance_profile_color !important;
+}
+
+.entity-badge-predicate {
+  background-color: $predicate_color !important;
 }
 
 // Page Container

@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.ig.controller;
 
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +24,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
+import gov.nist.hit.hl7.igamt.ig.model.GVTDomain;
 import gov.nist.hit.hl7.igamt.ig.service.GVTService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTExportException;
@@ -53,8 +55,7 @@ public class GVTConnectController extends BaseController {
 
 
   @RequestMapping(value = "/api/testing/domains", method = RequestMethod.GET, produces = {"application/json"})
-  public ResponseEntity<?> getDomains(@RequestHeader("target-url") String url, @RequestHeader("target-auth") String authorization) throws GVTLoginException {
-    log.info("Logging to " + url);
+  public List<GVTDomain> getDomains(@RequestHeader("target-url") String url, @RequestHeader("target-auth") String authorization) throws GVTLoginException {
     return gvtService.getDomains(authorization, url);
   }
 

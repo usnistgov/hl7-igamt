@@ -17,7 +17,7 @@ import {
 } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
-import {AlertsContainerComponent} from '../core/components/alerts-container/alerts-container.component';
+import { AlertsContainerComponent } from '../core/components/alerts-container/alerts-container.component';
 import { MessageService } from '../core/services/message.service';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
@@ -30,6 +30,7 @@ import { CsPropositionComponent } from './components/cs-proposition/cs-propositi
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
+import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
@@ -136,6 +137,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     BindingSelectorComponent,
     ExportToolComponent,
     AlertsContainerComponent,
+    DynamicMappingComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -255,8 +257,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     BindingSelectorComponent,
     ExportToolComponent,
     AlertsContainerComponent,
+    DynamicMappingComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent , ExportToolComponent, BindingSelectorComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent],
 
 })
 export class SharedModule {

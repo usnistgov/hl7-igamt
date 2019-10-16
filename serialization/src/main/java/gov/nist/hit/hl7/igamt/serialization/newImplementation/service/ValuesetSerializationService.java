@@ -10,7 +10,8 @@ import nu.xom.Element;
 
 public interface ValuesetSerializationService {
 	
-	public Element serializeValueSet(ValuesetDataModel valuesetDataModel, int level, ValueSetExportConfiguration valueSetExportConfiguration) throws ResourceSerializationException;
+	public Element serializeValueSet(ValuesetDataModel valuesetDataModel, int level, int position, ValueSetExportConfiguration valueSetExportConfiguration) throws ResourceSerializationException;
+
 
 
 }

@@ -14,6 +14,7 @@ import { MessageService } from '../../../core/services/message.service';
 import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
 import { Status } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import {FroalaService} from '../../../shared/services/froala.service';
 import { IgService } from '../../services/ig.service';
 
 export interface IIgEditMetadata {
@@ -36,12 +37,13 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
 
   coverPictureFile$: BehaviorSubject<File>;
   metadataFormInput: IMetadataFormInput<IIgEditMetadata>;
+  froalaConfig$: Observable<any>;
 
   constructor(
     store: Store<fromIgEdit.IState>,
     actions$: Actions,
     private igService: IgService,
-    private messageService: MessageService) {
+    private messageService: MessageService, private  froalaService: FroalaService) {
     super(
       {
         id: EditorID.IG_METADATA,
@@ -204,6 +206,7 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
   }
 
   ngOnInit() {
+    this.froalaConfig$ = this.froalaService.getConfig();
   }
 
   onDeactivate() {

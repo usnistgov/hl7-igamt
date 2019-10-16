@@ -260,7 +260,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 			else if (item.getPropertyType().equals(PropertyType.CODESYSTEM)) {
 
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-				item.setOldPropertyValue(s.getCodes());
+				item.setOldPropertyValue(s.getCodeSystems());
 				Set<String> codeSystems= mapper.readValue(jsonInString, new TypeReference<Set<String>>() {});
 				s.setCodeSystems(codeSystems);
 			}

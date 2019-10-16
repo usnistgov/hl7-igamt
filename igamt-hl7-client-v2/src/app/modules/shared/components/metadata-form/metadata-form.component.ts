@@ -21,6 +21,8 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
   changesSubscription: Subscription;
   dataSubscription: Subscription;
   viewOnlySubscription: Subscription;
+  @Input()
+  froalaConfig: any;
 
   constructor() {
     this.dataChange = new EventEmitter<FormGroup>();

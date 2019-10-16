@@ -79,6 +79,7 @@ export class ConformanceProfileEditEffects {
           take(1),
           flatMap((conformanceProfile) => {
             return this.store.select(selectMessagesById, { id: conformanceProfile.id }).pipe(
+              take(1),
               map((messageDisplay) => {
                 return new OpenEditor({
                   id: action.payload.id,
@@ -151,7 +152,6 @@ export class ConformanceProfileEditEffects {
     private message: MessageService,
     private deltaService: DeltaService,
     private conformanceProfileService: ConformanceProfileService,
-    private editorHelper: OpenEditorService,
-  ) { }
+    private editorHelper: OpenEditorService) { }
 
 }

@@ -19,10 +19,14 @@ package gov.nist.hit.hl7.igamt.export.configuration.domain;
  */
 public class MetadataConfiguration {
 
-  private boolean hl7version = false;
-  private boolean publicationDate = false;
-  private boolean publicationVersion = false;
-  private boolean scope = false;
+  private boolean hl7version = true;
+  private boolean publicationDate = true;
+  private boolean publicationVersion = true;
+  private boolean scope = true;
+  private boolean preDefinition = true;
+  private boolean postDefinition = true;
+  private boolean usageNotes = true;
+  private boolean AuthorNotes = true;
 
   public MetadataConfiguration() {
     super();
@@ -36,8 +40,40 @@ public class MetadataConfiguration {
     this.publicationVersion = publicationVersion;
     this.scope = scope;
   }
+  
+  public boolean isPreDefinition() {
+	return preDefinition;
+}
 
-  public boolean isHl7version() {
+public void setPreDefinition(boolean preDefinition) {
+	this.preDefinition = preDefinition;
+}
+
+public boolean isPostDefinition() {
+	return postDefinition;
+}
+
+public void setPostDefinition(boolean postDefinition) {
+	this.postDefinition = postDefinition;
+}
+
+public boolean isUsageNotes() {
+	return usageNotes;
+}
+
+public void setUsageNotes(boolean usageNotes) {
+	this.usageNotes = usageNotes;
+}
+
+public boolean isAuthorNotes() {
+	return AuthorNotes;
+}
+
+public void setAuthorNotes(boolean authorNotes) {
+	AuthorNotes = authorNotes;
+}
+
+public boolean isHl7version() {
     return hl7version;
   }
 
