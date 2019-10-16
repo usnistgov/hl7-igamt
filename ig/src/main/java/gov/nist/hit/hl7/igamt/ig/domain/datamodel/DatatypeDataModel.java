@@ -131,7 +131,10 @@ public class DatatypeDataModel implements Serializable {
 			}
 
 			if(seb.getPredicateId() != null){
-				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
+				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> {
+				  cp.setLocation(key);
+				  this.predicateMap.put(key, cp);
+				});
 			}
 
 			if(seb.getExternalSingleCode() != null){

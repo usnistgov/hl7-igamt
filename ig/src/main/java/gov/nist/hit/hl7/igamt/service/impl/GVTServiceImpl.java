@@ -12,6 +12,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -22,6 +23,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
@@ -37,9 +39,13 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import gov.nist.hit.hl7.igamt.ig.model.GVTDomain;
 import gov.nist.hit.hl7.igamt.ig.service.GVTService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTExportException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTLoginException;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 
 
 @Service
@@ -176,22 +182,24 @@ public class GVTServiceImpl implements GVTService {
 	return false;
   }
 
-  public ResponseEntity<?> getDomains(String authorization, String url) throws GVTLoginException {
+  public List<GVTDomain> getDomains(String authorization, String url) throws GVTLoginException {
     try {
       HttpHeaders headers = new HttpHeaders();
       this.validCredentials(authorization, url);
       headers.add("Authorization", authorization);
       HttpEntity<String> entity = new HttpEntity<String>("", headers);
-      ResponseEntity<List> response =
-          restTemplate.exchange(url + env.getProperty(DOMAINS_ENDPOINT), HttpMethod.GET, entity, List.class);
+      ResponseEntity<List<GVTDomain>> response =
+          restTemplate.exchange(url + env.getProperty(DOMAINS_ENDPOINT), HttpMethod.GET, entity, new ParameterizedTypeReference<List<GVTDomain>>() {});
      if(response.getBody().isEmpty()) {
     	 	throw new GVTLoginException("No tool scope available for this user");
      }
-      return response;
+      return response.getBody();
     } catch (HttpClientErrorException e) {
-      throw new GVTLoginException(e.getMessage());
+      e.printStackTrace();
+      throw new GVTLoginException(e.getLocalizedMessage());
     } catch (Exception e) {
-      throw new GVTLoginException(e.getMessage());
+      e.printStackTrace();
+      throw new GVTLoginException(e.getLocalizedMessage());
     }
   }
 
