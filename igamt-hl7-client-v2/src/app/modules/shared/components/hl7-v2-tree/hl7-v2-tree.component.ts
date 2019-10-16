@@ -144,7 +144,7 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
 
   @Output()
   changes: EventEmitter<IChange>;
-
+  changes$: Observable<IChange>;
   type: Type;
   nodes: IHL7v2TreeNode[];
   cols: ColumnOptions;
@@ -164,6 +164,7 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
     this.treeSubscriptions = [];
     this.treeExpandedNodes = [];
     this.changes = new EventEmitter<IChange>();
+    this.changes$ = this.changes.asObservable();
   }
 
   close(s: Subscription) {

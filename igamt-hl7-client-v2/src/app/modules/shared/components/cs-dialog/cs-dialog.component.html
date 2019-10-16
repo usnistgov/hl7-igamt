@@ -3,12 +3,12 @@
   <div style="display: flex; justify-content: space-between;">
     <label for="free" class="form-label-lg"> Assertion Type </label>
     <div style="border-radius: 5px; margin-left: 10px;">
-      <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.FREE" (ngModelChange)="changeTab($event)" name="activeTab" /> Free
       <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.SIMPLE" (ngModelChange)="changeTab($event)" name="activeTab" /> Simple
       <ng-container *ngIf="!predicateMode" >
         <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.CONDITIONAL" (ngModelChange)="changeTab($event)" name="activeTab" /> Conditional
       </ng-container>
       <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.COMPLEX" (ngModelChange)="changeTab($event)" name="activeTab" /> Complex
+      <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.FREE" (ngModelChange)="changeTab($event)" name="activeTab" /> Free Text
     </div>
   </div>
   <ng-container *ngIf="cs">

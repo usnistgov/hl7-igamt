@@ -18,7 +18,7 @@
             <i class="fa fa-pencil" style="font-size: 1.2em; margin-left: 5px;" (click)="openDialog(item)"></i>
         </div>
         <i class="fa fa-comment-o" style="font-size: 1.2em; margin-right: 5px;"></i>
-        <strong>{{item.dateupdated}}</strong>
+        <strong>{{item.dateupdated | date:'medium' }}</strong>
       </div>
     </div>
 </ng-template>

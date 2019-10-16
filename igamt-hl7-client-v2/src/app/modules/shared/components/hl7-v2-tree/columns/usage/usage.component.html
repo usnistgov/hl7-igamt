@@ -1,4 +1,5 @@
 <div style="display: flex; justify-content: space-between; align-items: center;">
+
   <ng-container  [ngSwitch]="viewOnly">
     <ng-container *ngSwitchCase="false">
       <p-dropdown
@@ -8,24 +9,22 @@
       [(ngModel)]="usage.value"
       [appendTo]="anchor" ></p-dropdown>
     </ng-container>
-    <strong *ngSwitchCase="true">{{usage.value}}</strong>
+    <strong *ngSwitchCase="true">{{usage.value === 'CAB' ? 'C(A/B)' : usage.value}}</strong>
   </ng-container>
 
-  <ng-container *ngIf="usage.value === 'C'">
-    <ng-container *ngIf="editablePredicate$ | async as predicate">
-      <ng-container  [ngSwitch]="!!predicate.value">
-        <ng-container *ngSwitchCase="true">
+  <ng-container *ngIf="editablePredicate$ | async as predicate">
+    <ng-container  [ngSwitch]="!!predicate.value">
+      <ng-container *ngSwitchCase="true">
 
-          <ng-container *ngTemplateOutlet="predicateDisplay; context : { $implicit : predicate.value, ctx : { resource : context }, editable: true }"></ng-container>
+        <ng-container *ngTemplateOutlet="predicateDisplay; context : { $implicit : predicate.value, ctx : { resource : context }, editable: true }"></ng-container>
 
-        </ng-container>
-        <ng-container *ngSwitchCase="false">
-            <ng-container *ngIf="freezePredicate$ | async as fpredicate; else addButton">
+      </ng-container>
+      <ng-container *ngSwitchCase="false">
+          <ng-container *ngIf="freezePredicate$ | async as fpredicate; else addButton">
 
-                <ng-container *ngTemplateOutlet="predicateDisplay; context : { $implicit : fpredicate.value, ctx : fpredicate.context, editable: false }"></ng-container>
+              <ng-container *ngTemplateOutlet="predicateDisplay; context : { $implicit : fpredicate.value, ctx : fpredicate.context, editable: false }"></ng-container>
 
-            </ng-container>
-        </ng-container>
+          </ng-container>
       </ng-container>
     </ng-container>
   </ng-container>
@@ -34,22 +33,22 @@
 
 
 <ng-template #addButton>
-  <button class="btn btn-sm btn-primary" style="margin-left: 5px;" (click)="createPredicateDialog()" *ngIf="!globalViewOnly">
+  <button class="btn btn-sm btn-primary" style="margin-left: 5px;" (click)="createPredicateDialog()" *ngIf="!globalViewOnly && ((usage.value === 'CAB' && level === 0) || ( level !== 0 && (usage.value === 'CAB' || usage.value === 'C') &&  type === 'FIELD'))">
     <app-entity-bagde type="PREDICATE" ></app-entity-bagde>  <i class="fa fa-pencil" style="margin-left: 5px;"></i>
   </button>
 </ng-template>
 
 <ng-template #predicateDisplay let-ctx="ctx" let-edit="editable" let-predicate>
-    <div class="btn-group" role="group" aria-label="Basic example" style="margin-left: 5px;" [pTooltip]="(predicate.assertion?.description || predicate.freeText)" disabled="true" tooltipPosition="top" >
-      <button disabled="true" type="button" class="btn btn-sm btn-light" style="border: 1px solid #a6a6a6; display: flex; opacity: 1; align-items: center; cursor: initial;">
-        <app-binding-badge [context]="ctx"></app-binding-badge>
-        <strong style="margin-left: 3px;"> ({{ predicate.trueUsage }} / {{ predicate.falseUsage }})</strong>
-      </button>
-      <button type="button" class="btn btn-sm btn-danger" *ngIf="edit && !globalViewOnly" (click)="clear()">
-        <i class="fa fa-trash"></i>
-      </button>
-      <button class="btn btn-sm btn-primary" *ngIf="!globalViewOnly" (click)="edit ? editPredicateDialog(predicate) : createPredicateDialog()">
-        <app-entity-bagde type="PREDICATE" ></app-entity-bagde> <i class="fa fa-pencil" style="margin-left: 5px;"></i>
-      </button>
-    </div>
+  <div class="btn-group" role="group" aria-label="Basic example" style="margin-left: 5px;" [pTooltip]="(predicate.assertion?.description || predicate.freeText)" disabled="true" tooltipPosition="top" >
+    <button disabled="true" type="button" class="btn btn-sm btn-light" style="border: 1px solid #a6a6a6; display: flex; opacity: 1; align-items: center; cursor: initial;">
+      <app-binding-badge [context]="ctx"></app-binding-badge>
+      <strong style="margin-left: 3px;"> ({{ predicate.trueUsage }} / {{ predicate.falseUsage }})</strong>
+    </button>
+    <button type="button" class="btn btn-sm btn-danger" *ngIf="edit && !globalViewOnly" (click)="clear()">
+      <i class="fa fa-trash"></i>
+    </button>
+    <button class="btn btn-sm btn-primary" *ngIf="!globalViewOnly && edit" (click)="editPredicateDialog(predicate)">
+      <app-entity-bagde type="PREDICATE" ></app-entity-bagde> <i class="fa fa-pencil" style="margin-left: 5px;"></i>
+    </button>
+  </div>
 </ng-template>

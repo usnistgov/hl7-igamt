@@ -201,7 +201,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
           node.changePrototype.propertyValue = changed;
           this.change({
             ...node.changePrototype,
-          }, ChangeType.UPDATE);
+          }, node.persisted ? ChangeType.UPDATE : ChangeType.ADD);
         }
       },
     );
@@ -228,7 +228,6 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       data: {
         title: 'Create Conformance Statement',
         resource: this.selectedResource$,
-        payload: this.csService.getFreeConformanceStatement(),
       },
     });
 
