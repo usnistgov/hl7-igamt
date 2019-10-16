@@ -1,14 +1,13 @@
 import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { Type } from '../../../../constants/type.enum';
 import { UsageOptions } from '../../../../constants/usage.enum';
 import { IPredicate } from '../../../../models/predicate.interface';
 import { IResource } from '../../../../models/resource.interface';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
-import { ConformanceStatementService } from '../../../../services/conformance-statement.service';
 import { Hl7V2TreeService, IBinding } from '../../../../services/hl7-v2-tree.service';
 import { PredicateService } from '../../../../services/predicate.service';
 import { AResourceRepositoryService } from '../../../../services/resource-repository.service';
@@ -78,7 +77,6 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
 
   constructor(
     private predicateService: PredicateService,
-    private conformanceStatementService: ConformanceStatementService,
     private treeService: Hl7V2TreeService,
     private dialog: MatDialog) {
     super([PropertyType.USAGE, PropertyType.PREDICATE]);
