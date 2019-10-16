@@ -295,15 +295,16 @@ export class CsDialogComponent implements OnDestroy {
 
         if (this.pattern && this.pattern.assertion) {
           payload = this.predicateMode ? this.csService.getAssertionPredicate(this.pattern.assertion) : this.csService.getAssertionConformanceStatement(this.pattern.assertion);
-          this.cs = {
-            ...this.cs,
-            ...payload.cs,
-            identifier: this.cs ? this.cs.identifier : undefined,
-            context: this.cs ? this.cs.context : undefined,
-            freeText: undefined,
-            assertionScript: undefined,
-          };
         }
+
+        this.cs = {
+          ...this.cs,
+          ...payload ? payload.cs : undefined,
+          identifier: this.cs ? this.cs.identifier : undefined,
+          context: this.cs ? this.cs.context : undefined,
+          freeText: undefined,
+          assertionScript: undefined,
+        };
         break;
     }
     this.activeTab = item;

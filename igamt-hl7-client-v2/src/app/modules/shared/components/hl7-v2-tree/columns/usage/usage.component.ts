@@ -145,7 +145,7 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
         predicateMode: true,
         predicateElementId: this.location,
         resource: this.resource,
-        payload: predicate,
+        payload: predicate ? _.cloneDeep(predicate) : undefined,
       },
     });
 
