@@ -228,8 +228,8 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       data: {
         title: 'Create Conformance Statement',
         resource: this.selectedResource$,
-        cs: this.csService.getFreeConformanceStatement(),
-      },
+        cs: this.csService.getFreeConformanceStatement()
+      }
     });
 
     dialogRef.afterClosed().subscribe(
