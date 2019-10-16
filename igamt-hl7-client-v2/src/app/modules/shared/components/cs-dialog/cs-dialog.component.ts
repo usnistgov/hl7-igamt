@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import { Observable, of, Subscription } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
-import { UsageOptions } from '../../constants/usage.enum';
+import { ConditionalUsageOptions } from '../../constants/usage.enum';
 import { AssertionMode, ConstraintType, IAssertionConformanceStatement, IFreeTextConformanceStatement, INotAssertion, IOperatorAssertion, IPath } from '../../models/cs.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
@@ -55,7 +55,7 @@ export class CsDialogComponent implements OnDestroy {
   predicateMode: boolean;
   predicateElementId: string;
   excludePaths: string[];
-  options = UsageOptions;
+  options = ConditionalUsageOptions;
 
   @ViewChildren(CsPropositionComponent) propositions: QueryList<CsPropositionComponent>;
   @ViewChild('csForm', { read: NgForm }) form: NgForm;
@@ -244,7 +244,9 @@ export class CsDialogComponent implements OnDestroy {
     if (this.cs.type === ConstraintType.ASSERTION) {
       this.updateAssertionDescription((this.cs as IAssertionConformanceStatement).assertion);
       if (this.predicateMode) {
-        (this.cs as IAssertionConformanceStatement).assertion.description = 'If ' + (this.cs as IAssertionConformanceStatement).assertion.description;
+        const desc = (this.cs as IAssertionConformanceStatement).assertion.description;
+        const noIf = desc && desc.startsWith('If');
+        (this.cs as IAssertionConformanceStatement).assertion.description = !noIf ? 'If ' + (this.cs as IAssertionConformanceStatement).assertion.description : desc;
       }
     }
   }
@@ -252,19 +254,23 @@ export class CsDialogComponent implements OnDestroy {
   // tslint:disable-next-line: cognitive-complexity
   changeTab(item: CsTab) {
     this.statementsValidity = [];
+    let payload;
     switch (item) {
       case CsTab.FREE:
+        payload = this.predicateMode ? this.csService.getFreePredicate() : this.csService.getFreeConformanceStatement();
         this.cs = {
           ...this.cs,
-          ...this.csService.getFreeConformanceStatement(),
+          ...payload,
+          assertion: undefined,
           identifier: this.cs ? this.cs.identifier : undefined,
           context: this.cs ? this.cs.context : undefined,
         };
         break;
       case CsTab.SIMPLE:
+        payload = this.predicateMode ? this.csService.getAssertionPredicate(new Statement('D', 0, null, 0)) : this.csService.getAssertionConformanceStatement(new Statement('D', 0, null, 0));
         this.cs = {
           ...this.cs,
-          ...this.csService.getAssertionConformanceStatement(new Statement('D', 0, null, 0)).cs,
+          ...payload.cs,
           identifier: this.cs ? this.cs.identifier : undefined,
           context: this.cs ? this.cs.context : undefined,
           freeText: undefined,
@@ -272,9 +278,10 @@ export class CsDialogComponent implements OnDestroy {
         };
         break;
       case CsTab.CONDITIONAL:
+        payload = this.predicateMode ? this.csService.getAssertionPredicate(this.ifThenPattern) : this.csService.getAssertionConformanceStatement(this.ifThenPattern);
         this.cs = {
           ...this.cs,
-          ...this.csService.getAssertionConformanceStatement(this.ifThenPattern).cs,
+          ...payload.cs,
           identifier: this.cs ? this.cs.identifier : undefined,
           context: this.cs ? this.cs.context : undefined,
           freeText: undefined,
@@ -287,9 +294,10 @@ export class CsDialogComponent implements OnDestroy {
         }
 
         if (this.pattern && this.pattern.assertion) {
+          payload = this.predicateMode ? this.csService.getAssertionPredicate(this.pattern.assertion) : this.csService.getAssertionConformanceStatement(this.pattern.assertion);
           this.cs = {
             ...this.cs,
-            ...this.csService.getAssertionConformanceStatement(this.pattern.assertion).cs,
+            ...payload.cs,
             identifier: this.cs ? this.cs.identifier : undefined,
             context: this.cs ? this.cs.context : undefined,
             freeText: undefined,

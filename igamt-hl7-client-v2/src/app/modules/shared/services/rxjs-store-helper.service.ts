@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
+import { forkJoin, Observable, ObservableInput, of } from 'rxjs';
 import { filter, flatMap, mergeMap, take } from 'rxjs/operators';
 import { TurnOffLoader } from 'src/app/root-store/loader/loader.actions';
 import { ClearAll } from 'src/app/root-store/page-messages/page-messages.actions';
@@ -25,6 +25,14 @@ export class RxjsStoreHelperService {
         return map[action.type].do(action);
       }),
     );
+  }
+
+  static forkJoin<T>(sources: Array<ObservableInput<T>>): Observable<T[]> {
+    if (sources && sources.length > 0) {
+      return forkJoin(sources);
+    } else {
+      return of([]);
+    }
   }
 
   constructor(private messageService: MessageService) { }

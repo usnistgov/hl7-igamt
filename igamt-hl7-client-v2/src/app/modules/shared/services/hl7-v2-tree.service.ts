@@ -598,6 +598,7 @@ export class Hl7V2TreeService {
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
     const components = datatype.components || [];
+
     return repository.getRefData(components.map((child) => child.ref.id)).pipe(
       take(1),
       map((refsData) => {

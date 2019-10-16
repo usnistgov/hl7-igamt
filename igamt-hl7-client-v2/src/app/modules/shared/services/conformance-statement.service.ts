@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Assertion, BinaryOperator, LEFT, NaryOperator, Operator, Pattern, RIGHT, Statement, UnaryOperator } from '../components/pattern-dialog/cs-pattern.domain';
 import { Usage } from '../constants/usage.enum';
 import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, ISimpleAssertion, Operator as CsOperator } from '../models/cs.interface';
-import { IFreeTextPredicate } from '../models/predicate.interface';
+import { IAssertionPredicate, IFreeTextPredicate } from '../models/predicate.interface';
 
 export interface IAssertionBag<T> {
   assertion: T;
@@ -41,6 +41,20 @@ export class ConformanceStatementService {
     return {
       cs: {
         identifier: '',
+        type: ConstraintType.ASSERTION,
+        assertion: bag.assertion,
+      },
+      statements: bag.leafs,
+    };
+  }
+
+  getAssertionPredicate(assertion: Assertion): { cs: IAssertionPredicate, statements: ISimpleAssertion[] } {
+    const bag = this.getCsDataAssertion(assertion);
+    return {
+      cs: {
+        identifier: '',
+        trueUsage: Usage.R,
+        falseUsage: Usage.X,
         type: ConstraintType.ASSERTION,
         assertion: bag.assertion,
       },
