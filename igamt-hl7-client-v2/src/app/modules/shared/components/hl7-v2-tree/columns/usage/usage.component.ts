@@ -100,7 +100,7 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
         this.treeService.getPathNameWithLocation(resource, this.repository, this.location).pipe(
           take(1),
           tap((path) => {
-            this.openDialog('Create Predicate for ' + this.treeService.getNameFromPath(path), this.conformanceStatementService.getFreePredicate());
+            this.openDialog('Create Predicate for ' + this.treeService.getNameFromPath(path), undefined);
           }),
         ).subscribe();
       }),

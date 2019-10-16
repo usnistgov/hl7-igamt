@@ -1,7 +1,5 @@
 <p-tree [style]="{'width':'100%', 'height': '100%'}" [value]="structure" (onNodeExpand)="onNodeExpand($event)" (onNodeSelect)="nodeSelected($event)" selectionMode="single" [(selection)]="selectedNode">
   <ng-template let-node pTemplate="default">
-    <strong *ngIf="configuration.cardinality && node.data.cardinality"> [{{ node.data.cardinality.min }}..{{ node.data.cardinality.max }}]</strong>
-    <strong *ngIf="configuration.usage && node.data.usage"> {{ node.data.usage.value }} </strong>
     <app-entity-bagde [type]="node.data.type" ></app-entity-bagde> <span *ngIf="node.data.position"> {{node.data.position}}.</span>
     {{node.data.name}}
   </ng-template>

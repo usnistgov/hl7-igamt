@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-select-versions',
@@ -21,7 +21,6 @@ export class SelectVersionsComponent implements OnInit {
   }
 
   select($event: any) {
-    console.log(event);
     this.selectedVersion = $event;
     this.selected.emit($event);
   }
