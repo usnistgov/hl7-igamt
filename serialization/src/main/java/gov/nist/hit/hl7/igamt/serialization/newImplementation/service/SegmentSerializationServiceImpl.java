@@ -59,6 +59,7 @@ ConstraintSerializationService constraintSerializationService;
 	  	      }
 	      if (segment.getDynamicMappingInfo() != null && segmentExportConfiguration.getDynamicMappingInfo()) {
 	        try {
+//	        	segment.getBinding().getc
 	          Element dynamicMappingElement =
 	              this.serializeDynamicMapping(segment.getDynamicMappingInfo(),igDataModel);
 	          if (dynamicMappingElement != null) {
@@ -69,14 +70,12 @@ ConstraintSerializationService constraintSerializationService;
 //	              segment.getDynamicMappingInfo());
 	        }
 	      }
-//	      System.out.println("Segment name : " + segment.getName());
-//	      if (segment.getBinding() != null) {
-//	    	  System.out.println("Je suis dans IF segment");
-//	        Element bindingElement = bindingSerializationService.serializeBinding(igDataModel, (Binding) segment.getBinding());
+	      if (segment.getBinding() != null) {
+//	        Element bindingElement = bindingSerializationService.serializeBinding(segmentDataModel.getValuesetMap(), (Binding) segment.getBinding());
 //	        if (bindingElement != null) {
 //	          segmentElement.appendChild(bindingElement);
 //	        }
-//	      }
+	      }
 	      if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
     	  Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
 	        if (constraints != null) {

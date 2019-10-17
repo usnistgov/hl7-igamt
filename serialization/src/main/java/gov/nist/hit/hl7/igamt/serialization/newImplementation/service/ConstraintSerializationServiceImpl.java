@@ -36,7 +36,8 @@ public class ConstraintSerializationServiceImpl implements ConstraintSerializati
 			if(predicates != null) {
 				for(String location : predicates.keySet()){
 					Predicate predicate = predicates.get(location);
-					Element predicateElement = serializePredicate(predicate);
+					System.out.println("Location is : " + location);
+					Element predicateElement = serializePredicate(predicate, location);
 					constraintsElement.appendChild(predicateElement);
 				}
 			}
@@ -68,7 +69,7 @@ public class ConstraintSerializationServiceImpl implements ConstraintSerializati
 	}
 
 	@Override
-	public Element serializePredicate(Predicate predicate) {
+	public Element serializePredicate(Predicate predicate, String location) {
 		Element predicateElement = new Element("Predicate");
 		predicateElement.addAttribute(new Attribute("trueUsage",
 				predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : ""));

@@ -118,7 +118,6 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	        	.collect(Collectors.joining(", "));
 	            componentElement
 	                .addAttribute(new Attribute("valueset", vs));
-//	        	  System.out.println("LOOK HERE : " + datatypeDataModel.getValuesetMap().get(component.getPosition()).stream().findFirst().get());
 	          }         
 	          if (component.getRef() != null) {
 //	            if (datatypeNamesMap != null
