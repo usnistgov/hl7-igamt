@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -102,6 +104,8 @@ public class BootstrapApplication implements CommandLineRunner {
   
   @Autowired
   ConformanceProfileService messageService;
+  @Autowired
+  BindingCollector bindingCollector;
   
 //  
 //  @Autowired
@@ -200,7 +204,7 @@ public class BootstrapApplication implements CommandLineRunner {
 //   }
 //  
    //
-  @PostConstruct
+  //@PostConstruct
    void createSharedConstant() {
     Config constant = new Config();
     this.sharedConstantService.deleteAll();
@@ -246,7 +250,6 @@ public class BootstrapApplication implements CommandLineRunner {
     constant.setValueSetBindingConfig(generateValueSetConfig(constant.getHl7Versions()));
     
     HashMap<String, Object> froalaConfig = new HashMap<>();
-    froalaConfig.put("key", "Rg1Wb2KYd1Td1WIh1CVc2F==");
     constant.setFroalaConfig(froalaConfig);
     sharedConstantService.save(constant);
   
@@ -509,4 +512,8 @@ public class BootstrapApplication implements CommandLineRunner {
 //		}	
 	}
  
+	//@PostConstruct
+	public void generateBindings() throws FileNotFoundException{
+	  this.bindingCollector.collect();
+	};
 }

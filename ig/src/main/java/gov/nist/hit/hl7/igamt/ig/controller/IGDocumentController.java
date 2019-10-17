@@ -524,10 +524,9 @@ public class IGDocumentController extends BaseController {
       info.setScope(Scope.USER);
       empty.setDomainInfo(info);
       empty.setMetadata(wrapper.getMetadata());
+      empty.setCreationDate(new Date());
       crudService.AddConformanceProfilesToEmptyIg(savedIds, empty);
-
       Ig ret = igService.save(empty);
-
       return new ResponseMessage<String>(Status.SUCCESS, "", "IG created Successfuly", ret.getId(), false,
           ret.getUpdateDate(), ret.getId());
 
