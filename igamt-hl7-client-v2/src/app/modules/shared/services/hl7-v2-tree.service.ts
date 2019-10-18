@@ -239,6 +239,40 @@ export class Hl7V2TreeService {
     return loop(elm);
   }
 
+  getNodeName(node: IHL7v2TreeNode): string {
+    return this.getNameFromPath(this.getPathInfo(node));
+  }
+
+  getPathInfo(node: IHL7v2TreeNode): IPathInfo {
+    const loop = (elm: IHL7v2TreeNode): IPathInfo[] => {
+      if (elm.parent) {
+        const parentPathInfoList = loop(elm.parent);
+        parentPathInfoList.push({
+          name: elm.data.name,
+          id: elm.data.id,
+          type: elm.data.type,
+          position: elm.data.position,
+          leaf: elm.leaf,
+        });
+      } else {
+        return [
+          {
+            name: elm.data.name,
+            id: elm.data.id,
+            type: elm.data.type,
+            position: elm.data.position,
+            leaf: elm.leaf,
+          },
+        ];
+      }
+    };
+    const chain: IPathInfo[] = loop(node);
+    return chain.reverse().reduce((pV, cV) => {
+      cV.child = pV;
+      return cV;
+    });
+  }
+
   getChildrenListFromResource(resource: IResource, repository: AResourceRepositoryService): Observable<NamedChildrenList> {
     const toListItem = (leafs) => (field) => {
       return {

@@ -1,9 +1,8 @@
 import { Type } from '../constants/type.enum';
 import { IValuesetBinding } from './binding.interface';
-import { IPath } from './cs.interface';
 
 export interface ICoConstraintTable {
-  id: string;
+  id?: string;
   baseSegment: string;
   headers: ICoConstraintHeaders;
   coconstraints: ICoConstraint[];
@@ -11,7 +10,7 @@ export interface ICoConstraintTable {
 }
 
 export interface ICoConstraintGroup {
-  id: string;
+  id?: string;
   baseSegment: string;
   name: string;
   headers: ICoConstraintHeaders;
@@ -39,13 +38,23 @@ export interface ICoConstraintHeaders {
 }
 
 export interface ICoConstraintHeader {
+  type: ICoConstraintHeaderType;
   key: string;
 }
 
 export interface IDataElementHeader extends ICoConstraintHeader {
-  path: IPath;
+  name: string;
   elementType: Type;
   columnType: ICoConstraintColumnType;
+  elementInfo: IDataElementHeaderInfo;
+}
+
+export interface IDataElementHeaderInfo {
+  version: string;
+  parent: string;
+  elementName: string;
+  location: number;
+  type: Type;
 }
 
 export interface INarrativeHeader extends ICoConstraintHeader {
@@ -53,31 +62,34 @@ export interface INarrativeHeader extends ICoConstraintHeader {
 }
 
 export interface ICoConstraint {
+  id: string;
   requirement: ICoConstraintRequirement;
-  cells: {
-    [key: string]: ICoConstraintCell;
-  };
+  cells: ICoConstraintCells;
+}
+
+export interface ICoConstraintCells {
+  [key: string]: ICoConstraintCell;
 }
 
 export interface ICoConstraintCell {
   type: ICoConstraintColumnType;
 }
 
-export interface ICoConstraintCodeCell {
+export interface ICoConstraintCodeCell extends ICoConstraintCell {
   code: string;
   codeSystem: string;
   locations: number[];
 }
 
-export interface ICoConstraintValueSetCell {
+export interface ICoConstraintValueSetCell extends ICoConstraintCell {
   bindings: IValuesetBinding[];
 }
 
-export interface ICoConstraintDatatypeCell {
+export interface ICoConstraintDatatypeCell extends ICoConstraintCell {
   datatypeId: string;
 }
 
-export interface ICoConstraintValueCell {
+export interface ICoConstraintValueCell extends ICoConstraintCell {
   value: string;
 }
 
@@ -91,6 +103,11 @@ export enum ICoConstraintColumnType {
 export enum ICoConstraintGroupBindingType {
   REF = 'REF',
   CONTAINED = 'CONTAINED',
+}
+
+export enum ICoConstraintHeaderType {
+  DATAELEMENT = 'DATAELEMENT',
+  NARRATIVE = 'NARRATIVE',
 }
 
 export interface ICoConstraintRequirement {
