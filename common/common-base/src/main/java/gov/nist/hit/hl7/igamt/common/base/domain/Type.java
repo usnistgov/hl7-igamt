@@ -28,7 +28,6 @@ public enum Type {
   Type(String value) {
     this.value = value;
   }
-
   private final String value;
 
   public String getValue() {

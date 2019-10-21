@@ -29,6 +29,7 @@ import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
+import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
@@ -138,6 +139,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExportToolComponent,
     AlertsContainerComponent,
     DynamicMappingComponent,
+    DeriveDialogComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -259,7 +261,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AlertsContainerComponent,
     DynamicMappingComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent],
 
 })
 export class SharedModule {
