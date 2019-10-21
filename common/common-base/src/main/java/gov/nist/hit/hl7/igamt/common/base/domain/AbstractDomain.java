@@ -32,6 +32,7 @@ public abstract class AbstractDomain implements Serializable{
 	private List<String> authors;
 	private Status status;
 	private String from;
+	private boolean derived; 
 
 	@Version
 	private Long version;
@@ -246,5 +247,13 @@ public abstract class AbstractDomain implements Serializable{
 			return false;
 		return true;
 	}
+
+  public boolean isDerived() {
+    return derived;
+  }
+
+  public void setDerived(boolean derived) {
+    this.derived = derived;
+  }
 
 }

@@ -14,6 +14,7 @@ public class IgSummary {
   private Date dateUpdated;
   private String id;
   private String username;
+  private boolean derived; 
   private List<String> participants;
   private Status status;
   private List<String> conformanceProfiles;
@@ -100,6 +101,14 @@ public class IgSummary {
 
   public void setParticipants(List<String> participants) {
     this.participants = participants;
+  }
+
+  public boolean isDerived() {
+    return derived;
+  }
+
+  public void setDerived(boolean derived) {
+    this.derived = derived;
   }
 
 

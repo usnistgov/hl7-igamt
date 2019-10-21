@@ -67,6 +67,8 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.display.model.CloneMode;
+import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CloneResponse;
@@ -804,7 +806,7 @@ public class IGDocumentController extends BaseController {
     }
     ConformanceProfile clone = profile.clone();
     clone.setUsername(username);
-    clone.setIdentifier(wrapper.getSelected().getExt());
+    clone.setName(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
     clone = conformanceProfileService.save(clone);
 
@@ -1110,16 +1112,23 @@ public class IGDocumentController extends BaseController {
         ig.getUpdateDate(), info);
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.GET, produces = {
+  @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
-  public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, Authentication authentication)
+  public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, @RequestBody CopyInfo info,  Authentication authentication)
       throws IGNotFoundException {
     String username = authentication.getPrincipal().toString();
 
     Ig ig = findIgById(id);
     Ig clone = this.igService.clone(ig, username);
     clone.getDomainInfo().setScope(Scope.USER);
-    clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[clone]");
+    if(info.getMode().equals(CloneMode.CLONE)) {
+      clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[clone]");
+    }else if(info.getMode().equals(CloneMode.DERIVE)){
+      clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[derived]");
+      clone.setDerived(true); 
+    }
+    clone.setCreationDate(new Date());
+    
     clone = igService.save(clone);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", clone.getId(), false,
         clone.getUpdateDate(), clone.getId());
@@ -1377,8 +1386,6 @@ public class IGDocumentController extends BaseController {
   public void exportXML(@PathVariable("id") String id, Authentication authentication,FormData formData,
       HttpServletResponse response)
           throws Exception {
-
-
     IgDataModel igModel = this.igService.generateDataModel(findIgById(id));		
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

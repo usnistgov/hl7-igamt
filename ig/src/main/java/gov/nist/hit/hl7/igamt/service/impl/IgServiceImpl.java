@@ -188,6 +188,7 @@ public class IgServiceImpl implements IgService {
 			// element.setConfrmanceProfiles(confrmanceProfiles);
 			element.setCoverpage(ig.getMetadata().getCoverPicture());
 			element.setId(ig.getId());
+			element.setDerived(ig.isDerived());
 			element.setUsername(ig.getUsername());
 			element.setStatus(ig.getStatus());
 			List<String> conformanceProfileNames = new ArrayList<String>();
@@ -404,7 +405,7 @@ public class IgServiceImpl implements IgService {
 		newIg.setUsername(username);
 		newIg.setDomainInfo(ig.getDomainInfo());
 		newIg.getDomainInfo().setScope(Scope.USER);
-
+		newIg.setStatus(null);
 		HashMap<String, String> conformanceProfilesMap =
 				getNewIdsMap(ig.getConformanceProfileRegistry());
 		HashMap<String, String> valuesetsMap = getNewIdsMap(ig.getValueSetRegistry());
