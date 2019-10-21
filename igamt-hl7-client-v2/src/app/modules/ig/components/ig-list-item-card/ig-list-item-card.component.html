@@ -44,12 +44,17 @@
 
         <!-- ITEM CONTROL BUTTONS -->
         <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-end;">
-          <button (click)="control.action(igListItem)" *ngFor="let control of controls" [class]="'btn btn-sm ' + control.class"
-                  [disabled]="control.disabled(igListItem)" style="margin-right: 5px;">
+          <ng-container *ngFor="let control of controls" >
+
+
+          <button (click)="control.action(igListItem)" [class]="'btn btn-sm ' + control.class"
+                  [disabled]="control.disabled(igListItem)" style="margin-right: 5px;" *ngIf ="!control.hide || control.hide(igListItem) ==false">
             <i [class]="'fa ' + control.icon"></i>
 
             {{ control.label }}
+
           </button>
+          </ng-container>
         </div>
 
       </div>

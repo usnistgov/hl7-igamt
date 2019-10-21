@@ -45,6 +45,9 @@ export class IgService {
   cloneIg(id: string): Observable<Message<string>> {
     return this.http.get<Message<string>>(IG_END_POINT + id + '/clone').pipe();
   }
+  publish(id: string): Observable<Message<string>> {
+    return this.http.post<Message<string>>(IG_END_POINT + id + '/publish', {}).pipe();
+  }
 
   getMessagesByVersion(hl7Version: string): Observable<Message<MessageEventTreeNode[]>> {
     return this.http.get<Message<MessageEventTreeNode[]>>(IG_END_POINT + 'findMessageEvents/' + hl7Version);

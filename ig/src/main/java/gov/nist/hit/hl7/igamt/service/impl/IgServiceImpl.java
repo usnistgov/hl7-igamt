@@ -36,6 +36,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
@@ -73,6 +74,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -187,6 +189,7 @@ public class IgServiceImpl implements IgService {
 			element.setCoverpage(ig.getMetadata().getCoverPicture());
 			element.setId(ig.getId());
 			element.setUsername(ig.getUsername());
+			element.setStatus(ig.getStatus());
 			List<String> conformanceProfileNames = new ArrayList<String>();
 			ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
 			if (conformanceProfileRegistry != null) {
@@ -262,8 +265,7 @@ public class IgServiceImpl implements IgService {
 	@Override
 	public List<Ig> findByUsername(String username, Scope scope) {
 		Criteria where = Criteria.where("username").is(username)
-				.andOperator(Criteria.where("domainInfo.scope").is(scope.toString()));
-
+				.andOperator(Criteria.where("domainInfo.scope").is(scope.toString()), Criteria.where("status").ne(Status.PUBLISHED));
 		Query qry = Query.query(where);
 		qry.fields().include("domainInfo");
 		qry.fields().include("id");
@@ -296,7 +298,7 @@ public class IgServiceImpl implements IgService {
 
 	@Override
 	public List<Ig> findAllPreloadedIG() {
-		Criteria where = Criteria.where("domainInfo.scope").is(Scope.PRELOADED);
+		Criteria where = Criteria.where("status").is(Status.PUBLISHED);
 		Query qry = Query.query(where);
 		qry.fields().include("domainInfo");
 		qry.fields().include("id");
@@ -311,7 +313,7 @@ public class IgServiceImpl implements IgService {
 	}
 
 	@Override
-	public UpdateResult updateAttribute(String id, String attributeName, Object value) {
+	public UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass) {
 		// TODO Auto-generated method stub
 		Query query = new Query();
 		query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
@@ -319,10 +321,10 @@ public class IgServiceImpl implements IgService {
 		Update update = new Update();
 		update.set(attributeName, value);
 		update.set("updateDate", new Date());
-		return mongoTemplate.updateFirst(query, update, Ig.class);
+		return mongoTemplate.updateFirst(query, update, entityClass);
 
 	}
-
+	
 
 	@Override
 	public List<Ig> findIgIdsForUser(String username) {
@@ -1044,5 +1046,55 @@ public class IgServiceImpl implements IgService {
 			ret.addAll(datatypeService.collectDependencies(dt));
 		}
 	}
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.ig.service.IgService#publishIG()
+   */
+  @Override
+  public void publishIG(String id)  throws IGNotFoundException, IGUpdateException{
+    // TODO Auto-generated method stub
+    Ig ig= this.findById(id);
+    if (ig == null) {
+      throw new IGNotFoundException("IG with id: "+ id + "Not found");
+    }
+    for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, ConformanceProfile.class);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not publish Conformance profile:" +l.getId());
+        }
+      }
+    }
+    for ( Link l: ig.getSegmentRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Segment.class);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not publish segment:" +l.getId());
+        }
+      }
+    }
+    
+    for ( Link l: ig.getDatatypeRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Datatype.class);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not publish Datatype:" +l.getId());
+        }
+      }
+    }
+    for ( Link l: ig.getValueSetRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Valueset.class);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not publish Value set:" +l.getId());
+        }
+      }
+    }
+    
+    UpdateResult updateResult = this.updateAttribute(id, "status", Status.PUBLISHED, Ig.class);
+    if(! updateResult.wasAcknowledged()) {
+      throw new IGUpdateException("Could not publish Ig:" +ig.getId());
+    }
+  }
 	  
-	}
+}

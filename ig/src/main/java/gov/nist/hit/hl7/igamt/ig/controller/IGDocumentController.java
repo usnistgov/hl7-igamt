@@ -325,7 +325,6 @@ public class IGDocumentController extends BaseController {
       } else if (type.equals(AccessType.SHARED)) {
         // TODO
       } else {
-
         igdouments = igService.findByUsername(username, Scope.USER);
 
       }
@@ -421,7 +420,7 @@ public class IGDocumentController extends BaseController {
 
     Set<TextSection> content = displayConverter.convertTocToDomain(toc);
 
-    UpdateResult updateResult = igService.updateAttribute(id, "content", content);
+    UpdateResult updateResult = igService.updateAttribute(id, "content", content, Ig.class);
     if (!updateResult.wasAcknowledged()) {
       throw new IGUpdateException(id);
     }
@@ -443,7 +442,7 @@ public class IGDocumentController extends BaseController {
       @RequestBody Set<TextSection> content, Authentication authentication)
           throws IGNotFoundException, IGUpdateException {
 
-    UpdateResult updateResult = igService.updateAttribute(id, "content", content);
+    UpdateResult updateResult = igService.updateAttribute(id, "content", content, Ig.class);
     if (!updateResult.wasAcknowledged()) {
       throw new IGUpdateException(id);
     }
@@ -1124,6 +1123,17 @@ public class IGDocumentController extends BaseController {
     clone = igService.save(clone);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", clone.getId(), false,
         clone.getUpdateDate(), clone.getId());
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/publish", method = RequestMethod.POST, produces = {
+  "application/json" })
+  public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id, Authentication authentication)
+      throws IGNotFoundException, IGUpdateException {
+    String username = authentication.getPrincipal().toString();
+
+    this.igService.publishIG(id);
+    return new ResponseMessage<String>(Status.SUCCESS, "", "Ig published Successfully", id, false,
+        new Date(), id);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.DELETE, produces = { "application/json" })
