@@ -124,7 +124,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 },
                 disabled: (item: IgListItem): boolean => {
                   if (item.type === 'PUBLISHED') {
-                    return !admin;
+                    return true;
                   } else {
                     return false;
                   }
@@ -149,6 +149,44 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   return false;
                 },
               },
+
+              {
+                label: 'Publish',
+                class: 'btn-scondary',
+                icon: 'fa fa-globe',
+                action: (item: IgListItem) => {
+                  this.ig.publish(item.id).subscribe(
+                    (response: Message<string>) => {
+                      this.store.dispatch(this.message.messageToAction(response));
+                      this.router.navigateByUrl('/ig/list?type=PUBLISHED');
+                    },
+                    (error) => {
+                      this.store.dispatch(this.message.actionFromError(error));
+                    },
+                  );
+                },
+                disabled: (item: IgListItem): boolean => {
+                    return !admin || item.type === 'PUBLISHED';
+                  },
+                hide: (item: IgListItem): boolean => {
+                  return item.type === 'PUBLISHED';
+                },
+              },
+              {
+                label: 'Derive from',
+                class: 'btn-scondary',
+                icon: 'fa fa-map-marker',
+                action: (item: IgListItem) => {
+
+                },
+                disabled: (item: IgListItem): boolean => {
+                  return false;
+                },
+                hide: (item: IgListItem): boolean => {
+                  return item.type !== 'PUBLISHED';
+                },
+              },
+
               {
                 label: 'Open',
                 class: 'btn-primary',
