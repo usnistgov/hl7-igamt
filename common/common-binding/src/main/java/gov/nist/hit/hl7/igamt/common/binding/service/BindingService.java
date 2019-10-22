@@ -10,15 +10,10 @@ import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
 public interface BindingService {
-	
-	Set<RelationShip> collectDependencies(ReferenceIndentifier parent, ResourceBinding binding, HashMap<String, Usage> usageMap);
-	
-	Set<String> processBinding(ResourceBinding binding);
 
-  /**
-   * @param binding
-   * @param valuesetsMap
-   */
+  Set<RelationShip> collectDependencies(ReferenceIndentifier parent, ResourceBinding binding, HashMap<String, Usage> usageMap);
+
+  Set<String> processBinding(ResourceBinding binding);
   void substitute(ResourceBinding binding, HashMap<RealKey, String > newKeys);
 
 
