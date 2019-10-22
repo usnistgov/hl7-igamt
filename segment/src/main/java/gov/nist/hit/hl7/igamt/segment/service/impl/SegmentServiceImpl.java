@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -568,7 +569,7 @@ public class SegmentServiceImpl implements SegmentService {
 	 * java.lang.String)
 	 */
 	@Override
-	public Link cloneSegment(String key, HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
+	public Link cloneSegment(String key, HashMap<RealKey, String> newKeys,
 			Link l, String username, Scope scope) {
 
 		Segment obj = this.findById(l.getId());
@@ -578,7 +579,7 @@ public class SegmentServiceImpl implements SegmentService {
 		Link newLink = l.clone(key);
 		elm.setId(newLink.getId());
 		newLink.setDomainInfo(elm.getDomainInfo());
-		updateDependencies(elm, valuesetsMap, datatypesMap, username);
+		updateDependencies(elm, newKeys, username);
 		this.save(elm);
 		//		updateCoConstraint(elm, obj, valuesetsMap, datatypesMap, username);
 		return newLink;
@@ -591,20 +592,21 @@ public class SegmentServiceImpl implements SegmentService {
 	 * @param valuesetsMap
 	 * @throws CoConstraintSaveException
 	 */
-	private void updateDependencies(Segment elm, HashMap<String, String> valuesetsMap,
-			HashMap<String, String> datatypesMap, String username) {
+	private void updateDependencies(Segment elm, HashMap<RealKey, String> newKeys, String username) {
 		// TODO Auto-generated method stub
 
 		for (Field f : elm.getChildren()) {
 			if (f.getRef() != null) {
 				if (f.getRef().getId() != null) {
-					if (datatypesMap.containsKey(f.getRef().getId())) {
-						f.getRef().setId(datatypesMap.get(f.getRef().getId()));
+				  RealKey key = new RealKey(f.getRef().getId(), Type.DATATYPE);
+					if (newKeys.containsKey(key)) {
+						f.getRef().setId(newKeys.get(key));
 					}
 				}
 			}
 		}
-		updateBindings(elm.getBinding(), valuesetsMap);
+		this.bindingService.substitute(elm.getBinding(), newKeys);
+		//updateBindings(elm.getBinding(), valuesetsMap);
 	}
 
 	private void updateCoConstraint(Segment elm, Segment old, HashMap<String, String> valuesetsMap,

@@ -21,6 +21,7 @@ import java.util.Set;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
@@ -83,9 +84,7 @@ public interface SegmentService extends ResourceService {
 	public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version);
 
 
-	public Link cloneSegment(String compositeKey, HashMap<String, String> valuesetsMap,
-//			HashMap<String, String> datatypesMap, Link l, String username, Scope user) throws CoConstraintSaveException;
-			HashMap<String, String> datatypesMap, Link l, String username, Scope user);
+	public Link cloneSegment(String id, HashMap<RealKey, String> newKeys, Link l, String username, Scope user);
 
 
 	public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)

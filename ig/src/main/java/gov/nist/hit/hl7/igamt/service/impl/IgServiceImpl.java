@@ -34,6 +34,7 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
@@ -406,22 +407,21 @@ public class IgServiceImpl implements IgService {
 		newIg.setDomainInfo(ig.getDomainInfo());
 		newIg.getDomainInfo().setScope(Scope.USER);
 		newIg.setStatus(null);
-		HashMap<String, String> conformanceProfilesMap =
-				getNewIdsMap(ig.getConformanceProfileRegistry());
-		HashMap<String, String> valuesetsMap = getNewIdsMap(ig.getValueSetRegistry());
-		HashMap<String, String> datatypesMap = getNewIdsMap(ig.getDatatypeRegistry());
-		HashMap<String, String> segmentsMap = getNewIdsMap(ig.getSegmentRegistry());
+		HashMap<RealKey, String> newKeys= new HashMap<RealKey, String>();
+		addKeys(ig.getConformanceProfileRegistry(), Type.CONFORMANCEPROFILE, newKeys);
+		addKeys(ig.getValueSetRegistry(), Type.VALUESET, newKeys);
+		addKeys(ig.getDatatypeRegistry(), Type.DATATYPE, newKeys);
+		addKeys(ig.getSegmentRegistry(), Type.SEGMENT, newKeys);
 
 
 
 		newIg.setValueSetRegistry(
-				copyValueSetRegistry(ig.getValueSetRegistry(), valuesetsMap, username));
+				copyValueSetRegistry(ig.getValueSetRegistry(), newKeys, username));
 		newIg.setDatatypeRegistry(
-				copyDatatypeRegistry(ig.getDatatypeRegistry(), valuesetsMap, datatypesMap, username));
-		newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),valuesetsMap,datatypesMap,segmentsMap, username));
+				copyDatatypeRegistry(ig.getDatatypeRegistry(), newKeys, username));
+		newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),newKeys, username));
 		newIg.setConformanceProfileRegistry(
-				copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), valuesetsMap,
-						datatypesMap, segmentsMap, conformanceProfilesMap, username));
+				copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), newKeys, username));
 		return newIg;
 	}
 
@@ -435,9 +435,8 @@ public class IgServiceImpl implements IgService {
 	 */
 
 	private ConformanceProfileRegistry copyConformanceProfileRegistry(
-			ConformanceProfileRegistry conformanceProfileRegistry, HashMap<String, String> valuesetsMap,
-			HashMap<String, String> datatypesMap, HashMap<String, String> segmentsMap,
-			HashMap<String, String> conformanceProfilesMap, String username) {
+			ConformanceProfileRegistry conformanceProfileRegistry,
+			HashMap<RealKey, String> newKeys, String username) {
 
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
@@ -445,11 +444,12 @@ public class IgServiceImpl implements IgService {
 		ConformanceProfileRegistry newReg = new ConformanceProfileRegistry();
 		HashSet<Link> children = new HashSet<Link>();
 		for (Link l : conformanceProfileRegistry.getChildren()) {
-			if (!conformanceProfilesMap.containsKey(l.getId())) {
+		  RealKey key  = new RealKey(l.getId(), Type.CONFORMANCEPROFILE);
+			if (!newKeys.containsKey(key)) {
 				children.add(l);
 			} else {
 				children.add(conformanceProfileService.cloneConformanceProfile(
-						conformanceProfilesMap.get(l.getId()),valuesetsMap,segmentsMap,l, username, Scope.USER));
+				    newKeys.get(key),newKeys,l, username, Scope.USER));
 			}
 		}
 		newReg.setChildren(children);
@@ -466,17 +466,16 @@ public class IgServiceImpl implements IgService {
 	 * @throws CoConstraintSaveException
 	 */
 	private SegmentRegistry copySegmentRegistry(SegmentRegistry segmentRegistry,
-			HashMap<String, String> valuesetsMap , HashMap<String, String> datatypesMap,
-			HashMap<String, String> segmentsMap, String username) {
+			HashMap<RealKey, String> newKeys, String username) {
 		// TODO Auto-generated method stub
 		SegmentRegistry newReg = new SegmentRegistry();
 		HashSet<Link> children = new HashSet<Link>();
 		for (Link l : segmentRegistry.getChildren()) {
-			if (!segmentsMap.containsKey(l.getId())) {
+		  RealKey key = new RealKey(l.getId(), Type.SEGMENT);
+			if (!newKeys.containsKey(key)) {
 				children.add(l);
 			} else {
-				children.add(segmentService.cloneSegment(segmentsMap.get(l.getId()),
-						valuesetsMap,datatypesMap, l, username,Scope.USER));
+				children.add(segmentService.cloneSegment(newKeys.get(key),newKeys, l, username,Scope.USER));
 			}
 		}
 		newReg.setChildren(children);
@@ -490,15 +489,17 @@ public class IgServiceImpl implements IgService {
 	 * @return
 	 */
 	private DatatypeRegistry copyDatatypeRegistry(DatatypeRegistry datatypeRegistry,
-			HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, String username) {
+			HashMap<RealKey, String> newKeys, String username) {
 		// TODO Auto-generated method stub
 		DatatypeRegistry newReg = new DatatypeRegistry();
 		HashSet<Link> children = new HashSet<Link>();
 		for (Link l : datatypeRegistry.getChildren()) {
-			if (!datatypesMap.containsKey(l.getId())) {
+          RealKey key = new RealKey(l.getId(), Type.DATATYPE);
+
+			if (!newKeys.containsKey(key)) {
 				children.add(l);
 			} else {
-				children.add(this.datatypeService.cloneDatatype(valuesetsMap,datatypesMap, l, username,Scope.USER));
+				children.add(this.datatypeService.cloneDatatype(newKeys.get(key),newKeys, l, username,Scope.USER));
 			}
 		}
 
@@ -511,17 +512,18 @@ public class IgServiceImpl implements IgService {
 	 * @param valuesetsMap
 	 */
 	private ValueSetRegistry copyValueSetRegistry(ValueSetRegistry reg,
-			HashMap<String, String> valuesetsMap, String username) {
+			HashMap<RealKey, String> newKeys, String username) {
 		// TODO Auto-generated method stub
 		ValueSetRegistry newReg = new ValueSetRegistry();
 		newReg.setExportConfig(reg.getExportConfig());
 		newReg.setCodesPresence(reg.getCodesPresence());
 		HashSet<Link> children = new HashSet<Link>();
 		for (Link l : reg.getChildren()) {
-			if (!valuesetsMap.containsKey(l.getId())) {
+		   RealKey key = new RealKey(l.getId(), Type.VALUESET);
+			if (!newKeys.containsKey(key)) {
 				children.add(l);
 			} else {
-				Link newLink = this.valueSetService.cloneValueSet(valuesetsMap.get(l.getId()), l, username, Scope.USER);    	  	
+				Link newLink = this.valueSetService.cloneValueSet(newKeys.get(key), l, username, Scope.USER);    	  	
 				children.add(newLink);
 			}
 		}
@@ -529,16 +531,15 @@ public class IgServiceImpl implements IgService {
 		return newReg;
 	}
 
-	private HashMap<String, String> getNewIdsMap(Registry reg) {
-		HashMap<String, String> map = new HashMap<String, String>();
+	private void addKeys(Registry reg, Type type, HashMap<RealKey, String> map) {
 		if (reg != null && reg.getChildren() != null) {
 			for (Link l : reg.getChildren()) {
 				if (!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD) && !l.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-					map.put(l.getId(), new ObjectId().toString());
+				    
+					map.put(new RealKey(l.getId(), type), new ObjectId().toString());
 				}
 			}
 		}
-		return map;
 	}
 
 	@Override
