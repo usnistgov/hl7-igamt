@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -364,7 +365,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	@Override
-	public Link cloneDatatype(HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, Link l,
+	public Link cloneDatatype( String newId, HashMap<RealKey, String> newKey, Link l,
 			String username, Scope scope) {
 		// TODO Auto-generated method stub
 
@@ -374,64 +375,34 @@ public class DatatypeServiceImpl implements DatatypeService {
 		Link newLink = l.clone(null);
 
 		elm.setOrigin(elm.getFrom());
-		if (datatypesMap.containsKey(l.getId())) {
-			newLink.setId(datatypesMap.get(l.getId()));
-		} else {
-			String newKey = new ObjectId().toString();
-			newLink.setId(newKey);
-			datatypesMap.put(l.getId(), newKey);
-		}
+		newLink.setId(newId);
 		newLink.setDomainInfo(elm.getDomainInfo());
-		updateDependencies(elm, datatypesMap, valuesetsMap);
+		updateDependencies(elm, newKey);
 		elm.setId(newLink.getId());
 		this.save(elm);
 		return newLink;
 
 	}
 
-	private void updateDependencies(Datatype elm, HashMap<String, String> valuesetsMap,
-			HashMap<String, String> datatypesMap) {
+	private void updateDependencies(Datatype elm, HashMap<RealKey, String> newKeys) {
 		// TODO Auto-generated method stub
 
 		if (elm instanceof ComplexDatatype) {
 			for (Component c : ((ComplexDatatype) elm).getComponents()) {
 				if (c.getRef() != null) {
 					if (c.getRef().getId() != null) {
-						if (datatypesMap.containsKey(c.getRef().getId())) {
-							c.getRef().setId(datatypesMap.get(c.getRef().getId()));
+					  RealKey key = new RealKey(c.getRef().getId(), Type.DATATYPE);
+						if (newKeys.containsKey(key)) {
+							c.getRef().setId(newKeys.get(key));
 						}
 					}
 				}
-
 			}
-
 		}
 		if (elm.getBinding() != null) {
-			updateBindings(elm.getBinding(), valuesetsMap);
+			this.bindingService.substitute(elm.getBinding(), newKeys);
 		}
 	}
-
-	private void updateBindings(ResourceBinding binding, HashMap<String, String> valuesetsMap) {
-		// TODO Auto-generated method stub
-		if (binding.getChildren() != null) {
-			for (StructureElementBinding child : binding.getChildren()) {
-				if (child.getValuesetBindings() != null) {
-					for (ValuesetBinding vs : child.getValuesetBindings()) {
-						if (vs.getValueSets() != null) {
-							for(String s: vs.getValueSets()) {
-								if (valuesetsMap.containsKey(s)) {
-									if(!vs.getValueSets().contains(s)) {
-										vs.getValueSets().add(valuesetsMap.get(s));
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
 	@Override
 	public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope) {
 		HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
