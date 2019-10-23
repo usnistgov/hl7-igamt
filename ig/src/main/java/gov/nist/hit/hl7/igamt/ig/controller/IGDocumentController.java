@@ -512,6 +512,7 @@ public class IGDocumentController extends BaseController {
         if (profile != null) {
           ConformanceProfile clone = profile.clone();
           clone.setUsername(username);
+          clone.setDescription(ev.getDescription());
           clone.getDomainInfo().setScope(Scope.USER);
           clone.setEvent(ev.getName());
           clone.setName(ev.getExt());
@@ -955,6 +956,7 @@ public class IGDocumentController extends BaseController {
         ConformanceProfile clone = profile.clone();
         clone.setUsername(username);
         clone.getDomainInfo().setScope(Scope.USER);
+        clone.setDescription(ev.getDescription());
         clone.setEvent(ev.getName());
         clone.setIdentifier(ev.getExt());
         clone.setName(ev.getExt());
