@@ -30,4 +30,9 @@ public interface MessageEventService {
   public List<MessageEventTreeNode> findByHl7Version(String hl7Version);
   
   public ResourcePickerList convertToDisplay(List<MessageEventTreeNode> list);
+
+  /**
+   * 
+   */
+  public void deleteAll();
 }
