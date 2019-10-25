@@ -1,4 +1,5 @@
 import {Type} from '../constants/type.enum';
+import {DeltaAction} from './delta';
 import {IDomainInfo} from './domain-info.interface';
 
 export interface IDisplayElement {
@@ -14,4 +15,5 @@ export interface IDisplayElement {
   children?: IDisplayElement[];
   isExpanded: boolean;
   path?: string;
+  delta?: DeltaAction;
 }

@@ -376,6 +376,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 		elm.setOrigin(elm.getFrom());
 		newLink.setId(newId);
+		newLink.setOrigin(elm.getFrom());
 		newLink.setDomainInfo(elm.getDomainInfo());
 		updateDependencies(elm, newKey);
 		elm.setId(newLink.getId());

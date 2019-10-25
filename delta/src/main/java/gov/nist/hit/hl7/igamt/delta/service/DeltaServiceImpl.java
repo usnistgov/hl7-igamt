@@ -3,14 +3,23 @@ package gov.nist.hit.hl7.igamt.delta.service;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
+import gov.nist.hit.hl7.igamt.delta.exception.IGDeltaException;
+import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
+import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
+import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import gov.nist.diff.domain.DeltaAction;
 import gov.nist.diff.domain.DeltaMode;
 import gov.nist.diff.domain.DeltaObject;
 import gov.nist.diff.service.DeltaProcessor;
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
@@ -23,7 +32,15 @@ import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class DeltaServiceImpl implements DeltaService {
@@ -40,6 +57,11 @@ public class DeltaServiceImpl implements DeltaService {
   public IgService igService;
   @Autowired
   public EntityDeltaServiceImpl entityDeltaService;
+  @Autowired
+  DisplayInfoService displayInfoService;
+  
+  @Autowired
+  ValuesetService valuesetService;
 
   public Delta delta(Type type, String documentId, String entityId) {
     Ig targetIg = this.igService.findById(documentId);
@@ -125,7 +147,7 @@ public class DeltaServiceImpl implements DeltaService {
         diffable = !this.igRepository.segmentsInSameIg(this.convertToObjectd(ig),
             this.convertToObjectd(source), this.convertToObjectd(target));
         System.out
-            .println("[HTM] " + diffable + " ig " + ig + " source " + source + " target " + target);
+        .println("[HTM] " + diffable + " ig " + ig + " source " + source + " target " + target);
         if (diffable) {
           Segment segment = this.segmentService.findById(source);
           return new DiffableResult(diffable, segment);
@@ -179,5 +201,218 @@ public class DeltaServiceImpl implements DeltaService {
     }
     return null;
   }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.delta.service.DeltaService#delta(gov.nist.hit.hl7.igamt.ig.domain.Ig, gov.nist.hit.hl7.igamt.ig.domain.Ig)
+   */
+  @Override
+  public IGDisplayInfo delta(Ig ig, Ig origin) throws IGDeltaException {
+
+    IGDisplayInfo ret = new IGDisplayInfo();
+    ret.setIg(ig);
+    ret.setMessages(compareRegistries(ig.getConformanceProfileRegistry(), origin.getConformanceProfileRegistry(), Type.CONFORMANCEPROFILEREGISTRY));
+    ret.setSegments(compareRegistries(ig.getSegmentRegistry(), origin.getSegmentRegistry(), Type.SEGMENTREGISTRY));
+    ret.setDatatypes(compareRegistries(ig.getDatatypeRegistry(), origin.getDatatypeRegistry(), Type.DATATYPEREGISTRY));
+    ret.setValueSets(compareRegistries(ig.getValueSetRegistry(), origin.getValueSetRegistry(), Type.VALUESETREGISTRY));
+    return ret;
+
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.delta.service.DeltaService#delta(gov.nist.hit.hl7.igamt.common.base.domain.Type, java.lang.String)
+   */
+  @Override
+  public List<StructureDelta> delta(Type type, String entityId) throws IGDeltaException {
+    // TODO Auto-generated method stub
+    if(type.equals(Type.DATATYPE)) {
+
+      Datatype target = this.datatypeService.findById(entityId);
+      Datatype source = this.datatypeService.findById(target.getOrigin());
+
+      DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
+      DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
+      List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+      return structure;
+
+    } else if(type.equals(Type.SEGMENT)) {
+
+      Segment target = this.segmentService.findById(entityId);
+      Segment source = this.segmentService.findById(target.getOrigin());
+
+      SegmentStructureDisplay sourceDisplay = this.segmentService.convertDomainToDisplayStructure(source, true);
+      SegmentStructureDisplay targetDisplay = this.segmentService.convertDomainToDisplayStructure(target, true);
+      List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
+
+      return structure;
+
+    } else if(type.equals(Type.CONFORMANCEPROFILE)) {
+
+      ConformanceProfile target = this.conformanceProfileService.findById(entityId);
+      ConformanceProfile source = this.conformanceProfileService.findById(target.getOrigin());
+
+      ConformanceProfileStructureDisplay sourceDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(source, true);
+      ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
+
+      List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
+
+      return structure;
+
+    }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.delta.service.DeltaService#hasChanged(java.util.List)
+   */
+  @Override
+  public DeltaAction summarize(List<StructureDelta> deltaStructure) {
+    // TODO Auto-generated method stub
+    DeltaAction ret = DeltaAction.UNCHANGED;
+    if(deltaStructure !=null)
+      for(StructureDelta child:deltaStructure ) {
+        if(child.getData() !=null && child.getData().getAction() != DeltaAction.UNCHANGED) {
+          return DeltaAction.UPDATED;
+        }
+      }
+    return ret;
+  }
+
+  public Set<DisplayElement> compareRegistries(Registry reg, Registry origin, Type registryType){
+    Set<DisplayElement> result = new HashSet<DisplayElement>();
+    Map<String, Link> originMap = origin.getLinksAsMap();
+    Map<String, Link> regMap = reg.getLinksAsMap();
+
+    Map<String, Link> hasChild = new HashMap<String, Link>();
+
+    for(Link l: reg.getChildren()) {
+      if(l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        if(l.getOrigin() == null || !originMap.containsKey(l.getOrigin()) ) {
+          result.add(createDeltaDisplay(registryType, l, DeltaAction.ADDED));
+        }else if(l.getOrigin()  !=null && originMap.containsKey(l.getOrigin())) {
+          
+          result.add(compareToOrigin(l, registryType));
+          hasChild.put(l.getOrigin(), l);
+        }
+      } else {
+        if(originMap.containsKey(l.getId())) {
+          result.add(createDeltaDisplay(registryType, l, DeltaAction.UNCHANGED));
+        }else {
+          result.add(createDeltaDisplay(registryType, l, DeltaAction.ADDED));
+        }
+      }
+    }
+    for(Link l: origin.getChildren()) {
+      if(l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        if(!hasChild.containsKey(l.getId())) {
+          result.add(createDeltaDisplay(registryType, l, DeltaAction.DELETED));
+        }
+      }else {
+        if(!regMap.containsKey(l.getId())) {
+          result.add(createDeltaDisplay(registryType, l, DeltaAction.DELETED));
+        }
+      }
+
+    }
+    return result;
+
+  }
+
+  /**
+   * @param l
+   * @param registryType
+   */
+  private DisplayElement compareToOrigin(Link l, Type registryType) {
+    // TODO Auto-generated method stub
+    switch(registryType) {
+      case CONFORMANCEPROFILEREGISTRY: {
+        
+        ConformanceProfile target = this.conformanceProfileService.findById(l.getId());
+        ConformanceProfile source = this.conformanceProfileService.findById(target.getOrigin());
+
+        ConformanceProfileStructureDisplay sourceDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(source, true);
+        ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
+
+        List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
+        DisplayElement elm= this.displayInfoService.convertConformanceProfile(target);
+        elm.setDelta(summarize(structure));
+        return elm;
+        
+      }
+      case DATATYPEREGISTRY: {
+        Datatype target = this.datatypeService.findById(l.getId());
+        Datatype source = this.datatypeService.findById(target.getOrigin());
+
+        DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
+        DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
+        List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+        DisplayElement elm= this.displayInfoService.convertDatatype(target);
+        elm.setDelta(summarize(structure));
+        return elm;
+      }
+      case SEGMENTREGISTRY : {
+      
+        
+        Segment target = this.segmentService.findById(l.getId());
+        Segment source = this.segmentService.findById(target.getOrigin());
+
+        SegmentStructureDisplay sourceDisplay = this.segmentService.convertDomainToDisplayStructure(source, true);
+        SegmentStructureDisplay targetDisplay = this.segmentService.convertDomainToDisplayStructure(target, true);
+        List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
+        DisplayElement elm= this.displayInfoService.convertSegment(target);
+        elm.setDelta(summarize(structure));
+        return elm;
+      }
+      case VALUESETREGISTRY: {
+        
+        DisplayElement elm=createDeltaDisplay(Type.VALUESETREGISTRY, l, DeltaAction.UNCHANGED);
+        return elm;
+      }
+      default:  return null;
+    }
+  }
+
+  /**
+   * @param registryType
+   * @param l
+   * @param deleted
+   */
+  private DisplayElement createDeltaDisplay(Type registryType, Link l, DeltaAction action) {
+    // TODO Auto-generated method stub
+    switch(registryType) {
+      case CONFORMANCEPROFILEREGISTRY: {
+        
+        ConformanceProfile target = this.conformanceProfileService.findById(l.getId());
+        DisplayElement elm= this.displayInfoService.convertConformanceProfile(target);
+        elm.setDelta(action);
+        return elm;
+        
+      }
+      case DATATYPEREGISTRY: {
+        Datatype target = this.datatypeService.findById(l.getId());
+        DisplayElement elm= this.displayInfoService.convertDatatype(target);
+        elm.setDelta(action);
+        return elm;
+      }
+      case SEGMENTREGISTRY : {
+      
+        
+        Segment target = this.segmentService.findById(l.getId());
+        DisplayElement elm= this.displayInfoService.convertSegment(target);
+        elm.setDelta(action);
+        return elm;
+      }
+      case VALUESETREGISTRY: {
+        
+        Valueset vs =  this.valuesetService.findById(l.getId()); 
+        DisplayElement elm= displayInfoService.convertValueSet(vs);
+        elm.setDelta(action);
+
+        return elm;
+      }
+      default:  return null;
+    }
+  }
+
+
 }
 

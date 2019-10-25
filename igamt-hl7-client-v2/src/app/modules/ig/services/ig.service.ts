@@ -225,4 +225,11 @@ export class IgService {
     return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + id + '/getFilteredDocument');
   }
 
+  getDisplay(id: string, delta: boolean) {
+    if (delta) {
+      return this.http.get<IGDisplayInfo>('api/delta/display/' + id);
+    } else {
+      return this.getIgInfo(id);
+    }
+  }
 }

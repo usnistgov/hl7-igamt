@@ -401,6 +401,7 @@ public class IgServiceImpl implements IgService {
 		Ig newIg = new Ig();
 		newIg.setId(null);
 		newIg.setFrom(ig.getId());
+		newIg.setOrigin(ig.getId());
 		newIg.setMetadata(ig.getMetadata().clone());
 		newIg.setContent(ig.getContent());
 		newIg.setUsername(username);
