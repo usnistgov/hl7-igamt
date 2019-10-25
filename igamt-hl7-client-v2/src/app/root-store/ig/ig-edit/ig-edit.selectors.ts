@@ -206,6 +206,12 @@ export const selectIgId = createSelector(
   },
 );
 
+export const selectDerived = createSelector(
+  selectIgDocument,
+  (state: IgDocument) => {
+    return state.derived;
+  },
+);
 export const selectTableOfContentEdit = createSelector(
   selectIgEdit,
   (state: IState) => {
@@ -411,6 +417,12 @@ export const selectValueSets = createSelector(
   selectIgEdit,
   (state: IState) => {
     return state.valueSets;
+  },
+);
+export const selectDelta = createSelector(
+  selectIgEdit,
+  (state: IState) => {
+    return state.delta;
   },
 );
 

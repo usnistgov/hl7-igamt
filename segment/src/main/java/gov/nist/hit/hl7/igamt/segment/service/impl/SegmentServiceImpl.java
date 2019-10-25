@@ -577,6 +577,7 @@ public class SegmentServiceImpl implements SegmentService {
 		elm.getDomainInfo().setScope(scope);
 		elm.setOrigin(elm.getFrom());
 		Link newLink = l.clone(key);
+		newLink.setOrigin(elm.getFrom());
 		elm.setId(newLink.getId());
 		newLink.setDomainInfo(elm.getDomainInfo());
 		updateDependencies(elm, newKeys, username);

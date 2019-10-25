@@ -1,4 +1,8 @@
-<div class="label-grid">
+<div class="label-grid" [ngClass]="{
+    'delta-changed':element.delta === 'UPDATED',
+    'delta-deleted':element.delta === 'DELETED',
+    'delta-added':element.delta === 'ADDED'
+  }">
   <app-scope-badge [scope]="element.domainInfo.scope" [version]="element.domainInfo.version">
   </app-scope-badge>
   <span> &nbsp;{{ getDisplayLabel() }}
@@ -7,4 +11,3 @@
     </ng-container>
   </span>
 </div>
-

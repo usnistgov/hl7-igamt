@@ -438,6 +438,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 		elm.setOrigin(elm.getFrom());
 		Link newLink = l.clone(key);
 		newLink.setDomainInfo(elm.getDomainInfo());
+		newLink.setOrigin(elm.getFrom());
 		updateDependencies(elm, newKeys);
 		elm.setId(newLink.getId());
 		elm.setUsername(username);
