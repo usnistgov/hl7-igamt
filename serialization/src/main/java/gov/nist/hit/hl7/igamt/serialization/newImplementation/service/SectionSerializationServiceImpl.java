@@ -309,11 +309,11 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 									.contains(segmentLink.getId())) {
 								segmentElement = segmentSerializationService.serializeSegment(igDataModel,
 										segmentDataModel, level + 1, segmentLink.getPosition(),
-										exportFilterDecision.getOveriddedSegmentMap().get(segmentLink.getId()));
+										exportFilterDecision.getOveriddedSegmentMap().get(segmentLink.getId()), exportFilterDecision);
 							} else {
 								segmentElement = segmentSerializationService.serializeSegment(igDataModel,
 										segmentDataModel, level + 1, segmentLink.getPosition(),
-										exportConfiguration.getSegmentExportConfiguration());
+										exportConfiguration.getSegmentExportConfiguration(), exportFilterDecision);
 
 							}
 							if (segmentElement != null) {

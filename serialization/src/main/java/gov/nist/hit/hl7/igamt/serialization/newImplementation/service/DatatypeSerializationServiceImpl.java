@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -18,6 +19,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
 import nu.xom.Attribute;
 import nu.xom.Element;
@@ -31,8 +33,11 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	@Autowired
 	private ConstraintSerializationService constraintSerializationService;
 	
+	@Autowired 
+	BindingSerializationService bindingSerializationService;
+	
 	@Override
-	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration) throws SubStructElementSerializationException {
+	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration) throws SerializationException {
 //	    try {
 	      Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
 	      Datatype datatype = datatypeDataModel.getModel();
@@ -41,6 +46,12 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	      if(datatypeExportConfiguration.getPurposeAndUse()) {
 	      datatypeElement.addAttribute(new Attribute("purposeAndUse",
 	          datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
+	      }
+	      if (datatype.getBinding() != null) {
+		        Element bindingElement = bindingSerializationService.serializeBinding((Binding) datatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getModel().getName());
+		        if (bindingElement != null) {
+		        	datatypeElement.appendChild(bindingElement);
+		        }
 	      }
 //	      if (datatype.getBinding() != null) {
 //	        Element bindingElement =  

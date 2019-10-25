@@ -42,7 +42,7 @@ BindingSerializationService bindingSerializationService;
 ConstraintSerializationService constraintSerializationService;
 	
 	@Override
-	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration) throws SerializationException {
+	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision) throws SerializationException {
 		Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, position, segmentExportConfiguration);
 	      Segment segment = segmentDataModel.getModel();
 	      if(segment.getExt() != null) {
@@ -71,10 +71,10 @@ ConstraintSerializationService constraintSerializationService;
 	        }
 	      }
 	      if (segment.getBinding() != null) {
-//	        Element bindingElement = bindingSerializationService.serializeBinding(segmentDataModel.getValuesetMap(), (Binding) segment.getBinding());
-//	        if (bindingElement != null) {
-//	          segmentElement.appendChild(bindingElement);
-//	        }
+	        Element bindingElement = bindingSerializationService.serializeBinding((Binding) segment.getBinding(), segmentDataModel.getValuesetMap(), segmentDataModel.getModel().getName() );
+	        if (bindingElement != null) {
+	          segmentElement.appendChild(bindingElement);
+	        }
 	      }
 	      if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
     	  Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
@@ -150,11 +150,8 @@ ConstraintSerializationService constraintSerializationService;
 		  	        	fieldElement
 		  	                .addAttribute(new Attribute("valueset", vs));
 		              }
-//		  	        	
-		              fieldsElement.appendChild(fieldElement);
-		              
-		            }
-		            
+		              fieldsElement.appendChild(fieldElement);		              
+		            }	            
 		          } catch (DatatypeNotFoundException exception) {
 		            throw new SubStructElementSerializationException(exception, field);
 		          }
