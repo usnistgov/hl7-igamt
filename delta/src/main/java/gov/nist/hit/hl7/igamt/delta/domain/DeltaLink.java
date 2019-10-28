@@ -9,30 +9,38 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.conformanceprofile.service.event;
+package gov.nist.hit.hl7.igamt.delta.domain;
 
-import java.util.List;
-
-import gov.nist.hit.hl7.igamt.common.base.wrappers.ResourcePickerList;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.MessageEvent;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
-
+import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
 
 /**
- * @author ena3
+ * @author Abdelghani El Ouakili
  *
  */
-public interface MessageEventService {
-
-
-  public MessageEvent save(MessageEvent ev);
-
-  public List<MessageEventTreeNode> findByHl7Version(String hl7Version);
+public class DeltaLink {
   
-  public ResourcePickerList convertToDisplay(List<MessageEventTreeNode> list);
-
+  private DeltaAction deltaAction;
+  private DisplayElement display;
+  
+  
   /**
    * 
    */
-  public void deleteAll();
+  public DeltaLink() {
+    super();
+  }
+  public DeltaAction getDeltaAction() {
+    return deltaAction;
+  }
+  public void setDeltaAction(DeltaAction deltaAction) {
+    this.deltaAction = deltaAction;
+  }
+  public DisplayElement getDisplay() {
+    return display;
+  }
+  public void setDisplay(DisplayElement display) {
+    this.display = display;
+  }
+  
 }

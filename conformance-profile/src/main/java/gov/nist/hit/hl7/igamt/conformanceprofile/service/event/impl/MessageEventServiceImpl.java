@@ -65,7 +65,7 @@ public class MessageEventServiceImpl implements MessageEventService {
         EventTreeData data = new EventTreeData();
         data.setName(ev.getName());
         data.setHl7Version(ev.getHl7Version());
-
+        data.setDescription(ev.getDescription());
         data.setParentStructId(ev.getParentStructId());
         data.setId(ev.getId());
         EventTreeNode node = new EventTreeNode();
@@ -115,6 +115,16 @@ private Map<VariableKey, List<String>> createComplement(MessageEventTreeNode nod
 	 }
 	ret.put(VariableKey.EVENT, events);
 	return ret; 
+}
+
+/* (non-Javadoc)
+ * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService#deleteAll()
+ */
+@Override
+public void deleteAll() {
+  // TODO Auto-generated method stub
+  this.messageEventRepository.deleteAll();
+  
 }
 
 

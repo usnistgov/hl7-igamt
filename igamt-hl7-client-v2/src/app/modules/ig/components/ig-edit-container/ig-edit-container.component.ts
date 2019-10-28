@@ -1,8 +1,9 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { fromEvent, Observable, Subscription } from 'rxjs';
-import { filter, repeat, skipUntil, takeUntil, tap } from 'rxjs/operators';
+import {filter, map, repeat, skipUntil, take, takeUntil, tap, withLatestFrom} from 'rxjs/operators';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {selectDelta, selectIgId, ToggleDelta} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { ClearIgEdit, ExpandTOC } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { IWorkspaceActive } from '../../../shared/models/editor.class';
@@ -25,6 +26,8 @@ export class IgEditContainerComponent implements OnInit, AfterViewInit, OnDestro
   tocCollapseSubscription: Subscription;
   activeComponent: AbstractEditorComponent;
   activeWorkspace: Observable<IWorkspaceActive>;
+  deltaMode$: Observable<boolean>;
+  delta: boolean;
 
   constructor(private store: Store<fromIgEdit.IState>) {
     this.titleBar = this.store.select(fromIgEdit.selectTitleBar);
@@ -56,7 +59,6 @@ export class IgEditContainerComponent implements OnInit, AfterViewInit, OnDestro
       $event.unregisterTitleListener();
     }
   }
-
   getControl() {
     return this.activeComponent ? this.activeComponent.controls : undefined;
   }

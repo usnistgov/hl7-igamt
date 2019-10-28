@@ -9,30 +9,34 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.conformanceprofile.service.event;
-
-import java.util.List;
-
-import gov.nist.hit.hl7.igamt.common.base.wrappers.ResourcePickerList;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.MessageEvent;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
-
+package gov.nist.hit.hl7.igamt.display.model;
 
 /**
- * @author ena3
+ * @author Abdelghani El Ouakili
  *
  */
-public interface MessageEventService {
+public class CopyInfo {
 
-
-  public MessageEvent save(MessageEvent ev);
-
-  public List<MessageEventTreeNode> findByHl7Version(String hl7Version);
+  private CloneMode mode; 
+  private Object data;
   
-  public ResourcePickerList convertToDisplay(List<MessageEventTreeNode> list);
+  public CopyInfo() {
+    super();
+    // TODO Auto-generated constructor stub
+  }
+  
+  public CloneMode getMode() {
+    return mode;
+  }
+  public void setMode(CloneMode mode) {
+    this.mode = mode;
+  }
+  public Object getData() {
+    return data;
+  }
+  public void setData(Object data) {
+    this.data = data;
+  }
 
-  /**
-   * 
-   */
-  public void deleteAll();
+  
 }

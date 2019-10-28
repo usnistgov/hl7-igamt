@@ -42,6 +42,7 @@ export class ValueSetEditEffects {
         blockUI: true,
       }));
       return this.store.select(fromIgEdit.selectIgId).pipe(
+        take(1),
         mergeMap((x: string ) => {
           return this.valueSetService.getById(x, action.id).pipe(
             take(1),

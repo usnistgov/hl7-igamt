@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.delta.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;

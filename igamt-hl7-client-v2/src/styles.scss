@@ -262,3 +262,21 @@ body .ui-panel .ui-panel-titlebar .ui-panel-titlebar-icon {
   border: 1px solid transparent;
   transition: color 0.2s;
 }
+
+.delta-added{
+  background-color: lightgreen;
+  font-style: italic;
+}
+.delta-deleted {
+
+  background-color: red;
+  text-decoration: line-through;
+  font-style: italic;
+}
+.delta-changed {
+  background-color: yellow;
+  font-style: italic;
+}
+.delta-badge{
+  padding: 0px;
+}

@@ -9,30 +9,39 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.conformanceprofile.service.event;
+package gov.nist.hit.hl7.igamt.display.model;
 
-import java.util.List;
-
-import gov.nist.hit.hl7.igamt.common.base.wrappers.ResourcePickerList;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.MessageEvent;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
-
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 /**
- * @author ena3
+ * @author Abdelghani El Ouakili
  *
  */
-public interface MessageEventService {
+public enum CloneMode {
+  CLONE("CLONE"), DERIVE ("DERIVE");
 
+  CloneMode(String value) {
+    this.value = value;
+  }
+  private final String value;
 
-  public MessageEvent save(MessageEvent ev);
+  public String getValue() {
+    return value;
+  }
 
-  public List<MessageEventTreeNode> findByHl7Version(String hl7Version);
-  
-  public ResourcePickerList convertToDisplay(List<MessageEventTreeNode> list);
+  @Override
+  public String toString() {
+    // TODO Auto-generated method stub
+    return this.value;
+  }
 
-  /**
-   * 
-   */
-  public void deleteAll();
+  public static CloneMode fromString(String text) {
+    for (CloneMode t : CloneMode.values()) {
+      if (t.value.equalsIgnoreCase(text)) {
+        return t;
+      }
+    }
+    return null;
+  }
+
 }

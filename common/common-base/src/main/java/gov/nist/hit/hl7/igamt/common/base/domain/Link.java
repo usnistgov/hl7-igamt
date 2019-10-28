@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Link implements Serializable{
   private String id;
+  private String origin;
   private int position;
   private DomainInfo domainInfo;
   private Type type;
@@ -110,6 +111,14 @@ public class Link implements Serializable{
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  public String getOrigin() {
+    return origin;
+  }
+
+  public void setOrigin(String origin) {
+    this.origin = origin;
   }
 
 
