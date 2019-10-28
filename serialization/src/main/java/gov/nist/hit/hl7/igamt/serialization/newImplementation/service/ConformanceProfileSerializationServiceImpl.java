@@ -1,5 +1,8 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,10 +69,13 @@ private ConstraintSerializationService constraintSerializationService;
 	        }
 	        if (conformanceProfile.getChildren() != null
 	            && conformanceProfile.getChildren().size() > 0) {
-	          for (MsgStructElement msgStructElm : conformanceProfile.getChildren()) {
-	            	System.out.println("HERE1 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
+	        	List<MsgStructElement> msgStructElementList = conformanceProfile.getChildren().stream().sorted((e1, e2) -> 
+	        	e1.getPosition() - e2.getPosition()).collect(Collectors.toList());
+	        	
+	          for (MsgStructElement msgStructElm : msgStructElementList) {
+	            	System.out.println("HERE1 position : " +  msgStructElm.getPosition() +" Name is : " + msgStructElm.getName());
 		            if (msgStructElm != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), msgStructElm.getUsage())) {
-		            	System.out.println("HERE2 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
+//		            	System.out.println("HERE2 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
 	            if (msgStructElm != null) {
 //	              if(this.bindedGroupsAndSegmentRefs.contains(msgStructElm.getId())) {
 	                Element msgStructElement = this.serializeMsgStructElement(igDataModel, msgStructElm, 0);
@@ -116,6 +122,9 @@ private ConstraintSerializationService constraintSerializationService;
 	      if (msgStructElement != null) {
 	        msgStructElement.addAttribute(new Attribute("min", String.valueOf(msgStructElm.getMin())));
 	        msgStructElement.addAttribute(new Attribute("max", msgStructElm.getMax()));
+	        msgStructElement.addAttribute(new Attribute("position", String.valueOf(msgStructElm.getPosition())));
+
+
 	      }
 	      return msgStructElement;
 	    } catch (SegmentNotFoundException e) {

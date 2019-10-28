@@ -42,7 +42,7 @@ BindingSerializationService bindingSerializationService;
 ConstraintSerializationService constraintSerializationService;
 	
 	@Override
-	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration) throws SerializationException {
+	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision) throws SerializationException {
 		Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, position, segmentExportConfiguration);
 	      Segment segment = segmentDataModel.getModel();
 	      if(segment.getExt() != null) {
@@ -59,6 +59,7 @@ ConstraintSerializationService constraintSerializationService;
 	  	      }
 	      if (segment.getDynamicMappingInfo() != null && segmentExportConfiguration.getDynamicMappingInfo()) {
 	        try {
+//	        	segment.getBinding().getc
 	          Element dynamicMappingElement =
 	              this.serializeDynamicMapping(segment.getDynamicMappingInfo(),igDataModel);
 	          if (dynamicMappingElement != null) {
@@ -69,14 +70,12 @@ ConstraintSerializationService constraintSerializationService;
 //	              segment.getDynamicMappingInfo());
 	        }
 	      }
-//	      System.out.println("Segment name : " + segment.getName());
-//	      if (segment.getBinding() != null) {
-//	    	  System.out.println("Je suis dans IF segment");
-//	        Element bindingElement = bindingSerializationService.serializeBinding(igDataModel, (Binding) segment.getBinding());
-//	        if (bindingElement != null) {
-//	          segmentElement.appendChild(bindingElement);
-//	        }
-//	      }
+	      if (segment.getBinding() != null) {
+	        Element bindingElement = bindingSerializationService.serializeBinding((Binding) segment.getBinding(), segmentDataModel.getValuesetMap(), segmentDataModel.getModel().getName() );
+	        if (bindingElement != null) {
+	          segmentElement.appendChild(bindingElement);
+	        }
+	      }
 	      if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
     	  Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
 	        if (constraints != null) {
@@ -151,11 +150,8 @@ ConstraintSerializationService constraintSerializationService;
 		  	        	fieldElement
 		  	                .addAttribute(new Attribute("valueset", vs));
 		              }
-//		  	        	
-		              fieldsElement.appendChild(fieldElement);
-		              
-		            }
-		            
+		              fieldsElement.appendChild(fieldElement);		              
+		            }	            
 		          } catch (DatatypeNotFoundException exception) {
 		            throw new SubStructElementSerializationException(exception, field);
 		          }
