@@ -25,6 +25,7 @@ import { BindingBadgeComponent } from './components/binding-badge/binding-badge.
 import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
+import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
@@ -104,6 +105,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     NamingDuplicationDirective,
     NamingConventionDirective,
     CopyResourceComponent,
+    ImportCsvValuesetComponent,
     SelectNameComponent,
     Hl7V2TreeComponent,
     UsageComponent,
@@ -222,6 +224,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChipsModule,
     ResourcePickerComponent,
     CopyResourceComponent,
+    ImportCsvValuesetComponent,
     NamingDuplicationDirective,
     NamingConventionDirective,
     Hl7V2TreeComponent,
@@ -259,7 +262,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AlertsContainerComponent,
     DynamicMappingComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent,
+    ImportCsvValuesetComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent],
 
 })
 export class SharedModule {

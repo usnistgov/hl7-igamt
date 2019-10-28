@@ -18,6 +18,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.verification.domain.VerificationReport;
 import gov.nist.hit.hl7.igamt.verification.service.VerificationService;
+import gov.nist.hit.hl7.igamt.verification.service.impl.VerificationResult;
 
 @RestController
 public class VerificationController extends BaseController {
@@ -41,25 +42,25 @@ public class VerificationController extends BaseController {
 
   @RequestMapping(value = "/api/verification/valueset", method = RequestMethod.POST, produces = {"application/json"})
   @ResponseBody
-  public VerificationReport verifyValueset(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Valueset valueset, Authentication authentication) {
+  public VerificationResult verifyValueset(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Valueset valueset, Authentication authentication) {
     return this.verificationService.verifyValueset(valueset, documentId);
   }
   
   @RequestMapping(value = "/api/verification/datatype", method = RequestMethod.POST, produces = {"application/json"})
   @ResponseBody
-  public VerificationReport verifyDatatype(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Datatype datatype, Authentication authentication) {
+  public VerificationResult verifyDatatype(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Datatype datatype, Authentication authentication) {
     return this.verificationService.verifyDatatype(datatype, documentId);
   }
   
   @RequestMapping(value = "/api/verification/segment", method = RequestMethod.POST, produces = {"application/json"})
   @ResponseBody
-  public VerificationReport verifySegment(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Segment segment, Authentication authentication) {
+  public VerificationResult verifySegment(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Segment segment, Authentication authentication) {
     return this.verificationService.verifySegment(segment, documentId);
   }
   
   @RequestMapping(value = "/api/verification/conformance-profile", method = RequestMethod.POST, produces = {"application/json"})
   @ResponseBody
-  public VerificationReport verifyConformanceProfile(@RequestParam(name = "dId", required = true) String documentId, @RequestBody ConformanceProfile conformanceProfile, Authentication authentication) {
+  public VerificationResult verifyConformanceProfile(@RequestParam(name = "dId", required = true) String documentId, @RequestBody ConformanceProfile conformanceProfile, Authentication authentication) {
     return this.verificationService.verifyConformanceProfile(conformanceProfile, documentId);
   }
 

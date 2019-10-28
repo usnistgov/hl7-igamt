@@ -21,6 +21,7 @@ import * as fromResource from '../../../../root-store/resource-loader/resource-l
 import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
+import { ImportCsvValuesetComponent } from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
 import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
 import { UsageDialogComponent } from '../../../shared/components/usage-dialog/usage-dialog.component';
 import { Scope } from '../../../shared/constants/scope.enum';
@@ -124,6 +125,27 @@ export class IgEditSidebarComponent implements OnInit {
       }),
     ).subscribe();
     subscription.unsubscribe();
+  }
+
+  addVSFromCSV($event) {
+    console.log($event);
+    const dialogRef = this.dialog.open(ImportCsvValuesetComponent, {
+      data: { ...$event, targetScope: Scope.USER, title: 'Add Valueset by CSV file' },
+    });
+
+    dialogRef.afterClosed().pipe(
+        filter((x) => x !== undefined),
+        withLatestFrom(this.igId$),
+        take(1),
+        map(([result, igId]) => {
+          console.log([result]);
+          console.log([igId]);
+
+          //TODO Need to upload csvFile to /api/igdocuments/{id}/valuesets/uploadCSVFile with file
+          //TODO need to update TOC
+          // this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: [result], type: $event.type }));
+        }),
+    ).subscribe();
   }
 
   copy($event: ICopyResourceData) {

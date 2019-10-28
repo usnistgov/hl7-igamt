@@ -33,4 +33,13 @@ export class ValueSetService {
       },
     });
   }
+
+  exportCSVFile(vsId: string) {
+    const form = document.createElement('form');
+    form.action = 'api/valuesets/exportCSV/' + vsId;
+    form.method = 'POST';
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
+  }
 }
