@@ -122,6 +122,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
           withLatestFrom(this.getIgId()),
           take(1),
           map(([result, igId]) => {
+            console.log(result,igId);
             this.igService.exportAsHtml(igId, result);
           }),
         ).subscribe();

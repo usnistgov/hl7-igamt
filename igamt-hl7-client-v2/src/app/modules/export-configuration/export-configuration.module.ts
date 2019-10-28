@@ -7,6 +7,7 @@ import { DatatypeExportConfigurationComponent } from './components/datatype-expo
 import { ExportConfigurationDialogComponent } from './components/export-configuration-dialog/export-configuration-dialog.component';
 import { SegmentExportConfigurationComponent } from './components/segment-export-configuration/segment-export-configuration.component';
 import { ValueSetExportConfigurationComponent } from './components/value-set-export-configuration/value-set-export-configuration.component';
+import { DeltaExportConfigurationComponent } from './components/delta-export-configuration/delta-export-configuration.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { ValueSetExportConfigurationComponent } from './components/value-set-exp
     ConformanceProfileExportConfigurationComponent,
     ExportConfigurationDialogComponent,
     ConfigurationTocComponent,
+    DeltaExportConfigurationComponent,
   ],
   imports: [
     CommonModule,

@@ -16,6 +16,7 @@ import {
   AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
 } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
+import { ColorPickerModule } from 'primeng/colorpicker';
 import { TreeModule as pTreeModule } from 'primeng/tree';
 import { AlertsContainerComponent } from '../core/components/alerts-container/alerts-container.component';
 import { MessageService } from '../core/services/message.service';
@@ -162,6 +163,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     TreeModule,
     TreeTableModule,
     TableModule,
+    ColorPickerModule,
     ContextMenuModule.forRoot({
       useBootstrap4: true,
     }),
@@ -243,6 +245,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ConstantValueComponent,
     PredicateComponent,
     TableModule,
+    ColorPickerModule,
     StructureTreeComponent,
     CsPropositionComponent,
     CsDialogComponent,

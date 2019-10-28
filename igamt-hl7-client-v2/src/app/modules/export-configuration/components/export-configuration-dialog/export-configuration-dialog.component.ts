@@ -81,6 +81,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
   }
 
   applyChange(event: any) {
+    console.log(event)
     switch (this.type) {
       case Type.SEGMENT: {
         this.filter.overiddedSegmentMap[this.selected.id] = event;
@@ -105,7 +106,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
   }
 
   submit() {
-    console.log(this.filter);
     this.dialogRef.close(this.filter);
   }
   cancel() {

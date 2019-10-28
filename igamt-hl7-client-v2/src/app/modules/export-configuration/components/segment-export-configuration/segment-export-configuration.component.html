@@ -99,6 +99,14 @@
             </div>
           </div>
         </tr> -->
+        <tr>
+          <th>Delta</th>
+        </tr>
+        <tr>
+          <div class="delta-container">
+            <app-delta-export-configuration [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
+          </div>
+        </tr>
     </table>
   </div>
   <div style="width: 50%;" *ngIf = "false">
