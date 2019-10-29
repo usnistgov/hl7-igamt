@@ -21,6 +21,7 @@ import java.util.Set;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -99,17 +100,7 @@ public interface ConformanceProfileService {
   public void validate(DisplayConformanceProfileMetadata metadata)
       throws ConformanceProfileValidationException;
 
-  /**
-   * @param String
-   * @param valuesetsMap
-   * @param segmentsMap
-   * @param l
-   * @param username
- * @param user 
-   * @return
-   */
-  public Link cloneConformanceProfile(String String,
-      HashMap<String, String> valuesetsMap, HashMap<String, String> segmentsMap, Link l,
+  public Link cloneConformanceProfile(String key, HashMap<RealKey, String> newKeys, Link l,
       String username, Scope scope);
 
   /**

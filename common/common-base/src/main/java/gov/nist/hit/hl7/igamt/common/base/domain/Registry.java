@@ -1,7 +1,9 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,5 +44,12 @@ public class Registry implements Serializable{
 			
 			return ret;
   }
+  
+  public Map<String, Link> getLinksAsMap(){
+    
+    Map<String, Link> ret = this.children.stream().collect(
+            Collectors.toMap(x -> x.getId(), x -> x));
+    return ret;
+}
 
 }

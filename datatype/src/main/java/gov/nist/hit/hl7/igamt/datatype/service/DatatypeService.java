@@ -21,6 +21,7 @@ import java.util.Set;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -90,7 +91,7 @@ public interface DatatypeService {
 
 	Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
 
-	public Link cloneDatatype(HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, Link l,
+	public Link cloneDatatype(String newId, HashMap<RealKey, String> newKeys,  Link l,
 			String username, Scope scope);
 
 	public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope);

@@ -91,7 +91,7 @@ public class DatatypeDataModel implements Serializable {
 		}
 
 		if ( d.getBinding() !=null && d.getBinding().getChildren() != null) {
-			this.popPathBinding(d.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+			this.popPathBinding(d.getName(), d.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
 		}
 
 		if (d instanceof ComplexDatatype) {
@@ -121,9 +121,11 @@ public class DatatypeDataModel implements Serializable {
 	 * @param children
 	 * @param object
 	 */
-	private void popPathBinding(Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository,  Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
+	private void popPathBinding(String readablePath, Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository,  Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
 		for (StructureElementBinding seb : sebs) {
 			String key;
+			String localPath;
+			localPath = readablePath + "." + seb.getLocationInfo().getPosition();
 			if(path == null){
 				key = seb.getLocationInfo().getPosition() + "";
 			}else {
@@ -131,7 +133,10 @@ public class DatatypeDataModel implements Serializable {
 			}
 
 			if(seb.getPredicateId() != null){
-				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
+				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> {
+				  cp.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
+				  this.predicateMap.put(key, cp);
+				});
 			}
 
 			if(seb.getExternalSingleCode() != null){
@@ -158,7 +163,7 @@ public class DatatypeDataModel implements Serializable {
 			}
 
 			if (seb.getChildren() != null) {
-				this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
+				this.popPathBinding(localPath, seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
 			}
 		}
 	}

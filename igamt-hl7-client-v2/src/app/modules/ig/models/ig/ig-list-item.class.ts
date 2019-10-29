@@ -9,6 +9,7 @@ export class IgListItem {
   username: any;
   participants?: any;
   conformanceProfiles: string[];
+  status: any;
 }
 
 export type IgListItemType = 'USER' | 'PUBLISHED';

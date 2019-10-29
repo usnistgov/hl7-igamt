@@ -34,8 +34,10 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
@@ -73,6 +75,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -186,7 +189,9 @@ public class IgServiceImpl implements IgService {
 			// element.setConfrmanceProfiles(confrmanceProfiles);
 			element.setCoverpage(ig.getMetadata().getCoverPicture());
 			element.setId(ig.getId());
+			element.setDerived(ig.isDerived());
 			element.setUsername(ig.getUsername());
+			element.setStatus(ig.getStatus());
 			List<String> conformanceProfileNames = new ArrayList<String>();
 			ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
 			if (conformanceProfileRegistry != null) {
@@ -262,8 +267,7 @@ public class IgServiceImpl implements IgService {
 	@Override
 	public List<Ig> findByUsername(String username, Scope scope) {
 		Criteria where = Criteria.where("username").is(username)
-				.andOperator(Criteria.where("domainInfo.scope").is(scope.toString()));
-
+				.andOperator(Criteria.where("domainInfo.scope").is(scope.toString()), Criteria.where("status").ne(Status.PUBLISHED));
 		Query qry = Query.query(where);
 		qry.fields().include("domainInfo");
 		qry.fields().include("id");
@@ -296,7 +300,7 @@ public class IgServiceImpl implements IgService {
 
 	@Override
 	public List<Ig> findAllPreloadedIG() {
-		Criteria where = Criteria.where("domainInfo.scope").is(Scope.PRELOADED);
+		Criteria where = Criteria.where("status").is(Status.PUBLISHED);
 		Query qry = Query.query(where);
 		qry.fields().include("domainInfo");
 		qry.fields().include("id");
@@ -311,7 +315,7 @@ public class IgServiceImpl implements IgService {
 	}
 
 	@Override
-	public UpdateResult updateAttribute(String id, String attributeName, Object value) {
+	public UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass) {
 		// TODO Auto-generated method stub
 		Query query = new Query();
 		query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
@@ -319,10 +323,10 @@ public class IgServiceImpl implements IgService {
 		Update update = new Update();
 		update.set(attributeName, value);
 		update.set("updateDate", new Date());
-		return mongoTemplate.updateFirst(query, update, Ig.class);
+		return mongoTemplate.updateFirst(query, update, entityClass);
 
 	}
-
+	
 
 	@Override
 	public List<Ig> findIgIdsForUser(String username) {
@@ -397,28 +401,28 @@ public class IgServiceImpl implements IgService {
 		Ig newIg = new Ig();
 		newIg.setId(null);
 		newIg.setFrom(ig.getId());
+		newIg.setOrigin(ig.getId());
 		newIg.setMetadata(ig.getMetadata().clone());
 		newIg.setContent(ig.getContent());
 		newIg.setUsername(username);
 		newIg.setDomainInfo(ig.getDomainInfo());
 		newIg.getDomainInfo().setScope(Scope.USER);
-
-		HashMap<String, String> conformanceProfilesMap =
-				getNewIdsMap(ig.getConformanceProfileRegistry());
-		HashMap<String, String> valuesetsMap = getNewIdsMap(ig.getValueSetRegistry());
-		HashMap<String, String> datatypesMap = getNewIdsMap(ig.getDatatypeRegistry());
-		HashMap<String, String> segmentsMap = getNewIdsMap(ig.getSegmentRegistry());
+		newIg.setStatus(null);
+		HashMap<RealKey, String> newKeys= new HashMap<RealKey, String>();
+		addKeys(ig.getConformanceProfileRegistry(), Type.CONFORMANCEPROFILE, newKeys);
+		addKeys(ig.getValueSetRegistry(), Type.VALUESET, newKeys);
+		addKeys(ig.getDatatypeRegistry(), Type.DATATYPE, newKeys);
+		addKeys(ig.getSegmentRegistry(), Type.SEGMENT, newKeys);
 
 
 
 		newIg.setValueSetRegistry(
-				copyValueSetRegistry(ig.getValueSetRegistry(), valuesetsMap, username));
+				copyValueSetRegistry(ig.getValueSetRegistry(), newKeys, username));
 		newIg.setDatatypeRegistry(
-				copyDatatypeRegistry(ig.getDatatypeRegistry(), valuesetsMap, datatypesMap, username));
-		newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),valuesetsMap,datatypesMap,segmentsMap, username));
+				copyDatatypeRegistry(ig.getDatatypeRegistry(), newKeys, username));
+		newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),newKeys, username));
 		newIg.setConformanceProfileRegistry(
-				copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), valuesetsMap,
-						datatypesMap, segmentsMap, conformanceProfilesMap, username));
+				copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), newKeys, username));
 		return newIg;
 	}
 
@@ -432,9 +436,8 @@ public class IgServiceImpl implements IgService {
 	 */
 
 	private ConformanceProfileRegistry copyConformanceProfileRegistry(
-			ConformanceProfileRegistry conformanceProfileRegistry, HashMap<String, String> valuesetsMap,
-			HashMap<String, String> datatypesMap, HashMap<String, String> segmentsMap,
-			HashMap<String, String> conformanceProfilesMap, String username) {
+			ConformanceProfileRegistry conformanceProfileRegistry,
+			HashMap<RealKey, String> newKeys, String username) {
 
 		// TODO Auto-generated method stub
 		// TODO Auto-generated method stub
@@ -442,11 +445,12 @@ public class IgServiceImpl implements IgService {
 		ConformanceProfileRegistry newReg = new ConformanceProfileRegistry();
 		HashSet<Link> children = new HashSet<Link>();
 		for (Link l : conformanceProfileRegistry.getChildren()) {
-			if (!conformanceProfilesMap.containsKey(l.getId())) {
+		  RealKey key  = new RealKey(l.getId(), Type.CONFORMANCEPROFILE);
+			if (!newKeys.containsKey(key)) {
 				children.add(l);
 			} else {
 				children.add(conformanceProfileService.cloneConformanceProfile(
-						conformanceProfilesMap.get(l.getId()),valuesetsMap,segmentsMap,l, username, Scope.USER));
+				    newKeys.get(key),newKeys,l, username, Scope.USER));
 			}
 		}
 		newReg.setChildren(children);
@@ -463,17 +467,16 @@ public class IgServiceImpl implements IgService {
 	 * @throws CoConstraintSaveException
 	 */
 	private SegmentRegistry copySegmentRegistry(SegmentRegistry segmentRegistry,
-			HashMap<String, String> valuesetsMap , HashMap<String, String> datatypesMap,
-			HashMap<String, String> segmentsMap, String username) {
+			HashMap<RealKey, String> newKeys, String username) {
 		// TODO Auto-generated method stub
 		SegmentRegistry newReg = new SegmentRegistry();
 		HashSet<Link> children = new HashSet<Link>();
 		for (Link l : segmentRegistry.getChildren()) {
-			if (!segmentsMap.containsKey(l.getId())) {
+		  RealKey key = new RealKey(l.getId(), Type.SEGMENT);
+			if (!newKeys.containsKey(key)) {
 				children.add(l);
 			} else {
-				children.add(segmentService.cloneSegment(segmentsMap.get(l.getId()),
-						valuesetsMap,datatypesMap, l, username,Scope.USER));
+				children.add(segmentService.cloneSegment(newKeys.get(key),newKeys, l, username,Scope.USER));
 			}
 		}
 		newReg.setChildren(children);
@@ -487,15 +490,17 @@ public class IgServiceImpl implements IgService {
 	 * @return
 	 */
 	private DatatypeRegistry copyDatatypeRegistry(DatatypeRegistry datatypeRegistry,
-			HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, String username) {
+			HashMap<RealKey, String> newKeys, String username) {
 		// TODO Auto-generated method stub
 		DatatypeRegistry newReg = new DatatypeRegistry();
 		HashSet<Link> children = new HashSet<Link>();
 		for (Link l : datatypeRegistry.getChildren()) {
-			if (!datatypesMap.containsKey(l.getId())) {
+          RealKey key = new RealKey(l.getId(), Type.DATATYPE);
+
+			if (!newKeys.containsKey(key)) {
 				children.add(l);
 			} else {
-				children.add(this.datatypeService.cloneDatatype(valuesetsMap,datatypesMap, l, username,Scope.USER));
+				children.add(this.datatypeService.cloneDatatype(newKeys.get(key),newKeys, l, username,Scope.USER));
 			}
 		}
 
@@ -508,17 +513,18 @@ public class IgServiceImpl implements IgService {
 	 * @param valuesetsMap
 	 */
 	private ValueSetRegistry copyValueSetRegistry(ValueSetRegistry reg,
-			HashMap<String, String> valuesetsMap, String username) {
+			HashMap<RealKey, String> newKeys, String username) {
 		// TODO Auto-generated method stub
 		ValueSetRegistry newReg = new ValueSetRegistry();
 		newReg.setExportConfig(reg.getExportConfig());
 		newReg.setCodesPresence(reg.getCodesPresence());
 		HashSet<Link> children = new HashSet<Link>();
 		for (Link l : reg.getChildren()) {
-			if (!valuesetsMap.containsKey(l.getId())) {
+		   RealKey key = new RealKey(l.getId(), Type.VALUESET);
+			if (!newKeys.containsKey(key)) {
 				children.add(l);
 			} else {
-				Link newLink = this.valueSetService.cloneValueSet(valuesetsMap.get(l.getId()), l, username, Scope.USER);    	  	
+				Link newLink = this.valueSetService.cloneValueSet(newKeys.get(key), l, username, Scope.USER);    	  	
 				children.add(newLink);
 			}
 		}
@@ -526,16 +532,15 @@ public class IgServiceImpl implements IgService {
 		return newReg;
 	}
 
-	private HashMap<String, String> getNewIdsMap(Registry reg) {
-		HashMap<String, String> map = new HashMap<String, String>();
+	private void addKeys(Registry reg, Type type, HashMap<RealKey, String> map) {
 		if (reg != null && reg.getChildren() != null) {
 			for (Link l : reg.getChildren()) {
 				if (!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD) && !l.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-					map.put(l.getId(), new ObjectId().toString());
+				    
+					map.put(new RealKey(l.getId(), type), new ObjectId().toString());
 				}
 			}
 		}
-		return map;
 	}
 
 	@Override
@@ -1044,5 +1049,55 @@ public class IgServiceImpl implements IgService {
 			ret.addAll(datatypeService.collectDependencies(dt));
 		}
 	}
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.ig.service.IgService#publishIG()
+   */
+  @Override
+  public void publishIG(String id)  throws IGNotFoundException, IGUpdateException{
+    // TODO Auto-generated method stub
+    Ig ig= this.findById(id);
+    if (ig == null) {
+      throw new IGNotFoundException("IG with id: "+ id + "Not found");
+    }
+    for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, ConformanceProfile.class);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not publish Conformance profile:" +l.getId());
+        }
+      }
+    }
+    for ( Link l: ig.getSegmentRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Segment.class);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not publish segment:" +l.getId());
+        }
+      }
+    }
+    
+    for ( Link l: ig.getDatatypeRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Datatype.class);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not publish Datatype:" +l.getId());
+        }
+      }
+    }
+    for ( Link l: ig.getValueSetRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Valueset.class);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not publish Value set:" +l.getId());
+        }
+      }
+    }
+    
+    UpdateResult updateResult = this.updateAttribute(id, "status", Status.PUBLISHED, Ig.class);
+    if(! updateResult.wasAcknowledged()) {
+      throw new IGUpdateException("Could not publish Ig:" +ig.getId());
+    }
+  }
 	  
-	}
+}

@@ -1,0 +1,27 @@
+<h2 mat-dialog-title>Derive IG</h2>
+<mat-dialog-content style="max-height: 800px; overflow-y:scroll">
+  <div>
+
+
+    <div>
+      <form [formGroup]="metaDataForm">
+        <app-form-input formControlName="title" id="title" label="IG Document Title*" name="Title"
+                        placeholder="IG Document Title" type="text">
+        </app-form-input>
+      </form>
+
+    </div>
+
+    <div>
+      <p-radioButton [(ngModel)]="customizeNarratives"  label="Keep narrative sections" name="IG" value=""></p-radioButton>
+
+      <p-radioButton [(ngModel)]="customizeNarratives"  label="Profile Only" [style]="{'margin-left': '50px'}" name="PROFILE"
+                     value="PROFILEONLY"></p-radioButton>
+    </div>
+
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

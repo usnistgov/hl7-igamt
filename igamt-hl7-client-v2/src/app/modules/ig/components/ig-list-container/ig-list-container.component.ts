@@ -1,9 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {combineLatest, Observable} from 'rxjs';
+import {filter, map} from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import {
   DeleteIgListItemRequest,
@@ -14,14 +14,17 @@ import {
 } from 'src/app/root-store/ig/ig-list/ig-list.actions';
 import * as fromIgList from 'src/app/root-store/ig/ig-list/ig-list.index';
 import * as fromRoot from 'src/app/root-store/index';
-import { ClearIgList } from '../../../../root-store/ig/ig-list/ig-list.actions';
-import { ClearAll } from '../../../../root-store/page-messages/page-messages.actions';
-import { IgListItem } from '../../models/ig/ig-list-item.class';
-import { IgService } from '../../services/ig.service';
-import { Message } from './../../../core/models/message/message.class';
-import { MessageService } from './../../../core/services/message.service';
-import { ConfirmDialogComponent } from './../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { IgListItemControl } from './../ig-list-item-card/ig-list-item-card.component';
+import {ClearIgList} from '../../../../root-store/ig/ig-list/ig-list.actions';
+import {ClearAll} from '../../../../root-store/page-messages/page-messages.actions';
+import {DeriveDialogComponent} from '../../../shared/components/derive-dialog/derive-dialog.component';
+import {CloneModeEnum} from '../../../shared/constants/clone-mode.enum';
+import {Type} from '../../../shared/constants/type.enum';
+import {IgListItem} from '../../models/ig/ig-list-item.class';
+import {IgService} from '../../services/ig.service';
+import {Message} from './../../../core/models/message/message.class';
+import {MessageService} from './../../../core/services/message.service';
+import {ConfirmDialogComponent} from './../../../shared/components/confirm-dialog/confirm-dialog.component';
+import {IgListItemControl} from './../ig-list-item-card/ig-list-item-card.component';
 
 @Component({
   selector: 'app-ig-list-container',
@@ -124,7 +127,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 },
                 disabled: (item: IgListItem): boolean => {
                   if (item.type === 'PUBLISHED') {
-                    return !admin;
+                    return true;
                   } else {
                     return false;
                   }
@@ -135,7 +138,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-success',
                 icon: 'fa-plus',
                 action: (item: IgListItem) => {
-                  this.ig.cloneIg(item.id).subscribe(
+                  this.ig.cloneIg(item.id, CloneModeEnum.CLONE, null).subscribe(
                     (response: Message<string>) => {
                       this.store.dispatch(this.message.messageToAction(response));
                       this.router.navigate(['ig', response.data]);
@@ -147,6 +150,50 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 },
                 disabled: (item: IgListItem): boolean => {
                   return false;
+                },
+              },
+              {
+                label: 'Publish',
+                class: 'btn-scondary',
+                icon: 'fa fa-globe',
+                action: (item: IgListItem) => {
+                  this.ig.publish(item.id).subscribe(
+                    (response: Message<string>) => {
+                      this.store.dispatch(this.message.messageToAction(response));
+                      this.router.navigateByUrl('/ig/list?type=PUBLISHED');
+                    },
+                    (error) => {
+                      this.store.dispatch(this.message.actionFromError(error));
+                    },
+                  );
+                },
+                disabled: (item: IgListItem): boolean => {
+                    return !admin || item.type === 'PUBLISHED';
+                  },
+                hide: (item: IgListItem): boolean => {
+                  return item.type === 'PUBLISHED';
+                },
+              },
+              {
+                label: 'Derive from',
+                class: 'btn-scondary',
+                icon: 'fa fa-map-marker',
+                action: (item: IgListItem) => {
+                  this.ig.cloneIg(item.id, CloneModeEnum.DERIVE, null).subscribe(
+                    (response: Message<string>) => {
+                      this.store.dispatch(this.message.messageToAction(response));
+                      this.router.navigate(['ig', response.data]);
+                    },
+                    (error) => {
+                      this.store.dispatch(this.message.actionFromError(error));
+                    },
+                  );
+                },
+                disabled: (item: IgListItem): boolean => {
+                  return false;
+                },
+                hide: (item: IgListItem): boolean => {
+                  return item.type !== 'PUBLISHED';
                 },
               },
               {

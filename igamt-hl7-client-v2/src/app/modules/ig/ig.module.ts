@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { ColorPickerModule } from 'primeng/colorpicker';
 import { ContextMenuModule, RadioButtonModule } from 'primeng/primeng';
 import { StepsModule } from 'primeng/steps';
 import { TableModule } from 'primeng/table';
-import { ColorPickerModule } from 'primeng/colorpicker';
 import { IgListEffects } from 'src/app/root-store/ig/ig-list/ig-list.effects';
 import { CreateIgEffects } from '../../root-store/create-ig/create-ig.effects';
 import * as fromIg from '../../root-store/ig/ig.reducer';

@@ -100,7 +100,7 @@ public class SegmentDataModel implements Serializable {
 				}
 			}
 			if (s.getBinding().getChildren() != null) {
-				this.popPathBinding(s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+				this.popPathBinding(s.getName(), s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
 			}
 
 		}
@@ -131,17 +131,23 @@ public class SegmentDataModel implements Serializable {
 	 * @param predicateRepository
 	 * @param valuesetBindingDataModelMap
 	 */
-	private void popPathBinding(Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
+	private void popPathBinding(String readablePath, Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
 		for (StructureElementBinding seb : sebs) {
 			String key;
+			String localPath;
 			if(path == null){
 				key = seb.getLocationInfo().getPosition() + "";
+				localPath = readablePath + "-" + seb.getLocationInfo().getPosition();
 			}else {
 				key = path + "." + seb.getLocationInfo().getPosition();
+				localPath = readablePath + "." + seb.getLocationInfo().getPosition();
 			}
 
 			if(seb.getPredicateId() != null){
-				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
+				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> {
+				  cp.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
+				  this.predicateMap.put(key, cp); 
+				});
 			}
 
 			if(seb.getExternalSingleCode() != null){
@@ -167,7 +173,7 @@ public class SegmentDataModel implements Serializable {
 				}
 
 				if (seb.getChildren() != null) {
-					this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
+					this.popPathBinding(localPath, seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
 				}
 			}
 

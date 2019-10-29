@@ -15,7 +15,8 @@ public interface ConstraintSerializationService {
 	
 	  public Element serializeConformanceStatement(ConformanceStatement conformanceStatement);
 	  
-	  public Element serializePredicate(Predicate predicate);
+	  public Element serializePredicate(Predicate predicate, String location);
+
 
 //	  public Element serializeExternalSingleCode(ExternalSingleCode externalSingleCode);
 

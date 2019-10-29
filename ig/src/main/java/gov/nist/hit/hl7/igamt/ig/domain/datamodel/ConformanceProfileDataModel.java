@@ -92,7 +92,7 @@ public class ConformanceProfileDataModel implements Serializable{
 				}
 			}
 			if (cp.getBinding().getChildren() != null) {
-				this.popPathBinding(cp.getBinding().getChildren(), null, predicateRepository,
+				this.popPathBinding(cp.getName(), cp.getBinding().getChildren(), null, predicateRepository,
 						valuesetBindingDataModelMap);
 			}
 		}
@@ -108,11 +108,13 @@ public class ConformanceProfileDataModel implements Serializable{
 
 	}
 
-	private void popPathBinding(Set<StructureElementBinding> sebs, String path,
+	private void popPathBinding(String readablePath, Set<StructureElementBinding> sebs, String path,
 			PredicateRepository predicateRepository,
 			Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
 		for (StructureElementBinding seb : sebs) {
 			String key;
+			String localPath;
+			localPath = readablePath + "." + seb.getLocationInfo().getPosition() + "";
 			if (path == null) {
 				key = seb.getLocationInfo().getPosition() + "";
 			} else {
@@ -120,8 +122,10 @@ public class ConformanceProfileDataModel implements Serializable{
 			}
 
 			if (seb.getPredicateId() != null) {
-				predicateRepository.findById(seb.getPredicateId())
-				.ifPresent(cp -> this.predicateMap.put(key, cp));
+				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> {
+				  cp.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
+				  this.predicateMap.put(key, cp); 
+				});
 			}
 
 			if (seb.getExternalSingleCode() != null) {
@@ -151,7 +155,7 @@ public class ConformanceProfileDataModel implements Serializable{
 			}
 
 			if (seb.getChildren() != null) {
-				this.popPathBinding(seb.getChildren(), key, predicateRepository,
+				this.popPathBinding(localPath, seb.getChildren(), key, predicateRepository,
 						valuesetBindingDataModelMap);
 			}
 		}

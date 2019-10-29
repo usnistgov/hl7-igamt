@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Role;
@@ -430,15 +431,15 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	 * gov.nist.hit.hl7.igamt.common.base.domain.Link, java.lang.String)
 	 */
 	@Override
-	public Link cloneConformanceProfile(String key, HashMap<String, String> valuesetsMap,
-			HashMap<String, String> segmentsMap, Link l, String username, Scope scope) {
+	public Link cloneConformanceProfile(String key, HashMap<RealKey, String> newKeys, Link l, String username, Scope scope) {
 		ConformanceProfile old = this.findById(l.getId());
 		ConformanceProfile elm = old.clone();
 		elm.getDomainInfo().setScope(scope);
 		elm.setOrigin(elm.getFrom());
 		Link newLink = l.clone(key);
 		newLink.setDomainInfo(elm.getDomainInfo());
-		updateDependencies(elm, valuesetsMap, segmentsMap);
+		newLink.setOrigin(elm.getFrom());
+		updateDependencies(elm, newKeys);
 		elm.setId(newLink.getId());
 		elm.setUsername(username);
 		this.save(elm);
@@ -450,12 +451,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	 * @param datatypesMap
 	 * @param valuesetsMap
 	 */
-	private void updateDependencies(ConformanceProfile elm, HashMap<String, String> valuesetsMap,
-			HashMap<String, String> segmentsMap) {
+	private void updateDependencies(ConformanceProfile elm, HashMap<RealKey, String> newKeys) {
 		// TODO Auto-generated method stub
 
-		updateBindings(elm.getBinding(), valuesetsMap);
-		processCp(elm, segmentsMap);
+		processAndSubstitute(elm, newKeys);
+		if(elm.getBinding() !=null) {
+	        this.bindingService.substitute(elm.getBinding(), newKeys);
+		}
 
 	}
 
@@ -463,45 +465,29 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	 * @param elm
 	 * @param valuesetsMap
 	 */
-	private void updateBindings(ResourceBinding binding, HashMap<String, String> valuesetsMap) {
-		// TODO Auto-generated method stub
-//		if (binding.getChildren() != null) {
-//			for (StructureElementBinding child : binding.getChildren()) {
-//				if (child.getValuesetBindings() != null) {
-//					for (ValuesetBinding vs : child.getValuesetBindings()) {
-//						if (vs.getValuesetId() != null) {
-//							if (valuesetsMap.containsKey(vs.getValuesetId())) {
-//								vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()));
-//							}
-//						}
-//					}
-//				}
-//			}
-//		}
-	}
-
-	private void processCp(ConformanceProfile cp, HashMap<String, String> segmentsMap) {
+	private void processAndSubstitute(ConformanceProfile cp,  HashMap<RealKey, String> newKeys) {
 		// TODO Auto-generated method stub
 		for (MsgStructElement segOrgroup : cp.getChildren()) {
-			processSegmentorGroup(segOrgroup, segmentsMap);
+			processAndSubstituteSegmentorGroup(segOrgroup, newKeys);
 		}
 
 	}
 
-	private void processSegmentorGroup(MsgStructElement segOrgroup, HashMap<String, String> segmentsMap) {
+	private void processAndSubstituteSegmentorGroup(MsgStructElement segOrgroup,  HashMap<RealKey, String> newKeys) {
 		// TODO Auto-generated method stub
 		if (segOrgroup instanceof SegmentRef) {
 			SegmentRef ref = (SegmentRef) segOrgroup;
 			if (ref.getRef() != null && ref.getRef().getId() != null) {
-				if (segmentsMap.containsKey(ref.getRef().getId())) {
-					ref.getRef().setId(segmentsMap.get(ref.getRef().getId()));
+			  RealKey key = new RealKey(ref.getRef().getId(), Type.SEGMENT);
+				if (newKeys.containsKey(key)) {
+					ref.getRef().setId(newKeys.get(key));
 				}
 
 			}
 		} else if (segOrgroup instanceof Group) {
 			Group g = (Group) segOrgroup;
 			for (MsgStructElement child : g.getChildren()) {
-				processSegmentorGroup(child, segmentsMap);
+			  processAndSubstituteSegmentorGroup(child, newKeys);
 			}
 		}
 

@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -102,6 +104,8 @@ public class BootstrapApplication implements CommandLineRunner {
   
   @Autowired
   ConformanceProfileService messageService;
+  @Autowired
+  BindingCollector bindingCollector;
   
 //  
 //  @Autowired
@@ -193,11 +197,12 @@ public class BootstrapApplication implements CommandLineRunner {
   // }
 
   //
-//   @PostConstruct
-//   void createMessageEvent() {
-//    messageEventFactory.createMessageEvent();
-//    System.out.println("done");
-//   }
+   @PostConstruct
+    void createMessageEvent() {
+  
+      messageEventFactory.createMessageEvent();
+      System.out.println("done");
+  }
 //  
    //
   //@PostConstruct
@@ -508,4 +513,8 @@ public class BootstrapApplication implements CommandLineRunner {
 //		}	
 	}
  
+	//@PostConstruct
+	public void generateBindings() throws FileNotFoundException{
+	  this.bindingCollector.collect();
+	};
 }

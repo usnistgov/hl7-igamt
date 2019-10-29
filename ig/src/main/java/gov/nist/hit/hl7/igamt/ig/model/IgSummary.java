@@ -3,6 +3,8 @@ package gov.nist.hit.hl7.igamt.ig.model;
 import java.util.Date;
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+
 public class IgSummary {
 
   private String title;
@@ -12,7 +14,9 @@ public class IgSummary {
   private Date dateUpdated;
   private String id;
   private String username;
+  private boolean derived; 
   private List<String> participants;
+  private Status status;
   private List<String> conformanceProfiles;
 
   public String getTitle() {
@@ -71,6 +75,14 @@ public class IgSummary {
     return position;
   }
 
+  public Status getStatus() {
+    return status;
+  }
+
+  public void setStatus(Status status) {
+    this.status = status;
+  }
+
   public void setPosition(int position) {
     this.position = position;
   }
@@ -90,5 +102,15 @@ public class IgSummary {
   public void setParticipants(List<String> participants) {
     this.participants = participants;
   }
+
+  public boolean isDerived() {
+    return derived;
+  }
+
+  public void setDerived(boolean derived) {
+    this.derived = derived;
+  }
+
+
 
 }

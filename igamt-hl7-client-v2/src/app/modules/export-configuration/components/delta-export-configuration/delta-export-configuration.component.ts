@@ -1,9 +1,9 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-delta-export-configuration',
   templateUrl: './delta-export-configuration.component.html',
-  styleUrls: ['./delta-export-configuration.component.scss']
+  styleUrls: ['./delta-export-configuration.component.scss'],
 })
 export class DeltaExportConfigurationComponent implements OnInit {
 
@@ -23,7 +23,7 @@ export class DeltaExportConfigurationComponent implements OnInit {
   @Input()
   config: any;
   @Output()
-  updateDelta: EventEmitter<any> = new EventEmitter<any>();;
+  updateDelta: EventEmitter<any> = new EventEmitter<any>();
   constructor() { }
 
   ngOnInit() {

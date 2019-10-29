@@ -67,6 +67,8 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.display.model.CloneMode;
+import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CloneResponse;
@@ -325,7 +327,6 @@ public class IGDocumentController extends BaseController {
       } else if (type.equals(AccessType.SHARED)) {
         // TODO
       } else {
-
         igdouments = igService.findByUsername(username, Scope.USER);
 
       }
@@ -421,7 +422,7 @@ public class IGDocumentController extends BaseController {
 
     Set<TextSection> content = displayConverter.convertTocToDomain(toc);
 
-    UpdateResult updateResult = igService.updateAttribute(id, "content", content);
+    UpdateResult updateResult = igService.updateAttribute(id, "content", content, Ig.class);
     if (!updateResult.wasAcknowledged()) {
       throw new IGUpdateException(id);
     }
@@ -443,7 +444,7 @@ public class IGDocumentController extends BaseController {
       @RequestBody Set<TextSection> content, Authentication authentication)
           throws IGNotFoundException, IGUpdateException {
 
-    UpdateResult updateResult = igService.updateAttribute(id, "content", content);
+    UpdateResult updateResult = igService.updateAttribute(id, "content", content, Ig.class);
     if (!updateResult.wasAcknowledged()) {
       throw new IGUpdateException(id);
     }
@@ -511,6 +512,7 @@ public class IGDocumentController extends BaseController {
         if (profile != null) {
           ConformanceProfile clone = profile.clone();
           clone.setUsername(username);
+          clone.setDescription(ev.getDescription());
           clone.getDomainInfo().setScope(Scope.USER);
           clone.setEvent(ev.getName());
           clone.setName(ev.getExt());
@@ -524,10 +526,9 @@ public class IGDocumentController extends BaseController {
       info.setScope(Scope.USER);
       empty.setDomainInfo(info);
       empty.setMetadata(wrapper.getMetadata());
+      empty.setCreationDate(new Date());
       crudService.AddConformanceProfilesToEmptyIg(savedIds, empty);
-
       Ig ret = igService.save(empty);
-
       return new ResponseMessage<String>(Status.SUCCESS, "", "IG created Successfuly", ret.getId(), false,
           ret.getUpdateDate(), ret.getId());
 
@@ -806,7 +807,7 @@ public class IGDocumentController extends BaseController {
     }
     ConformanceProfile clone = profile.clone();
     clone.setUsername(username);
-    clone.setIdentifier(wrapper.getSelected().getExt());
+    clone.setName(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
     clone = conformanceProfileService.save(clone);
 
@@ -955,6 +956,7 @@ public class IGDocumentController extends BaseController {
         ConformanceProfile clone = profile.clone();
         clone.setUsername(username);
         clone.getDomainInfo().setScope(Scope.USER);
+        clone.setDescription(ev.getDescription());
         clone.setEvent(ev.getName());
         clone.setIdentifier(ev.getExt());
         clone.setName(ev.getExt());
@@ -1112,19 +1114,37 @@ public class IGDocumentController extends BaseController {
         ig.getUpdateDate(), info);
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.GET, produces = {
+  @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
-  public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, Authentication authentication)
+  public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, @RequestBody CopyInfo info,  Authentication authentication)
       throws IGNotFoundException {
     String username = authentication.getPrincipal().toString();
 
     Ig ig = findIgById(id);
     Ig clone = this.igService.clone(ig, username);
     clone.getDomainInfo().setScope(Scope.USER);
-    clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[clone]");
+    if(info.getMode().equals(CloneMode.CLONE)) {
+      clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[clone]");
+    }else if(info.getMode().equals(CloneMode.DERIVE)){
+      clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[derived]");
+      clone.setDerived(true); 
+    }
+    clone.setCreationDate(new Date());
+    
     clone = igService.save(clone);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", clone.getId(), false,
         clone.getUpdateDate(), clone.getId());
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/publish", method = RequestMethod.POST, produces = {
+  "application/json" })
+  public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id, Authentication authentication)
+      throws IGNotFoundException, IGUpdateException {
+    String username = authentication.getPrincipal().toString();
+
+    this.igService.publishIG(id);
+    return new ResponseMessage<String>(Status.SUCCESS, "", "Ig published Successfully", id, false,
+        new Date(), id);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.DELETE, produces = { "application/json" })
@@ -1143,6 +1163,17 @@ public class IGDocumentController extends BaseController {
       throws IGNotFoundException {
 
     Ig ig = findIgById(id);
+    displayInfoService.covertIgToDisplay(ig);
+    return displayInfoService.covertIgToDisplay(ig);
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/delta", method = RequestMethod.GET, produces = {
+  "application/json" })
+  public @ResponseBody IGDisplayInfo getDeltaDisplay(@PathVariable("id") String id, Authentication authentication)
+      throws IGNotFoundException {
+
+    Ig ig = findIgById(id);
+    
     displayInfoService.covertIgToDisplay(ig);
     return displayInfoService.covertIgToDisplay(ig);
   }
@@ -1368,8 +1399,6 @@ public class IGDocumentController extends BaseController {
   public void exportXML(@PathVariable("id") String id, Authentication authentication,FormData formData,
       HttpServletResponse response)
           throws Exception {
-
-
     IgDataModel igModel = this.igService.generateDataModel(findIgById(id));		
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

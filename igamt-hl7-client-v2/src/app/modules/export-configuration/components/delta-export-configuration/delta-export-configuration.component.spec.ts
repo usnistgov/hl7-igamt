@@ -8,7 +8,7 @@ describe('DeltaExportConfigurationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DeltaExportConfigurationComponent ]
+      declarations: [ DeltaExportConfigurationComponent ],
     })
     .compileComponents();
   }));

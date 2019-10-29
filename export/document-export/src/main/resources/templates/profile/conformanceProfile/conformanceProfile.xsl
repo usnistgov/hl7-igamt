@@ -149,7 +149,7 @@
 				</xsl:with-param>
 			</xsl:call-template>
 		</xsl:if>
-                <xsl:if test="count(./Constraint[@Type='pre'])  &gt; 0">
+		<xsl:if test="count(Constraints/Predicate)  &gt; 0">
                     <xsl:element name="br"/>
                     <xsl:call-template name="Constraint">
                         <xsl:with-param name="title">

@@ -14,6 +14,7 @@ import {
 import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';
+import { RxjsStoreHelperService } from './rxjs-store-helper.service';
 
 export abstract class AResourceRepositoryService {
   abstract getResource<T extends IResource>(type: Type, id: string): Observable<T>;
@@ -72,7 +73,7 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
   }> {
     const values = ids.map((id) => this.store.select(selectDatatypesById, { id }).pipe(take(1)));
     return combineLatest(
-      forkJoin(values),
+      RxjsStoreHelperService.forkJoin(values),
       this.areLeafs(ids),
     ).pipe(
       map(([vals, leafs]) => {
