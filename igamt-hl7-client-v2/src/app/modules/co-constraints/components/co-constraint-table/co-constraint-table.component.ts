@@ -6,7 +6,7 @@ import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { SegmentService } from '../../../segment/services/segment.service';
 import { BindingSelectorComponent } from '../../../shared/components/binding-selector/binding-selector.component';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { CoConstraintColumnType, CoConstraintHeaderType, ICoConstraint, ICoConstraintGroup, ICoConstraintHeader, ICoConstraintTable, ICoConstraintValueSetCell, IDataElementHeader, ICoConstraintVariesCell } from '../../../shared/models/co-constraint.interface';
+import { CoConstraintColumnType, CoConstraintHeaderType, ICoConstraint, ICoConstraintGroup, ICoConstraintHeader, ICoConstraintTable, ICoConstraintValueSetCell, ICoConstraintVariesCell, IDataElementHeader } from '../../../shared/models/co-constraint.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { BindingService } from '../../../shared/services/binding.service';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';

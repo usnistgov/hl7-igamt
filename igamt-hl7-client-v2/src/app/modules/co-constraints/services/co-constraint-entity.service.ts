@@ -80,9 +80,11 @@ export class CoConstraintEntityService {
 
   createHeaderForField(segment: ISegment, field: IField, repository: AResourceRepositoryService, type: CoConstraintColumnType): Observable<IDataElementHeader> {
     return this.createDataElementHeaderFromValues(
-      field.id,
-      field.position,
-      field.type,
+      {
+        pathId: field.id,
+        position: field.position,
+        type: field.type,
+      },
       { id: field.ref.id, type: Type.DATATYPE },
       of(segment),
       'OBX-' + field.position,
@@ -127,9 +129,11 @@ export class CoConstraintEntityService {
   createDataElementHeader(node: IHL7v2TreeNode, parent: IResource, name: string, repository: AResourceRepositoryService, columnType: CoConstraintColumnType): Observable<IDataElementHeader> {
     const parentRef = node.parent.data.ref;
     return this.createDataElementHeaderFromValues(
-      node.data.pathId,
-      node.data.position,
-      node.data.type,
+      {
+        pathId: node.data.pathId,
+        position: node.data.position,
+        type: node.data.type,
+      },
       node.data.ref.value,
       !parentRef ? of(parent) : repository.fetchResource(parentRef.value.type, parentRef.value.id),
       name,
@@ -138,7 +142,7 @@ export class CoConstraintEntityService {
     );
   }
 
-  createDataElementHeaderFromValues(pathId: string, position: number, type: Type, elmRef: IResourceRef, parent: Observable<IResource>, name: string, repository: AResourceRepositoryService, columnType: CoConstraintColumnType): Observable<IDataElementHeader> {
+  createDataElementHeaderFromValues({ pathId, position, type }: { pathId: string, position: number, type: Type }, elmRef: IResourceRef, parent: Observable<IResource>, name: string, repository: AResourceRepositoryService, columnType: CoConstraintColumnType): Observable<IDataElementHeader> {
     return combineLatest(
       parent,
       repository.fetchResource(elmRef.type, elmRef.id)).pipe(

@@ -6,6 +6,7 @@ import { IDisplayElement } from 'src/app/modules/shared/models/display-element.i
 import { Type } from '../../../../constants/type.enum';
 import { IBindingType, InternalSingleCode, IValuesetBinding } from '../../../../models/binding.interface';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
+import { BindingService } from '../../../../services/binding.service';
 import { IBinding, IBindingContext } from '../../../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../../../services/resource-repository.service';
 import {
@@ -15,7 +16,6 @@ import {
 } from '../../../binding-selector/binding-selector.component';
 import { IValueSetBindingDisplay } from '../../../binding-selector/binding-selector.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
-import { BindingService } from '../../../../services/binding.service';
 
 export interface IValueSetOrSingleCodeBindings {
   valueSetBindings: Array<IBinding<IValuesetBinding[]>>;

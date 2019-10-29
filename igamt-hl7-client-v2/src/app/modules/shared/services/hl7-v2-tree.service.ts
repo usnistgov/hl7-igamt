@@ -220,6 +220,7 @@ export class Hl7V2TreeService {
     return payload;
   }
 
+  // tslint:disable-next-line: cognitive-complexity
   getNameFromPath(elm: IPathInfo, excludeDesc: boolean = false): string {
     const loop = (node: IPathInfo): string => {
       if (!node) {
@@ -227,7 +228,14 @@ export class Hl7V2TreeService {
       }
       const post = loop(node.child);
       const separator = node.child ? node.child.type === Type.FIELD ? '-' : '.' : '';
-      const desc = node.child ? '' : excludeDesc ? '' : ' (' + node.name + ')';
+      let desc: string;
+
+      if (node.child || excludeDesc) {
+        desc = '';
+      } else {
+        desc = ' (' + node.name + ')';
+      }
+
       if (node.type === Type.GROUP || node.type === Type.SEGMENT || node.type === Type.SEGMENTREF || node.type === Type.DATATYPE) {
         return node.name + separator + post;
       } else if (node.type === Type.CONFORMANCEPROFILE) {
