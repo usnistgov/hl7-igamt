@@ -8,6 +8,8 @@ import java.util.Set;
 import org.apache.commons.lang3.SerializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import gov.nist.diff.domain.DeltaMode;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
@@ -21,6 +23,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
@@ -78,71 +81,77 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	private static final String IG_XSLT_PATH = "/IGDocumentExport.xsl";
 
 	@Override
-	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId,ExportFilterDecision decision) throws Exception {
+	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision)
+			throws Exception {
 		Ig igDocument = igService.findById(igDocumentId);
 		if (igDocument != null) {
-			ExportedFile htmlFile =
-					this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision);
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision);
 			return htmlFile;
 		}
 		return null;
 	}
+
 	@Override
-	public  ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument,
-			ExportFormat exportFormat, ExportFilterDecision decision) throws Exception {
+	public ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument, ExportFormat exportFormat,
+			ExportFilterDecision decision) throws Exception {
 		try {
 			ExportConfiguration exportConfiguration =
 					exportConfigurationService.getExportConfiguration(username);
+			DeltaConfiguration deltaConfig = new DeltaConfiguration();
+			deltaConfig.setColors(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getColors());
+			deltaConfig.setMode(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getMode());
+			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
 			exportConfiguration = ExportConfiguration.populateRestOfExportConfiguration(exportConfiguration);
+			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
+			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
 			String xmlContent =
 					igDataModelSerializationService.serializeIgDocument(igDataModel, exportConfiguration,decision).toXML();
-//					      System.out.println("XML_EXPORT : " + xmlContent);
+					      System.out.println("XML_EXPORT : " + xmlContent);
 			//		      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
 					igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
 					exportFontConfiguration, "2.0_beta");
-			InputStream htmlContent =
-					exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH, exportParameters);
-			ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
+			InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH,
+					exportParameters);
+			ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(),
+					exportFormat);
 			exportedFile.setContent(htmlContent);
-			//		      return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
+			// return new ExportedFile(htmlContent, igDocument.getName(),
+			// igDocument.getId(), exportFormat);
 
 			return exportedFile;
-		} catch (SerializationException  serializationException) {
+		} catch (SerializationException serializationException) {
 			throw new ExportException(serializationException,
 					"Unable to serialize IG Document with ID " + igDocument.getId());
 		}
 	}
 
-	
-	
 	@Override
 	public ExportFilterDecision getExportFilterDecision(Ig ig, ExportConfiguration config) {
 		ExportFilterDecision decision = new ExportFilterDecision();
 
-		for(Link l : ig.getConformanceProfileRegistry().getChildren()) {
-			decision.getConformanceProfileFilterMap().put(l.getId(), true);		
+		for (Link l : ig.getConformanceProfileRegistry().getChildren()) {
+			decision.getConformanceProfileFilterMap().put(l.getId(), true);
 		}
-		for(Link l : ig.getSegmentRegistry().getChildren()) {
+		for (Link l : ig.getSegmentRegistry().getChildren()) {
 			decision.getSegmentFilterMap().put(l.getId(), false);
 		}
-		for(Link l : ig.getDatatypeRegistry().getChildren()) {
+		for (Link l : ig.getDatatypeRegistry().getChildren()) {
 			decision.getDatatypesFilterMap().put(l.getId(), false);
 		}
-		for(Link l : ig.getValueSetRegistry().getChildren()) {
-			decision.getValueSetFilterMap().put(l.getId(), false);	
+		for (Link l : ig.getValueSetRegistry().getChildren()) {
+			decision.getValueSetFilterMap().put(l.getId(), false);
 		}
-		processConformanceProfiles(ig,decision,config);
+		processConformanceProfiles(ig, decision, config);
 		return decision;
 	}
 
-
-	private void processConformanceProfiles(Ig ig,ExportFilterDecision decision , ExportConfiguration config) {
-		Set<String> segmentIds = new HashSet<String>(); 
+	private void processConformanceProfiles(Ig ig, ExportFilterDecision decision, ExportConfiguration config) {
+		Set<String> segmentIds = new HashSet<String>();
 		Set<String> datatypesIds = new HashSet<String>();
 		List<ConformanceProfile> profiles = conformanceProfileService
 				.findByIdIn(ig.getConformanceProfileRegistry().getLinksAsIds());
@@ -151,13 +160,13 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		}
 		List<Segment> BindedSegments = segmentService.findByIdIn(segmentIds);
 
-		for(Segment s: BindedSegments) {
+		for (Segment s : BindedSegments) {
 			datatypesIds.addAll(processSegment(s, decision, config));
 		}
 		List<Datatype> bindedDatatypes = datatypeService.findByIdIn(datatypesIds);
 
-		for(Datatype dt: bindedDatatypes) {
-			HashMap<String,Boolean> processed= new HashMap<String,Boolean>();
+		for (Datatype dt : bindedDatatypes) {
+			HashMap<String, Boolean> processed = new HashMap<String, Boolean>();
 			datatypesIds.addAll(processDatatype(dt, decision, config, new HashMap<String, Boolean>(), processed));
 		}
 	}
@@ -165,78 +174,78 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	private Set<String> processSegment(Segment s, ExportFilterDecision decision, ExportConfiguration config) {
 		Set<String> datatypesIds = new HashSet<String>();
 		HashMap<String, Boolean> bindedPaths = new HashMap<String, Boolean>();
-		for(Field child: s.getChildren() ) {
-			if(child.getRef() != null && child.getRef().getId() !=null) {
-				if(child.getUsage() !=null && config.getDatatypesExport().isBinded(child.getUsage())) {
+		for (Field child : s.getChildren()) {
+			if (child.getRef() != null && child.getRef().getId() != null) {
+				if (child.getUsage() != null && config.getDatatypesExport().isBinded(child.getUsage())) {
 					datatypesIds.add(child.getRef().getId());
 					decision.getDatatypesFilterMap().put(child.getRef().getId(), true);
 					bindedPaths.put(child.getId(), true);
-				}			
-			}		
+				}
+			}
 		}
 		this.processBinding(s.getBinding(), bindedPaths, decision);
 		return datatypesIds;
 	}
 
-
-	private Set<String> processDatatype(Datatype dt, ExportFilterDecision decision, ExportConfiguration config, HashMap<String, Boolean> bindedPaths, HashMap<String,Boolean> processed) {
+	private Set<String> processDatatype(Datatype dt, ExportFilterDecision decision, ExportConfiguration config,
+			HashMap<String, Boolean> bindedPaths, HashMap<String, Boolean> processed) {
 		Set<String> datatypesIds = new HashSet<String>();
-		if(!processed.containsKey(dt.getId())) {
-			if(dt instanceof ComplexDatatype) {
+		if (!processed.containsKey(dt.getId())) {
+			if (dt instanceof ComplexDatatype) {
 				datatypesIds.addAll(processComplexDatatype((ComplexDatatype) dt, decision, config));
 			}
 		}
-		processed.put(dt.getId(),true);
+		processed.put(dt.getId(), true);
 		return datatypesIds;
 	}
 
-
-	private Set<String> processComplexDatatype(ComplexDatatype dt, ExportFilterDecision decision, ExportConfiguration config) {
-		HashMap<String, Boolean> bindedPaths = new HashMap<String, Boolean> ();
+	private Set<String> processComplexDatatype(ComplexDatatype dt, ExportFilterDecision decision,
+			ExportConfiguration config) {
+		HashMap<String, Boolean> bindedPaths = new HashMap<String, Boolean>();
 		Set<String> datatypesIds = new HashSet<String>();
-		for(Component child: dt.getComponents() ) {
-			if(child.getRef() != null && child.getRef().getId() !=null) {
-				if(child.getUsage() !=null && config.getDatatypesExport().isBinded(child.getUsage())) {
+		for (Component child : dt.getComponents()) {
+			if (child.getRef() != null && child.getRef().getId() != null) {
+				if (child.getUsage() != null && config.getDatatypesExport().isBinded(child.getUsage())) {
 					datatypesIds.add(child.getRef().getId());
 					decision.getDatatypesFilterMap().put(child.getRef().getId(), true);
 					bindedPaths.put(child.getId(), true);
-				}			
-			}		
+				}
+			}
 		}
 		this.processBinding(dt.getBinding(), bindedPaths, decision);
 		return datatypesIds;
 	}
 
-
-	private Set<String> processConformanceProfile(ConformanceProfile cp, ExportFilterDecision decision, ExportConfiguration config) {
+	private Set<String> processConformanceProfile(ConformanceProfile cp, ExportFilterDecision decision,
+			ExportConfiguration config) {
 		// TODO Auto-generated method stub
 		Set<String> segmentsIds = new HashSet<String>();
 		HashMap<String, Boolean> bindedPaths = new HashMap<String, Boolean>();
-			
+
 		for (MsgStructElement segOrgroup : cp.getChildren()) {
 			if (segOrgroup instanceof SegmentRef) {
 				SegmentRef ref = (SegmentRef) segOrgroup;
 				if (ref.getRef() != null && ref.getRef().getId() != null) {
-					if(ref.getUsage() !=null && config.getSegmentsExport().isBinded(ref.getUsage())) {
+					if (ref.getUsage() != null && config.getSegmentsExport().isBinded(ref.getUsage())) {
 						segmentsIds.add(ref.getRef().getId());
 						decision.getSegmentFilterMap().put(ref.getRef().getId(), true);
 						bindedPaths.put(ref.getId(), true);
 					}
 				}
 			} else {
-				processSegmentorGroup(segOrgroup,  decision,  config, bindedPaths,segOrgroup.getId(), segmentsIds);
+				processSegmentorGroup(segOrgroup, decision, config, bindedPaths, segOrgroup.getId(), segmentsIds);
 			}
 		}
 		this.processBinding(cp.getBinding(), bindedPaths, decision);
 		return segmentsIds;
 	}
 
-	private void processSegmentorGroup(MsgStructElement segOrgroup, ExportFilterDecision decision, ExportConfiguration config,
-			HashMap<String, Boolean> bindedPaths, String path, Set<String> ids) {
+	private void processSegmentorGroup(MsgStructElement segOrgroup, ExportFilterDecision decision,
+			ExportConfiguration config, HashMap<String, Boolean> bindedPaths, String path, Set<String> ids) {
 		if (segOrgroup instanceof SegmentRef) {
 			SegmentRef ref = (SegmentRef) segOrgroup;
 			if (ref.getRef() != null && ref.getRef().getId() != null) {
-				if(ref.getUsage() !=null && config.getSegmentsExport().isBinded(ref.getUsage())) {
+				if (ref.getUsage() != null && config.getSegmentsExport().isBinded(ref.getUsage())) {
 					ids.add(ref.getRef().getId());
 					bindedPaths.put(path, true);
 					decision.getSegmentFilterMap().put(ref.getRef().getId(), true);
@@ -245,27 +254,28 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		} else if (segOrgroup instanceof Group) {
 			Group g = (Group) segOrgroup;
 			for (MsgStructElement child : g.getChildren()) {
-				processSegmentorGroup(child,  decision,  config, bindedPaths,path, ids);	   
+				processSegmentorGroup(child, decision, config, bindedPaths, path, ids);
 			}
 		}
 	}
-	
-	public void processBinding(ResourceBinding binding, HashMap<String, Boolean> bindedPaths, ExportFilterDecision decision) {
+
+	public void processBinding(ResourceBinding binding, HashMap<String, Boolean> bindedPaths,
+			ExportFilterDecision decision) {
 		if (binding.getChildren() != null) {
 			for (StructureElementBinding child : binding.getChildren()) {
 				if (child.getValuesetBindings() != null) {
 					for (ValuesetBinding vs : child.getValuesetBindings()) {
-						
+
 						if (vs.getValueSets() != null && bindedPaths.containsKey(child.getElementId())) {
-							for(String s: vs.getValueSets()) {
+							for (String s : vs.getValueSets()) {
 								decision.getValueSetFilterMap().put(s, true);
 							}
 						}
-						
+
 					}
 				}
 				if (child.getChildren() != null && !child.getChildren().isEmpty()) {
-					processStructureElementBinding(child, bindedPaths,decision,child.getElementId());
+					processStructureElementBinding(child, bindedPaths, decision, child.getElementId());
 				}
 			}
 		}
@@ -277,28 +287,30 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			if (child.getValuesetBindings() != null) {
 				for (ValuesetBinding vs : child.getValuesetBindings()) {
 					if (vs.getValueSets() != null && bindedPaths.containsKey(path)) {
-						for( String s: vs.getValueSets()) {
-						decision.getValueSetFilterMap().put(s, true);
+						for (String s : vs.getValueSets()) {
+							decision.getValueSetFilterMap().put(s, true);
 						}
 					}
 				}
 			}
 			if (child.getChildren() != null && !child.getChildren().isEmpty()) {
-				processStructureElementBinding(child, bindedPaths,decision,path);
+				processStructureElementBinding(child, bindedPaths, decision, path);
 			}
 		}
 	}
-	@Override
-	public ExportedFile exportIgDocumentToWord(String username, String id, ExportFilterDecision decision) throws Exception {
-	    Ig igDocument = igService.findById(id);
-	    if (igDocument != null) {
-	      ExportedFile htmlFile =
-	          this.serializeIgDocumentToHtml( username, igDocument, ExportFormat.WORD, decision);
-	      ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
-	      return wordFile;
-	    }
-	    return null;
-	  }
 
-	
+	@Override
+	public ExportedFile exportIgDocumentToWord(String username, String id, ExportFilterDecision decision)
+			throws Exception {
+		Ig igDocument = igService.findById(id);
+		if (igDocument != null) {
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD, decision);
+			ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(),
+					igDocument.getUpdateDate(),
+					igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
+			return wordFile;
+		}
+		return null;
+	}
+
 }

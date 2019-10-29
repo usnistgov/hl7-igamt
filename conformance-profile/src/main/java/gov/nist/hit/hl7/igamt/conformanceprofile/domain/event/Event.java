@@ -7,6 +7,7 @@ public class Event {
   private String id;
   String name;
   String parentStructId;
+  private String description; 
   private Type type = Type.EVENT;
   public void setType(Type type) {
 	this.type = type;
@@ -106,5 +107,13 @@ public String getHl7Version() {
 
 public void setHl7Version(String hl7Version) {
 	this.hl7Version = hl7Version;
+}
+
+public String getDescription() {
+  return description;
+}
+
+public void setDescription(String description) {
+  this.description = description;
 }
 }

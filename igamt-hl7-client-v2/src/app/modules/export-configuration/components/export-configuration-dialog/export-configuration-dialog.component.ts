@@ -105,7 +105,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
   }
 
   submit() {
-    console.log(this.filter);
     this.dialogRef.close(this.filter);
   }
   cancel() {

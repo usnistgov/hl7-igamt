@@ -1,4 +1,5 @@
 import {Type} from '../constants/type.enum';
+import {DeltaAction} from './delta';
 
 export interface IContent {
   id: string;
@@ -6,5 +7,6 @@ export interface IContent {
   type: Type;
   position: number;
   label: string;
+  delta?: DeltaAction;
   children: IContent[];
 }

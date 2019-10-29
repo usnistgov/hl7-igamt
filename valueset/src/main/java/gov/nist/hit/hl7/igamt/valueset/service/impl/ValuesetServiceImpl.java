@@ -212,6 +212,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 		elm.getDomainInfo().setScope(scope);
 		elm.setOrigin(elm.getFrom());
 		Link newLink = new Link();
+		newLink.setOrigin(elm.getFrom());
 		newLink = l.clone(newkey);
 		newLink.setDomainInfo(elm.getDomainInfo());
 		elm.setId(newkey);

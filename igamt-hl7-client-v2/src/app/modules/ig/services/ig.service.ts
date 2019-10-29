@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
+import {CloneModeEnum} from '../../shared/constants/clone-mode.enum';
 import { Type } from '../../shared/constants/type.enum';
 import { IConnectingInfo } from '../../shared/models/config.class';
 import { IContent } from '../../shared/models/content.interface';
@@ -11,13 +12,12 @@ import { IMetadata } from '../../shared/models/metadata.interface';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
 import { IG_END_POINT } from '../models/end-points';
 import { IDocumentCreationWrapper } from '../models/ig/document-creation.interface';
-import { IgDocument } from '../models/ig/ig-document.class';
 import { IGDisplayInfo } from '../models/ig/ig-document.class';
+import { IgDocument } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
 import { IAddNodes, ICopyNode, ICopyResourceResponse } from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
-
 @Injectable({
   providedIn: 'root',
 })
@@ -42,8 +42,11 @@ export class IgService {
     };
   }
 
-  cloneIg(id: string): Observable<Message<string>> {
-    return this.http.get<Message<string>>(IG_END_POINT + id + '/clone').pipe();
+  cloneIg(id: string, mode: CloneModeEnum, data: any): Observable<Message<string>> {
+    return this.http.post<Message<string>>(IG_END_POINT + id + '/clone', { mode, data}).pipe();
+  }
+  publish(id: string): Observable<Message<string>> {
+    return this.http.post<Message<string>>(IG_END_POINT + id + '/publish', {}).pipe();
   }
 
   getMessagesByVersion(hl7Version: string): Observable<Message<MessageEventTreeNode[]>> {
@@ -222,4 +225,11 @@ export class IgService {
     return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + id + '/getFilteredDocument');
   }
 
+  getDisplay(id: string, delta: boolean) {
+    if (delta) {
+      return this.http.get<IGDisplayInfo>('api/delta/display/' + id);
+    } else {
+      return this.getIgInfo(id);
+    }
+  }
 }

@@ -13,7 +13,7 @@ public interface InMemoryDomainExtentionService {
 	
 	// --- Extending
 	String getToken();
-	<T extends Resource> void put(String token, List<T> datatypes);
+	<T extends Resource> void put(String token, List<T> resource);
 	void clear(String token);
 	String put(DataExtention extention);
 

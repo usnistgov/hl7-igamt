@@ -15,6 +15,7 @@ export interface IgDocument extends IAbstractDomain {
   conformanceProfileRegistry: IRegistry;
   valueSetRegistry: IRegistry;
   label?: any;
+  derived: boolean;
 }
 
 export interface IGDisplayInfo {

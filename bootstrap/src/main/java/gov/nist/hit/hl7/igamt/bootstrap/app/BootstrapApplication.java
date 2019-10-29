@@ -197,11 +197,12 @@ public class BootstrapApplication implements CommandLineRunner {
   // }
 
   //
-//   @PostConstruct
-//   void createMessageEvent() {
-//    messageEventFactory.createMessageEvent();
-//    System.out.println("done");
-//   }
+   @PostConstruct
+    void createMessageEvent() {
+  
+      messageEventFactory.createMessageEvent();
+      System.out.println("done");
+  }
 //  
    //
   //@PostConstruct
