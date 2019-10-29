@@ -29,6 +29,7 @@ import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,10 +99,21 @@ private DeltaService deltaService;
 		    if(conformanceProfile.getOrigin() != null) {
 			  Delta delta = deltaService.delta(Type.CONFORMANCEPROFILE, igDataModel.getModel().getId(), conformanceProfile.getId());
 			  List<StructureDelta> structureDelta = delta.getDelta().stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-			  if(structureDelta != null) {
-				  Element deltaElement = this.serializeDelta(structureDelta, conformanceProfileExportConfiguration.getDeltaConfig());
-				  if (deltaElement != null) {
-					  conformanceProfileElement.appendChild(deltaElement);
+			  if(structureDelta != null && structureDelta.size()>0) {
+				  Element changesElement = new Element("Changes");
+				  changesElement.addAttribute(new Attribute("mode", conformanceProfileExportConfiguration.getDeltaConfig().getMode().name()));
+
+//		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
+				  changesElement.addAttribute(new Attribute("updatedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.UPDATED)));
+				  changesElement.addAttribute(new Attribute("addedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.ADDED)));
+				  changesElement.addAttribute(new Attribute("deletedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.DELETED)));
+				  List<Element> deltaElements = this.serializeDelta(structureDelta, conformanceProfileExportConfiguration.getDeltaConfig());
+				  if (deltaElements != null) {
+				  	for (Element el : deltaElements){
+						changesElement.appendChild(el);
+					}
+				  	conformanceProfileElement.appendChild(changesElement);
+
 				  }
 			  }
 		    }
@@ -128,21 +140,6 @@ private DeltaService deltaService;
 	      Element msgStructElement;
 	      if (msgStructElm instanceof Group) {
 	        msgStructElement = serializeGroup(igDataModel, (Group) msgStructElm, depth, conformanceProfileExportConfiguration);
-
-			  // Calculate conformanceProfile delta if the conformanceProfile has an origin
-//			  if(msgStructElm.getOrigin() != null) {
-				  Delta delta = deltaService.delta(Type.GROUP, igDataModel.getModel().getId(), msgStructElm.getId());
-				  if(delta != null){
-					  List<StructureDelta> structureDelta = delta.getDelta().stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-					  if(structureDelta != null) {
-						  Element deltaElement = this.serializeDelta(structureDelta, conformanceProfileExportConfiguration.getDeltaConfig());
-						  if (deltaElement != null) {
-							  msgStructElement.appendChild(deltaElement);
-						  }
-					  }
-				  }
-
-//			  }
 	      } else if (msgStructElm instanceof SegmentRef) {
 				SegmentDataModel segmentDataModel = igDataModel.getSegments().stream().filter(seg -> ((SegmentRef) msgStructElm).getRef().getId().equals(seg.getModel().getId())).findAny().orElseThrow(() -> new SegmentNotFoundException(((SegmentRef) msgStructElm).getRef().getId()));
 	        Segment segment = segmentDataModel.getModel();
@@ -220,6 +217,7 @@ private DeltaService deltaService;
 	//
 //	    }
 	    groupElement.addAttribute(new Attribute("name", group.getName()));
+	    groupElement.addAttribute(new Attribute("position", String.valueOf(group.getPosition())));
 	    Element elementGroupBegin = new Element("SegmentRef");
 	    elementGroupBegin.addAttribute(new Attribute("idGpe", group.getId()));
 	    elementGroupBegin.addAttribute(new Attribute("name", group.getName()));
@@ -255,62 +253,87 @@ private DeltaService deltaService;
 	    return groupElement;
 	  }
 
-	private Element serializeDelta(List<StructureDelta> structureDeltaList, DeltaConfiguration deltaConfiguration){
+	private List<Element> serializeDelta(List<StructureDelta> structureDeltaList, DeltaConfiguration deltaConfiguration){
 		if (structureDeltaList.size() > 0) {
-			Element changesElement = new Element("Changes");
-			changesElement.addAttribute(new Attribute("mode", deltaConfiguration.getMode().name()));
-
-//		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
-			changesElement.addAttribute(new Attribute("updatedColor", deltaConfiguration.getColors().get(DeltaAction.UPDATED)));
-			changesElement.addAttribute(new Attribute("addedColor", deltaConfiguration.getColors().get(DeltaAction.ADDED)));
-			changesElement.addAttribute(new Attribute("deletedColor", deltaConfiguration.getColors().get(DeltaAction.DELETED)));
-
-//		      }
+			List<Element> changesElements = new ArrayList<>();
 			for (StructureDelta structureDelta : structureDeltaList) {
-				this.setChangedElements(changesElement, structureDelta);
+
+				List<Element> els = this.setChangedElements(structureDelta, deltaConfiguration);
+				if(els != null && els.size()>0){
+					for(Element el : els){
+						changesElements.add(el);
+					}
+				}
 			}
-			return changesElement;
+			return changesElements;
 		}
 		return null;
 	}
 
-	private void setChangedElements(Element element, StructureDelta structureDelta) {
+	private List<Element> setChangedElements(StructureDelta structureDelta, DeltaConfiguration deltaConfiguration) {
+		List<Element> changedElements = new ArrayList<>();
 		if(structureDelta != null) {
-			if(structureDelta.getUsage() != null && !structureDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type",structureDelta.getType().getValue()));
-				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				changedElement.addAttribute(new Attribute("action", structureDelta.getUsage().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
-				element.appendChild(changedElement);
-			}
-			if(structureDelta.getMinCardinality() != null && !structureDelta.getMinCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", Type.SEGMENT.getValue()));
-				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				changedElement.addAttribute(new Attribute("action", structureDelta.getMinCardinality().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMIN.name()));
-				element.appendChild(changedElement);
-			}
-			if(structureDelta.getMaxCardinality() != null && !structureDelta.getMaxCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", Type.SEGMENT.getValue()));
-				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				changedElement.addAttribute(new Attribute("action", structureDelta.getMaxCardinality().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMAX.name()));
-				element.appendChild(changedElement);
-			}
-			if(structureDelta.getReference() != null && !structureDelta.getReference().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", Type.SEGMENT.getValue()));
-				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				changedElement.addAttribute(new Attribute("action", structureDelta.getReference().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.SEGMENTREF.name()));
-				element.appendChild(changedElement);
-			}
 
+				if(structureDelta.getUsage() != null && !structureDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("name",structureDelta.getName().getCurrent()));
+					changedElement.addAttribute(new Attribute("type",structureDelta.getType().getValue()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getUsage().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
+					changedElements.add(changedElement);
+				}
+				if(structureDelta.getMinCardinality() != null && !structureDelta.getMinCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getMinCardinality().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMIN.name()));
+					changedElements.add(changedElement);
+				}
+				if(structureDelta.getMaxCardinality() != null && !structureDelta.getMaxCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getMaxCardinality().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMAX.name()));
+					changedElements.add(changedElement);
+				}
+				if(structureDelta.getReference() != null && !structureDelta.getReference().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getReference().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.SEGMENTREF.name()));
+					changedElements.add(changedElement);
+				}
+
+
+			if(structureDelta.getChildren().size()>0  && structureDelta.getType().equals(Type.GROUP)){
+				List<StructureDelta> childrenDelta = structureDelta.getChildren().stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+				if(childrenDelta != null){
+					Element changedElement = new Element("Changes");
+					changedElement.addAttribute(new Attribute("mode", deltaConfiguration.getMode().name()));
+
+//		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
+					changedElement.addAttribute(new Attribute("updatedColor", deltaConfiguration.getColors().get(DeltaAction.UPDATED)));
+					changedElement.addAttribute(new Attribute("addedColor", deltaConfiguration.getColors().get(DeltaAction.ADDED)));
+					changedElement.addAttribute(new Attribute("deletedColor", deltaConfiguration.getColors().get(DeltaAction.DELETED)));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+
+					List<Element> deltaElements = this.serializeDelta(childrenDelta, deltaConfiguration);
+					if (deltaElements != null) {
+						for (Element el : deltaElements){
+							changedElement.appendChild(el);
+						}
+
+					}
+					changedElements.add(changedElement);
+				}
+			}
 
 		}
+		return changedElements;
 	}
 
 
