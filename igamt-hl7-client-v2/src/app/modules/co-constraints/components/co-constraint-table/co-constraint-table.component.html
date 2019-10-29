@@ -1,0 +1,228 @@
+<table *ngIf="value" class="table table-bordered">
+  <thead>
+    <tr>
+      <th rowspan="2" style="width: 54px;">
+        <button class="btn btn-sm btn-primary" (click)="addCoConstraint(value.coconstraints)">
+          <i class="fa fa-plus"></i>
+        </button>
+      </th>
+      <th rowspan="2" class="requirement-cell">Usage</th>
+      <th rowspan="2" class="requirement-cell">Cardinality</th>
+      <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'If', list: value.headers.selectors, isDataHeader: true }"></ng-container>
+      <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'Then', list: value.headers.constraints, isDataHeader: true  }"></ng-container>
+      <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'Narratives', list: value.headers.narratives, isDataHeader: false  }"></ng-container>
+    </tr>
+    <tr>
+      <ng-container *ngTemplateOutlet="value.headers.selectors.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.selectors, template: dataHeader }"></ng-container>
+      <ng-container *ngTemplateOutlet="value.headers.constraints.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.constraints, template: dataHeader }"></ng-container>
+      <ng-container *ngTemplateOutlet="value.headers.narratives.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.narratives, template: narrativeHeader }"></ng-container>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngTemplateOutlet="ccList; context: { $implicit: value.coconstraints }"></ng-container>
+  </tbody>
+  <ng-container *ngFor="let group of value.groups">
+    <ng-container [ngSwitch]="group.type" >
+      <ng-container *ngSwitchCase="'REF'">
+
+      </ng-container>
+      <ng-container *ngSwitchCase="'CONTAINED'">
+        <ng-container *ngTemplateOutlet="ccGroup; context: { $implicit: group }"></ng-container>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+</table>
+
+<!-- COLUMNS TOP HEADER -->
+<ng-template #columnHeader let-label let-list="list" let-isDataHeader="isDataHeader">
+  <th [attr.colspan]="list.length">
+    <div style="display: flex; justify-content: space-between;">
+      <span>{{label}}</span>
+      <button class="btn btn-sm btn-primary" (click)="openDataColumnDialog(list)">
+        <i class="fa fa-plus"></i>
+      </button>
+    </div>
+  </th>
+</ng-template>
+
+<!-- COLUMNS DYNAMIC COLLUMN -->
+<ng-template #columns let-list let-template="template">
+  <th *ngFor="let header of list" class="column">
+    <ng-container *ngTemplateOutlet="template; context: { $implicit: header }"></ng-container>
+  </th>
+</ng-template>
+
+<!-- EMPTY COLUMN -->
+<ng-template #emptyColumn>
+  <th class="column empty-column"></th>
+</ng-template>
+
+<!-- DATA HEADER -->
+<ng-template #dataHeader let-header>
+  <div style="width: 100%; display: flex; justify-content: space-between;">
+    <div>
+      <span class="badge badge-secondary">{{header.columnType}}</span>
+      <app-entity-bagde [type]="header.elementInfo.type"></app-entity-bagde>
+    </div>
+    {{header.name}}
+    <button class="btn btn-sm btn-danger"><i class="fa fa-minus"></i></button>
+  </div>
+</ng-template>
+
+<!-- NARRATIVE HEADER -->
+<ng-template #narrativeHeader let-header>
+  {{header.title}}
+</ng-template>
+
+ <!-- REQUIREMENTS -->
+<ng-template #usage let-elm>
+  <p-dropdown
+  [options]="usages"
+  [style]="{'width': '60px', 'min-width': 'inherit'}"
+  [(ngModel)]="elm.usage" ></p-dropdown>
+</ng-template>
+
+<ng-template #cardinality let-elm>
+  <div style="width : 100%; display: flex;">
+    <input style="width: 50px;" type="number" [(ngModel)]="elm.cardinality.min" class="form-control">
+    <input style="width: 50px;" type="text" [(ngModel)]="elm.cardinality.max" class="form-control">
+  </div>
+</ng-template>
+
+<!-- STRUCTURE -->
+<ng-template #ccList let-list>
+  <tr *ngFor="let cc of list">
+    <td class="btn-cell"><button class="btn btn-sm btn-danger"><i class="fa fa-minus"></i></button></td>
+    <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: cc.requirement }"></ng-container></td>
+    <td class="requirement-cell"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: cc.requirement }"></ng-container></td>
+    <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.selectors }"></ng-container>
+    <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.constraints }"></ng-container>
+    <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.narratives }"></ng-container>
+  </tr>
+</ng-template>
+
+<!-- STRUCTURE -->
+<ng-template #ccGroup let-group>
+  <tbody>
+    <tr style="background-color: gray;">
+      <td class="btn-cell">
+        <button class="btn btn-sm btn-primary" (click)="addCoConstraint(group.coconstraints)">
+          <i class="fa fa-plus"></i>
+        </button>
+        <button class="btn btn-sm btn-danger"><i class="fa fa-minus"></i></button>
+      </td>
+      <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: group.requirement }"></ng-container></td>
+      <td class="requirement-cell"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement }"></ng-container></td>
+      <td [attr.colspan]="numberOfColumns()" style="vertical-align: middle;">
+        <input class="form-control" type="text" [(ngModel)]="group.name" placeholder="Group Name">
+      </td>
+    </tr>
+    <ng-container *ngTemplateOutlet="ccList; context: { $implicit: group.coconstraints }"></ng-container>
+  </tbody>
+</ng-template>
+
+<!-- CELLS -->
+<ng-template #cellList let-headers="headers" let-cc>
+  <ng-container *ngIf="headers.length > 0; else emptyColumn">
+    <td class="column" *ngFor="let header of headers" >
+      <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header }"></ng-container>
+    </td>
+  </ng-container>
+</ng-template>
+
+<!-- CELLS -->
+<ng-template #codeCell let-header="header" let-cell>
+  <div style="width: 100%; display: flex; justify-content: space-between;">
+    <input type="text" [(ngModel)]="cell.code" class="form-control" placeholder="Code" style="width: 60%;">
+    <input type="text" [(ngModel)]="cell.codeSystem" class="form-control" placeholder="Code Sys" style="width: 40%;">
+  </div>
+  <p-multiSelect
+  [(ngModel)]="cell.locations"
+  [style]="{ width : '100%', 'min-width': 'inherit'}"
+  defaultLabel="Choose locations"></p-multiSelect>
+</ng-template>
+
+<ng-template #datatypeCell let-header="header" let-cell>
+  <p-dropdown
+  [autoDisplayFirst]="false"
+  [options]="datatypeOptions"
+  [style]="{'width': '100%', 'min-width': 'inherit'}"
+  placeholder="Datatype"
+  [(ngModel)]="cell.value" ></p-dropdown>
+    <p-dropdown
+      *ngIf="cell.value"
+      [autoDisplayFirst]="false"
+      [options]="datatypes"
+      [optionLabel]="'id'"
+      placeholder="Flavor"
+      dataKey="id"
+      [(ngModel)]="cell.datatypeId"
+      [style]="{'width': '100%', 'min-width': 'inherit'}"
+      [filter]="true"
+      filterBy="value.fixedName,value.variableName">
+      <ng-template let-item pTemplate="selectedItem">
+        <ng-container *ngIf="item.value">
+            <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
+            <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
+            <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
+        </ng-container>
+      </ng-template>
+      <ng-template let-item pTemplate="item">
+        <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
+        <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
+        <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
+      </ng-template>
+    </p-dropdown>
+</ng-template>
+
+
+<ng-template #valueSetCell let-header="header" let-cell>
+  <div style="width: 100%; display: flex; justify-content: space-between;">
+    <div style="margin-right: 5px;">
+      <ng-container *ngFor="let item of cell.bindings">
+        <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit : item }"></ng-container>
+      </ng-container>
+    </div>
+    <button class="btn btn-sm btn-primary" (click)="openVsPicker(cell, header)"><i class="fa fa-pencil"></i></button>
+  </div>
+</ng-template>
+
+<ng-template #displayVsBinding let-vsBinding>
+  <table class="table table-striped table-sm table-bordered" style="text-align: center; margin-bottom: 0;">
+    <tr>
+      <td pTooltip="Binding Strength" tooltipPosition="top">
+        <strong>{{vsBinding.bindingStrength}}</strong>
+      </td>
+      <td pTooltip="Binding Locations" tooltipPosition="top">
+        <strong>{{vsBinding.bindingLocation.length > 0 ? (vsBinding.bindingLocation | json) : '.'}}</strong>
+      </td>
+    </tr>
+    <tr *ngFor="let itemId of vsBinding.valueSets" >
+      <td colspan="2" *ngIf="getVsById(itemId) as item">
+        <div [pTooltip]="item.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
+          <app-entity-bagde [type]="item.type"></app-entity-bagde>
+          <app-scope-badge *ngIf="item.domainInfo" [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
+          <strong *ngIf="item.variableName" style="margin-left: 5px;"> {{item.variableName}}</strong>
+        </div>
+      </td>
+    </tr>
+  </table>
+</ng-template>
+
+<ng-template #valueCell let-header="header" let-cell>
+  <input type="text" [(ngModel)]="cell.value" class="form-control" placeholder="Constant Value">
+</ng-template>
+
+<ng-template #variesCell let-header="header" let-cell>
+  <div style="width: 100%; display: flex; justify-content: space-around;" *ngIf="!cell.cellType">
+    <button class="btn btn-sm btn-secondary" (click)="setTemplateType(cell, 'CODE')">Code</button>
+    <button class="btn btn-sm btn-secondary" (click)="setTemplateType(cell, 'VALUESET')">Value Set</button>
+    <button class="btn btn-sm btn-secondary" (click)="setTemplateType(cell, 'VALUE')">Constant</button>
+  </div>
+  <div style="width: 100%; display: flex; justify-content: space-between;" *ngIf="cell.cellType">
+    <div>
+      <ng-container *ngTemplateOutlet="getCellTemplateForType(cell.cellType); context: { $implicit: cell.cellValue, header: header }"></ng-container>
+    </div>
+    <button class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
+  </div>
+</ng-template>

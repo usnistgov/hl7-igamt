@@ -189,7 +189,6 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
         }
       });
     }
-
   }
 
   registerChange(change: IChange) {
