@@ -11,7 +11,7 @@ export class ValueSetExportConfigurationComponent implements OnInit {
   @Input()
   config: any;
   @Output()
-  change: EventEmitter<any> = new EventEmitter<any>();
+  detectChange: EventEmitter<any> = new EventEmitter<any>();
 
   constructor() { }
 
@@ -19,7 +19,7 @@ export class ValueSetExportConfigurationComponent implements OnInit {
   }
 
   triggerChange() {
-    this.change.emit(this.config);
+    this.detectChange.emit(this.config);
   }
 
   print() {

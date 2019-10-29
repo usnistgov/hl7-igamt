@@ -110,7 +110,9 @@
 				</xsl:element>
 			</xsl:element>
 			<xsl:element name="tbody">
-				<xsl:call-template name="displayMessageSegmentsOrGroups" />
+				<xsl:call-template name="displayMessageSegmentsOrGroups" >
+					<xsl:with-param name="changes" select="./Changes" />
+				</xsl:call-template>
 			</xsl:element>
 		</xsl:element>
 		<xsl:call-template name="MessageConstraint">
