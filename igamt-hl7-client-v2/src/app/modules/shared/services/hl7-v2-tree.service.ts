@@ -220,14 +220,14 @@ export class Hl7V2TreeService {
     return payload;
   }
 
-  getNameFromPath(elm: IPathInfo): string {
+  getNameFromPath(elm: IPathInfo, excludeDesc: boolean = false): string {
     const loop = (node: IPathInfo): string => {
       if (!node) {
         return '';
       }
       const post = loop(node.child);
       const separator = node.child ? node.child.type === Type.FIELD ? '-' : '.' : '';
-      const desc = node.child ? '' : ' (' + node.name + ')';
+      const desc = node.child ? '' : excludeDesc ? '' : ' (' + node.name + ')';
       if (node.type === Type.GROUP || node.type === Type.SEGMENT || node.type === Type.SEGMENTREF || node.type === Type.DATATYPE) {
         return node.name + separator + post;
       } else if (node.type === Type.CONFORMANCEPROFILE) {
@@ -240,7 +240,7 @@ export class Hl7V2TreeService {
   }
 
   getNodeName(node: IHL7v2TreeNode): string {
-    return this.getNameFromPath(this.getPathInfo(node));
+    return this.getNameFromPath(this.getPathInfo(node), true);
   }
 
   getPathInfo(node: IHL7v2TreeNode): IPathInfo {
@@ -254,6 +254,7 @@ export class Hl7V2TreeService {
           position: elm.data.position,
           leaf: elm.leaf,
         });
+        return parentPathInfoList;
       } else {
         return [
           {
@@ -266,6 +267,7 @@ export class Hl7V2TreeService {
         ];
       }
     };
+    console.log(loop(node));
     const chain: IPathInfo[] = loop(node);
     return chain.reverse().reduce((pV, cV) => {
       cV.child = pV;

@@ -1,25 +1,26 @@
 import { Type } from '../constants/type.enum';
 import { IValuesetBinding } from './binding.interface';
+import { ICoConstraint } from './co-constraint.interface';
 
-export interface ICoConstraintTable {
+export interface ICoConstraintCollection {
   id?: string;
+  coconstraintMode: CoConstraintMode;
   baseSegment: string;
   headers: ICoConstraintHeaders;
   coconstraints: ICoConstraint[];
+}
+
+export interface ICoConstraintTable extends ICoConstraintCollection {
   groups: ICoConstraintGroupBinding[];
 }
 
-export interface ICoConstraintGroup {
-  id?: string;
-  baseSegment: string;
+export interface ICoConstraintGroup extends ICoConstraintCollection {
   name: string;
-  headers: ICoConstraintHeaders;
-  coconstraints: ICoConstraint[];
 }
 
 export interface ICoConstraintGroupBinding {
   requirement: ICoConstraintRequirement;
-  type: ICoConstraintGroupBindingType;
+  type: CoConstraintGroupBindingType;
 }
 
 export interface ICoConstraintGroupBindingRef extends ICoConstraintGroupBinding {
@@ -38,14 +39,13 @@ export interface ICoConstraintHeaders {
 }
 
 export interface ICoConstraintHeader {
-  type: ICoConstraintHeaderType;
+  type: CoConstraintHeaderType;
   key: string;
 }
 
 export interface IDataElementHeader extends ICoConstraintHeader {
   name: string;
-  elementType: Type;
-  columnType: ICoConstraintColumnType;
+  columnType: CoConstraintColumnType;
   elementInfo: IDataElementHeaderInfo;
 }
 
@@ -72,7 +72,7 @@ export interface ICoConstraintCells {
 }
 
 export interface ICoConstraintCell {
-  type: ICoConstraintColumnType;
+  type: CoConstraintColumnType;
 }
 
 export interface ICoConstraintCodeCell extends ICoConstraintCell {
@@ -86,6 +86,7 @@ export interface ICoConstraintValueSetCell extends ICoConstraintCell {
 }
 
 export interface ICoConstraintDatatypeCell extends ICoConstraintCell {
+  value: string;
   datatypeId: string;
 }
 
@@ -93,21 +94,33 @@ export interface ICoConstraintValueCell extends ICoConstraintCell {
   value: string;
 }
 
-export enum ICoConstraintColumnType {
+export interface ICoConstraintVariesCell extends ICoConstraintCell {
+  cellType: CoConstraintColumnType;
+  cellValue: ICoConstraintCell;
+}
+
+export enum CoConstraintColumnType {
   CODE = 'CODE',
   VALUESET = 'VALUESET',
   DATATYPE = 'DATATYPE',
+  FLAVOR = 'FLAVOR',
+  VARIES = 'VARIES',
   VALUE = 'VALUE',
 }
 
-export enum ICoConstraintGroupBindingType {
+export enum CoConstraintGroupBindingType {
   REF = 'REF',
   CONTAINED = 'CONTAINED',
 }
 
-export enum ICoConstraintHeaderType {
+export enum CoConstraintHeaderType {
   DATAELEMENT = 'DATAELEMENT',
   NARRATIVE = 'NARRATIVE',
+}
+
+export enum CoConstraintMode {
+  GROUP = 'GROUP',
+  TABLE = 'TABLE',
 }
 
 export interface ICoConstraintRequirement {

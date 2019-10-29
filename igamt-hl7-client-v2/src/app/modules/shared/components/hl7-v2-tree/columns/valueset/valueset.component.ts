@@ -15,6 +15,7 @@ import {
 } from '../../../binding-selector/binding-selector.component';
 import { IValueSetBindingDisplay } from '../../../binding-selector/binding-selector.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
+import { BindingService } from '../../../../services/binding.service';
 
 export interface IValueSetOrSingleCodeBindings {
   valueSetBindings: Array<IBinding<IValuesetBinding[]>>;
@@ -57,7 +58,9 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
   context: Type;
   alive: boolean;
 
-  constructor(private dialog: MatDialog) {
+  constructor(
+    private dialog: MatDialog,
+    private bindingService: BindingService) {
     super([PropertyType.VALUESET, PropertyType.SINGLECODE]);
     this.editable = new BehaviorSubject<IValueSetOrSingleCodeDisplay>({ type: IBindingType.VALUESET, value: undefined });
     this.editable$ = this.editable.asObservable();
@@ -100,29 +103,6 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
     return merged;
   }
 
-  getValueSetBindingDisplay(bindings: IValuesetBinding[]): Observable<IValueSetBindingDisplay[]> {
-    return forkJoin(bindings.map((x) => {
-      return combineLatest(
-        of(x),
-        forkJoin(x.valueSets.map((id) =>
-          this.getValueSetById(id).pipe(
-            take(1),
-          ))),
-      );
-    })).pipe(
-      map((vsList) => {
-        return vsList.map((vsB) => {
-          const [binding, display] = vsB;
-          return {
-            valueSets: display,
-            bindingStrength: binding.strength,
-            bindingLocation: binding.valuesetLocations,
-          };
-        });
-      }),
-    );
-  }
-
   getValueSetById(id: string): Observable<IDisplayElement> {
     return this.repository.getResourceDisplay(Type.VALUESET, id);
   }
@@ -146,7 +126,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
   editBinding() {
     const dialogRef = this.dialog.open(BindingSelectorComponent, {
       minWidth: '40%',
-      minHeight: '40%' , data: {
+      minHeight: '40%', data: {
         resources: this.valueSets,
         locationInfo: this.bindingInfo,
         path: null,
@@ -246,7 +226,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
             switch (topBindings.value.type) {
 
               case IBindingType.VALUESET:
-                this.getValueSetBindingDisplay(topBindings.value.value as IValuesetBinding[]).pipe(
+                this.bindingService.getValueSetBindingDisplay(topBindings.value.value as IValuesetBinding[], this.repository).pipe(
                   takeWhile(() => this.alive),
                   tap((bindings) => {
                     this.editable.next({
@@ -285,7 +265,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
             switch (display.value.type) {
 
               case IBindingType.VALUESET:
-                this.freeze$ = this.getValueSetBindingDisplay(display.value.value as IValuesetBinding[]).pipe(
+                this.freeze$ = this.bindingService.getValueSetBindingDisplay(display.value.value as IValuesetBinding[], this.repository).pipe(
                   takeWhile(() => this.alive),
                   map((bindings) => {
                     return {
