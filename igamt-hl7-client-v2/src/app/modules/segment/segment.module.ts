@@ -4,6 +4,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { SegmentEditEffects } from '../../root-store/segment-edit/segment-edit.effects';
 import * as fromSegmentEdit from '../../root-store/segment-edit/segment-edit.reducer';
+import { CoConstraintsModule } from '../co-constraints/co-constraints.module';
 import { SharedModule } from '../shared/shared.module';
 import { CoconstraintsEditorComponent } from './components/coconstraints-editor/coconstraints-editor.component';
 import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';
@@ -31,6 +32,7 @@ import { SegmentService } from './services/segment.service';
     CommonModule,
     SegmentRoutingModule,
     SharedModule,
+    CoConstraintsModule,
     EffectsModule.forFeature([SegmentEditEffects]),
     StoreModule.forFeature('segmentEdit', fromSegmentEdit.reducer),
   ],

@@ -1,0 +1,22 @@
+.requirement-cell {
+  width: 80px;
+  vertical-align: middle;
+}
+
+.btn-cell {
+  width: 50px;
+  vertical-align: middle;
+}
+
+.empty-column {
+  width: 450px;
+  height: 45px;
+  background-color: #f3f3f3;
+}
+
+.column {
+  max-width: 300px;
+  min-width: 300px;
+  width: 300px;
+  vertical-align: middle;
+}
