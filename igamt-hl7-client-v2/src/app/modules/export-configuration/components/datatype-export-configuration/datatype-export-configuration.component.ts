@@ -27,7 +27,7 @@ export class DatatypeExportConfigurationComponent implements OnInit {
     this.config.deltaConfig = event.config;
     this.triggerChange();
   }
-  
+
   print() {
   }
 }
