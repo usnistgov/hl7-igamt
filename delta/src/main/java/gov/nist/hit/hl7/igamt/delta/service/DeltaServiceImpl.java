@@ -99,6 +99,7 @@ public class DeltaServiceImpl implements DeltaService {
 
     } else if(type.equals(Type.CONFORMANCEPROFILE)) {
 
+
       ConformanceProfile target = this.conformanceProfileService.findById(entityId);
       ConformanceProfile source = this.conformanceProfileService.findById(target.getOrigin());
 

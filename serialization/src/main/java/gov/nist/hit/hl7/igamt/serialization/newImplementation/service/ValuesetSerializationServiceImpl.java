@@ -35,7 +35,6 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	      Valueset valueSet = valuesetDataModel.getModel();
 	      valueSetElement.addAttribute(new Attribute("bindingIdentifier",
 	          valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
-	      System.out.println("bindingID here : " + valueSet.getName() + " " + valueSet.getBindingIdentifier() );
 	      valueSetElement
 	          .addAttribute(new Attribute("oid", valueSet.getOid() != null ? valueSet.getOid() : ""));
 	      if(valueSetExportConfiguration.isType()) {
@@ -59,9 +58,7 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	          valueSet.getContentDefinition() != null ? valueSet.getContentDefinition().value : ""));
 	      valueSetElement.addAttribute(
 	          new Attribute("numberOfCodes", String.valueOf(valueSet.getNumberOfCodes())));
-	      valueSetElement.addAttribute(new Attribute("codeSystemIds",getCodSystemDispaly(valueSet.getCodeSystems())));
-
-	   
+	      valueSetElement.addAttribute(new Attribute("codeSystemIds",getCodSystemDispaly(valueSet.getCodeSystems())));	   
 	      Element codesElement = new Element("Codes");
 	      if (valueSet.getCodes().size() > 0) {
 

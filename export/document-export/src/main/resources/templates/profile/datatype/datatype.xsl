@@ -152,6 +152,8 @@
                     </xsl:element>
                 </xsl:element>
             </xsl:element>
+            		<xsl:call-template name="ValueSetBindingList"/>		
+            
 <!--             <xsl:if test="count(./Constraint) &gt; 0">
  -->               <xsl:if test="count(Constraints/ConformanceStatement)  &gt; 0">
 

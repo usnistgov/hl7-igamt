@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TreeNode } from 'primeng/primeng';
 import { Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
 import { IPath } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';

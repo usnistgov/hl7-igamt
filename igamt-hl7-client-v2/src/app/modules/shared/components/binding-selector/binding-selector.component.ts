@@ -4,7 +4,7 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { TurnOnLoader } from '../../../../root-store/loader/loader.actions';
+import { TurnOffLoader, TurnOnLoader } from '../../../../root-store/loader/loader.actions';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IBindingType, IValuesetStrength } from '../../models/binding.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
@@ -90,7 +90,11 @@ export class BindingSelectorComponent<T> implements OnInit {
     this.store.dispatch(new TurnOnLoader({ blockUI: true }));
     this.getById($event.id).subscribe(
       (x) => {
+        this.store.dispatch(new TurnOffLoader());
         this.currentValueSet = x;
+      },
+      () => {
+        this.store.dispatch(new TurnOffLoader());
       },
     );
   }

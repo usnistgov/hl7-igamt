@@ -1,5 +1,13 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.delta.domain.Delta;
+import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
+import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +31,10 @@ import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ConformanceProfileSerializationServiceImpl implements ConformanceProfileSerializationService {
 
@@ -31,7 +43,10 @@ private IgDataModelSerializationService igDataModelSerializationService;
 
 @Autowired
 private ConstraintSerializationService constraintSerializationService;
-	
+
+@Autowired
+private DeltaService deltaService;
+
 	@Override
 	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level,  int position,
 			ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) throws ResourceSerializationException {
@@ -66,13 +81,16 @@ private ConstraintSerializationService constraintSerializationService;
 	        }
 	        if (conformanceProfile.getChildren() != null
 	            && conformanceProfile.getChildren().size() > 0) {
-	          for (MsgStructElement msgStructElm : conformanceProfile.getChildren()) {
-	            	System.out.println("HERE1 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
+	        	List<MsgStructElement> msgStructElementList = conformanceProfile.getChildren().stream().sorted((e1, e2) -> 
+	        	e1.getPosition() - e2.getPosition()).collect(Collectors.toList());
+	        	
+	          for (MsgStructElement msgStructElm : msgStructElementList) {
+	            	System.out.println("HERE1 position : " +  msgStructElm.getPosition() +" Name is : " + msgStructElm.getName());
 		            if (msgStructElm != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), msgStructElm.getUsage())) {
-		            	System.out.println("HERE2 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
+//		            	System.out.println("HERE2 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
 	            if (msgStructElm != null) {
 //	              if(this.bindedGroupsAndSegmentRefs.contains(msgStructElm.getId())) {
-	                Element msgStructElement = this.serializeMsgStructElement(igDataModel, msgStructElm, 0);
+	                Element msgStructElement = this.serializeMsgStructElement(igDataModel, msgStructElm, 0, conformanceProfileExportConfiguration);
 	                if (msgStructElement != null) {
 	                  conformanceProfileElement.appendChild(msgStructElement);
 	                }
@@ -81,6 +99,30 @@ private ConstraintSerializationService constraintSerializationService;
 //	            }
 	          }
 	        }
+
+	        // Calculate conformanceProfile delta if the conformanceProfile has an origin
+		    if(conformanceProfile.getOrigin() != null) {
+			  Delta delta = deltaService.delta(Type.CONFORMANCEPROFILE, igDataModel.getModel().getId(), conformanceProfile.getId());
+			  List<StructureDelta> structureDelta = delta.getDelta().stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+			  if(structureDelta != null && structureDelta.size()>0) {
+				  Element changesElement = new Element("Changes");
+				  changesElement.addAttribute(new Attribute("mode", conformanceProfileExportConfiguration.getDeltaConfig().getMode().name()));
+
+//		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
+				  changesElement.addAttribute(new Attribute("updatedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.UPDATED)));
+				  changesElement.addAttribute(new Attribute("addedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.ADDED)));
+				  changesElement.addAttribute(new Attribute("deletedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.DELETED)));
+				  List<Element> deltaElements = this.serializeDelta(structureDelta, conformanceProfileExportConfiguration.getDeltaConfig());
+				  if (deltaElements != null) {
+				  	for (Element el : deltaElements){
+						changesElement.appendChild(el);
+					}
+				  	conformanceProfileElement.appendChild(changesElement);
+
+				  }
+			  }
+		    }
+
 		    return igDataModelSerializationService.getSectionElement(conformanceProfileElement, conformanceProfileDataModel.getModel(), level, conformanceProfileExportConfiguration);
 
 	      } catch (Exception exception) {
@@ -97,12 +139,12 @@ private ConstraintSerializationService constraintSerializationService;
 	   * @throws SerializationException
 	   * @throws Exception
 	   */
-	  private Element serializeMsgStructElement(IgDataModel igDataModel, MsgStructElement msgStructElm, int depth)
+	  private Element serializeMsgStructElement(IgDataModel igDataModel, MsgStructElement msgStructElm, int depth, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration)
 	      throws SerializationException {
 	    try {
 	      Element msgStructElement;
 	      if (msgStructElm instanceof Group) {
-	        msgStructElement = serializeGroup(igDataModel, (Group) msgStructElm, depth);
+	        msgStructElement = serializeGroup(igDataModel, (Group) msgStructElm, depth, conformanceProfileExportConfiguration);
 	      } else if (msgStructElm instanceof SegmentRef) {
 				SegmentDataModel segmentDataModel = igDataModel.getSegments().stream().filter(seg -> ((SegmentRef) msgStructElm).getRef().getId().equals(seg.getModel().getId())).findAny().orElseThrow(() -> new SegmentNotFoundException(((SegmentRef) msgStructElm).getRef().getId()));
 	        Segment segment = segmentDataModel.getModel();
@@ -116,6 +158,9 @@ private ConstraintSerializationService constraintSerializationService;
 	      if (msgStructElement != null) {
 	        msgStructElement.addAttribute(new Attribute("min", String.valueOf(msgStructElm.getMin())));
 	        msgStructElement.addAttribute(new Attribute("max", msgStructElm.getMax()));
+	        msgStructElement.addAttribute(new Attribute("position", String.valueOf(msgStructElm.getPosition())));
+
+
 	      }
 	      return msgStructElement;
 	    } catch (SegmentNotFoundException e) {
@@ -124,7 +169,7 @@ private ConstraintSerializationService constraintSerializationService;
 	  }
 
 	  /**
-	   * @param msgStructElm @return @throws
+	   * @param segmentRef @return @throws
 	   */
 	  private Element serializeSegmentRef(SegmentRef segmentRef, Segment segment, int depth)
 	      throws MsgStructElementSerializationException {
@@ -165,7 +210,7 @@ private ConstraintSerializationService constraintSerializationService;
 	    }
 	  }
 
-	  private Element serializeGroup(IgDataModel igDataModel, Group group, int depth) throws SerializationException {
+	  private Element serializeGroup(IgDataModel igDataModel, Group group, int depth, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) throws SerializationException {
 	    Element groupElement = new Element("Group");
 //	    if (group.getBinding() != null) {
 //	      Element binding;
@@ -180,6 +225,7 @@ private ConstraintSerializationService constraintSerializationService;
 	//
 //	    }
 	    groupElement.addAttribute(new Attribute("name", group.getName()));
+	    groupElement.addAttribute(new Attribute("position", String.valueOf(group.getPosition())));
 	    Element elementGroupBegin = new Element("SegmentRef");
 	    elementGroupBegin.addAttribute(new Attribute("idGpe", group.getId()));
 	    elementGroupBegin.addAttribute(new Attribute("name", group.getName()));
@@ -193,7 +239,7 @@ private ConstraintSerializationService constraintSerializationService;
 	    groupElement.appendChild(elementGroupBegin);
 	    for (MsgStructElement msgStructElm : group.getChildren()) {
 	      try {
-	        Element child = this.serializeMsgStructElement(igDataModel, msgStructElm, depth + 1);
+	        Element child = this.serializeMsgStructElement(igDataModel, msgStructElm, depth + 1, conformanceProfileExportConfiguration);
 	        if (child != null) {
 	          groupElement.appendChild(child);
 	        }
@@ -214,6 +260,91 @@ private ConstraintSerializationService constraintSerializationService;
 	    groupElement.appendChild(elementGroupEnd);
 	    return groupElement;
 	  }
+
+	private List<Element> serializeDelta(List<StructureDelta> structureDeltaList, DeltaConfiguration deltaConfiguration){
+		if (structureDeltaList.size() > 0) {
+			List<Element> changesElements = new ArrayList<>();
+			for (StructureDelta structureDelta : structureDeltaList) {
+
+				List<Element> els = this.setChangedElements(structureDelta, deltaConfiguration);
+				if(els != null && els.size()>0){
+					for(Element el : els){
+						changesElements.add(el);
+					}
+				}
+			}
+			return changesElements;
+		}
+		return null;
+	}
+
+	private List<Element> setChangedElements(StructureDelta structureDelta, DeltaConfiguration deltaConfiguration) {
+		List<Element> changedElements = new ArrayList<>();
+		if(structureDelta != null) {
+
+				if(structureDelta.getUsage() != null && !structureDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("name",structureDelta.getName().getCurrent()));
+					changedElement.addAttribute(new Attribute("type",structureDelta.getType().getValue()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getUsage().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
+					changedElements.add(changedElement);
+				}
+				if(structureDelta.getMinCardinality() != null && !structureDelta.getMinCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getMinCardinality().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMIN.name()));
+					changedElements.add(changedElement);
+				}
+				if(structureDelta.getMaxCardinality() != null && !structureDelta.getMaxCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getMaxCardinality().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMAX.name()));
+					changedElements.add(changedElement);
+				}
+				if(structureDelta.getReference() != null && !structureDelta.getReference().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getReference().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.SEGMENTREF.name()));
+					changedElements.add(changedElement);
+				}
+
+
+			if(structureDelta.getChildren().size()>0  && structureDelta.getType().equals(Type.GROUP)){
+				List<StructureDelta> childrenDelta = structureDelta.getChildren().stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+				if(childrenDelta != null){
+					Element changedElement = new Element("Changes");
+					changedElement.addAttribute(new Attribute("mode", deltaConfiguration.getMode().name()));
+
+//		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
+					changedElement.addAttribute(new Attribute("updatedColor", deltaConfiguration.getColors().get(DeltaAction.UPDATED)));
+					changedElement.addAttribute(new Attribute("addedColor", deltaConfiguration.getColors().get(DeltaAction.ADDED)));
+					changedElement.addAttribute(new Attribute("deletedColor", deltaConfiguration.getColors().get(DeltaAction.DELETED)));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+
+					List<Element> deltaElements = this.serializeDelta(childrenDelta, deltaConfiguration);
+					if (deltaElements != null) {
+						for (Element el : deltaElements){
+							changedElement.appendChild(el);
+						}
+
+					}
+					changedElements.add(changedElement);
+				}
+			}
+
+		}
+		return changedElements;
+	}
+
+
 
 //	  @Override
 //	  public Map<String, String> getIdPathMap() {

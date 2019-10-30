@@ -110,7 +110,9 @@
 				</xsl:element>
 			</xsl:element>
 			<xsl:element name="tbody">
-				<xsl:call-template name="displayMessageSegmentsOrGroups" />
+				<xsl:call-template name="displayMessageSegmentsOrGroups" >
+					<xsl:with-param name="changes" select="./Changes" />
+				</xsl:call-template>
 			</xsl:element>
 		</xsl:element>
 		<xsl:call-template name="MessageConstraint">
@@ -147,7 +149,7 @@
 				</xsl:with-param>
 			</xsl:call-template>
 		</xsl:if>
-                <xsl:if test="count(./Constraint[@Type='pre'])  &gt; 0">
+		<xsl:if test="count(Constraints/Predicate)  &gt; 0">
                     <xsl:element name="br"/>
                     <xsl:call-template name="Constraint">
                         <xsl:with-param name="title">

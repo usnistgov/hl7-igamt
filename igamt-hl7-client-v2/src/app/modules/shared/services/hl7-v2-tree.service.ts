@@ -220,14 +220,22 @@ export class Hl7V2TreeService {
     return payload;
   }
 
-  getNameFromPath(elm: IPathInfo): string {
+  // tslint:disable-next-line: cognitive-complexity
+  getNameFromPath(elm: IPathInfo, excludeDesc: boolean = false): string {
     const loop = (node: IPathInfo): string => {
       if (!node) {
         return '';
       }
       const post = loop(node.child);
       const separator = node.child ? node.child.type === Type.FIELD ? '-' : '.' : '';
-      const desc = node.child ? '' : ' (' + node.name + ')';
+      let desc: string;
+
+      if (node.child || excludeDesc) {
+        desc = '';
+      } else {
+        desc = ' (' + node.name + ')';
+      }
+
       if (node.type === Type.GROUP || node.type === Type.SEGMENT || node.type === Type.SEGMENTREF || node.type === Type.DATATYPE) {
         return node.name + separator + post;
       } else if (node.type === Type.CONFORMANCEPROFILE) {
@@ -237,6 +245,42 @@ export class Hl7V2TreeService {
       }
     };
     return loop(elm);
+  }
+
+  getNodeName(node: IHL7v2TreeNode): string {
+    return this.getNameFromPath(this.getPathInfo(node), true);
+  }
+
+  getPathInfo(node: IHL7v2TreeNode): IPathInfo {
+    const loop = (elm: IHL7v2TreeNode): IPathInfo[] => {
+      if (elm.parent) {
+        const parentPathInfoList = loop(elm.parent);
+        parentPathInfoList.push({
+          name: elm.data.name,
+          id: elm.data.id,
+          type: elm.data.type,
+          position: elm.data.position,
+          leaf: elm.leaf,
+        });
+        return parentPathInfoList;
+      } else {
+        return [
+          {
+            name: elm.data.name,
+            id: elm.data.id,
+            type: elm.data.type,
+            position: elm.data.position,
+            leaf: elm.leaf,
+          },
+        ];
+      }
+    };
+    console.log(loop(node));
+    const chain: IPathInfo[] = loop(node);
+    return chain.reverse().reduce((pV, cV) => {
+      cV.child = pV;
+      return cV;
+    });
   }
 
   getChildrenListFromResource(resource: IResource, repository: AResourceRepositoryService): Observable<NamedChildrenList> {
