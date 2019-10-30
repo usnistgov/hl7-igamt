@@ -1,23 +1,24 @@
-import { Dictionary } from '@ngrx/entity';
-import { createSelector } from '@ngrx/store';
-import { IResourceMetadata } from 'src/app/modules/core/components/resource-metadata-editor/resource-metadata-editor.component';
-import { IConformanceProfile } from 'src/app/modules/shared/models/conformance-profile.interface';
-import { IWorkspace } from 'src/app/modules/shared/models/editor.class';
-import { IResource } from 'src/app/modules/shared/models/resource.interface';
-import { ISegment } from 'src/app/modules/shared/models/segment.interface';
-import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
-import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
-import { Scope } from '../../../modules/shared/constants/scope.enum';
-import { Type } from '../../../modules/shared/constants/type.enum';
-import { IContent } from '../../../modules/shared/models/content.interface';
-import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
-import { ILink } from '../../../modules/shared/models/link.interface';
-import { IRegistry } from '../../../modules/shared/models/registry.interface';
-import { IValueSet } from '../../../modules/shared/models/value-set.interface';
-import { selectIgEdit } from '../ig.reducer';
-import { ITitleBarMetadata } from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
-import { IDatatype } from './../../../modules/shared/models/datatype.interface';
-import { igElementAdapter, IResourcesState, IState, loadedResourceAdapter } from './ig-edit.reducer';
+import {Dictionary} from '@ngrx/entity';
+import {createSelector} from '@ngrx/store';
+import {IResourceMetadata} from 'src/app/modules/core/components/resource-metadata-editor/resource-metadata-editor.component';
+import {IConformanceProfile} from 'src/app/modules/shared/models/conformance-profile.interface';
+import {IWorkspace} from 'src/app/modules/shared/models/editor.class';
+import {IResource} from 'src/app/modules/shared/models/resource.interface';
+import {ISegment} from 'src/app/modules/shared/models/segment.interface';
+import {IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
+import {IgTOCNodeHelper} from '../../../modules/ig/services/ig-toc-node-helper.service';
+import {Scope} from '../../../modules/shared/constants/scope.enum';
+import {Type} from '../../../modules/shared/constants/type.enum';
+import {Status} from '../../../modules/shared/models/abstract-domain.interface';
+import {IContent} from '../../../modules/shared/models/content.interface';
+import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
+import {ILink} from '../../../modules/shared/models/link.interface';
+import {IRegistry} from '../../../modules/shared/models/registry.interface';
+import {IValueSet} from '../../../modules/shared/models/value-set.interface';
+import {selectIgEdit} from '../ig.reducer';
+import {ITitleBarMetadata} from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
+import {IDatatype} from './../../../modules/shared/models/datatype.interface';
+import {igElementAdapter, IResourcesState, IState, loadedResourceAdapter} from './ig-edit.reducer';
 
 export const {
   selectAll,
@@ -297,7 +298,7 @@ export const selectTitleBar = createSelector(
 export const selectViewOnly = createSelector(
   selectIgDocument,
   (document: IgDocument): boolean => {
-    return document.domainInfo.scope !== Scope.USER;
+    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED;
   },
 );
 
@@ -419,6 +420,10 @@ export const selectValueSets = createSelector(
     return state.valueSets;
   },
 );
+export const selectAllValueSets = createSelector(
+  selectValueSets,
+  selectAll,
+);
 export const selectDelta = createSelector(
   selectIgEdit,
   (state: IState) => {
@@ -443,6 +448,10 @@ export const selectMessages = createSelector(
   (state: IState) => {
     return state.messages;
   },
+);
+export const selectAllMessages = createSelector(
+  selectMessages,
+  selectAll,
 );
 
 export const selectMessagesEntites = createSelector(

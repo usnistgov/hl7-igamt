@@ -16,12 +16,9 @@
 
   <div *ngIf="delta" style="display: flex; flex-direction: row">
       <span class="badge delta-badge delta-changed"> <p-checkbox name="delta-display" value="UPDATED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> updated</span>
-
       <span class="badge delta-badge delta-deleted">   <p-checkbox name="delta-display" value="DELETED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> deleted</span>
-
       <span class="badge delta-badge delta-added"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> added </span>
       <span class="badge delta-badge badge-default">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"> </p-checkbox> unchanged</span>
-
   </div>
 
 </div>
@@ -55,7 +52,6 @@
 
 </div>
 <div class="sidebar-content" id="sidebar-content">
-
   <!-- <app-configuration-toc [nodes]="nodes$ | async"></app-configuration-toc> -->
   <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (addChild)="addChild($event)" (copy)="copy($event)" (delete)="delete($event)" [delta]="deltaMode$ | async"></app-ig-toc>
 </div>

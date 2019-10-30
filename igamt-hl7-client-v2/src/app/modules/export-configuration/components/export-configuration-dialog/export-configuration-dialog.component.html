@@ -35,6 +35,22 @@
         </button>
       </div>
     </div>
+    <div class="delta-filter">
+      <div *ngIf="derived">
+        <div>
+          <div class="custom-control custom-switch">
+            <label class="custom-control-label">Select only</label>
+          </div>
+        </div>
+
+        <div *ngIf="delta" style="display: flex; flex-direction: row">
+          <span class="badge delta-badge delta-changed"> <p-checkbox name="delta-display" value="UPDATED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> updated</span>
+          <span class="badge delta-badge delta-deleted">   <p-checkbox name="delta-display" value="DELETED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> deleted</span>
+          <span class="badge delta-badge delta-added"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> added </span>
+          <span class="badge delta-badge badge-default">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"> </p-checkbox> unchanged</span>
+        </div>
+      </div>
+    </div>
     <div class="sidebar-content">
       <app-configuration-toc [nodes]="nodes | async" [filter]="filter" (select)="select($event)" *ngIf="filter"></app-configuration-toc>
     </div>
