@@ -435,10 +435,10 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 		ConformanceProfile old = this.findById(l.getId());
 		ConformanceProfile elm = old.clone();
 		elm.getDomainInfo().setScope(scope);
-		elm.setOrigin(elm.getFrom());
+		elm.setOrigin(l.getId());
 		Link newLink = l.clone(key);
 		newLink.setDomainInfo(elm.getDomainInfo());
-		newLink.setOrigin(elm.getFrom());
+		newLink.setOrigin(l.getId());
 		updateDependencies(elm, newKeys);
 		elm.setId(newLink.getId());
 		elm.setUsername(username);

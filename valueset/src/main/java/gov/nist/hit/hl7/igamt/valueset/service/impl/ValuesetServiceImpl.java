@@ -210,10 +210,12 @@ public class ValuesetServiceImpl implements ValuesetService {
 		Valueset old = this.findById(l.getId());
 		Valueset elm = old.clone();
 		elm.getDomainInfo().setScope(scope);
-		elm.setOrigin(elm.getFrom());
+		elm.setOrigin(l.getId());
+		elm.setFrom(l.getId());
 		Link newLink = new Link();
-		newLink.setOrigin(elm.getFrom());
+		newLink.setOrigin(elm.getId());
 		newLink = l.clone(newkey);
+		newLink.setOrigin(l.getId());
 		newLink.setDomainInfo(elm.getDomainInfo());
 		elm.setId(newkey);
 		elm.setUsername(username);

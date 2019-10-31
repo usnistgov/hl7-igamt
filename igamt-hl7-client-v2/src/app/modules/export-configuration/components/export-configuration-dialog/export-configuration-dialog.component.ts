@@ -1,9 +1,18 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import {Store} from '@ngrx/store';
 import { TreeNode } from 'angular-tree-component';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
+import {map, take, withLatestFrom} from 'rxjs/operators';
+import {ToggleDelta} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import {
+  selectAllDatatypes, selectAllMessages, selectAllSegments, selectAllValueSets,
+  selectDelta,
+  selectDerived,
+  selectIgId, selectValueSets, selectValueSetsNodes,
+} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IExportConfigurationGlobal } from '../../models/config.interface';
@@ -23,12 +32,20 @@ export class ExportConfigurationDialogComponent implements OnInit {
   loading = false;
   defaultConfig: any;
   nodes: Observable<TreeNode>;
+  deltaMode$: Observable<boolean>;
   current: any = {};
+  derived: boolean;
+  delta: any;
+  selectedDeltaValues = [];
+
   constructor(
     public dialogRef: MatDialogRef<ExportConfigurationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
+    @Inject(MAT_DIALOG_DATA) public data: any, private store: Store<any>) {
     this.initialConfig = data.decision;
     this.nodes = data.toc;
+    this.deltaMode$ = this.store.select(selectDelta);
+    this.deltaMode$.subscribe((x) => this.delta = x);
+    this.store.select(selectDerived).subscribe((x) => this.derived = x);
     this.filter = this.initialConfig.exportFilterDecision;
     this.defaultConfig = _.cloneDeep(data.decision.exportConfiguration);
   }
@@ -116,5 +133,47 @@ export class ExportConfigurationDialogComponent implements OnInit {
 
   scrollTo(messages: string) {
     this.toc.scrollTo(messages);
+  }
+  toggleDelta() {
+    this.toc.filter('');
+    this.store.select(selectIgId).pipe(
+      take(1),
+      withLatestFrom(this.deltaMode$),
+      map(([id, delta]) => {
+        this.store.dispatch(new ToggleDelta(id, !delta));
+      }),
+    ).subscribe();
+  }
+  filterByDelta($event: string[]) {
+    let subscription = this.store.select(selectAllDatatypes).pipe(
+     map((value: IDisplayElement[], number: any) => {
+       for ( const display  of value) {
+         this.filter.datatypesFilterMap[display.id] = $event.indexOf(display.delta) > -1;
+       }
+     })).subscribe();
+
+    subscription.unsubscribe();
+    subscription = this.store.select(selectAllSegments).pipe(
+      map((value: IDisplayElement[], number: any) => {
+        for ( const display  of value) {
+          this.filter.segmentFilterMap[display.id] = $event.indexOf(display.delta) > -1;
+        }
+      })).subscribe();
+    subscription.unsubscribe();
+    subscription = this.store.select(selectAllValueSets).pipe(
+      map((value: IDisplayElement[], number: any) => {
+        for ( const display  of value) {
+          this.filter.valueSetFilterMap[display.id] = $event.indexOf(display.delta) > -1;
+        }
+      })).subscribe();
+    subscription.unsubscribe();
+
+    subscription = this.store.select(selectAllMessages).pipe(
+      map((value: IDisplayElement[], number: any) => {
+        for ( const display  of value) {
+          this.filter.conformanceProfileFilterMap[display.id] = $event.indexOf(display.delta) > -1;
+        }
+      })).subscribe();
+    subscription.unsubscribe();
   }
 }
