@@ -1,8 +1,8 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { TREE_ACTIONS, TreeComponent, TreeNode } from 'angular-tree-component';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
-import { NodeHelperService } from '../../../shared/services/node-helper.service';
 import {DeltaAction} from '../../../shared/models/delta';
+import { NodeHelperService } from '../../../shared/services/node-helper.service';
 
 @Component({
   selector: 'app-configuration-toc',
