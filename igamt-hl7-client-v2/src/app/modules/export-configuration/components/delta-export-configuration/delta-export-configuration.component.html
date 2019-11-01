@@ -1,0 +1,48 @@
+<div class="p-grid" style="padding: 10px;">
+  <div class="p-col-4">
+    <div class="custom-control custom-switch">
+      <input type="checkbox" class="custom-control-input" id="customSwitches" [(ngModel)]="active"
+        (ngModelChange)="triggerChange()">
+      <label class="custom-control-label" for="customSwitches">Delta</label>
+    </div>
+  </div>
+  <ng-container *ngIf="active">
+    <div class="p-col-8 p-grid">
+      <div class="p-col-2" style="padding-top: 13px;">
+        Mode
+      </div>
+      <div class="p-col-8 form-group">
+        <p-dropdown [options]="modeOptions" [styleClass]="'form-control form-control-dropdown'"
+          [(ngModel)]="config.mode" name="mode" placeholder="Mode" (ngModelChange)="triggerChange()"></p-dropdown>
+      </div>
+    </div>
+    <div class="p-col-12 p-grid">
+      <div class="p-col-4 p-grid">
+        <div class="p-col-6" style="padding-top: 13px;">
+          Updated
+        </div>
+        <div class="p-col-6">
+          <p-colorPicker [(ngModel)]="config.colors.UPDATED" (ngModelChange)="triggerChange()"></p-colorPicker>
+        </div>
+      </div>
+      <div class="p-col-4 p-grid">
+        <div class="p-col-6" style="padding-top: 13px;">
+          Added
+        </div>
+        <div class="p-col-6">
+          <p-colorPicker [(ngModel)]="config.colors.ADDED" (ngModelChange)="triggerChange()"></p-colorPicker>
+        </div>
+      </div>
+      <div class="p-col-4 p-grid">
+        <div class="p-col-6" style="padding-top: 13px;">
+          Deleted
+        </div>
+        <div class="p-col-6">
+          <p-colorPicker [(ngModel)]="config.colors.DELETED" (ngModelChange)="triggerChange()"></p-colorPicker>
+        </div>
+      </div>
+
+    </div>
+  </ng-container>
+
+</div>

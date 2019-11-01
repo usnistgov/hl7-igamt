@@ -11,7 +11,7 @@ export class DatatypeExportConfigurationComponent implements OnInit {
   @Input()
   config: any;
   @Output()
-  change: EventEmitter<any> = new EventEmitter<any>();
+  detectChange: EventEmitter<any> = new EventEmitter<any>();
 
   constructor() { }
 
@@ -19,7 +19,13 @@ export class DatatypeExportConfigurationComponent implements OnInit {
   }
 
   triggerChange() {
-    this.change.emit(this.config);
+    this.detectChange.emit(this.config);
+  }
+
+  applyChange(event: any) {
+    this.config.deltaMode = event.active;
+    this.config.deltaConfig = event.config;
+    this.triggerChange();
   }
 
   print() {

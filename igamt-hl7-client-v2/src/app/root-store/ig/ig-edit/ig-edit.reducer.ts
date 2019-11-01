@@ -21,6 +21,7 @@ export interface IState {
   tableOfContentEdit: {
     changed: boolean;
   };
+  delta: boolean;
   segments: EntityState<IDisplayElement>;
   valueSets: EntityState<IDisplayElement>;
   datatypes: EntityState<IDisplayElement>;
@@ -34,6 +35,7 @@ export const initialState: IState = {
   document: null,
   tocCollapsed: false,
   fullscreen: false,
+  delta: false,
   tableOfContentEdit: {
     changed: false,
   },
@@ -98,7 +100,23 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         valueSets: igElementAdapter.upsertMany(action.igInfo.valueSets, state.valueSets),
         sections: igElementAdapter.upsertMany(sections, state.sections),
       };
-
+    case IgEditActionTypes.ToggleDeltaSuccess:
+      const newSections: IDisplayElement[] = IgTOCNodeHelper.getIDisplayFromSections(action.igInfo.ig.content, '');
+      state.datatypes = igElementAdapter.removeAll(state.datatypes);
+      state.segments = igElementAdapter.removeAll(state.segments);
+      state.messages = igElementAdapter.removeAll(state.messages);
+      state.valueSets = igElementAdapter.removeAll(state.valueSets);
+      console.log(action.igInfo.ig.segmentRegistry.children.length);
+      return {
+        ...state,
+        document: action.igInfo.ig,
+        datatypes: igElementAdapter.upsertMany(action.igInfo.datatypes, state.datatypes),
+        segments: igElementAdapter.upsertMany(action.igInfo.segments, state.segments),
+        messages: igElementAdapter.upsertMany(action.igInfo.messages, state.messages),
+        valueSets: igElementAdapter.upsertMany(action.igInfo.valueSets, state.valueSets),
+        sections: igElementAdapter.upsertMany(newSections, state.sections),
+        delta: action.deltaMode,
+      };
     case IgEditActionTypes.ClearIgEdit:
       return {
         ...initialState,

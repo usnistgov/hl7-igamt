@@ -116,11 +116,9 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 									abstractDomain.getPublicationInfo().getPublicationDate().toString())
 									: "")
 									: ""));}
-						if(abstractDomainExportConfiguration.isDescription()) {
-			element.addAttribute(new Attribute("Description",
+			element.addAttribute(new Attribute("description",
 					abstractDomain.getDescription() != null ? this.formatStringData(abstractDomain.getDescription())
-							: ""));}
-
+							: ""));
 						if(abstractDomainExportConfiguration.isVersion()) {
 			element.addAttribute(
 					new Attribute("domainCompatibilityVersion",
@@ -131,7 +129,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 									: "")
 									: ""));}
 			element.addAttribute(
-					new Attribute("name", abstractDomain.getName() != null ? abstractDomain.getName() : ""));
+					new Attribute("name", abstractDomain.getName() != null ? abstractDomain.getName(): ""));
 			element.addAttribute(new Attribute("id",
 					abstractDomain.getId() != null && abstractDomain.getId() != null ? abstractDomain.getId() : ""));
 

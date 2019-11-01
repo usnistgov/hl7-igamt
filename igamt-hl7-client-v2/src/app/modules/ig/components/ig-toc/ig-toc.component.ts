@@ -12,6 +12,7 @@ import {
 import {ActivatedRoute, Router} from '@angular/router';
 import {TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
 import {ContextMenuComponent} from 'ngx-contextmenu';
+import {SelectItem} from 'primeng/api';
 import {Scope} from '../../../shared/constants/scope.enum';
 import {Type} from '../../../shared/constants/type.enum';
 import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
@@ -27,6 +28,9 @@ import {IClickInfo} from '../../models/toc/click-info.interface';
   styleUrls: ['./ig-toc.component.scss'],
 })
 export class IgTocComponent implements OnInit, AfterViewInit {
+  optionsToDisplay: any;
+  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED'}];
+
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
   @ViewChild('vsLib') vsLib: ElementRef;
   @ViewChild('dtLib') dtLib: ElementRef;
@@ -38,6 +42,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   _nodes: TreeNode[];
   @Input()
   nodes: TreeNode[];
+  @Input()
+  delta: boolean;
 
   @Output()
   nodeState = new EventEmitter<IDisplayElement[]>();
@@ -183,5 +189,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
   createNew(node: IDisplayElement, type: Type) {
     this.addChild.emit({node, type});
+  }
+
+  filterByDelta($event: string[]) {
+    console.log('filter called');
+    this.tree.treeModel.filterNodes((node) => node.data.delta != null && $event.indexOf(node.data.delta) > -1 && node.data.Type !== Type.TEXT);
   }
 }

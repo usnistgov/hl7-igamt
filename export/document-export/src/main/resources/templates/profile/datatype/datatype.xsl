@@ -2,7 +2,7 @@
 	<xsl:import href="/templates/profile/resource/preDef.xsl" />
 	<xsl:import href="/templates/profile/resource/usageNotes.xsl" />
 	<xsl:import href="/templates/profile/resource/authorNotes.xsl" />
-	<xsl:import href="/templates/profile/resource/VersionDisplay.xsl" />
+	<xsl:import href="/templates/profile/resource/versionDisplay.xsl" />
 	<xsl:import href="/templates/profile/resource/postDef.xsl" />	
     <xsl:import href="/templates/profile/datatype/component.xsl"/>
     <xsl:import href="/templates/profile/constraint.xsl"/>
@@ -152,6 +152,8 @@
                     </xsl:element>
                 </xsl:element>
             </xsl:element>
+            		<xsl:call-template name="ValueSetBindingList"/>		
+            
 <!--             <xsl:if test="count(./Constraint) &gt; 0">
  -->               <xsl:if test="count(Constraints/ConformanceStatement)  &gt; 0">
 

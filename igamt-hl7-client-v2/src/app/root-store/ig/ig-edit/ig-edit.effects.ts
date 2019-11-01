@@ -15,36 +15,36 @@ import { ResourceService } from '../../../modules/shared/services/resource.servi
 import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
 import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
 import {
+  AddResourceFailure,
+  AddResourceSuccess,
+  CopyResource,
+  CopyResourceFailure,
+  CopyResourceSuccess,
   DeleteResource,
   DeleteResourceFailure,
   DeleteResourceSuccess,
+  EditorSave,
+  IgEditActions,
+  IgEditActionTypes,
+  IgEditResolverLoad, IgEditResolverLoadFailure,
+  IgEditResolverLoadSuccess,
+  IgEditTocAddResource,
   ImportResourceFromFile,
   ImportResourceFromFileFailure,
   ImportResourceFromFileSuccess,
   LoadResourceReferences,
   LoadResourceReferencesFailure,
   LoadResourceReferencesSuccess,
-  OpenEditorFailure,
-} from './ig-edit.actions';
-import {
-  AddResourceFailure,
-  AddResourceSuccess,
-  CopyResource,
-  CopyResourceFailure,
-  CopyResourceSuccess,
-  EditorSave,
-  IgEditActions,
-  IgEditActionTypes,
-  IgEditResolverLoad,
-  IgEditResolverLoadFailure,
-  IgEditResolverLoadSuccess,
-  IgEditTocAddResource,
   OpenEditor,
+  OpenEditorFailure,
   OpenIgMetadataEditorNode,
   OpenNarrativeEditorNode,
   TableOfContentSave,
   TableOfContentSaveFailure,
   TableOfContentSaveSuccess,
+  ToggleDelta,
+  ToggleDeltaFailure,
+  ToggleDeltaSuccess,
   ToolbarSave,
 } from './ig-edit.actions';
 import {
@@ -409,7 +409,30 @@ export class IgEditEffects {
       );
     }),
   );
+  @Effect()
+  displayDelta$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.ToggleDelta),
+    switchMap((action: ToggleDelta ) => {
+      this.store.dispatch(new TurnOnLoader({
+        blockUI: true,
+      }));
+      return this.igService.getDisplay(action.igId, action.delta).pipe(
+        flatMap((igInfo: IGDisplayInfo) => {
+          return [
+            new ToggleDeltaSuccess(igInfo, action.delta),
+            new TurnOffLoader(),
 
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new TurnOffLoader(),
+            new ToggleDeltaFailure(error),
+          );
+        }),
+      );
+    }),
+  );
   finalizeAdd(toDoo: Observable<Action>) {
     return combineLatest(
       this.store.select(selectTableOfContentChanged),

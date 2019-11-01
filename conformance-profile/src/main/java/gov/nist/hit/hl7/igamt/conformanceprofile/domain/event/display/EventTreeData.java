@@ -9,6 +9,7 @@ public class EventTreeData {
   String parentStructId;
   final Type type = Type.EVENT;
   private String hl7Version;
+  private String description;
   
   public int getPosition() {
 	return position;
@@ -101,6 +102,14 @@ public String getHl7Version() {
 
 public void setHl7Version(String hl7Version) {
 	this.hl7Version = hl7Version;
+}
+
+public String getDescription() {
+  return description;
+}
+
+public void setDescription(String description) {
+  this.description = description;
 }
 
 

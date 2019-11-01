@@ -1,0 +1,14 @@
+<p-dropdown
+  [options]="types"
+  [autoDisplayFirst]="false"
+  [style]="{'width': '100%', 'min-width': 'inherit', 'margin-bottom': '5px'}"
+  [(ngModel)]="type" ></p-dropdown>
+<div style="width: 300px; height: 400px;">
+  <app-structure-tree
+    [tree]="structure"
+    [repository]="repository"
+    (selection)="selectNode($event)"
+  ></app-structure-tree>
+</div>
+<button class="btn btn-sm btn-success" (click)="done()" >Done</button>
+
