@@ -17,31 +17,58 @@
       </div>
     </div>
     <div class="p-col-12 p-grid">
-      <div class="p-col-4 p-grid">
-        <div class="p-col-6" style="padding-top: 13px;">
-          Updated
-        </div>
-        <div class="p-col-6">
-          <p-colorPicker [(ngModel)]="config.colors.UPDATED" (ngModelChange)="triggerChange()"></p-colorPicker>
-        </div>
+      <div class="color-label">
+        Updated
       </div>
-      <div class="p-col-4 p-grid">
-        <div class="p-col-6" style="padding-top: 13px;">
-          Added
+      <div class="color-value ">
+          <div *ngIf="!colorOpened || openedFor !== 'UPDATED'" class="circle selected-color"
+            [ngStyle]="{'background': config.colors.UPDATED}" (click)="toggleColors('UPDATED')"></div>
+          <div *ngIf="colorOpened && openedFor === 'UPDATED'" class="colors-container">
+            <div class="colors">
+              <div *ngFor="let shades of defaultColors" class="color-line">
+                <div *ngFor="let paint of shades" class="circle" [ngStyle]="{'background': paint}"
+                  (click)="selectColor('UPDATED', paint)"></div>
+              </div>
+  
+            </div>
+          </div>
         </div>
-        <div class="p-col-6">
-          <p-colorPicker [(ngModel)]="config.colors.ADDED" (ngModelChange)="triggerChange()"></p-colorPicker>
-        </div>
+    </div>
+    <div class="p-col-12 p-grid">
+      <div class="color-label">
+        Added
       </div>
-      <div class="p-col-4 p-grid">
-        <div class="p-col-6" style="padding-top: 13px;">
-          Deleted
-        </div>
-        <div class="p-col-6">
-          <p-colorPicker [(ngModel)]="config.colors.DELETED" (ngModelChange)="triggerChange()"></p-colorPicker>
-        </div>
-      </div>
+      <div class="color-value ">
+        <div *ngIf="!colorOpened || openedFor !== 'ADDED'" class="circle selected-color"
+          [ngStyle]="{'background': config.colors.ADDED}" (click)="toggleColors('ADDED')"></div>
+        <div *ngIf="colorOpened && openedFor === 'ADDED'" class="colors-container">
+          <div class="colors">
+            <div *ngFor="let shades of defaultColors" class="color-line">
+              <div *ngFor="let paint of shades" class="circle" [ngStyle]="{'background': paint}"
+                (click)="selectColor('ADDED', paint)"></div>
+            </div>
 
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="p-col-12 p-grid">
+      <div class="color-label">
+        Deleted
+      </div>
+      <div class="color-value ">
+          <div *ngIf="!colorOpened || openedFor !== 'DELETED'" class="circle selected-color"
+            [ngStyle]="{'background': config.colors.DELETED}" (click)="toggleColors('DELETED')"></div>
+          <div *ngIf="colorOpened && openedFor === 'DELETED'" class="colors-container">
+            <div class="colors">
+              <div *ngFor="let shades of defaultColors" class="color-line">
+                <div *ngFor="let paint of shades" class="circle" [ngStyle]="{'background': paint}"
+                  (click)="selectColor('DELETED', paint)"></div>
+              </div>
+  
+            </div>
+          </div>
+        </div>
     </div>
   </ng-container>
 
