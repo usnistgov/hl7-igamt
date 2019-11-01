@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.verification.domain;
 
+import gov.nist.hit.hl7.igamt.verification.domain.VerificationReport.DocumentTarget;
 import gov.nist.hit.hl7.igamt.verification.domain.VerificationReport.ErrorType;
 
 /**
