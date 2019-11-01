@@ -3,7 +3,7 @@ package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
 
-public class CloneResponse {
+public class AddResourceResponse {
 	
 	private String id;
 	private Registry reg;

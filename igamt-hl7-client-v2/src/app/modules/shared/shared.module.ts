@@ -25,7 +25,6 @@ import { BindingBadgeComponent } from './components/binding-badge/binding-badge.
 import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
-import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
@@ -49,6 +48,7 @@ import { TextComponent } from './components/hl7-v2-tree/columns/text/text.compon
 import { UsageComponent } from './components/hl7-v2-tree/columns/usage/usage.component';
 import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/valueset.component';
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
+import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { LoginFormComponent } from './components/login-form/login-form.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';

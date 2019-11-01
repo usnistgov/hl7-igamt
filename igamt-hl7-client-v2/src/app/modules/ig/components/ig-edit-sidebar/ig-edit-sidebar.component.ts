@@ -6,7 +6,7 @@ import { Store } from '@ngrx/store';
 import { $e } from 'codelyzer/angular/styles/chars';
 import {Observable, of} from 'rxjs';
 import { concatMap, filter, map, take, tap, withLatestFrom } from 'rxjs/operators';
-import {IgEditActionTypes} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {IgEditActionTypes, ImportResourceFromFile} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   CopyResource, CopyResourceSuccess,
@@ -130,7 +130,7 @@ export class IgEditSidebarComponent implements OnInit {
   addVSFromCSV($event) {
     console.log($event);
     const dialogRef = this.dialog.open(ImportCsvValuesetComponent, {
-      data: { ...$event, targetScope: Scope.USER, title: 'Add Valueset by CSV file' },
+      data: { ...$event, targetScope: Scope.USER, title: 'Add Valueset from CSV file' },
     });
 
     dialogRef.afterClosed().pipe(
@@ -141,9 +141,7 @@ export class IgEditSidebarComponent implements OnInit {
           console.log([result]);
           console.log([igId]);
 
-          //TODO Need to upload csvFile to /api/igdocuments/{id}/valuesets/uploadCSVFile with file
-          //TODO need to update TOC
-          // this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: [result], type: $event.type }));
+          this.store.dispatch(new ImportResourceFromFile(igId, Type.VALUESET, Type.IGDOCUMENT, result));
         }),
     ).subscribe();
   }

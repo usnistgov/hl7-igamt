@@ -17,9 +17,9 @@ import {Type} from '../../../shared/constants/type.enum';
 import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {NodeHelperService} from '../../../shared/services/node-helper.service';
+import {ValueSetService} from '../../../value-set/service/value-set.service';
 import {IAddNewWrapper, IAddWrapper} from '../../models/ig/add-wrapper.class';
 import {IClickInfo} from '../../models/toc/click-info.interface';
-import {ValueSetService} from '../../../value-set/service/value-set.service';
 
 @Component({
   selector: 'app-ig-toc',
@@ -122,7 +122,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.copy.emit({element: {...node.data}, existing: node.parent.data.children});
   }
 
-  exportCSVFileForVS(node:TreeNode) {
+  exportCSVFileForVS(node: TreeNode) {
     this.valueSetService.exportCSVFile(node.data.id);
     console.log(node.data);
   }

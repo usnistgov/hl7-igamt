@@ -23,3 +23,10 @@ export interface ICopyResourceResponse {
   reg: IRegistry;
   display: IDisplayElement;
 }
+
+export interface IAddResourceFromFile {
+  documentId?: string;
+  id: string;
+  reg: IRegistry;
+  display: IDisplayElement;
+}
