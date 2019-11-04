@@ -94,6 +94,7 @@ import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationExcepti
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SCOPE;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
@@ -446,7 +447,7 @@ public class IgServiceImpl implements IgService {
 		HashSet<Link> children = new HashSet<Link>();
 		for (Link l : conformanceProfileRegistry.getChildren()) {
 		  RealKey key  = new RealKey(l.getId(), Type.CONFORMANCEPROFILE);
-			if (!newKeys.containsKey(key)) {
+			if (!l.isUser()) {
 				children.add(l);
 			} else {
 				children.add(conformanceProfileService.cloneConformanceProfile(
@@ -473,7 +474,7 @@ public class IgServiceImpl implements IgService {
 		HashSet<Link> children = new HashSet<Link>();
 		for (Link l : segmentRegistry.getChildren()) {
 		  RealKey key = new RealKey(l.getId(), Type.SEGMENT);
-			if (!newKeys.containsKey(key)) {
+			if (!l.isUser()) {
 				children.add(l);
 			} else {
 				children.add(segmentService.cloneSegment(newKeys.get(key),newKeys, l, username,Scope.USER));
@@ -497,7 +498,7 @@ public class IgServiceImpl implements IgService {
 		for (Link l : datatypeRegistry.getChildren()) {
           RealKey key = new RealKey(l.getId(), Type.DATATYPE);
 
-			if (!newKeys.containsKey(key)) {
+			if (!l.isUser()) {
 				children.add(l);
 			} else {
 				children.add(this.datatypeService.cloneDatatype(newKeys.get(key),newKeys, l, username,Scope.USER));
@@ -521,7 +522,7 @@ public class IgServiceImpl implements IgService {
 		HashSet<Link> children = new HashSet<Link>();
 		for (Link l : reg.getChildren()) {
 		   RealKey key = new RealKey(l.getId(), Type.VALUESET);
-			if (!newKeys.containsKey(key)) {
+			if (!l.isUser()) {
 				children.add(l);
 			} else {
 				Link newLink = this.valueSetService.cloneValueSet(newKeys.get(key), l, username, Scope.USER);    	  	
@@ -536,8 +537,9 @@ public class IgServiceImpl implements IgService {
 		if (reg != null && reg.getChildren() != null) {
 			for (Link l : reg.getChildren()) {
 				if (!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD) && !l.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-				    
-					map.put(new RealKey(l.getId(), type), new ObjectId().toString());
+				  map.put(new RealKey(l.getId(), type), new ObjectId().toString());
+				} else {
+				  map.put(new RealKey(l.getId(), type), l.getId());
 				}
 			}
 		}

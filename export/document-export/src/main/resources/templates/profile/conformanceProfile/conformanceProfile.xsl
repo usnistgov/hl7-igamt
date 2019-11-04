@@ -4,12 +4,11 @@
 	<xsl:import href="/templates/profile/resource/preDef.xsl" />
 	<xsl:import href="/templates/profile/resource/usageNotes.xsl" />
 	<xsl:import href="/templates/profile/resource/authorNotes.xsl" />
-	<xsl:import href="/templates/profile/resource/VersionDisplay.xsl" />
+	<xsl:import href="/templates/profile/resource/versionDisplay.xsl" />
 	<xsl:import href="/templates/profile/resource/postDef.xsl" />
 	<xsl:include href="/templates/profile/conformanceProfile/messageSegment.xsl" />
 	<xsl:include href="/templates/profile/messageConstraint.xsl" />
-	<xsl:include
-		href="/templates/profile/conformanceProfile/messageSegmentsOrGroups.xsl" />
+	<xsl:include href="/templates/profile/conformanceProfile/messageSegmentsOrGroups.xsl" />
 	<xsl:include href="/templates/profile/valueset/valueSetBindingList.xsl" />
 	<xsl:include href="/templates/profile/commentList.xsl" />
 	<xsl:include href="/templates/profile/metadata.xsl" />

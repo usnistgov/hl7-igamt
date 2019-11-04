@@ -4,7 +4,7 @@ import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { distinctUntilChanged, filter, map, tap, withLatestFrom } from 'rxjs/operators';
 import { IgDocument } from 'src/app/modules/ig/models/ig/ig-document.class';
-import { EditorSave } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {EditorSave, selectDelta} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { EditorChange, EditorSaveFailure, EditorSaveSuccess, IgEditActionTypes, UpdateActiveResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Scope } from '../../../shared/constants/scope.enum';
@@ -48,13 +48,14 @@ export abstract class AbstractEditorComponent {
     this.current$ = this.store.select<IWorkspaceCurrent>(fromIgEdit.selectWorkspaceCurrent);
     this.viewOnly$ = combineLatest(
       this.store.select(fromIgEdit.selectViewOnly),
+      this.store.select(selectDelta),
       this.store.select(fromIgEdit.selectWorkspaceActive).pipe(
         map((active) => {
           return active.display.domainInfo && active.display.domainInfo.scope !== Scope.USER;
         }),
       )).pipe(
-        map(([vOnly, notUser]) => {
-          return vOnly || notUser;
+        map(([vOnly, delta, notUser]) => {
+          return vOnly || notUser || delta;
         }),
       );
     this.ig$ = this.store.select(fromIgEdit.selectIgDocument);

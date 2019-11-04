@@ -2,7 +2,7 @@
 	<xsl:import href="/templates/profile/resource/preDef.xsl" />
 	<xsl:import href="/templates/profile/resource/usageNotes.xsl" />
 	<xsl:import href="/templates/profile/resource/authorNotes.xsl" />
-	<xsl:import href="/templates/profile/resource/VersionDisplay.xsl" />
+	<xsl:import href="/templates/profile/resource/versionDisplay.xsl" />
 	<xsl:import href="/templates/profile/resource/postDef.xsl" />	
     <xsl:import href="/templates/profile/datatype/component.xsl"/>
     <xsl:import href="/templates/profile/constraint.xsl"/>
