@@ -99,6 +99,7 @@ public class DeltaServiceImpl implements DeltaService {
 
     } else if(type.equals(Type.CONFORMANCEPROFILE)) {
 
+
       ConformanceProfile target = this.conformanceProfileService.findById(entityId);
       ConformanceProfile source = this.conformanceProfileService.findById(target.getOrigin());
 
@@ -288,7 +289,7 @@ public class DeltaServiceImpl implements DeltaService {
       if(l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
         if(l.getOrigin() == null || !originMap.containsKey(l.getOrigin()) ) {
           result.add(createDeltaDisplay(registryType, l, DeltaAction.ADDED));
-        }else if(l.getOrigin()  !=null && originMap.containsKey(l.getOrigin())) {
+        }else if(l.getOrigin()!=null && originMap.containsKey(l.getOrigin())) {
           
           result.add(compareToOrigin(l, registryType));
           hasChild.put(l.getOrigin(), l);

@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { combineLatest, Observable, of } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import { selectBindingConfig } from '../../../root-store/config/config.reducer';
-import { IBindingLocationInfo } from '../components/binding-selector/binding-selector.component';
+import { IBindingLocationInfo, IValueSetBindingDisplay } from '../components/binding-selector/binding-selector.component';
 import { Type } from '../constants/type.enum';
+import { IValuesetBinding } from '../models/binding.interface';
 import { IBindingLocationInfoConfig } from '../models/config.class';
+import { AResourceRepositoryService } from './resource-repository.service';
+import { RxjsStoreHelperService } from './rxjs-store-helper.service';
 
 function contains(locationExceptions: IBindingLocationInfoConfig[], version: string, location: number, type: Type, parent: string) {
   return locationExceptions.filter((x: IBindingLocationInfoConfig) => {
@@ -19,6 +22,31 @@ function contains(locationExceptions: IBindingLocationInfoConfig[], version: str
 export class BindingService {
 
   constructor(private store: Store<any>) { }
+
+  getValueSetBindingDisplay(bindings: IValuesetBinding[], repository: AResourceRepositoryService): Observable<IValueSetBindingDisplay[]> {
+    return RxjsStoreHelperService.forkJoin(bindings.map((x) => {
+      return combineLatest(
+        of(x),
+        RxjsStoreHelperService.forkJoin(x.valueSets.map((id) =>
+          repository.getResourceDisplay(Type.VALUESET, id).pipe(
+            take(1),
+          )),
+        ),
+      );
+    })).pipe(
+      map((vsList) => {
+        console.log(vsList);
+        return vsList.map((vsB) => {
+          const [binding, display] = vsB;
+          return {
+            valueSets: display,
+            bindingStrength: binding.strength,
+            bindingLocation: binding.valuesetLocations,
+          };
+        });
+      }),
+    );
+  }
 
   getBingdingInfo(version: string, parent: string, elementName: string, location: number, type: Type): Observable<IBindingLocationInfo> {
     return this.store.select(selectBindingConfig).pipe(

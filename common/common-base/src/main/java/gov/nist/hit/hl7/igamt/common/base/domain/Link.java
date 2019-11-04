@@ -120,6 +120,9 @@ public class Link implements Serializable{
   public void setOrigin(String origin) {
     this.origin = origin;
   }
+  public boolean isUser(){
+    return this.domainInfo.getScope() !=null &&  this.domainInfo.getScope().equals(Scope.USER);
+  }
 
 
 }

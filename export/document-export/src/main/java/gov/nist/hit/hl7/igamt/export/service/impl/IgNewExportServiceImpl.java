@@ -8,6 +8,8 @@ import java.util.Set;
 import org.apache.commons.lang3.SerializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import gov.nist.diff.domain.DeltaMode;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
@@ -21,6 +23,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
@@ -92,15 +95,22 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	public ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument, ExportFormat exportFormat,
 			ExportFilterDecision decision) throws Exception {
 		try {
-			ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(username);
+			ExportConfiguration exportConfiguration =
+					exportConfigurationService.getExportConfiguration(username);
+			DeltaConfiguration deltaConfig = new DeltaConfiguration();
+			deltaConfig.setColors(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getColors());
+			deltaConfig.setMode(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getMode());
+			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
 			exportConfiguration = ExportConfiguration.populateRestOfExportConfiguration(exportConfiguration);
-			ExportFontConfiguration exportFontConfiguration = exportFontConfigurationService
-					.getExportFontConfiguration(username);
+			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
+			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
+			ExportFontConfiguration exportFontConfiguration =
+					exportFontConfigurationService.getExportFontConfiguration(username);
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
-			String xmlContent = igDataModelSerializationService
-					.serializeIgDocument(igDataModel, exportConfiguration, decision).toXML();
-			 System.out.println("XML_EXPORT : " + xmlContent);
-			// System.out.println("XmlContent in IgExportService is : " + xmlContent);
+			String xmlContent =
+					igDataModelSerializationService.serializeIgDocument(igDataModel, exportConfiguration,decision).toXML();
+					      System.out.println("XML_EXPORT : " + xmlContent);
+			//		      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
 					igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,

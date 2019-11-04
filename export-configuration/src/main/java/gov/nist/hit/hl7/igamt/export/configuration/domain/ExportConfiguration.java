@@ -14,9 +14,11 @@
 package gov.nist.hit.hl7.igamt.export.configuration.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.persistence.Column;
 
+import gov.nist.diff.domain.DeltaAction;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -60,6 +62,7 @@ public class ExportConfiguration {
   private boolean includeValuesetsTable = true;
   private boolean includeCompositeProfileTable = true;
   private boolean includeProfileComponentTable = true;
+  private boolean deltaMode = true;
 
   private boolean greyOutOBX2FlavorColumn = false;
 
@@ -93,6 +96,7 @@ public class ExportConfiguration {
   private MetadataConfiguration segmentMetadataConfig;
   private MetadataConfiguration messageMetadataConfig;
   private MetadataConfiguration compositeProfileMetadataConfig;
+  private DeltaConfiguration deltaConfig;
   public final static int MAX_CODE = 500;
   private int maxCodeNumber = MAX_CODE;
 
@@ -134,7 +138,12 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     displayAll.setX(false);
     displayAll.setO(false);
     displayAll.setR(true);
-
+    DeltaExportConfigMode deltaMode = DeltaExportConfigMode.HIGHLIGHT;
+    HashMap<DeltaAction,String> colors = new HashMap<>();
+    colors.put(DeltaAction.ADDED, "#a7d6a9");
+    colors.put(DeltaAction.DELETED, "#EC330C");
+    colors.put(DeltaAction.UPDATED, "#ECAF0C");
+    DeltaConfiguration deltaConfiguration = new DeltaConfiguration(deltaMode,colors);
     defaultConfiguration.setSegmentORGroupsMessageExport(displayAll);
     defaultConfiguration.setSegmentORGroupsCompositeProfileExport(displayAll);
 
@@ -229,7 +238,7 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     ConstraintExportConfiguration constraintExportConfiguration = new ConstraintExportConfiguration(true,true);
     
     //Setting AbstractDomainConfiguration
-    AbstractDomainExportConfiguration abstractDomainExportConfiguration = new AbstractDomainExportConfiguration(true, true, true, false, false, false, true, false, true, true, false, true, true, false, true, true);
+    AbstractDomainExportConfiguration abstractDomainExportConfiguration = new AbstractDomainExportConfiguration(true, true, true, false, false, false, true, false, true, true, false, true, true, false, true, true, true, deltaConfiguration);
     
     
     // Setting DatatypeExportConfiguration
@@ -237,14 +246,16 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     datatypeExportConfiguration.setBinding(true);
     datatypeExportConfiguration.setPurposeAndUse(true);
     datatypeExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-
+    datatypeExportConfiguration.setDeltaMode(true);
+    datatypeExportConfiguration.setDeltaConfig(deltaConfiguration);
 
     // Setting SegmentExportConfiguration
     SegmentExportConfiguration segmentExportConfiguration = new SegmentExportConfiguration(defaultConfiguration);
     segmentExportConfiguration.setDynamicMappingInfo(true);
     segmentExportConfiguration.setBinding(true);
     segmentExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-
+    segmentExportConfiguration.setDeltaMode(true);
+    segmentExportConfiguration.setDeltaConfig(deltaConfiguration);
     
     // Setting ConformanceProfileExportConfiguration
     ConformanceProfileExportConfiguration conformanceProfileExportConfiguration = new ConformanceProfileExportConfiguration(defaultConfiguration);
@@ -254,17 +265,23 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     conformanceProfileExportConfiguration.setStructID(true);
     conformanceProfileExportConfiguration.setBinding(true);
     conformanceProfileExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
+    conformanceProfileExportConfiguration.setDeltaMode(true);
+    conformanceProfileExportConfiguration.setDeltaConfig(deltaConfiguration);
 
-    
     // Setting ValueSetExportConfiguration
     ValueSetExportConfiguration valueSetExportConfiguration = new ValueSetExportConfiguration(defaultConfiguration);
+
+
 
     defaultConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
     defaultConfiguration.setConformamceProfileExportConfiguration(conformanceProfileExportConfiguration);
     defaultConfiguration.setValueSetExportConfiguration(valueSetExportConfiguration);
     defaultConfiguration.setSegmentExportConfiguration(segmentExportConfiguration);
     defaultConfiguration.setAbstractDomainExportConfiguration(abstractDomainExportConfiguration);
-    
+    defaultConfiguration.setDeltaMode(true);
+    defaultConfiguration.setDeltaConfig(deltaConfiguration);
+
+
     return defaultConfiguration;
   }
 
@@ -509,12 +526,17 @@ public String getId() {
   }
 
 
-
   public void setIncludeProfileComponentTable(boolean includeProfileComponentTable) {
     this.includeProfileComponentTable = includeProfileComponentTable;
   }
 
+  public boolean isDeltaMode() {
+    return deltaMode;
+  }
 
+  public void setDeltaMode(boolean deltaMode) {
+    this.deltaMode = deltaMode;
+  }
 
   public boolean isGreyOutOBX2FlavorColumn() {
     return greyOutOBX2FlavorColumn;
@@ -850,6 +872,17 @@ public String getId() {
 
   public void setDatatypeLibraryIncludeDerived(boolean datatypeLibraryIncludeDerived) {
     this.datatypeLibraryIncludeDerived = datatypeLibraryIncludeDerived;
+  }
+
+  public DeltaConfiguration getDeltaConfig() {
+    return deltaConfig;
+  }
+
+
+
+  public void setDeltaConfig(
+          DeltaConfiguration deltaConfig) {
+    this.deltaConfig = deltaConfig;
   }
 
 

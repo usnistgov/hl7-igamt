@@ -1,7 +1,11 @@
 package gov.nist.hit.hl7.igamt.export.configuration.newModel;
 
 import java.util.Date;
+import java.util.HashMap;
 
+import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaExportConfigMode;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -29,14 +33,16 @@ public class AbstractDomainExportConfiguration {
 	private boolean from;
 	private boolean version;
 	private boolean domainCompatibilityVersion;
-	
+	private boolean deltaMode;
+	private DeltaConfiguration deltaConfig;
+
 	
 	
 	
 	public AbstractDomainExportConfiguration(boolean creationDate, boolean updateDate, boolean name, boolean type,
 			boolean origin, boolean publicationInfo, boolean publicationDate, boolean domainInfo, boolean comment,
 			boolean description, boolean createdFrom, boolean authorNotes, boolean usageNotes, boolean from,
-			boolean version, boolean domainCompatibilityVersion) {
+			boolean version, boolean domainCompatibilityVersion, boolean deltaMode, DeltaConfiguration deltaConfig) {
 		super();
 		this.creationDate = creationDate;
 		this.updateDate = updateDate;
@@ -54,6 +60,8 @@ public class AbstractDomainExportConfiguration {
 		this.from = from;
 		this.version = version;
 		this.domainCompatibilityVersion = domainCompatibilityVersion;
+		this.deltaMode = deltaMode;
+		this.deltaConfig = deltaConfig;
 	}
 	public AbstractDomainExportConfiguration() {
 		super();
@@ -154,6 +162,20 @@ public class AbstractDomainExportConfiguration {
 	}
 	public void setDomainCompatibilityVersion(boolean domainCompatibilityVersion) {
 		this.domainCompatibilityVersion = domainCompatibilityVersion;
+	}
+	public void setDeltaMode(boolean deltaMode) {
+		this.deltaMode = deltaMode;
+	}
+	public void setDeltaConfig(DeltaConfiguration deltaConfig) {
+		this.deltaConfig = deltaConfig;
+	}
+
+	public boolean isDeltaMode() {
+		return deltaMode;
+	}
+
+	public DeltaConfiguration getDeltaConfig() {
+		return deltaConfig;
 	}
 }
 	

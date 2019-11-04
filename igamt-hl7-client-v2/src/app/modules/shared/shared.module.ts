@@ -11,6 +11,7 @@ import { TreeModule } from 'angular-tree-component';
 import { ToastyModule } from 'ng2-toasty';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { CardModule } from 'primeng/card';
+import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
 import {
   AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
@@ -164,6 +165,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     TreeModule,
     TreeTableModule,
     TableModule,
+    ColorPickerModule,
     ContextMenuModule.forRoot({
       useBootstrap4: true,
     }),
@@ -245,6 +247,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ConstantValueComponent,
     PredicateComponent,
     TableModule,
+    ColorPickerModule,
     StructureTreeComponent,
     CsPropositionComponent,
     CsDialogComponent,

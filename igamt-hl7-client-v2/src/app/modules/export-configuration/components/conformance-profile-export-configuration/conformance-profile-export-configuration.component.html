@@ -82,6 +82,11 @@
             </div>
       </p-card>
 
-    
+
+      <p-card  header="Delta" [styleClass]="'pcard'">
+          <div class="delta-container">
+            <app-delta-export-configuration [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
+          </div>
+      </p-card>
   </div>
 </div>

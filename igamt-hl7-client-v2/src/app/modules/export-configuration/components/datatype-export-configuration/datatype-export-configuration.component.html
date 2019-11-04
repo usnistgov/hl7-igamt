@@ -1,5 +1,5 @@
 <div style="width: 100%; display: flex; align-items: flex-start;">
-    <div style="width: 50%;">
+    <div style="width: 100%;">
 <!-- <p-checkbox binary="true" label="Include Datatype Table Options"></p-checkbox> -->
 <table class="table table-sm table-striped">
   <tr>
@@ -92,7 +92,7 @@
         <p-checkbox binary="true" label="Grey out OBX-2 Flavor column"></p-checkbox>
       </td>
     </tr> -->
-    <!-- <tr>
+    <tr>
       <td>Display</td>
     </tr>
     <tr>
@@ -102,7 +102,15 @@
       <div>
         <p-radioButton name="coConstraintExportMode" value="VERBOSE" label="Verbose" (onChange)="triggerChange()" ></p-radioButton>
       </div>
-    </tr> -->
+    </tr>
+    <tr>
+        <th>Delta</th>
+      </tr>
+      <tr>
+        <div class="delta-container">
+          <app-delta-export-configuration [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
+        </div>
+      </tr>
 </table>
 </div>
 <div style="width: 50%;" *ngIf = "false" >
