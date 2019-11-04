@@ -30,7 +30,7 @@ export class DeltaExportConfigurationComponent implements OnInit {
       '#ffea00',
       '#ff9100',
       '#4e342e',
-      '#37474f'
+      '#37474f',
     ],
     [
       '#ff8a80',
@@ -44,7 +44,7 @@ export class DeltaExportConfigurationComponent implements OnInit {
       '#ffff8d',
       '#ffd180',
       '#6d4c41',
-      '#546e7a'
+      '#546e7a',
     ],
     [
       '#e57373',
@@ -58,8 +58,8 @@ export class DeltaExportConfigurationComponent implements OnInit {
       '#fff176',
       '#ffb74d',
       '#a1887f',
-      '#90a4ae'
-    ]
+      '#90a4ae',
+    ],
 
   ];
 
@@ -76,12 +76,10 @@ export class DeltaExportConfigurationComponent implements OnInit {
 
   ngOnInit() {
   }
-  triggerChange(ev) {
-    console.log(ev);
+  triggerChange() {
     this.updateDelta.emit({ active: this.active, config: this.config });
   }
   toggleColors(target) {
-    console.log(target)
     if (target !== this.openedFor) {
       this.openedFor = target;
       this.colorOpened = true;

@@ -1,13 +1,16 @@
 <div class="p-grid" style="padding: 10px;">
-  <div class="p-col-4">
+  <div class="p-col-12 p-md-6">
     <div class="custom-control custom-switch">
+      <div class="off-label">
+        Off
+      </div>
       <input type="checkbox" class="custom-control-input" id="customSwitches" [(ngModel)]="active"
         (ngModelChange)="triggerChange()">
-      <label class="custom-control-label" for="customSwitches">Delta</label>
+      <label class="custom-control-label" for="customSwitches">On</label>
     </div>
   </div>
   <ng-container *ngIf="active">
-    <div class="p-col-8 p-grid">
+    <div class="p-col-12 p-md-6 p-grid">
       <div class="p-col-2" style="padding-top: 13px;">
         Mode
       </div>
@@ -16,59 +19,40 @@
           [(ngModel)]="config.mode" name="mode" placeholder="Mode" (ngModelChange)="triggerChange()"></p-dropdown>
       </div>
     </div>
-    <div class="p-col-12 p-grid">
-      <div class="color-label">
-        Updated
-      </div>
-      <div class="color-value ">
-          <div *ngIf="!colorOpened || openedFor !== 'UPDATED'" class="circle selected-color"
-            [ngStyle]="{'background': config.colors.UPDATED}" (click)="toggleColors('UPDATED')"></div>
-          <div *ngIf="colorOpened && openedFor === 'UPDATED'" class="colors-container">
-            <div class="colors">
-              <div *ngFor="let shades of defaultColors" class="color-line">
-                <div *ngFor="let paint of shades" class="circle" [ngStyle]="{'background': paint}"
-                  (click)="selectColor('UPDATED', paint)"></div>
-              </div>
-  
-            </div>
-          </div>
-        </div>
-    </div>
-    <div class="p-col-12 p-grid">
-      <div class="color-label">
-        Added
-      </div>
-      <div class="color-value ">
-        <div *ngIf="!colorOpened || openedFor !== 'ADDED'" class="circle selected-color"
-          [ngStyle]="{'background': config.colors.ADDED}" (click)="toggleColors('ADDED')"></div>
-        <div *ngIf="colorOpened && openedFor === 'ADDED'" class="colors-container">
-          <div class="colors">
-            <div *ngFor="let shades of defaultColors" class="color-line">
-              <div *ngFor="let paint of shades" class="circle" [ngStyle]="{'background': paint}"
-                (click)="selectColor('ADDED', paint)"></div>
-            </div>
+    <div class="p-col-12">
+      <table class="colors-table">
+        <tr>
+          <th>Updated</th>
+          <th>Added</th>
+          <th>Deleted</th>
+        </tr>
+        <tr>
+          <td class="no-pad">
+            <div class="circle selected-color" [ngStyle]="{'background': config.colors.UPDATED}"
+              (click)="toggleColors('UPDATED')"></div>
+              <div class="triangle-color" *ngIf="openedFor === 'UPDATED'"></div>
+          </td>
+          <td class="no-pad">
+            <div class="circle selected-color" [ngStyle]="{'background': config.colors.ADDED}"
+              (click)="toggleColors('ADDED')"></div>
+              <div class="triangle-color" *ngIf="openedFor === 'ADDED'"></div>
+          </td>
+          <td class="no-pad">
+            <div class="circle selected-color" [ngStyle]="{'background': config.colors.DELETED}"
+              (click)="toggleColors('DELETED')"></div>
+              <div class="triangle-color" *ngIf="openedFor === 'DELETED'"></div>
+          </td>
+        </tr>
 
+      </table>
+      <div *ngIf="colorOpened" class="colors-container">
+        <div class="colors">
+          <div *ngFor="let shades of defaultColors" class="color-line">
+            <div *ngFor="let paint of shades" class="circle" [ngStyle]="{'background': paint}"
+              (click)="selectColor(openedFor, paint)"></div>
           </div>
         </div>
       </div>
-    </div>
-    <div class="p-col-12 p-grid">
-      <div class="color-label">
-        Deleted
-      </div>
-      <div class="color-value ">
-          <div *ngIf="!colorOpened || openedFor !== 'DELETED'" class="circle selected-color"
-            [ngStyle]="{'background': config.colors.DELETED}" (click)="toggleColors('DELETED')"></div>
-          <div *ngIf="colorOpened && openedFor === 'DELETED'" class="colors-container">
-            <div class="colors">
-              <div *ngFor="let shades of defaultColors" class="color-line">
-                <div *ngFor="let paint of shades" class="circle" [ngStyle]="{'background': paint}"
-                  (click)="selectColor('DELETED', paint)"></div>
-              </div>
-  
-            </div>
-          </div>
-        </div>
     </div>
   </ng-container>
 

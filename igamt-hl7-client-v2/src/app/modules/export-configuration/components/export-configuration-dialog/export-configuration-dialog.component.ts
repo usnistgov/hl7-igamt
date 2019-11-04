@@ -33,6 +33,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.defaultConfig = _.cloneDeep(data.decision.exportConfiguration);
   }
   select(node) {
+    console.log(node);
     this.loading = true;
     this.selected = node;
     this.type = node.type;

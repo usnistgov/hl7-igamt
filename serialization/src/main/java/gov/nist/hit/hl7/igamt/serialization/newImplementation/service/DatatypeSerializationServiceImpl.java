@@ -100,10 +100,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
 		// Calculate datatype delta if the segment has an origin
 		if(datatype.getOrigin() != null && datatypeExportConfiguration.isDeltaMode()) {
-			Delta delta = deltaService.delta(Type.DATATYPE, igId, datatype.getId());
-			List<StructureDelta> structureDelta = delta.getDelta().stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-			if(structureDelta != null) {
-				Element deltaElement = this.serializeDelta(structureDelta, datatypeExportConfiguration.getDeltaConfig());
+			List<StructureDelta> structureDelta = deltaService.delta(Type.DATATYPE, datatype);
+			List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+			if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
+				Element deltaElement = this.serializeDelta(structureDeltaChanged, datatypeExportConfiguration.getDeltaConfig());
 				if (deltaElement != null) {
 					datatypeElement.appendChild(deltaElement);
 				}
