@@ -1,0 +1,32 @@
+<div class="page-container-nopad page-container">
+    <div class="alerts">
+        <app-alerts-container></app-alerts-container>
+    </div>
+    <div class="top-bar">
+        <h5>Default User Configuration</h5>
+        <div>
+            <button class="btn btn-sn btn-danger" style="margin-right:5px;"> <i class="fa fa-trash"></i> Reset</button>
+            <button class="btn btn-sn btn-success"> <i class="fa fa-save"></i> Save</button>
+
+        </div>
+    </div>
+    <div class="content">
+        <p-tabView>
+            <p-tabPanel header="Conformance Profile" [selected]="true">
+                    <app-conformance-profile-export-configuration [config]="conformamceProfileExportConfiguration" [displayColumns]="true" ></app-conformance-profile-export-configuration>
+                </p-tabPanel>
+            <p-tabPanel header="Segment" >
+                    <app-segment-export-configuration [config]="segmentExportConfiguration" ></app-segment-export-configuration>
+                </p-tabPanel>
+            <p-tabPanel header="Datatype">
+                    <app-datatype-export-configuration [config]="datatypeExportConfiguration" ></app-datatype-export-configuration>
+                </p-tabPanel>
+                <p-tabPanel header="ValueSet">
+                        <app-value-set-export-configuration [config]="valueSetExportConfiguration" ></app-value-set-export-configuration>
+                    </p-tabPanel>
+        </p-tabView>
+    </div>
+
+      
+    
+</div>

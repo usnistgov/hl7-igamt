@@ -7,6 +7,12 @@ import { DatatypeExportConfigurationComponent } from './components/datatype-expo
 import { ExportConfigurationDialogComponent } from './components/export-configuration-dialog/export-configuration-dialog.component';
 import { SegmentExportConfigurationComponent } from './components/segment-export-configuration/segment-export-configuration.component';
 import { ValueSetExportConfigurationComponent } from './components/value-set-export-configuration/value-set-export-configuration.component';
+import { DefaultConfigurationComponent } from './components/default-configuration/default-configuration.component';
+import { ExportConfigurationRoutingModule } from './export-configuration-routing.module';
+import {TabViewModule} from 'primeng/tabview';
+import {CardModule} from 'primeng/card';
+
+
 
 @NgModule({
   declarations: [
@@ -16,10 +22,14 @@ import { ValueSetExportConfigurationComponent } from './components/value-set-exp
     ConformanceProfileExportConfigurationComponent,
     ExportConfigurationDialogComponent,
     ConfigurationTocComponent,
+    DefaultConfigurationComponent,
   ],
   imports: [
     CommonModule,
     SharedModule,
+    ExportConfigurationRoutingModule,
+    TabViewModule,
+    CardModule,
   ],
   exports: [
     SegmentExportConfigurationComponent,
@@ -27,6 +37,7 @@ import { ValueSetExportConfigurationComponent } from './components/value-set-exp
     ValueSetExportConfigurationComponent,
     ConformanceProfileExportConfigurationComponent,
     ExportConfigurationDialogComponent,
+    DefaultConfigurationComponent,
   ],
   entryComponents: [
     ExportConfigurationDialogComponent,
