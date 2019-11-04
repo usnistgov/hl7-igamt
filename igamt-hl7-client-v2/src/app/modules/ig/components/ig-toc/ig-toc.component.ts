@@ -84,8 +84,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    console.log(this.nodes)
-
   }
 
   print() {
