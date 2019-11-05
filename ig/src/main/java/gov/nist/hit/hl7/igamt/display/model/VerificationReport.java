@@ -9,7 +9,7 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.verification.domain;
+package gov.nist.hit.hl7.igamt.display.model;
 
 import java.io.IOException;
 import java.util.ArrayList;

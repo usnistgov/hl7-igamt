@@ -13,8 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletResponse;
-import gov.nist.hit.hl7.igamt.display.model.IGMetaDataDisplay;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,6 @@ import com.opencsv.CSVReader;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -68,6 +67,8 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
+import gov.nist.hit.hl7.igamt.display.model.IGMetaDataDisplay;
+import gov.nist.hit.hl7.igamt.display.model.VerificationReport;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CloneResponse;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
@@ -95,9 +96,11 @@ import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.service.impl.VerificationResult;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -146,6 +149,9 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   DisplayInfoService displayInfoService;
+  
+  @Autowired
+  VerificationService verificationService;
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
@@ -1393,5 +1399,69 @@ public class IGDocumentController extends BaseController {
     } else {
       throw new PredicateNotFoundException(id);
     }
+  }
+  
+  
+//  @RequestMapping(value = "/api/verification/xml", method = RequestMethod.POST, produces = {"application/json"})
+//  public @ResponseBodyVerificationReport verifyXML(@RequestBody String profileXML,
+//      @RequestBody String constraintXML, @RequestBody String valuesetXML,
+//      Authentication authentication) {
+//    return this.verificationService.verifyXMLs(profileXML, constraintXML, valuesetXML);
+//  }
+//
+//  @RequestMapping(value = "/api/verification/valueset", method = RequestMethod.POST, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyValueset(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Valueset valueset, Authentication authentication) {
+//    return this.verificationService.verifyValueset(valueset, documentId, null);
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/datatype", method = RequestMethod.POST, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyDatatype(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Datatype datatype, Authentication authentication) {
+//    return this.verificationService.verifyDatatype(datatype, documentId, null);
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/segment", method = RequestMethod.POST, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifySegment(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Segment segment, Authentication authentication) {
+//    return this.verificationService.verifySegment(segment, documentId, null);
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/conformance-profile", method = RequestMethod.POST, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyConformanceProfile(@RequestParam(name = "dId", required = true) String documentId, @RequestBody ConformanceProfile conformanceProfile, Authentication authentication) {
+//    return this.verificationService.verifyConformanceProfile(conformanceProfile, documentId, null);
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/{documentId}/valueset/{valuesetId}", method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyValuesetById(@PathVariable("documentId") String documentId, @PathVariable("valuesetId") String valuesetId, Authentication authentication) {
+//    Valueset vs = this.valuesetService.findById(valuesetId);
+//    if(vs != null) return this.verificationService.verifyValueset(vs, documentId, null);
+//    return null;
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/{documentId}/datatype/{datatypeId}", method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyDatatypeById(@PathVariable("documentId") String documentId, @PathVariable("datatypeId") String datatypeId, Authentication authentication) {
+//    Datatype dt = this.datatypeService.findById(datatypeId);
+//    if (dt != null) return this.verificationService.verifyDatatype(dt, documentId, null);
+//    return null;
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/{documentId}/segment/{segmentId}", method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifySegmentById(@PathVariable("documentId") String documentId, @PathVariable("segmentId") String segmentId, Authentication authentication) {
+//    Segment sg = this.segmentService.findById(segmentId);
+//    if (sg != null) return this.verificationService.verifySegment(sg, documentId, null);
+//    return null;
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/{documentId}/conformance-profile/{conformanceProfileId}", method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyConformanceProfileById(@PathVariable("documentId") String documentId, @PathVariable("conformanceProfileId") String conformanceProfileId, Authentication authentication) {
+//    ConformanceProfile cp = this.conformanceProfileService.findById(conformanceProfileId);
+//    if (cp != null) return this.verificationService.verifyConformanceProfile(cp, documentId, null);
+//    return null;
+//  }
+  
+  @RequestMapping(value = "/api/igdocuments/{igid}/verify", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody VerificationResult verifyConformanceProfileById(@PathVariable("igid") String igid, Authentication authentication) {
+    Ig ig = this.igService.findById(igid);
+    if (ig != null) return this.verificationService.verifyIg(igid);
+    return null;
   }
 }

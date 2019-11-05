@@ -9,21 +9,21 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.verification.service.impl;
+package gov.nist.hit.hl7.igamt.service.impl;
 
 /**
  * @author jungyubw
  *
  */
-public class SegmentObjectError extends IgamtObjectError {
+public class IgObjectError  extends IgamtObjectError {
 
-  public SegmentObjectError() {
+  public IgObjectError() {
     super();
-    this.setTargetType("SEGMENT");
+    this.setTargetType("IG");
   }
 
-  public SegmentObjectError(String targetId, String errorType, String errorTarget,
+  public IgObjectError(String targetId, String errorType, String errorTarget,
       String errorDescription, String errorLocation, String severity) {
-    super("DATATYPE", targetId, errorType, errorTarget, errorDescription, errorLocation, severity);
+    super("IG", targetId, errorType, errorTarget, errorDescription, errorLocation, severity);
   }
 }

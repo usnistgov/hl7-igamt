@@ -9,37 +9,23 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.verification.service.impl;
-
-import java.util.ArrayList;
-import java.util.List;
+package gov.nist.hit.hl7.igamt.service.impl;
 
 /**
  * @author jungyubw
  *
  */
-public class VerificationResult {
-  
-  private List<DatatypeObjectError> datatypeObjectErrors;
-  
-  private List<SegmentObjectError> segmentObjectErrors;
+public class DatatypeObjectError extends IgamtObjectError {
 
-  /**
-   * @param datatypeObjectError
-   */
-  public void addDatatypeError(DatatypeObjectError datatypeObjectError) {
-    if(this.datatypeObjectErrors == null) this.datatypeObjectErrors = new ArrayList<DatatypeObjectError>();
-    
-    this.datatypeObjectErrors.add(datatypeObjectError);
-  }
-  
-  /**
-   * @param datatypeObjectError
-   */
-  public void addSegmentError(SegmentObjectError segmentObjectError) {
-    if(this.segmentObjectErrors == null) this.segmentObjectErrors = new ArrayList<SegmentObjectError>();
-    
-    this.segmentObjectErrors.add(segmentObjectError);
+  public DatatypeObjectError() {
+    super();
+    this.setTargetType("DATATYPE");
   }
 
+  public DatatypeObjectError(String targetId, String errorType, String errorTarget,
+      String errorDescription, String errorLocation, String severity) {
+    super("DATATYPE", targetId, errorType, errorTarget, errorDescription, errorLocation, severity);
+  }
+
+  
 }
