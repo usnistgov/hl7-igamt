@@ -110,7 +110,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setLeaf(!(datatype instanceof ComplexDatatype));
 		displayElement.setVariableName(datatype.getExt());
 		displayElement.setType(Type.DATATYPE);
-		
+		displayElement.setOrigin(datatype.getOrigin());
 		return displayElement;
 		
 	}
@@ -125,7 +125,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setLeaf(false);
 		displayElement.setVariableName(conformanceProfile.getName());
 		displayElement.setType(Type.CONFORMANCEPROFILE);
-		
+		displayElement.setOrigin(conformanceProfile.getOrigin());
 		return displayElement;
 		
 	}
@@ -141,7 +141,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setLeaf(false);
 		displayElement.setVariableName(segment.getExt());
 		displayElement.setType(Type.SEGMENT);
-		
+		displayElement.setOrigin(segment.getOrigin());
 		return displayElement;
 	}
 
@@ -155,7 +155,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setLeaf(false);
 		displayElement.setVariableName(valueset.getBindingIdentifier());
 		displayElement.setType(Type.VALUESET);
-		
+		displayElement.setOrigin(valueset.getOrigin());
 		return displayElement;
 	}
 

@@ -1,7 +1,14 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
+import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.delta.domain.Delta;
+import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
+import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,9 +42,12 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	
 	@Autowired 
 	BindingSerializationService bindingSerializationService;
-	
+
+	@Autowired
+	private DeltaService deltaService;
+
 	@Override
-	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration) throws SerializationException {
+	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration) throws SerializationException {
 //	    try {
 	      Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
 	      Datatype datatype = datatypeDataModel.getModel();
@@ -87,6 +97,18 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	        	datatypeElement.appendChild(constraints);
     }
 	      }
+
+		// Calculate datatype delta if the segment has an origin
+		if(datatype.getOrigin() != null && datatypeExportConfiguration.isDeltaMode()) {
+			List<StructureDelta> structureDelta = deltaService.delta(Type.DATATYPE, datatype);
+			List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+			if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
+				Element deltaElement = this.serializeDelta(structureDeltaChanged, datatypeExportConfiguration.getDeltaConfig());
+				if (deltaElement != null) {
+					datatypeElement.appendChild(deltaElement);
+				}
+			}
+		}
 	      return igDataModelSerializationService.getSectionElement(datatypeElement, datatypeDataModel.getModel(), level, datatypeExportConfiguration);
 
 //	    } catch (Exception exception) {
@@ -182,5 +204,79 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	    }
 	    return datatypeElement;
 	  }
+
+	private Element serializeDelta(List<StructureDelta> structureDeltaList, DeltaConfiguration deltaConfiguration){
+		if (structureDeltaList.size() > 0) {
+			Element changesElement = new Element("Changes");
+			changesElement.addAttribute(new Attribute("mode", deltaConfiguration.getMode().name()));
+
+//		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
+			changesElement.addAttribute(new Attribute("updatedColor", deltaConfiguration.getColors().get(DeltaAction.UPDATED)));
+			changesElement.addAttribute(new Attribute("addedColor", deltaConfiguration.getColors().get(DeltaAction.ADDED)));
+			changesElement.addAttribute(new Attribute("deletedColor", deltaConfiguration.getColors().get(DeltaAction.DELETED)));
+
+//		      }
+			for (StructureDelta structureDelta : structureDeltaList) {
+				this.setChangedElements(changesElement, structureDelta);
+			}
+			return changesElement;
+		}
+		return null;
+	}
+
+	private void setChangedElements(Element element, StructureDelta structureDelta) {
+		if(structureDelta != null) {
+			if(structureDelta.getUsage() != null && !structureDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
+				Element changedElement = new Element("Change");
+				changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
+				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				changedElement.addAttribute(new Attribute("action", structureDelta.getUsage().getAction().name()));
+				changedElement.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
+				element.appendChild(changedElement);
+			}
+			if(structureDelta.getConstantValue() != null && !structureDelta.getConstantValue().getAction().equals(DeltaAction.UNCHANGED)) {
+				Element changedElement = new Element("Change");
+				changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
+				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				changedElement.addAttribute(new Attribute("action", structureDelta.getConstantValue().getAction().name()));
+				changedElement.addAttribute(new Attribute("property", PropertyType.CONSTANTVALUE.name()));
+				element.appendChild(changedElement);
+			}
+			if(structureDelta.getMinLength() != null && !structureDelta.getMinLength().getAction().equals(DeltaAction.UNCHANGED)) {
+				Element changedElement = new Element("Change");
+				changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
+				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				changedElement.addAttribute(new Attribute("action", structureDelta.getMinLength().getAction().name()));
+				changedElement.addAttribute(new Attribute("property", PropertyType.LENGTHMIN.name()));
+				element.appendChild(changedElement);
+			}
+			if(structureDelta.getMaxLength() != null && !structureDelta.getMaxLength().getAction().equals(DeltaAction.UNCHANGED)) {
+				Element changedElement = new Element("Change");
+				changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
+				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				changedElement.addAttribute(new Attribute("action", structureDelta.getMaxLength().getAction().name()));
+				changedElement.addAttribute(new Attribute("property", PropertyType.LENGTHMAX.name()));
+				element.appendChild(changedElement);
+			}
+			if(structureDelta.getConfLength() != null && !structureDelta.getConfLength().getAction().equals(DeltaAction.UNCHANGED)) {
+				Element changedElement = new Element("Change");
+				changedElement.addAttribute(new Attribute("type",structureDelta.getType().toString()));
+				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				changedElement.addAttribute(new Attribute("action", structureDelta.getConfLength().getAction().name()));
+				changedElement.addAttribute(new Attribute("property", PropertyType.CONFLENGTH.name()));
+				element.appendChild(changedElement);
+			}
+			if(structureDelta.getReference() != null && !structureDelta.getReference().getAction().equals(DeltaAction.UNCHANGED)) {
+				Element changedElement = new Element("Change");
+				changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
+				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				changedElement.addAttribute(new Attribute("action", structureDelta.getReference().getAction().name()));
+				changedElement.addAttribute(new Attribute("property", PropertyType.DATATYPE.name()));
+				element.appendChild(changedElement);
+			}
+
+
+		}
+	}
 
 }
