@@ -44,7 +44,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   resource$: Observable<T>;
   workspace_s: Subscription;
   hasOrigin$: Observable<boolean>;
-  igId: Observable<string>;
+  public igId: Observable<string>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,

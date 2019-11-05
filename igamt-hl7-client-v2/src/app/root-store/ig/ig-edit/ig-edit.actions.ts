@@ -60,6 +60,9 @@ export enum IgEditActionTypes {
   CollapseTOC = '[Ig Edit TOC] Collapse',
   ExpandTOC = '[Ig Edit TOC] Expand',
   ToggleFullScreen = '[Ig Edit] Toggle Fullscreen',
+  ToggleDelta = '[Ig Edit] Toggle DELTA Delta',
+  ToggleDeltaSuccess = '[Ig Edit] Toggle DELTA Success',
+  ToggleDeltaFailure = '[Ig Edit] Toggle DELTA Failure',
 }
 
 export class CollapseTOC implements Action {
@@ -333,13 +336,27 @@ export class TableOfContentSaveSuccess implements Action {
 
   constructor(readonly igId: string) { }
 }
-
 export class TableOfContentSaveFailure implements Action {
   readonly type = IgEditActionTypes.TableOfContentSaveFailure;
 
   constructor(readonly igId: string) { }
 }
 
+export class ToggleDelta implements Action {
+  readonly type = IgEditActionTypes.ToggleDelta;
+  constructor(readonly igId: string, readonly delta: boolean) { }
+}
+
+export class ToggleDeltaSuccess implements Action {
+  readonly type = IgEditActionTypes.ToggleDeltaSuccess;
+  constructor(readonly igInfo: IGDisplayInfo, readonly deltaMode: boolean) { }
+}
+
+export class ToggleDeltaFailure implements Action {
+  readonly type = IgEditActionTypes.ToggleDeltaFailure;
+  constructor(readonly error: HttpErrorResponse) { }
+
+}
 export type IgEditActions =
   IgEditResolverLoad
   | IgEditResolverLoadSuccess
@@ -375,4 +392,7 @@ export type IgEditActions =
   | DeleteResource
   | DeleteResourceSuccess
   | DeleteResourceFailure
-  | EditorUpdate;
+  | EditorUpdate
+  | ToggleDelta
+  | ToggleDeltaSuccess
+  | ToggleDeltaFailure;

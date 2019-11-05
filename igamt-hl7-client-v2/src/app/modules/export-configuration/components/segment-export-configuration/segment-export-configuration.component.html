@@ -92,13 +92,21 @@
       <tr>
           <div layout="column">
             <div class="config-checkbox">
-              <p-checkbox label="Comments" binary="false" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox>
+              <p-checkbox label="Comments" binary="false" [(ngModng lint --el)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox>
             </div>
             <div class="config-checkbox">
               <p-checkbox label="Definition Text" binary="false" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox>
             </div>
           </div>
         </tr> -->
+        <tr>
+          <th>Delta</th>
+        </tr>
+        <tr>
+          <div class="delta-container">
+            <app-delta-export-configuration [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
+          </div>
+        </tr>
     </table>
   </div>
   <div style="width: 50%;" *ngIf = "false">

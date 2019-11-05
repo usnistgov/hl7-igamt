@@ -9,9 +9,9 @@ public class IGDisplayInfo {
 
 	private Ig ig;
 	private Set<DisplayElement> messages = new HashSet<DisplayElement>();
-	private Set<DisplayElement> segments = new HashSet<DisplayElement>();;
+	private Set<DisplayElement> segments = new HashSet<DisplayElement>();
 	private Set<DisplayElement> datatypes = new HashSet<DisplayElement>();
-	private Set<DisplayElement> valueSets = new HashSet<DisplayElement>();;
+	private Set<DisplayElement> valueSets = new HashSet<DisplayElement>();
 	
 	
 	public Ig getIg() {

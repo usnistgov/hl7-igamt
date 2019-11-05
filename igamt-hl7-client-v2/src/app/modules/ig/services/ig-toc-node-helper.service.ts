@@ -114,6 +114,7 @@ export class IgTOCNodeHelper {
       id: iDisplayElement.id,
       description: iDisplayElement.description,
       type: iDisplayElement.type,
+      delta: iDisplayElement.delta,
       position: i + 1,
       label: iDisplayElement.variableName,
       children: [],

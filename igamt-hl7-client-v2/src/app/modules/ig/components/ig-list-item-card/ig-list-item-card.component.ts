@@ -34,4 +34,5 @@ export interface IgListItemControl {
   default?: boolean;
   action: (item: IgListItem) => void;
   disabled: (item: IgListItem) => boolean;
+  hide?: (item: IgListItem ) => boolean;
 }

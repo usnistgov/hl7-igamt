@@ -1,21 +1,24 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import { MatDialog } from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Actions, ofType} from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { $e } from 'codelyzer/angular/styles/chars';
+import {SelectItem} from 'primeng/api';
 import {Observable, of} from 'rxjs';
-import { concatMap, filter, map, take, tap, withLatestFrom } from 'rxjs/operators';
-import {IgEditActionTypes} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {concatMap, filter, map, mergeMap, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {
   CopyResource, CopyResourceSuccess,
   DeleteResource,
-  IgEditTocAddResource,
+  IgEditTocAddResource, selectDerived, selectProfileTree,
   UpdateSections,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {IgEditActionTypes, ToggleDelta} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {selectIgId} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
 import { CollapseTOC } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
 import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
 import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
@@ -47,16 +50,39 @@ export class IgEditSidebarComponent implements OnInit {
   hl7Version$: Observable<string[]>;
   igId$: Observable<string>;
   version$: Observable<string>;
+  delta: boolean;
+  @Input()
+  deltaMode = false;
   @ViewChild(IgTocComponent) toc: IgTocComponent;
+  optionsToDisplay: any;
+  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED'}];
+  selectedValues = ['UPDATED', 'DELETED', 'ADDED', 'UNCHANGED'];
+  deltaMode$: Observable<boolean> = of(false);
 
+  derived: boolean;
   constructor(private store: Store<IGDisplayInfo>, private dialog: MatDialog, private crossReferencesService: CrossReferencesService,
               private router: Router, private activeRoute: ActivatedRoute, private actions: Actions) {
-    this.nodes$ = store.select(fromIgDocumentEdit.selectToc);
+    this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
+    this.deltaMode$.subscribe((x) => this.delta = x);
+    this.store.select(selectDerived).subscribe((x) => this.derived = x);
+    this.nodes$ = this.getNodes();
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
+
   }
 
+  getNodes() {
+   return  this.deltaMode$.pipe(
+      switchMap((x) => {
+        if (!x) {
+          return this.store.select(fromIgDocumentEdit.selectToc);
+        } else {
+          return this.store.select(fromIgDocumentEdit.selectProfileTree);
+        }
+      }),
+    );
+  }
   collapseToc() {
     this.store.dispatch(new CollapseTOC());
   }
@@ -258,5 +284,22 @@ export class IgEditSidebarComponent implements OnInit {
         this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: [result], type: $event.type }));
       }),
     ).subscribe();
+  }
+
+  toggleDelta() {
+    this.toc.filter('');
+    this.store.select(selectIgId).pipe(
+      take(1),
+      withLatestFrom(this.deltaMode$),
+      map(([id, delta]) => {
+        this.store.dispatch(new ToggleDelta(id, !delta));
+        }),
+    ).subscribe();
+  }
+
+  filterByDelta($event: string[]) {
+    if (this.delta) {
+      this.toc.filterByDelta($event);
+    }
   }
 }
