@@ -102,25 +102,28 @@ private DeltaService deltaService;
 
 	        // Calculate conformanceProfile delta if the conformanceProfile has an origin
 		    if(conformanceProfile.getOrigin() != null) {
-			  Delta delta = deltaService.delta(Type.CONFORMANCEPROFILE, igDataModel.getModel().getId(), conformanceProfile.getId());
-			  List<StructureDelta> structureDelta = delta.getDelta().stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-			  if(structureDelta != null && structureDelta.size()>0) {
-				  Element changesElement = new Element("Changes");
-				  changesElement.addAttribute(new Attribute("mode", conformanceProfileExportConfiguration.getDeltaConfig().getMode().name()));
+				List<StructureDelta> structureDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
+			  	if(structureDelta != null){
+					List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+					if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
+						Element changesElement = new Element("Changes");
+						changesElement.addAttribute(new Attribute("mode", conformanceProfileExportConfiguration.getDeltaConfig().getMode().name()));
 
 //		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
-				  changesElement.addAttribute(new Attribute("updatedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.UPDATED)));
-				  changesElement.addAttribute(new Attribute("addedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.ADDED)));
-				  changesElement.addAttribute(new Attribute("deletedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.DELETED)));
-				  List<Element> deltaElements = this.serializeDelta(structureDelta, conformanceProfileExportConfiguration.getDeltaConfig());
-				  if (deltaElements != null) {
-				  	for (Element el : deltaElements){
-						changesElement.appendChild(el);
-					}
-				  	conformanceProfileElement.appendChild(changesElement);
+						changesElement.addAttribute(new Attribute("updatedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.UPDATED)));
+						changesElement.addAttribute(new Attribute("addedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.ADDED)));
+						changesElement.addAttribute(new Attribute("deletedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.DELETED)));
+						List<Element> deltaElements = this.serializeDelta(structureDeltaChanged, conformanceProfileExportConfiguration.getDeltaConfig());
+						if (deltaElements != null) {
+							for (Element el : deltaElements){
+								changesElement.appendChild(el);
+							}
+							conformanceProfileElement.appendChild(changesElement);
 
-				  }
-			  }
+						}
+					}
+				}
+
 		    }
 
 		    return igDataModelSerializationService.getSectionElement(conformanceProfileElement, conformanceProfileDataModel.getModel(), level, conformanceProfileExportConfiguration);

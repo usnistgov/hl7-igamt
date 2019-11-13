@@ -10,6 +10,8 @@ export class ConformanceProfileExportConfigurationComponent implements OnInit {
 
   @Input()
   config: any;
+  @Input()
+  selected: any;
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
 
