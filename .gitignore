@@ -39,4 +39,7 @@ hl7-igamt.log.2019-10-24.0.gz
 .idea/encodings.xml
 .idea/misc.xml
 .idea/vcs.xml
+*.idea*
 *.gz
+*node_modules*
+igamt-hl7-client/dist
