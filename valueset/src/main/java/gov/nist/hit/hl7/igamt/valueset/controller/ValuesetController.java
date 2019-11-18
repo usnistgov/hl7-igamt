@@ -26,6 +26,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
@@ -92,7 +95,7 @@ public class ValuesetController extends BaseController {
 		return valueset;
 	}
 	
-	@RequestMapping(value = "/exportCSV/{id}", method = RequestMethod.POST, produces = "text/xml", consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	@RequestMapping(value = "/api/valuesets/exportCSV/{id}", method = RequestMethod.POST, produces = "text/xml", consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	  public void exportCSV(@PathVariable("id") String tableId, HttpServletRequest request,
 	      HttpServletResponse response) throws IOException, ValuesetNotFoundException {
 	    log.info("Export table " + tableId);
@@ -104,6 +107,7 @@ public class ValuesetController extends BaseController {
 	        + "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv");
 	    FileCopyUtils.copy(content, response.getOutputStream());
 	  }
+
 	
 	private Valueset findById(String id) throws ValuesetNotFoundException {
 		Valueset valueset = valuesetService.findById(id);

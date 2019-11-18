@@ -52,7 +52,5 @@
 
 </div>
 <div class="sidebar-content" id="sidebar-content">
-  <!-- <app-configuration-toc [nodes]="nodes$ | async"></app-configuration-toc> -->
-  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (addChild)="addChild($event)" (copy)="copy($event)" (delete)="delete($event)" [delta]="deltaMode$ | async"></app-ig-toc>
+  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (addChild)="addChild($event)" (copy)="copy($event)" (delete)="delete($event)" (addVSFromCSV)="addVSFromCSV($event)"  [delta]="deltaMode$ | async"></app-ig-toc>
 </div>
-

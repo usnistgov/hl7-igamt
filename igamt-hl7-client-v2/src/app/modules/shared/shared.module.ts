@@ -50,6 +50,7 @@ import { TextComponent } from './components/hl7-v2-tree/columns/text/text.compon
 import { UsageComponent } from './components/hl7-v2-tree/columns/usage/usage.component';
 import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/valueset.component';
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
+import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { LoginFormComponent } from './components/login-form/login-form.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
@@ -106,6 +107,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     NamingDuplicationDirective,
     NamingConventionDirective,
     CopyResourceComponent,
+    ImportCsvValuesetComponent,
     SelectNameComponent,
     Hl7V2TreeComponent,
     UsageComponent,
@@ -226,6 +228,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChipsModule,
     ResourcePickerComponent,
     CopyResourceComponent,
+    ImportCsvValuesetComponent,
     NamingDuplicationDirective,
     NamingConventionDirective,
     Hl7V2TreeComponent,
@@ -264,8 +267,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AlertsContainerComponent,
     DynamicMappingComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent],
-
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, ImportCsvValuesetComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {
