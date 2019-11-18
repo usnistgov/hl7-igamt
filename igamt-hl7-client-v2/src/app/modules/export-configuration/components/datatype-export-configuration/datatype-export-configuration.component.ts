@@ -12,8 +12,8 @@ export class DatatypeExportConfigurationComponent implements OnInit {
   config: any;
 
   @Input()
-  displayColumns : boolean;
-  
+  displayColumns: boolean;
+
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
 

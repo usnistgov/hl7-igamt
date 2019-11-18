@@ -1,7 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import {TabViewModule} from 'primeng/tabview';
 import {CardModule} from 'primeng/card';
-
+import {TabViewModule} from 'primeng/tabview';
 
 import * as _ from 'lodash';
 
@@ -16,11 +15,10 @@ export class ConformanceProfileExportConfigurationComponent implements OnInit {
   config: any;
 
   @Input()
-  displayColumns : boolean;
+  displayColumns: boolean;
 
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
-
 
   constructor() { }
 

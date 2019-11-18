@@ -1,7 +1,6 @@
 
-
 export interface IExportConfiguration {
-  configName : string;
+  configName: string;
   id: string;
   datatypeExportConfiguration: IDatatypeExportConfiguration;
   segmentExportConfiguration: ISegmentExportConfiguration;
@@ -52,7 +51,7 @@ export interface IExportConfiguration {
 }
 
 export interface IMessageColumn {
-  columns: Column[];
+  columns: IColumn[];
 }
 
 export interface IAbstractDomainExportConfiguration {
@@ -96,7 +95,7 @@ export interface IValueSetExportConfiguration {
   includeValuesetsTable: boolean;
   valuesetsExport: IUsageConfiguration;
   codesExport: ICodesExport;
-  columns: Column[];
+  columns: IColumn[];
   metadataConfig: IValueSetMetadataConfig;
   unboundHL7: boolean;
   unboundCustom: boolean;
@@ -150,7 +149,7 @@ export interface IConformamceProfileExportConfiguration {
   binding: boolean;
   includeMessageTable: boolean;
   segmentORGroupsMessageExport: IUsageConfiguration;
-  columns: Column[];
+  columns: IColumn[];
   metadataConfig: IMetadataConfig;
   constraintExportConfiguration: IConstraintExportConfiguration;
 }
@@ -181,7 +180,7 @@ export interface ISegmentExportConfiguration {
   greyOutOBX2FlavorColumn: boolean;
   segmentsExport: IUsageConfiguration;
   fieldsExport: IUsageConfiguration;
-  columns: Column[];
+  columns: IColumn[];
   metadataConfig: IMetadataConfig;
 }
 
@@ -210,23 +209,10 @@ export interface IDatatypeExportConfiguration {
   includeDatatypeTable: boolean;
   datatypesExport: IUsageConfiguration;
   componentExport: IUsageConfiguration;
-  columns: Column[];
+  columns: IColumn[];
   metadataConfig: IMetadataConfig;
   includeVaries: boolean;
 }
-
-// interface MetadataConfig {
-//   hl7version: boolean;
-//   publicationDate: boolean;
-//   publicationVersion: boolean;
-//   scope: boolean;
-//   preDefinition: boolean;
-//   postDefinition: boolean;
-//   usageNotes: boolean;
-//   authorNotes: boolean;
-
-// }
-
 export interface IMetadataConfig {
     hl7version: boolean;
     publicationDate: boolean;
@@ -243,8 +229,7 @@ export interface IMetadataConfig {
 
   }
 
-
-interface Column {
+interface IColumn {
   name: string;
   position: number;
   present: boolean;

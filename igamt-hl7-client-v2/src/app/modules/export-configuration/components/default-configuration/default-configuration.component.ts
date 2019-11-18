@@ -1,63 +1,62 @@
 import { Component, OnInit } from '@angular/core';
-import {TabViewModule} from 'primeng/tabview';
-import { IExportConfiguration } from '../../models/default-export-configuration.interface';
-import { ExportConfigurationService } from '../../services/export-configuration.service';
-import * as _ from 'lodash';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material';
+import * as _ from 'lodash';
+import {TabViewModule} from 'primeng/tabview';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { IExportConfiguration } from '../../models/default-export-configuration.interface';
 import { IExportConfigurationForFrontEnd } from '../../models/exportConfigurationForFrontEnd.interface';
-
+import { ExportConfigurationService } from '../../services/export-configuration.service';
 
 @Component({
   selector: 'app-default-configuration',
   templateUrl: './default-configuration.component.html',
-  styleUrls: ['./default-configuration.component.css']
+  styleUrls: ['./default-configuration.component.css'],
 })
 export class DefaultConfigurationComponent implements OnInit {
 
-basicExportConfiguration : IExportConfiguration;
-currentConfiguration : IExportConfiguration;
-backupConfiguration : IExportConfiguration;
-exportConfigurationForFrontEnd : IExportConfigurationForFrontEnd;
-configList : Array<IExportConfigurationForFrontEnd>;
-configName : string;
+basicExportConfiguration: IExportConfiguration;
+currentConfiguration: IExportConfiguration;
+backupConfiguration: IExportConfiguration;
+exportConfigurationForFrontEnd: IExportConfigurationForFrontEnd;
+configList: IExportConfigurationForFrontEnd[];
+configName: string;
   constructor(
-    private exportConfigurationService : ExportConfigurationService,
+    private exportConfigurationService: ExportConfigurationService,
     private dialog: MatDialog,
   ) { }
 
   ngOnInit() {
     this.displayConfigurations();
     this.exportConfigurationService.getExportConfigurationById('BasicExportConfiguration').subscribe(
-      x => this.currentConfiguration = x); 
-      this.backupConfiguration=this.currentConfiguration;
+      (x) => this.currentConfiguration = x);
+    this.backupConfiguration = this.currentConfiguration;
   }
 
-  displayConfigurations(){
+  displayConfigurations() {
     this.exportConfigurationService.getAllExportConfigurationByUsername().subscribe(
-      x => this.configList = x); 
+      (x) => this.configList = x);
   }
 
   open(id: string) {
     this.exportConfigurationService.getExportConfigurationById(id).subscribe(
-       x =>{ this.currentConfiguration = x,
-      this.backupConfiguration = _.cloneDeep(this.currentConfiguration)}
-    ); 
+       (x) => { this.currentConfiguration = x,
+      this.backupConfiguration = _.cloneDeep(this.currentConfiguration); },
+    );
     // FETCH
     // CLONE and AFFECT TO BACKUP
     // AFFECT TO currentConfiguration
   }
 
   reset() {
-this.currentConfiguration=this.backupConfiguration;
+this.currentConfiguration = this.backupConfiguration;
   }
 
   create() {
     this.exportConfigurationService.createExportConfiguration().subscribe(
-       x => {this.currentConfiguration = x;
-      this.open(this.currentConfiguration.id);
-      this.displayConfigurations();   
-    }
+       (x) => {this.currentConfiguration = x;
+               this.open(this.currentConfiguration.id);
+               this.displayConfigurations();
+    },
     );
     // CREATE
     // REFRESH LIST
@@ -77,20 +76,18 @@ this.currentConfiguration=this.backupConfiguration;
         if (answer) {
           this.exportConfigurationService.deleteExportConfiguration(configuration).subscribe(
           () => this.displayConfigurations(),
-          ); 
+          );
           // REFRESH LIST
         }
       },
     );
   }
 
-  save(){
-    // this.currentConfiguration = _.cloneDeep(this.basicExportConfiguration);
+  save() {
     this.exportConfigurationService.saveExportConfiguration(this.currentConfiguration).subscribe(
     () => this.displayConfigurations(),
     );
 
   }
-
 
 }
