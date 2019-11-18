@@ -1,14 +1,7 @@
 <div style="width: 100%; display: flex; align-items: flex-start;">
   <div style="width: 100%;">
-    <table class="table table-sm table-striped">
-      <tr>
-        <th>Usages</th>
-      </tr>
-      <tr>
-        <td>Fields to export</td>
-      </tr>
-      <tr>
-        <td>
+
+      <p-card header="Usages - Fields to export" [styleClass]="'pcard'">
           <p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.fieldsExport.r"></p-checkbox>
           <br>
           <p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.fieldsExport.re"></p-checkbox>
@@ -19,133 +12,77 @@
           <br>
           <p-checkbox label="X" binary="true" [(ngModel)]="config.fieldsExport.x" (onChange)="triggerChange()"></p-checkbox>
           <br>
-        </td>
-      </tr>
-      <tr>
-        <th>Metadata</th>
-      </tr>
-      <tr>
-        <div layout="column">
+      </p-card>
+
+      <p-card header="Columns to export" [styleClass]="'pcard'" *ngIf="displayColumns" >
           <div class="config-checkbox">
-            <p-checkbox label="HL7 Version" binary="true" [(ngModel)]="config.version" (onChange)="triggerChange()"></p-checkbox>
-          </div>
-          <!-- <div class="config-checkbox">
-            <p-checkbox label="Publication Date" binary="true" [(ngModel)]="config.metadataConfig.publicationDate" (onChange)="triggerChange()"></p-checkbox>
-          </div>
-          <div class="config-checkbox">
-            <p-checkbox label="Publication Version" binary="true" [(ngModel)]="config.metadataConfig.publicationVersion" (onChange)="triggerChange()"></p-checkbox>
-          </div>
-          <div class="config-checkbox">
-            <p-checkbox label="Scope" binary="true" [(ngModel)]="config.metadataConfig.scope" (onChange)="triggerChange()"></p-checkbox>
-          </div> -->
-          <div class="config-checkbox">
-              <p-checkbox label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox>
+              <p-checkbox label="Name" binary="true"></p-checkbox>
             </div>
             <div class="config-checkbox">
-              <p-checkbox label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox>
+              <p-checkbox label="Conformance Length" binary="true"></p-checkbox>
             </div>
             <div class="config-checkbox">
-              <p-checkbox label="Usage Notes " binary="true" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox>
+              <p-checkbox label="Length" binary="true"></p-checkbox>
             </div>
             <div class="config-checkbox">
-              <p-checkbox label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox>
+              <p-checkbox label="Usage" binary="true"></p-checkbox>
             </div>
-        </div>
-      </tr>
-      <tr>
-          <th>Constraints</th>
-        </tr>
-        <tr>
-          <div layout="column">
             <div class="config-checkbox">
+              <p-checkbox label="Cardinality" binary="true"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox label="Value Set" binary="true"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox label="Constant Value" binary="true"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox label="Definition Text" binary="true"></p-checkbox>
+            </div>
+      </p-card>
+
+      <p-card header="Metadata" [styleClass]="'pcard'">
+          <div class="config-checkbox">
+              <p-checkbox label="HL7 Version" binary="true" [(ngModel)]="config.metadataConfig.hl7version" (onChange)="triggerChange()"></p-checkbox>
+            </div>
+            <!-- <div class="config-checkbox">
+              <p-checkbox label="Publication Date" binary="true" [(ngModel)]="config.metadataConfig.publicationDate" (onChange)="triggerChange()"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox label="Publication Version" binary="true" [(ngModel)]="config.metadataConfig.publicationVersion" (onChange)="triggerChange()"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox label="Scope" binary="true" [(ngModel)]="config.metadataConfig.scope" (onChange)="triggerChange()"></p-checkbox>
+            </div> -->
+            <div class="config-checkbox">
+                <p-checkbox label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox>
+              </div>
+              <div class="config-checkbox">
+                <p-checkbox label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox>
+              </div>
+              <div class="config-checkbox">
+                <p-checkbox label="Usage Notes " binary="true" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox>
+              </div>
+              <div class="config-checkbox">
+                <p-checkbox label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox>
+              </div>
+      </p-card>
+
+      <p-card header="Constraints" [styleClass]="'pcard'">
+          <div class="config-checkbox">
               <p-checkbox label="Conditional Predicates" binary="true" [(ngModel)]="config.constraintExportConfiguration.predicate" (onChange)="triggerChange()"></p-checkbox>
             </div>
             <div class="config-checkbox">
               <p-checkbox label="Conformance Statments" binary="true" [(ngModel)]="config.constraintExportConfiguration.conformanceStatement"
                 (onChange)="triggerChange()"></p-checkbox>
             </div>
-          </div>
-        </tr>
-        
-      <tr>
-        <th>Co-Constraints</th>
-      </tr>
-      <!-- <tr>
-        <td>
-          <p-checkbox binary="true" label="Grey out OBX-2 Flavor column"></p-checkbox>
-        </td>
-      </tr> -->
-      <!-- <tr>
-        <td>Display</td>
-      </tr>
-      <tr>
-        <div>
-          <p-radioButton name="coConstraintExportMode" value="COMPACT" label="Compact" [(ngModel)]="config.coConstraintExportMode.COMPACT" (onChange)="triggerChange()"></p-radioButton>
-        </div>
-        <div>
-          <p-radioButton name="coConstraintExportMode" value="VERBOSE" label="Verbose" [(ngModel)]="config.coConstraintExportMode.VERBOSE" (onChange)="triggerChange()" ></p-radioButton>
-        </div>
-      </tr> -->
-      <!-- <tr>
-          <th>Comments & Definition Text</th>
-        </tr>
-      <tr>
-          <div layout="column">
-            <div class="config-checkbox">
-              <p-checkbox label="Comments" binary="false" [(ngModng lint --el)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox>
-            </div>
-            <div class="config-checkbox">
-              <p-checkbox label="Definition Text" binary="false" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox>
-            </div>
-          </div>
-        </tr> -->
-        <tr>
-          <th>Delta</th>
-        </tr>
-        <tr>
+      </p-card>
+
+      <p-card header="Delta" [styleClass]="'pcardDelta'">
           <div class="delta-container">
-            <app-delta-export-configuration [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
-          </div>
-        </tr>
-    </table>
-  </div>
-  <div style="width: 50%;" *ngIf = "false">
-    <table class="table table-sm table-striped">
-      <tr>
-        <th>Columns</th>
-      </tr>
-      <tr>
-        <td>Columns to export</td>
-      </tr>
-      <tr>
-        <div layout="column">
-          <div class="config-checkbox">
-            <p-checkbox label="Name" binary="true"></p-checkbox>
-          </div>
-          <div class="config-checkbox">
-            <p-checkbox label="Conformance Length" binary="true"></p-checkbox>
-          </div>
-          <div class="config-checkbox">
-            <p-checkbox label="Length" binary="true"></p-checkbox>
-          </div>
-          <div class="config-checkbox">
-            <p-checkbox label="Usage" binary="true"></p-checkbox>
-          </div>
-          <div class="config-checkbox">
-            <p-checkbox label="Cardinality" binary="true"></p-checkbox>
-          </div>
-          <div class="config-checkbox">
-            <p-checkbox label="Value Set" binary="true"></p-checkbox>
-          </div>
-          <div class="config-checkbox">
-            <p-checkbox label="Constant Value" binary="true"></p-checkbox>
-          </div>
-          <div class="config-checkbox">
-            <p-checkbox label="Definition Text" binary="true"></p-checkbox>
-          </div>
-        </div>
-      </tr>
-      <!-- </div> -->
-    </table>
+              <app-delta-export-configuration [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
+            </div>
+      </p-card>
+
   </div>
 </div>

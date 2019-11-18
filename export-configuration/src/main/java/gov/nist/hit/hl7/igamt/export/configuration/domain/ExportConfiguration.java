@@ -39,6 +39,10 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConf
 @Document(collection = "exportConfiguration")
 public class ExportConfiguration {
 	
+	private String configName;
+	 @Id
+	  private String id;
+	 
 	private DatatypeExportConfiguration datatypeExportConfiguration;
 	private SegmentExportConfiguration segmentExportConfiguration;
 	private ConformanceProfileExportConfiguration conformamceProfileExportConfiguration;
@@ -47,8 +51,7 @@ public class ExportConfiguration {
 	private ResourceExportConfiguration resourceExportConfiguration;
 	private DocumentMetadataConfiguration DocumentMetadataConfiguration;
 	
-  @Id
-  private String id;
+ 
   boolean defaultType = false;
   private String name;
   @Column(unique=true)
@@ -111,7 +114,8 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
 }
 
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue) {
-    ExportConfiguration defaultConfiguration = new ExportConfiguration();   
+    ExportConfiguration defaultConfiguration = new ExportConfiguration();  
+    defaultConfiguration.setConfigName("");
     defaultConfiguration.setCoConstraintExportMode(CoConstraintExportMode.COMPACT);
     defaultConfiguration.setDefaultType(true);
     defaultConfiguration.setUsername(null);
@@ -267,6 +271,9 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     conformanceProfileExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
     conformanceProfileExportConfiguration.setDeltaMode(true);
     conformanceProfileExportConfiguration.setDeltaConfig(deltaConfiguration);
+//    conformanceProfileExportConfiguration.getMetadataConfig().setType(false);
+//    conformanceProfileExportConfiguration.getMetadataConfig().setRole(false);
+
 
     // Setting ValueSetExportConfiguration
     ValueSetExportConfiguration valueSetExportConfiguration = new ValueSetExportConfiguration(defaultConfiguration);
@@ -885,5 +892,12 @@ public String getId() {
     this.deltaConfig = deltaConfig;
   }
 
+  public String getConfigName() {
+		return configName;
+	}
+
+	public void setConfigName(String configName) {
+		this.configName = configName;
+	}
 
 }

@@ -1,31 +1,14 @@
 
-export interface IRootObject {
-  exportConfiguration: IExportConfiguration;
-  exportFilterDecision: IExportFilterDecision;
-}
-
-export interface IExportFilterDecision {
-//   datatypesFilterMap: DatatypesFilterMap;
-//   segmentFilterMap: SegmentFilterMap;
-//   conformanceProfileFilterMap: ConformanceProfileFilterMap;
-//   valueSetFilterMap: ValueSetFilterMap;
-//   overiddedDatatypesMap: OveriddedDatatypesMap;
-//   overiddedValueSetMap: OveriddedDatatypesMap;
-//   overiddedConformanceProfileMap: OveriddedDatatypesMap;
-//   overiddedSegmentMap: OveriddedDatatypesMap;
-}
-
-interface OveriddedDatatypesMap {
-}
 
 export interface IExportConfiguration {
+  configName : string;
+  id: string;
   datatypeExportConfiguration: IDatatypeExportConfiguration;
   segmentExportConfiguration: ISegmentExportConfiguration;
   conformamceProfileExportConfiguration: IConformamceProfileExportConfiguration;
   valueSetExportConfiguration: IValueSetExportConfiguration;
   abstractDomainExportConfiguration: IAbstractDomainExportConfiguration;
   resourceExportConfiguration?: any;
-  id?: any;
   defaultType: boolean;
   name?: any;
   username?: any;

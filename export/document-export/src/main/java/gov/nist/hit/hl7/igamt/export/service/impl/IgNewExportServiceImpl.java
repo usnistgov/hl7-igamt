@@ -95,8 +95,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	public ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument, ExportFormat exportFormat,
 			ExportFilterDecision decision) throws Exception {
 		try {
-			ExportConfiguration exportConfiguration =
-					exportConfigurationService.getExportConfiguration(username);
+//			ExportConfiguration exportConfiguration =
+//					exportConfigurationService.getExportConfiguration(username);
+			ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
 			DeltaConfiguration deltaConfig = new DeltaConfiguration();
 			deltaConfig.setColors(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getColors());
 			deltaConfig.setMode(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getMode());

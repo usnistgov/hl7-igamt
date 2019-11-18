@@ -12,6 +12,7 @@ import { DefaultConfigurationComponent } from './components/default-configuratio
 import { ExportConfigurationRoutingModule } from './export-configuration-routing.module';
 import {TabViewModule} from 'primeng/tabview';
 import {CardModule} from 'primeng/card';
+import { ExportConfigurationService } from './services/export-configuration.service';
 
 
 
@@ -44,5 +45,8 @@ import {CardModule} from 'primeng/card';
   entryComponents: [
     ExportConfigurationDialogComponent,
   ],
+  providers:[
+    ExportConfigurationService,
+  ]
 })
 export class ExportConfigurationModule { }

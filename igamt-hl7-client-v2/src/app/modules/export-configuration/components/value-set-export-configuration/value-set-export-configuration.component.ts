@@ -10,6 +10,10 @@ export class ValueSetExportConfigurationComponent implements OnInit {
 
   @Input()
   config: any;
+
+  @Input()
+  displayColumns : boolean;
+
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
 

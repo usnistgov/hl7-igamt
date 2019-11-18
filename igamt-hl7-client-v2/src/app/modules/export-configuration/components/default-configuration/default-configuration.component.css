@@ -20,13 +20,29 @@
     justify-content: space-between; 
 }
 
-.content{
+.content {
     grid-column: 1;
     grid-row: content;
+    display: grid;
+    grid-template-columns: [config-list] 1fr [config-content] 5fr;
+    grid-template-rows: 1;
 }
 
-.pcard{
-    margin-top: 50px;
+.config-list {
+    grid-column: config-list;
+    padding: 5px;
+    padding-right: 10px;
     display: flex;
-    padding-top: 50px;
+    flex-direction: column;
 }
+
+.config-content {
+    grid-column: config-content;
+}
+
+.list-item {
+    margin-top: 3px;
+}
+
+
+

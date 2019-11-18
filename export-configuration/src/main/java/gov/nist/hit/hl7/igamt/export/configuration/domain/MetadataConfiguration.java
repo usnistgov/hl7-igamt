@@ -30,8 +30,8 @@ public class MetadataConfiguration {
   
   private boolean organization = true;
   private boolean author = true;
-  private boolean type = true;
-  private boolean role = true;
+  private boolean type = false;
+  private boolean role = false;
   
 
 
