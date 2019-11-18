@@ -165,11 +165,11 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							if (exportFilterDecision != null && exportFilterDecision.getOveriddedDatatypesMap() != null
 									&& exportFilterDecision.getOveriddedDatatypesMap()
 											.containsKey(datatypeLink.getId())) {
-								datatypeElement = datatypeSerializationService.serializeDatatype(datatypeDataModel,
+								datatypeElement = datatypeSerializationService.serializeDatatype(igDataModel.getModel().getId(),datatypeDataModel,
 										level + 1, datatypeLink.getPosition(),
 										exportFilterDecision.getOveriddedDatatypesMap().get(datatypeLink.getId()));
 							} else {
-								datatypeElement = datatypeSerializationService.serializeDatatype(datatypeDataModel,
+								datatypeElement = datatypeSerializationService.serializeDatatype(igDataModel.getModel().getId(),datatypeDataModel,
 										level + 1, datatypeLink.getPosition(),
 										exportConfiguration.getDatatypeExportConfiguration());
 							}
