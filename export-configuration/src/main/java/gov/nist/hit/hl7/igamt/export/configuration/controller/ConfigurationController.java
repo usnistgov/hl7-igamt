@@ -13,15 +13,23 @@
  */
 package gov.nist.hit.hl7.igamt.export.configuration.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.export.configuration.display.ExportFontConfigurationDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.CompositeProfileTableOptionsDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.ConformanceProfileTableOptionsDisplay;
@@ -32,8 +40,10 @@ import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.TableOpt
 import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.ValuesetTableOptionsDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportConfigurationForFrontEnd;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontConfigurationService;
+
 
 
 /**
@@ -48,6 +58,54 @@ public class ConfigurationController {
   
   @Autowired
   private ExportFontConfigurationService exportFontConfigurationService;
+  
+  
+  @RequestMapping(value = "api/configuration/save", method = RequestMethod.POST,
+	      consumes = {"application/json"})
+	  public ResponseMessage saveExportconfuguration(@RequestBody ExportConfiguration exportConfiguration){
+	  System.out.println("Inside save controler");
+	  	 exportConfigurationService.save(exportConfiguration);
+		return new ResponseMessage(Status.SUCCESS, "EXPORTCONFIGURATION_SAVED", exportConfiguration.getId(), null);
+
+	  }
+  
+  @RequestMapping(value = "/api/configuration/{id}", method = RequestMethod.GET, produces = { "application/json" })
+  public @ResponseBody ExportConfiguration getExportConfiguration(@PathVariable("id") String id) {
+	  System.out.println("Inside get controler and id is : "+ id );
+	  return exportConfigurationService.getExportConfiguration(id);
+
+  }
+  
+  @RequestMapping(value = "/api/configuration/generalConfigurations", method = RequestMethod.GET, produces = { "application/json" })
+  public @ResponseBody List<ExportConfigurationForFrontEnd> getAllGeneralConfigurations( Authentication authentication) {
+	  String username =  authentication.getPrincipal().toString();
+	  List<ExportConfiguration> configList = exportConfigurationService.getAllExportConfiguration(username);
+	 List<ExportConfigurationForFrontEnd> configNames = new ArrayList<>();
+	  for(ExportConfiguration ec : configList) {
+		  ExportConfigurationForFrontEnd exportConfigurationForFrontEnd = new ExportConfigurationForFrontEnd();
+		  exportConfigurationForFrontEnd.setId(ec.getId());
+		  exportConfigurationForFrontEnd.setConfigName(ec.getConfigName());
+		  configNames.add(exportConfigurationForFrontEnd);
+		  
+	  }
+	  System.out.println("Inside getall controler and list size is : "+ configList.size() +" And Username is : " + username);
+
+	  return configNames;
+  }
+  
+  @RequestMapping(value = "api/configuration/delete", method = RequestMethod.POST,
+	      consumes = {"application/json"})
+	  public void deleteExportconfuguration(@RequestBody ExportConfiguration exportConfiguration){
+	  	 exportConfigurationService.delete(exportConfiguration);
+	  }
+  
+  @RequestMapping(value = "/api/configuration/create", method = RequestMethod.GET, produces = { "application/json" })
+  public @ResponseBody ExportConfiguration createExportConfiguration() {
+	  System.out.println("Inside create controler");
+	  return exportConfigurationService.create();
+  }
+  
+
 
   @RequestMapping(value = "api/configuration/tableOptions/conformanceProfile", method = RequestMethod.GET,
       produces = {"application/json"})

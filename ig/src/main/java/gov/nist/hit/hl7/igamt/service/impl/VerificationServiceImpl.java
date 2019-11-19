@@ -58,9 +58,9 @@ import gov.nist.hit.hl7.igamt.datatype.domain.PrimitiveDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.CustomProfileError;
-import gov.nist.hit.hl7.igamt.display.model.DocumentTarget;
 import gov.nist.hit.hl7.igamt.display.model.VerificationReport;
 import gov.nist.hit.hl7.igamt.display.model.XSDVerificationResult;
+import gov.nist.hit.hl7.igamt.display.model.VerificationReport.DocumentTarget;
 import gov.nist.hit.hl7.igamt.display.model.VerificationReport.ErrorType;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -79,11 +79,6 @@ import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
-
-/**
- * @author jungyubw
- *
- */
 
 @Service("verificationService")
 public class VerificationServiceImpl implements VerificationService {

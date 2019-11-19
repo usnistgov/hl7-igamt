@@ -27,6 +27,13 @@ public class MetadataConfiguration {
   private boolean postDefinition = true;
   private boolean usageNotes = true;
   private boolean AuthorNotes = true;
+  
+  private boolean organization = true;
+  private boolean author = true;
+  private boolean type = false;
+  private boolean role = false;
+  
+
 
   public MetadataConfiguration() {
     super();
@@ -41,7 +48,41 @@ public class MetadataConfiguration {
     this.scope = scope;
   }
   
-  public boolean isPreDefinition() {
+  
+  
+  public boolean isOrganization() {
+	return organization;
+}
+
+public void setOrganization(boolean organization) {
+	this.organization = organization;
+}
+
+public boolean isAuthor() {
+	return author;
+}
+
+public void setAuthor(boolean author) {
+	this.author = author;
+}
+
+public boolean isType() {
+	return type;
+}
+
+public void setType(boolean type) {
+	this.type = type;
+}
+
+public boolean isRole() {
+	return role;
+}
+
+public void setRole(boolean role) {
+	this.role = role;
+}
+
+public boolean isPreDefinition() {
 	return preDefinition;
 }
 

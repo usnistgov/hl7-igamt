@@ -1,6 +1,6 @@
 import {Component, ElementRef, HostListener, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 
 @Component({
   selector: 'app-import-csv-valueset',
@@ -18,10 +18,11 @@ export class ImportCsvValuesetComponent implements ControlValueAccessor, OnInit 
   onChange: (files: File) => void;
   onTouched: () => void;
   @ViewChild('fileInput', { read: ElementRef })
-  private fileInput: ElementRef;
-  private file: File = null;
-  private url: string;
-  private preview: string | ArrayBuffer;
+  fileInput: ElementRef;
+  file: File = null;
+  url: string;
+  preview: string | ArrayBuffer;
+  viewOnly = false;
 
   constructor(public dialogRef: MatDialogRef<ImportCsvValuesetComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any, private host: ElementRef<HTMLInputElement>) {

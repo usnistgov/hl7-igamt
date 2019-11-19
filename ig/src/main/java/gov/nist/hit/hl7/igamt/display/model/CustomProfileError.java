@@ -11,7 +11,9 @@
  */
 package gov.nist.hit.hl7.igamt.display.model;
 
+import gov.nist.hit.hl7.igamt.display.model.VerificationReport.DocumentTarget;
 import gov.nist.hit.hl7.igamt.display.model.VerificationReport.ErrorType;
+
 
 /**
  * @author jungyubw

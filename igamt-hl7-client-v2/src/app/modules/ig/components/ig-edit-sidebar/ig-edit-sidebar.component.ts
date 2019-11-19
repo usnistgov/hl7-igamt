@@ -3,19 +3,19 @@ import { MatDialog } from '@angular/material';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Actions, ofType} from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { $e } from 'codelyzer/angular/styles/chars';
 import {SelectItem} from 'primeng/api';
 import {Observable, of} from 'rxjs';
-import {concatMap, filter, map, mergeMap, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {concatMap, filter, map, switchMap, take, withLatestFrom} from 'rxjs/operators';
+import {IgEditActionTypes, ImportResourceFromFile} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   CopyResource, CopyResourceSuccess,
   DeleteResource,
   IgEditTocAddResource, selectDerived, selectProfileTree,
   UpdateSections,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {IgEditActionTypes, ToggleDelta} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {selectIgId} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {ToggleDelta} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
 import { CollapseTOC } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
@@ -156,7 +156,7 @@ export class IgEditSidebarComponent implements OnInit {
   addVSFromCSV($event) {
     console.log($event);
     const dialogRef = this.dialog.open(ImportCsvValuesetComponent, {
-      data: { ...$event, targetScope: Scope.USER, title: 'Add Valueset by CSV file' },
+      data: { ...$event, targetScope: Scope.USER, title: 'Add Valueset from CSV file' },
     });
 
     dialogRef.afterClosed().pipe(
@@ -167,9 +167,7 @@ export class IgEditSidebarComponent implements OnInit {
           console.log([result]);
           console.log([igId]);
 
-          //TODO Need to upload csvFile to /api/igdocuments/{id}/valuesets/uploadCSVFile with file
-          //TODO need to update TOC
-          // this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: [result], type: $event.type }));
+          this.store.dispatch(new ImportResourceFromFile(igId, Type.VALUESET, Type.IGDOCUMENT, result));
         }),
     ).subscribe();
   }
