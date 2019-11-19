@@ -1,0 +1,45 @@
+<div class="page-container-nopad page-container">
+    <div class="alerts">
+        <app-alerts-container></app-alerts-container>
+    </div>
+
+    <div class="top-bar">
+        <h5>User Export Configuration</h5>
+        <div>
+            <button (click)="delete(currentConfiguration)"class="btn btn-sn btn-danger" style="margin-right:5px;"> <i class="fa fa-trash"></i> Delete</button>
+            <button (click)="reset()" class="btn btn-sn btn-warning" style="margin-right:5px;"> <i class="fa fa-trash"></i> Reset</button>
+            <button (click)="save()" class="btn btn-sn btn-success"> <i class="fa fa-save"></i> Save</button>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="config-list">
+            <div>
+                <button (click)="create()" class="btn btn-sn btn-primary" style="margin-right:5px;"> <i class="fa fa-plus"></i> Create Configuration </button>
+            </div>
+            <p-card [styleClass]="'config-list-item'" *ngFor="let item of configList" (click)="open(item.id)" >
+                {{item.configName}}
+            </p-card>
+        </div>
+        <div class="config-content" *ngIf="currentConfiguration">
+            <label class="form-label-lg"> Configuration name  </label>
+            <input type="text"  class="form-control" [(ngModel)]="currentConfiguration.configName">
+
+            <p-tabView>
+                <p-tabPanel header="Conformance Profile" [selected]="true">
+                        <app-conformance-profile-export-configuration [config]="currentConfiguration.conformamceProfileExportConfiguration" [displayColumns]="true" ></app-conformance-profile-export-configuration>
+                    </p-tabPanel>
+                <p-tabPanel header="Segment" >
+                        <app-segment-export-configuration [config]="currentConfiguration.segmentExportConfiguration" [displayColumns]="true" ></app-segment-export-configuration>
+                    </p-tabPanel>
+                <p-tabPanel header="Datatype">
+                        <app-datatype-export-configuration [config]="currentConfiguration.datatypeExportConfiguration" [displayColumns]="true"></app-datatype-export-configuration>
+                    </p-tabPanel>
+                    <p-tabPanel header="ValueSet">
+                            <app-value-set-export-configuration [config]="currentConfiguration.valueSetExportConfiguration" [displayColumns]="true" ></app-value-set-export-configuration>
+                        </p-tabPanel>
+            </p-tabView>
+        </div>
+    </div>
+
+</div>

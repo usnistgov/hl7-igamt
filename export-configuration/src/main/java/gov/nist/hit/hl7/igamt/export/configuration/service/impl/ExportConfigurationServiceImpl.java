@@ -13,6 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.export.configuration.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,14 +34,7 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   @Autowired
   private ExportConfigurationRepository exportConfigurationRepository;
 
-  @Override
-  public ExportConfiguration getExportConfiguration(String username) {
-    ExportConfiguration exportConfiguration = exportConfigurationRepository.findOneByUsername(username);
-    if(exportConfiguration == null) {
-      exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
-    }
-    return exportConfiguration;
-  }
+
 
   /* (non-Javadoc)
    * @see gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService#save(gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration)
@@ -48,6 +43,30 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   public ExportConfiguration save(ExportConfiguration exportConfiguration) {
     return exportConfigurationRepository.save(exportConfiguration);
   }
+
+@Override
+public List<ExportConfiguration> getAllExportConfiguration(String username) {
+	return exportConfigurationRepository.findAll();
+}
+
+@Override
+public void delete(ExportConfiguration exportConfiguration) {
+	exportConfigurationRepository.delete(exportConfiguration);	
+}
+
+@Override
+public ExportConfiguration create() {
+	ExportConfiguration exportConfiguration = exportConfigurationRepository.findOneById("BasicExportConfiguration");
+		exportConfiguration.setId(null);
+		exportConfiguration.setConfigName("New Configuration");
+		exportConfigurationRepository.save(exportConfiguration);
+		return exportConfiguration;
+}
+
+@Override
+public ExportConfiguration getExportConfiguration(String id) {
+	return exportConfigurationRepository.findOneById(id);	
+}
   
 
   

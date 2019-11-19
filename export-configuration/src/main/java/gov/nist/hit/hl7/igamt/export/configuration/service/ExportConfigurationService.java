@@ -13,6 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.export.configuration.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
@@ -24,7 +26,11 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 @Service("exportConfigurationService")
 public interface ExportConfigurationService {
 
-  public ExportConfiguration getExportConfiguration(String username);
+  public ExportConfiguration getExportConfiguration(String id);
+  public List<ExportConfiguration> getAllExportConfiguration(String username);
   public ExportConfiguration save(ExportConfiguration exportConfiguration);
+  public void delete(ExportConfiguration exportConfiguration);
+  public ExportConfiguration create();
+
 
 }

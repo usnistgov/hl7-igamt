@@ -21,6 +21,10 @@ const routes: Routes = [
     canActivate: [NotAuthenticatedGuard],
   },
   {
+    path: 'configuration',
+    loadChildren: 'src/app/modules/export-configuration/export-configuration.module#ExportConfigurationModule',
+  },
+  {
     path: 'home',
     component: HomeComponent,
   },

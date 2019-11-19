@@ -8,6 +8,7 @@ html {
   width: 100%;
 }
 
+
 body {
   @extend %blue-bg;
   height: 100%;
@@ -279,4 +280,25 @@ body .ui-panel .ui-panel-titlebar .ui-panel-titlebar-icon {
 }
 .delta-badge{
   padding: 0px;
+}
+
+.pcard{
+  margin-top: 50px;
+  float: left;
+  margin-right: 25px;
+  margin-left: 25px;
+  width: 40%;
+}
+
+.pcardDelta{
+  margin-top: 50px;
+  float: left;
+  margin-right: 25px;
+  margin-left: 25px;
+  width: 80%;
+}
+
+.config-list-item {
+  margin-top: 3px;
+  cursor: pointer;
 }
