@@ -9,10 +9,11 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.verification.domain;
+package gov.nist.hit.hl7.igamt.display.model;
 
-import gov.nist.hit.hl7.igamt.verification.domain.VerificationReport.DocumentTarget;
-import gov.nist.hit.hl7.igamt.verification.domain.VerificationReport.ErrorType;
+import gov.nist.hit.hl7.igamt.display.model.VerificationReport.DocumentTarget;
+import gov.nist.hit.hl7.igamt.display.model.VerificationReport.ErrorType;
+
 
 /**
  * @author jungyubw

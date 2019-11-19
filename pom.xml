@@ -112,7 +112,6 @@
 		<module>datatype</module>
 		<module>valueset</module>
 		<module>conformance-profile</module>
-		<module>verification</module>
 		<module>serialization</module>
 		<module>segment</module>
 		<module>datatype-library</module>

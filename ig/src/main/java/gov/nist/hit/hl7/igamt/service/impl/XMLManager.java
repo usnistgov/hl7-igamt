@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.verification.service.impl;
+package gov.nist.hit.hl7.igamt.service.impl;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

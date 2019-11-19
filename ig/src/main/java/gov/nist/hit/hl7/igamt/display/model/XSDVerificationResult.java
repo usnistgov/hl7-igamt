@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.verification.domain;
+package gov.nist.hit.hl7.igamt.display.model;
 
 public class XSDVerificationResult {
 

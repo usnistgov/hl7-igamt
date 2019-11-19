@@ -107,7 +107,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     NamingDuplicationDirective,
     NamingConventionDirective,
     CopyResourceComponent,
-    ImportCsvValuesetComponent,
     SelectNameComponent,
     Hl7V2TreeComponent,
     UsageComponent,
@@ -143,6 +142,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AlertsContainerComponent,
     DynamicMappingComponent,
     DeriveDialogComponent,
+    ImportCsvValuesetComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -228,7 +228,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChipsModule,
     ResourcePickerComponent,
     CopyResourceComponent,
-    ImportCsvValuesetComponent,
     NamingDuplicationDirective,
     NamingConventionDirective,
     Hl7V2TreeComponent,
