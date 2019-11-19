@@ -71,7 +71,7 @@ public class BindingCollector {
       Map<String, String> datatypesNames = datatypes.stream().collect(
           Collectors.toMap(Datatype::getId, Datatype::getName));
       processSegment(s, valueSetsNames, datatypesNames);
-      processDatatypes(s,valueSetsNames, datatypesNames);
+     // processDatatypes(s,valueSetsNames, datatypesNames);
     }
   }
 
@@ -92,9 +92,8 @@ public class BindingCollector {
   private void processDatatypes(String version, Map<String, String> valueSetsNames, Map<String, String> datatypesNames) throws FileNotFoundException {
     // TODO Auto-generated method stub
     List<Datatype> datatypes= this.datatypeService.findByDomainInfoScopeAndDomainInfoVersion(SCOPE.HL7STANDARD.toString(), version);
-    
-    
     gerneratefileDatatypesBindings("datatypes"+ version, datatypes, valueSetsNames,datatypesNames );
+    
   }
 
 

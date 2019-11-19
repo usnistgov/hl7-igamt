@@ -27,6 +27,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
@@ -75,6 +76,9 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   ConfigService sharedConstantService;
+  
+  @Autowired
+  DataFixer dataFixer;
 
   @Autowired
   MessageEventFacory messageEventFactory;
@@ -512,8 +516,16 @@ public class BootstrapApplication implements CommandLineRunner {
 //		}	
 	}
  
-	//@PostConstruct
+	@PostConstruct
 	public void generateBindings() throws FileNotFoundException{
 	  this.bindingCollector.collect();
 	};
+	   
+	
+	//@PostConstruct
+	public void fixBinding() throws ValidationException {
+	  this.dataFixer.readCsv();
+	}
+
+	
 }
