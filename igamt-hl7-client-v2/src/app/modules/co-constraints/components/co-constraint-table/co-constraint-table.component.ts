@@ -263,11 +263,7 @@ export class CoConstraintTableComponent implements OnInit {
 
     ref.afterClosed().subscribe(
       (header: IDataElementHeader) => {
-        if (header) {
-          list.push(header);
-          this.coconstraintEntity.addColumn(header, this.value);
-          this.emitChange();
-        }
+        this.addHeaderToList(list, header);
       },
     );
   }
@@ -281,13 +277,17 @@ export class CoConstraintTableComponent implements OnInit {
 
     ref.afterClosed().subscribe(
       (header: INarrativeHeader) => {
-        if (header) {
-          list.push(header);
-          this.coconstraintEntity.addColumn(header, this.value);
-          this.emitChange();
-        }
+        this.addHeaderToList(list, header);
       },
     );
+  }
+
+  addHeaderToList(list: ICoConstraintHeader[], header: ICoConstraintHeader) {
+    if (header) {
+      list.push(header);
+      this.coconstraintEntity.addColumn(header, this.value);
+      this.emitChange();
+    }
   }
 
   clearVariesCell(cell: ICoConstraintVariesCell) {

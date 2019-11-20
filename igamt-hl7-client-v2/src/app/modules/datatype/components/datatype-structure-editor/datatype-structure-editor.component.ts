@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
 import { selectDatatypesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
@@ -17,7 +18,6 @@ import { IChange } from '../../../shared/models/save-change';
 import { DeltaService } from '../../../shared/services/delta.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { DatatypeService } from '../../services/datatype.service';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-datatype-structure-editor',

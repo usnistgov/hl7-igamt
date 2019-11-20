@@ -7,7 +7,7 @@ import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tr
 import { IResource } from '../../../shared/models/resource.interface';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
-import { IHL7v2TreeFilter, RestrictionType, RestrictionCombinator } from '../../../shared/services/tree-filter.service';
+import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../../shared/services/tree-filter.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 
 @Component({

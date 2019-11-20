@@ -8,7 +8,7 @@ import {
   ICopyResourceResponse,
   IDeleteNode,
 } from '../../../modules/ig/models/toc/toc-operation.class';
-import { ICreateCoConstraintGroupResponse, ICreateCoConstraintGroup } from '../../../modules/ig/models/toc/toc-operation.class';
+import { ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../../../modules/ig/models/toc/toc-operation.class';
 import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';

@@ -10,8 +10,8 @@ import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '.
 import { IResource } from '../../models/resource.interface';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
+import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { ICardinalityRange, IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
-import { IHL7v2TreeFilter, RestrictionType, RestrictionCombinator } from '../../services/tree-filter.service';
 
 @Component({
   selector: 'app-cs-proposition',

@@ -1,19 +1,19 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { Store, Action } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { combineLatest, of, pipe } from 'rxjs';
 import { catchError, filter, flatMap, map, switchMap, take } from 'rxjs/operators';
 import { CoConstraintGroupService } from '../../modules/co-constraints/services/co-constraint-group.service';
 import { MessageService } from '../../modules/core/services/message.service';
 import { SegmentService } from '../../modules/segment/services/segment.service';
+import { Type } from '../../modules/shared/constants/type.enum';
 import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.interface';
-import { LoadSelectedResource, OpenEditor, LoadResourceReferences, IgEditActionTypes, LoadResourceReferencesSuccess } from '../ig/ig-edit/ig-edit.actions';
+import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
+import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesSuccess, LoadSelectedResource, OpenEditor } from '../ig/ig-edit/ig-edit.actions';
 import { selectCoConstraintGroupsById, selectedCoConstraintGroup, selectedDatatype } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import { CoConstraintGroupEditActions, CoConstraintGroupEditActionTypes, LoadCoConstraintGroup, LoadCoConstraintGroupFailure, LoadCoConstraintGroupSuccess, OpenCoConstraintGroupEditor } from './co-constraint-group-edit.actions';
-import { Type } from '../../modules/shared/constants/type.enum';
-import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
 
 @Injectable()
 export class CoConstraintGroupEditEffects {

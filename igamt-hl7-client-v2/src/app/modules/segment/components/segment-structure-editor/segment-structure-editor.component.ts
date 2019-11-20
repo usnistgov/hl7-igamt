@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { Observable, ReplaySubject, Subscription, of } from 'rxjs';
+import { Observable, of, ReplaySubject, Subscription } from 'rxjs';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';

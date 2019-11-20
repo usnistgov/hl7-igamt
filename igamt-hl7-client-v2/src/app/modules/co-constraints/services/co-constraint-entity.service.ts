@@ -239,9 +239,7 @@ export class CoConstraintEntityService {
     return {
       type: CoConstraintColumnType.DATATYPE,
       value: '',
-      ref: {
-        id: '',
-      },
+      datatypeId: '',
     };
   }
 

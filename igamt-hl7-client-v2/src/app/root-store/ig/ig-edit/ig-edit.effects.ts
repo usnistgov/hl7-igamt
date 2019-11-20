@@ -14,7 +14,7 @@ import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
 import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
 import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
-import { CreateCoConstraintGroup, CreateCoConstraintGroupSuccess, CreateCoConstraintGroupFailure } from './ig-edit.actions';
+import { CreateCoConstraintGroup, CreateCoConstraintGroupFailure, CreateCoConstraintGroupSuccess } from './ig-edit.actions';
 import {
   DeleteResource,
   DeleteResourceFailure,

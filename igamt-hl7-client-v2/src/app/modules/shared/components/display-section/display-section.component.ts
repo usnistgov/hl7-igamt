@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { IDisplayElement } from '../../models/display-element.interface';
 import { Type } from '../../constants/type.enum';
+import { IDisplayElement } from '../../models/display-element.interface';
 
 @Component({
   selector: 'app-display-section',
@@ -20,6 +20,7 @@ export class DisplaySectionComponent implements OnInit {
   }
 
   getDisplayLabel() {
+    // tslint:disable-next-line: no-small-switch
     switch (this.element.type) {
       case Type.COCONSTRAINTGROUP:
         return this.element.fixedName + ' - ' + this.element.variableName;

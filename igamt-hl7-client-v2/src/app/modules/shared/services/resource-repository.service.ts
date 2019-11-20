@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Store, MemoizedSelectorWithProps } from '@ngrx/store';
+import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, take, tap } from 'rxjs/operators';
 import { LoadResourceReferences } from '../../../root-store/ig/ig-edit/ig-edit.actions';
