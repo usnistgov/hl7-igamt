@@ -1,0 +1,9 @@
+<div>
+        What configuration would you like to apply ? 
+          <p-dropdown [autoDisplayFirst]="false" [options]="configlist" [(ngModel)]="selectedConfig" optionLabel="configName"></p-dropdown>
+</div>
+<div class="dialog"> 
+    Would you like to override the configuration ?
+    <button (click)="customize()" class="btn btn-sn btn-primary" style="margin-right:5px;">Customize</button>
+    <button  (click)="exportNow()" class="btn btn-sn btn-success"> Export now</button> 
+</div>  

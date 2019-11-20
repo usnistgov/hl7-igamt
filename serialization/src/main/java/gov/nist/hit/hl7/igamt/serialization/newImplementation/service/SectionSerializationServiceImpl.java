@@ -176,6 +176,19 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							if (datatypeElement != null) {
 								datatypeRegistryElement.appendChild(datatypeElement);
 							}
+						} else if(exportFilterDecision == null) {
+							DatatypeDataModel datatypeDataModel = igDataModel.getDatatypes().stream()
+									.filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
+									.orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId()));
+							Element datatypeElement;
+								datatypeElement = datatypeSerializationService.serializeDatatype(igDataModel.getModel().getId(),datatypeDataModel,
+										level + 1, datatypeLink.getPosition(),
+										exportConfiguration.getDatatypeExportConfiguration());
+							
+							if (datatypeElement != null) {
+								datatypeRegistryElement.appendChild(datatypeElement);
+							}
+						
 						}
 					}
 				}
@@ -319,6 +332,19 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							if (segmentElement != null) {
 								segmentRegistryElement.appendChild(segmentElement);
 							}
+						} else if(exportFilterDecision == null) {
+							SegmentDataModel segmentDataModel = igDataModel.getSegments().stream()
+									.filter(seg -> segmentLink.getId().equals(seg.getModel().getId())).findAny()
+									.orElseThrow(() -> new SegmentNotFoundException(segmentLink.getId()));
+							Segment segment = segmentDataModel.getModel();
+							Element segmentElement;
+								segmentElement = segmentSerializationService.serializeSegment(igDataModel,
+										segmentDataModel, level + 1, segmentLink.getPosition(),
+										exportConfiguration.getSegmentExportConfiguration(), exportFilterDecision);
+							if (segmentElement != null) {
+								segmentRegistryElement.appendChild(segmentElement);
+							}
+						
 						}
 					}
 				}

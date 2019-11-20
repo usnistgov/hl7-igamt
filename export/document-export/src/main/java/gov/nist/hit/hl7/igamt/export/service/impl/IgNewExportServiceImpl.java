@@ -81,11 +81,12 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	private static final String IG_XSLT_PATH = "/IGDocumentExport.xsl";
 
 	@Override
-	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision)
+	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId)
 			throws Exception {
 		Ig igDocument = igService.findById(igDocumentId);
+		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision);
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration);
 			return htmlFile;
 		}
 		return null;
@@ -93,11 +94,10 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 	@Override
 	public ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument, ExportFormat exportFormat,
-			ExportFilterDecision decision) throws Exception {
+			ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception {
 		try {
 //			ExportConfiguration exportConfiguration =
 //					exportConfigurationService.getExportConfiguration(username);
-			ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
 			DeltaConfiguration deltaConfig = new DeltaConfiguration();
 			deltaConfig.setColors(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getColors());
 			deltaConfig.setMode(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getMode());
@@ -301,11 +301,12 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	@Override
-	public ExportedFile exportIgDocumentToWord(String username, String id, ExportFilterDecision decision)
+	public ExportedFile exportIgDocumentToWord(String username, String id, ExportFilterDecision decision, String configId )
 			throws Exception {
 		Ig igDocument = igService.findById(id);
+		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD, decision);
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD, decision, exportConfiguration);
 			ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(),
 					igDocument.getUpdateDate(),
 					igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);

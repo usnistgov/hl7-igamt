@@ -9,7 +9,9 @@ import { selectIsLoggedIn } from '../../../../root-store/authentication/authenti
 import { selectExternalTools } from '../../../../root-store/config/config.reducer';
 import { selectFullScreen } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ExportConfigurationDialogComponent } from '../../../export-configuration/components/export-configuration-dialog/export-configuration-dialog.component';
+import { ExportDialogComponent } from '../../../export-configuration/components/export-dialog/export-dialog.component';
 import { IExportConfigurationGlobal } from '../../../export-configuration/models/config.interface';
+import { ExportConfigurationService } from '../../../export-configuration/services/export-configuration.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
@@ -32,7 +34,11 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   subscription: Subscription;
   toolConfig: Observable<IConnectingInfo[]>;
 
-  constructor(private store: Store<IGDisplayInfo>, private igService: IgService, private dialog: MatDialog) {
+  constructor(
+    private store: Store<IGDisplayInfo>,
+    private exportConfigurationService: ExportConfigurationService,
+    private igService: IgService,
+    private dialog: MatDialog) {
     this.subscription = this.store.select(fromIgDocumentEdit.selectViewOnly).subscribe(
       (value) => this.viewOnly = value,
     );
@@ -102,38 +108,33 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       }),
     ).subscribe();
 
+
   }
+  getDecision(){
+    return of();
+  }
+
   exportHTML() {
-    this.getDecision().pipe(
-      map((decision) => {
-        const dialogRef = this.dialog.open(ExportConfigurationDialogComponent, {
-          maxWidth: '95vw',
-          maxHeight: '90vh',
-          width: '95vw',
-          height: '95vh',
+    combineLatest(
+      this.getIgId(),
+      this.exportConfigurationService.getAllExportConfigurationByUsername()).pipe(
+      map(([igId, configurations]) => {
+        console.log(igId);
+        const dialogRef = this.dialog.open(ExportDialogComponent, {
           data: {
             toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
-            decision,
+            igId,
+            configurations,
           },
         });
         dialogRef.afterClosed().pipe(
           filter((y) => y !== undefined),
-
-          withLatestFrom(this.getIgId()),
-          take(1),
-          map(([result, igId]) => {
-            this.igService.exportAsHtml(igId, result);
+          map((result) => {
+            this.igService.exportAsHtml(igId, result.decision, result.configurationId);
           }),
         ).subscribe();
       }),
     ).subscribe();
-  }
-
-  getDecision(): Observable<IExportConfigurationGlobal> {
-    return this.getIgId().pipe(
-      take(1),
-      concatMap((x: string) => this.igService.getExportFirstDecision(x)),
-    );
   }
 
   exportXML() {
