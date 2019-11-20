@@ -54,11 +54,7 @@
       <div *ngIf="showContext" style="height: 100px;">
         <app-structure-tree
           [tree]="context"
-          [filter]= "{
-            primitive: false,
-            types: [ 'GROUP', 'CONFORMANCEPROFILE' ],
-            paths: excludePaths
-          }"
+          [filter]="contextFilter"
           [resourceType]="resourceType"
           [repository]="repository"
           (selection)="selectContextNode($event)"

@@ -11,6 +11,7 @@ import { IResource } from '../../models/resource.interface';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { ICardinalityRange, IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
+import { IHL7v2TreeFilter, RestrictionType, RestrictionCombinator } from '../../services/tree-filter.service';
 
 @Component({
   selector: 'app-cs-proposition',
@@ -71,8 +72,39 @@ export class CsPropositionComponent implements OnInit {
     this.res = r;
   }
 
+  treeFilter: IHL7v2TreeFilter = {
+    hide: false,
+    restrictions: [
+      {
+        criterion: RestrictionType.PRIMITIVE,
+        allow: true,
+        value: true,
+      },
+    ],
+  };
+
   @Input()
-  excludePaths: string[];
+  set excludePaths(paths: string[]) {
+    this.treeFilter.restrictions = [
+      {
+        criterion: RestrictionType.PRIMITIVE,
+        allow: true,
+        value: true,
+      },
+      {
+        criterion: RestrictionType.PATH,
+        combine: RestrictionCombinator.ENFORCE,
+        allow: false,
+        value: paths.map((path) => {
+          return {
+            path,
+            excludeChildren: true,
+          };
+        }),
+      },
+    ];
+  }
+
   @Input()
   predicateMode: boolean;
   @Input()

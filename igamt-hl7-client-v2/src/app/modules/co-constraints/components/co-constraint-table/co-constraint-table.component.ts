@@ -1,18 +1,37 @@
-import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
-import { combineLatest, Observable } from 'rxjs';
+import * as _ from 'lodash';
+import { combineLatest } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { SegmentService } from '../../../segment/services/segment.service';
 import { BindingSelectorComponent } from '../../../shared/components/binding-selector/binding-selector.component';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { CoConstraintColumnType, CoConstraintHeaderType, ICoConstraint, ICoConstraintGroup, ICoConstraintHeader, ICoConstraintTable, ICoConstraintValueSetCell, ICoConstraintVariesCell, IDataElementHeader } from '../../../shared/models/co-constraint.interface';
+import { ICoConstraintHeaders } from '../../../shared/models/co-constraint.interface';
+import {
+  CoConstraintColumnType,
+  CoConstraintGroupBindingType,
+  CoConstraintHeaderType,
+  CoConstraintMode,
+  ICoConstraint,
+  ICoConstraintGroup,
+  ICoConstraintGroupBindingContained,
+  ICoConstraintHeader,
+  ICoConstraintTable,
+  ICoConstraintValueSetCell,
+  ICoConstraintVariesCell,
+  IDataElementHeader,
+  INarrativeHeader,
+} from '../../../shared/models/co-constraint.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { BindingService } from '../../../shared/services/binding.service';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
+import { NarrativeHeaderDialogComponent } from '../narrative-header-dialog/narrative-header-dialog.component';
 
 @Component({
   selector: 'app-co-constraint-table',
@@ -35,29 +54,67 @@ export class CoConstraintTableComponent implements OnInit {
   set repository(repo: AResourceRepositoryService) {
     this.processTree(this._segment, repo, this._igId);
   }
+
+  @Input()
+  set value(table: ICoConstraintTable & ICoConstraintGroup) {
+    this._value = _.cloneDeep(table);
+    const datatype: IDataElementHeader = this._value.headers.constraints.find((header) => header.type === CoConstraintHeaderType.DATAELEMENT && (header as IDataElementHeader).columnType === CoConstraintColumnType.DATATYPE) as IDataElementHeader;
+    const varies: IDataElementHeader = this._value.headers.constraints.find((header) => header.type === CoConstraintHeaderType.DATAELEMENT && (header as IDataElementHeader).columnType === CoConstraintColumnType.VARIES) as IDataElementHeader;
+    this.dynamicMappingHeaders = {
+      datatype,
+      varies,
+    };
+  }
+
+  get value() {
+    return this._value;
+  }
+
+  @Output()
+  valueChange: EventEmitter<ICoConstraintTable & ICoConstraintGroup>;
+
   usages = [
-    {
-      label: 'O',
-      value: 'O',
-    },
     {
       label: 'R',
       value: 'R',
     },
+    {
+      label: 'S',
+      value: 'S',
+    },
+    {
+      label: 'O',
+      value: 'O',
+    },
   ];
 
-  @Input()
+  locations = [
+    {
+      label: '1',
+      value: 1,
+    },
+    {
+      label: '4',
+      value: 4,
+    },
+    {
+      label: '10',
+      value: 10,
+    },
+  ];
+
   _igId: string;
-  @Input()
-  value: ICoConstraintTable | ICoConstraintGroup;
   @Input()
   valueSets: IDisplayElement[];
   @Input()
   datatypes: IDisplayElement[];
+  @Input()
+  mode: CoConstraintMode;
   _repository: AResourceRepositoryService;
   _segment: ISegment;
-  structure: IHL7v2TreeNode[];
+  _value: ICoConstraintTable & ICoConstraintGroup;
 
+  structure: IHL7v2TreeNode[];
   @ViewChild('codeCell')
   codeTmplRef: TemplateRef<any>;
   @ViewChild('valueCell')
@@ -66,15 +123,47 @@ export class CoConstraintTableComponent implements OnInit {
   valueSetTmplRef: TemplateRef<any>;
   @ViewChild('datatypeCell')
   datatypeTmplRef: TemplateRef<any>;
+  @ViewChild('narrativeCell')
+  narrativeTmplRef: TemplateRef<any>;
   @ViewChild('variesCell')
   variesTmplRef: TemplateRef<any>;
 
-  datatypeOptions = [];
+  @ViewChild('tableForm')
+  form: NgForm;
 
-  filter(values: IDisplayElement[], value: string) {
+  filteredOptions = [];
+  datatypeOptions = [];
+  dynamicMappingHeaders: {
+    datatype: IDataElementHeader;
+    varies: IDataElementHeader;
+  };
+
+  datatypeOptionsMap = {};
+  variesOptionMap = {};
+
+  filterDatatype(id: string, value: string) {
+    this.datatypeOptionsMap[id] = this.filter(this.datatypes, value);
+  }
+
+  filter(values: IDisplayElement[], value: string): IDisplayElement[] {
     return values.filter((v) => {
       return v.fixedName === value;
     });
+  }
+
+  drop(event: CdkDragDrop<ICoConstraint[]>) {
+    if (event.currentIndex === 0) {
+      event.container.data[event.previousIndex].requirement.usage = 'R';
+    }
+
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    } else {
+      transferArrayItem(event.previousContainer.data,
+        event.container.data,
+        event.previousIndex,
+        event.currentIndex);
+    }
   }
 
   processTree(segment: ISegment, repository: AResourceRepositoryService, id: string) {
@@ -118,7 +207,14 @@ export class CoConstraintTableComponent implements OnInit {
     private segmentService: SegmentService,
     private bindingsService: BindingService,
     private coconstraintEntity: CoConstraintEntityService,
-    private treeService: Hl7V2TreeService) { }
+    private treeService: Hl7V2TreeService) {
+    this.valueChange = new EventEmitter();
+  }
+
+  emitChange() {
+    console.log(this.form);
+    this.valueChange.emit(this.value);
+  }
 
   initOptions() {
     this.segmentService.getObx2Values(this._segment, this._igId).pipe(
@@ -152,6 +248,7 @@ export class CoConstraintTableComponent implements OnInit {
   setTemplateType(varies: ICoConstraintVariesCell, type: CoConstraintColumnType) {
     varies.cellType = type;
     varies.cellValue = this.coconstraintEntity.createEmptyCell(type);
+    this.emitChange();
   }
 
   openDataColumnDialog(list: IDataElementHeader[]) {
@@ -160,6 +257,7 @@ export class CoConstraintTableComponent implements OnInit {
         structure: this.structure,
         repository: this._repository,
         segment: this._segment,
+        excludePaths: this.getDataElementPaths(this._value.headers),
       },
     });
 
@@ -168,22 +266,49 @@ export class CoConstraintTableComponent implements OnInit {
         if (header) {
           list.push(header);
           this.coconstraintEntity.addColumn(header, this.value);
+          this.emitChange();
         }
       },
     );
+  }
+
+  getDataElementPaths(headers: ICoConstraintHeaders): string[] {
+    return [...headers.selectors, ...headers.constraints].filter((header) => header.type === CoConstraintHeaderType.DATAELEMENT).map((header) => header.key);
+  }
+
+  openNarrativeColumnDialog(list: INarrativeHeader[]) {
+    const ref = this.dialog.open(NarrativeHeaderDialogComponent);
+
+    ref.afterClosed().subscribe(
+      (header: INarrativeHeader) => {
+        if (header) {
+          list.push(header);
+          this.coconstraintEntity.addColumn(header, this.value);
+          this.emitChange();
+        }
+      },
+    );
+  }
+
+  clearVariesCell(cell: ICoConstraintVariesCell) {
+    cell.cellType = undefined;
+    cell.cellValue = undefined;
+    this.emitChange();
   }
 
   getCellTemplate(header: ICoConstraintHeader) {
     if (header.type === CoConstraintHeaderType.DATAELEMENT) {
       const dataHeader = header as IDataElementHeader;
       return this.getCellTemplateForType(dataHeader.columnType);
+    } else {
+      return this.narrativeTmplRef;
     }
   }
 
   openVsPicker(vsCell: ICoConstraintValueSetCell, dataHeader: IDataElementHeader) {
     const info = dataHeader.elementInfo;
     combineLatest(
-      this.bindingsService.getBingdingInfo(info.version, info.parent, info.elementName, info.location, info.type),
+      this.bindingsService.getBingdingInfo(info.version, info.parent, info.datatype, info.location, info.type),
       this.bindingsService.getValueSetBindingDisplay(vsCell.bindings, this._repository),
     ).pipe(
       take(1),
@@ -204,14 +329,16 @@ export class CoConstraintTableComponent implements OnInit {
 
         dialogRef.afterClosed().subscribe(
           (result) => {
-            vsCell.bindings = result.selectedValueSets.map((element) => {
-              return {
-                valueSets: element.valueSets.map((vs) => vs.id),
-                bindingStrength: element.bindingStrength,
-                bindingLocation: element.bindingLocation,
-              };
-            });
-            console.log(vsCell);
+            if (result) {
+              vsCell.bindings = result.selectedValueSets.map((element) => {
+                return {
+                  valueSets: element.valueSets.map((vs) => vs.id),
+                  bindingStrength: element.bindingStrength,
+                  bindingLocation: element.bindingLocation,
+                };
+              });
+              this.emitChange();
+            }
           },
         );
       }),
@@ -219,15 +346,54 @@ export class CoConstraintTableComponent implements OnInit {
   }
 
   numberOfColumns() {
-    const ifSize = this.value.headers.selectors.length;
-    const thenSize = this.value.headers.constraints.length;
-    const userSize = this.value.headers.narratives.length;
+    const ifSize = this.listSize(this.value.headers.selectors);
+    const thenSize = this.listSize(this.value.headers.constraints);
+    const userSize = this.listSize(this.value.headers.narratives);
 
-    const oneOrMore = (n: number): number => {
-      return (n === 0) ? 1 : n;
-    };
+    return ifSize + thenSize + userSize;
+  }
 
-    return oneOrMore(ifSize) + oneOrMore(thenSize) + oneOrMore(userSize);
+  oneOrMore(n: number): number {
+    return (n === 0) ? 1 : n;
+  }
+
+  listSize(headers: ICoConstraintHeader[]) {
+    let size = 0;
+    headers.forEach(
+      (header) => {
+        if (header.type === CoConstraintHeaderType.DATAELEMENT && (header as IDataElementHeader).cardinality) {
+          size += 2;
+        } else {
+          size++;
+        }
+      },
+    );
+
+    return this.oneOrMore(size);
+  }
+
+  datatypeChange(datatype: IDisplayElement, row: ICoConstraint) {
+    if (this.dynamicMappingHeaders && this.dynamicMappingHeaders.varies && this.dynamicMappingHeaders.datatype) {
+      const allowed = this.getDatatypeAllowedConstraints(datatype.fixedName);
+      this.variesOptionMap[row.id] = allowed;
+      if (row.cells[this.dynamicMappingHeaders.varies.key]) {
+        const varies = row.cells[this.dynamicMappingHeaders.varies.key] as ICoConstraintVariesCell;
+        if (!allowed.includes(varies.cellType)) {
+          this.clearVariesCell(varies);
+        }
+      }
+      this.emitChange();
+    }
+  }
+
+  getDatatypeAllowedConstraints(name: string): CoConstraintColumnType[] {
+    if (['CE', 'CNE', 'CWE'].includes(name)) {
+      return [CoConstraintColumnType.VALUESET, CoConstraintColumnType.CODE];
+    } else if (['ID', 'ST', 'IS', 'FT', 'DT', 'DTM', 'TM'].includes(name)) {
+      return [CoConstraintColumnType.VALUE];
+    } else {
+      return [];
+    }
   }
 
   getVsById(id: string): IDisplayElement {
@@ -239,11 +405,44 @@ export class CoConstraintTableComponent implements OnInit {
   addCoConstraint(list) {
     const cc = this.coconstraintEntity.createEmptyCoConstraint(this.value.headers);
     list.push(cc);
+    this.emitChange();
   }
 
-  addCoConstraintGroup(list: ICoConstraint[]) {
+  addCoConstraintGroup() {
     const group = this.coconstraintEntity.createEmptyContainedGroupBinding();
     (this.value as ICoConstraintTable).groups.push(group);
+    this.emitChange();
+  }
+
+  deleteCoConstraint(list: ICoConstraint[], index: number) {
+    list.splice(index, 1);
+    this.emitChange();
+  }
+
+  deleteCoConstraintGroup(list: ICoConstraintGroup[], index: number) {
+    list.splice(index, 1);
+    this.emitChange();
+  }
+
+  deleteColumn(list: ICoConstraintHeader[], header: ICoConstraintHeader, index: number) {
+    this.value.coConstraints.forEach((cc) => {
+      delete cc.cells[header.key];
+    });
+
+    if (this.value.type === CoConstraintMode.TABLE) {
+      const table = this.value as ICoConstraintTable;
+      table.groups.forEach((group) => {
+        if (group.type === CoConstraintGroupBindingType.CONTAINED) {
+          const ccgroup = group as ICoConstraintGroupBindingContained;
+          ccgroup.coConstraints.forEach((cc) => {
+            delete cc.cells[header.key];
+          });
+        }
+      });
+    }
+
+    list.splice(index, 1);
+    this.emitChange();
   }
 
   ngOnInit() {

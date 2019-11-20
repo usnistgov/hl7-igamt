@@ -33,7 +33,7 @@ $datatype_color: rgb(240, 10, 10);
 $valueset_color: rgb(255, 0, 200);
 $comformance_profile_color: rgb(167, 90, 1);
 $predicate_color: rgb(85, 173, 255);
-
+$co_constraint_group_color: rgb(240, 159, 53);
 // Scope Badge Colors
 $hl7_scope_color: rgb(253, 150, 150);
 $user_scope_color: rgb(14, 158, 46);
@@ -84,6 +84,10 @@ $single_code_binding_color: rgb(138, 43, 226);
 
 .entity-badge-predicate {
   background-color: $predicate_color !important;
+}
+
+.entity-badge-co-constraint-group {
+  background-color: $co_constraint_group_color !important;
 }
 
 // Page Container

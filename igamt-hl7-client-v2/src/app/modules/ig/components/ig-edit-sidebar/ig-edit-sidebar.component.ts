@@ -1,26 +1,27 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Actions, ofType} from '@ngrx/effects';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { $e } from 'codelyzer/angular/styles/chars';
-import {SelectItem} from 'primeng/api';
-import {Observable, of} from 'rxjs';
-import {concatMap, filter, map, mergeMap, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import { SelectItem } from 'primeng/api';
+import { combineLatest, Observable, of } from 'rxjs';
+import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import {
   CopyResource, CopyResourceSuccess,
   DeleteResource,
-  IgEditTocAddResource, selectDerived, selectProfileTree,
+  IgEditTocAddResource, selectDerived,
   UpdateSections,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {IgEditActionTypes, ToggleDelta} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {selectIgId} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { IgEditActionTypes, ToggleDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { selectIgId } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
-import { CollapseTOC } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { CollapseTOC, CreateCoConstraintGroup } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
+import { selectAllSegments } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
+import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
@@ -33,7 +34,7 @@ import { IUsages } from '../../../shared/models/cross-reference';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
 import { CrossReferencesService } from '../../../shared/services/cross-references.service';
-import {RxjsStoreHelperService} from '../../../shared/services/rxjs-store-helper.service';
+import { RxjsStoreHelperService } from '../../../shared/services/rxjs-store-helper.service';
 import { IAddNewWrapper, IAddWrapper } from '../../models/ig/add-wrapper.class';
 import { IGDisplayInfo } from '../../models/ig/ig-document.class';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
@@ -54,13 +55,18 @@ export class IgEditSidebarComponent implements OnInit {
   deltaMode = false;
   @ViewChild(IgTocComponent) toc: IgTocComponent;
   optionsToDisplay: any;
-  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED'}];
+  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
   selectedValues = ['UPDATED', 'DELETED', 'ADDED', 'UNCHANGED'];
   deltaMode$: Observable<boolean> = of(false);
 
   derived: boolean;
-  constructor(private store: Store<IGDisplayInfo>, private dialog: MatDialog, private crossReferencesService: CrossReferencesService,
-              private router: Router, private activeRoute: ActivatedRoute, private actions: Actions) {
+  constructor(
+    private store: Store<IGDisplayInfo>,
+    private dialog: MatDialog,
+    private crossReferencesService: CrossReferencesService,
+    private router: Router,
+    private activeRoute: ActivatedRoute,
+    private actions: Actions) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).subscribe((x) => this.derived = x);
@@ -68,11 +74,10 @@ export class IgEditSidebarComponent implements OnInit {
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
-
   }
 
   getNodes() {
-   return  this.deltaMode$.pipe(
+    return this.deltaMode$.pipe(
       switchMap((x) => {
         if (!x) {
           return this.store.select(fromIgDocumentEdit.selectToc);
@@ -163,7 +168,7 @@ export class IgEditSidebarComponent implements OnInit {
         RxjsStoreHelperService.listenAndReact(this.actions, {
           [IgEditActionTypes.CopyResourceSuccess]: {
             do: (action: CopyResourceSuccess) => {
-              this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], {relativeTo: this.activeRoute});
+              this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
               return of();
             },
           },
@@ -249,6 +254,43 @@ export class IgEditSidebarComponent implements OnInit {
   }
 
   addChild($event: IAddNewWrapper) {
+    switch ($event.type) {
+      case Type.VALUESET:
+        this.addValueSet($event);
+        break;
+      case Type.COCONSTRAINTGROUP:
+        this.addCoConstraintGroup($event);
+        break;
+    }
+  }
+
+  addCoConstraintGroup($event: IAddNewWrapper) {
+    combineLatest(this.igId$, this.store.select(selectAllSegments)).pipe(
+      take(1),
+      tap(([igId, segments]) => {
+        const dialogRef = this.dialog.open(AddCoConstraintGroupComponent, {
+          data: {
+            segments: segments.filter((f) => {
+              return f.domainInfo.scope === Scope.USER;
+            }),
+            baseSegment: undefined,
+          },
+        });
+        dialogRef.afterClosed().pipe(
+          filter((x) => x !== undefined),
+          take(1),
+          map((result) => {
+            if (result) {
+              console.log(result);
+              this.store.dispatch(new CreateCoConstraintGroup({ documentId: igId, ...result }));
+            }
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
+  }
+
+  addValueSet($event: IAddNewWrapper) {
     const dialogRef = this.dialog.open(AddResourceComponent, {
       data: { existing: $event.node.children, scope: Scope.USER, title: this.getNewTitle($event.type), type: $event.type },
     });
@@ -271,7 +313,7 @@ export class IgEditSidebarComponent implements OnInit {
       withLatestFrom(this.deltaMode$),
       map(([id, delta]) => {
         this.store.dispatch(new ToggleDelta(id, !delta));
-        }),
+      }),
     ).subscribe();
   }
 

@@ -12,6 +12,7 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,4 +68,13 @@ public class ValuesetBinding implements Serializable{
 	public void setValueSets(List<String> valueSets) {
 		this.valueSets = valueSets;
 	}
+
+	public ValuesetBinding clone() {
+		ValuesetBinding clone = new ValuesetBinding();
+		clone.setValueSets(new ArrayList<>(this.valueSets));
+		clone.setStrength(strength);
+		clone.setValuesetLocations(new HashSet<>(valuesetLocations));
+		return clone;
+	}
+
 }

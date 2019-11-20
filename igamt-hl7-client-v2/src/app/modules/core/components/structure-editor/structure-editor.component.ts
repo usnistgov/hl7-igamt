@@ -78,6 +78,8 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     this.resource$ = this.resourceSubject.asObservable();
   }
 
+  abstract isDTM(): Observable<boolean>;
+
   ngOnDestroy(): void {
     console.log('unsubscribe');
     this.workspace_s.unsubscribe();

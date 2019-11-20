@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
+import { Store, MemoizedSelectorWithProps } from '@ngrx/store';
 import { combineLatest, forkJoin, Observable, of } from 'rxjs';
-import { filter, map, mergeMap, take } from 'rxjs/operators';
+import { filter, map, mergeMap, take, tap } from 'rxjs/operators';
 import { LoadResourceReferences } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
   selectDatatypesById,
@@ -16,19 +16,21 @@ import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';
 import { RxjsStoreHelperService } from './rxjs-store-helper.service';
 
+export interface IRefData {
+  [id: string]: {
+    leaf: boolean,
+    version: string,
+    name: string,
+  };
+}
+
 export abstract class AResourceRepositoryService {
   abstract getResource<T extends IResource>(type: Type, id: string): Observable<T>;
   abstract loadResource(type: Type, id: string): void;
   abstract fetchResource<T extends IResource>(type: Type, id: string): Observable<T>;
   abstract getResourceDisplay(type: Type, id: string): Observable<IDisplayElement>;
   abstract areLeafs(ids: string[]): Observable<{ [id: string]: boolean }>;
-  abstract getRefData(ids: string[]): Observable<{
-    [id: string]: {
-      leaf: boolean,
-      version: string,
-      name: string,
-    },
-  }>;
+  abstract getRefData(ids: string[], type: Type): Observable<IRefData>;
 }
 
 @Injectable()
@@ -64,14 +66,24 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
     );
   }
 
-  getRefData(ids: string[]): Observable<{
-    [id: string]: {
-      leaf: boolean,
-      version: string,
-      name: string,
-    },
-  }> {
-    const values = ids.map((id) => this.store.select(selectDatatypesById, { id }).pipe(take(1)));
+  getSelector(type: Type): MemoizedSelectorWithProps<object, {
+    id: string;
+  }, IDisplayElement> {
+    switch (type) {
+      case Type.DATATYPE:
+        return selectDatatypesById;
+      case Type.SEGMENT:
+        return selectSegmentsById;
+      case Type.CONFORMANCEPROFILE:
+        return selectMessagesById;
+      case Type.VALUESET:
+        return selectValueSetById;
+    }
+    return selectDatatypesById;
+  }
+
+  getRefData(ids: string[], type: Type): Observable<IRefData> {
+    const values = ids.map((id) => this.store.select(this.getSelector(type), { id }).pipe(take(1)));
     return combineLatest(
       RxjsStoreHelperService.forkJoin(values),
       this.areLeafs(ids),

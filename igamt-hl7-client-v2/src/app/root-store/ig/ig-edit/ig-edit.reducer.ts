@@ -26,6 +26,7 @@ export interface IState {
   valueSets: EntityState<IDisplayElement>;
   datatypes: EntityState<IDisplayElement>;
   messages: EntityState<IDisplayElement>;
+  coConstraintGroups: EntityState<IDisplayElement>;
   sections: EntityState<IDisplayElement>;
   resources: IResourcesState;
   workspace: IWorkspace;
@@ -48,6 +49,10 @@ export const initialState: IState = {
     ids: [],
   },
   datatypes: {
+    entities: {},
+    ids: [],
+  },
+  coConstraintGroups: {
     entities: {},
     ids: [],
   },
@@ -98,6 +103,7 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         segments: igElementAdapter.upsertMany(action.igInfo.segments, state.segments),
         messages: igElementAdapter.upsertMany(action.igInfo.messages, state.messages),
         valueSets: igElementAdapter.upsertMany(action.igInfo.valueSets, state.valueSets),
+        coConstraintGroups: igElementAdapter.upsertMany(action.igInfo.coConstraintGroups, state.coConstraintGroups),
         sections: igElementAdapter.upsertMany(sections, state.sections),
       };
     case IgEditActionTypes.ToggleDeltaSuccess:
@@ -106,6 +112,7 @@ export function reducer(state = initialState, action: IgEditActions): IState {
       state.segments = igElementAdapter.removeAll(state.segments);
       state.messages = igElementAdapter.removeAll(state.messages);
       state.valueSets = igElementAdapter.removeAll(state.valueSets);
+      state.coConstraintGroups = igElementAdapter.removeAll(state.coConstraintGroups);
       console.log(action.igInfo.ig.segmentRegistry.children.length);
       return {
         ...state,
@@ -114,6 +121,7 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         segments: igElementAdapter.upsertMany(action.igInfo.segments, state.segments),
         messages: igElementAdapter.upsertMany(action.igInfo.messages, state.messages),
         valueSets: igElementAdapter.upsertMany(action.igInfo.valueSets, state.valueSets),
+        coConstraintGroups: igElementAdapter.upsertMany(action.igInfo.coConstraintGroups, state.coConstraintGroups),
         sections: igElementAdapter.upsertMany(newSections, state.sections),
         delta: action.deltaMode,
       };
@@ -176,12 +184,23 @@ export function reducer(state = initialState, action: IgEditActions): IState {
           datatypeRegistry: action.payload.ig.datatypeRegistry,
           segmentRegistry: action.payload.ig.segmentRegistry,
           valueSetRegistry: action.payload.ig.valueSetRegistry,
+          coConstraintGroupRegistry: action.payload.ig.coConstraintGroupRegistry,
           content: state.document.content,
         },
         datatypes: igElementAdapter.upsertMany(action.payload.datatypes, state.datatypes),
         segments: igElementAdapter.upsertMany(action.payload.segments, state.segments),
         messages: igElementAdapter.upsertMany(action.payload.messages, state.messages),
         valueSets: igElementAdapter.upsertMany(action.payload.valueSets, state.valueSets),
+        coConstraintGroups: igElementAdapter.upsertMany(action.payload.coConstraintGroups, state.coConstraintGroups),
+      };
+    case IgEditActionTypes.CreateCoConstraintGroupSuccess:
+      return {
+        ...state,
+        document: {
+          ...state.document,
+          coConstraintGroupRegistry: action.payload.registry,
+        },
+        coConstraintGroups: igElementAdapter.upsertOne(action.payload.display, state.coConstraintGroups),
       };
     case IgEditActionTypes.CopyResourceSuccess:
 

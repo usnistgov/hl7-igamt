@@ -16,12 +16,9 @@
 
   <div *ngIf="delta" style="display: flex; flex-direction: row">
       <span class="badge delta-badge delta-changed"> <p-checkbox name="delta-display" value="UPDATED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> updated</span>
-
       <span class="badge delta-badge delta-deleted">   <p-checkbox name="delta-display" value="DELETED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> deleted</span>
-
       <span class="badge delta-badge delta-added"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> added </span>
       <span class="badge delta-badge badge-default">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"> </p-checkbox> unchanged</span>
-
   </div>
 
 </div>
@@ -29,6 +26,9 @@
   <button (click)="collapseToc()" class="btn btn-sm btn-default" style="border: 1px solid grey; border-radius: 50%; width: 35px; height: 35px; margin-left: 5px;"><i class="fa fa-chevron-left"></i></button>
   <div class="btn-group mr-2" role="group">
 
+    <button (click)="scrollTo('coConstraintGroups')" class="btn btn-text btn-sm entity-badge-co-constraint-group" type="button">
+      CCG
+    </button>
     <button (click)="scrollTo('messages')" class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
       CP
     </button>
@@ -55,8 +55,6 @@
 
 </div>
 <div class="sidebar-content" id="sidebar-content">
-
-  <!-- <app-configuration-toc [nodes]="nodes$ | async"></app-configuration-toc> -->
   <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (addChild)="addChild($event)" (copy)="copy($event)" (delete)="delete($event)" [delta]="deltaMode$ | async"></app-ig-toc>
 </div>
 

@@ -1,0 +1,24 @@
+<ng-template #headerTitle let-active let-defaultTemplate="defaultTemplate">
+  <h5 class="title-text">
+    <app-entity-bagde [type]="active.display.type"></app-entity-bagde>
+    {{active.display.variableName}}
+  </h5>
+  &nbsp;&nbsp;
+  <h6 class="title-text">Co-Constraint Group For Segment</h6>
+  &nbsp;&nbsp;
+  <h5 class="title-text">
+    <app-entity-bagde [type]="'SEGMENT'"></app-entity-bagde>
+    <app-scope-badge [scope]="active.display.domainInfo?.scope" [version]="active.display.domainInfo?.version" ></app-scope-badge>
+    {{active.display.fixedName}}
+  </h5>
+</ng-template>
+<app-co-constraint-table
+  [segment]="segment$ | async"
+  [value]="group$ | async"
+  [mode]="'GROUP'"
+  [datatypes]="datatypes | async"
+  [valueSets]="valueSets | async"
+  [repository]="repository"
+  (valueChange)="change($event)"
+  [igId]="igId | async" >
+</app-co-constraint-table>

@@ -18,6 +18,7 @@ import { selectIgEdit } from '../ig.reducer';
 import { ITitleBarMetadata } from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
 import { IDatatype } from './../../../modules/shared/models/datatype.interface';
 import { igElementAdapter, IResourcesState, IState, loadedResourceAdapter } from './ig-edit.reducer';
+import { ICoConstraintGroup } from '../../../modules/shared/models/co-constraint.interface';
 
 export const {
   selectAll,
@@ -119,6 +120,18 @@ export const selectedDatatype = createSelector(
     }
   },
 );
+
+export const selectedCoConstraintGroup = createSelector(
+  selectSelectedResource,
+  (state: IResource): ICoConstraintGroup => {
+    if (state && state.type === Type.COCONSTRAINTGROUP) {
+      return state as ICoConstraintGroup;
+    } else {
+      return undefined;
+    }
+  },
+);
+
 
 export const selectedSegment = createSelector(
   selectSelectedResource,
@@ -325,6 +338,12 @@ export const selectConformanceProfileRegistry = createSelector(
     return state.conformanceProfileRegistry;
   },
 );
+export const selectCoConstraintGroupRegistry = createSelector(
+  selectIgDocument,
+  (state: IgDocument) => {
+    return state.coConstraintGroupRegistry;
+  },
+);
 
 export const selectSegments = createSelector(
   selectIgEdit,
@@ -445,6 +464,18 @@ export const selectMessages = createSelector(
   },
 );
 
+export const selectCoConstraintGroups = createSelector(
+  selectIgEdit,
+  (state: IState) => {
+    return state.coConstraintGroups;
+  },
+);
+
+export const selectCoConstraintGroupEntites = createSelector(
+  selectCoConstraintGroups,
+  selectEntities,
+);
+
 export const selectMessagesEntites = createSelector(
   selectMessages,
   selectEntities,
@@ -481,12 +512,32 @@ export const selectDatatypesNodes = createSelector(
   },
 );
 
+export const selectCoConstraintGroupNodes = createSelector(
+  selectCoConstraintGroupEntites,
+  selectCoConstraintGroupRegistry,
+  (nodes: Dictionary<IDisplayElement>, registry: IRegistry) => {
+    return IgTOCNodeHelper.sortRegistry(nodes, registry);
+  },
+);
+
 export const selectMessagesNodes = createSelector(
   selectMessagesEntites,
   selectConformanceProfileRegistry,
   (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
     return registry.children.sort((a: ILink, b: ILink) => a.position - b.position).map((link) => messages[link.id]);
   },
+);
+
+export const selectCoConstraintGroupsById = createSelector(
+  selectCoConstraintGroupEntites,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
+);
+
+export const selectAllCoConstraintGroups = createSelector(
+  selectCoConstraintGroups,
+  selectAll,
 );
 
 export const selectStructure = createSelector(
@@ -501,14 +552,16 @@ export const selectToc = createSelector(
   selectMessagesNodes,
   selectSegmentsNodes,
   selectDatatypesNodes,
-  selectValueSetsNodes, (
+  selectValueSetsNodes,
+  selectCoConstraintGroupNodes, (
     structure: IContent[],
     messageNodes: IDisplayElement[],
     segmentsNodes: IDisplayElement[],
     datatypesNodes: IDisplayElement[],
     valueSetsNodes: IDisplayElement[],
+    coConstraintGroupNodes: IDisplayElement[],
 ) => {
-  return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
+  return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes);
 },
 );
 
@@ -517,14 +570,16 @@ export const selectProfileTree = createSelector(
   selectMessagesNodes,
   selectSegmentsNodes,
   selectDatatypesNodes,
-  selectValueSetsNodes, (
+  selectValueSetsNodes,
+  selectCoConstraintGroupNodes, (
     structure: IContent[],
     messageNodes: IDisplayElement[],
     segmentsNodes: IDisplayElement[],
     datatypesNodes: IDisplayElement[],
     valueSetsNodes: IDisplayElement[],
+    coConstraintGroupNodes: IDisplayElement[],
 ) => {
-  return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
+  return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes);
 },
 );
 

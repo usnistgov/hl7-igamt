@@ -30,7 +30,7 @@ import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
+//import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -1094,43 +1094,43 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 				}
 
 				// #2 CoConstraint's Defined Dynamic Mapping
-				if (sModel.getCoConstraintTable() != null) {
-					CoConstraintTable coConstraintTable = sModel.getCoConstraintTable();
-					Set<String[]> dynamicMappingItems = coConstraintTable.generateDynamicMappingItems();
-
-					if (dynamicMappingItems != null) {
-						dynamicMappingItems.forEach(item -> {
-							if (item[0] != null && !item[0].isEmpty() && item[1] != null && !item[1].isEmpty()) {
-								DatatypeDataModel itemDTModel = igModel.findDatatype(item[1]);
-								if (itemDTModel != null) {
-									Element elmCase = new Element("Case");
-									elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
-									elmCase.addAttribute(new Attribute("SecondValue", item[0]));
-									if (igModel.getModel().getDomainInfo() != null
-											&& igModel.getModel().getDomainInfo().getVersion() != null
-											&& itemDTModel.getModel().getDomainInfo() != null
-											&& itemDTModel.getModel().getDomainInfo().getVersion() != null) {
-										if (igModel.getModel().getDomainInfo().getVersion()
-												.equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
-											elmCase.addAttribute(new Attribute("Datatype",
-													this.str(itemDTModel.getModel().getLabel())));
-										} else {
-											elmCase.addAttribute(new Attribute("Datatype",
-													this.str(itemDTModel.getModel().getLabel() + "_"
-															+ itemDTModel.getModel().getDomainInfo().getVersion()
-																	.replaceAll("\\.", "-"))));
-										}
-									} else {
-										elmCase.addAttribute(
-												new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-									}
-
-									elmMapping.appendChild(elmCase);
-								}
-							}
-						});
-					}
-				}
+//				if (sModel.getCoConstraintTable() != null) {
+//					CoConstraintTable coConstraintTable = sModel.getCoConstraintTable();
+//					Set<String[]> dynamicMappingItems = coConstraintTable.generateDynamicMappingItems();
+//
+//					if (dynamicMappingItems != null) {
+//						dynamicMappingItems.forEach(item -> {
+//							if (item[0] != null && !item[0].isEmpty() && item[1] != null && !item[1].isEmpty()) {
+//								DatatypeDataModel itemDTModel = igModel.findDatatype(item[1]);
+//								if (itemDTModel != null) {
+//									Element elmCase = new Element("Case");
+//									elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
+//									elmCase.addAttribute(new Attribute("SecondValue", item[0]));
+//									if (igModel.getModel().getDomainInfo() != null
+//											&& igModel.getModel().getDomainInfo().getVersion() != null
+//											&& itemDTModel.getModel().getDomainInfo() != null
+//											&& itemDTModel.getModel().getDomainInfo().getVersion() != null) {
+//										if (igModel.getModel().getDomainInfo().getVersion()
+//												.equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
+//											elmCase.addAttribute(new Attribute("Datatype",
+//													this.str(itemDTModel.getModel().getLabel())));
+//										} else {
+//											elmCase.addAttribute(new Attribute("Datatype",
+//													this.str(itemDTModel.getModel().getLabel() + "_"
+//															+ itemDTModel.getModel().getDomainInfo().getVersion()
+//																	.replaceAll("\\.", "-"))));
+//										}
+//									} else {
+//										elmCase.addAttribute(
+//												new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+//									}
+//
+//									elmMapping.appendChild(elmCase);
+//								}
+//							}
+//						});
+//					}
+//				}
 
 				// #3 OBX-2 Dynamic Mapping
 				String version = null;

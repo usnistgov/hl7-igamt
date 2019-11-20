@@ -40,6 +40,13 @@ export interface ICardinalityRange {
 export interface IResourceRef {
   type: Type;
   id: string;
+  version: string;
+  name: string;
+}
+
+export interface IResourceKey {
+  type: Type;
+  id: string;
 }
 
 export interface IStringValue {
@@ -196,23 +203,21 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   }
 
   datatypeChange(change: IChange, row: { node: IHL7v2TreeNode }) {
-    this.referenceChange({
-      type: Type.DATATYPE,
-      id: change.propertyValue,
-    }, row.node, change);
+    this.referenceChange(change.propertyValue, row.node, change);
   }
 
   segmentChange(change: IChange, row: { node: IHL7v2TreeNode }) {
-    this.referenceChange({
-      type: Type.SEGMENT,
-      id: change.propertyValue,
-    }, row.node, change);
+    this.referenceChange(change.propertyValue, row.node, change);
   }
 
   referenceChange(ref: IResourceRef, node: IHL7v2TreeNode, change: IChange) {
     node.data.ref.next(ref);
     this.resolveReference(node);
-    this.registerChange(change);
+    this.registerChange({
+      ...change,
+      propertyValue: change.propertyValue.id,
+      oldPropertyValue: change.oldPropertyValue.id,
+    });
   }
 
   updateLength(value: ILengthAndConfLength, row: { node: IHL7v2TreeNode }) {

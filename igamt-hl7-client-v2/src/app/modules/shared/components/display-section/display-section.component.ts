@@ -1,5 +1,6 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {IDisplayElement} from '../../models/display-element.interface';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { IDisplayElement } from '../../models/display-element.interface';
+import { Type } from '../../constants/type.enum';
 
 @Component({
   selector: 'app-display-section',
@@ -19,7 +20,12 @@ export class DisplaySectionComponent implements OnInit {
   }
 
   getDisplayLabel() {
-    return getLabel(this.element.fixedName, this.element.variableName);
+    switch (this.element.type) {
+      case Type.COCONSTRAINTGROUP:
+        return this.element.fixedName + ' - ' + this.element.variableName;
+      default:
+        return getLabel(this.element.fixedName, this.element.variableName);
+    }
   }
 
 }

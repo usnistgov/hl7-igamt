@@ -1,7 +1,7 @@
-import {Type} from '../../../shared/constants/type.enum';
-import {IAddingInfo} from '../../../shared/models/adding-info';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {IRegistry} from '../../../shared/models/registry.interface';
+import { Type } from '../../../shared/constants/type.enum';
+import { IAddingInfo } from '../../../shared/models/adding-info';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { IRegistry } from '../../../shared/models/registry.interface';
 export interface IAddNodes {
   documentId: string;
   selected: IAddingInfo[];
@@ -22,4 +22,14 @@ export interface ICopyResourceResponse {
   id: string;
   reg: IRegistry;
   display: IDisplayElement;
+}
+export interface ICreateCoConstraintGroupResponse {
+  id: string;
+  registry: IRegistry;
+  display: IDisplayElement;
+}
+export interface ICreateCoConstraintGroup {
+  documentId?: string;
+  name: string;
+  baseSegment: string;
 }

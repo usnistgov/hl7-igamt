@@ -1,8 +1,8 @@
-import {Dictionary} from '@ngrx/entity';
+import { Dictionary } from '@ngrx/entity';
 import { Type } from '../../shared/constants/type.enum';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
-import {IRegistry} from '../../shared/models/registry.interface';
+import { IRegistry } from '../../shared/models/registry.interface';
 
 export class IgTOCNodeHelper {
 
@@ -38,7 +38,7 @@ export class IgTOCNodeHelper {
     return ret;
   }
 
-  static createProfileSection(section: IContent, messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], path: string) {
+  static createProfileSection(section: IContent, messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[], path: string) {
     const ret = this.initializeIDisplayElement(section, path);
     if (section.children && section.children.length > 0) {
       for (const child of section.children) {
@@ -55,6 +55,10 @@ export class IgTOCNodeHelper {
             break;
           case Type.VALUESETREGISTRY:
             retChild.children = valueSetsNodes;
+            break;
+          case Type.COCONSTRAINTGROUPREGISTRY:
+            retChild.children = coConstraintGroupNodes;
+            break;
         }
         ret.children.push(retChild);
       }
@@ -63,7 +67,7 @@ export class IgTOCNodeHelper {
     return ret;
   }
 
-  static buildTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[]) {
+  static buildTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[]) {
     const ret: IDisplayElement[] = [];
     for (const section of structure) {
       switch (section.type) {
@@ -71,7 +75,7 @@ export class IgTOCNodeHelper {
           ret.push(this.createNarativeSection(section, section.position + ''));
           break;
         case Type.PROFILE:
-          ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, section.position + ''));
+          ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, section.position + ''));
           break;
         default:
           break;
@@ -80,11 +84,11 @@ export class IgTOCNodeHelper {
     return this.sort(ret);
   }
 
-  static buildProfileTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[]) {
+  static buildProfileTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[]) {
     const ret: IDisplayElement[] = [];
     for (const section of structure) {
       if (section.type === Type.PROFILE) {
-        ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, section.position + ''));
+        ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, section.position + ''));
       }
     }
     return this.sort(ret);
@@ -147,7 +151,7 @@ export class IgTOCNodeHelper {
     }
   }
   static sortRegistry(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
-    return  Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement ) => this.compare(a, b));
+    return Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement) => this.compare(a, b));
   }
   static getFullName(node: IDisplayElement): string {
     if (node.fixedName && node.fixedName.length) {
@@ -161,7 +165,7 @@ export class IgTOCNodeHelper {
     }
   }
   static compare(a: IDisplayElement, b: IDisplayElement) {
-    const left  = this.getFullName(a);
+    const left = this.getFullName(a);
     const right = this.getFullName(b);
     if (left < right) {
       return -1;

@@ -17,6 +17,7 @@ import { IChange } from '../../../shared/models/save-change';
 import { DeltaService } from '../../../shared/services/delta.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { DatatypeService } from '../../services/datatype.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-datatype-structure-editor',
@@ -68,6 +69,14 @@ export class DatatypeStructureEditorComponent extends StructureEditorComponent<I
         HL7v2TreeColumnType.TEXT,
         HL7v2TreeColumnType.COMMENT,
       ]);
+  }
+
+  isDTM(): Observable<boolean> {
+    return this.resource$.pipe(
+      map((resource) => {
+        return resource.type === Type.DATATYPE && resource.name === 'DTM';
+      }),
+    );
   }
 
   saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message<any>> {

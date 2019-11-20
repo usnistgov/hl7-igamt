@@ -13,6 +13,7 @@ import { IResource } from '../../models/resource.interface';
 import { ConformanceStatementService } from '../../services/conformance-statement.service';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../services/resource-repository.service';
+import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { CsPropositionComponent } from '../cs-proposition/cs-proposition.component';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 import { BinaryOperator, Pattern, Statement } from '../pattern-dialog/cs-pattern.domain';
@@ -56,6 +57,16 @@ export class CsDialogComponent implements OnDestroy {
   predicateElementId: string;
   excludePaths: string[];
   options = ConditionalUsageOptions;
+  contextFilter: IHL7v2TreeFilter = {
+    hide: false,
+    restrictions: [
+      {
+        criterion: RestrictionType.TYPE,
+        allow: true,
+        value: [Type.CONFORMANCEPROFILE, Type.GROUP],
+      },
+    ],
+  };
 
   @ViewChildren(CsPropositionComponent) propositions: QueryList<CsPropositionComponent>;
   @ViewChild('csForm', { read: NgForm }) form: NgForm;
@@ -78,6 +89,17 @@ export class CsDialogComponent implements OnDestroy {
     this.predicateElementId = data.predicateElementId;
     if (this.predicateMode && this.predicateElementId) {
       this.excludePaths = [this.predicateElementId];
+      this.contextFilter.restrictions.push({
+        criterion: RestrictionType.PATH,
+        allow: false,
+        combine: RestrictionCombinator.ENFORCE,
+        value: this.excludePaths.map((path) => {
+          return {
+            path,
+            excludeChildren: true,
+          };
+        }),
+      });
     }
 
     this.s_resource = data.resource.subscribe(
