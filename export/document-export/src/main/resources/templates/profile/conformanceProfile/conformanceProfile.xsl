@@ -23,6 +23,10 @@
 		<xsl:call-template name="UsageNotes"/>
 		<xsl:call-template name="AuthorNotes" />
 		<xsl:call-template name="Organization" />
+		<xsl:call-template name="Role" />
+		<xsl:call-template name="Type" />
+		<xsl:call-template name="PostDef" />
+	
 	
 		<xsl:if test="$messageMetadata.display = 'true'">
 			<xsl:apply-templates select="Metadata">

@@ -31,4 +31,40 @@
 </p-card>
 
 
+<p-card header="Columns to export for Codes" [styleClass]="'pcard'" *ngIf="displayColumns" >
+        <!-- <div class="config-checkbox">
+            <p-checkbox label="Name" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Conformance Length" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Length" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Usage" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Cardinality" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Value Set" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Constant Value" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Definition Text" binary="true"></p-checkbox>
+          </div> -->
+          <div  *ngFor="let c of config.columns">
+
+              <div class="config-checkbox">
+                  <p-checkbox label= {{c.name}} binary="true" [(ngModel)]="c.present" (onChange)="triggerChange()"></p-checkbox>
+                </div>
+              
+
+          </div>
+    </p-card>
+
+
 </div>

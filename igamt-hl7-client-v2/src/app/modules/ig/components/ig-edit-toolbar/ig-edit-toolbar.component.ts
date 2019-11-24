@@ -137,6 +137,14 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     ).subscribe();
   }
 
+  exportQuickHTML(){
+    // this.getIgId().subscribe( (x) =>{
+    //   x =>     this.igService.exportAsHtmlQuick(x);
+    //   x => console.log(x);
+    // });
+    this.getIgId().subscribe(id => this.igService.exportAsHtmlQuick(id));
+  }
+
   exportXML() {
     const subscription = this.getMessages().pipe(
       withLatestFrom(this.getCompositeProfies()),

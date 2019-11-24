@@ -185,7 +185,7 @@ export class IgService {
     this.submitForm(decision, this.EXPORT_URL + igId + '/configuration/' + configurationId + '/html');
   }
 
-  exportAsHtmlQuick(igId) {
+  exportAsHtmlQuick(igId: string) {
     this.submitForm(null, this.EXPORT_URL + igId + '/quickHtml');
   }
 

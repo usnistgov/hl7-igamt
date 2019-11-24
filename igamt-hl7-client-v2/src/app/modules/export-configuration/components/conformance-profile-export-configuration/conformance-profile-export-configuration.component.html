@@ -52,6 +52,7 @@
             <div class="config-checkbox">
               <p-checkbox label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox>
             </div>
+            
       </p-card>
       
       <p-card header="Constraints" [styleClass]="'pcard'">
@@ -65,21 +66,32 @@
       </p-card>
 
       <p-card header="Columns to export" *ngIf="displayColumns" [styleClass]="'pcard'">
-          <div class="config-checkbox">
-              <p-checkbox label="Segment Name" binary="true"></p-checkbox>
+           <!-- <div class="config-checkbox">
+              <p-checkbox label="Segment Name" binary="true" [(ngModel)]="config.listedColumns.segment.presence" (onChange)="triggerChange()"></p-checkbox>
             </div>
             <div class="config-checkbox">
-              <p-checkbox label="Usage" binary="true"></p-checkbox>
+                <p-checkbox label="Flavor" binary="true" [(ngModel)]="config.listedColumns.flavor.presence" (onChange)="triggerChange()"></p-checkbox>
+              </div>
+              <div class="config-checkbox">
+                <p-checkbox label="Element name" binary="true" [(ngModel)]="config.listedColumns.elementName.presence" (onChange)="triggerChange()"></p-checkbox>
+              </div> 
+            <div class="config-checkbox">
+              <p-checkbox label="Usage" binary="true" [(ngModel)]="config.listedColumns.usage.presence" (onChange)="triggerChange()"></p-checkbox>
             </div>
             <div class="config-checkbox">
-              <p-checkbox label="Cardinality" binary="true"></p-checkbox>
+              <p-checkbox label="Cardinality" binary="true" [(ngModel)]="config.listedColumns.cardinality.presence" (onChange)="triggerChange()"></p-checkbox>
+            </div> -->
+            
+
+            <div  *ngFor="let c of config.columns">
+
+                <div class="config-checkbox">
+                    <p-checkbox label= {{c.name}} binary="true" [(ngModel)]="c.present" (onChange)="triggerChange()"></p-checkbox>
+                  </div>
+                
+
             </div>
-            <div class="config-checkbox">
-              <p-checkbox label="Comment" binary="true"></p-checkbox>
-            </div>
-            <div class="config-checkbox">
-              <p-checkbox label="Definition Text" binary="true"></p-checkbox>
-            </div>
+
       </p-card>
 
 
