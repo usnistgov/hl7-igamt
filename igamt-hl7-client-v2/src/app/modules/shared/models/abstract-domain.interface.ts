@@ -22,6 +22,7 @@ export interface IAbstractDomain {
   status: Status;
   from?: string;
   version?: number;
+  dateTimeConstraints?: any;
 }
 
 export enum Status {

@@ -22,17 +22,17 @@ public class DateTimeComponentDefinition {
   private int position;
   private String name;
   private String description;
+  private String format;
   private Usage usage;
   private DateTimePredicate dateTimePredicate;
+ 
 
-  public DateTimeComponentDefinition(int position, String name, String description, Usage usage,
-      DateTimePredicate dateTimePredicate) {
+  public DateTimeComponentDefinition(int position, String name, String format, Usage usage) {
     super();
     this.position = position;
     this.name = name;
-    this.description = description;
     this.usage = usage;
-    this.dateTimePredicate = dateTimePredicate;
+    this.format = format;
   }
 
   public int getPosition() {
@@ -51,14 +51,6 @@ public class DateTimeComponentDefinition {
     this.name = name;
   }
 
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
   public Usage getUsage() {
     return usage;
   }
@@ -67,12 +59,28 @@ public class DateTimeComponentDefinition {
     this.usage = usage;
   }
 
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   public DateTimePredicate getDateTimePredicate() {
     return dateTimePredicate;
   }
 
   public void setDateTimePredicate(DateTimePredicate dateTimePredicate) {
     this.dateTimePredicate = dateTimePredicate;
+  }
+
+  public String getFormat() {
+    return format;
+  }
+
+  public void setFormat(String format) {
+    this.format = format;
   }
 
 

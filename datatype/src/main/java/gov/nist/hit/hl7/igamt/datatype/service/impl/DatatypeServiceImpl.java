@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import gov.nist.hit.hl7.igamt.common.binding.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +33,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -55,6 +55,11 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
@@ -69,6 +74,9 @@ import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
+import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
+import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
@@ -880,8 +888,14 @@ public class DatatypeServiceImpl implements DatatypeService {
 			throws JsonProcessingException, IOException {
 		Collections.sort(cItems);
 		for (ChangeItemDomain item : cItems) {
-
-			if (item.getPropertyType().equals(PropertyType.PREDEF)) {
+		    if (item.getPropertyType().equals(PropertyType.DTMSTRUC)) {
+		      DateTimeDatatype dtd = (DateTimeDatatype)d;
+		      item.setOldPropertyValue(dtd.getDateTimeConstraints());
+		      
+		      DateTimeConstraints data = new DateTimeConstraints();
+		      data.setDateTimeComponentDefinitions((List<DateTimeComponentDefinition>) item.getPropertyValue());
+		      dtd.setDateTimeConstraints(data);
+		    }  else if (item.getPropertyType().equals(PropertyType.PREDEF)) {
 				item.setOldPropertyValue(d.getPreDef());
 				d.setPreDef((String) item.getPropertyValue());
 
