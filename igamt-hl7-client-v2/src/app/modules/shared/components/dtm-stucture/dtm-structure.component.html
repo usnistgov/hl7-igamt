@@ -1,0 +1,43 @@
+<p-accordion>
+    <p-accordionTab header="Basic Structure" [selected]="true">
+        <div class="ui-g">
+            <div class="ui-g-6">
+                <p-table [value]="dateTimeConstraints.dateTimeComponentDefinitions">
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 15em">Name</th>
+                            <th style="width: 15em">Format</th>
+                            <th>Usage</th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item>
+                        <tr>
+                            <td>{{item.name}}</td>
+                            <td>{{item.format}}</td>
+                            <td *ngIf="item.name === 'Year'">
+                                <p-selectButton [options]="usageOptions" [(ngModel)]="item.usage" disabled=""></p-selectButton>
+                            </td>
+                            <td *ngIf="item.name !== 'Year' && item.name !== 'Time Zone'">
+                                <p-selectButton [options]="usageOptions" [(ngModel)]="item.usage" (onChange)="usageChange($event, item.name, item)"></p-selectButton>
+                            </td>
+                            <td *ngIf="item.name === 'Time Zone'">
+                                <p-selectButton [options]="usageOptions" [(ngModel)]="item.usage" (onChange)="timeZoneUsageChange($event, item.name, item)"></p-selectButton>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <div class="ui-g-6">
+                <p-card header="Expected DTM Format" subheader="Format : Error Message : Regular Expression" [style]="{height: '100%'}" styleClass="ui-card-shadow">
+                    <p-header>
+                        <img [style.width.px]="300" src="assets/calclock.png">
+                    </p-header>
+                    <div [innerHTML]="simpleFormatter()"></div>
+                </p-card>
+            </div>
+        </div>
+    </p-accordionTab>
+    <p-accordionTab header="Advance Structure" [disabled]="true">
+        To be implemented
+    </p-accordionTab>
+</p-accordion>
