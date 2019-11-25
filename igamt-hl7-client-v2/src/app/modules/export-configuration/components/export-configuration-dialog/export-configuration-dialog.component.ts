@@ -37,12 +37,14 @@ export class ExportConfigurationDialogComponent implements OnInit {
   derived: boolean;
   delta: any;
   selectedDeltaValues = [];
+  configurationName: string;
 
   constructor(
     public dialogRef: MatDialogRef<ExportConfigurationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any, private store: Store<any>) {
     this.initialConfig = data.decision;
     this.nodes = data.toc;
+    this.configurationName = data.configurationName;
     this.deltaMode$ = this.store.select(selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).subscribe((x) => this.derived = x);

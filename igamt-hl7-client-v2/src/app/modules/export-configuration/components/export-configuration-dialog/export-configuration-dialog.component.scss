@@ -2,7 +2,25 @@
   padding: 0;
 }
 
+.dg-page-layout {
+  display: grid;
+  grid-gap: 2px;
+  grid-template-columns: 1fr;
+  grid-template-rows: [title-bar] 40px [dg-container] auto;
+  overflow: hidden;
+  height: 100%;
+  background-color: #d2d1d2;
+}
+
+.title-bar {
+  grid-row: title-bar;
+  padding: 10px;
+  padding-left: 20px;
+  background-color: white;
+}
+
 .dg-container {
+  grid-row: dg-container;
   overflow: auto;
   display: grid;
   grid-gap: 5px;

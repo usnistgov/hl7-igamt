@@ -98,13 +98,14 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		try {
 //			ExportConfiguration exportConfiguration =
 //					exportConfigurationService.getExportConfiguration(username);
+			
 			DeltaConfiguration deltaConfig = new DeltaConfiguration();
 			deltaConfig.setColors(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getColors());
 			deltaConfig.setMode(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getMode());
 			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
-			exportConfiguration = ExportConfiguration.populateRestOfExportConfiguration(exportConfiguration);
 			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
 			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
+			
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
@@ -266,7 +267,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			for (StructureElementBinding child : binding.getChildren()) {
 				if (child.getValuesetBindings() != null) {
 					for (ValuesetBinding vs : child.getValuesetBindings()) {
-
+						
 						if (vs.getValueSets() != null && bindedPaths.containsKey(child.getElementId())) {
 							for (String s : vs.getValueSets()) {
 								decision.getValueSetFilterMap().put(s, true);

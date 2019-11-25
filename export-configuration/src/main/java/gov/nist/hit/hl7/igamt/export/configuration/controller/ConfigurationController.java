@@ -63,7 +63,6 @@ public class ConfigurationController {
   @RequestMapping(value = "api/configuration/save", method = RequestMethod.POST,
 	      consumes = {"application/json"})
 	  public ResponseMessage saveExportconfuguration(@RequestBody ExportConfiguration exportConfiguration){
-	  System.out.println("Inside save controler");
 	  	 exportConfigurationService.save(exportConfiguration);
 		return new ResponseMessage(Status.SUCCESS, "EXPORT_CONFIGURATION_SAVED", exportConfiguration.getId(), null);
 
@@ -71,7 +70,6 @@ public class ConfigurationController {
   
   @RequestMapping(value = "/api/configuration/{id}", method = RequestMethod.GET, produces = { "application/json" })
   public @ResponseBody ExportConfiguration getExportConfiguration(@PathVariable("id") String id) {
-	  System.out.println("Inside get controler and id is : "+ id );
 	  return exportConfigurationService.getExportConfiguration(id);
 
   }

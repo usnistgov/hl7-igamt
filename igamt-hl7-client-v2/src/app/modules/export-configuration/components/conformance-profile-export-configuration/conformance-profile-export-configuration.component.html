@@ -38,14 +38,12 @@
           </ul>
         </div>
 
-        <div class="card card-configuration" style="flex-grow: 1">
+        <div class="card card-configuration" style="flex-grow: 1" *ngIf="displayColumns" >
           <h5 class="card-title title-text custom-card-title">Columns to export</h5>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item"><p-checkbox label="Segment Name" binary="true"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox label="Usage" binary="true"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox label="Cardinality" binary="true"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox label="Comment" binary="true"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox label="Definition Text" binary="true"></p-checkbox></li>
+            <li class="list-group-item" *ngFor="let c of config.columns">
+              <p-checkbox label= {{c.name}} binary="true" [(ngModel)]="c.present" (onChange)="triggerChange()"></p-checkbox>
+            </li>
           </ul>
         </div>
       </div>

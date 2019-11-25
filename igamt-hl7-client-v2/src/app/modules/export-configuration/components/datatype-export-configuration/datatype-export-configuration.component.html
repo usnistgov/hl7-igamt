@@ -13,29 +13,30 @@
     </div>
 
     <div style="display: flex;">
-      <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;">
-        <h5 class="card-title title-text custom-card-title">Metadata</h5>
+
+      <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;" *ngIf="displayColumns">
+        <h5 class="card-title title-text custom-card-title">Columns to export</h5>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item"><p-checkbox label="HL7 Version" binary="true" [(ngModel)]="config.metadataConfig.hl7version" (onChange)="triggerChange()"></p-checkbox></li>
-          <li class="list-group-item"><p-checkbox label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox></li>
-          <li class="list-group-item"><p-checkbox label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox></li>
-          <li class="list-group-item"><p-checkbox label="Usage Notes " binary="true" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox></li>
-          <li class="list-group-item"><p-checkbox label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item" *ngFor="let c of config.columns">
+            <p-checkbox label= {{c.name}} binary="true" [(ngModel)]="c.present" (onChange)="triggerChange()"></p-checkbox>
+          </li>
         </ul>
       </div>
+
+
       <div style="display: flex; flex-grow: 1; flex-direction: column;">
+
         <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
-          <h5 class="card-title title-text custom-card-title">Columns to export</h5>
+          <h5 class="card-title title-text custom-card-title">Metadata</h5>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item"><p-checkbox label="Name" binary="true"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox label="Conformance Length" binary="true"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox label="Length" binary="true"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox label="Usage" binary="true"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox label="Value Set" binary="true"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox label="Constant Value" binary="true"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox label="Definition Text" binary="true"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox label="HL7 Version" binary="true" [(ngModel)]="config.metadataConfig.hl7version" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox label="Usage Notes " binary="true" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox></li>
           </ul>
         </div>
+
         <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
           <h5 class="card-title title-text custom-card-title">Constraints</h5>
           <ul class="list-group list-group-flush">

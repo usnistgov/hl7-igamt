@@ -45,6 +45,7 @@ export class ExportDialogComponent implements OnInit {
           height: '95vh',
           panelClass: 'configuration-dialog-container',
           data: {
+            configurationName: this.selectedConfig.configName,
             toc: this.toc,
             decision,
           },
@@ -66,7 +67,6 @@ export class ExportDialogComponent implements OnInit {
   change(configuration) {
     this.igService.getExportFirstDecision(this.igId, configuration.id).pipe(
       map((decision) => {
-        console.log(decision);
         this.overrides.next(decision);
         this.customized = false;
       }),

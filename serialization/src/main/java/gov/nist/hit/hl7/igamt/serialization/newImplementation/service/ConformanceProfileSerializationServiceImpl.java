@@ -74,9 +74,9 @@ private DeltaService deltaService;
 			if(conformanceProfileExportConfiguration.getMetadataConfig().isOrganization()) {
 		        conformanceProfileElement.addAttribute(new Attribute("organization",
 		            conformanceProfile.getOrganization() != null ? conformanceProfile.getOrganization() : ""));}
-			if(conformanceProfileExportConfiguration.getMetadataConfig().isRole()) {
+			if(conformanceProfileExportConfiguration.getMetadataConfig().isType()) {
 		        conformanceProfileElement.addAttribute(new Attribute("type",
-		            conformanceProfile.getType() != null ? conformanceProfile.getType().getValue() : ""));}
+		            conformanceProfile.getProfileType() != null ? conformanceProfile.getProfileType().name() : ""));}
 			if(conformanceProfileExportConfiguration.getMetadataConfig().isRole()) {
 		        conformanceProfileElement.addAttribute(new Attribute("role",
 		            conformanceProfile.getRole() != null ? conformanceProfile.getRole().name() : ""));}

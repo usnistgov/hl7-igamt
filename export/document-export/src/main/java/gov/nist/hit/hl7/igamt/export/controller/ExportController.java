@@ -63,22 +63,25 @@ public class ExportController {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
 			try {
-				System.out.println("Look here : " + formData.getJson());
 				ExportFilterDecision decision = null;
-				
+			    Ig igDocument = igService.findById(igId);
+
 				if(formData.getJson() != null) {
 					ObjectMapper mapper = new ObjectMapper();
 					mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 					decision = mapper.readValue(formData.getJson(), ExportFilterDecision.class);
+				} else {
+					ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
+					 decision = igExportService.getExportFilterDecision(igDocument, exportConfiguration);
+
 				}
 				
-//				//Save lastUserConfiguration For quickHTLMExport
-//			    Ig igDocument = igService.findById(igId);
-//			    DocumentExportConfiguration lastUserConfiguration = new DocumentExportConfiguration();
-//			    lastUserConfiguration.setConfigId(configId);
-//			    lastUserConfiguration.setDecision(decision);
-//			    igDocument.setLastUserConfiguration(lastUserConfiguration);
-//			    igService.save(igDocument);
+				//Save lastUserConfiguration For quickHTLMExport
+			    DocumentExportConfiguration lastUserConfiguration = new DocumentExportConfiguration();
+			    lastUserConfiguration.setConfigId(configId);
+			    lastUserConfiguration.setDecision(decision);
+			    igDocument.setLastUserConfiguration(lastUserConfiguration);
+			    igService.save(igDocument);
 
 				String username = authentication.getPrincipal().toString();				
 				if(format.toLowerCase().equals("html")) {	
@@ -111,46 +114,36 @@ public class ExportController {
 		}
 	}
 	
-//	@RequestMapping(value = "/api/export/ig/{igId}/auickHTML", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-//	public @ResponseBody void exportIgDocument(@PathVariable("igId") String igId,
-//			HttpServletResponse response, FormData formData) throws ExportException {
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		if (authentication != null) {
-//			try {
-//				String username = authentication.getPrincipal().toString();				
-//				if(format.toLowerCase().equals("html")) {	
-//					
-//				ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, configId);
-//				response.setContentType("text/html");
-//				response.setHeader("Content-disposition",
-//						"attachment;filename=" + exportedFile.getFileName());
-//				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-//				}			
-//				if(format.toLowerCase().equals("word")) {					
-//				ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, igId, decision, configId);
-////			    ExportedFile wordFile = WordUtil.convertHtmlToWord(exportedFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
-//
-//				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-//				response.setHeader("Content-disposition",
-//						"attachment;filename=" + exportedFile.getFileName());
-//
-//				System.out.println("ICI : " + exportedFile.getFileName());
-//				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-//				}
-//				
-//				
-//			} catch (Exception e) {
-//				throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
-//			}
-//		} else {
-//			throw new AuthenticationCredentialsNotFoundException("No Authentication");
-//		}
-//	}
+	@RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	public @ResponseBody void exportIgDocument(@PathVariable("igId") String igId,
+			HttpServletResponse response, FormData formData) throws ExportException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null) {
+			try {
+				String username = authentication.getPrincipal().toString();				
+			    Ig igDocument = igService.findById(igId);
+			    ExportedFile exportedFile;
+			    if(igDocument.getLastUserConfiguration() != null) {
+					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, igDocument.getLastUserConfiguration().getDecision(), igDocument.getLastUserConfiguration().getConfigId());
+			    } else {		
+//			    		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration("BasicExportConfiguration");
+					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, "BasicExportConfiguration");
+			    }
+				response.setContentType("text/html");
+				response.setHeader("Content-disposition",
+						"attachment;filename=" + exportedFile.getFileName());
+				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());		
+			} catch (Exception e) {
+				throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
+			}
+		} else {
+			throw new AuthenticationCredentialsNotFoundException("No Authentication");
+		}
+	}
 
 	@RequestMapping(value = "/api/export/igdocuments/{id}/configuration/{configId}/getFilteredDocument", method = RequestMethod.GET)
 	public @ResponseBody ExportConfigurationGlobal getFilteredDocument(@PathVariable("id") String id, @PathVariable("configId") String configId,
 			HttpServletResponse response) throws ExportException, IGNotFoundException {
-
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
 			ExportConfiguration config = exportConfigurationService.getExportConfiguration(configId);

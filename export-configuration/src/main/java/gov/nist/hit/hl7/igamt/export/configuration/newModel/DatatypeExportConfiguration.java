@@ -32,6 +32,7 @@ public class DatatypeExportConfiguration extends ResourceExportConfiguration{
 		    this.componentExport = exportConfiguration.getComponentExport();
 		    this.columns = exportConfiguration.getDatatypeColumn().getColumns();
 		    this.metadataConfig = exportConfiguration.getDatatypeMetadataConfig();
+		    this.columns=exportConfiguration.getDatatypeColumn().getColumns();
 		  }
 
 		  /** 
