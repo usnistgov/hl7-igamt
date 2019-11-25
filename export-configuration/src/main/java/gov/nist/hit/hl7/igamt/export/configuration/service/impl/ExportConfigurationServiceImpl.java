@@ -54,7 +54,12 @@ public void delete(ExportConfiguration exportConfiguration) {
 	exportConfigurationRepository.delete(exportConfiguration);	
 }
 
-@Override
+	@Override
+	public void deleteById(String id) {
+		this.exportConfigurationRepository.deleteById(id);
+	}
+
+	@Override
 public ExportConfiguration create() {
 	ExportConfiguration exportConfiguration = exportConfigurationRepository.findOneById("BasicExportConfiguration");
 		exportConfiguration.setId(null);

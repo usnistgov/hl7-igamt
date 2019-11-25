@@ -30,6 +30,7 @@ public interface ExportConfigurationService {
   public List<ExportConfiguration> getAllExportConfiguration(String username);
   public ExportConfiguration save(ExportConfiguration exportConfiguration);
   public void delete(ExportConfiguration exportConfiguration);
+  public void deleteById(String id);
   public ExportConfiguration create();
 
 

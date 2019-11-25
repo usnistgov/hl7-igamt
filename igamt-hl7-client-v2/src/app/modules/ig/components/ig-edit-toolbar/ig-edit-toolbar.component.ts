@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import { concatMap, filter, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { filter, map, take, tap, withLatestFrom } from 'rxjs/operators';
 import { ToggleFullScreen } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { selectIsLoggedIn } from '../../../../root-store/authentication/authentication.reducer';
@@ -10,7 +10,6 @@ import { selectExternalTools } from '../../../../root-store/config/config.reduce
 import { selectFullScreen } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ExportConfigurationDialogComponent } from '../../../export-configuration/components/export-configuration-dialog/export-configuration-dialog.component';
 import { ExportDialogComponent } from '../../../export-configuration/components/export-dialog/export-dialog.component';
-import { IExportConfigurationGlobal } from '../../../export-configuration/models/config.interface';
 import { ExportConfigurationService } from '../../../export-configuration/services/export-configuration.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
@@ -77,12 +76,6 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     this.store.dispatch(new fromIgDocumentEdit.ToolbarSave());
   }
 
-  ngOnInit() {
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
-  }
   exportWord() {
     this.getDecision().pipe(
       map((decision) => {
@@ -107,34 +100,33 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
         ).subscribe();
       }),
     ).subscribe();
-
-
   }
-  getDecision(){
+
+  getDecision() {
     return of();
   }
 
   exportHTML() {
     combineLatest(
       this.getIgId(),
-      this.exportConfigurationService.getAllExportConfigurationByUsername()).pipe(
-      map(([igId, configurations]) => {
-        console.log(igId);
-        const dialogRef = this.dialog.open(ExportDialogComponent, {
-          data: {
-            toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
-            igId,
-            configurations,
-          },
-        });
-        dialogRef.afterClosed().pipe(
-          filter((y) => y !== undefined),
-          map((result) => {
-            this.igService.exportAsHtml(igId, result.decision, result.configurationId);
-          }),
-        ).subscribe();
-      }),
-    ).subscribe();
+      this.exportConfigurationService.getAllExportConfigurations()).pipe(
+        map(([igId, configurations]) => {
+          console.log(igId);
+          const dialogRef = this.dialog.open(ExportDialogComponent, {
+            data: {
+              toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
+              igId,
+              configurations,
+            },
+          });
+          dialogRef.afterClosed().pipe(
+            filter((y) => y !== undefined),
+            map((result) => {
+              this.igService.exportAsHtml(igId, result.decision, result.configurationId);
+            }),
+          ).subscribe();
+        }),
+      ).subscribe();
   }
 
   exportXML() {
@@ -158,6 +150,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     ).subscribe();
     subscription.unsubscribe();
   }
+
   exportTool() {
     combineLatest(this.store.select(fromIgDocumentEdit.selectMessagesNodes), this.store.select(selectExternalTools), this.getCompositeProfies(), this.getIgId()).pipe(
       take(1),
@@ -170,13 +163,23 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       }),
     ).subscribe();
   }
+
   getIgId(): Observable<string> {
     return this.store.select(fromIgDocumentEdit.selectIgId);
   }
+
   getMessages(): Observable<IDisplayElement[]> {
     return this.store.select(fromIgDocumentEdit.selectMessagesNodes);
   }
+
   getCompositeProfies(): Observable<IDisplayElement[]> {
     return of([]);
+  }
+
+  ngOnInit() {
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }

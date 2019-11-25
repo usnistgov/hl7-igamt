@@ -1,4 +1,3 @@
-
 export interface IExportConfiguration {
   configName: string;
   id: string;
@@ -214,20 +213,20 @@ export interface IDatatypeExportConfiguration {
   includeVaries: boolean;
 }
 export interface IMetadataConfig {
-    hl7version: boolean;
-    publicationDate: boolean;
-    publicationVersion: boolean;
-    scope: boolean;
-    preDefinition: boolean;
-    postDefinition: boolean;
-    usageNotes: boolean;
-    authorNotes: boolean;
-    organization: boolean;
-    author: boolean;
-    type: boolean;
-    role: boolean;
+  hl7version: boolean;
+  publicationDate: boolean;
+  publicationVersion: boolean;
+  scope: boolean;
+  preDefinition: boolean;
+  postDefinition: boolean;
+  usageNotes: boolean;
+  authorNotes: boolean;
+  organization: boolean;
+  author: boolean;
+  type: boolean;
+  role: boolean;
 
-  }
+}
 
 interface IColumn {
   name: string;

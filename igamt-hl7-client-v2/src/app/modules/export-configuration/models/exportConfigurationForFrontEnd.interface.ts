@@ -1,4 +1,4 @@
-export interface IExportConfigurationForFrontEnd {
-    configName: string;
-    id: string;
-    }
+export interface IExportConfigurationItemList {
+  configName: string;
+  id: string;
+}

@@ -65,7 +65,7 @@ public class ConfigurationController {
 	  public ResponseMessage saveExportconfuguration(@RequestBody ExportConfiguration exportConfiguration){
 	  System.out.println("Inside save controler");
 	  	 exportConfigurationService.save(exportConfiguration);
-		return new ResponseMessage(Status.SUCCESS, "EXPORTCONFIGURATION_SAVED", exportConfiguration.getId(), null);
+		return new ResponseMessage(Status.SUCCESS, "EXPORT_CONFIGURATION_SAVED", exportConfiguration.getId(), null);
 
 	  }
   
@@ -95,8 +95,9 @@ public class ConfigurationController {
   
   @RequestMapping(value = "api/configuration/delete", method = RequestMethod.POST,
 	      consumes = {"application/json"})
-	  public void deleteExportconfuguration(@RequestBody ExportConfiguration exportConfiguration){
+	  public @ResponseBody ResponseMessage deleteExportconfuguration(@RequestBody ExportConfiguration exportConfiguration){
 	  	 exportConfigurationService.delete(exportConfiguration);
+	  	 return new ResponseMessage<String>(Status.SUCCESS, "EXPORT_CONFIGURATION_DELETED", exportConfiguration.getId(), null);
 	  }
   
   @RequestMapping(value = "/api/configuration/create", method = RequestMethod.GET, produces = { "application/json" })

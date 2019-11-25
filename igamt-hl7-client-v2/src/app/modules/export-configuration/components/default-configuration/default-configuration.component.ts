@@ -1,66 +1,59 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import {TabViewModule} from 'primeng/tabview';
+import { Observable, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { UserMessage } from 'src/app/modules/core/models/message/message.class';
+import { TurnOffLoader, TurnOnLoader } from '../../../../root-store/loader/loader.actions';
+import { MessageType } from '../../../core/models/message/message.class';
+import { MessageService } from '../../../core/services/message.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { IExportConfiguration } from '../../models/default-export-configuration.interface';
-import { IExportConfigurationForFrontEnd } from '../../models/exportConfigurationForFrontEnd.interface';
+import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
 import { ExportConfigurationService } from '../../services/export-configuration.service';
 
 @Component({
   selector: 'app-default-configuration',
   templateUrl: './default-configuration.component.html',
-  styleUrls: ['./default-configuration.component.css'],
+  styleUrls: ['./default-configuration.component.scss'],
 })
 export class DefaultConfigurationComponent implements OnInit {
 
-basicExportConfiguration: IExportConfiguration;
-currentConfiguration: IExportConfiguration;
-backupConfiguration: IExportConfiguration;
-exportConfigurationForFrontEnd: IExportConfigurationForFrontEnd;
-configList: IExportConfigurationForFrontEnd[];
-configName: string;
+  basicExportConfiguration: IExportConfiguration;
+  currentConfiguration: IExportConfiguration;
+  backupConfiguration: IExportConfiguration;
+  configList: IExportConfigurationItemList[];
+  configName: string;
+  hasChanges: boolean;
+  filter: string;
+
   constructor(
     private exportConfigurationService: ExportConfigurationService,
+    private store: Store<any>,
+    private messageService: MessageService,
     private dialog: MatDialog,
   ) { }
 
-  ngOnInit() {
-    this.displayConfigurations();
-    this.exportConfigurationService.getExportConfigurationById('BasicExportConfiguration').subscribe(
-      (x) => this.currentConfiguration = x);
-    this.backupConfiguration = this.currentConfiguration;
-  }
-
-  displayConfigurations() {
-    this.exportConfigurationService.getAllExportConfigurationByUsername().subscribe(
-      (x) => this.configList = x);
-  }
-
-  open(id: string) {
-    this.exportConfigurationService.getExportConfigurationById(id).subscribe(
-       (x) => { this.currentConfiguration = x,
-      this.backupConfiguration = _.cloneDeep(this.currentConfiguration); },
+  loadExportConfigurationList() {
+    this.exportConfigurationService.getAllExportConfigurations().subscribe(
+      (x) => this.configList = x,
     );
-    // FETCH
-    // CLONE and AFFECT TO BACKUP
-    // AFFECT TO currentConfiguration
+  }
+
+  filteredList(): IExportConfigurationItemList[] {
+    return this.configList.filter((elm) => {
+      return !this.filter || elm.configName.includes(this.filter);
+    });
   }
 
   reset() {
-this.currentConfiguration = this.backupConfiguration;
+    this.currentConfiguration = _.cloneDeep(this.backupConfiguration);
+    this.hasChanges = false;
   }
 
-  create() {
-    this.exportConfigurationService.createExportConfiguration().subscribe(
-       (x) => {this.currentConfiguration = x;
-               this.open(this.currentConfiguration.id);
-               this.displayConfigurations();
-    },
-    );
-    // CREATE
-    // REFRESH LIST
-    // OPEN
+  change($event) {
+    this.hasChanges = true;
   }
 
   delete(configuration: IExportConfiguration) {
@@ -74,20 +67,107 @@ this.currentConfiguration = this.backupConfiguration;
     dialogRef.afterClosed().subscribe(
       (answer) => {
         if (answer) {
+          this.store.dispatch(new TurnOnLoader({ blockUI: true }));
           this.exportConfigurationService.deleteExportConfiguration(configuration).subscribe(
-          () => this.displayConfigurations(),
+            (response) => {
+              this.loadExportConfigurationList();
+              this.store.dispatch(this.messageService.messageToAction(response));
+              if (this.currentConfiguration && this.currentConfiguration.id === configuration.id) {
+                this.currentConfiguration = undefined;
+                this.hasChanges = false;
+              }
+            },
+            (error) => {
+              this.store.dispatch(this.messageService.actionFromError(error));
+              this.store.dispatch(new TurnOffLoader());
+            },
+            () => {
+              this.store.dispatch(new TurnOffLoader());
+            },
           );
-          // REFRESH LIST
         }
       },
     );
   }
 
-  save() {
+  save(): Observable<boolean> {
+    const success: Subject<boolean> = new Subject<boolean>();
+    this.store.dispatch(new TurnOnLoader({ blockUI: true }));
     this.exportConfigurationService.saveExportConfiguration(this.currentConfiguration).subscribe(
-    () => this.displayConfigurations(),
+      (response) => {
+        this.loadExportConfigurationList();
+        this.store.dispatch(this.messageService.messageToAction(response));
+        this.backupConfiguration = _.cloneDeep(this.currentConfiguration);
+        this.hasChanges = false;
+        success.next(true);
+      },
+      (error) => {
+        this.store.dispatch(this.messageService.actionFromError(error));
+        this.store.dispatch(new TurnOffLoader());
+        success.next(false);
+        success.complete();
+      },
+      () => {
+        this.store.dispatch(new TurnOffLoader());
+        success.complete();
+      },
     );
 
+    return success.asObservable();
   }
 
+  open(id: string) {
+    const fetchAndOpen = () => {
+      this.store.dispatch(new TurnOnLoader({ blockUI: true }));
+      this.exportConfigurationService.getExportConfigurationById(id).subscribe(
+        (x) => {
+          this.currentConfiguration = x;
+          this.backupConfiguration = _.cloneDeep(this.currentConfiguration);
+          this.hasChanges = false;
+        },
+        (error) => {
+          this.store.dispatch(this.messageService.actionFromError(error));
+          this.store.dispatch(new TurnOffLoader());
+        },
+        () => {
+          this.store.dispatch(new TurnOffLoader());
+        },
+      );
+    };
+
+    if (this.currentConfiguration && this.currentConfiguration.id !== id && this.hasChanges) {
+      this.save().pipe(
+        map((success) => {
+          if (success) {
+            fetchAndOpen();
+          }
+        }),
+      ).subscribe();
+    } else if (!this.currentConfiguration || this.currentConfiguration.id !== id) {
+      fetchAndOpen();
+    }
+  }
+
+  create() {
+    this.store.dispatch(new TurnOnLoader({ blockUI: true }));
+    this.exportConfigurationService.createExportConfiguration().subscribe(
+      (x) => {
+        this.currentConfiguration = x;
+        this.open(this.currentConfiguration.id);
+        this.store.dispatch(this.messageService.userMessageToAction(new UserMessage(MessageType.SUCCESS, 'Configuration Created Successfully')));
+        this.loadExportConfigurationList();
+      },
+      (error) => {
+        this.store.dispatch(this.messageService.actionFromError(error));
+        this.store.dispatch(new TurnOffLoader());
+      },
+      () => {
+        this.store.dispatch(new TurnOffLoader());
+      },
+    );
+  }
+
+  ngOnInit() {
+    this.loadExportConfigurationList();
+  }
 }
