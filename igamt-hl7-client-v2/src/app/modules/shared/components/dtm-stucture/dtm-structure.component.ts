@@ -251,4 +251,10 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
   }
+
+  getLogSize() {
+    if(this.dtName === 'DTM') return 300;
+    if(this.dtName === 'DT') return 100;
+    if(this.dtName === 'TM') return 200;
+  }
 }
