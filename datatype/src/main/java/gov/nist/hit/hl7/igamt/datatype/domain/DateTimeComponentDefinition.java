@@ -11,14 +11,20 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
+import java.io.Serializable;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 
 /**
  * @author jungyubw
  *
  */
-public class DateTimeComponentDefinition {
+public class DateTimeComponentDefinition implements Serializable {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -2526258830529516566L;
   private int position;
   private String name;
   private String description;
@@ -26,6 +32,9 @@ public class DateTimeComponentDefinition {
   private Usage usage;
   private DateTimePredicate dateTimePredicate;
  
+  public DateTimeComponentDefinition(){
+    super();
+  }
 
   public DateTimeComponentDefinition(int position, String name, String format, Usage usage) {
     super();

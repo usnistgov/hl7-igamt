@@ -3,6 +3,7 @@ import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { IResource } from '../../models/resource.interface';
 import { IChange, ChangeType, PropertyType } from '../../models/save-change';
 import {SelectItem} from 'primeng/api';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-dtm-structure',
@@ -16,12 +17,21 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
 
   usageOptions: SelectItem[];
 
+  regexList: any;
+  dtName: string;
+
+  @Input()
+  viewOnly: boolean;
+
   @Input()
   set resource(resource: IResource) {
+    this.regexList = null;
     this.resource$ = of(resource);
     this.dateTimeConstraints = resource.dateTimeConstraints;
 
-    if(this.dateTimeConstraints === null || this.dateTimeConstraints.dateTimeComponentDefinitions === null) {
+
+
+    if(this.viewOnly || !this.dateTimeConstraints || !this.dateTimeConstraints.dateTimeComponentDefinitions) {
       if(resource.name === 'DTM') {
         this.dateTimeConstraints = {
           dateTimeComponentDefinitions: [
@@ -35,39 +45,41 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
             {position: 8, name: "1/100 second", format: ".s..", usage: "O"},
             {position: 9, name: "1/1000 second", format: "..s.", usage: "O"},
             {position: 10, name: "1/10000 second", format: "...s", usage: "O"},
-            {position: 11, name: "Time Zone", format: "+/-ZZZZ", usage: "O", trueUsage: null}
+            {position: 11, name: "Time Zone", format: "+/-ZZZZ", usage: "O"}
           ]
         };
       } else if(resource.name === 'DT') {
         this.dateTimeConstraints = {
           dateTimeComponentDefinitions: [
-            {position: 1, name: "Year", usage: "R", trueUsage: null},
-            {position: 2, name: "Month", usage: "O", trueUsage: null},
-            {position: 3, name: "Day", usage: "C", trueUsage: "O"},
-            {position: 11, name: "Time Zone", usage: "O", trueUsage: null}
+            {position: 1, name: "Year", format: "YYYY", usage: "R"},
+            {position: 2, name: "Month", format: "MM", usage: "O"},
+            {position: 3, name: "Day", format: "DD", usage: "O"},
           ]
         };
       }  else if(resource.name === 'TM') {
         this.dateTimeConstraints = {
           dateTimeComponentDefinitions: [
-            {position: 1, name: "Hour", usage: "C", trueUsage: "O"},
-            {position: 2, name: "Minute", usage: "C", trueUsage: "O"},
-            {position: 3, name: "Second", usage: "C", trueUsage: "O"},
-            {position: 4, name: "1/10 second", usage: "C", trueUsage: "O"},
-            {position: 5, name: "1/100 second", usage: "C", trueUsage: "O"},
-            {position: 6, name: "1/1000 second", usage: "C", trueUsage: "O"},
-            {position: 10, name: "1/10000 second", usage: "C", trueUsage: "O"}
+            {position: 1, name: "Hour", format: "hh", usage: "R"},
+            {position: 2, name: "Minute", format: "mm", usage: "O"},
+            {position: 3, name: "Second", format: "ss", usage: "O"},
+            {position: 4, name: "1/10 second", format: "s...", usage: "O"},
+            {position: 5, name: "1/100 second", format: ".s..", usage: "O"},
+            {position: 6, name: "1/1000 second", format: "..s.", usage: "O"},
+            {position: 7, name: "1/10000 second", format: "...s", usage: "O"},
+            {position: 11, name: "Time Zone", format: "+/-ZZZZ", usage: "O"}
           ]
         };
       }
     }
+    this.dtName = resource.name;
+    this.loadRegexDataAndUpdateAssertion();
   }
 
   @Output()
   changes: EventEmitter<IChange>;
   changes$: Observable<IChange>;
 
-  constructor() {
+  constructor(private http : HttpClient) {
     this.changes = new EventEmitter<IChange>();
     this.changes$ = this.changes.asObservable();
 
@@ -83,6 +95,32 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
     if (s && !s.closed) {
       s.unsubscribe();
     }
+  }
+
+  loadRegexDataAndUpdateAssertion() {
+    if(!this.regexList) {
+      this.http.get('assets/' + this.dtName + ' regex list.csv', {responseType: 'text'})
+          .subscribe(data => {
+            this.regexList = {};
+            for (const line of data.split(/[\r\n]+/)){
+
+              let lineSplits = line.split(',');
+              let key = lineSplits[0] + '-' + lineSplits[1] + '-' + lineSplits[2];
+
+              this.regexList[key] = {
+                format : lineSplits[3],
+                errorMessage : lineSplits[4],
+                regex : lineSplits[5]
+              };
+            }
+
+            this.updateAssertion();
+          });
+    } else {
+      this.updateAssertion();
+    }
+
+
   }
 
   makeX(position:number) {
@@ -119,8 +157,8 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
   makeO(position:number) {
     this.dateTimeConstraints.dateTimeComponentDefinitions.forEach(item => {
       if(item.position < position && item.position !== 11) {
-        if(item.usage !== 'R') {
-          item.usage = 'RE';
+        if(item.usage !== 'R' && item.usage !== 'RE') {
+          item.usage = 'O';
         }
       }
       if(item.position > position && item.position !== 11) {
@@ -132,13 +170,30 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
   }
 
 
-  simpleFormatter() {
-    return '' +
-        '<ul>' +
-        '<li>YYYY[MM[DD[hh[mm[ss[.s[s[s[s]]]]]]]]]</li>' +
-        '<li>Element \'DTM\' value SHALL follow the Date/Time pattern \'YYYY[MM[DD[hh[mm[ss[.s[s[s[s]]]]]]]]]\'.</li>' +
-        '<li>^(\\d{4}|\\d{6}|\\d{8}|\\d{10}|\\d{12}|\\d{14}|\\d{14}\.\\d|\\d{14}\.\\d{2}|\\d{14}\.\\d{3}|\\d{14}\.\\d{4})$</li>' +
-        '</ul>' ;
+  updateAssertion() {
+    if(this.regexList) {
+      let countR = 0;
+      let countX = 0;
+      let timeZoneUsage = null;
+      this.dateTimeConstraints.dateTimeComponentDefinitions.forEach(item => {
+        if(item.usage === 'R' && item.position !== 11) countR++;
+        if(item.usage === 'X' && item.position !== 11) countX++;
+        if(item.position === 11) timeZoneUsage = item.usage;
+      });
+
+      if(!timeZoneUsage) timeZoneUsage = 'X';
+      if(timeZoneUsage !== 'R' && timeZoneUsage !== 'X') timeZoneUsage = 'REO';
+
+
+      let key = countR + '-' + countX + '-' + timeZoneUsage;
+
+
+      if(this.regexList[key]) {
+        this.dateTimeConstraints.simplePattern = this.regexList[key].format;
+        this.dateTimeConstraints.errorMessage = this.regexList[key].errorMessage;
+        this.dateTimeConstraints.regex = this.regexList[key].regex;
+      }
+    }
   }
 
   getPrevious(position:number){
@@ -154,14 +209,8 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
   }
 
   timeZoneUsageChange(event: any, location:string, target:any): void {
-    this.changes.emit({
-      location: 'DTM',
-      propertyType: PropertyType.DTMSTRUC,
-      propertyValue: this.dateTimeConstraints.dateTimeComponentDefinitions,
-      oldPropertyValue: null,
-      position: null,
-      changeType: ChangeType.UPDATE
-    });
+    this.loadRegexDataAndUpdateAssertion();
+    this.updateChanges();
   }
 
   usageChange(event: any, location:string, target:any): void {
@@ -181,14 +230,20 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
       this.makeO(target.position);
     }
 
+    this.loadRegexDataAndUpdateAssertion();
+    this.updateChanges();
+  }
+
+  updateChanges(){
     this.changes.emit({
-      location: 'DTM',
+      location: this.dtName ,
       propertyType: PropertyType.DTMSTRUC,
-      propertyValue: this.dateTimeConstraints.dateTimeComponentDefinitions,
+      propertyValue: this.dateTimeConstraints,
       oldPropertyValue: null,
       position: null,
       changeType: ChangeType.UPDATE
     });
+
   }
 
   ngOnDestroy() {

@@ -74,7 +74,6 @@ import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingDisplay;
@@ -889,12 +888,45 @@ public class DatatypeServiceImpl implements DatatypeService {
 		Collections.sort(cItems);
 		for (ChangeItemDomain item : cItems) {
 		    if (item.getPropertyType().equals(PropertyType.DTMSTRUC)) {
-		      DateTimeDatatype dtd = (DateTimeDatatype)d;
-		      item.setOldPropertyValue(dtd.getDateTimeConstraints());
+		      DateTimeDatatype dtd;
+		      if(d instanceof DateTimeDatatype){
+		        dtd = (DateTimeDatatype)d;
+		      }else {
+		        dtd = new DateTimeDatatype();
+		        dtd.setAuthorNotes(d.getAuthorNotes());
+		        dtd.setAuthors(d.getAuthors());
+		        dtd.setBinding(d.getBinding());
+		        dtd.setComment(d.getComment());
+		        dtd.setCreatedFrom(d.getComment());
+		        dtd.setCreationDate(d.getCreationDate());
+		        dtd.setDerived(d.isDerived());
+		        dtd.setDescription(d.getDescription());
+		        dtd.setDomainInfo(d.getDomainInfo());
+		        dtd.setExt(d.getExt());
+		        dtd.setFrom(d.getFrom());
+		        dtd.setId(d.getId());
+		        dtd.setName(d.getName());
+		        dtd.setOrganization(d.getOrganization());
+		        dtd.setOrigin(d.getOrigin());
+		        dtd.setPostDef(d.getPostDef());
+		        dtd.setPreDef(d.getPreDef());
+		        dtd.setPublicationInfo(d.getPublicationInfo());
+		        dtd.setPurposeAndUse(d.getPurposeAndUse());
+		        dtd.setStatus(d.getStatus());
+		        dtd.setType(d.getType());
+		        dtd.setUpdateDate(d.getUpdateDate());
+		        dtd.setUsageNotes(d.getUsageNotes());
+		        dtd.setUsername(d.getUsername());
+		        dtd.setVersion(d.getVersion());
+		        
+		        d = (Datatype)dtd;
+		      }
 		      
-		      DateTimeConstraints data = new DateTimeConstraints();
-		      data.setDateTimeComponentDefinitions((List<DateTimeComponentDefinition>) item.getPropertyValue());
-		      dtd.setDateTimeConstraints(data);
+		      item.setOldPropertyValue(dtd.getDateTimeConstraints());
+              ObjectMapper mapper = new ObjectMapper();
+              String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+              mapper.readValue(jsonInString, DateTimeConstraints.class);
+		      dtd.setDateTimeConstraints(mapper.readValue(jsonInString, DateTimeConstraints.class));
 		    }  else if (item.getPropertyType().equals(PropertyType.PREDEF)) {
 				item.setOldPropertyValue(d.getPreDef());
 				d.setPreDef((String) item.getPropertyValue());
