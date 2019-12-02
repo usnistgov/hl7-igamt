@@ -38,13 +38,13 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
             {position: 1, name: "Year", format: "YYYY", usage: "R"},
             {position: 2, name: "Month", format: "MM", usage: "O"},
             {position: 3, name: "Day", format: "DD", usage: "O"},
-            {position: 4, name: "Hour", format: "hh", usage: "O"},
-            {position: 5, name: "Minute", format: "mm", usage: "O"},
-            {position: 6, name: "Second", format: "ss", usage: "O"},
-            {position: 7, name: "1/10 second", format: "s...", usage: "O"},
-            {position: 8, name: "1/100 second", format: ".s..", usage: "O"},
-            {position: 9, name: "1/1000 second", format: "..s.", usage: "O"},
-            {position: 10, name: "1/10000 second", format: "...s", usage: "O"},
+            {position: 4, name: "Hour", format: "HH", usage: "O"},
+            {position: 5, name: "Minute", format: "MM", usage: "O"},
+            {position: 6, name: "Second", format: "SS", usage: "O"},
+            {position: 7, name: "1/10 second", format: "S...", usage: "O"},
+            {position: 8, name: "1/100 second", format: ".S..", usage: "O"},
+            {position: 9, name: "1/1000 second", format: "..S.", usage: "O"},
+            {position: 10, name: "1/10000 second", format: "...S", usage: "O"},
             {position: 11, name: "Time Zone", format: "+/-ZZZZ", usage: "O"}
           ]
         };
@@ -59,13 +59,13 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
       }  else if(resource.name === 'TM') {
         this.dateTimeConstraints = {
           dateTimeComponentDefinitions: [
-            {position: 1, name: "Hour", format: "hh", usage: "R"},
-            {position: 2, name: "Minute", format: "mm", usage: "O"},
-            {position: 3, name: "Second", format: "ss", usage: "O"},
-            {position: 4, name: "1/10 second", format: "s...", usage: "O"},
-            {position: 5, name: "1/100 second", format: ".s..", usage: "O"},
-            {position: 6, name: "1/1000 second", format: "..s.", usage: "O"},
-            {position: 7, name: "1/10000 second", format: "...s", usage: "O"},
+            {position: 1, name: "Hour", format: "HH", usage: "R"},
+            {position: 2, name: "Minute", format: "MM", usage: "O"},
+            {position: 3, name: "Second", format: "SS", usage: "O"},
+            {position: 4, name: "1/10 second", format: "S...", usage: "O"},
+            {position: 5, name: "1/100 second", format: ".S..", usage: "O"},
+            {position: 6, name: "1/1000 second", format: "..S.", usage: "O"},
+            {position: 7, name: "1/10000 second", format: "...S", usage: "O"},
             {position: 11, name: "Time Zone", format: "+/-ZZZZ", usage: "O"}
           ]
         };
@@ -105,12 +105,12 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
             for (const line of data.split(/[\r\n]+/)){
 
               let lineSplits = line.split(',');
-              let key = lineSplits[0] + '-' + lineSplits[1] + '-' + lineSplits[2];
+              let key = lineSplits[0] + '-' + lineSplits[1] + '-' + lineSplits[2] + '-' + lineSplits[3] + '-' + lineSplits[4];
 
               this.regexList[key] = {
-                format : lineSplits[3],
-                errorMessage : lineSplits[4],
-                regex : lineSplits[5]
+                format : lineSplits[5],
+                errorMessage : lineSplits[6],
+                regex : lineSplits[7]
               };
             }
 
@@ -173,20 +173,23 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
   updateAssertion() {
     if(this.regexList) {
       let countR = 0;
+      let countRE = 0;
+      let countO = 0;
       let countX = 0;
       let timeZoneUsage = null;
       this.dateTimeConstraints.dateTimeComponentDefinitions.forEach(item => {
         if(item.usage === 'R' && item.position !== 11) countR++;
+        if(item.usage === 'RE' && item.position !== 11) countRE++;
+        if(item.usage === 'O' && item.position !== 11) countO++;
         if(item.usage === 'X' && item.position !== 11) countX++;
         if(item.position === 11) timeZoneUsage = item.usage;
       });
 
       if(!timeZoneUsage) timeZoneUsage = 'X';
-      if(timeZoneUsage !== 'R' && timeZoneUsage !== 'X') timeZoneUsage = 'REO';
 
+      let key = countR + '-' + countRE + '-' + countO + '-' + countX + '-' + timeZoneUsage;
 
-      let key = countR + '-' + countX + '-' + timeZoneUsage;
-
+      console.log(key);
 
       if(this.regexList[key]) {
         this.dateTimeConstraints.simplePattern = this.regexList[key].format;
@@ -194,18 +197,6 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
         this.dateTimeConstraints.regex = this.regexList[key].regex;
       }
     }
-  }
-
-  getPrevious(position:number){
-    if(position === 2) return 'Year';
-    if(position === 3) return 'Month';
-    if(position === 4) return 'Day';
-    if(position === 5) return 'Hour';
-    if(position === 6) return 'Minute';
-    if(position === 7) return 'Second';
-    if(position === 8) return '1/10 second';
-    if(position === 9) return '1/100 second';
-    if(position === 10) return '1/1000 second';
   }
 
   timeZoneUsageChange(event: any, location:string, target:any): void {

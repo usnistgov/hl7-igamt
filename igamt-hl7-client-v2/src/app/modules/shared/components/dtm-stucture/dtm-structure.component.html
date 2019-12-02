@@ -28,21 +28,24 @@
                 </p-table>
             </div>
             <div class="ui-g-6">
-                <p-card header="Expected {{dtName}} Format and Constraint" subheader="Pattern : Error Message : Regular Expression" [style]="{height: '100%'}" styleClass="ui-card-shadow">
+                <p-card header="Expected {{dtName}} Format and Constraint" [style]="{height: '100%'}" styleClass="ui-card-shadow">
                     <p-header>
                         <img [style.width.px]="getLogSize()" src="assets/{{dtName}} logo.png">
                     </p-header>
-                    <ul>
-                        <li>
-                            {{dateTimeConstraints.simplePattern}}
-                        </li>
-                        <li>
-                            {{dateTimeConstraints.errorMessage}}
-                        </li>
-                        <li>
-                            {{dateTimeConstraints.regex}}
-                        </li>
-                    </ul>
+                    <table>
+                        <tr>
+                            <td>Pattern (R: <b>bold</b>, RE: <em>italic</em>):</td>
+                            <td style="color:#0607f4"><div [innerHTML]="dateTimeConstraints.simplePattern"></div></td>
+                        </tr>
+                        <tr>
+                            <td>Erorr Message:</td>
+                            <td style="color:#0607f4">{{dateTimeConstraints.errorMessage}}</td>
+                        </tr>
+                        <tr>
+                            <td>Regular Expression:</td>
+                            <td style="color:#0607f4">{{dateTimeConstraints.regex}}</td>
+                        </tr>
+                    </table>
                 </p-card>
             </div>
         </div>

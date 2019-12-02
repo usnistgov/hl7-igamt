@@ -9,8 +9,7 @@ import {ISelectedIds} from '../select-resource-ids/select-resource-ids.component
   styleUrls: ['./export-xml-dialog.component.css'],
 })
 export class ExportXmlDialogComponent implements OnInit {
-  ids: ISelectedIds = {conformanceProfilesId: [], compositeProfilesId: [],
-  };
+  ids: ISelectedIds = {conformanceProfilesId: [], compositeProfilesId: []};
   constructor(public dialogRef: MatDialogRef<ExportXmlDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IExportXmlDialogData) {
 
@@ -20,6 +19,12 @@ export class ExportXmlDialogComponent implements OnInit {
   cancel() {
     this.dialogRef.close();
   }
+
+  verify() {
+    console.log('verify', this.ids);
+    console.log(this.data);
+  }
+
   submit() {
     this.dialogRef.close(this.ids);
   }
@@ -33,4 +38,5 @@ export class ExportXmlDialogComponent implements OnInit {
 export interface IExportXmlDialogData {
   conformanceProfiles?: IDisplayElement[];
   compositeProfiles?: IDisplayElement[];
+  igId?:string;
 }

@@ -1,6 +1,10 @@
-﻿1,0,X,YYYY[MM[DD]],Element 'xxx' SHALL follow the Date/Time pattern 'YYYY[MM[DD]]'.,^(\d{4}|\d{6}|\d{8})$
-1,1,X,YYYY[MM],Element 'xxx' SHALL follow the Date/Time pattern 'YYYY[MM]'.,^(\d{4}|\d{6})$
-1,2,X,YYYY,Element 'xxx' SHALL follow the Date/Time pattern 'YYYY'.,^(\d{4})$
-2,0,X,YYYYMM[DD],Element 'xxx' SHALL follow the Date/Time pattern 'YYYYMM[DD]'.,^(\d{6}|\d{8})$
-2,1,X,YYYYMM,Element 'xxx' SHALL follow the Date/Time pattern 'YYYYMM'.,^(\d{6})$
-3,0,X,YYYYMMDD,Element 'xxx' SHALL follow the Date/Time pattern 'YYYYMMDD'.,^(\d{8})$
+﻿1,2,0,0,X,<b>YYYY</b>{<em>MM</em>{<em>DD</em>}},Element 'xxx' SHALL follow the Date/Time pattern 'YYYY{MM{DD}}'.,^(\d{4}|\d{6}|\d{8})$
+1,1,1,0,X,<b>YYYY</b>{<em>MM</em>[DD]},Element 'xxx' SHALL follow the Date/Time pattern 'YYYY{MM[DD]}'.,^(\d{4}|\d{6}|\d{8})$
+1,0,2,0,X,<b>YYYY</b>[MM[DD]],Element 'xxx' SHALL follow the Date/Time pattern 'YYYY[MM[DD]]'.,^(\d{4}|\d{6}|\d{8})$
+1,1,0,1,X,<b>YYYY</b>{<em>MM</em>},Element 'xxx' SHALL follow the Date/Time pattern 'YYYY{MM}'.,^(\d{4}|\d{6})$
+1,0,1,1,X,<b>YYYY</b>[MM],Element 'xxx' SHALL follow the Date/Time pattern 'YYYY[MM]'.,^(\d{4}|\d{6})$
+1,0,0,2,X,<b>YYYY</b>,Element 'xxx' SHALL follow the Date/Time pattern 'YYYY'.,^(\d{4})$
+2,1,0,0,X,<b>YYYYMM</b>{<em>DD</em>},Element 'xxx' SHALL follow the Date/Time pattern 'YYYYMM{DD}'.,^(\d{6}|\d{8})$
+2,0,1,0,X,<b>YYYYMM</b>[DD],Element 'xxx' SHALL follow the Date/Time pattern 'YYYYMM[DD]'.,^(\d{6}|\d{8})$
+2,0,0,1,X,<b>YYYYMM</b>,Element 'xxx' SHALL follow the Date/Time pattern 'YYYYMM'.,^(\d{6})$
+3,0,0,0,X,<b>YYYYMMDD</b>,Element 'xxx' SHALL follow the Date/Time pattern 'YYYYMMDD'.,^(\d{8})$
