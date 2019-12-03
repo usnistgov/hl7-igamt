@@ -13,7 +13,12 @@
                     <ng-template pTemplate="body" let-item>
                         <tr>
                             <td>{{item.name}}</td>
-                            <td>{{item.format}}</td>
+                            <td>
+                                <div *ngIf="item.usage === 'R'"><b>{{item.format}}</b></div>
+                                <div *ngIf="item.usage === 'RE'">[<b>{{item.format}}</b>]</div>
+                                <div *ngIf="item.usage === 'O'">[{{item.format}}]</div>
+                                <div *ngIf="item.usage === 'X'"><del>{{item.format}}</del></div>
+                            </td>
                             <td *ngIf="item.position === 1">
                                 <p-selectButton [options]="usageOptions" [(ngModel)]="item.usage" disabled=""></p-selectButton>
                             </td>
@@ -34,11 +39,11 @@
                     </p-header>
                     <table>
                         <tr>
-                            <td>Pattern (R: <b>bold</b>, RE: <em>italic</em>):</td>
-                            <td style="color:#0607f4"><div [innerHTML]="dateTimeConstraints.simplePattern"></div></td>
+                            <td>Pattern (R, RE: <b>bold</b>):</td>
+                            <td style="color:#0607f4"><div [innerHTML]="genHTML(dateTimeConstraints.simplePattern)"></div></td>
                         </tr>
                         <tr>
-                            <td>Erorr Message:</td>
+                            <td>Error Message:</td>
                             <td style="color:#0607f4">{{dateTimeConstraints.errorMessage}}</td>
                         </tr>
                         <tr>
