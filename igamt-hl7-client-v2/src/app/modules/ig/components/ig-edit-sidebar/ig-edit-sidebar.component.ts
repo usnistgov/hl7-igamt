@@ -6,15 +6,16 @@ import { Store } from '@ngrx/store';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of } from 'rxjs';
 import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { IgEditActionTypes, ImportResourceFromFile } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   CopyResource, CopyResourceSuccess,
   DeleteResource,
   IgEditTocAddResource, selectDerived,
   UpdateSections,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { IgEditActionTypes, ToggleDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { selectIgId } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { ToggleDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
 import { CollapseTOC, CreateCoConstraintGroup } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
@@ -25,6 +26,7 @@ import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co
 import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
+import { ImportCsvValuesetComponent } from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
 import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
 import { UsageDialogComponent } from '../../../shared/components/usage-dialog/usage-dialog.component';
 import { Scope } from '../../../shared/constants/scope.enum';
@@ -155,6 +157,25 @@ export class IgEditSidebarComponent implements OnInit {
       }),
     ).subscribe();
     subscription.unsubscribe();
+  }
+
+  addVSFromCSV($event) {
+    console.log($event);
+    const dialogRef = this.dialog.open(ImportCsvValuesetComponent, {
+      data: { ...$event, targetScope: Scope.USER, title: 'Add Valueset from CSV file' },
+    });
+
+    dialogRef.afterClosed().pipe(
+      filter((x) => x !== undefined),
+      withLatestFrom(this.igId$),
+      take(1),
+      map(([result, igId]) => {
+        console.log([result]);
+        console.log([igId]);
+
+        this.store.dispatch(new ImportResourceFromFile(igId, Type.VALUESET, Type.IGDOCUMENT, result));
+      }),
+    ).subscribe();
   }
 
   copy($event: ICopyResourceData) {

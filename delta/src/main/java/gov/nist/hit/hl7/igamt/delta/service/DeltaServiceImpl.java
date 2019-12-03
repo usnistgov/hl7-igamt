@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.delta.service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
@@ -16,12 +17,6 @@ import gov.nist.diff.domain.DeltaAction;
 import gov.nist.diff.domain.DeltaMode;
 import gov.nist.diff.domain.DeltaObject;
 import gov.nist.diff.service.DeltaProcessor;
-import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -289,7 +284,7 @@ public class DeltaServiceImpl implements DeltaService {
       if(l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
         if(l.getOrigin() == null || !originMap.containsKey(l.getOrigin()) ) {
           result.add(createDeltaDisplay(registryType, l, DeltaAction.ADDED));
-        }else if(l.getOrigin()  !=null && originMap.containsKey(l.getOrigin())) {
+        }else if(l.getOrigin()!=null && originMap.containsKey(l.getOrigin())) {
           
           result.add(compareToOrigin(l, registryType));
           hasChild.put(l.getOrigin(), l);
@@ -412,6 +407,44 @@ public class DeltaServiceImpl implements DeltaService {
       }
       default:  return null;
     }
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.delta.service.DeltaService#delta(gov.nist.hit.hl7.igamt.common.base.domain.Type, gov.nist.hit.hl7.igamt.common.base.domain.Resource)
+   */
+  @Override
+  public List<StructureDelta> delta(Type type, Resource resource){
+    // TODO Auto-generated method stub
+    if(type.equals(Type.DATATYPE)) {
+      Datatype target = (Datatype) resource;
+      Datatype source = this.datatypeService.findById(target.getOrigin());
+      DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
+      DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
+      List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+      return structure;
+
+    } else if(type.equals(Type.SEGMENT)) {
+      Segment target = (Segment) resource;
+      Segment source = this.segmentService.findById(target.getOrigin());
+      SegmentStructureDisplay sourceDisplay = this.segmentService.convertDomainToDisplayStructure(source, true);
+      SegmentStructureDisplay targetDisplay = this.segmentService.convertDomainToDisplayStructure(target, true);
+      List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
+
+      return structure;
+
+    } else if(type.equals(Type.CONFORMANCEPROFILE)) {
+      ConformanceProfile target = (ConformanceProfile) resource;
+      ConformanceProfile source = this.conformanceProfileService.findById(target.getOrigin());
+
+      ConformanceProfileStructureDisplay sourceDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(source, true);
+      ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
+
+      List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
+
+      return structure;
+
+    }
+    return null;
   }
 
 

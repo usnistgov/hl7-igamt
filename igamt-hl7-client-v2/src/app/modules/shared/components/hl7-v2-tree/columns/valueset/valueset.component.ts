@@ -185,7 +185,6 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
       PropertyType.SINGLECODE,
       ChangeType.UPDATE,
     );
-
     if (change) {
       this.vsBindingsChange([]);
     }

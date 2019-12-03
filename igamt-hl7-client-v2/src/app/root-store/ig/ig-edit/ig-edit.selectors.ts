@@ -9,6 +9,7 @@ import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
 import { Scope } from '../../../modules/shared/constants/scope.enum';
 import { Type } from '../../../modules/shared/constants/type.enum';
+import { Status } from '../../../modules/shared/models/abstract-domain.interface';
 import { ICoConstraintGroup } from '../../../modules/shared/models/co-constraint.interface';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
@@ -309,7 +310,7 @@ export const selectTitleBar = createSelector(
 export const selectViewOnly = createSelector(
   selectIgDocument,
   (document: IgDocument): boolean => {
-    return document.domainInfo.scope !== Scope.USER;
+    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED;
   },
 );
 
@@ -437,6 +438,10 @@ export const selectValueSets = createSelector(
     return state.valueSets;
   },
 );
+export const selectAllValueSets = createSelector(
+  selectValueSets,
+  selectAll,
+);
 export const selectDelta = createSelector(
   selectIgEdit,
   (state: IState) => {
@@ -461,6 +466,10 @@ export const selectMessages = createSelector(
   (state: IState) => {
     return state.messages;
   },
+);
+export const selectAllMessages = createSelector(
+  selectMessages,
+  selectAll,
 );
 
 export const selectCoConstraintGroups = createSelector(

@@ -14,9 +14,10 @@ import { IDocumentCreationWrapper } from '../models/ig/document-creation.interfa
 import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
-import { IAddNodes, ICopyNode, ICopyResourceResponse, ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../models/toc/toc-operation.class';
+import { IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse, ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -231,6 +232,12 @@ export class IgService {
 
   getExportFirstDecision(id: string): Observable<IExportConfigurationGlobal> {
     return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + id + '/getFilteredDocument');
+  }
+
+  importFromFile(documentId, resourceType: Type, targetType: Type, file: any) {
+    const form: FormData = new FormData();
+    form.append('file', file);
+    return this.http.post<Message<IAddResourceFromFile>>('/api/igdocuments/' + documentId + '/valuesets/uploadCSVFile', form);
   }
 
   getDisplay(id: string, delta: boolean) {

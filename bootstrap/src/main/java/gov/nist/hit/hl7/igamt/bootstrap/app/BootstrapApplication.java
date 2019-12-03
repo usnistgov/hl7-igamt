@@ -48,6 +48,9 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontConfigurationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
@@ -81,6 +84,9 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   Environment env;
+  
+  @Autowired
+  private ExportConfigurationService exportConfigurationService;
   
 //  @Autowired
 //  RelationShipService testCache;
@@ -199,9 +205,31 @@ public class BootstrapApplication implements CommandLineRunner {
   //
    @PostConstruct
     void createMessageEvent() {
-  
-      messageEventFactory.createMessageEvent();
+      messageEventFactory.createMessageEvent();      
+      if(exportConfigurationService.getExportConfiguration("BasicExportConfiguration") == null) {
+    	  ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
+    	  basicExportConfiguration.setConfigName("BasicExportConfiguration");
+    	  basicExportConfiguration.setId("BasicExportConfiguration");
+    	  exportConfigurationService.save(basicExportConfiguration);
       System.out.println("done");
+
+      }
+      if(exportConfigurationService.getExportConfiguration("BasicExportConfiguration2") == null) {
+    	  ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
+    	  basicExportConfiguration.setConfigName("BasicExportConfiguration2");
+    	  basicExportConfiguration.setId("BasicExportConfiguration2");
+    	  exportConfigurationService.save(basicExportConfiguration);
+      System.out.println("done");
+
+      }
+      if(exportConfigurationService.getExportConfiguration("BasicExportConfiguration3") == null) {
+    	  ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
+    	  basicExportConfiguration.setConfigName("BasicExportConfiguration3");
+    	  basicExportConfiguration.setId("BasicExportConfiguration3");
+    	  exportConfigurationService.save(basicExportConfiguration);
+      System.out.println("done");
+
+      }
   }
 //  
    //

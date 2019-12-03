@@ -1,6 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
@@ -9,43 +8,43 @@ import { MessageService } from 'src/app/modules/core/services/message.service';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
 import { Message, MessageType, UserMessage } from '../../../modules/core/models/message/message.class';
 import { IGDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
-import { ICopyResourceResponse, ICreateCoConstraintGroupResponse } from '../../../modules/ig/models/toc/toc-operation.class';
+import { IAddResourceFromFile, ICopyResourceResponse, ICreateCoConstraintGroupResponse } from '../../../modules/ig/models/toc/toc-operation.class';
 import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
 import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
 import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
 import { CreateCoConstraintGroup, CreateCoConstraintGroupFailure, CreateCoConstraintGroupSuccess } from './ig-edit.actions';
 import {
-  DeleteResource,
-  DeleteResourceFailure,
-  DeleteResourceSuccess,
-  LoadResourceReferences,
-  LoadResourceReferencesFailure,
-  LoadResourceReferencesSuccess,
-  OpenEditorFailure,
-  ToggleDelta,
-  ToggleDeltaFailure,
-  ToggleDeltaSuccess,
-} from './ig-edit.actions';
-import {
   AddResourceFailure,
   AddResourceSuccess,
   CopyResource,
   CopyResourceFailure,
   CopyResourceSuccess,
+  DeleteResource,
+  DeleteResourceFailure,
+  DeleteResourceSuccess,
   EditorSave,
   IgEditActions,
   IgEditActionTypes,
-  IgEditResolverLoad,
-  IgEditResolverLoadFailure,
+  IgEditResolverLoad, IgEditResolverLoadFailure,
   IgEditResolverLoadSuccess,
   IgEditTocAddResource,
+  ImportResourceFromFile,
+  ImportResourceFromFileFailure,
+  ImportResourceFromFileSuccess,
+  LoadResourceReferences,
+  LoadResourceReferencesFailure,
+  LoadResourceReferencesSuccess,
   OpenEditor,
+  OpenEditorFailure,
   OpenIgMetadataEditorNode,
   OpenNarrativeEditorNode,
   TableOfContentSave,
   TableOfContentSaveFailure,
   TableOfContentSaveSuccess,
+  ToggleDelta,
+  ToggleDeltaFailure,
+  ToggleDeltaSuccess,
   ToolbarSave,
 } from './ig-edit.actions';
 import {
@@ -287,9 +286,25 @@ export class IgEditEffects {
   );
 
   @Effect()
+  importResourceFromFileSuccess$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.ImportResourceFromFileSuccess),
+    map((action: ImportResourceFromFileSuccess) => {
+      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource imported successfully ', null));
+    }),
+  );
+
+  @Effect()
   deleteResourceFailure$ = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteResourceFailure),
     map((action: DeleteResourceFailure) => {
+      return this.message.actionFromError(action.error);
+    }),
+  );
+
+  @Effect()
+  importResourceFromFileFailure$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.ImportResourceFromFileFailure),
+    map((action: ImportResourceFromFileFailure) => {
       return this.message.actionFromError(action.error);
     }),
   );
@@ -320,6 +335,31 @@ export class IgEditEffects {
           return of(
             new TurnOffLoader(),
             new AddResourceFailure(error),
+          );
+        }),
+      );
+      return this.finalizeAdd(doAdd);
+    }),
+  );
+
+  @Effect()
+  CopyResourceSuccess = this.actions$.pipe(
+    ofType(IgEditActionTypes.ImportResourceFromFile),
+    switchMap((action: ImportResourceFromFile) => {
+      this.store.dispatch(new TurnOnLoader({
+        blockUI: true,
+      }));
+      const doAdd: Observable<Action> = this.igService.importFromFile(action.documentId, action.resourceType, action.targetType, action.file).pipe(
+        flatMap((response: Message<IAddResourceFromFile>) => {
+          return [
+            new TurnOffLoader(),
+            new ImportResourceFromFileSuccess(response.data),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new TurnOffLoader(),
+            new ImportResourceFromFileFailure(error),
           );
         }),
       );

@@ -31,8 +31,9 @@
 			</xsl:if>
 			<xsl:if test="$columnDisplay.message.flavor = 'true'">
 				<xsl:element name="td">
-					<xsl:choose>
+                    <xsl:choose>
 						<xsl:when test="$changeClass/@property = 'SEGMENTREF' and $changeClass/@action = 'UPDATED'">
+
 							<xsl:attribute name="style">
 								<xsl:value-of select="concat('background-color:' , $updatedColor)"/>
 							</xsl:attribute>
@@ -57,10 +58,11 @@
 				</xsl:element>
 			</xsl:if>
 			<xsl:choose>
-				<xsl:when test="@ref!=']'">
+				<xsl:when test="not(contains(@ref,']'))">
 					<xsl:if test="$columnDisplay.message.usage = 'true'">
 						<xsl:element name="td">
 							<xsl:if test="(normalize-space(@usage)!='')">
+
 								<xsl:choose>
 									<xsl:when test="$changeClass/@property = 'USAGE' and $changeClass/@action = 'UPDATED'">
 										<xsl:attribute name="style">

@@ -13,6 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.export.configuration.repository;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
@@ -23,4 +25,8 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
  */
 public interface ExportConfigurationRepository extends MongoRepository<ExportConfiguration, String> {
   public ExportConfiguration findOneByUsername(String username);
+  public List<ExportConfiguration> findByUsername(String username);
+  public ExportConfiguration findOneById(String id);
+  public ExportConfiguration findLatestById(String id);
+  
 }

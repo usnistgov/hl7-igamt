@@ -3,7 +3,7 @@ import { Action } from '@ngrx/store';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { IGDisplayInfo } from '../../../modules/ig/models/ig/ig-document.class';
 import {
-  IAddNodes,
+  IAddNodes, IAddResourceFromFile,
   ICopyNode,
   ICopyResourceResponse,
   IDeleteNode,
@@ -55,7 +55,6 @@ export enum IgEditActionTypes {
   EditorUpdate = '[Editor Update] Update editor without changes',
   EditorSaveSuccess = '[Editor Save Success] Editor Save Success',
   EditorSaveFailure = '[Editor Save Failure] Editor Save Failure',
-
   LoadSelectedResource = '[Router Resolver] Load Selected Resource',
   LoadResourceReferences = '[Ig Resource References] Load Resource References',
   LoadResourceReferencesSuccess = '[Ig Resource References] Load Resource References Success',
@@ -64,6 +63,9 @@ export enum IgEditActionTypes {
   CollapseTOC = '[Ig Edit TOC] Collapse',
   ExpandTOC = '[Ig Edit TOC] Expand',
   ToggleFullScreen = '[Ig Edit] Toggle Fullscreen',
+  ImportResourceFromFile = '[Ig Edit] Import resource from file',
+  ImportResourceFromFileSuccess = '[Ig Edit] Import resource from file Success',
+  ImportResourceFromFileFailure= '[Ig Edit] Import resource from file Failure',
   ToggleDelta = '[Ig Edit] Toggle DELTA Delta',
   ToggleDeltaSuccess = '[Ig Edit] Toggle DELTA Success',
   ToggleDeltaFailure = '[Ig Edit] Toggle DELTA Failure',
@@ -71,10 +73,8 @@ export enum IgEditActionTypes {
 
 export class CollapseTOC implements Action {
   readonly type = IgEditActionTypes.CollapseTOC;
-
   constructor() {
   }
-
 }
 
 export class ExpandTOC implements Action {
@@ -149,6 +149,25 @@ export class IgEditTocAddResource implements Action {
   constructor(readonly payload: IAddNodes) {
   }
 }
+
+export class ImportResourceFromFile implements Action {
+  readonly type = IgEditActionTypes.ImportResourceFromFile;
+  constructor(readonly documentId, readonly resourceType: Type , readonly targetType: Type, readonly file: any ) {
+  }
+}
+
+export class ImportResourceFromFileSuccess implements Action {
+  readonly type = IgEditActionTypes.ImportResourceFromFileSuccess;
+  constructor(readonly payload: IAddResourceFromFile ) {
+  }
+}
+
+export class ImportResourceFromFileFailure implements Action {
+  readonly type = IgEditActionTypes.ImportResourceFromFileFailure;
+  constructor(readonly error: HttpErrorResponse) {
+  }
+}
+
 export class AddResourceSuccess implements Action {
   readonly type = IgEditActionTypes.AddResourceSuccess;
   constructor(readonly payload: IGDisplayInfo) {
@@ -416,6 +435,9 @@ export type IgEditActions =
   | DeleteResourceSuccess
   | DeleteResourceFailure
   | EditorUpdate
+  | ImportResourceFromFile
+  | ImportResourceFromFileSuccess
+  | ImportResourceFromFileFailure
   | ToggleDelta
   | ToggleDeltaSuccess
   | CreateCoConstraintGroupFailure

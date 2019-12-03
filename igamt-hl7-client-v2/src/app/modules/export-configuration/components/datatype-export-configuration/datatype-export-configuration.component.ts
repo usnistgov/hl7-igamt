@@ -10,6 +10,10 @@ export class DatatypeExportConfigurationComponent implements OnInit {
 
   @Input()
   config: any;
+
+  @Input()
+  displayColumns: boolean;
+
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
 
@@ -20,6 +24,12 @@ export class DatatypeExportConfigurationComponent implements OnInit {
 
   triggerChange() {
     this.detectChange.emit(this.config);
+  }
+
+  applyChange(event: any) {
+    this.config.deltaMode = event.active;
+    this.config.deltaConfig = event.config;
+    this.triggerChange();
   }
 
   print() {

@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  ChangeDetectionStrategy, ChangeDetectorRef,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -18,6 +18,7 @@ import { Type } from '../../../shared/constants/type.enum';
 import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { NodeHelperService } from '../../../shared/services/node-helper.service';
+import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IAddNewWrapper, IAddWrapper } from '../../models/ig/add-wrapper.class';
 import { IClickInfo } from '../../models/toc/click-info.interface';
 
@@ -55,9 +56,12 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   addChildren = new EventEmitter<IAddWrapper>();
   @Output()
   addChild = new EventEmitter<IAddNewWrapper>();
+  @Output()
+  addVSFromCSV = new EventEmitter<any>();
+
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
-  constructor(private nodeHelperService: NodeHelperService, private cd: ChangeDetectorRef, private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor(private nodeHelperService: NodeHelperService, private valueSetService: ValueSetService, private cd: ChangeDetectorRef, private router: Router, private activatedRoute: ActivatedRoute) {
     this.options = {
       allowDrag: (node: TreeNode) => node.data.type === Type.TEXT ||
         node.data.type === Type.CONFORMANCEPROFILE ||
@@ -116,9 +120,20 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   import(node, type: Type, scope: Scope) {
     this.addChildren.emit({ node, type, scope });
   }
+
+  importCSV(node, type: Type, scope: Scope) {
+    this.addVSFromCSV.emit({ node, type, scope });
+  }
+
   copyResource(node: TreeNode) {
     this.copy.emit({ element: { ...node.data }, existing: node.parent.data.children });
   }
+
+  exportCSVFileForVS(node: TreeNode) {
+    this.valueSetService.exportCSVFile(node.data.id);
+    console.log(node.data);
+  }
+
   deleteResource(node: TreeNode) {
     this.delete.emit(node.data);
   }

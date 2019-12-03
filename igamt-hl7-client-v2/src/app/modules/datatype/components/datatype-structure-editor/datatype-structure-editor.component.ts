@@ -15,7 +15,6 @@ import { IDatatype } from '../../../shared/models/datatype.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
-import { DeltaService } from '../../../shared/services/delta.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { DatatypeService } from '../../services/datatype.service';
 
@@ -73,8 +72,8 @@ export class DatatypeStructureEditorComponent extends StructureEditorComponent<I
 
   isDTM(): Observable<boolean> {
     return this.resource$.pipe(
-      map((resource) => {
-        return resource.type === Type.DATATYPE && resource.name === 'DTM';
+      map((datatype) => {
+        return datatype.name === 'DTM';
       }),
     );
   }

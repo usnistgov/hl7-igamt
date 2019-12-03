@@ -38,14 +38,27 @@ export class SelectMessagesComponent implements OnInit {
   filterTable(value) {
     this.tableRef.filteredValue = [];
     for (const row of this.tableRef.value) {
-      const nameFilter = row.data.name.includes(value);
-      const descriptionFilter = row.data.description.includes(value);
+      let nameFilter = false;
+      let descriptionFilter = false;
+      if (row.data.name) {
+        nameFilter  = this.includeFilter(value, row.data.name);
+      }
+      if (row.data.description) {
+        descriptionFilter = this.includeFilter(value, row.data.description);
+      }
       const eventsFilter = row.children.filter((node: any) => {
-        return node.data.name.includes(value);
+        return this.includeFilter(value, node.data.name);
       }).length > 0;
       if (nameFilter || descriptionFilter || eventsFilter) {
         this.tableRef.filteredValue.push(row);
       }
+    }
+  }
+  includeFilter(input: string, value: string) {
+    if (input == null || input.length === 0) {
+      return true;
+    } else {
+      return value.toUpperCase().includes(input.toUpperCase());
     }
   }
   selectMessageEvent(obj: any) {

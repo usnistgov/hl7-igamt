@@ -2,7 +2,7 @@
 	<xsl:import href="/templates/profile/resource/preDef.xsl" />
 	<xsl:import href="/templates/profile/resource/usageNotes.xsl" />
 	<xsl:import href="/templates/profile/resource/authorNotes.xsl" />
-	<xsl:import href="/templates/profile/resource/VersionDisplay.xsl" />
+	<xsl:import href="/templates/profile/resource/versionDisplay.xsl" />
 	<xsl:import href="/templates/profile/resource/postDef.xsl" />	
     <xsl:import href="/templates/profile/datatype/component.xsl"/>
     <xsl:import href="/templates/profile/constraint.xsl"/>
@@ -143,11 +143,35 @@
                     <xsl:element name="tbody">
                         <xsl:for-each select="Component">
                             <xsl:sort select="@position" data-type="number"></xsl:sort>
-                            <xsl:call-template name="component">
-                                <xsl:with-param name="style"
-                                                select="'background-color:white;text-decoration:normal'"/>
-                                <xsl:with-param name="showConfLength" select="../@ShowConfLength"/>
-                            </xsl:call-template>
+
+                            <xsl:variable name="changedPosition" select="./@position" />
+
+                            <xsl:choose>
+                                <xsl:when test="not(../Changes/@mode) or ../Changes/@mode = 'HIGHLIGHT'">
+                                    <xsl:call-template name="component">
+                                        <xsl:with-param name="style"
+                                                        select="'background-color:white;text-decoration:normal'"/>
+                                        <xsl:with-param name="showConfLength" select="../@ShowConfLength"/>
+                                        <xsl:with-param name="changeClass" select="../Changes/Change[@position=$changedPosition]"  />
+                                        <xsl:with-param name="updatedColor" select="../Changes/@updatedColor" />
+                                        <xsl:with-param name="addedColor" select="../Changes/@addedColor" />
+                                        <xsl:with-param name="deletedColor" select="../Changes/@deletedColor" />
+                                    </xsl:call-template>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:if test="../Changes/Change[@position=$changedPosition]">
+                                        <xsl:call-template name="component">
+                                            <xsl:with-param name="style"
+                                                            select="'background-color:white;text-decoration:normal'"/>
+                                            <xsl:with-param name="showConfLength" select="../@ShowConfLength"/>
+                                            <xsl:with-param name="changeClass" select="../Changes/Change[@position=$changedPosition]"  />
+                                            <xsl:with-param name="updatedColor" select="../Changes/@updatedColor" />
+                                            <xsl:with-param name="addedColor" select="../Changes/@addedColor" />
+                                            <xsl:with-param name="deletedColor" select="../Changes/@deletedColor" />
+                                        </xsl:call-template>
+                                    </xsl:if>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </xsl:for-each>
                     </xsl:element>
                 </xsl:element>
