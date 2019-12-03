@@ -1,7 +1,7 @@
 import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import { selectBindingConfig } from '../../../../root-store/config/config.reducer';
@@ -99,6 +99,10 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
         this.editorChange({ changes, resource }, true);
       }),
     ).subscribe();
+  }
+
+  isDTM(): Observable<boolean> {
+    return of(false);
   }
 
   onEditorSave(action: EditorSave): Observable<Action> {

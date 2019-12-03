@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>gov.nist.hit.hl7</groupId>
+		<artifactId>igamt</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>verification</artifactId>
+	<name>verification</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>conformance-profile</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.4</version>
+		</dependency>
+<!-- 		<dependency>
+			<groupId>gov.nist</groupId>
+			<artifactId>hl7-v2-validation</artifactId>
+			<version>1.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.healthcare.hl7.v2.unifiedreport</groupId>
+			<artifactId>validation-proxy</artifactId>
+			<version>1.0.5</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.healthcare.hl7.v2.unifiedreport</groupId>
+			<artifactId>report-filter</artifactId>
+			<version>1.0.5</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.healthcare.resources</groupId>
+			<artifactId>validation</artifactId>
+			<version>1.0.1</version>
+		</dependency> -->
+		<dependency>
+			<groupId>dom4j</groupId>
+			<artifactId>dom4j</artifactId>
+			</dependency>
+	</dependencies>
+</project>

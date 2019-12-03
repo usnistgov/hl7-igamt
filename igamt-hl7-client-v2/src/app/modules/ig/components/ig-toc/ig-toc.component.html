@@ -69,6 +69,9 @@
               <ng-template (execute)="import(node.data, 'VALUESET', 'PHINVADS')" contextMenuItem>
                 <i class="fa fa-plus"></i> Add PHINVADS Value Sets
               </ng-template>
+              <ng-template (execute)="importCSV(node.data, 'VALUESET', 'USER')" contextMenuItem>
+                <i class="fa fa-plus"></i> Add User Value Sets by CSV
+              </ng-template>
             </context-menu>
           </div>
         </ng-container>
@@ -136,6 +139,9 @@
           <context-menu #valueSetContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
+            </ng-template>
+            <ng-template (execute)="exportCSVFileForVS(node)" contextMenuItem>
+              <i class="fa fa-file"></i> Export CSV File
             </ng-template>
             <ng-template (execute)="deleteResource(node)" contextMenuItem>
               <i class="fa fa-remove"></i> Delete

@@ -13,8 +13,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletResponse;
-import gov.nist.hit.hl7.igamt.display.model.IGMetaDataDisplay;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,6 @@ import com.opencsv.CSVReader;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -70,8 +69,10 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.CloneMode;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
+import gov.nist.hit.hl7.igamt.display.model.IGMetaDataDisplay;
+import gov.nist.hit.hl7.igamt.display.model.VerificationReport;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CloneResponse;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddResourceResponse;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
@@ -84,6 +85,7 @@ import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.ImportValueSetException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.PredicateNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.XReferenceFoundException;
@@ -97,9 +99,11 @@ import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.service.impl.VerificationResult;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -148,6 +152,9 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   DisplayInfoService displayInfoService;
+  
+  @Autowired
+  VerificationService verificationService;
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
@@ -796,7 +803,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
-  public ResponseMessage<CloneResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
+  public ResponseMessage<AddResourceResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("conformanceProfileId") String conformanceProfileId,
       Authentication authentication) throws CloneException, IGNotFoundException {
     Ig ig = findIgById(id);
@@ -824,18 +831,18 @@ public class IGDocumentController extends BaseController {
         ig.getConformanceProfileRegistry().getChildren().size() + 1));
     ig = igService.save(ig);
 
-    CloneResponse response = new CloneResponse();
+    AddResourceResponse response = new AddResourceResponse();
     response.setId(clone.getId());
     response.setReg(ig.getConformanceProfileRegistry());
     response.setDisplay(displayInfoService.convertConformanceProfile(clone));
 
-    return new ResponseMessage<CloneResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
+    return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
         clone.getId(), false, clone.getUpdateDate(), response);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
-  public ResponseMessage<CloneResponse> cloneSegment(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
+  public ResponseMessage<AddResourceResponse> cloneSegment(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("segmentId") String segmentId, Authentication authentication)
           throws IGNotFoundException, ValidationException, CloneException {
     Ig ig = findIgById(id);
@@ -864,18 +871,18 @@ public class IGDocumentController extends BaseController {
     ig.getSegmentRegistry().getChildren()
     .add(new Link(clone.getId(), clone.getDomainInfo(), ig.getSegmentRegistry().getChildren().size() + 1));
     ig = igService.save(ig);
-    CloneResponse response = new CloneResponse();
+    AddResourceResponse response = new AddResourceResponse();
     response.setId(clone.getId());
     response.setReg(ig.getSegmentRegistry());
     response.setDisplay(displayInfoService.convertSegment(clone));
 
-    return new ResponseMessage<CloneResponse>(Status.SUCCESS, "", "Segment profile clone Success", clone.getId(),
+    return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Segment profile clone Success", clone.getId(),
         false, clone.getUpdateDate(), response);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
-  public ResponseMessage<CloneResponse> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
+  public ResponseMessage<AddResourceResponse> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("datatypeId") String datatypeId, Authentication authentication)
           throws IGNotFoundException, CloneException {
     Ig ig = findIgById(id);
@@ -904,18 +911,18 @@ public class IGDocumentController extends BaseController {
     ig.getDatatypeRegistry().getChildren()
     .add(new Link(clone.getId(), clone.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size() + 1));
     ig = igService.save(ig);
-    CloneResponse response = new CloneResponse();
+    AddResourceResponse response = new AddResourceResponse();
     response.setId(clone.getId());
     response.setReg(ig.getDatatypeRegistry());
     response.setDisplay(displayInfoService.convertDatatype(clone));
-    return new ResponseMessage<CloneResponse>(Status.SUCCESS, "", "Datatype clone Success", clone.getId(), false,
+    return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Datatype clone Success", clone.getId(), false,
         clone.getUpdateDate(), response);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
 
-  public ResponseMessage<CloneResponse> cloneValueSet(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
+  public ResponseMessage<AddResourceResponse> cloneValueSet(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("valuesetId") String valuesetId, Authentication authentication)
           throws CloneException, IGNotFoundException {
     Ig ig = findIgById(id);
@@ -934,11 +941,11 @@ public class IGDocumentController extends BaseController {
     ig.getValueSetRegistry().getChildren()
     .add(new Link(clone.getId(), clone.getDomainInfo(), ig.getValueSetRegistry().getChildren().size() + 1));
     ig = igService.save(ig);
-    CloneResponse response = new CloneResponse();
+    AddResourceResponse response = new AddResourceResponse();
     response.setId(clone.getId());
     response.setReg(ig.getValueSetRegistry());
     response.setDisplay(displayInfoService.convertValueSet(clone));
-    return new ResponseMessage<CloneResponse>(Status.SUCCESS, "", "Value Set clone Success", clone.getId(), false,
+    return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Value Set clone Success", clone.getId(), false,
         clone.getUpdateDate(), response);
   }
 
@@ -1271,8 +1278,8 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/uploadCSVFile",
       method = RequestMethod.POST)
-  public ResponseMessage<IGDisplayInfo> addValuesetFromCSV(@PathVariable("id") String id,
-      @RequestParam("file") MultipartFile csvFile) {
+  public ResponseMessage<AddResourceResponse> addValuesetFromCSV(@PathVariable("id") String id,
+      @RequestParam("file") MultipartFile csvFile) throws ImportValueSetException {
     CSVReader reader = null;
     if (!csvFile.isEmpty()) {
       try {
@@ -1338,27 +1345,26 @@ public class IGDocumentController extends BaseController {
         }
 
         reader.close();
-
-        Set<String> savedIds = new HashSet<String>();
-        newVS = this.valuesetService.save(newVS);
-        savedIds.add(newVS.getId());
         Ig ig = findIgById(id);
-        AddValueSetResponseObject objects = this.crudService.addValueSets(savedIds, ig);
+        newVS = this.valuesetService.save(newVS);
+        newVS.getDomainInfo().setScope(Scope.USER);
+        newVS.setUsername(ig.getUsername());
+      
+
+        ig.getValueSetRegistry().getChildren()
+        .add(new Link(newVS.getId(), newVS.getDomainInfo(), ig.getValueSetRegistry().getChildren().size() + 1));
         ig = igService.save(ig);
-        IGDisplayInfo info = new IGDisplayInfo();
-        info.setIg(ig);
-        info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
-
-        return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "",
-            "Value Sets Added Succesfully", ig.getId(), false, ig.getUpdateDate(), info);
-
+        AddResourceResponse response = new AddResourceResponse();
+        response.setId(newVS.getId());
+        response.setReg(ig.getValueSetRegistry());
+        response.setDisplay(displayInfoService.convertValueSet(newVS));
+        return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Value Set clone Success", newVS.getId(), false,
+            newVS.getUpdateDate(), response);
       } catch (Exception e) {
-        return new ResponseMessage<IGDisplayInfo>(Status.FAILED, "", e.getMessage(), id, false,
-            null, null);
+        throw new ImportValueSetException(e.getLocalizedMessage());
       }
-    } else {
-      return new ResponseMessage<IGDisplayInfo>(Status.FAILED, "", "CSV File is empty.", id, false,
-          null, null);
+    }else {
+      throw new ImportValueSetException("File is Empty");
     }
   }
 
@@ -1423,5 +1429,69 @@ public class IGDocumentController extends BaseController {
     } else {
       throw new PredicateNotFoundException(id);
     }
+  }
+  
+  
+//  @RequestMapping(value = "/api/verification/xml", method = RequestMethod.POST, produces = {"application/json"})
+//  public @ResponseBodyVerificationReport verifyXML(@RequestBody String profileXML,
+//      @RequestBody String constraintXML, @RequestBody String valuesetXML,
+//      Authentication authentication) {
+//    return this.verificationService.verifyXMLs(profileXML, constraintXML, valuesetXML);
+//  }
+//
+//  @RequestMapping(value = "/api/verification/valueset", method = RequestMethod.POST, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyValueset(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Valueset valueset, Authentication authentication) {
+//    return this.verificationService.verifyValueset(valueset, documentId, null);
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/datatype", method = RequestMethod.POST, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyDatatype(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Datatype datatype, Authentication authentication) {
+//    return this.verificationService.verifyDatatype(datatype, documentId, null);
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/segment", method = RequestMethod.POST, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifySegment(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Segment segment, Authentication authentication) {
+//    return this.verificationService.verifySegment(segment, documentId, null);
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/conformance-profile", method = RequestMethod.POST, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyConformanceProfile(@RequestParam(name = "dId", required = true) String documentId, @RequestBody ConformanceProfile conformanceProfile, Authentication authentication) {
+//    return this.verificationService.verifyConformanceProfile(conformanceProfile, documentId, null);
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/{documentId}/valueset/{valuesetId}", method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyValuesetById(@PathVariable("documentId") String documentId, @PathVariable("valuesetId") String valuesetId, Authentication authentication) {
+//    Valueset vs = this.valuesetService.findById(valuesetId);
+//    if(vs != null) return this.verificationService.verifyValueset(vs, documentId, null);
+//    return null;
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/{documentId}/datatype/{datatypeId}", method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyDatatypeById(@PathVariable("documentId") String documentId, @PathVariable("datatypeId") String datatypeId, Authentication authentication) {
+//    Datatype dt = this.datatypeService.findById(datatypeId);
+//    if (dt != null) return this.verificationService.verifyDatatype(dt, documentId, null);
+//    return null;
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/{documentId}/segment/{segmentId}", method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifySegmentById(@PathVariable("documentId") String documentId, @PathVariable("segmentId") String segmentId, Authentication authentication) {
+//    Segment sg = this.segmentService.findById(segmentId);
+//    if (sg != null) return this.verificationService.verifySegment(sg, documentId, null);
+//    return null;
+//  }
+//  
+//  @RequestMapping(value = "/api/verification/{documentId}/conformance-profile/{conformanceProfileId}", method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody VerificationResult verifyConformanceProfileById(@PathVariable("documentId") String documentId, @PathVariable("conformanceProfileId") String conformanceProfileId, Authentication authentication) {
+//    ConformanceProfile cp = this.conformanceProfileService.findById(conformanceProfileId);
+//    if (cp != null) return this.verificationService.verifyConformanceProfile(cp, documentId, null);
+//    return null;
+//  }
+  
+  @RequestMapping(value = "/api/igdocuments/{igid}/verify", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody VerificationResult verifyConformanceProfileById(@PathVariable("igid") String igid, Authentication authentication) {
+    Ig ig = this.igService.findById(igid);
+    if (ig != null) return this.verificationService.verifyIg(igid);
+    return null;
   }
 }

@@ -15,7 +15,7 @@ import { IDocumentCreationWrapper } from '../models/ig/document-creation.interfa
 import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
-import { IAddNodes, ICopyNode, ICopyResourceResponse } from '../models/toc/toc-operation.class';
+import {IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse} from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 @Injectable({
@@ -230,6 +230,11 @@ export class IgService {
     return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + igId + '/configuration/' + configId + '/getFilteredDocument');
   }
 
+  importFromFile(documentId, resourceType: Type, targetType: Type, file: any) {
+    const form: FormData = new FormData();
+    form.append('file', file);
+    return this.http.post<Message<IAddResourceFromFile>>('/api/igdocuments/' + documentId + '/valuesets/uploadCSVFile', form);
+  }
   getDisplay(id: string, delta: boolean) {
     if (delta) {
       return this.http.get<IGDisplayInfo>('api/delta/display/' + id);
