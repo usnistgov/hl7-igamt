@@ -181,23 +181,28 @@ export class IgService {
     form.submit();
   }
 
-  exportAsHtml(igId, decision: any) {
-    this.submitForm(igId, decision, this.EXPORT_URL + igId + '/html');
+  exportAsHtml(igId: string, decision: any, configurationId: string) {
+    this.submitForm(decision, this.EXPORT_URL + igId + '/configuration/' + configurationId + '/html');
   }
 
-  submitForm(igId, decision: any, end_point: string) {
+  exportAsHtmlQuick(igId: string) {
+    this.submitForm(null, this.EXPORT_URL + igId + '/quickHtml');
+  }
+
+  submitForm(decision: any, end_point: string) {
     const form = document.createElement('form');
-    form.action = this.EXPORT_URL + igId + '/html';
+    form.action = end_point;
     form.method = 'POST';
-    const json = document.createElement('input');
-    json.type = 'hidden';
-    json.name = 'json';
-    json.value = JSON.stringify(decision);
-    form.appendChild(json);
+    if (decision) {
+      const json = document.createElement('input');
+      json.type = 'hidden';
+      json.name = 'json';
+      json.value = JSON.stringify(decision);
+      form.appendChild(json);
+    }
     form.style.display = 'none';
     document.body.appendChild(form);
     form.submit();
-    console.log(decision);
   }
 
   loadDomain(username: string, password: string, tool: IConnectingInfo): Observable<any[]> {
@@ -221,8 +226,8 @@ export class IgService {
     return this.location.prepareExternalUrl('api/export/igdocuments/' + igId + '/export/' + type).replace('#', '');
   }
 
-  getExportFirstDecision(id: string): Observable<IExportConfigurationGlobal> {
-    return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + id + '/getFilteredDocument');
+  getExportFirstDecision(igId: string, configId: string): Observable<IExportConfigurationGlobal> {
+    return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + igId + '/configuration/' + configId + '/getFilteredDocument');
   }
 
   importFromFile(documentId, resourceType: Type, targetType: Type, file: any) {

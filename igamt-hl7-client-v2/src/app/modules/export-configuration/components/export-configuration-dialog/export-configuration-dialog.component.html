@@ -1,90 +1,96 @@
-<div style="width: 100%; height: 100%;" class="dg-container">
-  <div class="config-toc">
-    <div class="input-group sidebar-filter">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroupPrepend3">
-          <i class="fa fa-filter"></i>
-        </span>
-      </div>
-      <input class="form-control" id="validationServerUsername" placeholder="Filter" required style="background-color: #f0f0f0;"
-        type="text">
-    </div>
-    <div class="sidebar-controls">
-      <div></div>
-      <div class="btn-group mr-2" role="group">
-        <button class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
-          CP
-        </button>
-        <button class="btn btn-text btn-sm entity-badge-segment" type="button">
-          S
-        </button>
-        <button class="btn btn-text btn-sm entity-badge-datatype" type="button">
-          DT
-        </button>
-        <button class="btn btn-text btn-sm entity-badge-valueset" type="button">
-          VS
-        </button>
-        <button class="btn btn-text btn-sm btn-primary">
-          <i class="fa fa-expand"></i>
-        </button>
-        <button class="btn btn-text btn-sm btn-primary">
-          <i class="fa fa-compress"></i>
-        </button>
-        <button class="btn btn-text btn-sm btn-primary" type="button">
-          <i class="fa fa-plus"></i>
-        </button>
-      </div>
-    </div>
-    <div class="delta-filter">
-      <div *ngIf="derived">
-        <div>
-          <label><strong>Select only:</strong> </label>
-        </div>
-
-        <div *ngIf="delta" style="display: flex; flex-direction: row">
-          <span class="badge delta-badge delta-changed"> <p-checkbox name="delta-display" value="UPDATED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> updated</span>
-          <span class="badge delta-badge delta-added"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> added </span>
-          <span class="badge delta-badge badge-default">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"> </p-checkbox> unchanged</span>
-        </div>
-      </div>
-    </div>
-    <div class="sidebar-content">
-      <app-configuration-toc [nodes]="nodes | async" [filter]="filter" (select)="select($event)" *ngIf="filter"></app-configuration-toc>
-    </div>
+<div class="dg-page-layout">
+  <div class="title-bar">
+      <h5 class="title-text"> Export Configuration Override ({{ configurationName }})</h5>
   </div>
-  <div class="config-panel">
-    <div class="titlebar">
-      <h5 class="title-text">
-        <app-scope-badge *ngIf="selected?.domainInfo" [scope]="selected?.domainInfo.scope" [version]="selected?.domainInfo.version"></app-scope-badge>
-        <app-entity-bagde [type]="selected?.type"></app-entity-bagde>
-        <span *ngIf="selected?.type !== 'IGDOCUMENT'">
-          <span *ngIf="selected?.path"> {{selected?.path}} </span>
-          <span> {{selected?.fixedName}}</span>
-          <span *ngIf="selected?.fixedName && selected?.variableName">_</span>
-          <span> {{selected?.variableName}}</span>
-        </span>
-        <span *ngIf="selected?.type === 'IGDOCUMENT'"> Implementation Guide</span>
-      </h5>
+  <div style="width: 100%; height: 100%;" class="dg-container">
+    <div class="config-toc">
+      <div class="input-group sidebar-filter">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroupPrepend3">
+            <i class="fa fa-filter"></i>
+          </span>
+        </div>
+        <input class="form-control" id="validationServerUsername" placeholder="Filter" required style="background-color: #f0f0f0;"
+          type="text">
+      </div>
+      <div class="sidebar-controls">
+        <div></div>
+        <div class="btn-group mr-2" role="group">
+          <button class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
+            CP
+          </button>
+          <button class="btn btn-text btn-sm entity-badge-segment" type="button">
+            S
+          </button>
+          <button class="btn btn-text btn-sm entity-badge-datatype" type="button">
+            DT
+          </button>
+          <button class="btn btn-text btn-sm entity-badge-valueset" type="button">
+            VS
+          </button>
+          <button class="btn btn-text btn-sm btn-primary">
+            <i class="fa fa-expand"></i>
+          </button>
+          <button class="btn btn-text btn-sm btn-primary">
+            <i class="fa fa-compress"></i>
+          </button>
+          <button class="btn btn-text btn-sm btn-primary" type="button">
+            <i class="fa fa-plus"></i>
+          </button>
+        </div>
+      </div>
+      <div class="delta-filter">
+        <div *ngIf="derived">
+          <div>
+            <label><strong>Select only:</strong> </label>
+          </div>
+
+          <div *ngIf="delta" style="display: flex; flex-direction: row">
+            <span class="badge delta-badge delta-changed"> <p-checkbox name="delta-display" value="UPDATED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> updated</span>
+            <span class="badge delta-badge delta-added"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> added </span>
+            <span class="badge delta-badge badge-default">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"> </p-checkbox> unchanged</span>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-content">
+        <app-configuration-toc [nodes]="nodes | async" [filter]="filter" (select)="select($event)" *ngIf="filter"></app-configuration-toc>
+      </div>
     </div>
-    <div class="content">
-      <ng-container [ngSwitch]="type">
-        <ng-container *ngSwitchCase="'SEGMENT'">
-          <app-segment-export-configuration [config]="current" (detectChange)="applyChange($event)" *ngIf="!loading && derived"></app-segment-export-configuration>
+    <div class="config-panel">
+      <div class="titlebar">
+        <h5 class="title-text">
+          <app-scope-badge *ngIf="selected?.domainInfo" [scope]="selected?.domainInfo.scope" [version]="selected?.domainInfo.version"></app-scope-badge>
+          <app-entity-bagde [type]="selected?.type"></app-entity-bagde>
+          <span *ngIf="selected?.type !== 'IGDOCUMENT'">
+            <span *ngIf="selected?.path"> {{selected?.path}} </span>
+            <span> {{selected?.fixedName}}</span>
+            <span *ngIf="selected?.fixedName && selected?.variableName">_</span>
+            <span> {{selected?.variableName}}</span>
+          </span>
+          <span *ngIf="selected?.type === 'IGDOCUMENT'"> Implementation Guide</span>
+        </h5>
+      </div>
+      <div class="content">
+        <ng-container [ngSwitch]="type">
+          <ng-container *ngSwitchCase="'SEGMENT'">
+            <app-segment-export-configuration [config]="current" (detectChange)="applyChange($event)" *ngIf="!loading"></app-segment-export-configuration>
+          </ng-container>
+          <ng-container *ngSwitchCase="'VALUESET'">
+            <app-value-set-export-configuration [config]="current" (detectChange)="applyChange($event)" *ngIf="!loading" ></app-value-set-export-configuration>
+          </ng-container>
+          <ng-container *ngSwitchCase="'DATATYPE'">
+            <app-datatype-export-configuration [config]="current" (detectChange)="applyChange($event)" *ngIf="!loading"></app-datatype-export-configuration>
+          </ng-container>
+          <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
+            <app-conformance-profile-export-configuration [config]="current" (detectChange)="applyChange($event)" *ngIf="!loading"></app-conformance-profile-export-configuration>
+          </ng-container>
         </ng-container>
-        <ng-container *ngSwitchCase="'VALUESET'">
-          <app-value-set-export-configuration [config]="current" (detectChange)="applyChange($event)" *ngIf="!loading  && derived" ></app-value-set-export-configuration>
-        </ng-container>
-        <ng-container *ngSwitchCase="'DATATYPE'">
-          <app-datatype-export-configuration [config]="current" (detectChange)="applyChange($event)" *ngIf="!loading  && derived"></app-datatype-export-configuration>
-        </ng-container>
-        <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-          <app-conformance-profile-export-configuration [config]="current" (detectChange)="applyChange($event)" *ngIf="!loading  && derived"></app-conformance-profile-export-configuration>
-        </ng-container>
-      </ng-container>
-    </div>
-    <div class="button-row">
-      <button class="btn btn-sm btn-danger" (click)="cancel()">Cancel</button>
-      <button class="btn btn-sm btn-success" (click)="submit()">Submit</button>
+      </div>
+      <div class="button-row">
+        <button class="btn btn-sm btn-danger" (click)="cancel()">Cancel</button>
+        <button class="btn btn-sm btn-success" (click)="submit()">Submit</button>
+      </div>
     </div>
   </div>
 </div>
+

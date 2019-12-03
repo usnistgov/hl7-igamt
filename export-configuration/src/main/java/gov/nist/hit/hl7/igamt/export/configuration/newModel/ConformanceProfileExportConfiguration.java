@@ -24,6 +24,7 @@ public class ConformanceProfileExportConfiguration extends ResourceExportConfigu
 	  private boolean includeMessageTable = true;
 	  private UsageConfiguration segmentORGroupsMessageExport;
 	  private List<NameAndPositionAndPresence> columns;
+	  private Columns listedColumns;
 	  private MetadataConfiguration metadataConfig;
 	  private ConstraintExportConfiguration constraintExportConfiguration;
 
@@ -36,6 +37,7 @@ public class ConformanceProfileExportConfiguration extends ResourceExportConfigu
 	    this.segmentORGroupsMessageExport = exportConfiguration.getSegmentORGroupsMessageExport();
 	    this.columns = exportConfiguration.getMessageColumn().getColumns();
 	    this.metadataConfig = exportConfiguration.getMessageMetadataConfig();
+	    this.listedColumns = exportConfiguration.getListedColumns();
 	  }
 	  
 
@@ -49,16 +51,34 @@ public class ConformanceProfileExportConfiguration extends ResourceExportConfigu
 
 	public ConformanceProfileExportConfiguration(boolean includeMessageTable,
 	      UsageConfiguration segmentORGroupsMessageExport, List<NameAndPositionAndPresence> columns,
-	      MetadataConfiguration metadataConfig) {
+	      MetadataConfiguration metadataConfig,Columns listedColumns ) {
 	    this.includeMessageTable = includeMessageTable;
 	    this.segmentORGroupsMessageExport = segmentORGroupsMessageExport;
 	    this.columns = columns;
 	    this.metadataConfig = metadataConfig;
+	    this.listedColumns = listedColumns;
 	  }
 	  
 	  
 
-	  public Boolean getIdentifier() {
+	
+
+
+
+
+	public Columns getListedColumns() {
+		return listedColumns;
+	}
+
+
+
+	public void setListedColumns(Columns listedColumns) {
+		this.listedColumns = listedColumns;
+	}
+
+
+
+	public Boolean getIdentifier() {
 		return identifier;
 	}
 

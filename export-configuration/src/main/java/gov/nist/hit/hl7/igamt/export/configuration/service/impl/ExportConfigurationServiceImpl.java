@@ -16,6 +16,8 @@ package gov.nist.hit.hl7.igamt.export.configuration.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
@@ -39,14 +41,27 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   /* (non-Javadoc)
    * @see gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService#save(gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration)
    */
-  @Override
-  public ExportConfiguration save(ExportConfiguration exportConfiguration) {
-    return exportConfigurationRepository.save(exportConfiguration);
-  }
+	@Override
+	public ExportConfiguration save(ExportConfiguration exportConfiguration, Authentication authentication) {
+		String username = authentication.getPrincipal().toString();
+		if (exportConfiguration.isDefaultConfig()) {
+			List<ExportConfiguration> configList = this.getAllExportConfiguration(username);
+			for (ExportConfiguration exportconfiguration : configList) {
+				exportconfiguration.setDefaultConfig(false);
+				exportConfigurationRepository.save(exportconfiguration);
+			}
+			exportConfiguration.setDefaultConfig(true);
+			exportConfiguration.setUsername(username);
+			return exportConfigurationRepository.save(exportConfiguration);
+		} else {
+			exportConfiguration.setUsername(username);
+			return exportConfigurationRepository.save(exportConfiguration);
+		}
+	}
 
 @Override
 public List<ExportConfiguration> getAllExportConfiguration(String username) {
-	return exportConfigurationRepository.findAll();
+	return exportConfigurationRepository.findByUsername(username);
 }
 
 @Override
@@ -54,11 +69,18 @@ public void delete(ExportConfiguration exportConfiguration) {
 	exportConfigurationRepository.delete(exportConfiguration);	
 }
 
-@Override
-public ExportConfiguration create() {
-	ExportConfiguration exportConfiguration = exportConfigurationRepository.findOneById("BasicExportConfiguration");
+	@Override
+	public void deleteById(String id) {
+		this.exportConfigurationRepository.deleteById(id);
+	}
+
+	@Override
+public ExportConfiguration create(String username) {
+//	ExportConfiguration exportConfiguration = exportConfigurationRepository.findOneById("BasicExportConfiguration");
+		ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
 		exportConfiguration.setId(null);
 		exportConfiguration.setConfigName("New Configuration");
+		exportConfiguration.setUsername(username);
 		exportConfigurationRepository.save(exportConfiguration);
 		return exportConfiguration;
 }
@@ -66,6 +88,11 @@ public ExportConfiguration create() {
 @Override
 public ExportConfiguration getExportConfiguration(String id) {
 	return exportConfigurationRepository.findOneById(id);	
+}
+
+@Override
+public ExportConfiguration getDefaultConfig(boolean defaultConfig, String username) {
+	 return exportConfigurationRepository.findOneByDefaultConfigAndUsername(defaultConfig, username);
 }
   
 
