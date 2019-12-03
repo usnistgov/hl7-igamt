@@ -76,7 +76,7 @@ public class ExportController {
 
 				}
 				
-				//Save lastUserConfiguration For quickHTLMExport
+				//Save lastUserConfiguration For quickHtmlExport
 			    DocumentExportConfiguration lastUserConfiguration = new DocumentExportConfiguration();
 			    lastUserConfiguration.setConfigId(configId);
 			    lastUserConfiguration.setDecision(decision);
@@ -99,8 +99,6 @@ public class ExportController {
 				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 				response.setHeader("Content-disposition",
 						"attachment;filename=" + exportedFile.getFileName());
-
-				System.out.println("ICI : " + exportedFile.getFileName());
 				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 				}
 				
@@ -125,9 +123,15 @@ public class ExportController {
 			    ExportedFile exportedFile;
 			    if(igDocument.getLastUserConfiguration() != null) {
 					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, igDocument.getLastUserConfiguration().getDecision(), igDocument.getLastUserConfiguration().getConfigId());
-			    } else {		
-//			    		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration("BasicExportConfiguration");
-					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, "BasicExportConfiguration");
+			    }
+			    else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
+			    		ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
+					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId());
+			    } 
+			    else {
+		    		ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
+				 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId());
+
 			    }
 				response.setContentType("text/html");
 				response.setHeader("Content-disposition",

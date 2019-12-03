@@ -177,7 +177,6 @@
                     </xsl:call-template>
                 </xsl:if>
 		
-		<xsl:call-template name="PostDef" />
 		<xsl:if test="count(Text[@Type='UsageNote']) &gt; 0">
 			<xsl:element name="br" />
 			<xsl:element name="span">

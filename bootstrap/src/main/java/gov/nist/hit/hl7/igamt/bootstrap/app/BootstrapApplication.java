@@ -206,14 +206,13 @@ public class BootstrapApplication implements CommandLineRunner {
    @PostConstruct
     void createMessageEvent() {
       messageEventFactory.createMessageEvent();      
-      if(exportConfigurationService.getExportConfiguration("BasicExportConfiguration") == null) {
-    	  ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
-    	  basicExportConfiguration.setConfigName("BasicExportConfiguration");
-    	  basicExportConfiguration.setId("BasicExportConfiguration");
-    	  exportConfigurationService.save(basicExportConfiguration);
+//      if(exportConfigurationService.getExportConfiguration("BasicExportConfiguration") == null) {
+//    	  ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
+//    	  basicExportConfiguration.setConfigName("BasicExportConfiguration");
+//    	  basicExportConfiguration.setId("BasicExportConfiguration");
+//    	  exportConfigurationService.save(basicExportConfiguration,null);
+//      }
       System.out.println("done");
-
-      }
 
   }
 //  

@@ -85,6 +85,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			throws Exception {
 		Ig igDocument = igService.findById(igDocumentId);
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
+		System.out.println("Here is the exportConfiguration name : " + exportConfiguration.getConfigName());
 		if (igDocument != null) {
 			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration);
 			return htmlFile;
@@ -111,7 +112,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
 			String xmlContent =
 					igDataModelSerializationService.serializeIgDocument(igDataModel, exportConfiguration,decision).toXML();
-					      System.out.println("XML_EXPORT : " + xmlContent);
+//					      System.out.println("XML_EXPORT : " + xmlContent);
 			//		      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),

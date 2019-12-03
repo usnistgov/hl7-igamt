@@ -23,7 +23,8 @@ export class DefaultConfigurationComponent implements OnInit {
   basicExportConfiguration: IExportConfiguration;
   currentConfiguration: IExportConfiguration;
   backupConfiguration: IExportConfiguration;
-  configList: IExportConfigurationItemList[];
+  userConfiguration: IExportConfiguration;
+  configList: IExportConfigurationItemList[] = [];
   configName: string;
   hasChanges: boolean;
   filter: string;
@@ -55,6 +56,13 @@ export class DefaultConfigurationComponent implements OnInit {
   change($event) {
     this.hasChanges = true;
   }
+
+  useAsDefaultConfiguration(configuration: IExportConfigurationItemList) {
+    this.exportConfigurationService.saveAsDefaultExportConfiguration(configuration).subscribe(
+      (x) =>  this.loadExportConfigurationList(),
+    );
+
+    }
 
   delete(configuration: IExportConfiguration) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {

@@ -24,13 +24,16 @@
       </div>
       <div class="list-content">
         <ng-container *ngFor="let item of filteredList()" >
-          <div [contextMenu]="contextMenu" class="config-list-item" (click)="open(item.id)" [ngClass]="{'config-list-item-selected': item.id === currentConfiguration?.id }">
+          <div [contextMenu]="contextMenu" class="config-list-item" (click)="open(item.id)" [ngClass]="{'config-list-item-selected': item.id === currentConfiguration?.id, 'config-list-item-default': item.defaultConfig === true }">
             {{item.configName}}
           </div>
           <context-menu #contextMenu>
             <ng-template (execute)="delete(item)" contextMenuItem>
               <i class="fa fa-remove"></i> Delete
             </ng-template>
+            <ng-template (execute)="useAsDefaultConfiguration(item)" contextMenuItem>
+                <i class="fa fa-check-square"></i> Use As Default Configuration
+              </ng-template>
           </context-menu>
         </ng-container>
       </div>

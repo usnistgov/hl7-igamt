@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
-import { Subject, BehaviorSubject } from 'rxjs';
-import { map, filter, take } from 'rxjs/operators';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { filter, map, take } from 'rxjs/operators';
 import { IgService } from '../../../ig/services/ig.service';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
 import { ExportConfigurationDialogComponent } from '../export-configuration-dialog/export-configuration-dialog.component';
@@ -27,6 +27,10 @@ export class ExportDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.configlist = data.configurations;
+    this.selectedConfig = this.configlist.find( (x) => {
+      return x.defaultConfig;
+    },
+  );
     this.igId = data.igId;
     this.toc = data.toc;
     this.overrides = new BehaviorSubject<any>(undefined);

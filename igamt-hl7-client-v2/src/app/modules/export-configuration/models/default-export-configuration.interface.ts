@@ -1,6 +1,7 @@
 export interface IExportConfiguration {
   configName: string;
   id: string;
+  defaultConfig: boolean;
   datatypeExportConfiguration: IDatatypeExportConfiguration;
   segmentExportConfiguration: ISegmentExportConfiguration;
   conformamceProfileExportConfiguration: IConformamceProfileExportConfiguration;

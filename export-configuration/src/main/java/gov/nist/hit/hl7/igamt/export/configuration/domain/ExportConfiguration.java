@@ -55,11 +55,13 @@ public class ExportConfiguration {
 	
  
   boolean defaultType = false;
+  boolean defaultConfig = false;
   private String name;
   private Columns listedColumns;
   @Column(unique=true)
   private String username;
-  private boolean unboundHL7 = false;
+ 
+private boolean unboundHL7 = false;
   private boolean unboundCustom = false;
   private boolean includeVaries = false;
   private boolean includeMessageTable = true;
@@ -119,6 +121,7 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();  
     defaultConfiguration.setConfigName("");
+    defaultConfiguration.setDefaultConfig(false);
     defaultConfiguration.setCoConstraintExportMode(CoConstraintExportMode.COMPACT);
     defaultConfiguration.setDefaultType(true);
     defaultConfiguration.setUsername(null);
@@ -540,6 +543,13 @@ public void setName(String name) {
     return includeCompositeProfileTable;
   }
 
+  public boolean isDefaultConfig() {
+		return defaultConfig;
+	}
+
+	public void setDefaultConfig(boolean defaultConfig) {
+		this.defaultConfig = defaultConfig;
+	}
 
 
   public void setIncludeCompositeProfileTable(boolean includeCompositeProfileTable) {

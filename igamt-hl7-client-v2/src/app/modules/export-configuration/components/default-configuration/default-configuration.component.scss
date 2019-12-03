@@ -109,6 +109,11 @@
   background-color: $nist_light_yellow !important;
 }
 
+.config-list-item-default {
+  background-color: lightgrey;
+  font-weight: bold;
+}
+
 .config-list-item {
   cursor: pointer;
   padding: 10px;

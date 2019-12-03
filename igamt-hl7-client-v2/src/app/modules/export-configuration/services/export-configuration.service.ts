@@ -24,6 +24,10 @@ export class ExportConfigurationService {
     return this.http.post<Message<any>>(this.URL + '/save', exportConfiguration);
   }
 
+  saveAsDefaultExportConfiguration(exportConfiguration: IExportConfigurationItemList): Observable<Message<any>> {
+    return this.http.post<Message<any>>(this.URL + '/saveAsDefault', exportConfiguration);
+  }
+
   deleteExportConfiguration(exportConfiguration: IExportConfiguration): Observable<Message<any>> {
     return this.http.post<Message<any>>(this.URL + '/delete', exportConfiguration);
   }
