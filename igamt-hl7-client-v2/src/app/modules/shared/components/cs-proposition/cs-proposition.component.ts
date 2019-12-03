@@ -475,7 +475,6 @@ export class CsPropositionComponent implements OnInit {
   }
 
   comparativeElement(event) {
-    console.log(event.node);
     this.changeElement(event, this.assertion.complement);
     this.getName(this.treeService.concatPath(this.context, event.path)).pipe(
       take(1),

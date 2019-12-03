@@ -275,7 +275,7 @@ export class Hl7V2TreeService {
         ];
       }
     };
-    console.log(loop(node));
+
     const chain: IPathInfo[] = loop(node);
     return chain.reverse().reduce((pV, cV) => {
       cV.child = pV;
@@ -629,6 +629,7 @@ export class Hl7V2TreeService {
               ref: reference,
               bindings,
             },
+            parent,
             leaf: refsData[child.ref.id].leaf,
             $hl7V2TreeHelpers: {
               ref$: reference.asObservable(),
@@ -693,6 +694,7 @@ export class Hl7V2TreeService {
               ref: reference,
               bindings,
             },
+            parent,
             leaf: refsData[child.ref.id].leaf,
             $hl7V2TreeHelpers: {
               ref$: reference.asObservable(),
@@ -791,6 +793,7 @@ export class Hl7V2TreeService {
           bindings: bds,
         },
         leaf,
+        parent,
         $hl7V2TreeHelpers: {
           predicate$: predicate,
           ref$: child.type === Type.SEGMENTREF ? reference.asObservable() : undefined,

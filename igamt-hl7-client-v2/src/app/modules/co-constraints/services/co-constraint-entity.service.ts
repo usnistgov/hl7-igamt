@@ -5,7 +5,7 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ICardinalityRange, IHL7v2TreeNode, IResourceKey } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../shared/constants/type.enum';
-import { ICoConstraintVariesCell, INarrativeHeader } from '../../shared/models/co-constraint.interface';
+import { ICoConstraintVariesCell, INarrativeHeader, ICoConstraintGroupBindingRef } from '../../shared/models/co-constraint.interface';
 import {
   CoConstraintGroupBindingType,
   CoConstraintHeaderType,
@@ -38,6 +38,34 @@ import { AResourceRepositoryService } from '../../shared/services/resource-repos
 export class CoConstraintEntityService {
 
   constructor() { }
+
+  mergeGroupWithTable(ccTable: ICoConstraintTable, group: ICoConstraintGroup) {
+    this.mergeHeaders(ccTable.headers.selectors, group.headers.selectors);
+    this.mergeHeaders(ccTable.headers.constraints, group.headers.constraints);
+    this.mergeHeaders(ccTable.headers.narratives, group.headers.narratives);
+  }
+
+  mergeHeaders(table: ICoConstraintHeader[], group: ICoConstraintHeader[]) {
+    group.forEach((groupHeader) => {
+
+      const header = table.find((tableHeader) => {
+        return groupHeader.key === tableHeader.key;
+      });
+
+      if (!header) {
+        table.push(groupHeader);
+      }
+
+    });
+  }
+
+  createCoConstraintGroupBinding(group: ICoConstraintGroup): ICoConstraintGroupBindingRef {
+    return {
+      requirement: this.createEmptyRequirements(),
+      type: CoConstraintGroupBindingType.REF,
+      refId: group.id,
+    };
+  }
 
   createOBXCoConstraintTable(segment: ISegment, repository: AResourceRepositoryService): Observable<ICoConstraintTable> {
     const table: ICoConstraintTable = {
@@ -111,6 +139,14 @@ export class CoConstraintEntityService {
       coConstraints: [],
       groups: [],
     };
+  }
+
+  createCoConstraintTableForSegment(segment: ISegment, repository: AResourceRepositoryService): Observable<ICoConstraintTable> {
+    if (segment.name === 'OBX') {
+      return this.createOBXCoConstraintTable(segment, repository);
+    } else {
+      return of(this.createEmptyCoConstraintTable(segment));
+    }
   }
 
   createEmptyCoConstraint(headers: ICoConstraintHeaders): ICoConstraint {

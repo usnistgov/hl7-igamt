@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild 
 import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
-import { combineLatest } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { SegmentService } from '../../../segment/services/segment.service';
@@ -30,8 +30,10 @@ import { BindingService } from '../../../shared/services/binding.service';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
+import { CoConstraintGroupService } from '../../services/co-constraint-group.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
 import { NarrativeHeaderDialogComponent } from '../narrative-header-dialog/narrative-header-dialog.component';
+import { Type } from '../../../shared/constants/type.enum';
 
 @Component({
   selector: 'app-co-constraint-table',
@@ -57,7 +59,7 @@ export class CoConstraintTableComponent implements OnInit {
 
   @Input()
   set value(table: ICoConstraintTable & ICoConstraintGroup) {
-    this._value = _.cloneDeep(table);
+    this._value = table;
     const datatype: IDataElementHeader = this._value.headers.constraints.find((header) => header.type === CoConstraintHeaderType.DATAELEMENT && (header as IDataElementHeader).columnType === CoConstraintColumnType.DATATYPE) as IDataElementHeader;
     const varies: IDataElementHeader = this._value.headers.constraints.find((header) => header.type === CoConstraintHeaderType.DATAELEMENT && (header as IDataElementHeader).columnType === CoConstraintColumnType.VARIES) as IDataElementHeader;
     this.dynamicMappingHeaders = {
@@ -145,6 +147,12 @@ export class CoConstraintTableComponent implements OnInit {
     this.datatypeOptionsMap[id] = this.filter(this.datatypes, value);
   }
 
+  getDatatype(id: string): IDisplayElement {
+    return this.datatypes.find((dt) => {
+      return dt.id === id;
+    });
+  }
+
   filter(values: IDisplayElement[], value: string): IDisplayElement[] {
     return values.filter((v) => {
       return v.fixedName === value;
@@ -207,13 +215,17 @@ export class CoConstraintTableComponent implements OnInit {
     private segmentService: SegmentService,
     private bindingsService: BindingService,
     private coconstraintEntity: CoConstraintEntityService,
+    private coConstraintGroupEntity: CoConstraintGroupService,
     private treeService: Hl7V2TreeService) {
     this.valueChange = new EventEmitter();
   }
 
   emitChange() {
-    console.log(this.form);
     this.valueChange.emit(this.value);
+  }
+
+  getGroup(id: string): Observable<ICoConstraintGroup> {
+    return this._repository.fetchResource(Type.COCONSTRAINTGROUP, id);
   }
 
   initOptions() {
@@ -225,7 +237,6 @@ export class CoConstraintTableComponent implements OnInit {
             label: value,
           };
         });
-        console.log(this.datatypeOptions);
       }),
     ).subscribe();
   }

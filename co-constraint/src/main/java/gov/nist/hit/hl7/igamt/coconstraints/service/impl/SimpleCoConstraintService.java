@@ -15,6 +15,7 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -33,6 +34,11 @@ public class SimpleCoConstraintService implements CoConstraintService {
         return this.coConstraintGroupRepository.findById(id).orElseThrow(() -> {
             return new CoConstraintGroupNotFoundException(id);
         });
+    }
+
+    @Override
+    public List<CoConstraintGroup> findByBaseSegmentAndDocumentIdAndUsername(String baseSegment, String documentId, String username) {
+        return this.coConstraintGroupRepository.findByBaseSegmentAndDocumentIdAndUsername(baseSegment, documentId, username);
     }
 
     @Override

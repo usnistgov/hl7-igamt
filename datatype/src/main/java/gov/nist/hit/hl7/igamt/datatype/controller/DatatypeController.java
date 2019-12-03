@@ -78,16 +78,13 @@ public class DatatypeController extends BaseController {
 			throws DatatypeNotFoundException {
 		Datatype datatype = findById(id);
 		return datatypeService.convertDomainToStructureDisplay(datatype, getReadOnly(authentication, datatype));
-
 	}
 
 	@RequestMapping(value = "/api/datatypes/{id}/resources", method = RequestMethod.GET, produces = {
 			"application/json" })
-
 	public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) {
 		Datatype datatype = datatypeService.findById(id);
 		return datatypeService.getDependencies(datatype);
-
 	}
 
 	@RequestMapping(value = "/api/datatypes/{id}/{idPath}/{path}/{viewscope}/structure-by-ref", method = RequestMethod.GET, produces = {

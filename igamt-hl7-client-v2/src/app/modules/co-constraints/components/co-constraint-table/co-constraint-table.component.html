@@ -1,25 +1,20 @@
-<button (click)="addCoConstraintGroup()" class="btn btn-sm btn-primary" style="margin-bottom: 5px;" *ngIf="mode === 'TABLE'">
-  <i class="fa fa-plus"></i>
-  Create Group
-</button>
 <ng-container *ngIf="mode === 'GROUP'">
   <label for="groupName" style="font-weight: bold;" >Co-Constraint Group Name : </label>
   <input name="groupName" type="text" class="form-control" style="margin-bottom: 5px;" [(ngModel)]="value.name" (ngModelChange)="emitChange()" >
   <label style="font-weight: bold;" >Table : </label>
 </ng-container>
-
 <form #tableForm="ngForm" >
   <table *ngIf="value" class="table table-bordered table-striped table-sm">
     <thead>
       <tr>
-        <th rowspan="2" style="width: 54px;">
+        <th rowspan="2" style="width: 54px;" class="stick-header stick-top-none">
           <button class="btn btn-sm btn-primary" (click)="addCoConstraint(value.coConstraints)">
             <i class="fa fa-plus"></i>
           </button>
         </th>
-        <th rowspan="2" class="requirement-cell">ID</th>
-        <th rowspan="2" class="requirement-cell">Usage</th>
-        <th rowspan="2" class="requirement-cell column-border">Cardinality</th>
+        <th rowspan="2" class="requirement-cell stick-header stick-top-none">ID</th>
+        <th rowspan="2" class="requirement-cell stick-header stick-top-none">Usage</th>
+        <th rowspan="2" class="requirement-cell column-border stick-header stick-top-none">Cardinality</th>
         <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'If', list: value.headers.selectors, isDataHeader: true }"></ng-container>
         <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'Then', list: value.headers.constraints, isDataHeader: true  }"></ng-container>
         <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'Narratives', list: value.headers.narratives, isDataHeader: false  }"></ng-container>
@@ -34,7 +29,7 @@
     <ng-container *ngFor="let group of value.groups; let i = index">
       <ng-container [ngSwitch]="group.type" >
         <ng-container *ngSwitchCase="'REF'">
-
+          <ng-container *ngTemplateOutlet="ccGroupRef; context: { $implicit: group, list : value.groups, index: i }"></ng-container>
         </ng-container>
         <ng-container *ngSwitchCase="'CONTAINED'">
           <ng-container *ngTemplateOutlet="ccGroup; context: { $implicit: group, list : value.groups, index: i }"></ng-container>
@@ -45,7 +40,7 @@
 
   <!-- COLUMNS TOP HEADER -->
   <ng-template #columnHeader let-label let-list="list" let-isDataHeader="isDataHeader">
-    <th [attr.colspan]="listSize(list)" class="column-border">
+    <th [attr.colspan]="listSize(list)" class="column-border stick-header stick-top-none">
       <div style="display: flex; justify-content: space-between;">
         <span>{{label}}</span>
         <button class="btn btn-sm btn-primary" (click)="isDataHeader ? openDataColumnDialog(list) : openNarrativeColumnDialog(list)">
@@ -64,12 +59,12 @@
 
   <!-- EMPTY COLUMN -->
   <ng-template #emptyColumn>
-    <th class="column empty-column column-border"></th>
+    <th class="column empty-column column-border stick-header stick-top-pad"></th>
   </ng-template>
 
   <!-- DATA HEADER -->
   <ng-template #dataHeader let-header let-list="list" let-index="index">
-    <th class="column" [ngClass]="{'column-border': index === (list.length - 1) && !header.cardinality, 'inside-border' :  index !== (list.length - 1) && !header.cardinality }">
+    <th class="column stick-header stick-top-pad" [ngClass]="{'column-border': index === (list.length - 1) && !header.cardinality, 'inside-border' :  index !== (list.length - 1) && !header.cardinality }">
       <div style="width: 100%; display: flex; justify-content: space-between;">
         <div>
           <button class="btn btn-sm btn-danger" (click)="deleteColumn(list, header, index)"><i class="fa fa-times"></i></button>
@@ -81,7 +76,7 @@
         </div>
       </div>
     </th>
-    <th *ngIf="header.cardinality" style="text-align: center; vertical-align: middle; width: 60px;" [ngClass]="{'column-border': index === (list.length - 1), 'inside-border' : index !== (list.length - 1) }">
+    <th *ngIf="header.cardinality" style="text-align: center; vertical-align: middle; width: 60px;" class="stick-header stick-top-pad" [ngClass]="{'column-border': index === (list.length - 1), 'inside-border' : index !== (list.length - 1) }">
       Cardinality
     </th>
   </ng-template>
@@ -100,8 +95,9 @@
   </ng-template>
 
   <!-- REQUIREMENTS -->
-  <ng-template #usage let-elm let-disabled="disabled" let-fieldId="fieldId" >
+  <ng-template #usage let-elm let-disabled="disabled" let-fieldId="fieldId" let-viewOnly="viewOnly" >
     <p-dropdown
+      *ngIf="!viewOnly"
       [options]="usages"
       [style]="{'width': '60px', 'min-width': 'inherit'}"
       [disabled]="disabled"
@@ -110,10 +106,11 @@
       required
       [(ngModel)]="elm.usage" >
     </p-dropdown>
+    <strong *ngIf="viewOnly">{{elm.usage}}</strong>
   </ng-template>
 
-  <ng-template #cardinality let-elm let-fieldId="fieldId" >
-    <div style="width : 100%; display: flex;">
+  <ng-template #cardinality let-elm let-fieldId="fieldId" let-viewOnly="viewOnly" >
+    <div style="width : 100%; display: flex;" *ngIf="!viewOnly">
       <input
         style="width: 50px;"
         type="number"
@@ -131,10 +128,15 @@
         class="form-control"
         required >
     </div>
+    <div style="width : 100%; display: flex;" *ngIf="viewOnly">
+      <strong>{{elm.cardinality.min}}</strong>
+      <span>..</span>
+      <strong>{{elm.cardinality.max}}</strong>
+    </div>
   </ng-template>
 
   <!-- STRUCTURE -->
-  <ng-template #ccList let-list let-group="group" let-fieldId="fieldId" >
+  <ng-template #ccList let-list let-group="group" let-fieldId="fieldId" let-viewOnly="viewOnly">
     <tbody cdkDropList [cdkDropListData]="list" (cdkDropListDropped)="drop($event)">
       <tr *ngFor="let cc of list; let i = index" cdkDrag>
         <div *cdkDragPreview style="padding: 10px; background-color: lightcoral;"> Co-Constraint ({{ i + 1 }}) </div>
@@ -150,11 +152,11 @@
           </table>
           <span *ngIf="i !== 0 || !group">{{ i + 1 }}</span>
         </td>
-        <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: cc.requirement, disabled :  i === 0 && group, fieldId : fieldId + '-req-' + i }"></ng-container></td>
-        <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: cc.requirement, fieldId : fieldId + '-req-' + i }"></ng-container></td>
-        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.selectors, fieldId : fieldId + '-if-' + i }"></ng-container>
-        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.constraints, fieldId : fieldId + '-then-' + i }"></ng-container>
-        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.narratives, fieldId : fieldId + '-nar-' + i }"></ng-container>
+        <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: cc.requirement, disabled :  i === 0 && group, fieldId : fieldId + '-req-' + i, viewOnly : viewOnly }"></ng-container></td>
+        <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: cc.requirement, fieldId : fieldId + '-req-' + i, viewOnly : viewOnly }"></ng-container></td>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.selectors, fieldId : fieldId + '-if-' + i, viewOnly : viewOnly }"></ng-container>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.constraints, fieldId : fieldId + '-then-' + i, viewOnly : viewOnly }"></ng-container>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.narratives, fieldId : fieldId + '-nar-' + i, viewOnly : viewOnly }"></ng-container>
       </tr>
     </tbody>
   </ng-template>
@@ -179,23 +181,43 @@
     <ng-container *ngTemplateOutlet="ccList; context: { $implicit: group.coConstraints, group : true, fieldId : 'g-' + index }"></ng-container>
   </ng-template>
 
+  <ng-template #ccGroupRef let-group let-list="list" let-index="index" >
+    <ng-container *ngIf="getGroup(group.refId) | async as content">
+      <tbody>
+        <tr style="background-color: gray;">
+          <td class="btn-cell" colspan="2">
+            <button class="btn btn-sm btn-danger" (click)="deleteCoConstraintGroup(list, index)"><i class="fa fa-minus"></i></button>
+          </td>
+          <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: group.requirement, fieldId : 'g-' + index  }"></ng-container></td>
+          <td class="requirement-cell"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, fieldId : 'g-' + index  }"></ng-container></td>
+          <td [attr.colspan]="numberOfColumns()" style="vertical-align: middle;">
+            <app-entity-bagde [type]="'COCONSTRAINTGROUP'"></app-entity-bagde>
+            <strong style="color: white; margin-left: 5px;">{{ content.name }}</strong>
+          </td>
+        </tr>
+      </tbody>
+      <ng-container *ngTemplateOutlet="ccList; context: { $implicit: content.coConstraints, group : true, fieldId : 'g-' + index, viewOnly: true }"></ng-container>
+    </ng-container>
+  </ng-template>
+
   <!-- CELLS -->
-  <ng-template #cellList let-headers="headers" let-cc let-fieldId="fieldId" >
+  <ng-template #cellList let-headers="headers" let-cc let-fieldId="fieldId" let-viewOnly="viewOnly">
     <ng-container *ngIf="headers.length > 0; else emptyColumn">
       <ng-container *ngFor="let header of headers; let i = index">
-        <td class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !header.cardinality, 'inside-border' : i !== (headers.length - 1) && !header.cardinality }" >
-          <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key }"></ng-container>
+        <td #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !header.cardinality, 'inside-border' : i !== (headers.length - 1) && !header.cardinality }" *ngIf="cc.cells[header.key]" >
+          <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor }"></ng-container>
         </td>
         <td *ngIf="header.cardinality" [ngClass]="{'column-border': i === (headers.length - 1), 'inside-border' :  i !== (headers.length - 1) }" style="vertical-align: middle; text-align: center;">
-          <input type="text" style="width: 100px;" [placeholder]="header.elementInfo.cardinality.max">
+          <input *ngIf="!viewOnly" type="text" style="width: 100px;" [placeholder]="header.elementInfo.cardinality.max">
+          <span *ngIf="viewOnly"></span>
         </td>
       </ng-container>
     </ng-container>
   </ng-template>
 
   <!-- CELLS -->
-  <ng-template #codeCell let-header="header" let-cell let-fieldId="fieldId">
-    <div style="width: 100%; display: flex; justify-content: space-between;">
+  <ng-template #codeCell let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor">
+    <div style="width: 100%; display: flex; justify-content: space-between;" *ngIf="!viewOnly">
       <input
         type="text"
         [name]="fieldId + '-code'"
@@ -215,26 +237,41 @@
         placeholder="Code System"
         style="width: 50%;">
     </div>
-    <!-- <p-multiSelect
-    [(ngModel)]="cell.locations"
-    (ngModelChange)="emitChange()"
-    [options]="locations"
-    [style]="{ width : '100%', 'min-width': 'inherit'}"
-    defaultLabel="Choose locations"></p-multiSelect> -->
+    <div *ngIf="viewOnly" style="width: 100%; display: flex; justify-content: space-between;">
+      <strong> Code : </strong>
+      <span> {{ cell.code }} </span>
+      <strong> Code System : </strong>
+      <span> {{ cell.codeSystem }} </span>
+    </div>
+    <p-multiSelect
+      *ngIf="!viewOnly"
+      [(ngModel)]="cell.locations"
+      (ngModelChange)="emitChange()"
+      [appendTo]="anchor"
+      [options]="locations"
+      [name]="fieldId + '-location'"
+      [style]="{ width : '100%', 'min-width': 'inherit'}"
+      defaultLabel="Choose locations">
+    </p-multiSelect>
+    <div *ngIf="viewOnly && cell.locations">
+      <strong> Locations : </strong>
+      <span> {{ cell.locations | json }} </span>
+    </div>
   </ng-template>
 
   <ng-template #narrativeCell let-header="header" let-cell let-fieldId="fieldId">
     <textarea class="form-control" [(ngModel)]="cell.value" [name]="fieldId + '-textArea'" (ngModelChange)="emitChange()"></textarea>
   </ng-template>
 
-  <ng-template #datatypeCell let-header="header" let-id="id" let-row="row" let-cell let-fieldId="fieldId">
+  <ng-template #datatypeCell let-header="header" let-id="id" let-row="row" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor" >
     <table class="table table-sm" style="margin-bottom: 0px;">
       <tr>
-        <td style="text-align: center; vertical-align: middle; width: 60px;">
+        <td style="text-align: center; vertical-align: middle; width: 60px;" >
           <strong>Value</strong>
         </td>
         <td>
           <p-dropdown
+            *ngIf="!viewOnly"
             [autoDisplayFirst]="false"
             [options]="datatypeOptions"
             [style]="{'width': '100%', 'min-width': 'inherit'}"
@@ -244,6 +281,7 @@
             (ngModelChange)="emitChange()"
             [(ngModel)]="cell.value" >
           </p-dropdown>
+          <span *ngIf="viewOnly"> {{ cell.value }} </span>
         </td>
       </tr>
       <tr *ngIf="cell.value">
@@ -252,6 +290,7 @@
         </td>
         <td>
           <app-resource-dropdown
+            *ngIf="!viewOnly"
             [placeholder]="'Flavor'"
             [name]="fieldId + '-dtFlavor'"
             [filter]="true"
@@ -259,33 +298,12 @@
             (valueChange)="datatypeChange($event, row)"
             [resources]="datatypes"
           ></app-resource-dropdown>
-          <!-- <p-dropdown
-            [autoDisplayFirst]="false"
-            [options]="datatypeOptionsMap[id]"
-            [optionLabel]="'id'"
-            placeholder="Flavor"
-            [name]="fieldId + '-dtFlavor'"
-            required
-            dataKey="id"
-            (onShow)="filterDatatype(id, cell.value)"
-            [(ngModel)]="cell.datatypeId"
-            (ngModelChange)="datatypeChange($event, row)"
-            [style]="{'width': '100%', 'min-width': 'inherit'}"
-            [filter]="true"
-            filterBy="value.fixedName,value.variableName">
-            <ng-template let-item pTemplate="selectedItem">
-              <ng-container *ngIf="item.value">
-                  <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
-                  <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
-                  <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
-              </ng-container>
-            </ng-template>
-            <ng-template let-item pTemplate="item">
-              <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
-              <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
-              <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
-            </ng-template>
-          </p-dropdown> -->
+          <app-display-section
+            *ngIf="viewOnly"
+            [element]="getDatatype(cell.datatypeId)"
+            [hideDescription]="true"
+          >
+          </app-display-section>
         </td>
       </tr>
     </table>
@@ -328,18 +346,18 @@
     <input type="text" [(ngModel)]="cell.value" class="form-control" [name]="fieldId + '-value'" placeholder="Constant Value" (ngModelChange)="emitChange()">
   </ng-template>
 
-  <ng-template #variesCell let-header="header" let-id="id" let-cell>
+  <ng-template #variesCell let-header="header" let-id="id" let-cell let-viewOnly="viewOnly">
     <div class="btn-group" style="width: 100%; border: 1px solid gray;" *ngIf="!cell.cellType && variesOptionMap[id] && variesOptionMap[id].length > 0">
       <button *ngFor="let item of variesOptionMap[id]" class="btn btn-sm btn-light" (click)="setTemplateType(cell, item)">{{ item }}</button>
     </div>
-    <div  style="width: 100%; text-align: center; color: lightgray;" *ngIf="!cell.cellType && (!variesOptionMap[id] || variesOptionMap[id].length === 0)">
+    <div  style="width: 100%; text-align: center; color: lightgray;" *ngIf="!cell.cellType && (!variesOptionMap[id] || variesOptionMap[id].length === 0) && !viewOnly">
       <strong>Select OBX-2 datatype (Coded Element or Primitive)</strong>
     </div>
     <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;" *ngIf="cell.cellType">
       <div style="width: 100%;">
-        <ng-container *ngTemplateOutlet="getCellTemplateForType(cell.cellType); context: { $implicit: cell.cellValue, header: header }"></ng-container>
+        <ng-container *ngTemplateOutlet="getCellTemplateForType(cell.cellType); context: { $implicit: cell.cellValue, header: header, viewOnly : viewOnly }"></ng-container>
       </div>
-      <i style="color: red; margin-left: 5px; font-size: 1.2em; cursor: pointer;" class="fa fa-times" (click)="clearVariesCell(cell)" ></i>
+      <i style="color: red; margin-left: 5px; font-size: 1.2em; cursor: pointer;" class="fa fa-times" (click)="clearVariesCell(cell)" *ngIf="!viewOnly" ></i>
     </div>
   </ng-template>
 

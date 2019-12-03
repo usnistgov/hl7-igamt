@@ -1,0 +1,120 @@
+import { Component, Inject, OnInit } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
+import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { Type } from '../../../shared/constants/type.enum';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
+import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
+import { IHL7v2TreeFilter, RestrictionType } from '../../../shared/services/tree-filter.service';
+import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
+import { CoConstraintGroupService } from '../../services/co-constraint-group.service';
+import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
+
+@Component({
+  selector: 'app-co-constraint-binding-dialog',
+  templateUrl: './co-constraint-binding-dialog.component.html',
+  styleUrls: ['./co-constraint-binding-dialog.component.scss'],
+})
+export class CoConstraintBindingDialogComponent implements OnInit {
+
+  structure: IHL7v2TreeNode[];
+  excludePaths: string[];
+  repository: AResourceRepositoryService;
+  selectedContextNode: any;
+  segmentTree: IHL7v2TreeNode[];
+  selectedSegmentNode: any;
+  selectedContextNodeName: string;
+  selectedSegmentNodeName: string;
+  selectedGroups: IDisplayElement[];
+  contextFilter: IHL7v2TreeFilter = {
+    hide: false,
+    restrictions: [
+      {
+        criterion: RestrictionType.TYPE,
+        allow: true,
+        value: [Type.GROUP, Type.CONFORMANCEPROFILE],
+      },
+    ],
+  };
+  segmentFilter: IHL7v2TreeFilter = {
+    hide: false,
+    restrictions: [
+      {
+        criterion: RestrictionType.TYPE,
+        allow: true,
+        value: [Type.SEGMENT],
+      },
+    ],
+  };
+
+  compatibleGroups$: Observable<IDisplayElement[]>;
+
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private ccEntityService: CoConstraintEntityService,
+    private treeService: Hl7V2TreeService,
+    private ccService: CoConstraintGroupService,
+    public dialogRef: MatDialogRef<DataHeaderDialogComponent>) {
+    this.structure = data.structure;
+    this.excludePaths = data.excludePaths;
+    this.repository = data.repository;
+  }
+
+  selectContext($event) {
+    this.selectedContextNode = $event;
+    this.selectedContextNodeName = this.treeService.getNodeName(this.selectedContextNode.node, true);
+    this.segmentTree = [
+      {
+        ...this.selectedContextNode.node,
+        parent: null,
+      },
+    ];
+  }
+
+  selectSegment($event) {
+    this.selectedSegmentNode = $event;
+    this.popRoot(this.selectedSegmentNode.node);
+    this.selectedSegmentNodeName = this.treeService.getNodeName(this.selectedSegmentNode.node, true);
+  }
+
+  popRoot(node: IHL7v2TreeNode): void {
+    let top = false;
+    let cursor = node;
+    while (!top) {
+      if (!cursor.parent.parent) {
+        cursor.parent = null;
+        top = true;
+      } else {
+        cursor = cursor.parent;
+      }
+    }
+  }
+
+  finish() {
+    this.dialogRef.close({
+      context: {
+        ...this.selectedContextNode,
+        name: this.selectedContextNodeName,
+      },
+      segment: {
+        ...this.selectedSegmentNode,
+        segmentId: (this.selectedSegmentNode.node as IHL7v2TreeNode).data.ref.getValue().id,
+        name: this.selectedSegmentNodeName,
+      },
+    });
+  }
+
+  clearContextNode() {
+    this.selectedContextNode = undefined;
+    this.selectedSegmentNode = undefined;
+  }
+
+  clearSegmentNode() {
+    this.selectedSegmentNode = undefined;
+  }
+
+  ngOnInit() {
+  }
+
+}

@@ -7,6 +7,7 @@ import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.'
 import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
+import { CoConstraintsBindingEditorComponent } from './components/co-constraints-binding-editor/co-constraints-binding-editor.component';
 import { ConformanceProfileStructureEditorComponent } from './components/conformance-profile-structure-editor/conformance-profile-structure-editor.component';
 import { CPConformanceStatementEditorComponent } from './components/conformance-statement-editor/cp-conformance-statement-editor.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
@@ -47,6 +48,25 @@ const routes: Routes = [
             saveTableOfContent: true,
           },
           action: OpenCPConformanceStatementEditor,
+          idKey: 'conformanceProfileId',
+        },
+      },
+      {
+        path: 'co-constraint',
+        component: CoConstraintsBindingEditorComponent,
+        canActivate: [IgEditorActivateGuard],
+        canDeactivate: [IgEditSaveDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.CP_CC_BINDING,
+            title: 'Co-Constraints Binding',
+            resourceType: Type.CONFORMANCEPROFILE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenConformanceProfileStructureEditor,
           idKey: 'conformanceProfileId',
         },
       },

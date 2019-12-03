@@ -10,6 +10,8 @@ import { EditorSave, EditorUpdate, IgEditResolverLoad } from '../../../../root-s
 import { selectAllDatatypes, selectCoConstraintGroupsById, selectIgId, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { MessageService } from '../../../core/services/message.service';
+import { ICoConstraintTable } from '../../../segment/model/coconstraints.model';
+import { IAssertion, IPath } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { CoConstraintGroupService } from '../../services/co-constraint-group.service';

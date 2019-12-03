@@ -9,6 +9,7 @@ import java.util.List;
 @Document(collection = "coconstraints")
 public class CoConstraintGroup extends Resource {
     protected String baseSegment;
+    protected String documentId;
     protected CoConstraintHeaders headers;
     protected List<CoConstraint> coConstraints;
 
@@ -29,6 +30,14 @@ public class CoConstraintGroup extends Resource {
         clone.setHeaders(headers.clone());
         clone.setCoConstraints(new ArrayList<>(this.coConstraints));
         return clone;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 
     public String getBaseSegment() {

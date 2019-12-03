@@ -78,7 +78,6 @@ export class TreeFilterService {
   }
 
   keep(node: IHL7v2TreeNode, restrictions: Array<ITreeRestriction<any>>): boolean {
-    console.log(restrictions);
     const combined = restrictions.filter((elm) => !elm.combine || elm.combine === RestrictionCombinator.ACCUMULATE);
     const enforced = restrictions.filter((elm) => elm.combine === RestrictionCombinator.ENFORCE);
 
@@ -90,8 +89,6 @@ export class TreeFilterService {
       return keep;
     };
 
-    console.log(enforced);
-    console.log(evaluate(enforced));
     return evaluate(combined) && (enforced.length === 0 || evaluate(enforced));
   }
 

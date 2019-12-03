@@ -12,11 +12,11 @@
     </div>
   </div>
   <ng-container *ngIf="cs">
-    <div class="form-group" *ngIf="!predicateMode">
+    <div class="form-group" *ngIf="!predicateMode && !assertionMode">
       <label for="free" class="form-label-lg"> Identifier </label>
       <input type="text" class="form-control" id="id" name="id" placeholder="Assertion Identifier" required #identifier="ngModel" [(ngModel)]="cs.identifier">
     </div>
-    <table *ngIf="predicateMode" class="table table-sm table-bordered">
+    <table *ngIf="predicateMode && !assertionMode" class="table table-sm table-bordered">
       <tr>
         <th style="text-align: center;">True Usage</th>
         <th style="text-align: center;">False Usage</th>
@@ -40,7 +40,7 @@
         </td>
       </tr>
     </table>
-    <div class="form-group" *ngIf="resourceType === 'CONFORMANCEPROFILE'">
+    <div class="form-group" *ngIf="resourceType === 'CONFORMANCEPROFILE' && !assertionMode">
       <label for="free" class="form-label-lg"> Context </label>
       <span *ngIf="cs?.context" >
         <span style="margin-left: 5px;" ><app-entity-bagde [type]='structure[0].data.type' ></app-entity-bagde> {{ contextName }}</span>
