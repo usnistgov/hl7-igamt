@@ -16,8 +16,8 @@ import { DropdownModule } from 'primeng/dropdown';
 import {
   AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
 } from 'primeng/primeng';
-import { TableModule } from 'primeng/table';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
 import { AlertsContainerComponent } from '../core/components/alerts-container/alerts-container.component';
 import { MessageService } from '../core/services/message.service';
@@ -33,6 +33,7 @@ import { DeltaColumnComponent } from './components/delta-column/delta-column.com
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
 import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
+import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
@@ -51,7 +52,6 @@ import { TextComponent } from './components/hl7-v2-tree/columns/text/text.compon
 import { UsageComponent } from './components/hl7-v2-tree/columns/usage/usage.component';
 import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/valueset.component';
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
-import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { LoginFormComponent } from './components/login-form/login-form.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';

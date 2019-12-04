@@ -38,5 +38,5 @@ export class ExportXmlDialogComponent implements OnInit {
 export interface IExportXmlDialogData {
   conformanceProfiles?: IDisplayElement[];
   compositeProfiles?: IDisplayElement[];
-  igId?:string;
+  igId?: string;
 }
