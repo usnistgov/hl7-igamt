@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.display.model.VerificationReport;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationResult;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.service.impl.VerificationResult;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 @Service("verificationService")

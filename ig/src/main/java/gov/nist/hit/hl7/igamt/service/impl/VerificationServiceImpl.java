@@ -63,6 +63,7 @@ import gov.nist.hit.hl7.igamt.display.model.XSDVerificationResult;
 import gov.nist.hit.hl7.igamt.display.model.VerificationReport.DocumentTarget;
 import gov.nist.hit.hl7.igamt.display.model.VerificationReport.ErrorType;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationResult;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;

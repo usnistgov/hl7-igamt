@@ -9,17 +9,28 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.service.impl;
+package gov.nist.hit.hl7.igamt.ig.domain.verification;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import gov.nist.hit.hl7.igamt.service.impl.ConformanceProfileObjectError;
+import gov.nist.hit.hl7.igamt.service.impl.DatatypeObjectError;
+import gov.nist.hit.hl7.igamt.service.impl.IgObjectError;
+import gov.nist.hit.hl7.igamt.service.impl.SegmentObjectError;
+import gov.nist.hit.hl7.igamt.service.impl.ValuesetObjectError;
 
 /**
  * @author jungyubw
  *
  */
 public class VerificationResult implements Serializable {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -5775165964558251622L;
 
   private List<ValuesetObjectError> valuesetObjectErrors;
 
