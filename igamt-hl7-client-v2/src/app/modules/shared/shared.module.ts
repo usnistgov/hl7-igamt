@@ -16,6 +16,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import {
   AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
 } from 'primeng/primeng';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
 import { AlertsContainerComponent } from '../core/components/alerts-container/alerts-container.component';
@@ -32,6 +33,7 @@ import { DeltaColumnComponent } from './components/delta-column/delta-column.com
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
 import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
+import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
@@ -109,6 +111,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     CopyResourceComponent,
     SelectNameComponent,
     Hl7V2TreeComponent,
+    DtmStructureComponent,
     UsageComponent,
     CardinalityComponent,
     LengthComponent,
@@ -167,6 +170,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     TreeModule,
     TreeTableModule,
     TableModule,
+    SelectButtonModule,
     ColorPickerModule,
     ContextMenuModule.forRoot({
       useBootstrap4: true,
@@ -176,6 +180,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AccordionModule,
     InputSwitchModule,
     TableModule,
+    SelectButtonModule,
     ExtendedModule,
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot(),
@@ -231,6 +236,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     NamingDuplicationDirective,
     NamingConventionDirective,
     Hl7V2TreeComponent,
+    DtmStructureComponent,
     UsageComponent,
     CardinalityComponent,
     LengthComponent,
@@ -249,6 +255,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ConstantValueComponent,
     PredicateComponent,
     TableModule,
+    SelectButtonModule,
     ColorPickerModule,
     StructureTreeComponent,
     CsPropositionComponent,

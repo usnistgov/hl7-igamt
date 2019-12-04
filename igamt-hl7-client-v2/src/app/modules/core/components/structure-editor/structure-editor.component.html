@@ -29,8 +29,11 @@
     </app-hl7-v2-tree>
   </ng-container>
   <ng-container *ngSwitchCase="true">
-    DTM
-    <!-- DTM COMPONENT LOGIC -->
+    <app-dtm-structure
+            [resource]="resource$ | async"
+            [viewOnly]="viewOnly$ | async"
+            (changes)="change($event)">
+    </app-dtm-structure>
   </ng-container>
 </ng-container>
 
