@@ -4,7 +4,7 @@
 		<xsl:if test="normalize-space(@usageNotes)!=''">
 <!-- 			<xsl:value-of disable-output-escaping="yes" select="concat('Usage Notes : ' ,@usageNotes)"></xsl:value-of>
  -->	
- 			<b>Usage notes</b> <xsl:value-of disable-output-escaping="yes" select="@usageNotes"></xsl:value-of>
+ 			<b>Usage notes : </b> <xsl:value-of disable-output-escaping="yes" select="@usageNotes"></xsl:value-of>
  		<xsl:element name="br" />
 		</xsl:if>
 	</xsl:template>

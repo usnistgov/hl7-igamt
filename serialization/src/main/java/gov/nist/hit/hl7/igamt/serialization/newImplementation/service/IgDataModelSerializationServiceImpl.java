@@ -159,7 +159,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 						resource.getPreDef() != null && !resource.getPreDef().isEmpty()
 						? this.formatStringData(resource.getPreDef())
 								: ""));}
-			element.addAttribute(new Attribute("type", type.getValue()));
+//			element.addAttribute(new Attribute("type", type.getValue()));
 		}
 		return element;
 	}

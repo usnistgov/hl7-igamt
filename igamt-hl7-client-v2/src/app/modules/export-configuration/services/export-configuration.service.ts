@@ -1,20 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { Message } from '../../core/models/message/message.class';
 import { IExportConfiguration } from '../../export-configuration/models/default-export-configuration.interface';
-import { IStructureElementBinding } from '../../shared/models/binding.interface';
-import { IConformanceStatementList } from '../../shared/models/cs-list.interface';
-import { IChange } from '../../shared/models/save-change';
-import { ISegment } from '../../shared/models/segment.interface';
-import { ValueSetService } from '../../value-set/service/value-set.service';
+import { IExportConfigurationItemList } from '../models/exportConfigurationForFrontEnd.interface';
 
 @Injectable()
 export class ExportConfigurationService {
 
   readonly URL = 'api/configuration';
-  exportConfigurationForFrontEnd: any;
 
   constructor(private http: HttpClient) { }
 
@@ -26,16 +20,20 @@ export class ExportConfigurationService {
     return this.http.get<IExportConfiguration>(this.URL + '/create');
   }
 
-  saveExportConfiguration(exportConfiguration: IExportConfiguration): Observable<IExportConfiguration> {
-    return this.http.post<IExportConfiguration>(this.URL + '/save', exportConfiguration);
+  saveExportConfiguration(exportConfiguration: IExportConfiguration): Observable<Message<any>> {
+    return this.http.post<Message<any>>(this.URL + '/save', exportConfiguration);
   }
 
-  deleteExportConfiguration(exportConfiguration: IExportConfiguration): Observable<IExportConfiguration> {
-    return this.http.post<IExportConfiguration>(this.URL + '/delete', exportConfiguration);
+  saveAsDefaultExportConfiguration(exportConfiguration: IExportConfigurationItemList): Observable<Message<any>> {
+    return this.http.post<Message<any>>(this.URL + '/saveAsDefault', exportConfiguration);
   }
 
-  getAllExportConfigurationByUsername(): Observable<any[]> {
-    return this.http.get<any[]>(this.URL + '/generalConfigurations');
+  deleteExportConfiguration(exportConfiguration: IExportConfiguration): Observable<Message<any>> {
+    return this.http.post<Message<any>>(this.URL + '/delete', exportConfiguration);
+  }
+
+  getAllExportConfigurations(): Observable<IExportConfigurationItemList[]> {
+    return this.http.get<IExportConfigurationItemList[]>(this.URL + '/generalConfigurations');
   }
 
 }

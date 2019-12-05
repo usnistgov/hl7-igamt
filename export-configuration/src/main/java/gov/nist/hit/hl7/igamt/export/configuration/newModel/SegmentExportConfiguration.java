@@ -32,6 +32,7 @@ public class SegmentExportConfiguration extends ResourceExportConfiguration{
 		  this.columns=defaultConfiguration.getSegmentColumn().getColumns();
 		  this.coConstraintExportMode=defaultConfiguration.getCoConstraintExportMode();
 		  this.metadataConfig=defaultConfiguration.getSegmentMetadataConfig();  
+		  this.columns=defaultConfiguration.getSegmentColumn().getColumns();
 	  }
 	  
 	  

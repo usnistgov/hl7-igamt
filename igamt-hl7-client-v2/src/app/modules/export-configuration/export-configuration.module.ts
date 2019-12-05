@@ -9,6 +9,7 @@ import { DatatypeExportConfigurationComponent } from './components/datatype-expo
 import { DefaultConfigurationComponent } from './components/default-configuration/default-configuration.component';
 import { DeltaExportConfigurationComponent } from './components/delta-export-configuration/delta-export-configuration.component';
 import { ExportConfigurationDialogComponent } from './components/export-configuration-dialog/export-configuration-dialog.component';
+import { ExportDialogComponent } from './components/export-dialog/export-dialog.component';
 import { SegmentExportConfigurationComponent } from './components/segment-export-configuration/segment-export-configuration.component';
 import { ValueSetExportConfigurationComponent } from './components/value-set-export-configuration/value-set-export-configuration.component';
 import { ExportConfigurationRoutingModule } from './export-configuration-routing.module';
@@ -24,6 +25,7 @@ import { ExportConfigurationService } from './services/export-configuration.serv
     ConfigurationTocComponent,
     DefaultConfigurationComponent,
     DeltaExportConfigurationComponent,
+    ExportDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -39,9 +41,11 @@ import { ExportConfigurationService } from './services/export-configuration.serv
     ConformanceProfileExportConfigurationComponent,
     ExportConfigurationDialogComponent,
     DefaultConfigurationComponent,
+    ExportDialogComponent,
   ],
   entryComponents: [
     ExportConfigurationDialogComponent,
+    ExportDialogComponent,
   ],
   providers: [
     ExportConfigurationService,

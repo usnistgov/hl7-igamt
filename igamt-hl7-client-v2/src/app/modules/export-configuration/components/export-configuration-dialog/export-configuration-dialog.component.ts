@@ -1,12 +1,12 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import {Store} from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { TreeNode } from 'angular-tree-component';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
-import {map, take, withLatestFrom} from 'rxjs/operators';
-import {ToggleDelta} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { map, take, withLatestFrom } from 'rxjs/operators';
+import { ToggleDelta } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
   selectAllDatatypes, selectAllMessages, selectAllSegments, selectAllValueSets,
   selectDelta,
@@ -37,16 +37,19 @@ export class ExportConfigurationDialogComponent implements OnInit {
   derived: boolean;
   delta: any;
   selectedDeltaValues = [];
+  configurationName: string;
 
   constructor(
     public dialogRef: MatDialogRef<ExportConfigurationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any, private store: Store<any>) {
     this.initialConfig = data.decision;
     this.nodes = data.toc;
+    this.configurationName = data.configurationName;
     this.deltaMode$ = this.store.select(selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).subscribe((x) => this.derived = x);
     this.filter = this.initialConfig.exportFilterDecision;
+    console.log(this.filter);
     this.defaultConfig = _.cloneDeep(data.decision.exportConfiguration);
   }
   select(node) {
@@ -146,23 +149,23 @@ export class ExportConfigurationDialogComponent implements OnInit {
   }
   filterByDelta($event: string[]) {
     let subscription = this.store.select(selectAllDatatypes).pipe(
-     map((value: IDisplayElement[], number: any) => {
-       for ( const display  of value) {
-         this.filter.datatypesFilterMap[display.id] = $event.indexOf(display.delta) > -1;
-       }
-     })).subscribe();
+      map((value: IDisplayElement[], number: any) => {
+        for (const display of value) {
+          this.filter.datatypesFilterMap[display.id] = $event.indexOf(display.delta) > -1;
+        }
+      })).subscribe();
 
     subscription.unsubscribe();
     subscription = this.store.select(selectAllSegments).pipe(
       map((value: IDisplayElement[], number: any) => {
-        for ( const display  of value) {
+        for (const display of value) {
           this.filter.segmentFilterMap[display.id] = $event.indexOf(display.delta) > -1;
         }
       })).subscribe();
     subscription.unsubscribe();
     subscription = this.store.select(selectAllValueSets).pipe(
       map((value: IDisplayElement[], number: any) => {
-        for ( const display  of value) {
+        for (const display of value) {
           this.filter.valueSetFilterMap[display.id] = $event.indexOf(display.delta) > -1;
         }
       })).subscribe();
@@ -170,7 +173,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
 
     subscription = this.store.select(selectAllMessages).pipe(
       map((value: IDisplayElement[], number: any) => {
-        for ( const display  of value) {
+        for (const display of value) {
           this.filter.conformanceProfileFilterMap[display.id] = $event.indexOf(display.delta) > -1;
         }
       })).subscribe();

@@ -62,16 +62,25 @@ public class ConfigurationController {
   
   @RequestMapping(value = "api/configuration/save", method = RequestMethod.POST,
 	      consumes = {"application/json"})
-	  public ResponseMessage saveExportconfuguration(@RequestBody ExportConfiguration exportConfiguration){
-	  System.out.println("Inside save controler");
-	  	 exportConfigurationService.save(exportConfiguration);
-		return new ResponseMessage(Status.SUCCESS, "EXPORTCONFIGURATION_SAVED", exportConfiguration.getId(), null);
+	  public ResponseMessage saveExportconfuguration(@RequestBody ExportConfiguration exportConfiguration, Authentication authentication){
+	  exportConfigurationService.save(exportConfiguration, authentication );
+		return new ResponseMessage(Status.SUCCESS, "EXPORT_CONFIGURATION_SAVED", exportConfiguration.getId(), null);
+
+	  }
+  
+  @RequestMapping(value = "api/configuration/saveAsDefault", method = RequestMethod.POST,
+	      consumes = {"application/json"})
+  	@ResponseBody
+	  public ResponseMessage saveAsDefaultExportconfuguration(@RequestBody ExportConfigurationForFrontEnd exportConfigurationWrapper, Authentication authentication){
+	  ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(exportConfigurationWrapper.getId());
+	  exportConfiguration.setDefaultConfig(true);
+	  	 exportConfigurationService.save(exportConfiguration, authentication);
+		return new ResponseMessage(Status.SUCCESS, "EXPORT_CONFIGURATION_SAVED", exportConfiguration.getId(), null);
 
 	  }
   
   @RequestMapping(value = "/api/configuration/{id}", method = RequestMethod.GET, produces = { "application/json" })
   public @ResponseBody ExportConfiguration getExportConfiguration(@PathVariable("id") String id) {
-	  System.out.println("Inside get controler and id is : "+ id );
 	  return exportConfigurationService.getExportConfiguration(id);
 
   }
@@ -85,27 +94,28 @@ public class ConfigurationController {
 		  ExportConfigurationForFrontEnd exportConfigurationForFrontEnd = new ExportConfigurationForFrontEnd();
 		  exportConfigurationForFrontEnd.setId(ec.getId());
 		  exportConfigurationForFrontEnd.setConfigName(ec.getConfigName());
-		  configNames.add(exportConfigurationForFrontEnd);
-		  
+		  exportConfigurationForFrontEnd.setDefaultConfig(ec.isDefaultConfig());
+		  configNames.add(exportConfigurationForFrontEnd);		  
 	  }
-	  System.out.println("Inside getall controler and list size is : "+ configList.size() +" And Username is : " + username);
-
 	  return configNames;
   }
   
   @RequestMapping(value = "api/configuration/delete", method = RequestMethod.POST,
 	      consumes = {"application/json"})
-	  public void deleteExportconfuguration(@RequestBody ExportConfiguration exportConfiguration){
+	  public @ResponseBody ResponseMessage deleteExportconfuguration(@RequestBody ExportConfiguration exportConfiguration){
 	  	 exportConfigurationService.delete(exportConfiguration);
+	  	 return new ResponseMessage<String>(Status.SUCCESS, "EXPORT_CONFIGURATION_DELETED", exportConfiguration.getId(), null);
 	  }
   
   @RequestMapping(value = "/api/configuration/create", method = RequestMethod.GET, produces = { "application/json" })
-  public @ResponseBody ExportConfiguration createExportConfiguration() {
-	  System.out.println("Inside create controler");
-	  return exportConfigurationService.create();
+  public @ResponseBody ExportConfiguration createExportConfiguration(Authentication authentication ) {
+	  String username =  authentication.getPrincipal().toString();
+	  return exportConfigurationService.create(username);
   }
   
-
+  
+  
+  
 
   @RequestMapping(value = "api/configuration/tableOptions/conformanceProfile", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -208,7 +218,7 @@ public class ConfigurationController {
       ExportConfiguration exportConfiguration = tableOptionsDisplay.populateExportConfiguration(this.findExportConfigurationServiceByAuthentication(authentication));
       exportConfiguration.setUsername(authentication.getPrincipal().toString());
       exportConfiguration.setDefaultType(false);
-      exportConfigurationService.save(exportConfiguration);
+//      exportConfigurationService.save(exportConfiguration);
     }
   }
 
