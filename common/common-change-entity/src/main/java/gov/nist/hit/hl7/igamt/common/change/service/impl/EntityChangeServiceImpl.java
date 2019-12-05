@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.common.config.service.impl;
+package gov.nist.hit.hl7.igamt.common.change.service.impl;
 
 import java.util.List;
 
@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
-import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
+import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 
 @Service
 public class EntityChangeServiceImpl implements EntityChangeService {
   @Autowired
-  gov.nist.hit.hl7.igamt.common.config.repository.EntityChangeRepository entityChangeRepository;
+  gov.nist.hit.hl7.igamt.common.change.repository.EntityChangeRepository entityChangeRepository;
 
   public EntityChangeServiceImpl() {}
 

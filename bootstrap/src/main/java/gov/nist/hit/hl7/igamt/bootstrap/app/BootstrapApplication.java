@@ -56,8 +56,8 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 //@EnableMongoAuditing
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
     DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
-@EnableMongoRepositories("gov.nist.hit.hl7.igamt")
-@ComponentScan({"gov.nist.hit.hl7.igamt", "gov.nist.hit.hl7.auth.util.crypto","gov.nist.hit.hl7.auth.util.service"})
+@EnableMongoRepositories("gov.nist.hit.hl7")
+@ComponentScan({"gov.nist.hit.hl7", "gov.nist.hit.hl7.auth.util.crypto","gov.nist.hit.hl7.auth.util.service"})
 @EnableScheduling
 public class BootstrapApplication implements CommandLineRunner {
 
@@ -201,11 +201,11 @@ public class BootstrapApplication implements CommandLineRunner {
   // }
 
   //
-   @PostConstruct
-    void createMessageEvent() {
-      messageEventFactory.createMessageEvent();
-      System.out.println("done");
-  }
+//   @PostConstruct
+//    void createMessageEvent() {
+//      messageEventFactory.createMessageEvent();
+//      System.out.println("done");
+//  }
 //  
    //
   //@PostConstruct

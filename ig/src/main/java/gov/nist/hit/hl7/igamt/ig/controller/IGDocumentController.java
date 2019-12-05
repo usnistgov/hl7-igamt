@@ -55,7 +55,9 @@ import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
+import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
@@ -146,6 +148,9 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   PredicateRepository predicateRepository;
+  
+  @Autowired
+  MessageStructureRepository  messageStructureRepository;
 
   @Autowired
   DisplayInfoService displayInfoService;
@@ -478,8 +483,11 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<List<MessageEventTreeNode>> getMessageEvents(
       @PathVariable("version") String version, Authentication authentication) {
     try {
+      
+      
+    List<MessageStructure>  allStuctures= messageStructureRepository.findByDomainInfoVersion(version);
 
-      List<MessageEventTreeNode> list = messageEventService.findByHl7Version(version);
+      List<MessageEventTreeNode> list = messageEventService.convertMessageStructureToEventTree(allStuctures);
 
       return new ResponseMessage<List<MessageEventTreeNode>>(Status.SUCCESS, null, null, null, false, null, list);
     } catch (Exception e) {
@@ -509,9 +517,12 @@ public class IGDocumentController extends BaseController {
       Ig empty = igService.createEmptyIg();
       Set<String> savedIds = new HashSet<String>();
       for (AddingInfo ev : wrapper.getMsgEvts()) {
-        ConformanceProfile profile = conformanceProfileService.findById(ev.getOriginalId());
+        
+        
+        MessageStructure profile = messageStructureRepository.findOneById(ev.getOriginalId());
         if (profile != null) {
-          ConformanceProfile clone = profile.clone();
+          ConformanceProfile clone = new ConformanceProfile(profile, ev.getName());
+          clone.setUsername(username);
           clone.setUsername(username);
           clone.setDescription(ev.getDescription());
           clone.getDomainInfo().setScope(Scope.USER);
@@ -522,6 +533,7 @@ public class IGDocumentController extends BaseController {
           savedIds.add(clone.getId());
         }
       }
+     
       empty.setUsername(username);
       DomainInfo info = new DomainInfo();
       info.setScope(Scope.USER);
@@ -952,13 +964,12 @@ public class IGDocumentController extends BaseController {
     Ig ig = findIgById(id);
     Set<String> savedIds = new HashSet<String>();
     for (AddingInfo ev : wrapper.getSelected()) {
-      ConformanceProfile profile = conformanceProfileService.findById(ev.getOriginalId());
+      MessageStructure profile = messageStructureRepository.findOneById(ev.getOriginalId());
       if (profile != null) {
-        ConformanceProfile clone = profile.clone();
+        ConformanceProfile clone = new ConformanceProfile(profile, ev.getName());
         clone.setUsername(username);
         clone.getDomainInfo().setScope(Scope.USER);
         clone.setDescription(ev.getDescription());
-        clone.setEvent(ev.getName());
         clone.setIdentifier(ev.getExt());
         clone.setName(ev.getExt());
         clone = conformanceProfileService.save(clone);

@@ -38,7 +38,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
-import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
+import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.exception.ValuesetException;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;

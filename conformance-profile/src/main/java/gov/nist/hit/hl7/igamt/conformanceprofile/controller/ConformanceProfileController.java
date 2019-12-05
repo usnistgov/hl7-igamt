@@ -29,7 +29,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
-import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
+import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
