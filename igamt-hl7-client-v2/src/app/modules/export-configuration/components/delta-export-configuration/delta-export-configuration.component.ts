@@ -102,6 +102,8 @@ export class DeltaExportConfigurationComponent implements OnInit {
         this.config.colors.DELETED = color;
         break;
     }
+
+    this.triggerChange();
   }
 
 }

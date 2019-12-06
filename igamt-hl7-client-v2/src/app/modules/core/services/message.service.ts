@@ -55,10 +55,19 @@ export class MessageService {
 
   userMessageToAction(userMessage: UserMessage): Notify | AddMessage {
     if (userMessage.status === MessageType.SUCCESS) {
-      return new Notify(userMessage);
+      return new Notify(this.mergeUserMessage(userMessage));
     } else {
-      return new AddMessage(userMessage);
+      return new AddMessage(this.mergeUserMessage(userMessage));
     }
+  }
+
+  mergeUserMessage(userMessage: UserMessage): UserMessage {
+    return new UserMessage(
+      userMessage.status,
+      userMessage.message,
+      userMessage.data,
+      this.mergeOptions(userMessage.options),
+    );
   }
 
   fromError(response: HttpErrorResponse, data?: any, options?: IUserMessageOptions): UserMessage {

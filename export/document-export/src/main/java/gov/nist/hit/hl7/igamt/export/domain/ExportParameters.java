@@ -60,22 +60,39 @@ public class ExportParameters {
         null, null, null, null, null, null, null, null, null, appVersion);
   }
 
+//  public ExportParameters(boolean inlineConstraints, boolean includeTOC, String targetFormat,
+//      String documentTitle, String imageLogo, ExportConfiguration exportConfiguration,
+//      ExportFontConfiguration exportFontConfiguration, String appVersion) {
+//    this(inlineConstraints, includeTOC, targetFormat, documentTitle, imageLogo,
+//        exportConfiguration.getMessageColumn().getColumns(),
+//        exportConfiguration.getCompositeProfileColumn().getColumns(),
+//        exportConfiguration.getProfileComponentColumn().getColumns(),
+//        exportConfiguration.getSegmentColumn().getColumns(),
+//        exportConfiguration.getDatatypeColumn().getColumns(),
+//        exportConfiguration.getValuesetColumn().getColumns(),
+//        exportConfiguration.getValuesetsMetadata(), exportConfiguration.getDatatypeMetadataConfig(),
+//        exportConfiguration.getSegmentMetadataConfig(),
+//        exportConfiguration.getMessageMetadataConfig(),
+//        exportConfiguration.getCompositeProfileMetadataConfig(), exportFontConfiguration,
+//        appVersion);
+//  }
+  
   public ExportParameters(boolean inlineConstraints, boolean includeTOC, String targetFormat,
-      String documentTitle, String imageLogo, ExportConfiguration exportConfiguration,
-      ExportFontConfiguration exportFontConfiguration, String appVersion) {
-    this(inlineConstraints, includeTOC, targetFormat, documentTitle, imageLogo,
-        exportConfiguration.getMessageColumn().getColumns(),
-        exportConfiguration.getCompositeProfileColumn().getColumns(),
-        exportConfiguration.getProfileComponentColumn().getColumns(),
-        exportConfiguration.getSegmentColumn().getColumns(),
-        exportConfiguration.getDatatypeColumn().getColumns(),
-        exportConfiguration.getValuesetColumn().getColumns(),
-        exportConfiguration.getValuesetsMetadata(), exportConfiguration.getDatatypeMetadataConfig(),
-        exportConfiguration.getSegmentMetadataConfig(),
-        exportConfiguration.getMessageMetadataConfig(),
-        exportConfiguration.getCompositeProfileMetadataConfig(), exportFontConfiguration,
-        appVersion);
-  }
+	      String documentTitle, String imageLogo, ExportConfiguration exportConfiguration,
+	      ExportFontConfiguration exportFontConfiguration, String appVersion) {
+	    this(inlineConstraints, includeTOC, targetFormat, documentTitle, imageLogo,
+	        exportConfiguration.getConformamceProfileExportConfiguration().getColumns(),
+	        exportConfiguration.getCompositeProfileColumn().getColumns(),
+	        exportConfiguration.getProfileComponentColumn().getColumns(),
+	        exportConfiguration.getSegmentExportConfiguration().getColumns(),
+	        exportConfiguration.getDatatypeExportConfiguration().getColumns(),
+	        exportConfiguration.getValueSetExportConfiguration().getColumns(),
+	        exportConfiguration.getValuesetsMetadata(), exportConfiguration.getDatatypeMetadataConfig(),
+	        exportConfiguration.getSegmentMetadataConfig(),
+	        exportConfiguration.getMessageMetadataConfig(),
+	        exportConfiguration.getCompositeProfileMetadataConfig(), exportFontConfiguration,
+	        appVersion);
+	  }
 
   public ExportParameters(boolean inlineConstraints, boolean includeTOC, String targetFormat,
       String documentTitle, String imageLogo, List<NameAndPositionAndPresence> messageColumns,

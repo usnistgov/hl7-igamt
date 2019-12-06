@@ -28,5 +28,7 @@ public interface ExportConfigurationRepository extends MongoRepository<ExportCon
   public List<ExportConfiguration> findByUsername(String username);
   public ExportConfiguration findOneById(String id);
   public ExportConfiguration findLatestById(String id);
+  public ExportConfiguration findOneByDefaultConfigAndUsername(boolean defaultConfig, String username);
+
   
 }
