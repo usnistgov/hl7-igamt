@@ -58,12 +58,17 @@ import gov.nist.hit.hl7.igamt.datatype.domain.PrimitiveDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.CustomProfileError;
-import gov.nist.hit.hl7.igamt.display.model.VerificationReport;
+import gov.nist.hit.hl7.igamt.display.model.XMLVerificationReport;
+import gov.nist.hit.hl7.igamt.display.model.XMLVerificationReport.DocumentTarget;
+import gov.nist.hit.hl7.igamt.display.model.XMLVerificationReport.ErrorType;
 import gov.nist.hit.hl7.igamt.display.model.XSDVerificationResult;
-import gov.nist.hit.hl7.igamt.display.model.VerificationReport.DocumentTarget;
-import gov.nist.hit.hl7.igamt.display.model.VerificationReport.ErrorType;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationResult;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.CPVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.DTSegVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.VSVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
@@ -109,8 +114,6 @@ public class VerificationServiceImpl implements VerificationService {
       "https://raw.githubusercontent.com/Jungyubw/NIST_healthcare_hl7_v2_profile_schema/master/Schema/NIST%20Validation%20Schema/ConformanceContext.xsd";
 
 
-
-
   private XSDVerificationResult verifyXMLByXSD(String xsdURL, String profileXMLStr) {
     try {
       URL schemaFile = new URL(xsdURL);
@@ -130,8 +133,8 @@ public class VerificationServiceImpl implements VerificationService {
   }
 
   @Override
-  public VerificationReport verifyXMLs(String profileXMLStr, String constraintXMLStr, String valuesetXMLStr) {
-    VerificationReport report = new VerificationReport();
+  public XMLVerificationReport verifyXMLs(String profileXMLStr, String constraintXMLStr, String valuesetXMLStr) {
+    XMLVerificationReport report = new XMLVerificationReport();
     // 1. XML Validation by XSD
     report.setProfileXSDValidationResult(this.verifyXMLByXSD(profileXSDurl, profileXMLStr));
     report.setValueSetXSDValidationResult(this.verifyXMLByXSD(valueSetXSDurl, valuesetXMLStr));
@@ -303,46 +306,44 @@ public class VerificationServiceImpl implements VerificationService {
   }
 
   @Override
-  public VerificationResult verifyValueset(Valueset valueset, String documentId, VerificationResult vr) {
-    if(vr == null) vr = new VerificationResult();
+  public VSVerificationResult verifyValueset(Valueset valueset) {
+    VSVerificationResult result = new VSVerificationResult(valueset);
     
     // 1. Metadata checking
-    this.checkingMetadataForValueset(valueset, vr);
+    this.checkingMetadataForValueset(valueset, result);
     
     // 2. Structure Checking
-    this.checkingStructureForValueset(valueset, vr);
+    this.checkingStructureForValueset(valueset, result);
     
-    return vr;
+    return result;
   }
 
   @Override
-  public VerificationResult verifyDatatype(Datatype datatype, String documentId, VerificationResult vr) {
-    if(vr == null) vr = new VerificationResult();
+  public DTSegVerificationResult verifyDatatype(Datatype datatype) {
+    DTSegVerificationResult result = new DTSegVerificationResult(datatype);
     
     // 1. Metadata checking
-    this.checkingMetadataForDatatype(datatype, vr);
-    
+    this.checkingMetadataForDatatype(datatype, result);
     
     // 2. Structure Checking
-    this.checkingStructureForDatatype(datatype, vr);
+    this.checkingStructureForDatatype(datatype, result);
     
-    return vr;
+    return result;
   }
   
   /**
    * @param valueset
    * @param vr
    */
-  private void checkingStructureForValueset(Valueset valueset, VerificationResult vr) {
-    if(valueset.getCodes() != null) this.checkingCodes(valueset, valueset.getCodes(), vr);
-    
+  private void checkingStructureForValueset(Valueset valueset, VSVerificationResult result) {
+    if(valueset.getCodes() != null) this.checkingCodes(valueset, valueset.getCodes(), result);
   }
 
   /**
    * @param datatype
    * @param vr
    */
-  private void checkingStructureForDatatype(Datatype datatype, VerificationResult vr) {
+  private void checkingStructureForDatatype(Datatype datatype, DTSegVerificationResult result) {
     // Case #1 : Primitive
     if (datatype instanceof PrimitiveDatatype) {
       //NO Checking
@@ -351,7 +352,7 @@ public class VerificationServiceImpl implements VerificationService {
     if (datatype instanceof ComplexDatatype) {
       ComplexDatatype cDt = (ComplexDatatype)datatype;
       
-      this.checkingComponents(cDt, cDt.getComponents(), vr);
+      this.checkingComponents(cDt, cDt.getComponents(), result);
     }
   }
   
@@ -359,11 +360,11 @@ public class VerificationServiceImpl implements VerificationService {
    * @param conformanceProfile
    * @param vr
    */
-  private void checkingStructureForConformanceProfile(ConformanceProfile conformanceProfile, VerificationResult vr) {
+  private void checkingStructureForConformanceProfile(ConformanceProfile conformanceProfile, CPVerificationResult result) {
     Set<StructureElementBinding> sebs = null;
     if(conformanceProfile.getBinding() != null) sebs = conformanceProfile.getBinding().getChildren();
     
-    this.checkingSegmentRefOrGroups(conformanceProfile, conformanceProfile.getChildren(), vr, null, null, sebs);
+    this.checkingSegmentRefOrGroups(conformanceProfile, conformanceProfile.getChildren(), result, null, null, sebs);
     
   }
   
@@ -373,10 +374,10 @@ public class VerificationServiceImpl implements VerificationService {
    * @param vr
    * @param sebs 
    */
-  private void checkingSegmentRefOrGroups(ConformanceProfile conformanceProfile, Set<SegmentRefOrGroup> segmentRefOrGroups, VerificationResult vr, String positionPath, String path, Set<StructureElementBinding> sebs) {
+  private void checkingSegmentRefOrGroups(ConformanceProfile conformanceProfile, Set<SegmentRefOrGroup> segmentRefOrGroups, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
     
     if (segmentRefOrGroups != null) {
-      segmentRefOrGroups.forEach(srog -> this.checkingSegmentRefOrGroup(conformanceProfile, srog, vr, positionPath, path, this.findSEB(sebs, srog.getId())));
+      segmentRefOrGroups.forEach(srog -> this.checkingSegmentRefOrGroup(conformanceProfile, srog, result, positionPath, path, this.findSEB(sebs, srog.getId())));
     }
   }
 
@@ -401,11 +402,11 @@ public class VerificationServiceImpl implements VerificationService {
    * @param set 
    * @return
    */
-  private void checkingSegmentRefOrGroup(ConformanceProfile conformanceProfile, SegmentRefOrGroup srog, VerificationResult vr, String positionPath, String path, Set<StructureElementBinding> sebs) {
+  private void checkingSegmentRefOrGroup(ConformanceProfile conformanceProfile, SegmentRefOrGroup srog, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
     if(srog instanceof SegmentRef) {
-      this.chekcingSegmentRef(conformanceProfile, (SegmentRef)srog, vr, positionPath, path, sebs);
+      this.chekcingSegmentRef(conformanceProfile, (SegmentRef)srog, result, positionPath, path, sebs);
     } else if(srog instanceof Group) {
-      this.checkingGroup(conformanceProfile, (Group)srog, vr, positionPath, path, sebs);
+      this.checkingGroup(conformanceProfile, (Group)srog, result, positionPath, path, sebs);
     } 
   }
 
@@ -417,7 +418,7 @@ public class VerificationServiceImpl implements VerificationService {
    * @param path
    * @param sebs
    */
-  private void chekcingSegmentRef(ConformanceProfile conformanceProfile, SegmentRef sr, VerificationResult vr, String positionPath, String path, Set<StructureElementBinding> sebs) {
+  private void chekcingSegmentRef(ConformanceProfile conformanceProfile, SegmentRef sr, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
     int position = sr.getPosition();
     Usage usage = sr.getUsage();
     
@@ -430,20 +431,20 @@ public class VerificationServiceImpl implements VerificationService {
     else positionPath = positionPath + "." + position;
     
     
-    if(max == null || !this.isIntOrStar(max)) vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "STRUCTURE", "group.max", "Field max should be integer or *", positionPath + "", "HIGH"));
+    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.max", "Field max should be integer or *", positionPath + "", "HIGH"));
     if(usage != null) {
-      if(usage.equals(Usage.R) && min < 1)  vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "STRUCTURE", "group.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "HIGH"));
+      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "HIGH"));
     }
     
-    if(usage.equals(Usage.CAB) && !this.hasPredicate(sr.getId(), sebs)) vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "STRUCTURE", "group.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "HIGH"));
+    if(usage.equals(Usage.CAB) && !this.hasPredicate(sr.getId(), sebs)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "HIGH"));
     
 
       
-      if(ref == null || ref.getId() != null) vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "STRUCTURE", "group.ref", "SegmentRef should be required", positionPath + "", "HIGH"));
+      if(ref == null || ref.getId() != null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.ref", "SegmentRef should be required", positionPath + "", "HIGH"));
       else {
         Segment refSeg = this.segmentService.findById(ref.getId());
         
-        if(refSeg == null) vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "STRUCTURE", "group.ref", "Segment is missing on DB", positionPath + "", "HIGH"));
+        if(refSeg == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.ref", "Segment is missing on DB", positionPath + "", "HIGH"));
       }
    
     
@@ -457,7 +458,7 @@ public class VerificationServiceImpl implements VerificationService {
    * @param path
    * @param sebs 
    */
-  private void checkingGroup(ConformanceProfile conformanceProfile, Group group, VerificationResult vr, String positionPath, String path, Set<StructureElementBinding> sebs) {
+  private void checkingGroup(ConformanceProfile conformanceProfile, Group group, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
     String name = group.getName();
     int position = group.getPosition();
     Usage usage = group.getUsage();
@@ -468,14 +469,14 @@ public class VerificationServiceImpl implements VerificationService {
     if (positionPath == null) path = position + "";
     else positionPath = positionPath + "." + position;
     
-    if(!this.isNotNullNotEmpty(name)) vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "STRUCTURE", "group.name", "Name should be required.", positionPath + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.name", "Name should be required.", positionPath + "", "HIGH"));
     
-    if(max == null || !this.isIntOrStar(max)) vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "STRUCTURE", "group.max", "Field max should be integer or *", positionPath + "", "HIGH"));
+    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.max", "Field max should be integer or *", positionPath + "", "HIGH"));
     if(usage != null) {
-      if(usage.equals(Usage.R) && min < 1)  vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "STRUCTURE", "group.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "HIGH"));
+      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "HIGH"));
     }
     
-    if(usage.equals(Usage.CAB) && !this.hasPredicate(group.getId(), sebs)) vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "STRUCTURE", "group.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "HIGH"));
+    if(usage.equals(Usage.CAB) && !this.hasPredicate(group.getId(), sebs)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "HIGH"));
     
     if(name != null) {
       if (path == null) path = name;
@@ -483,7 +484,7 @@ public class VerificationServiceImpl implements VerificationService {
       
       if(group.getChildren() != null) {
         for (SegmentRefOrGroup child : group.getChildren()) {
-          this.checkingSegmentRefOrGroup(conformanceProfile, child, vr, positionPath, path, this.findSEB(sebs, child.getId()));
+          this.checkingSegmentRefOrGroup(conformanceProfile, child, result, positionPath, path, this.findSEB(sebs, child.getId()));
         } 
       }      
     }
@@ -493,8 +494,8 @@ public class VerificationServiceImpl implements VerificationService {
    * @param segment
    * @param vr
    */
-  private void checkingStructureForSegment(Segment segment, VerificationResult vr) {      
-      this.checkingFields(segment, segment.getChildren(), vr);
+  private void checkingStructureForSegment(Segment segment, DTSegVerificationResult result) {      
+      this.checkingFields(segment, segment.getChildren(), result);
   }
   
   /**
@@ -502,11 +503,11 @@ public class VerificationServiceImpl implements VerificationService {
    * @param children
    * @param vr
    */
-  private void checkingFields(Segment segment, Set<Field> fields, VerificationResult vr) {
+  private void checkingFields(Segment segment, Set<Field> fields, DTSegVerificationResult result) {
     if(fields == null || fields.size() == 0) {
-      vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "fields", "Segment should have one or more fields.", null, "HIGH"));
+      result.getErrors().add(new IgamtObjectError("STRUCTURE", "fields", "Segment should have one or more fields.", null, "HIGH"));
     } else {
-      fields.forEach(f -> this.checkingField(segment, f, vr));
+      fields.forEach(f -> this.checkingField(segment, f, result));
     }
   }
   
@@ -515,19 +516,19 @@ public class VerificationServiceImpl implements VerificationService {
    * @param codes
    * @param vr
    */
-  private void checkingCodes(Valueset valueset, Set<Code> codes, VerificationResult vr) {
-    codes.forEach(c -> this.checkingCode(valueset, c, vr));
+  private void checkingCodes(Valueset valueset, Set<Code> codes, VSVerificationResult result) {
+    codes.forEach(c -> this.checkingCode(valueset, c, result));
     
   }
   
   /**
    * @param components
    */
-  private void checkingComponents(ComplexDatatype cDt, Set<Component> components, VerificationResult vr) {
+  private void checkingComponents(ComplexDatatype cDt, Set<Component> components, DTSegVerificationResult result) {
     if(components == null || components.size() == 0) {
-      vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "components", "Complex Datatype should have one or more components.", null, "HIGH"));
+      result.getErrors().add(new IgamtObjectError("STRUCTURE", "components", "Complex Datatype should have one or more components.", null, "HIGH"));
     } else {
-      components.forEach(c -> this.checkingComponent(cDt, c, vr));
+      components.forEach(c -> this.checkingComponent(cDt, c, result));
     }
   }
   
@@ -537,20 +538,20 @@ public class VerificationServiceImpl implements VerificationService {
    * @param vr
    * @return
    */
-  private void checkingCode(Valueset valueset, Code c, VerificationResult vr) {
+  private void checkingCode(Valueset valueset, Code c, VSVerificationResult result) {
     String value = c.getValue();
     String description = c.getDescription();
     String codeSystem = c.getCodeSystem();
     CodeUsage usage = c.getUsage();
     
-    if(!this.isNotNullNotEmpty(value)) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "STRUCTURE", "code.value", "value should be required.", c.getValue() + "", "HIGH"));
-    if(description == null) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "STRUCTURE", "code.description", "description should be required.", c.getValue() + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(codeSystem)) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "STRUCTURE", "code.codeSystem", "codeSystem should be required.", c.getValue() + "", "HIGH"));
-    if(usage == null) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "STRUCTURE", "code.usage", "usage should be required.", c.getValue() + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(value)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.value", "value should be required.", c.getValue() + "", "HIGH"));
+    if(description == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.description", "description should be required.", c.getValue() + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.codeSystem", "codeSystem should be required.", c.getValue() + "", "HIGH"));
+    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.usage", "usage should be required.", c.getValue() + "", "HIGH"));
     
     valueset.getCodes().forEach(otherC -> {
       if(!otherC.getId().equals(c.getId())){
-        if ((otherC.getValue() + "-" + otherC.getCodeSystem()).equals(c.getValue() + "-" + c.getCodeSystem())) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "STRUCTURE", "code.value", "The code value and codesys pair is duplicated.", c.getValue() + "", "HIGH"));
+        if ((otherC.getValue() + "-" + otherC.getCodeSystem()).equals(c.getValue() + "-" + c.getCodeSystem())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.value", "The code value and codesys pair is duplicated.", c.getValue() + "", "HIGH"));
       }
     });
   }
@@ -562,7 +563,7 @@ public class VerificationServiceImpl implements VerificationService {
    * @param vr
    * @return
    */
-  private void checkingComponent(ComplexDatatype cDt, Component c, VerificationResult vr) {
+  private void checkingComponent(ComplexDatatype cDt, Component c, DTSegVerificationResult result) {
     String name = c.getName();
     int position = c.getPosition();
     Ref ref = c.getRef();
@@ -573,38 +574,38 @@ public class VerificationServiceImpl implements VerificationService {
     String maxLength = c.getMaxLength();
     String minLength = c.getMinLength();
 
-    if(position == 0) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.position", "Component position should be greater than 0", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(name)) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.name", "Name should be required.", position + "", "HIGH"));
-    if(ref == null || ref.getId() == null) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.ref", "Component Ref should be required.", position + "", "HIGH"));
-    if(type == null || !type.equals(Type.COMPONENT)) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.type", "Component type should be 'COMPONENT'.", position + "", "HIGH"));
-    if(usage == null) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.usage", "Component usage should be required.", position + "", "HIGH"));
+    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.position", "Component position should be greater than 0", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.name", "Name should be required.", position + "", "HIGH"));
+    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "Component Ref should be required.", position + "", "HIGH"));
+    if(type == null || !type.equals(Type.COMPONENT)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.type", "Component type should be 'COMPONENT'.", position + "", "HIGH"));
+    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.usage", "Component usage should be required.", position + "", "HIGH"));
     
     if(this.isLengthAllowedComponent(c)) {
-      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.length", "Component length should be required.", position + "", "HIGH"));
-      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.length", "Component length should defined using a single way.", position + "", "HIGH"));
-      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.maxLength", "Component maxLength is not defined.", position + "", "HIGH"));
-      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.minLength", "Component minLength is not defined.", position + "", "HIGH"));
-      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.minLength", "Component minLength is not integer.", position + "", "HIGH"));
-      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.maxLength", "Component maxLength should be integer or *", position + "", "HIGH"));   
+      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component length should be required.", position + "", "HIGH"));
+      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component length should defined using a single way.", position + "", "HIGH"));
+      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.maxLength", "Component maxLength is not defined.", position + "", "HIGH"));
+      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.minLength", "Component minLength is not defined.", position + "", "HIGH"));
+      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.minLength", "Component minLength is not integer.", position + "", "HIGH"));
+      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.maxLength", "Component maxLength should be integer or *", position + "", "HIGH"));   
     }
     
     cDt.getComponents().forEach(otherC -> {
       if(!otherC.getId().equals(c.getId())){
-        if (otherC.getPosition() == c.getPosition()) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.position", "The component position is duplicated.", position + "", "HIGH"));
-        if (otherC.getName().equals(c.getName())) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.name", "The component name is duplicated.", position + "", "HIGH"));
+        if (otherC.getPosition() == c.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.position", "The component position is duplicated.", position + "", "HIGH"));
+        if (otherC.getName().equals(c.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.name", "The component name is duplicated.", position + "", "HIGH"));
       }
     });
     
-    if(usage.equals(Usage.CAB) && !this.hasPredicate(cDt, c.getId())) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "HIGH"));
+    if(usage.equals(Usage.CAB) && !this.hasPredicate(cDt, c.getId())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "HIGH"));
     
     if(ref != null && ref.getId() != null) {
       Datatype childDt = this.datatypeService.findById(ref.getId());
-      if(childDt == null) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.ref", "The component child DT is missing.", position + "", "HIGH"));
+      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "The component child DT is missing.", position + "", "HIGH"));
             
       if(this.isPrimitiveDatatype(childDt)) {
         
       } else {
-        if(this.isNotNullNotEmpty(c.getConstantValue())) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "HIGH"));
+        if(this.isNotNullNotEmpty(c.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "HIGH"));
       }
       
       if (this.isValueSetOrSingleCodeAllowedComponent(c, childDt)) {
@@ -614,9 +615,9 @@ public class VerificationServiceImpl implements VerificationService {
           ExternalSingleCode externalSingleCode = childBinding.getExternalSingleCode();
           InternalSingleCode internalSingleCode = childBinding.getInternalSingleCode();
           
-          if(valuesetBindings != null) this.checkingValueSetBindings(cDt, valuesetBindings, vr, position);
-          if(externalSingleCode != null) this.checkingExternalSingleCode(cDt, externalSingleCode, vr, position);
-          if(internalSingleCode != null) this.checkingInternalSingleCode(cDt, internalSingleCode, vr, position);
+          if(valuesetBindings != null) this.checkingValueSetBindings(cDt, valuesetBindings, result, position);
+          if(externalSingleCode != null) this.checkingExternalSingleCode(cDt, externalSingleCode, result, position);
+          if(internalSingleCode != null) this.checkingInternalSingleCode(cDt, internalSingleCode, result, position);
         }
         
       }else {
@@ -631,7 +632,7 @@ public class VerificationServiceImpl implements VerificationService {
    * @param vr
    * @return
    */
-  private void checkingField(Segment segment, Field f, VerificationResult vr) {
+  private void checkingField(Segment segment, Field f, DTSegVerificationResult result) {
     String name = f.getName();
     int position = f.getPosition();
     Ref ref = f.getRef();
@@ -646,43 +647,43 @@ public class VerificationServiceImpl implements VerificationService {
     String max = f.getMax();
   
 
-    if(position == 0) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.position", "Field position should be greater than 0", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(name)) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.name", "Name should be required.", position + "", "HIGH"));
-    if(ref == null || ref.getId() == null) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.ref", "Field Ref should be required.", position + "", "HIGH"));
-    if(type == null || !type.equals(Type.FIELD)) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.type", "Field type should be 'FIELD'.", position + "", "HIGH"));
-    if(usage == null) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.usage", "Field usage should be required.", position + "", "HIGH"));
+    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.position", "Field position should be greater than 0", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.name", "Name should be required.", position + "", "HIGH"));
+    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.ref", "Field Ref should be required.", position + "", "HIGH"));
+    if(type == null || !type.equals(Type.FIELD)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.type", "Field type should be 'FIELD'.", position + "", "HIGH"));
+    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.usage", "Field usage should be required.", position + "", "HIGH"));
     
     if(this.isLengthAllowedComponent(f)) {
-      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.length", "Field length should be required.", position + "", "HIGH"));
-      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.length", "Field length should defined using a single way.", position + "", "HIGH"));
-      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.maxLength", "Field maxLength is not defined.", position + "", "HIGH"));
-      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.minLength", "Field minLength is not defined.", position + "", "HIGH"));
-      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.minLength", "Field minLength is not integer.", position + "", "HIGH"));
-      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.maxLength", "Field maxLength should be integer or *", position + "", "HIGH"));   
+      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.length", "Field length should be required.", position + "", "HIGH"));
+      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.length", "Field length should defined using a single way.", position + "", "HIGH"));
+      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.maxLength", "Field maxLength is not defined.", position + "", "HIGH"));
+      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.minLength", "Field minLength is not defined.", position + "", "HIGH"));
+      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.minLength", "Field minLength is not integer.", position + "", "HIGH"));
+      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.maxLength", "Field maxLength should be integer or *", position + "", "HIGH"));   
     }
    
-    if(max == null || !this.isIntOrStar(max)) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.max", "Field max should be integer or *", position + "", "HIGH"));
+    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.max", "Field max should be integer or *", position + "", "HIGH"));
     if(usage != null) {
-      if(usage.equals(Usage.R) && min < 1)  vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.min", "Field min should be greater than 0 if Usage is R", position + "", "HIGH"));
+      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.min", "Field min should be greater than 0 if Usage is R", position + "", "HIGH"));
     }
     
     segment.getChildren().forEach(otherF -> {
       if(!otherF.getId().equals(f.getId())){
-        if (otherF.getPosition() == f.getPosition()) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.position", "The field position is duplicated.", position + "", "HIGH"));
-        if (otherF.getName().equals(f.getName())) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.name", "The field name is duplicated.", position + "", "HIGH"));
+        if (otherF.getPosition() == f.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.position", "The field position is duplicated.", position + "", "HIGH"));
+        if (otherF.getName().equals(f.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.name", "The field name is duplicated.", position + "", "HIGH"));
       }
     });
     
-    if(usage.equals(Usage.CAB) && !this.hasPredicate(segment, f.getId())) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "HIGH"));
+    if(usage.equals(Usage.CAB) && !this.hasPredicate(segment, f.getId())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "HIGH"));
     
     if(ref != null && ref.getId() != null) {
       Datatype childDt = this.datatypeService.findById(ref.getId());
-      if(childDt == null) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "component.ref", "The field child DT is missing.", position + "", "HIGH"));
+      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "The field child DT is missing.", position + "", "HIGH"));
             
       if(this.isPrimitiveDatatype(childDt)) {
         
       } else {
-        if(this.isNotNullNotEmpty(f.getConstantValue())) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "HIGH"));
+        if(this.isNotNullNotEmpty(f.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "HIGH"));
       }
       
       if (this.isValueSetOrSingleCodeAllowedField(f, childDt)) {
@@ -692,9 +693,9 @@ public class VerificationServiceImpl implements VerificationService {
           ExternalSingleCode externalSingleCode = childBinding.getExternalSingleCode();
           InternalSingleCode internalSingleCode = childBinding.getInternalSingleCode();
           
-          if(valuesetBindings != null) this.checkingValueSetBindings(segment, valuesetBindings, vr, position);
-          if(externalSingleCode != null) this.checkingExternalSingleCode(segment, externalSingleCode, vr, position);
-          if(internalSingleCode != null) this.checkingInternalSingleCode(segment, internalSingleCode, vr, position);
+          if(valuesetBindings != null) this.checkingValueSetBindings(segment, valuesetBindings, result, position);
+          if(externalSingleCode != null) this.checkingExternalSingleCode(segment, externalSingleCode, result, position);
+          if(internalSingleCode != null) this.checkingInternalSingleCode(segment, internalSingleCode, result, position);
         }
         
       }else {
@@ -707,17 +708,17 @@ public class VerificationServiceImpl implements VerificationService {
    * @param internalSingleCode
    * @param vr
    */
-  private void checkingInternalSingleCode(ComplexDatatype cDt, InternalSingleCode internalSingleCode, VerificationResult vr, int position) {
+  private void checkingInternalSingleCode(ComplexDatatype cDt, InternalSingleCode internalSingleCode, DTSegVerificationResult result, int position) {
     String code = internalSingleCode.getCode();
     String codeSystem = internalSingleCode.getCodeSystem();
     String valueSetId = internalSingleCode.getValueSetId();
     
-    if(!this.isNotNullNotEmpty(code))       vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode Code is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(codeSystem)) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode CodeSystem is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(valueSetId)) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode valueset is missing", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(code))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode Code is not valid", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode CodeSystem is not valid", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(valueSetId)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode valueset is missing", position + "", "HIGH"));
     
     if (valueSetId != null) {
-      if(this.valuesetService.findById(valueSetId) == null) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode valueset is missing", position + "", "HIGH"));
+      if(this.valuesetService.findById(valueSetId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode valueset is missing", position + "", "HIGH"));
     }
   }
   
@@ -727,17 +728,17 @@ public class VerificationServiceImpl implements VerificationService {
    * @param vr
    * @param position
    */
-  private void checkingInternalSingleCode(Segment segment, InternalSingleCode internalSingleCode, VerificationResult vr, int position) {
+  private void checkingInternalSingleCode(Segment segment, InternalSingleCode internalSingleCode, DTSegVerificationResult result, int position) {
     String code = internalSingleCode.getCode();
     String codeSystem = internalSingleCode.getCodeSystem();
     String valueSetId = internalSingleCode.getValueSetId();
     
-    if(!this.isNotNullNotEmpty(code))       vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode Code is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(codeSystem)) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode CodeSystem is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(valueSetId)) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode valueset is missing", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(code))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode Code is not valid", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode CodeSystem is not valid", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(valueSetId)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode valueset is missing", position + "", "HIGH"));
     
     if (valueSetId != null) {
-      if(this.valuesetService.findById(valueSetId) == null) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode valueset is missing", position + "", "HIGH"));
+      if(this.valuesetService.findById(valueSetId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode valueset is missing", position + "", "HIGH"));
     }
   }
 
@@ -745,12 +746,12 @@ public class VerificationServiceImpl implements VerificationService {
    * @param externalSingleCode
    * @param vr
    */
-  private void checkingExternalSingleCode(ComplexDatatype cDt, ExternalSingleCode externalSingleCode, VerificationResult vr, int position) {
+  private void checkingExternalSingleCode(ComplexDatatype cDt, ExternalSingleCode externalSingleCode, DTSegVerificationResult result, int position) {
     String value = externalSingleCode.getValue();
     String codeSystem = externalSingleCode.getCodeSystem();
     
-    if(!this.isNotNullNotEmpty(value))       vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.externalSingleCode", "The component's external SingleCode Code is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(codeSystem)) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.externalSingleCode", "The component's external SingleCode CodeSystem is not valid", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(value))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.externalSingleCode", "The component's external SingleCode Code is not valid", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.externalSingleCode", "The component's external SingleCode CodeSystem is not valid", position + "", "HIGH"));
   }
 
   /**
@@ -759,12 +760,12 @@ public class VerificationServiceImpl implements VerificationService {
    * @param vr
    * @param position
    */
-  private void checkingExternalSingleCode(Segment segment, ExternalSingleCode externalSingleCode, VerificationResult vr, int position) {
+  private void checkingExternalSingleCode(Segment segment, ExternalSingleCode externalSingleCode, DTSegVerificationResult result, int position) {
     String value = externalSingleCode.getValue();
     String codeSystem = externalSingleCode.getCodeSystem();
     
-    if(!this.isNotNullNotEmpty(value))       vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.externalSingleCode", "The component's external SingleCode Code is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(codeSystem)) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.externalSingleCode", "The component's external SingleCode CodeSystem is not valid", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(value))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.externalSingleCode", "The component's external SingleCode Code is not valid", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.externalSingleCode", "The component's external SingleCode CodeSystem is not valid", position + "", "HIGH"));
     
   }
   
@@ -772,13 +773,13 @@ public class VerificationServiceImpl implements VerificationService {
    * @param valuesetBindings
    * @param vr
    */
-  private void checkingValueSetBindings(ComplexDatatype cDt, Set<ValuesetBinding> valuesetBindings, VerificationResult vr, int position) {
+  private void checkingValueSetBindings(ComplexDatatype cDt, Set<ValuesetBinding> valuesetBindings, DTSegVerificationResult result, int position) {
     for (ValuesetBinding vb : valuesetBindings) {
       for(String vsId : vb.getValueSets()){
         if(vsId == null) {
-          vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.valuesetBindings", "The component's valueset is null", position + "", "HIGH"));   
+          result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.valuesetBindings", "The component's valueset is null", position + "", "HIGH"));   
         }else {
-          if(this.valuesetService.findById(vsId) == null) vr.addDatatypeError(new DatatypeObjectError(cDt.getId(), "STRUCTURE", "component.valuesetBindings", "The component's valueset is missing", position + "", "HIGH"));   
+          if(this.valuesetService.findById(vsId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.valuesetBindings", "The component's valueset is missing", position + "", "HIGH"));   
         }
       }
     }
@@ -790,13 +791,13 @@ public class VerificationServiceImpl implements VerificationService {
    * @param vr
    * @param position
    */
-  private void checkingValueSetBindings(Segment segment, Set<ValuesetBinding> valuesetBindings, VerificationResult vr, int position) {
+  private void checkingValueSetBindings(Segment segment, Set<ValuesetBinding> valuesetBindings, DTSegVerificationResult result, int position) {
     for (ValuesetBinding vb : valuesetBindings) {
       for(String vsId : vb.getValueSets()){
         if(vsId == null) {
-          vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.valuesetBindings", "The field's valueset is null", position + "", "HIGH"));   
+          result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.valuesetBindings", "The field's valueset is null", position + "", "HIGH"));   
         }else {
-          if(this.valuesetService.findById(vsId) == null) vr.addSegmentError(new SegmentObjectError(segment.getId(), "STRUCTURE", "field.valuesetBindings", "The field's valueset is missing", position + "", "HIGH"));   
+          if(this.valuesetService.findById(vsId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.valuesetBindings", "The field's valueset is missing", position + "", "HIGH"));   
         }
       }
     }
@@ -944,7 +945,7 @@ public class VerificationServiceImpl implements VerificationService {
    * @param valueset
    * @param vr
    */
-  private void checkingMetadataForValueset(Valueset valueset, VerificationResult vr) {
+  private void checkingMetadataForValueset(Valueset valueset, VSVerificationResult result) {
     if (valueset == null) {
       
     } else {
@@ -956,22 +957,22 @@ public class VerificationServiceImpl implements VerificationService {
       int numberOfCodes = valueset.getNumberOfCodes(); 
       DomainInfo domainInfo = valueset.getDomainInfo();
       
-      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(bId)) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "METADATA", "bindingIdentifier", "bindingIdentifier should be required.", null, "HIGH"));
-      if (name == null) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "METADATA", "name", "name should be required.", null, "HIGH"));
-      if (extensibility == null) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "METADATA", "extensibility", "extensibility should be required.", null, "HIGH"));
-      if (stability == null) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "METADATA", "stability", "stability should be required.", null, "HIGH"));
-      if (contentDefinition == null) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "METADATA", "contentDefinition", "contentDefinition should be required.", null, "HIGH"));
+      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(bId)) result.getErrors().add(new IgamtObjectError("METADATA", "bindingIdentifier", "bindingIdentifier should be required.", null, "HIGH"));
+      if (name == null) result.getErrors().add(new IgamtObjectError("METADATA", "name", "name should be required.", null, "HIGH"));
+      if (extensibility == null) result.getErrors().add(new IgamtObjectError("METADATA", "extensibility", "extensibility should be required.", null, "HIGH"));
+      if (stability == null) result.getErrors().add(new IgamtObjectError("METADATA", "stability", "stability should be required.", null, "HIGH"));
+      if (contentDefinition == null) result.getErrors().add(new IgamtObjectError("METADATA", "contentDefinition", "contentDefinition should be required.", null, "HIGH"));
       
       if(domainInfo == null) {
-        vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
       } else {
-        if (domainInfo.getScope() == null) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "METADATA", "scope", "Scope is required", null, "HIGH"));
+        if (domainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "HIGH"));
       }
       
       if(valueset.getCodes() == null || valueset.getCodes().size() == 0) {
-        if(numberOfCodes != 0) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "METADATA", "numberOfCodes", "numberOfCodes is wrong", null, "HIGH"));
+        if(numberOfCodes != 0) result.getErrors().add(new IgamtObjectError("METADATA", "numberOfCodes", "numberOfCodes is wrong", null, "HIGH"));
       } else {
-        if(numberOfCodes != valueset.getCodes().size()) vr.addValuesetError(new ValuesetObjectError(valueset.getId(), "METADATA", "numberOfCodes", "numberOfCodes is wrong", null, "HIGH"));
+        if(numberOfCodes != valueset.getCodes().size()) result.getErrors().add(new IgamtObjectError("METADATA", "numberOfCodes", "numberOfCodes is wrong", null, "HIGH"));
       }
       
     }
@@ -983,7 +984,7 @@ public class VerificationServiceImpl implements VerificationService {
    * @param vr
    * Required: Name, Extension, dtDomainInfo, dtDomainInfo.scope
    */
-  private void checkingMetadataForDatatype(Datatype datatype, VerificationResult vr) {
+  private void checkingMetadataForDatatype(Datatype datatype, DTSegVerificationResult result) {
     if (datatype == null) {
       
     } else {
@@ -992,15 +993,15 @@ public class VerificationServiceImpl implements VerificationService {
       DomainInfo dtDomainInfo = datatype.getDomainInfo();
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(dtName)) {
-        vr.addDatatypeError(new DatatypeObjectError(datatype.getId(), "METADATA", "name", "Name should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "HIGH"));
       }
       
       if(dtDomainInfo == null) {
-        vr.addDatatypeError(new DatatypeObjectError(datatype.getId(), "METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
       } else {
-        if (dtDomainInfo.getScope() == null) vr.addDatatypeError(new DatatypeObjectError(datatype.getId(), "METADATA", "scope", "Scope is required", null, "HIGH"));
+        if (dtDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "HIGH"));
         if (!dtDomainInfo.getScope().equals(Scope.HL7STANDARD) && !this.isNotNullNotEmptyNotWhiteSpaceOnly(dtExt)) {
-          vr.addDatatypeError(new DatatypeObjectError(datatype.getId(), "METADATA", "ext", "Non-STD datatype should have extension name.", null, "HIGH"));
+          result.getErrors().add(new IgamtObjectError("METADATA", "ext", "Non-STD datatype should have extension name.", null, "HIGH"));
         }        
       }
     }
@@ -1010,7 +1011,7 @@ public class VerificationServiceImpl implements VerificationService {
    * @param segment
    * @param vr
    */
-  private void checkingMetadataForSegment(Segment segment, VerificationResult vr) {
+  private void checkingMetadataForSegment(Segment segment, DTSegVerificationResult result) {
     if (segment == null) {
       
     } else {
@@ -1019,15 +1020,15 @@ public class VerificationServiceImpl implements VerificationService {
       DomainInfo dtDomainInfo = segment.getDomainInfo();
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(dtName)) {
-        vr.addSegmentError(new SegmentObjectError(segment.getId(), "METADATA", "name", "Name should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "HIGH"));
       }
       
       if(dtDomainInfo == null) {
-        vr.addSegmentError(new SegmentObjectError(segment.getId(), "METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
       } else {
-        if (dtDomainInfo.getScope() == null) vr.addDatatypeError(new DatatypeObjectError(segment.getId(), "METADATA", "scope", "Scope is required", null, "HIGH"));
+        if (dtDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "HIGH"));
         if (!dtDomainInfo.getScope().equals(Scope.HL7STANDARD) && !this.isNotNullNotEmptyNotWhiteSpaceOnly(dtExt)) {
-          vr.addSegmentError(new SegmentObjectError(segment.getId(), "METADATA", "ext", "Non-STD datatype should have extension name.", null, "HIGH"));
+          result.getErrors().add(new IgamtObjectError("METADATA", "ext", "Non-STD datatype should have extension name.", null, "HIGH"));
         }        
       }
     }
@@ -1037,7 +1038,7 @@ public class VerificationServiceImpl implements VerificationService {
    * @param conformanceProfile
    * @param vr
    */
-  private void checkingMetadataForConformanceProfile(ConformanceProfile conformanceProfile, VerificationResult vr) {
+  private void checkingMetadataForConformanceProfile(ConformanceProfile conformanceProfile, CPVerificationResult result) {
     if (conformanceProfile == null) {
       
     } else {
@@ -1048,25 +1049,25 @@ public class VerificationServiceImpl implements VerificationService {
       String event = conformanceProfile.getEvent();
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(cpName)) {
-        vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "METADATA", "name", "Name should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "HIGH"));
       }
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(structId)) {
-        vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "METADATA", "structId", "structId should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "structId", "structId should be required.", null, "HIGH"));
       }
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(mType)) {
-        vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "METADATA", "messageType", "messageType should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "messageType", "messageType should be required.", null, "HIGH"));
       }
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(event)) {
-        vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "METADATA", "triggerEvent", "triggerEvent should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "triggerEvent", "triggerEvent should be required.", null, "HIGH"));
       }
       
       if(cpDomainInfo == null) {
-        vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
       } else {
-        if (cpDomainInfo.getScope() == null) vr.addConformanceProfileError(new ConformanceProfileObjectError(conformanceProfile.getId(), "METADATA", "scope", "Scope is required", null, "HIGH"));     
+        if (cpDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "HIGH"));     
       }
     }
   }
@@ -1099,39 +1100,40 @@ public class VerificationServiceImpl implements VerificationService {
   }
 
   @Override
-  public VerificationResult verifySegment(Segment segment, String documentId, VerificationResult vr) {
-    if(vr == null) vr = new VerificationResult();
+  public DTSegVerificationResult verifySegment(Segment segment) {
+    DTSegVerificationResult result = new DTSegVerificationResult(segment);
+    
     // 1. Metadata checking
-    this.checkingMetadataForSegment(segment, vr);
+    this.checkingMetadataForSegment(segment, result);
     
     
     // 2. Structure Checking
-    this.checkingStructureForSegment(segment, vr);
+    this.checkingStructureForSegment(segment, result);
     
     
     // 3. DynamicMapping Checking
-    this.checkingDynamicMapping(segment, vr);
+    this.checkingDynamicMapping(segment, result);
     
-    return vr;
+    return result;
   }
 
   /**
    * @param segment
    * @param vr
    */
-  private void checkingDynamicMapping(Segment segment, VerificationResult vr) {
+  private void checkingDynamicMapping(Segment segment, DTSegVerificationResult result) {
     if(this.isAvaliableDynamicMappingSegmnet(segment)) {
       DynamicMappingInfo dynamicMappingInfo = segment.getDynamicMappingInfo();
       
       if(dynamicMappingInfo != null && dynamicMappingInfo.getItems() != null) {
         for(DynamicMappingItem item : dynamicMappingInfo.getItems()) {
-          if(this.isNotNullNotEmptyNotWhiteSpaceOnly(item.getValue())) vr.addSegmentError(new SegmentObjectError(segment.getId(), "DYNMICMAPPING", "item.value", "The dynamicmpaping value is invalid", item.getValue() + "", "HIGH"));
+          if(this.isNotNullNotEmptyNotWhiteSpaceOnly(item.getValue())) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.value", "The dynamicmpaping value is invalid", item.getValue() + "", "HIGH"));
           String datatypeId = item.getDatatypeId();
           
-          if(datatypeId == null) vr.addSegmentError(new SegmentObjectError(segment.getId(), "DYNMICMAPPING", "item.datatypeId", "The dynamicmpaping dt id is null", item.getValue() + "", "HIGH"));
+          if(datatypeId == null) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.datatypeId", "The dynamicmpaping dt id is null", item.getValue() + "", "HIGH"));
           else {
             Datatype dt = this.datatypeService.findById(datatypeId);
-            if(dt == null) vr.addSegmentError(new SegmentObjectError(segment.getId(), "DYNMICMAPPING", "item.datatypeId", "The dynamicmpaping datattype is missing in the DB", item.getValue() + "", "HIGH"));
+            if(dt == null) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.datatypeId", "The dynamicmpaping datattype is missing in the DB", item.getValue() + "", "HIGH"));
           }
         }
       }
@@ -1148,25 +1150,26 @@ public class VerificationServiceImpl implements VerificationService {
   }
 
   @Override
-  public VerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile, String documentId, VerificationResult vr) {
-    if(vr == null) vr = new VerificationResult();
+  public CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile) {
+    CPVerificationResult result = new CPVerificationResult(conformanceProfile);
     
     //1. Metadata checking
-    this.checkingMetadataForConformanceProfile(conformanceProfile, vr);
+    this.checkingMetadataForConformanceProfile(conformanceProfile, result);
     
     // 2. Structure Checking
-    this.checkingStructureForConformanceProfile(conformanceProfile, vr);
+    this.checkingStructureForConformanceProfile(conformanceProfile, result);
     
-    return vr;
+    return result;
   }
 
   /* (non-Javadoc)
    * @see gov.nist.hit.hl7.igamt.verification.service.VerificationService#verifyIg(java.lang.String)
    */
   @Override
-  public VerificationResult verifyIg(String documentId) {
-    VerificationResult vr = new VerificationResult();
+  public VerificationReport verifyIg(String documentId) {
+    VerificationReport report = new VerificationReport();
     Ig ig = this.igService.findById(documentId);
+    IgVerificationResult result = new IgVerificationResult(ig);
     
     ValueSetRegistry valueSetRegistry = ig.getValueSetRegistry();
     
@@ -1176,13 +1179,12 @@ public class VerificationServiceImpl implements VerificationService {
         String id = l.getId();
         
         Valueset vs = this.valuesetService.findById(id);
-        
-        if(vs == null) vr.addIgError(new IgObjectError(ig.getId(), "VALUESETREPOSITORY", "link.id", "The valueset is missing in the DB.", id + "", "HIGH"));
+        if(vs == null) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.id", "The valueset is missing in the DB.", id + "", "HIGH"));
         else {
-          if(vs.getDomainInfo().getScope() == null || !vs.getDomainInfo().getScope().equals(domainInfo.getScope())) vr.addIgError(new IgObjectError(ig.getId(), "VALUESETREPOSITORY", "link.scope", "The valueset scope info is wrong", id + "", "HIGH"));
-          if(vs.getDomainInfo().getVersion() == null || !vs.getDomainInfo().getVersion().equals(domainInfo.getVersion())) vr.addIgError(new IgObjectError(ig.getId(), "VALUESETREPOSITORY", "link.version", "The valueset version info is wrong", id + "", "HIGH"));
+          if(vs.getDomainInfo().getScope() == null || !vs.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.scope", "The valueset scope info is wrong", id + "", "HIGH"));
+          if(vs.getDomainInfo().getVersion() == null || !vs.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.version", "The valueset version info is wrong", id + "", "HIGH"));
         
-          this.verifyValueset(vs, documentId, vr);
+          report.addValuesetVerificationResult(this.verifyValueset(vs));
         }
         
       } 
@@ -1197,14 +1199,13 @@ public class VerificationServiceImpl implements VerificationService {
         
         Datatype dt = this.datatypeService.findById(id);
         
-        if(dt == null) vr.addIgError(new IgObjectError(ig.getId(), "DATATYPEREPOSITORY", "link.id", "The datatype is missing in the DB.", id + "", "HIGH"));
+        if(dt == null) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.id", "The datatype is missing in the DB.", id + "", "HIGH"));
         else {
-          if(dt.getDomainInfo().getScope() == null || !dt.getDomainInfo().getScope().equals(domainInfo.getScope())) vr.addIgError(new IgObjectError(ig.getId(), "DATATYPEREPOSITORY", "link.scope", "The datatype scope info is wrong", id + "", "HIGH"));
-          if(dt.getDomainInfo().getVersion() == null || !dt.getDomainInfo().getVersion().equals(domainInfo.getVersion())) vr.addIgError(new IgObjectError(ig.getId(), "DATATYPEREPOSITORY", "link.version", "The datatype version info is wrong", id + "", "HIGH"));
+          if(dt.getDomainInfo().getScope() == null || !dt.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.scope", "The datatype scope info is wrong", id + "", "HIGH"));
+          if(dt.getDomainInfo().getVersion() == null || !dt.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.version", "The datatype version info is wrong", id + "", "HIGH"));
         
-          this.verifyDatatype(dt, documentId, vr);
+          report.addDatatypeVerificationResult(this.verifyDatatype(dt));
         }
-        
       } 
     }
     
@@ -1217,12 +1218,12 @@ public class VerificationServiceImpl implements VerificationService {
         
         Segment s = this.segmentService.findById(id);
         
-        if(s == null) vr.addIgError(new IgObjectError(ig.getId(), "SEGMENTREPOSITORY", "link.id", "The segment is missing in the DB.", id + "", "HIGH"));
+        if(s == null) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.id", "The segment is missing in the DB.", id + "", "HIGH"));
         else {
-          if(s.getDomainInfo().getScope() == null || !s.getDomainInfo().getScope().equals(domainInfo.getScope())) vr.addIgError(new IgObjectError(ig.getId(), "SEGMENTREPOSITORY", "link.scope", "The segment scope info is wrong", id + "", "HIGH"));
-          if(s.getDomainInfo().getVersion() == null || !s.getDomainInfo().getVersion().equals(domainInfo.getVersion())) vr.addIgError(new IgObjectError(ig.getId(), "SEGMENTREPOSITORY", "link.version", "The segment version info is wrong", id + "", "HIGH"));
+          if(s.getDomainInfo().getScope() == null || !s.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.scope", "The segment scope info is wrong", id + "", "HIGH"));
+          if(s.getDomainInfo().getVersion() == null || !s.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.version", "The segment version info is wrong", id + "", "HIGH"));
         
-          this.verifySegment(s, documentId, vr);
+          report.addSegmentVerificationResult(this.verifySegment(s));
         }
         
       } 
@@ -1236,18 +1237,19 @@ public class VerificationServiceImpl implements VerificationService {
         
         ConformanceProfile cp = this.conformanceProfileService.findById(id);
         
-        if(cp == null) vr.addIgError(new IgObjectError(ig.getId(), "CONFORMANCEPROFILEREPOSITORY", "link.id", "The conformanceprofile is missing in the DB.", id + "", "HIGH"));
+        if(cp == null) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.id", "The conformanceprofile is missing in the DB.", id + "", "HIGH"));
         else {
-          if(cp.getDomainInfo().getScope() == null || !cp.getDomainInfo().getScope().equals(domainInfo.getScope())) vr.addIgError(new IgObjectError(ig.getId(), "CONFORMANCEPROFILEREPOSITORY", "link.scope", "The conformanceprofile scope info is wrong", id + "", "HIGH"));
-          if(cp.getDomainInfo().getVersion() == null || !cp.getDomainInfo().getVersion().equals(domainInfo.getVersion())) vr.addIgError(new IgObjectError(ig.getId(), "CONFORMANCEPROFILEREPOSITORY", "link.version", "The conformanceprofile version info is wrong", id + "", "HIGH"));
+          if(cp.getDomainInfo().getScope() == null || !cp.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.scope", "The conformanceprofile scope info is wrong", id + "", "HIGH"));
+          if(cp.getDomainInfo().getVersion() == null || !cp.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.version", "The conformanceprofile version info is wrong", id + "", "HIGH"));
         
-          this.verifyConformanceProfile(cp, documentId, vr);
+          report.addConformanceProfileVerificationResult(this.verifyConformanceProfile(cp));
         }
         
       } 
     }
     
-    return vr;
+    report.setIgVerificationResult(result);
+    return report;
   }
 
 }

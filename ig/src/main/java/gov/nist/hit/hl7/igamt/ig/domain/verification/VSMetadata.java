@@ -11,28 +11,51 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.verification;
 
-import java.util.ArrayList;
-import java.util.List;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 /**
  * @author jungyubw
  *
  */
-public class VerificationResult {
-  private List<IgamtObjectError> errors;
-  
-  
+public class VSMetadata {
 
-  public VerificationResult() {
-    super();
-    this.errors = new ArrayList<IgamtObjectError>();
+  private String name;
+  private String bindingIdentifier;
+  private DomainInfo domainInfo;
+
+  /**
+   * @param valueset
+   */
+  public VSMetadata(Valueset valueset) {
+    this.setBindingIdentifier(valueset.getBindingIdentifier());
+    this.setDomainInfo(valueset.getDomainInfo());
+    this.setName(valueset.getName());
   }
 
-  public List<IgamtObjectError> getErrors() {
-    return errors;
+  public String getName() {
+    return name;
   }
 
-  public void setErrors(List<IgamtObjectError> errors) {
-    this.errors = errors;
+  public void setName(String name) {
+    this.name = name;
   }
+
+  public String getBindingIdentifier() {
+    return bindingIdentifier;
+  }
+
+  public void setBindingIdentifier(String bindingIdentifier) {
+    this.bindingIdentifier = bindingIdentifier;
+  }
+
+  public DomainInfo getDomainInfo() {
+    return domainInfo;
+  }
+
+  public void setDomainInfo(DomainInfo domainInfo) {
+    this.domainInfo = domainInfo;
+  }
+
+
 }
