@@ -137,19 +137,22 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     const subscription = this.getMessages().pipe(
       withLatestFrom(this.getCompositeProfies()),
       map(([messages, cps]) => {
-        const dialogRef = this.dialog.open(ExportXmlDialogComponent, {
-          data: { conformanceProfiles: messages, compositeProfiles: cps },
+        this.getIgId().subscribe((igId) => {
+          const dialogRef = this.dialog.open(ExportXmlDialogComponent, {
+            data: { conformanceProfiles: messages, compositeProfiles: cps, igId},
+          });
+
+          dialogRef.afterClosed().pipe(
+              filter((x) => x !== undefined),
+              withLatestFrom(this.getIgId()),
+              take(1),
+              map(([result, igId2]) => {
+
+                this.igService.exportXML(igId2, result, null);
+              }),
+          ).subscribe();
         });
 
-        dialogRef.afterClosed().pipe(
-          filter((x) => x !== undefined),
-          withLatestFrom(this.getIgId()),
-          take(1),
-          map(([result, igId]) => {
-
-            this.igService.exportXML(igId, result, null);
-          }),
-        ).subscribe();
       }),
     ).subscribe();
     subscription.unsubscribe();

@@ -58,6 +58,8 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement.Complement
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
+import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
@@ -696,6 +698,53 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 							.innerXMLHandler(this.generateAssertionScript(cs, dtModel.getModel().getId())));
 					elm_ByID.appendChild(elm_Constraint);
 				}
+			}
+			
+			Datatype dt = dtModel.getModel();
+			
+			if(dt.getName().equals("DTM") || dt.getName().equals("TM") || dt.getName().equals("DT")) {
+			    DateTimeConstraints dateTimeConstraints = null;
+	            
+			    if(dt instanceof DateTimeDatatype) {
+	              dateTimeConstraints = ((DateTimeDatatype)dt).getDateTimeConstraints();
+	            }
+			    
+			    if (dateTimeConstraints == null || dateTimeConstraints.getErrorMessage() == null || dateTimeConstraints.getErrorMessage().isEmpty() || dateTimeConstraints.getRegex() == null || dateTimeConstraints.getRegex().isEmpty() ) {
+			      dateTimeConstraints = new DateTimeConstraints();
+			      if(dt.getName().equals("DTM")) {
+			        Element elm_Constraint = new Element("Constraint");
+                    elm_Constraint.addAttribute(new Attribute("ID", dt.getLabel() + "_DateTimeConstraint"));
+                    Element elm_Description = new Element("Description");
+                    elm_Description.appendChild("The value SHALL follow the Date/Time pattern 'YYYY[MM[DD[HH[MM[SS[.S[S[S[S]]]]]]]]][+/-ZZZZ]'.");
+                    elm_Constraint.appendChild(elm_Description);
+                    elm_Constraint.appendChild(this.innerXMLHandler("<Assertion>" + "^(\\d{4}|\\d{6}|\\d{8}|\\d{10}|\\d{12}|\\d{14}|\\d{14}\\.\\d|\\d{14}\\.\\d{2}|\\d{14}\\.\\d{3}|\\d{14}\\.\\d{4})([+-]\\d{4})?$" + "</Assertion>"));
+                    elm_ByID.appendChild(elm_Constraint);
+			      } else if(dt.getName().equals("DT")) {
+	                 Element elm_Constraint = new Element("Constraint");
+	                 elm_Constraint.addAttribute(new Attribute("ID", dt.getLabel() + "_DateTimeConstraint"));
+	                 Element elm_Description = new Element("Description");
+	                 elm_Description.appendChild("The value SHALL follow the Date/Time pattern 'YYYY[MM[DD]]'.");
+	                 elm_Constraint.appendChild(elm_Description);
+	                 elm_Constraint.appendChild(this.innerXMLHandler("<Assertion>" + "^(\\d{4}|\\d{6}|\\d{8})$" + "</Assertion>"));
+	                 elm_ByID.appendChild(elm_Constraint);
+                  } else if(dt.getName().equals("TM")) {
+                    Element elm_Constraint = new Element("Constraint");
+                    elm_Constraint.addAttribute(new Attribute("ID", dt.getLabel() + "_DateTimeConstraint"));
+                    Element elm_Description = new Element("Description");
+                    elm_Description.appendChild("The value SHALL follow the Date/Time pattern 'HH[MM[SS[.S[S[S[S]]]]]][+/-ZZZZ]'.");
+                    elm_Constraint.appendChild(elm_Description);
+                    elm_Constraint.appendChild(this.innerXMLHandler("<Assertion>" + "^(\\d{2}|\\d{4}|\\d{6}|\\d{6}\\.\\d|\\d{6}\\.\\d{2}|\\d{6}\\.\\d{3}|\\d{6}\\.\\d{4})([+-]\\d{4})?$" + "</Assertion>"));
+                    elm_ByID.appendChild(elm_Constraint);
+                  } 
+			    } else {
+                  Element elm_Constraint = new Element("Constraint");
+                  elm_Constraint.addAttribute(new Attribute("ID", dt.getLabel() + "_DateTimeConstraint"));
+                  Element elm_Description = new Element("Description");
+                  elm_Description.appendChild(dateTimeConstraints.getErrorMessage());
+                  elm_Constraint.appendChild(elm_Description);
+                  elm_Constraint.appendChild(this.innerXMLHandler("<Assertion>" + dateTimeConstraints.getRegex() + "</Assertion>"));
+                  elm_ByID.appendChild(elm_Constraint);
+			    }
 			}
 
 			if (elm_ByID.getChildElements() != null && elm_ByID.getChildElements().size() > 0) {
