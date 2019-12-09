@@ -14,6 +14,7 @@ import { ExportConfigurationService } from '../../../export-configuration/servic
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
+import { VerifyIgDialogComponent } from '../../../shared/components/verify-ig-dialog/verify-ig-dialog.component';
 import { IConnectingInfo } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IGDisplayInfo } from '../../models/ig/ig-document.class';
@@ -131,6 +132,16 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
 
   exportQuickHTML() {
     this.getIgId().subscribe((id) => this.igService.exportAsHtmlQuick(id));
+  }
+
+  verifyIG() {
+    this.getIgId().subscribe((igId) => {
+      const dialogRef = this.dialog.open(VerifyIgDialogComponent, {
+        data: {igId},
+      });
+
+      dialogRef.afterClosed().pipe().subscribe();
+    });
   }
 
   exportXML() {

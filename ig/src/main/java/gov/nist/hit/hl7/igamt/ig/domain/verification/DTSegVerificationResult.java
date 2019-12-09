@@ -9,21 +9,39 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.service.impl;
+package gov.nist.hit.hl7.igamt.ig.domain.verification;
+
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 
 /**
  * @author jungyubw
  *
  */
-public class SegmentObjectError extends IgamtObjectError {
+public class DTSegVerificationResult extends VerificationResult{
 
-  public SegmentObjectError() {
+  private DTSegMetadata metadata;
+
+  public DTSegVerificationResult() {
     super();
-    this.setTargetType("SEGMENT");
   }
 
-  public SegmentObjectError(String targetId, String errorType, String errorTarget,
-      String errorDescription, String errorLocation, String severity) {
-    super("DATATYPE", targetId, errorType, errorTarget, errorDescription, errorLocation, severity);
+  public DTSegVerificationResult(Datatype datatype) {
+    super();
+    this.metadata = new DTSegMetadata(datatype);
   }
+  
+  public DTSegVerificationResult(Segment segment) {
+    super();
+    this.metadata = new DTSegMetadata(segment);
+  }
+
+  public DTSegMetadata getMetadata() {
+    return metadata;
+  }
+
+  public void setMetadata(DTSegMetadata metadata) {
+    this.metadata = metadata;
+  }
+
 }

@@ -6,7 +6,6 @@
   </app-select-resource-ids>
 </mat-dialog-content>
 <mat-dialog-actions style="justify-content: flex-end;">
-  <button (click)="verify()" class="btn btn-sm btn-info" style="margin-right: 5px;">Verify</button>
   <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
   <button (click)="submit()" [disabled]="!isSelected()" class="btn btn-sm btn-success">Submit</button>
 </mat-dialog-actions>

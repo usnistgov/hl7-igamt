@@ -9,17 +9,13 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.service.impl;
+package gov.nist.hit.hl7.igamt.ig.domain.verification;
 
 /**
  * @author jungyubw
  *
  */
-public class IgamtObjectError {
-  
-  private String targetType;
-  private String targetId;
-  
+public class IgamtObjectError {  
   private String errorType;
   private String errorTarget;
   private String errorDescription;
@@ -31,32 +27,14 @@ public class IgamtObjectError {
     super();
   }
 
-  public IgamtObjectError(String targetType, String targetId, String errorType, String errorTarget,
+  public IgamtObjectError(String errorType, String errorTarget,
       String errorDescription, String errorLocation, String severity) {
     super();
-    this.targetType = targetType;
-    this.targetId = targetId;
     this.errorType = errorType;
     this.errorTarget = errorTarget;
     this.errorDescription = errorDescription;
     this.errorLocation = errorLocation;
     this.severity = severity;
-  }
-
-  public String getTargetType() {
-    return targetType;
-  }
-
-  public void setTargetType(String targetType) {
-    this.targetType = targetType;
-  }
-
-  public String getTargetId() {
-    return targetId;
-  }
-
-  public void setTargetId(String targetId) {
-    this.targetId = targetId;
   }
 
   public String getErrorType() {

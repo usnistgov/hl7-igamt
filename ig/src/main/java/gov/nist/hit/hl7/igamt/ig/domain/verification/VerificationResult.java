@@ -9,21 +9,30 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.service.impl;
+package gov.nist.hit.hl7.igamt.ig.domain.verification;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author jungyubw
  *
  */
-public class IgObjectError  extends IgamtObjectError {
+public class VerificationResult {
+  private List<IgamtObjectError> errors;
+  
+  
 
-  public IgObjectError() {
+  public VerificationResult() {
     super();
-    this.setTargetType("IG");
+    this.errors = new ArrayList<IgamtObjectError>();
   }
 
-  public IgObjectError(String targetId, String errorType, String errorTarget,
-      String errorDescription, String errorLocation, String severity) {
-    super("IG", targetId, errorType, errorTarget, errorDescription, errorLocation, severity);
+  public List<IgamtObjectError> getErrors() {
+    return errors;
+  }
+
+  public void setErrors(List<IgamtObjectError> errors) {
+    this.errors = errors;
   }
 }

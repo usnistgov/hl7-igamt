@@ -21,7 +21,7 @@ import org.apache.commons.io.IOUtils;
  * @author jungyubw
  *
  */
-public class VerificationReport {
+public class XMLVerificationReport {
 
   private boolean success;
 
@@ -31,7 +31,7 @@ public class VerificationReport {
 
   List<CustomProfileError> profileErrors;
 
-  public VerificationReport() {
+  public XMLVerificationReport() {
     this.success = true;
   }
 
