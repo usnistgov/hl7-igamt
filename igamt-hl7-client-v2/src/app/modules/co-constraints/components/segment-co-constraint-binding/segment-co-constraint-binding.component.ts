@@ -49,6 +49,8 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   valueChange: EventEmitter<ICoConstraintBindingSegment>;
   @ViewChildren(CoConstraintTableComponent)
   tableComponents: QueryList<CoConstraintTableComponent>;
+  @Output()
+  delete: EventEmitter<boolean>;
 
   @Input()
   set value(binding: ICoConstraintBindingSegment) {
@@ -65,6 +67,11 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     public repository: StoreResourceRepositoryService,
     protected ccService: CoConstraintEntityService) {
     this.valueChange = new EventEmitter<ICoConstraintBindingSegment>();
+    this.delete = new EventEmitter<boolean>();
+  }
+
+  triggerRemove() {
+    this.delete.emit(true);
   }
 
   getSegment(id: string): Observable<ISegment> {

@@ -144,9 +144,7 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
 
         // -- Set bindings value
         this.bindings.next(data.value || []);
-        this.bindingsSync.next(_.cloneDeep([
-          ...data.value,
-        ]) || []);
+        this.bindingsSync.next(_.cloneDeep(data.value) || []);
       }),
     ).subscribe();
   }
@@ -166,7 +164,27 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
     }
   }
 
-  openBindingCreateDialog() {
+  deleteSegmentBinding(segments: ICoConstraintBindingSegment[], segment: ICoConstraintBindingSegment, contextId: string, i: number) {
+    segments.splice(i, 1);
+    this.registerChange({
+      type: ChangeType.DELETE,
+      level: ChangeLevel.SEGMENT,
+      contextId,
+      segment,
+    });
+  }
+
+  deleteContextBinding(contexts: ICoConstraintBindingContext[], context: ICoConstraintBindingContext, contextId: string, i: number) {
+    contexts.splice(i, 1);
+    this.registerChange({
+      type: ChangeType.DELETE,
+      level: ChangeLevel.CONTEXT,
+      contextId,
+      context,
+    });
+  }
+
+  openBindingCreateDialog(contexts: ICoConstraintBindingContext[]) {
     const ref = this.dialog.open(CoConstraintBindingDialogComponent, {
       data: {
         structure: this.structure,
@@ -198,39 +216,47 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
             tables: [],
           };
 
-          this.bindings.pipe(
-            take(1),
-            tap((current) => {
-              const context = current.find((b) => b.context.pathId === result.context.node.data.pathId);
-              if (context) {
-                const segment = context.bindings.find((b) => b.segment.pathId === result.segment.node.data.pathId);
-                if (!segment) {
-                  this.registerChange({
-                    type: ChangeType.ADD,
-                    level: ChangeLevel.SEGMENT,
-                    contextId: result.context.node.data.pathId,
-                    segment: segmentNode,
-                  });
-                }
-              } else {
-                this.registerChange({
-                  type: ChangeType.ADD,
-                  level: ChangeLevel.CONTEXT,
-                  context: contextNode,
-                });
+          const context = contexts.find((b) => b.context.pathId === result.context.node.data.pathId);
+          if (context) {
+            const segment = context.bindings.find((b) => b.segment.pathId === result.segment.node.data.pathId);
+            if (!segment) {
+              context.bindings.push(segmentNode);
 
-                this.registerChange({
-                  type: ChangeType.ADD,
-                  level: ChangeLevel.SEGMENT,
-                  contextId: result.context.node.data.pathId,
-                  segment: segmentNode,
-                });
-              }
-            }),
-          ).subscribe();
+              this.registerChange({
+                type: ChangeType.ADD,
+                level: ChangeLevel.SEGMENT,
+                contextId: result.context.node.data.pathId,
+                segment: segmentNode,
+              });
+
+              this.openPanel(contextNode.context.pathId);
+            }
+          } else {
+
+            contexts.push({
+              ...contextNode,
+              bindings: [
+                segmentNode,
+              ],
+            });
+
+            this.openPanel(contextNode.context.pathId);
+
+            this.registerChange({
+              type: ChangeType.ADD,
+              level: ChangeLevel.CONTEXT,
+              context: contextNode,
+            });
+
+            this.registerChange({
+              type: ChangeType.ADD,
+              level: ChangeLevel.SEGMENT,
+              contextId: result.context.node.data.pathId,
+              segment: segmentNode,
+            });
+          }
         }
-      },
-    );
+      });
   }
 
   segmentBindingChange(contextId: string, value: ICoConstraintBindingSegment) {

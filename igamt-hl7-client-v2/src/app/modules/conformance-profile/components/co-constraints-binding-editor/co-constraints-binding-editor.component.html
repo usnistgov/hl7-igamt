@@ -1,38 +1,47 @@
-<ng-template #headerControls>
-  <button class="btn btn-success btn-sm" (click)="openBindingCreateDialog()" *ngIf="!(viewOnly$ | async)">
-    <i class="fa fa-plus"></i> Add Co-Constraint Table Binding
-  </button>
-</ng-template>
+<ng-container *ngIf="bindingsSync$ | async as bindings">
+  <ng-template #headerControls>
+    <button class="btn btn-success btn-sm" (click)="openBindingCreateDialog(bindings)" *ngIf="!(viewOnly$ | async)">
+      <i class="fa fa-plus"></i> Add Co-Constraint Table Binding
+    </button>
+  </ng-template>
 
-<div style="overflow: scroll; height: 100%;" *ngIf="bindingsSync$ | async as bindings">
-  <ng-container *ngFor="let binding of bindings">
-    <div style="height: 45px;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;">
-      <div style="display: flex; align-items: center; justify-content: flex-start; cursor: pointer; flex-grow: 1;" (click)="togglePanel(binding.context.pathId)" >
-        <i class="fa fa-chevron-down" style="margin-right: 10px;" *ngIf="expansionPanelView[binding.context.pathId]"></i>
-        <i class="fa fa-chevron-right" style="margin-right: 10px;" *ngIf="!expansionPanelView[binding.context.pathId]"></i>
-        <app-entity-bagde [type]="'GROUP'" ></app-entity-bagde>
-        <h6 class="title-text" style="margin-left: 10px !important;" >{{ binding.context.name }}</h6>
+  <div style="overflow: scroll; height: 100%;">
+    <ng-container *ngFor="let binding of bindings; let i = index">
+      <div style="height: 45px;
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: space-between;">
+        <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; flex-grow: 1;" (click)="togglePanel(binding.context.pathId)" >
+          <div style="display: flex; align-items: center;">
+            <i class="fa fa-chevron-down" style="margin-right: 10px;" *ngIf="expansionPanelView[binding.context.pathId]"></i>
+            <i class="fa fa-chevron-right" style="margin-right: 10px;" *ngIf="!expansionPanelView[binding.context.pathId]"></i>
+            <app-entity-bagde [type]="'GROUP'" ></app-entity-bagde>
+            <h6 class="title-text" style="margin-left: 10px !important;" >{{ binding.context.name }}</h6>
+          </div>
+          <button class="btn btn-sm btn-danger margin-right" (click)="deleteContextBinding(bindings, binding, binding.context.pathId, i)" >
+            <i class="fa fa-trash"></i>
+            Delete Context
+          </button>
+        </div>
+        <hr style="margin: 0 !important;">
       </div>
-      <hr style="margin: 0 !important;">
-    </div>
 
 
-    <ng-container *ngIf="expansionPanelView[binding.context.pathId]" >
-        <app-segment-co-constraint-binding
-          *ngFor="let segment of binding.bindings"
-          [segments]="segments | async"
-          [datatypes]="datatypes | async"
-          [valueSets]="valueSets | async"
-          [igId]="igId | async"
-          [conformanceProfile]="conformanceProfile$"
-          [context]="binding.context"
-          (valueChange)="segmentBindingChange(binding.context.pathId, $event)"
-          [value]="segment">
-        </app-segment-co-constraint-binding>
+      <ng-container *ngIf="expansionPanelView[binding.context.pathId]" >
+          <app-segment-co-constraint-binding
+            *ngFor="let segment of binding.bindings; let j = index"
+            [segments]="segments | async"
+            [datatypes]="datatypes | async"
+            [valueSets]="valueSets | async"
+            [igId]="igId | async"
+            [conformanceProfile]="conformanceProfile$"
+            [context]="binding.context"
+            (valueChange)="segmentBindingChange(binding.context.pathId, $event)"
+            (delete)="deleteSegmentBinding(binding.bindings, segment, binding.context.pathId, j)"
+            [value]="segment">
+          </app-segment-co-constraint-binding>
+      </ng-container>
+
     </ng-container>
-
-  </ng-container>
-</div>
+  </div>
+</ng-container>
