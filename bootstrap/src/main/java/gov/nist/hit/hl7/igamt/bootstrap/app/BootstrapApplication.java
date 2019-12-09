@@ -206,30 +206,14 @@ public class BootstrapApplication implements CommandLineRunner {
    @PostConstruct
     void createMessageEvent() {
       messageEventFactory.createMessageEvent();      
-      if(exportConfigurationService.getExportConfiguration("BasicExportConfiguration") == null) {
-    	  ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
-    	  basicExportConfiguration.setConfigName("BasicExportConfiguration");
-    	  basicExportConfiguration.setId("BasicExportConfiguration");
-    	  exportConfigurationService.save(basicExportConfiguration);
+//      if(exportConfigurationService.getExportConfiguration("BasicExportConfiguration") == null) {
+//    	  ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
+//    	  basicExportConfiguration.setConfigName("BasicExportConfiguration");
+//    	  basicExportConfiguration.setId("BasicExportConfiguration");
+//    	  exportConfigurationService.save(basicExportConfiguration,null);
+//      }
       System.out.println("done");
 
-      }
-      if(exportConfigurationService.getExportConfiguration("BasicExportConfiguration2") == null) {
-    	  ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
-    	  basicExportConfiguration.setConfigName("BasicExportConfiguration2");
-    	  basicExportConfiguration.setId("BasicExportConfiguration2");
-    	  exportConfigurationService.save(basicExportConfiguration);
-      System.out.println("done");
-
-      }
-      if(exportConfigurationService.getExportConfiguration("BasicExportConfiguration3") == null) {
-    	  ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
-    	  basicExportConfiguration.setConfigName("BasicExportConfiguration3");
-    	  basicExportConfiguration.setId("BasicExportConfiguration3");
-    	  exportConfigurationService.save(basicExportConfiguration);
-      System.out.println("done");
-
-      }
   }
 //  
    //

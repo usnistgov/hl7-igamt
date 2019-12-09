@@ -1,0 +1,129 @@
+<h2 mat-dialog-title>Verification Reports for IG</h2>
+
+<p-progressBar mode="indeterminate" *ngIf="!reports"></p-progressBar>
+
+<mat-dialog-content *ngIf="reports">
+    <label *ngIf="errorCounts">Total {{errorCounts[0]}} errors found</label>
+    <p-accordion *ngIf="errorCounts">
+        <p-accordionTab header="IG Document Verification Results ({{errorCounts[5]}} errors found)">
+            <ul *ngIf="reports.igVerificationResult && errorCounts && errorCounts[5] > 0">
+                <li *ngFor="let error of reports.igVerificationResult.errors">
+                    <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
+                    <span class="badge errorType-{{error.errorType}}">{{error.errorType}}</span>&nbsp;
+                    <span>{{error.errorDescription}}</span>
+                </li>
+            </ul>
+        </p-accordionTab>
+        <p-accordionTab header="Conformance Profiles Verification Results ({{errorCounts[4]}} errors found)">
+            <p-table *ngIf="reports.conformanceProfileVerificationResults && errorCounts && errorCounts[4] > 0" [value]="reports.conformanceProfileVerificationResults">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 30em">Name</th>
+                        <th>Errors</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr *ngIf="item.errors && item.errors.length > 0">
+                        <td>
+                            <app-scope-badge [scope]="item.metadata.domainInfo.scope" [version]="item.metadata.domainInfo.version"></app-scope-badge>
+                            <span> {{item.metadata.name}}<ng-container *ngIf="item.metadata.extension">{{'-' + item.metadata.extension}}</ng-container></span>
+                        </td>
+                        <td>
+                            <ul>
+                                <li *ngFor="let error of item.errors">
+                                    <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
+                                    <span class="badge errorType-{{error.errorType}}">{{error.errorType}}</span>&nbsp;
+                                    <span>{{error.errorDescription}}</span>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-accordionTab>
+        <p-accordionTab header="Segments Verification Results ({{errorCounts[3]}} errors found)">
+            <p-table *ngIf="reports.segmentVerificationResults && errorCounts && errorCounts[3] > 0" [value]="reports.segmentVerificationResults">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 30em">Name</th>
+                        <th>Errors</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr *ngIf="item.errors && item.errors.length > 0">
+                        <td>
+                            <app-scope-badge [scope]="item.metadata.domainInfo.scope" [version]="item.metadata.domainInfo.version"></app-scope-badge>
+                            <span> {{item.metadata.name}}<ng-container *ngIf="item.metadata.extension">{{'-' + item.metadata.extension}}</ng-container></span>
+                        </td>
+                        <td>
+                            <ul>
+                                <li *ngFor="let error of item.errors">
+                                    <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
+                                    <span class="badge errorType-{{error.errorType}}">{{error.errorType}}</span>&nbsp;
+                                    <span>{{error.errorDescription}}</span>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-accordionTab>
+        <p-accordionTab header="Datatypes Verification Results ({{errorCounts[2]}} errors found)">
+            <p-table *ngIf="reports.datatypeVerificationResults && errorCounts && errorCounts[2] > 0" [value]="reports.datatypeVerificationResults">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 30em">Name</th>
+                        <th>Errors</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr *ngIf="item.errors && item.errors.length > 0">
+                        <td>
+                            <app-scope-badge [scope]="item.metadata.domainInfo.scope" [version]="item.metadata.domainInfo.version"></app-scope-badge>
+                            <span> {{item.metadata.name}}<ng-container *ngIf="item.metadata.extension">{{'-' + item.metadata.extension}}</ng-container></span>
+                        </td>
+                        <td>
+                            <ul>
+                                <li *ngFor="let error of item.errors">
+                                    <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
+                                    <span class="badge errorType-{{error.errorType}}">{{error.errorType}}</span>&nbsp;
+                                    <span>{{error.errorDescription}}</span>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-accordionTab>
+        <p-accordionTab header="Valuesets Verification Results ({{errorCounts[1]}} errors found)">
+            <p-table *ngIf="reports.valuesetVerificationResults && errorCounts && errorCounts[1] > 0" [value]="reports.valuesetVerificationResults">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 30em">Name</th>
+                        <th>Errors</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr *ngIf="item.errors && item.errors.length > 0">
+                        <td>
+                            <app-scope-badge [scope]="item.metadata.domainInfo.scope" [version]="item.metadata.domainInfo.version"></app-scope-badge>
+                            <span> {{item.metadata.bindingIdentifier}}<ng-container *ngIf="item.metadata.name">{{'-' + item.metadata.name}}</ng-container></span>
+                        </td>
+                        <td>
+                            <ul>
+                                <li *ngFor="let error of item.errors">
+                                    <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
+                                    <span class="badge errorType-{{error.errorType}}">{{error.errorType}}</span>&nbsp;
+                                    <span>{{error.errorDescription}}</span>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-accordionTab>
+    </p-accordion>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+    <button (click)="cancel()" class="btn btn-sm btn-info" style="margin-right: 5px;">Close</button>
+</mat-dialog-actions>

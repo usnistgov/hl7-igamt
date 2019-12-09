@@ -4,7 +4,14 @@ public class ExportConfigurationForFrontEnd {
 	
 	private String id;
 	private String configName;
+	private boolean defaultConfig;
 	
+	public boolean isDefaultConfig() {
+		return defaultConfig;
+	}
+	public void setDefaultConfig(boolean defaultConfig) {
+		this.defaultConfig = defaultConfig;
+	}
 	public String getId() {
 		return id;
 	}

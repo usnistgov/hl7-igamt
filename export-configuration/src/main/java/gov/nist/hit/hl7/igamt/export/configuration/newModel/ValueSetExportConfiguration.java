@@ -41,6 +41,7 @@ public class ValueSetExportConfiguration extends ResourceExportConfiguration{
 	    this.phinvadsUpdateEmailNotification = exportConfiguration.isPhinvadsUpdateEmailNotification();
 	    this.codeNumber = exportConfiguration.getMaxCodeNumber();
 	    this.maxCodeNumber = ExportConfiguration.MAX_CODE;
+	    this.columns=exportConfiguration.getValuesetColumn().getColumns();
 	  }
 
 	  /**

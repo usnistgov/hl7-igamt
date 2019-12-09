@@ -1,85 +1,54 @@
 <div style="width: 100%; display: flex; align-items: flex-start;">
-    <div style="width: 100%;">
-<!-- <p-checkbox binary="true" label="Include Datatype Table Options"></p-checkbox> -->
+  <div style="width: 100%;">
 
-<p-card header="Usages - Components to export" [styleClass]="'pcard'">
-    <p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.componentExport.r"></p-checkbox>
-    <br>
-    <p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.componentExport.re"></p-checkbox>
-    <br>
-    <p-checkbox disabled="true" label="C" binary="true" [(ngModel)]="config.componentExport.c"> </p-checkbox>
-    <br>
-    <p-checkbox label="O" binary="true" [(ngModel)]="config.componentExport.o" (onChange)="triggerChange()"></p-checkbox>
-    <br>
-    <p-checkbox label="X" binary="true" [(ngModel)]="config.componentExport.x" (onChange)="triggerChange()"></p-checkbox>
-    <br>
-</p-card>
-<p-card header="Columns to export" [styleClass]="'pcard'" *ngIf="displayColumns">
-    <div class="config-checkbox">
-        <p-checkbox label="Name" binary="true"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox label="Conformance Length" binary="true"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox label="Length" binary="true"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox label="Usage" binary="true"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox label="Value Set" binary="true"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox label="Constant Value" binary="true"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox label="Definition Text" binary="true"></p-checkbox>
-      </div>
-</p-card>
-<p-card header="Metadata" [styleClass]="'pcard'">
-    <div class="config-checkbox">
-        <p-checkbox label="HL7 Version" binary="true" [(ngModel)]="config.metadataConfig.hl7version" (onChange)="triggerChange()"></p-checkbox>
-      </div>
-      <!-- <div class="config-checkbox">
-        <p-checkbox label="Publication Date" binary="true" [(ngModel)]="config.metadataConfig.publicationDate" (onChange)="triggerChange()"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox label="Publication Version" binary="true" [(ngModel)]="config.metadataConfig.publicationVersion" (onChange)="triggerChange()"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox label="Scope" binary="true" [(ngModel)]="config.metadataConfig.scope" (onChange)="triggerChange()"></p-checkbox>
-      </div> -->
-      <div class="config-checkbox">
-          <p-checkbox label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox>
-        </div>
-        <div class="config-checkbox">
-          <p-checkbox label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox>
-        </div>
-        <div class="config-checkbox">
-          <p-checkbox label="Usage Notes " binary="true" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox>
-        </div>
-        <div class="config-checkbox">
-          <p-checkbox label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox>
-        </div>
-</p-card>
-<p-card header="Constraints" [styleClass]="'pcard'">
-  <div class="config-checkbox">
-      <p-checkbox label="Conditional Predicates" binary="true" [(ngModel)]="config.constraintExportConfiguration.predicate" (onChange)="triggerChange()"></p-checkbox>
+    <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+      <h5 class="card-title title-text custom-card-title">Usages (Components to Export)</h5>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item"><p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.componentExport.r"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.componentExport.re"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox disabled="true" label="C" binary="true" [(ngModel)]="config.componentExport.c"> </p-checkbox></li>
+        <li class="list-group-item"><p-checkbox label="O" binary="true" [(ngModel)]="config.componentExport.o" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox label="X" binary="true" [(ngModel)]="config.componentExport.x" (onChange)="triggerChange()"></p-checkbox></li>
+      </ul>
     </div>
-    <div class="config-checkbox">
-      <p-checkbox label="Conformance Statments" binary="true" [(ngModel)]="config.constraintExportConfiguration.conformanceStatement"
-        (onChange)="triggerChange()"></p-checkbox>
-    </div>
-</p-card>
 
-<p-card header="Delta" [styleClass]="'pcardDelta'" >
-    <div class="delta-container">
-        <app-delta-export-configuration [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
+    <div style="display: flex;">
+
+      <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;" *ngIf="displayColumns">
+        <h5 class="card-title title-text custom-card-title">Columns to export</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let c of config.columns">
+            <p-checkbox label= {{c.name}} binary="true" [(ngModel)]="c.present" (onChange)="triggerChange()"></p-checkbox>
+          </li>
+        </ul>
       </div>
-</p-card>
 
-</div>
+
+      <div style="display: flex; flex-grow: 1; flex-direction: column;">
+
+        <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+          <h5 class="card-title title-text custom-card-title">Metadata</h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><p-checkbox label="HL7 Version" binary="true" [(ngModel)]="config.metadataConfig.hl7version" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox label="Usage Notes " binary="true" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox></li>
+          </ul>
+        </div>
+
+        <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+          <h5 class="card-title title-text custom-card-title">Constraints</h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><p-checkbox label="Conditional Predicates" binary="true" [(ngModel)]="config.constraintExportConfiguration.predicate" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox label="Conformance Statments" binary="true" [(ngModel)]="config.constraintExportConfiguration.conformanceStatement" (onChange)="triggerChange()"></p-checkbox></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <app-delta-export-configuration [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
+
+  </div>
 </div>
 
-   

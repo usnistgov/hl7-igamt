@@ -9,21 +9,35 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.service.impl;
+package gov.nist.hit.hl7.igamt.ig.domain.verification;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
 /**
  * @author jungyubw
  *
  */
-public class ValuesetObjectError extends IgamtObjectError{
-  public ValuesetObjectError() {
+public class IgVerificationResult extends VerificationResult {
+  private DocumentMetadata metadata;
+
+  public IgVerificationResult() {
     super();
-    this.setTargetType("VALUESET");
   }
 
-  public ValuesetObjectError(String targetId, String errorType, String errorTarget,
-      String errorDescription, String errorLocation, String severity) {
-    super("VALUESET", targetId, errorType, errorTarget, errorDescription, errorLocation, severity);
+  public IgVerificationResult(Ig ig) {
+    super();
+    this.metadata = ig.getMetadata();
   }
+
+  public DocumentMetadata getMetadata() {
+    return metadata;
+  }
+
+  public void setMetadata(DocumentMetadata metadata) {
+    this.metadata = metadata;
+  }
+
+
 
 }

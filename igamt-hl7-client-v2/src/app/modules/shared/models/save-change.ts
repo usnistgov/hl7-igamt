@@ -1,6 +1,6 @@
 export interface IChange<T = any> {
   location: string;
-  propertyType: string;
+  propertyType: PropertyType;
   propertyValue: T;
   oldPropertyValue?: T;
   position?: number;
@@ -48,6 +48,7 @@ export enum PropertyType {
   PROFILETYPE = 'PROFILETYPE',
   ROLE = 'ROLE',
   PROFILEIDENTIFIER = 'PROFILEIDENTIFIER',
-  ORGANISATION = 'ORGANISATION',
   COCONSTRAINTBINDINGS = 'COCONSTRAINTBINDINGS',
+  ORGANISATION = 'ORGANISATION',
+  DTMSTRUC = 'DTMSTRUC',
 }

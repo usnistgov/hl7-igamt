@@ -67,7 +67,9 @@ export class ConfigurationTocComponent implements OnInit {
   }
 
   ngOnInit() {
+
   }
+
   filterByname(value: string) {
     this.tree.treeModel.filterNodes((node) => {
       return this.nodeHelperService

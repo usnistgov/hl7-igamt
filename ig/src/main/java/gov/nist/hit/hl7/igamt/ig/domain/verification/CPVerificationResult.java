@@ -9,21 +9,34 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.service.impl;
+package gov.nist.hit.hl7.igamt.ig.domain.verification;
+
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 
 /**
  * @author jungyubw
  *
  */
-public class ConformanceProfileObjectError extends IgamtObjectError {
-  public ConformanceProfileObjectError() {
+public class CPVerificationResult extends VerificationResult {
+  private CPMetadata metadata;
+
+  public CPVerificationResult() {
     super();
-    this.setTargetType("CONFORMANCEPROFILE");
   }
 
-  public ConformanceProfileObjectError(String targetId, String errorType, String errorTarget,
-      String errorDescription, String errorLocation, String severity) {
-    super("CONFORMANCEPROFILE", targetId, errorType, errorTarget, errorDescription, errorLocation,
-        severity);
+  public CPVerificationResult(ConformanceProfile conformanceProfile) {
+    super();
+    metadata = new CPMetadata(conformanceProfile);
   }
+
+  public CPMetadata getMetadata() {
+    return metadata;
+  }
+
+  public void setMetadata(CPMetadata metadata) {
+    this.metadata = metadata;
+  }
+
+
+
 }

@@ -16,6 +16,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentExportConfiguration;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
@@ -33,9 +34,19 @@ public class Ig extends AbstractDomain {
   private CompositeProfileRegistry compositeProfileRegistry = new CompositeProfileRegistry();
   private ConformanceProfileRegistry conformanceProfileRegistry = new ConformanceProfileRegistry();
   private CoConstraintGroupRegistry coConstraintGroupRegistry = new CoConstraintGroupRegistry();
+  private DocumentExportConfiguration lastUserConfiguration;
+
   private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
 
-  public DocumentMetadata getMetadata() {
+  public DocumentExportConfiguration getLastUserConfiguration() {
+	return lastUserConfiguration;
+}
+
+public void setLastUserConfiguration(DocumentExportConfiguration lastUserConfiguration) {
+	this.lastUserConfiguration = lastUserConfiguration;
+}
+
+public DocumentMetadata getMetadata() {
     return metadata;
   }
 

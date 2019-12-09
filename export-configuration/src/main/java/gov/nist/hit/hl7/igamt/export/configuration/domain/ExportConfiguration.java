@@ -23,6 +23,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.Columns;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConstraintExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
@@ -30,6 +31,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.ResourceExportConfig
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.SegmentExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ValueSetExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.PositionAndPresence;
 
 
 /**
@@ -40,8 +42,8 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConf
 public class ExportConfiguration {
 	
 	private String configName;
-	 @Id
-	  private String id;
+	@Id
+	private String id;
 	 
 	private DatatypeExportConfiguration datatypeExportConfiguration;
 	private SegmentExportConfiguration segmentExportConfiguration;
@@ -53,10 +55,13 @@ public class ExportConfiguration {
 	
  
   boolean defaultType = false;
+  boolean defaultConfig = false;
   private String name;
+  private Columns listedColumns;
   @Column(unique=true)
   private String username;
-  private boolean unboundHL7 = false;
+ 
+private boolean unboundHL7 = false;
   private boolean unboundCustom = false;
   private boolean includeVaries = false;
   private boolean includeMessageTable = true;
@@ -116,6 +121,7 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();  
     defaultConfiguration.setConfigName("");
+    defaultConfiguration.setDefaultConfig(false);
     defaultConfiguration.setCoConstraintExportMode(CoConstraintExportMode.COMPACT);
     defaultConfiguration.setDefaultType(true);
     defaultConfiguration.setUsername(null);
@@ -174,6 +180,19 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     defaultConfiguration.setMessageMetadataConfig(metadataDefaultConfig);
     defaultConfiguration.setCompositeProfileMetadataConfig(metadataDefaultConfig);
 
+    // New default column
+    PositionAndPresence positionAndPresence = new PositionAndPresence();
+    positionAndPresence.setPosition(1);
+    positionAndPresence.setPresence(true);
+    
+    Columns listedColumns = new Columns();
+    listedColumns.setCardinality(positionAndPresence);
+    listedColumns.setElementName(positionAndPresence);
+    listedColumns.setFlavor(positionAndPresence);
+    listedColumns.setSegment(positionAndPresence);
+    listedColumns.setUsage(positionAndPresence);
+    defaultConfiguration.setListedColumns(listedColumns);
+    
     // Default column
     ArrayList<NameAndPositionAndPresence> messageColumnsDefaultList =
         new ArrayList<NameAndPositionAndPresence>();
@@ -181,24 +200,22 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     messageColumnsDefaultList.add(new NameAndPositionAndPresence("Segment", 1, true, true));
     messageColumnsDefaultList.add(new NameAndPositionAndPresence("Flavor", 2, true, true));
     messageColumnsDefaultList.add(new NameAndPositionAndPresence("Element Name", 3, true, true));
+    messageColumnsDefaultList.add(new NameAndPositionAndPresence("Usage", 5, true, setAllTrue));
     messageColumnsDefaultList
         .add(new NameAndPositionAndPresence("Cardinality", 4, true, setAllTrue));
-    messageColumnsDefaultList.add(new NameAndPositionAndPresence("Usage", 5, true, setAllTrue));
-    messageColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 1, true, setAllTrue));
+//    messageColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 1, true, setAllTrue));
 
     ArrayList<NameAndPositionAndPresence> segmentColumnsDefaultList =
         new ArrayList<NameAndPositionAndPresence>();
     segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Name", 1, true, true));
-    segmentColumnsDefaultList
-        .add(new NameAndPositionAndPresence("Conformance Length", 2, setAllTrue, setAllTrue));
     segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Data Type", 3, true, setAllTrue));
     segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Usage", 4, true, setAllTrue));
-    segmentColumnsDefaultList
-        .add(new NameAndPositionAndPresence("Cardinality", 5, true, setAllTrue));
-    segmentColumnsDefaultList
-        .add(new NameAndPositionAndPresence("Length", 6, setAllTrue, setAllTrue));
+    segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Cardinality", 5, true, setAllTrue));
+    segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Length", 6, setAllTrue, setAllTrue));
+//    segmentColumnsDefaultList
+//        .add(new NameAndPositionAndPresence("Conformance Length", 2, setAllTrue, setAllTrue));
     segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Value Set", 7, true, setAllTrue));
-    segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 8, true, setAllTrue));
+//    segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 8, true, setAllTrue));
 
 
 
@@ -206,8 +223,8 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
         new ArrayList<NameAndPositionAndPresence>();
 
     dataTypeColumnsDefaultList.add(new NameAndPositionAndPresence("Name", 1, true, true));
-    dataTypeColumnsDefaultList
-        .add(new NameAndPositionAndPresence("Conformance Length", 2, setAllTrue, setAllTrue));
+//    dataTypeColumnsDefaultList
+//        .add(new NameAndPositionAndPresence("Conformance Length", 2, setAllTrue, setAllTrue));
     dataTypeColumnsDefaultList
         .add(new NameAndPositionAndPresence("Data Type", 3, true, setAllTrue));
     dataTypeColumnsDefaultList.add(new NameAndPositionAndPresence("Usage", 4, true, setAllTrue));
@@ -215,7 +232,7 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
         .add(new NameAndPositionAndPresence("Length", 5, setAllTrue, setAllTrue));
     dataTypeColumnsDefaultList
         .add(new NameAndPositionAndPresence("Value Set", 6, true, setAllTrue));
-    dataTypeColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 7, true, setAllTrue));
+//    dataTypeColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 7, true, setAllTrue));
 
 
 
@@ -271,15 +288,13 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     conformanceProfileExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
     conformanceProfileExportConfiguration.setDeltaMode(true);
     conformanceProfileExportConfiguration.setDeltaConfig(deltaConfiguration);
+    conformanceProfileExportConfiguration.setListedColumns(listedColumns);
 //    conformanceProfileExportConfiguration.getMetadataConfig().setType(false);
 //    conformanceProfileExportConfiguration.getMetadataConfig().setRole(false);
 
 
     // Setting ValueSetExportConfiguration
     ValueSetExportConfiguration valueSetExportConfiguration = new ValueSetExportConfiguration(defaultConfiguration);
-
-
-
     defaultConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
     defaultConfiguration.setConformamceProfileExportConfiguration(conformanceProfileExportConfiguration);
     defaultConfiguration.setValueSetExportConfiguration(valueSetExportConfiguration);
@@ -409,7 +424,15 @@ public String getId() {
 
 
 
-  public void setName(String name) {
+  public Columns getListedColumns() {
+	return listedColumns;
+}
+
+public void setListedColumns(Columns listedColumns) {
+	this.listedColumns = listedColumns;
+}
+
+public void setName(String name) {
     this.name = name;
   }
 
@@ -520,6 +543,13 @@ public String getId() {
     return includeCompositeProfileTable;
   }
 
+  public boolean isDefaultConfig() {
+		return defaultConfig;
+	}
+
+	public void setDefaultConfig(boolean defaultConfig) {
+		this.defaultConfig = defaultConfig;
+	}
 
 
   public void setIncludeCompositeProfileTable(boolean includeCompositeProfileTable) {
