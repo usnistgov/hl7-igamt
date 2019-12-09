@@ -33,9 +33,6 @@
         	<xsl:element name="br"/>
         </xsl:if>
         <xsl:if test="@name = 'DTM'">
-        <xsl:text>
-Inside IF yes DTM
-</xsl:text>
 <!--             <xsl:apply-templates select="DateTimeDatatype"/>
  -->      
  <xsl:element name="span">
@@ -122,9 +119,6 @@ Inside IF yes DTM
    </xsl:if>
  
         <xsl:if test="@name != 'DTM'">
-        <xsl:text>
-Inside IF not DTM
-</xsl:text>
             <xsl:element name="span">
                 <xsl:element name="span">
                     <xsl:element name="b">
