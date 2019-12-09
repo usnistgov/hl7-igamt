@@ -1,68 +1,42 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { combineLatest, Observable, of, ReplaySubject } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
+import * as _ from 'lodash';
+import { combineLatest, Observable, ReplaySubject, Subject, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
-import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectAllDatatypes, selectIgId, selectSegmentsById, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { CoConstraintBindingDialogComponent } from '../../../co-constraints/components/co-constraint-binding-dialog/co-constraint-binding-dialog.component';
-import { CoConstraintGroupSelectorComponent } from '../../../co-constraints/components/co-constraint-group-selector/co-constraint-group-selector.component';
+import { EditorSave, EditorUpdate, LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { selectAllDatatypes, selectAllSegments, selectIgId, selectMessagesById, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { CoConstraintBindingDialogComponent, IBindingDialogResult } from '../../../co-constraints/components/co-constraint-binding-dialog/co-constraint-binding-dialog.component';
 import { CoConstraintEntityService } from '../../../co-constraints/services/co-constraint-entity.service';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
+import { MessageService } from '../../../core/services/message.service';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { ICoConstraintTable, ICoConstraintGroup } from '../../../shared/models/co-constraint.interface';
+import { ICoConstraintBindingContext, ICoConstraintBindingSegment } from '../../../shared/models/co-constraint.interface';
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';
-import { IAssertion, IPath } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { ISegment } from '../../../shared/models/segment.interface';
-import { ConformanceStatementService } from '../../../shared/services/conformance-statement.service';
+import { ChangeType, PropertyType } from '../../../shared/models/save-change';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
+import { ConformanceProfileService } from '../../services/conformance-profile.service';
 
-export interface ICoConstraintBindingContext {
-  context: {
-    pathId: string;
-    name: string;
-    path: IPath;
-  };
-  bindings: ICoConstraintBindingSegment[];
+export interface IExpansionPanelView {
+  [key: string]: boolean;
 }
 
-export interface ICoConstraintBindingSegment {
-  segment: {
-    pathId: string;
-    segmentId: string;
-    name: string;
-    path: IPath;
-  };
-  tables: ICoConstraintTableConditionalBinding[];
+export enum ChangeLevel {
+  CONTEXT,
+  SEGMENT,
 }
 
-export interface ICoConstraintTableConditionalBinding {
-  condition: IAssertion;
-  table: ICoConstraintTable;
-}
-
-export interface IBindingDialogResult {
-  context: {
-    name: string;
-    node: IHL7v2TreeNode;
-    path: IPath;
-  };
-  segment: {
-    name: string;
-    segmentId: string;
-    node: IHL7v2TreeNode;
-    path: IPath;
-  };
-}
-
-export interface ISegmentMap {
-  [id: string]: ISegment;
+export interface IChange {
+  type: ChangeType;
+  level: ChangeLevel;
+  contextId?: string;
+  context?: ICoConstraintBindingContext;
+  segment?: ICoConstraintBindingSegment;
 }
 
 @Component({
@@ -70,29 +44,38 @@ export interface ISegmentMap {
   templateUrl: './co-constraints-binding-editor.component.html',
   styleUrls: ['./co-constraints-binding-editor.component.scss'],
 })
-export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent implements OnInit {
+export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
 
   conformanceProfile$: Observable<IConformanceProfile>;
   conformanceProfile: ReplaySubject<IConformanceProfile>;
-  segments: ReplaySubject<IConformanceProfile>;
-  structure: IHL7v2TreeNode[];
-  group$: Observable<ICoConstraintTable>;
-  groupSubject: ReplaySubject<ICoConstraintTable>;
-  nameSubject: ReplaySubject<ICoConstraintTable>;
+
+  bindings$: Observable<ICoConstraintBindingContext[]>;
+  bindings: ReplaySubject<ICoConstraintBindingContext[]>;
+
+  bindingsSync$: Observable<ICoConstraintBindingContext[]>;
+  bindingsSync: ReplaySubject<ICoConstraintBindingContext[]>;
+
+  changes: Subject<IChange>;
+
+  public structure: IHL7v2TreeNode[];
+  public segments: Observable<IDisplayElement[]>;
   public datatypes: Observable<IDisplayElement[]>;
   public valueSets: Observable<IDisplayElement[]>;
   public igId: Observable<string>;
-  bindings: ICoConstraintBindingContext[] = [];
-  accordionState: {
-    [id: string]: boolean,
-  } = {};
+
+  ccTableBinding: ICoConstraintBindingContext[];
+  expansionPanelView: IExpansionPanelView;
+  s_workspace: Subscription;
+  s_changes: Subscription;
+  s_tree: Subscription;
 
   constructor(
     protected actions$: Actions,
     private dialog: MatDialog,
     protected store: Store<any>,
     public repository: StoreResourceRepositoryService,
-    private csService: ConformanceStatementService,
+    private conformanceProfileService: ConformanceProfileService,
+    private messageService: MessageService,
     private treeService: Hl7V2TreeService,
     protected ccService: CoConstraintEntityService) {
     super({
@@ -101,32 +84,51 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
       resourceType: Type.CONFORMANCEPROFILE,
     },
       actions$,
-      store);
+      store,
+    );
 
-    this.groupSubject = new ReplaySubject<ICoConstraintTable>(1);
-    this.group$ = this.groupSubject.asObservable();
-
+    this.expansionPanelView = {};
     this.datatypes = this.store.select(selectAllDatatypes);
+    this.segments = this.store.select(selectAllSegments);
     this.valueSets = this.store.select(selectValueSetsNodes);
     this.igId = this.store.select(selectIgId);
+
     this.conformanceProfile = new ReplaySubject<IConformanceProfile>(1);
     this.conformanceProfile$ = this.conformanceProfile.asObservable();
-    this.currentSynchronized$.pipe(
-      tap((data) => {
-        this.conformanceProfile.next(data.resource);
+
+    this.bindings = new ReplaySubject<ICoConstraintBindingContext[]>(1);
+    this.bindings$ = this.bindings.asObservable();
+
+    this.bindingsSync = new ReplaySubject<ICoConstraintBindingContext[]>(1);
+    this.bindingsSync$ = this.bindingsSync.asObservable();
+
+    this.changes = new Subject<IChange>();
+    this.s_changes = this.changes.pipe(
+      concatMap((change) => {
+        switch (change.level) {
+          case ChangeLevel.CONTEXT:
+            return this.changeContext(change.type, change.context);
+          case ChangeLevel.SEGMENT:
+            return this.changeSegment(change.contextId, change.type, change.segment);
+        }
       }),
     ).subscribe();
 
-    this.conformanceProfile$.pipe(
-      map((message) => {
-        this.treeService.getTree(message, this.repository, true, true, (value) => {
+    this.s_workspace = this.currentSynchronized$.pipe(
+      tap((data) => {
+
+        // -- Set CP
+        this.conformanceProfile.next(data.resource);
+
+        // -- Set Tree
+        this.s_tree = this.treeService.getTree(data.resource, this.repository, true, true, (value) => {
           this.structure = [
             {
               data: {
-                id: message.id,
-                pathId: message.id,
-                name: message.name,
-                type: message.type,
+                id: data.resource.id,
+                pathId: data.resource.id,
+                name: data.resource.name,
+                type: data.resource.type,
                 position: 0,
               },
               expanded: true,
@@ -135,58 +137,33 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
             },
           ];
         });
-      }),
-    ).subscribe();
-  }
 
-  change($event) {
-  }
-
-  clearCondition(conditional: ICoConstraintTableConditionalBinding) {
-    conditional.condition = undefined;
-  }
-
-  openConditionDialog(context: any, conditional: ICoConstraintTableConditionalBinding) {
-    const dialogRef = this.dialog.open(CsDialogComponent, {
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      data: {
-        title: 'Co-Constraint Table Conditional',
-        assertionMode: true,
-        context: context.path,
-        assertion: conditional.condition,
-        resource: this.conformanceProfile$,
-      },
-    });
-
-    dialogRef.afterClosed().subscribe(
-      (result) => {
-        if (result) {
-          console.log(result);
-          conditional.condition = result.assertion;
+        if (data.value && data.value.length > 0) {
+          this.openPanel(data.value[0].context.pathId);
         }
-      },
-    );
-  }
 
-  createTable(segment: ICoConstraintBindingSegment) {
-    this.repository.fetchResource(Type.SEGMENT, segment.segment.segmentId).pipe(
-      take(1),
-      map((seg: ISegment) => {
-        this.ccService.createCoConstraintTableForSegment(seg, this.repository).pipe(
-          map((table) => {
-            segment.tables.push({
-              condition: undefined,
-              table,
-            });
-          }),
-        ).subscribe();
+        // -- Set bindings value
+        this.bindings.next(data.value || []);
+        this.bindingsSync.next(_.cloneDeep([
+          ...data.value,
+        ]) || []);
       }),
     ).subscribe();
   }
 
-  getSegment(id: string): Observable<ISegment> {
-    return this.repository.fetchResource(Type.SEGMENT, id);
+  openPanel(id: string) {
+    for (const key of Object.keys(this.expansionPanelView)) {
+      this.expansionPanelView[key] = false;
+    }
+    this.expansionPanelView[id] = true;
+  }
+
+  togglePanel(id: string) {
+    if (this.expansionPanelView[id]) {
+      this.expansionPanelView[id] = false;
+    } else {
+      this.openPanel(id);
+    }
   }
 
   openBindingCreateDialog() {
@@ -200,107 +177,234 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
     ref.afterClosed().subscribe(
       (result: IBindingDialogResult) => {
         if (result) {
-          let binding = this.bindings.find((b) => b.context.pathId === result.context.node.data.pathId);
-          if (!binding) {
-            binding = {
-              context: {
-                pathId: result.context.node.data.pathId,
-                path: result.context.path,
-                name: result.context.name,
-              },
-              bindings: [],
-            };
-            this.bindings.push(binding);
-          }
 
-          const segmentBinding = binding.bindings.find((b) => b.segment.pathId === result.segment.node.data.pathId);
-          if (!segmentBinding) {
-            const bd = {
-              segment: {
-                pathId: result.segment.node.data.pathId,
-                segmentId: result.segment.segmentId,
-                path: result.segment.path,
-                name: result.segment.name,
-              },
-              tables: [],
-            };
-            binding.bindings.push(bd);
-            this.createTable(bd);
-          }
-          this.openAccordion(result.context.node.data.pathId);
+          const contextNode = {
+            context: {
+              pathId: result.context.node.data.pathId,
+              path: result.context.path,
+              name: result.context.name,
+            },
+            bindings: [],
+          };
+
+          const segmentNode = {
+            segment: {
+              pathId: result.segment.node.data.pathId,
+              path: result.segment.path,
+              name: result.segment.name,
+            },
+            name: '',
+            flavorId: result.segment.flavorId,
+            tables: [],
+          };
+
+          this.bindings.pipe(
+            take(1),
+            tap((current) => {
+              const context = current.find((b) => b.context.pathId === result.context.node.data.pathId);
+              if (context) {
+                const segment = context.bindings.find((b) => b.segment.pathId === result.segment.node.data.pathId);
+                if (!segment) {
+                  this.registerChange({
+                    type: ChangeType.ADD,
+                    level: ChangeLevel.SEGMENT,
+                    contextId: result.context.node.data.pathId,
+                    segment: segmentNode,
+                  });
+                }
+              } else {
+                this.registerChange({
+                  type: ChangeType.ADD,
+                  level: ChangeLevel.CONTEXT,
+                  context: contextNode,
+                });
+
+                this.registerChange({
+                  type: ChangeType.ADD,
+                  level: ChangeLevel.SEGMENT,
+                  contextId: result.context.node.data.pathId,
+                  segment: segmentNode,
+                });
+              }
+            }),
+          ).subscribe();
         }
       },
     );
   }
 
-  deleteTable(segment: ICoConstraintBindingSegment, i: number) {
-    segment.tables.splice(i, 1);
+  segmentBindingChange(contextId: string, value: ICoConstraintBindingSegment) {
+    this.registerChange({
+      type: ChangeType.UPDATE,
+      level: ChangeLevel.SEGMENT,
+      contextId,
+      segment: value,
+    });
   }
 
-  importCoConstraintGroup(binding: ICoConstraintBindingSegment, table: ICoConstraintTable) {
-    combineLatest(
-      this.store.select(selectSegmentsById, { id: binding.segment.segmentId }),
-      this.igId,
-    ).pipe(
-      map(([segment, igId]) => {
-        const dialogRef = this.dialog.open(CoConstraintGroupSelectorComponent, {
-          data: {
-            segment,
-            igId,
-          },
-        });
-
-        dialogRef.afterClosed().subscribe(
-          (result: IDisplayElement[]) => {
-            if (result) {
-              result.forEach((groupDisplay) => {
-                this.repository.fetchResource(Type.COCONSTRAINTGROUP, groupDisplay.id).pipe(
-                  take(1),
-                  tap((group: ICoConstraintGroup) => {
-                    this.ccService.mergeGroupWithTable(table, group);
-                    table.groups.push(
-                      this.ccService.createCoConstraintGroupBinding(group),
-                    );
-                  }),
-                ).subscribe();
-              });
-            }
-          },
-        );
-      }),
-    ).subscribe();
+  registerChange(change: IChange) {
+    this.changes.next(change);
   }
 
-  addCoConstraintGroup(table: ICoConstraintTable) {
-    const group = this.ccService.createEmptyContainedGroupBinding();
-    table.groups.push(group);
+  changeContext(changeType: ChangeType, value: ICoConstraintBindingContext): Observable<ICoConstraintBindingContext[]> {
+    const closure = (list: ICoConstraintBindingContext[]): ICoConstraintBindingContext[] => {
+      switch (changeType) {
+        case ChangeType.ADD:
+          return this.addContext(list, value);
+        case ChangeType.DELETE:
+          return this.deleteContext(value.context.pathId, list);
+      }
+    };
+
+    return this.change(closure);
   }
 
-  openAccordion(id: string) {
-    for (const key of Object.keys(this.accordionState)) {
-      this.accordionState[key] = false;
-    }
-    this.accordionState[id] = true;
+  changeSegment(contextId: string, changeType: ChangeType, value: ICoConstraintBindingSegment): Observable<ICoConstraintBindingContext[]> {
+    const closure = (list: ICoConstraintBindingContext[]): ICoConstraintBindingContext[] => {
+      switch (changeType) {
+        case ChangeType.ADD:
+          return this.addSegment(contextId, list, value);
+        case ChangeType.DELETE:
+          return this.deleteSegment(contextId, value.segment.pathId, list, value);
+        case ChangeType.UPDATE:
+          return this.updateSegment(contextId, value.segment.pathId, value, list);
+      }
+    };
+
+    return this.change(closure);
   }
 
-  toggleAccordion(id: string) {
-    if (this.accordionState[id]) {
-      this.accordionState[id] = false;
-    } else {
-      this.openAccordion(id);
-    }
+  change(closure: (list: ICoConstraintBindingContext[]) => ICoConstraintBindingContext[]): Observable<ICoConstraintBindingContext[]> {
+    return combineLatest(
+      this.bindings$,
+      this.conformanceProfile$).pipe(
+        take(1),
+        map(([current, cp]) => {
+          const transformed = closure(current);
+          this.editorChange({
+            value: transformed,
+            resource: cp,
+          }, true);
+          this.bindings.next(transformed);
+          return transformed;
+        }),
+      );
+  }
+
+  updateSegment(contextId: string, segmentId: string, value: ICoConstraintBindingSegment, bindings: ICoConstraintBindingContext[]) {
+    const context = bindings.find((elm) => elm.context.pathId === contextId);
+    return this.replaceContext(
+      contextId,
+      bindings,
+      {
+        ...context,
+        bindings: this.replaceSegment(
+          segmentId,
+          context.bindings,
+          value,
+        ),
+      },
+    );
+  }
+
+  replaceContext(contextId: string, bindings: ICoConstraintBindingContext[], value: ICoConstraintBindingContext): ICoConstraintBindingContext[] {
+    return [
+      ...bindings.filter((elm) => elm.context.pathId !== contextId),
+      ...[value].filter((elm) => !!elm),
+    ];
+  }
+
+  replaceSegment(segmentId: string, bindings: ICoConstraintBindingSegment[], value: ICoConstraintBindingSegment): ICoConstraintBindingSegment[] {
+    return [
+      ...bindings.filter((elm) => elm.segment.pathId !== segmentId),
+      ...[value].filter((elm) => !!elm),
+    ];
+  }
+
+  addContext(bindings: ICoConstraintBindingContext[], value: ICoConstraintBindingContext) {
+    return this.replaceContext(undefined, bindings, value);
+  }
+
+  addSegment(contextId: string, bindings: ICoConstraintBindingContext[], value: ICoConstraintBindingSegment) {
+    const context = bindings.find((elm) => elm.context.pathId === contextId);
+    return this.replaceContext(
+      contextId,
+      bindings,
+      {
+        ...context,
+        bindings: this.replaceSegment(
+          undefined,
+          context.bindings,
+          value,
+        ),
+      },
+    );
+  }
+
+  deleteContext(contextId: string, bindings: ICoConstraintBindingContext[]) {
+    return this.replaceContext(contextId, bindings, undefined);
+  }
+
+  deleteSegment(contextId: string, segmentId: string, bindings: ICoConstraintBindingContext[], value: ICoConstraintBindingSegment) {
+    const context = bindings.find((elm) => elm.context.pathId === contextId);
+    return this.replaceContext(
+      contextId,
+      bindings,
+      {
+        ...context,
+        bindings: this.replaceSegment(
+          segmentId,
+          context.bindings,
+          undefined,
+        ),
+      },
+    );
   }
 
   onEditorSave(action: EditorSave): Observable<Action> {
-    return of();
+    return combineLatest(this.elementId$, this.igId, this.current$, this.initial$).pipe(
+      take(1),
+      concatMap(([id, igId, current, initial]) => {
+        return this.conformanceProfileService.saveChanges(id, igId, [
+          {
+            location: id,
+            propertyType: PropertyType.COCONSTRAINTBINDINGS,
+            oldPropertyValue: initial.value,
+            propertyValue: current.data.value,
+            changeType: ChangeType.UPDATE,
+          },
+        ]).pipe(
+          mergeMap((message) => {
+            return this.conformanceProfileService.getById(id).pipe(
+              flatMap((resource) => {
+                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new EditorUpdate({ value: { value: resource.coConstraintsBindings, resource }, updateDate: false })];
+              }),
+            );
+          }),
+          catchError((error) => throwError(this.messageService.actionFromError(error))),
+        );
+      }),
+    );
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {
-    return of();
+    return this.elementId$.pipe(
+      concatMap((id) => {
+        return this.store.select(selectMessagesById, { id });
+      }),
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.s_workspace.unsubscribe();
+    this.s_changes.unsubscribe();
+    if (this.s_tree) {
+      this.s_tree.unsubscribe();
+    }
   }
 
   onDeactivate(): void {
-
+    this.ngOnDestroy();
   }
 
   ngOnInit() {

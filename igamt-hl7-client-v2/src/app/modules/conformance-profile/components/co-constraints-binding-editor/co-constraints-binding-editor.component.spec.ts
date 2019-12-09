@@ -8,7 +8,7 @@ describe('CoConstraintsBindingEditorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CoConstraintsBindingEditorComponent ]
+      declarations: [ CoConstraintsBindingEditorComponent ],
     })
     .compileComponents();
   }));

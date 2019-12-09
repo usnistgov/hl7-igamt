@@ -763,7 +763,7 @@ export class Hl7V2TreeService {
       const reference = child.type === Type.SEGMENTREF ? this.createReference(refsData, Type.SEGMENT, (child as ISegmentRef).ref.id) : undefined;
       const name = child.type === Type.GROUP ? child.name : segments[(child as ISegmentRef).ref.id].name;
       const level = parent ? parent.data.level + 1 : 0;
-      const bds = this.mergeBindings([], child.id, { resource: Type.COMPOSITEPROFILE }, bindings, level);
+      const bds = this.mergeBindings(parent ? parent.data.bindings.children[child.id] || [] : [], child.id, { resource: Type.COMPOSITEPROFILE }, bindings, level);
       let predicate;
       if (bds.values.predicateId && bds.values.predicateId.length > 0) {
         predicate = this.predicate.getPredicate('', bds.values.predicateId[0].value);

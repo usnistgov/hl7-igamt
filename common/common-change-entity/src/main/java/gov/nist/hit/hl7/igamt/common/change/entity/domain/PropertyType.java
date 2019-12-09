@@ -32,6 +32,7 @@ public enum PropertyType {
   
   //COCONSTRAINT
   COCONSTRAINT,
+  COCONSTRAINTBINDINGS,
   
   //VALUESET
   CODES,

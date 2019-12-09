@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1078,7 +1079,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
               item.setOldPropertyValue(cp.getAuthors());
               List<String> authors= mapper.readValue(jsonInString, new TypeReference<List<String>>() {});
               cp.setAuthors(authors);
-             }	        
+             }
+	        else if (item.getPropertyType().equals(PropertyType.COCONSTRAINTBINDINGS)) {
+				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+				item.setOldPropertyValue(cp.getCoConstraintsBindings());
+				List<CoConstraintBinding> coconstraints = mapper.readValue(jsonInString, new TypeReference<List<CoConstraintBinding>>() {});
+				cp.setCoConstraintsBindings(coconstraints);
+			}
 	        else if (item.getPropertyType().equals(PropertyType.PROFILEIDENTIFIER)) {
               String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
               item.setOldPropertyValue(cp.getAuthors());

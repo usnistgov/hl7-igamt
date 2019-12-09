@@ -4,78 +4,34 @@
   </button>
 </ng-template>
 
-<div style="overflow: scroll; height: 100%;">
+<div style="overflow: scroll; height: 100%;" *ngIf="bindingsSync$ | async as bindings">
   <ng-container *ngFor="let binding of bindings">
     <div style="height: 45px;
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;">
-      <div style="display: flex; align-items: center; justify-content: flex-start; cursor: pointer; flex-grow: 1;" (click)="toggleAccordion(binding.context.pathId)" >
-        <i class="fa fa-chevron-down" style="margin-right: 10px;" *ngIf="accordionState[binding.context.pathId]"></i>
-        <i class="fa fa-chevron-right" style="margin-right: 10px;" *ngIf="!accordionState[binding.context.pathId]"></i>
+      <div style="display: flex; align-items: center; justify-content: flex-start; cursor: pointer; flex-grow: 1;" (click)="togglePanel(binding.context.pathId)" >
+        <i class="fa fa-chevron-down" style="margin-right: 10px;" *ngIf="expansionPanelView[binding.context.pathId]"></i>
+        <i class="fa fa-chevron-right" style="margin-right: 10px;" *ngIf="!expansionPanelView[binding.context.pathId]"></i>
         <app-entity-bagde [type]="'GROUP'" ></app-entity-bagde>
         <h6 class="title-text" style="margin-left: 10px !important;" >{{ binding.context.name }}</h6>
       </div>
       <hr style="margin: 0 !important;">
     </div>
 
-    <ng-container *ngIf="accordionState[binding.context.pathId]">
-      <div style="background-color: #f7f7f7; padding: 5px;" *ngFor="let segmentBinding of binding.bindings" >
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-          <div style="display: flex; align-items: center; justify-content: flex-start; margin-top: 10px;">
-            <strong style="margin-right: 10px !important;"> Co-Constraint Tables for Segment </strong>
-            <app-entity-bagde [type]="'SEGMENT'" ></app-entity-bagde>
-            <h6 class="title-text" style="margin-left: 10px !important;" > {{ segmentBinding.segment.name }} </h6>
-          </div>
-          <div>
-            <button class="btn btn-sm btn-primary" style="margin-right: 10px;" (click)="createTable(segmentBinding)" >
-              <i class="fa fa-plus"></i>
-              Co-Constraint Table
-            </button>
-          </div>
-        </div>
 
-        <div style="padding: 10px; border: 1px solid lightgray; background-color: white; margin-top: 10px;" *ngFor="let tableBinding of segmentBinding.tables; let i = index">
-          <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-            <button class="btn btn-sm entity-badge-co-constraint-group margin-right" style="color: white;" (click)="importCoConstraintGroup(segmentBinding, tableBinding.table)" >
-              <i class="fa fa-arrow-down"></i>
-              Import Co-Constraint Group
-            </button>
-            <button class="btn btn-sm btn-primary margin-right" (click)="addCoConstraintGroup(tableBinding.table)">
-              <i class="fa fa-plus"></i>
-              Co-Constraint Group
-            </button>
-            <button class="btn btn-sm btn-danger margin-right" (click)="deleteTable(segmentBinding, i)" >
-              <i class="fa fa-trash"></i>
-              Delete Table
-            </button>
-          </div>
-          <div>
-            <div style="margin-bottom: 10px;">
-              <strong>Condition : </strong>
-              <span> {{ tableBinding.condition?.description }} </span>
-              <button class="btn btn-sm btn-primary" style="margin-left: 10px;" (click)="openConditionDialog(binding.context, tableBinding)">
-                <i class="fa fa-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="clearCondition(tableBinding)" *ngIf="tableBinding.condition">
-                <i class="fa fa-trash"></i>
-              </button>
-            </div>
-            <div style="overflow: scroll;">
-              <app-co-constraint-table
-                [segment]="getSegment(segmentBinding.segment.segmentId) | async"
-                [(value)]="tableBinding.table"
-                [mode]="'TABLE'"
-                [datatypes]="datatypes | async"
-                [valueSets]="valueSets | async"
-                [repository]="repository"
-                (valueChange)="change($event)"
-                [igId]="igId | async" >
-              </app-co-constraint-table>
-            </div>
-          </div>
-        </div>
-      </div>
+    <ng-container *ngIf="expansionPanelView[binding.context.pathId]" >
+        <app-segment-co-constraint-binding
+          *ngFor="let segment of binding.bindings"
+          [segments]="segments | async"
+          [datatypes]="datatypes | async"
+          [valueSets]="valueSets | async"
+          [igId]="igId | async"
+          [conformanceProfile]="conformanceProfile$"
+          [context]="binding.context"
+          (valueChange)="segmentBindingChange(binding.context.pathId, $event)"
+          [value]="segment">
+        </app-segment-co-constraint-binding>
     </ng-container>
 
   </ng-container>

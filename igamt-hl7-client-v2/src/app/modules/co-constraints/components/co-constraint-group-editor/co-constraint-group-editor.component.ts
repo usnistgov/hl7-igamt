@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { combineLatest, Observable, ReplaySubject, throwError } from 'rxjs';
+import * as _ from 'lodash';
+import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, mergeMap, take, tap } from 'rxjs/operators';
 import { ICoConstraintGroup } from 'src/app/modules/shared/models/co-constraint.interface';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
@@ -10,8 +11,6 @@ import { EditorSave, EditorUpdate, IgEditResolverLoad } from '../../../../root-s
 import { selectAllDatatypes, selectCoConstraintGroupsById, selectIgId, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { MessageService } from '../../../core/services/message.service';
-import { ICoConstraintTable } from '../../../segment/model/coconstraints.model';
-import { IAssertion, IPath } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { CoConstraintGroupService } from '../../services/co-constraint-group.service';
@@ -21,7 +20,7 @@ import { CoConstraintGroupService } from '../../services/co-constraint-group.ser
   templateUrl: './co-constraint-group-editor.component.html',
   styleUrls: ['./co-constraint-group-editor.component.scss'],
 })
-export class CoConstraintGroupEditorComponent extends AbstractEditorComponent implements OnInit {
+export class CoConstraintGroupEditorComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
 
   segment$: Observable<ISegment>;
   group$: Observable<ICoConstraintGroup>;
@@ -31,6 +30,7 @@ export class CoConstraintGroupEditorComponent extends AbstractEditorComponent im
   public datatypes: Observable<IDisplayElement[]>;
   public valueSets: Observable<IDisplayElement[]>;
   public igId: Observable<string>;
+  public s_workspace: Subscription;
 
   constructor(
     protected actions: Actions,
@@ -53,19 +53,15 @@ export class CoConstraintGroupEditorComponent extends AbstractEditorComponent im
     this.valueSets = this.store.select(selectValueSetsNodes);
     this.igId = this.store.select(selectIgId);
 
-    this.currentSynchronized$.pipe(
+    this.s_workspace = this.currentSynchronized$.pipe(
       tap((current) => {
-        console.log(current);
-        this.groupSubject.next({
-          ...current.ccGroup,
-        });
+        this.groupSubject.next(_.cloneDeep(current.ccGroup));
         this.segmentSubject.next(current.segment);
       }),
     ).subscribe();
   }
 
   change($event) {
-    console.log($event);
     this.editorChange($event, true);
   }
 
@@ -77,7 +73,7 @@ export class CoConstraintGroupEditorComponent extends AbstractEditorComponent im
           mergeMap((message) => {
             return this.ccService.getById(id).pipe(
               flatMap((resource) => {
-                return [this.messageService.messageToAction(message), new EditorUpdate({ value: { ccGroup: resource, segment }, updateDate: false }), new IgEditResolverLoad(igId)];
+                return [this.messageService.messageToAction(message), new EditorUpdate({ value: { ccGroup: resource, segment }, updateDate: true }), new IgEditResolverLoad(igId)];
               }),
             );
           }),
@@ -96,6 +92,11 @@ export class CoConstraintGroupEditorComponent extends AbstractEditorComponent im
   }
 
   onDeactivate() {
+    this.ngOnDestroy();
+  }
+
+  ngOnDestroy() {
+    this.s_workspace.unsubscribe();
   }
 
   ngOnInit() {

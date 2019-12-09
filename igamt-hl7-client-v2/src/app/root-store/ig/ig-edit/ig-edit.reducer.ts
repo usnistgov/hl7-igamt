@@ -1,13 +1,13 @@
-import {createEntityAdapter, EntityState} from '@ngrx/entity';
-import {IWorkspace} from 'src/app/modules/shared/models/editor.class';
-import {IResource} from 'src/app/modules/shared/models/resource.interface';
-import {IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
-import {IgTOCNodeHelper} from '../../../modules/ig/services/ig-toc-node-helper.service';
-import {Type} from '../../../modules/shared/constants/type.enum';
-import {IContent} from '../../../modules/shared/models/content.interface';
-import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
-import {IRegistry} from '../../../modules/shared/models/registry.interface';
-import {IgEditActions, IgEditActionTypes} from './ig-edit.actions';
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { IWorkspace } from 'src/app/modules/shared/models/editor.class';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
+import { Type } from '../../../modules/shared/constants/type.enum';
+import { IContent } from '../../../modules/shared/models/content.interface';
+import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
+import { IRegistry } from '../../../modules/shared/models/registry.interface';
+import { IgEditActions, IgEditActionTypes } from './ig-edit.actions';
 
 export interface IResourcesState {
   selected: IResource;
@@ -203,17 +203,17 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         coConstraintGroups: igElementAdapter.upsertOne(action.payload.display, state.coConstraintGroups),
       };
 
-      case IgEditActionTypes.ImportResourceFromFileSuccess:
-        if (action.payload.display.type === Type.VALUESET) {
-          return {
-            ...state,
-            document: { ...state.document, valueSetRegistry: action.payload.reg },
-            valueSets: igElementAdapter.upsertOne(action.payload.display, state.valueSets),
-          };
-        }
-        break;
+    case IgEditActionTypes.ImportResourceFromFileSuccess:
+      if (action.payload.display.type === Type.VALUESET) {
+        return {
+          ...state,
+          document: { ...state.document, valueSetRegistry: action.payload.reg },
+          valueSets: igElementAdapter.upsertOne(action.payload.display, state.valueSets),
+        };
+      }
+      break;
 
-      case IgEditActionTypes.CopyResourceSuccess:
+    case IgEditActionTypes.CopyResourceSuccess:
 
       if (action.payload.display.type === Type.VALUESET) {
         return {
@@ -306,7 +306,6 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         ...state,
         workspace: {
           ...state.workspace,
-          changeTime: new Date(),
           current: {
             ...(action.current ? action.current : state.workspace.current),
           },

@@ -162,13 +162,13 @@
         "position": 4
       },
       {
-        "label": "Co-Constraint Groups",
-        "type": "COCONSTRAINTGROUPREGISTRY",
+        "label": "Data Types",
+        "type": "DATATYPEREGISTRY",
         "position": 5
       },
       {
-        "label": "Data Types",
-        "type": "DATATYPEREGISTRY",
+        "label": "Co-Constraint Groups",
+        "type": "COCONSTRAINTGROUPREGISTRY",
         "position": 6
       },
       {

@@ -24,7 +24,7 @@ import {
   OpenConformanceProfilePostDefEditor,
   OpenConformanceProfilePreDefEditor,
 } from './conformance-profile-edit.actions';
-import { OpenConformanceProfileDeltaEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from './conformance-profile-edit.actions';
+import { OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileDeltaEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from './conformance-profile-edit.actions';
 import { IState } from './conformance-profile-edit.reducer';
 
 @Injectable()
@@ -95,6 +95,15 @@ export class ConformanceProfileEditEffects {
   );
 
   ConfPNotFound = 'Could not find conformance profile with ID ';
+
+  @Effect()
+  openMessageCoConstraintBindingsEditor$ = this.editorHelper.openCoConstraintsBindingEditor<IConformanceProfile, OpenConformanceProfileCoConstraintBindingsEditor>(
+    ConformanceProfileEditActionTypes.OpenConformanceProfileCoConstraintBindingsEditor,
+    Type.CONFORMANCEPROFILE,
+    fromIgEdit.selectMessagesById,
+    this.store.select(fromIgEdit.selectedConformanceProfile),
+    this.ConfPNotFound,
+  );
 
   @Effect()
   openMessageStructureEditor$ = this.editorHelper.openStructureEditor<IConformanceProfile, OpenConformanceProfileStructureEditor>(

@@ -109,6 +109,7 @@ export class IgEditEffects {
           ];
         }),
         catchError((error: HttpErrorResponse) => {
+          console.log(error);
           return of(
             new TurnOffLoader(),
             new IgEditResolverLoadFailure(error),

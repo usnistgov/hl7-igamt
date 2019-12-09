@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
@@ -44,7 +44,7 @@ export interface IConformanceProfileEditMetadata {
   templateUrl: './metadata-editor.component.html',
   styleUrls: ['./metadata-editor.component.scss'],
 })
-export class MetadataEditorComponent extends AbstractEditorComponent implements OnInit {
+export class MetadataEditorComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
 
   conformanceProfileMetadata: Observable<IConformanceProfileEditMetadata>;
   formGroup: FormGroup;
@@ -255,6 +255,10 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
   }
 
   onDeactivate(): void {
+    this.ngOnDestroy();
+  }
+
+  ngOnDestroy() {
     this.s_workspace.unsubscribe();
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { combineLatest, forkJoin, Observable, of } from 'rxjs';
-import { filter, map, mergeMap, take, tap } from 'rxjs/operators';
+import { combineLatest, Observable, of } from 'rxjs';
+import { filter, map, mergeMap, take } from 'rxjs/operators';
 import { LoadResourceReferences } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
   selectDatatypesById,

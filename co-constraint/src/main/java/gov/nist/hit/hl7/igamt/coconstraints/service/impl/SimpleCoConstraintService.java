@@ -4,7 +4,9 @@ import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundE
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.repository.CoConstraintGroupRepository;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -92,6 +94,9 @@ public class SimpleCoConstraintService implements CoConstraintService {
         if(segment != null) {
             CoConstraintGroup group = new CoConstraintGroup();
             group.setBaseSegment(segment.getId());
+            DomainInfo di = new DomainInfo();
+            di.setScope(Scope.USER);
+            group.setDomainInfo(di);
             if(segment.getName().equals("OBX")) {
                 this.createOBXCoConstraintGroup(segment, group);
             }
@@ -106,6 +111,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
         Link link = new Link();
         link.setId(group.getId());
         link.setType(Type.COCONSTRAINTGROUP);
+        link.setDomainInfo(group.getDomainInfo());
         link.setPosition(position);
         link.setUsername(username);
         return link;

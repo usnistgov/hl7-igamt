@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Observable } from 'rxjs';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
+import { IPath } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
@@ -10,6 +11,20 @@ import { IHL7v2TreeFilter, RestrictionType } from '../../../shared/services/tree
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 import { CoConstraintGroupService } from '../../services/co-constraint-group.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
+
+export interface IBindingDialogResult {
+  context: {
+    name: string;
+    node: IHL7v2TreeNode;
+    path: IPath;
+  };
+  segment: {
+    name: string;
+    flavorId: string;
+    node: IHL7v2TreeNode;
+    path: IPath;
+  };
+}
 
 @Component({
   selector: 'app-co-constraint-binding-dialog',
@@ -92,17 +107,19 @@ export class CoConstraintBindingDialogComponent implements OnInit {
   }
 
   finish() {
-    this.dialogRef.close({
+    const value: IBindingDialogResult = {
       context: {
         ...this.selectedContextNode,
         name: this.selectedContextNodeName,
       },
       segment: {
         ...this.selectedSegmentNode,
-        segmentId: (this.selectedSegmentNode.node as IHL7v2TreeNode).data.ref.getValue().id,
+        flavorId: (this.selectedSegmentNode.node as IHL7v2TreeNode).data.ref.getValue().id,
         name: this.selectedSegmentNodeName,
       },
-    });
+    };
+
+    this.dialogRef.close(value);
   }
 
   clearContextNode() {

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 })
 public abstract class CoConstraintCell {
     protected ColumnType type;
+    protected String cardinalityMax;
 
     public ColumnType getType() {
         return type;
@@ -24,7 +25,17 @@ public abstract class CoConstraintCell {
         this.type = type;
     }
 
+    public String getCardinalityMax() {
+        return cardinalityMax;
+    }
+
+    public void setCardinalityMax(String cardinalityMax) {
+        this.cardinalityMax = cardinalityMax;
+    }
+
     public CoConstraintCell cloneCell() throws CloneNotSupportedException {
-        return (CoConstraintCell) this.clone();
+        CoConstraintCell cell = (CoConstraintCell) this.clone();
+        cell.setCardinalityMax(cardinalityMax);
+        return cell;
     }
 }

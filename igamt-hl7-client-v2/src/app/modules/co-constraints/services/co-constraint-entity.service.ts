@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
+import { Md5 } from 'md5-typescript';
 import { combineLatest, Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { ICardinalityRange, IHL7v2TreeNode, IResourceKey } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../shared/constants/type.enum';
-import { ICoConstraintVariesCell, INarrativeHeader, ICoConstraintGroupBindingRef } from '../../shared/models/co-constraint.interface';
+import { ICoConstraintGroupBindingRef, ICoConstraintVariesCell, INarrativeHeader } from '../../shared/models/co-constraint.interface';
 import {
   CoConstraintGroupBindingType,
   CoConstraintHeaderType,
@@ -39,13 +40,13 @@ export class CoConstraintEntityService {
 
   constructor() { }
 
-  mergeGroupWithTable(ccTable: ICoConstraintTable, group: ICoConstraintGroup) {
-    this.mergeHeaders(ccTable.headers.selectors, group.headers.selectors);
-    this.mergeHeaders(ccTable.headers.constraints, group.headers.constraints);
-    this.mergeHeaders(ccTable.headers.narratives, group.headers.narratives);
+  mergeGroupWithTable(ccTable: ICoConstraintTable & ICoConstraintGroup, group: ICoConstraintGroup) {
+    this.mergeHeaders(ccTable, ccTable.headers.selectors, group.headers.selectors);
+    this.mergeHeaders(ccTable, ccTable.headers.constraints, group.headers.constraints);
+    this.mergeHeaders(ccTable, ccTable.headers.narratives, group.headers.narratives);
   }
 
-  mergeHeaders(table: ICoConstraintHeader[], group: ICoConstraintHeader[]) {
+  mergeHeaders(collection: ICoConstraintTable & ICoConstraintGroup, table: ICoConstraintHeader[], group: ICoConstraintHeader[]) {
     group.forEach((groupHeader) => {
 
       const header = table.find((tableHeader) => {
@@ -53,17 +54,23 @@ export class CoConstraintEntityService {
       });
 
       if (!header) {
-        table.push(groupHeader);
+        table.push({
+          ...groupHeader,
+          _keep: true,
+        });
+        this.addColumn(groupHeader, collection);
+      } else {
+        header._keep = true;
       }
 
     });
   }
 
-  createCoConstraintGroupBinding(group: ICoConstraintGroup): ICoConstraintGroupBindingRef {
+  createCoConstraintGroupBinding(id: string): ICoConstraintGroupBindingRef {
     return {
       requirement: this.createEmptyRequirements(),
       type: CoConstraintGroupBindingType.REF,
-      refId: group.id,
+      refId: id,
     };
   }
 
@@ -97,6 +104,7 @@ export class CoConstraintEntityService {
       this.createHeaderForField(segment, obx2, repository, false, CoConstraintColumnType.DATATYPE),
       this.createHeaderForField(segment, obx5, repository, true, CoConstraintColumnType.VARIES),
     ).pipe(
+      take(1),
       map(([_obx3, _obx2, _obx5]) => {
         table.headers.selectors.push(_obx3);
         table.headers.constraints.push(_obx2);
@@ -186,11 +194,11 @@ export class CoConstraintEntityService {
     );
   }
 
-  createNarrativeHeader(title: string, key: string): INarrativeHeader {
+  createNarrativeHeader(title: string): INarrativeHeader {
     return {
       type: CoConstraintHeaderType.NARRATIVE,
       title,
-      key,
+      key: Md5.init(title),
     };
   }
 
@@ -198,6 +206,7 @@ export class CoConstraintEntityService {
     return combineLatest(
       parent,
       repository.fetchResource(elmRef.type, elmRef.id)).pipe(
+        take(1),
         map(([p, resource]) => {
           return {
             key: pathId,
@@ -218,8 +227,7 @@ export class CoConstraintEntityService {
       );
   }
 
-  addColumn(header: ICoConstraintHeader, collection: ICoConstraintTable & ICoConstraintGroup) {
-    const cell = this.createEmptyCell((header as IDataElementHeader).columnType);
+  getCoConstraintRowList(collection: ICoConstraintTable & ICoConstraintGroup): ICoConstraint[] {
     let list = [];
     if (collection.groups) {
       (collection as ICoConstraintTable).groups.filter((groupBinding) => {
@@ -231,6 +239,12 @@ export class CoConstraintEntityService {
       });
     }
     list = list.concat(collection.coConstraints);
+    return list;
+  }
+
+  addColumn(header: ICoConstraintHeader, collection: ICoConstraintTable & ICoConstraintGroup) {
+    const cell = this.createEmptyCell((header as IDataElementHeader).columnType);
+    const list = this.getCoConstraintRowList(collection);
     list.forEach(
       (cc) => {
         cc.cells[header.key] = _.cloneDeep(cell);

@@ -1,4 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Dropdown } from 'primeng/primeng';
 import { IDisplayElement } from '../../models/display-element.interface';
 
 @Component({
@@ -12,14 +13,24 @@ export class ResourceDropdownComponent implements OnInit {
     [id: string]: IDisplayElement;
   } = {};
   _resources: IDisplayElement[];
+  filtered: IDisplayElement[];
   _id: string;
-
+  _filterValue: string;
   @Input()
   placeholder: string;
   @Input()
   name: string;
   @Input()
   filter: boolean;
+  @Input()
+  set filterBy(value: string) {
+    this._filterValue = value;
+    this.filterList();
+  }
+
+  get filterBy(): string {
+    return this._filterValue;
+  }
 
   @Output()
   idChange: EventEmitter<string> = new EventEmitter<string>();
@@ -33,18 +44,24 @@ export class ResourceDropdownComponent implements OnInit {
     return this._id;
   }
 
+  @ViewChild(Dropdown)
+  dropdown: Dropdown;
+
   @Output()
   valueChange: EventEmitter<IDisplayElement> = new EventEmitter<IDisplayElement>();
 
   @Input()
   set resources(list: IDisplayElement[]) {
     this.resourceMap = {};
-    this._resources = list;
+    this._resources = [...list];
+    this.filtered = [...list];
     list.forEach((elm) => {
       this.resourceMap[elm.id] = elm;
     });
     this.initSelection();
+    this.filterList();
   }
+
   get resources() {
     return this._resources;
   }
@@ -55,6 +72,12 @@ export class ResourceDropdownComponent implements OnInit {
     this._id = $event.id;
     this.idChange.emit($event.id);
     this.valueChange.emit($event);
+  }
+
+  filterList() {
+    if (this.filterBy && this._resources) {
+      this.filtered = this._resources.filter((elm) => elm.fixedName === this.filterBy);
+    }
   }
 
   initSelection() {

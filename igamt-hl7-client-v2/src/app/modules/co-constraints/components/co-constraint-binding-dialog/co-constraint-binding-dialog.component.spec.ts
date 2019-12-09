@@ -8,7 +8,7 @@ describe('CoConstraintBindingDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CoConstraintBindingDialogComponent ]
+      declarations: [ CoConstraintBindingDialogComponent ],
     })
     .compileComponents();
   }));

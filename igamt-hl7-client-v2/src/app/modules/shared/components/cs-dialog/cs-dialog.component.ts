@@ -87,10 +87,14 @@ export class CsDialogComponent implements OnDestroy {
     this.predicateMode = data.predicateMode || data.assertionMode;
     this.assertionMode = data.assertionMode;
     this.title = data.title;
+    this.excludePaths = data.excludePaths || [];
 
     this.predicateElementId = data.predicateElementId;
     if (this.predicateMode && this.predicateElementId) {
-      this.excludePaths = [this.predicateElementId];
+      this.excludePaths = [
+        ...this.excludePaths,
+        this.predicateElementId,
+      ];
       this.contextFilter.restrictions.push({
         criterion: RestrictionType.PATH,
         allow: false,

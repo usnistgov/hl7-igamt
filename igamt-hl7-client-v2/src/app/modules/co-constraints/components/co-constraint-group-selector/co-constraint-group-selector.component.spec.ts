@@ -8,7 +8,7 @@ describe('CoConstraintGroupSelectorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CoConstraintGroupSelectorComponent ]
+      declarations: [ CoConstraintGroupSelectorComponent ],
     })
     .compileComponents();
   }));

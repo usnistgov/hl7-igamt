@@ -1,7 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Guid } from 'guid-typescript';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 
 @Component({
@@ -20,7 +19,7 @@ export class NarrativeHeaderDialogComponent implements OnInit {
   }
 
   done() {
-    this.dialogRef.close(this.ccEntityService.createNarrativeHeader(this.title, Guid.create().toString()));
+    this.dialogRef.close(this.ccEntityService.createNarrativeHeader(this.title));
   }
 
   ngOnInit() {

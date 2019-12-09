@@ -2,7 +2,31 @@ import { ICardinalityRange } from '../components/hl7-v2-tree/hl7-v2-tree.compone
 import { Type } from '../constants/type.enum';
 import { IValuesetBinding } from './binding.interface';
 import { ICoConstraint } from './co-constraint.interface';
+import { IAssertion, IPath } from './cs.interface';
 import { IResource } from './resource.interface';
+
+export interface IStructureElementRef {
+  pathId: string;
+  name: string;
+  path: IPath;
+}
+
+export interface ICoConstraintBindingContext {
+  context: IStructureElementRef;
+  bindings: ICoConstraintBindingSegment[];
+}
+
+export interface ICoConstraintBindingSegment {
+  segment: IStructureElementRef;
+  flavorId: string;
+  name: string;
+  tables: ICoConstraintTableConditionalBinding[];
+}
+
+export interface ICoConstraintTableConditionalBinding {
+  condition: IAssertion;
+  value: ICoConstraintTable;
+}
 
 export interface ICoConstraintTable {
   id?: string;
@@ -44,6 +68,7 @@ export interface ICoConstraintHeaders {
 export interface ICoConstraintHeader {
   type: CoConstraintHeaderType;
   key: string;
+  _keep?: boolean;
 }
 
 export interface IDataElementHeader extends ICoConstraintHeader {
@@ -78,6 +103,7 @@ export interface ICoConstraintCells {
 
 export interface ICoConstraintCell {
   type: CoConstraintColumnType;
+  cardinalityMax?: string;
 }
 
 export interface ICoConstraintCodeCell extends ICoConstraintCell {
