@@ -431,20 +431,20 @@ public class VerificationServiceImpl implements VerificationService {
     else positionPath = positionPath + "." + position;
     
     
-    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.max", "Field max should be integer or *", positionPath + "", "HIGH"));
+    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.max", "Field max should be integer or *", positionPath + "", "HIGH"));
     if(usage != null) {
-      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "HIGH"));
+      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "HIGH"));
     }
     
-    if(usage.equals(Usage.CAB) && !this.hasPredicate(sr.getId(), sebs)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "HIGH"));
+    if(usage.equals(Usage.CAB) && !this.hasPredicate(sr.getId(), sebs)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "HIGH"));
     
 
       
-      if(ref == null || ref.getId() != null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.ref", "SegmentRef should be required", positionPath + "", "HIGH"));
+      if(ref == null || ref.getId() != null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", positionPath + " SegmentRef info is mising", positionPath + "", "HIGH"));
       else {
         Segment refSeg = this.segmentService.findById(ref.getId());
         
-        if(refSeg == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.ref", "Segment is missing on DB", positionPath + "", "HIGH"));
+        if(refSeg == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", "Segment is missing on DB", positionPath + "", "HIGH"));
       }
    
     
@@ -545,7 +545,7 @@ public class VerificationServiceImpl implements VerificationService {
     CodeUsage usage = c.getUsage();
     
     if(!this.isNotNullNotEmpty(value)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.value", "value should be required.", c.getValue() + "", "HIGH"));
-    if(description == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.description", "description should be required.", c.getValue() + "", "HIGH"));
+    if(description == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.description", "Code " + c.getValue() + "'s description is missing.", c.getValue() + "", "HIGH"));
     if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.codeSystem", "codeSystem should be required.", c.getValue() + "", "HIGH"));
     if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.usage", "usage should be required.", c.getValue() + "", "HIGH"));
     
@@ -581,7 +581,7 @@ public class VerificationServiceImpl implements VerificationService {
     if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.usage", "Component usage should be required.", position + "", "HIGH"));
     
     if(this.isLengthAllowedComponent(c)) {
-      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component length should be required.", position + "", "HIGH"));
+      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component" + position + " length should be required.", position + "", "HIGH"));
       if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component length should defined using a single way.", position + "", "HIGH"));
       if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.maxLength", "Component maxLength is not defined.", position + "", "HIGH"));
       if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.minLength", "Component minLength is not defined.", position + "", "HIGH"));

@@ -75,6 +75,7 @@ import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.comp
 import { UsageDialogComponent } from './components/usage-dialog/usage-dialog.component';
 import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.component';
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
+import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
@@ -136,6 +137,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddResourceComponent,
     SelectResourceIdsComponent,
     ExportXmlDialogComponent,
+    VerifyIgDialogComponent,
     MinNumberDirective,
     MaxNumberDirective,
     DeltaTreeComponent,
@@ -264,6 +266,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ValueSetStructureComponent,
     AddResourceComponent,
     ExportXmlDialogComponent,
+    VerifyIgDialogComponent,
     MinNumberDirective,
     MaxNumberDirective,
     DeltaTreeComponent,
@@ -273,7 +276,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AlertsContainerComponent,
     DynamicMappingComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, ImportCsvValuesetComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, ImportCsvValuesetComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, VerifyIgDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {
