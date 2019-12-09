@@ -186,6 +186,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	            dateTimeComponentDefinition.getDescription() != null
 	                ? dateTimeComponentDefinition.getDescription()
 	                : ""));
+	        dateTimeComponentDefinitionElement.addAttribute(new Attribute("format",
+		            dateTimeComponentDefinition.getFormat() != null
+		                ? dateTimeComponentDefinition.getFormat()
+		                : ""));
 	        dateTimeComponentDefinitionElement.addAttribute(new Attribute("name",
 	            dateTimeComponentDefinition.getName() != null ? dateTimeComponentDefinition.getName()
 	                : ""));

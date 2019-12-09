@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IgService } from '../../../ig/services/ig.service';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
@@ -16,6 +16,7 @@ export class ExportDialogComponent implements OnInit {
   configlist: IExportConfigurationItemList[];
   selectedConfig: IExportConfigurationItemList;
   overrides: BehaviorSubject<any>;
+  overrides$: Observable<any>;
   igId: string;
   toc: any;
   customized: boolean;
@@ -26,14 +27,20 @@ export class ExportDialogComponent implements OnInit {
     private igService: IgService,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
-    this.configlist = data.configurations;
-    this.selectedConfig = this.configlist.find( (x) => {
-      return x.defaultConfig;
-    },
-  );
+    this.overrides = new BehaviorSubject<any>(undefined);
+    this.overrides$ = this.overrides.asObservable();
     this.igId = data.igId;
     this.toc = data.toc;
-    this.overrides = new BehaviorSubject<any>(undefined);
+    this.configlist = data.configurations;
+    this.selectedConfig = this.configlist.find( (x) => {
+        return x.defaultConfig;
+      },
+    );
+
+    if (this.selectedConfig) {
+      this.change(this.selectedConfig);
+    }
+
   }
 
   customize() {
@@ -66,11 +73,14 @@ export class ExportDialogComponent implements OnInit {
         });
       }),
     ).subscribe();
+    console.log('customize clicked');
+
   }
 
   change(configuration) {
     this.igService.getExportFirstDecision(this.igId, configuration.id).pipe(
       map((decision) => {
+        console.log(decision);
         this.overrides.next(decision);
         this.customized = false;
       }),
