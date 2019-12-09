@@ -8,8 +8,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
   styleUrls: ['./verify-ig-dialog.component.css'],
 })
 export class VerifyIgDialogComponent implements OnInit {
-  private reports: any;
-  private errorCounts: number[];
+  reports: any;
+  errorCounts: number[];
   constructor(private http: HttpClient, public dialogRef: MatDialogRef<VerifyIgDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IVerifyIgDialogData) {
     this.reports = null;
