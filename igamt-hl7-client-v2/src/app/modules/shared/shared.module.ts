@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { ExtendedModule } from '@angular/flex-layout';
@@ -14,13 +15,14 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
 import {
-  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
+  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
 } from 'primeng/primeng';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
 import { AlertsContainerComponent } from '../core/components/alerts-container/alerts-container.component';
 import { MessageService } from '../core/services/message.service';
+import { AddCoConstraintGroupComponent } from './components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
@@ -60,6 +62,7 @@ import { NewPasswordFromComponent } from './components/new-password-from/new-pas
 import { PatternDialogComponent } from './components/pattern-dialog/pattern-dialog.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
+import { ResourceDropdownComponent } from './components/resource-dropdown/resource-dropdown.component';
 import { ResourcePickerComponent } from './components/resource-picker/resource-picker.component';
 import { ScopeBadgeComponent } from './components/scope-badge/scope-badge.component';
 import { SelectDatatypesComponent } from './components/select-datatypes/select-datatypes.component';
@@ -147,6 +150,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AlertsContainerComponent,
     DynamicMappingComponent,
     DeriveDialogComponent,
+    AddCoConstraintGroupComponent,
+    ResourceDropdownComponent,
     ImportCsvValuesetComponent,
   ],
   providers: [
@@ -191,6 +196,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     OrganizationChartModule,
     PanelModule,
     AutoCompleteModule,
+    DragDropModule,
   ],
   exports: [
     CommonModule,
@@ -275,8 +281,10 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExportToolComponent,
     AlertsContainerComponent,
     DynamicMappingComponent,
+    AddCoConstraintGroupComponent,
+    ResourceDropdownComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, ImportCsvValuesetComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, VerifyIgDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent, AddCoConstraintGroupComponent, ImportCsvValuesetComponent, VerifyIgDialogComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

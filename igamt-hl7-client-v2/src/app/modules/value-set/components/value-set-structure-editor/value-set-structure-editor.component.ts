@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { SelectItem } from 'primeng/api';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 import { LoadValueSet } from 'src/app/root-store/value-set-edit/value-set-edit.actions';
 import { selectIgId, selectValueSetById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
@@ -88,6 +88,10 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
   }
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
     return selectValueSetById;
+  }
+
+  isDTM(): Observable<boolean> {
+    return of(false);
   }
 
 }

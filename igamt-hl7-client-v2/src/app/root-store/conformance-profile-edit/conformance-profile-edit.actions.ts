@@ -13,6 +13,7 @@ export enum ConformanceProfileEditActionTypes {
   OpenConformanceProfileDeltaEditor = '[ConformanceProfileEdit] Open Conformance Profile Delta Editor',
   OpenConformanceProfileStructureEditor = '[ConformanceProfileEdit] Open Conformance Profile Structure Editor',
   OpenConformanceProfileMetadataEditor = '[ConformanceProfileEdit] Open Conformance Profile Metadata Editor',
+  OpenConformanceProfileCoConstraintBindingsEditor = '[ConformanceProfileEdit] Open Conformance Profile CoConstraint Bindings Editor',
   OpenCPConformanceStatementEditor = '[ConformanceProfileEdit] Open Conformance Profile Conformance Statement Editor',
 }
 
@@ -61,6 +62,16 @@ export class OpenConformanceProfileStructureEditor extends OpenEditorBase {
   }
 }
 
+export class OpenConformanceProfileCoConstraintBindingsEditor extends OpenEditorBase {
+  readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfileCoConstraintBindingsEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IEditorMetadata,
+  }) {
+    super();
+  }
+}
+
 export class OpenConformanceProfileMetadataEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfileMetadataEditor;
   constructor(readonly payload: {
@@ -99,5 +110,6 @@ export type ConformanceProfileEditActions =
   | OpenConformanceProfileDeltaEditor
   | OpenConformanceProfileMetadataEditor
   | OpenCPConformanceStatementEditor
+  | OpenConformanceProfileCoConstraintBindingsEditor
   | LoadConformanceProfileSuccess
   | LoadConformanceProfileFailure;

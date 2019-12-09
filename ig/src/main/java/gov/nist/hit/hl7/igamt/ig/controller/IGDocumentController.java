@@ -13,9 +13,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
+import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
+import gov.nist.hit.hl7.igamt.coconstraints.service.impl.SimpleCoConstraintService;
+import gov.nist.hit.hl7.igamt.display.model.*;
+
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.*;
+import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -66,6 +73,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.display.model.CloneMode;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
@@ -156,11 +164,13 @@ public class IGDocumentController extends BaseController {
   @Autowired
   VerificationService verificationService;
 
+  @Autowired
+  SimpleCoConstraintService coConstraintService;
+
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
   private static final String VALUESET_DELETE = "VALUESET_DELETE";
   private static final String CONFORMANCE_PROFILE_DELETE = "CONFORMANCE_PROFILE_DELETE";
-
   private static final String TABLE_OF_CONTENT_UPDATED = "TABLE_OF_CONTENT_UPDATED";
   private static final String METATDATA_UPDATED = "METATDATA_UPDATED";
 
@@ -230,7 +240,6 @@ public class IGDocumentController extends BaseController {
     result = segmentService.getSegmentFlavorsOptions(ids, s, viewScope);
     return result;
   }
-
 
 
   /**
@@ -1021,6 +1030,40 @@ public class IGDocumentController extends BaseController {
         ig.getUpdateDate(), info);
   }
 
+  @RequestMapping(value = "/api/igdocuments/{id}/co-constraint-group/create", method = RequestMethod.POST, produces = {
+          "application/json" })
+  public ResponseMessage<CoConstraintGroupCreateResponse> createCoConstraint(
+          @PathVariable("id") String id,
+          @RequestBody CoConstraintGroupCreateWrapper coConstraintGroupCreateWrapper,
+          Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, SegmentNotFoundException {
+    String username = authentication.getPrincipal().toString();
+    Ig ig = findIgById(id);
+    CoConstraintGroup group = this.coConstraintService.createCoConstraintGroupPrototype(coConstraintGroupCreateWrapper.getBaseSegment());
+    group.setUsername(username);
+    group.setType(Type.COCONSTRAINTGROUP);
+    group.setCreationDate(new Date());
+    group.setUpdateDate(new Date());
+    group.setName(coConstraintGroupCreateWrapper.getName());
+    group.setDocumentId(id);
+    this.coConstraintService.saveCoConstraintGroup(group);
+    ig.getCoConstraintGroupRegistry().getChildren().add(this.coConstraintService.createIgLink(group, ig.getCoConstraintGroupRegistry().getChildren().size(), username));
+
+    this.igService.save(ig);
+
+    CoConstraintGroupCreateResponse response = new CoConstraintGroupCreateResponse(group.getId(), ig.getCoConstraintGroupRegistry(), this.displayInfoService.convertCoConstraintGroup(group));
+
+    return new ResponseMessage<CoConstraintGroupCreateResponse>(Status.SUCCESS, "", "CoConstraint Group Created Successfully", ig.getId(), false,
+            ig.getUpdateDate(), response);
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{documentId}/coconstraints/group/segment/{id}", method = RequestMethod.GET, produces = {"application/json" })
+  public List<DisplayElement> getCoConstraintGroupForSegment(@PathVariable("id") String id,
+                                                             @PathVariable("documentId") String documentId,
+                                                             Authentication authentication) throws CoConstraintGroupNotFoundException {
+    List<CoConstraintGroup> groups = this.coConstraintService.findByBaseSegmentAndDocumentIdAndUsername(id, documentId, authentication.getName());
+    return groups.stream().map(this.displayInfoService::convertCoConstraintGroup).collect(Collectors.toList());
+  }
+
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/add", method = RequestMethod.POST, produces = {
   "application/json" })
   public ResponseMessage<IGDisplayInfo> addDatatypes(@PathVariable("id") String id,
@@ -1035,7 +1078,6 @@ public class IGDocumentController extends BaseController {
         if (datatype != null) {
           Datatype clone = datatype.clone();
           clone.getDomainInfo().setScope(Scope.USER);
-
           clone.setUsername(username);
           clone.setName(datatype.getName());
           clone.setExt(elm.getExt());
@@ -1375,14 +1417,11 @@ public class IGDocumentController extends BaseController {
     return convFile;
   }
 
-
-
   @RequestMapping(value = "/api/igdocuments/{id}/grand", method = RequestMethod.GET, produces = {"application/json"})
   public @ResponseBody IgDataModel getIgGrandObject(@PathVariable("id") String id, Authentication authentication) throws Exception {
 
     return this.igService.generateDataModel(findIgById(id));
   }
-
 
   @RequestMapping(value = "/api/igdocuments/exportTests", method = RequestMethod.GET, produces = {"application/json"})
   public void  test(HttpServletResponse response, Authentication authentication) throws Exception {
@@ -1399,12 +1438,8 @@ public class IGDocumentController extends BaseController {
     return str.replaceAll(" ", "-").replaceAll("\\*", "-").replaceAll("\"", "-").replaceAll(":", "-").replaceAll(";", "-").replaceAll("=", "-").replaceAll(",", "-");
   }
 
-
   @RequestMapping(value = "/api/export/ig/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-
-  public void exportXML(@PathVariable("id") String id, Authentication authentication,FormData formData,
-      HttpServletResponse response)
-          throws Exception {
+  public void exportXML(@PathVariable("id") String id, Authentication authentication, FormData formData, HttpServletResponse response) throws Exception {
     IgDataModel igModel = this.igService.generateDataModel(findIgById(id));		
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -1419,8 +1454,7 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{ig}/predicate/{id}", method = RequestMethod.GET,
       produces = {"application/json"})
   public @ResponseBody
-  Predicate getPredicate(@PathVariable("ig") String ig, @PathVariable("id") String id,
-      Authentication authentication) throws IGNotFoundException, PredicateNotFoundException {
+  Predicate getPredicate(@PathVariable("ig") String ig, @PathVariable("id") String id, Authentication authentication) throws IGNotFoundException, PredicateNotFoundException {
     Ig igdocument = findIgById(ig);
     if(igdocument.getUsername().equals(authentication.getName())) {
       return this.predicateRepository.findById(id).orElseThrow(() -> {

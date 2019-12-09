@@ -5,7 +5,7 @@ import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError 
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import { selectBindingConfig } from '../../../../root-store/config/config.reducer';
-import { EditorSave, EditorUpdate, LoadResourceReferences } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { EditorSave, EditorUpdate, LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
   selectAllDatatypes,
   selectAllSegments,
@@ -19,6 +19,7 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
+import { IResource } from '../../../shared/models/resource.interface';
 import { IChange } from '../../../shared/models/save-change';
 import { IBindingContext } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
@@ -79,12 +80,11 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   }
 
   ngOnDestroy(): void {
-    console.log('unsubscribe');
     this.workspace_s.unsubscribe();
   }
 
   onDeactivate() {
-    console.log('ON DEACTIVATE');
+    this.ngOnDestroy();
   }
 
   change(change: IChange) {
@@ -113,7 +113,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
           mergeMap((message) => {
             return this.getById(id).pipe(
               flatMap((resource) => {
-                return [this.messageService.messageToAction(message), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new EditorUpdate({ value: { changes: {}, resource }, updateDate: false })];
+                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new EditorUpdate({ value: { changes: {}, resource }, updateDate: false })];
               }),
             );
           }),
@@ -124,7 +124,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   }
 
   abstract saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message>;
-  abstract getById(id: string): Observable<T>;
+  abstract getById(id: string): Observable<IResource>;
 
   convert(changes: IStructureChanges): IChange[] {
     let c = [];

@@ -26,6 +26,7 @@ export class BindingSelectorComponent<T> implements OnInit {
   bindingStrengthOptions = [
     { label: 'Required', value: IValuesetStrength.R }, { label: 'Suggested', value: IValuesetStrength.S }, { label: 'Unspecified', value: IValuesetStrength.U },
   ];
+  locationInfo: IBindingLocationInfo;
   private selectedValueSets: IValueSetBindingDisplay[] = [];
 
   constructor(
@@ -36,6 +37,7 @@ export class BindingSelectorComponent<T> implements OnInit {
     this.selectedBindingType = this.data.existingBindingType ? this.data.existingBindingType : IBindingType.VALUESET;
     this.selectedSingleCode = this.data.selectedSingleCode;
     this.selectedValueSets = this.data.selectedValueSetBinding;
+    this.locationInfo = this.data.locationInfo;
   }
 
   submit() {

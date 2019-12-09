@@ -11,6 +11,10 @@ export interface IDatatype extends IResource {
   components?: IComponent[];
 }
 
+export interface IDTM extends IDatatype {
+  constraints: any;
+}
+
 export interface IComponent extends ISubStructElement {
   constantValue: string;
   comments: IComment[];

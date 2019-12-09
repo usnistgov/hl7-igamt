@@ -1,4 +1,5 @@
 import { IResourceBinding } from './binding.interface';
+import { ICoConstraintBindingContext } from './co-constraint.interface';
 import { IComment } from './comment.interface';
 import { IRef } from './ref.interface';
 import { IResource } from './resource.interface';
@@ -24,6 +25,7 @@ export interface IConformanceProfile extends IResource {
   profileType: ProfileType;
   role: Role;
   profileIdentifier: IMessageProfileIdentifier[];
+  coConstraintsBindings: ICoConstraintBindingContext[];
   children: IMsgStructElement[];
   binding?: IResourceBinding;
 }

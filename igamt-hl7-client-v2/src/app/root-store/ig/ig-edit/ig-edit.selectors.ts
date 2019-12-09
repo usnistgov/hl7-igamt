@@ -1,24 +1,25 @@
-import {Dictionary} from '@ngrx/entity';
-import {createSelector} from '@ngrx/store';
-import {IResourceMetadata} from 'src/app/modules/core/components/resource-metadata-editor/resource-metadata-editor.component';
-import {IConformanceProfile} from 'src/app/modules/shared/models/conformance-profile.interface';
-import {IWorkspace} from 'src/app/modules/shared/models/editor.class';
-import {IResource} from 'src/app/modules/shared/models/resource.interface';
-import {ISegment} from 'src/app/modules/shared/models/segment.interface';
-import {IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
-import {IgTOCNodeHelper} from '../../../modules/ig/services/ig-toc-node-helper.service';
-import {Scope} from '../../../modules/shared/constants/scope.enum';
-import {Type} from '../../../modules/shared/constants/type.enum';
-import {Status} from '../../../modules/shared/models/abstract-domain.interface';
-import {IContent} from '../../../modules/shared/models/content.interface';
-import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
-import {ILink} from '../../../modules/shared/models/link.interface';
-import {IRegistry} from '../../../modules/shared/models/registry.interface';
-import {IValueSet} from '../../../modules/shared/models/value-set.interface';
-import {selectIgEdit} from '../ig.reducer';
-import {ITitleBarMetadata} from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
-import {IDatatype} from './../../../modules/shared/models/datatype.interface';
-import {igElementAdapter, IResourcesState, IState, loadedResourceAdapter} from './ig-edit.reducer';
+import { Dictionary } from '@ngrx/entity';
+import { createSelector } from '@ngrx/store';
+import { IResourceMetadata } from 'src/app/modules/core/components/resource-metadata-editor/resource-metadata-editor.component';
+import { IConformanceProfile } from 'src/app/modules/shared/models/conformance-profile.interface';
+import { IWorkspace } from 'src/app/modules/shared/models/editor.class';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { ISegment } from 'src/app/modules/shared/models/segment.interface';
+import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
+import { Scope } from '../../../modules/shared/constants/scope.enum';
+import { Type } from '../../../modules/shared/constants/type.enum';
+import { Status } from '../../../modules/shared/models/abstract-domain.interface';
+import { ICoConstraintGroup } from '../../../modules/shared/models/co-constraint.interface';
+import { IContent } from '../../../modules/shared/models/content.interface';
+import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
+import { ILink } from '../../../modules/shared/models/link.interface';
+import { IRegistry } from '../../../modules/shared/models/registry.interface';
+import { IValueSet } from '../../../modules/shared/models/value-set.interface';
+import { selectIgEdit } from '../ig.reducer';
+import { ITitleBarMetadata } from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
+import { IDatatype } from './../../../modules/shared/models/datatype.interface';
+import { igElementAdapter, IResourcesState, IState, loadedResourceAdapter } from './ig-edit.reducer';
 
 export const {
   selectAll,
@@ -115,6 +116,17 @@ export const selectedDatatype = createSelector(
   (state: IResource): IDatatype => {
     if (state && state.type === Type.DATATYPE) {
       return state as IDatatype;
+    } else {
+      return undefined;
+    }
+  },
+);
+
+export const selectedCoConstraintGroup = createSelector(
+  selectSelectedResource,
+  (state: IResource): ICoConstraintGroup => {
+    if (state && state.type === Type.COCONSTRAINTGROUP) {
+      return state as ICoConstraintGroup;
     } else {
       return undefined;
     }
@@ -326,6 +338,12 @@ export const selectConformanceProfileRegistry = createSelector(
     return state.conformanceProfileRegistry;
   },
 );
+export const selectCoConstraintGroupRegistry = createSelector(
+  selectIgDocument,
+  (state: IgDocument) => {
+    return state.coConstraintGroupRegistry;
+  },
+);
 
 export const selectSegments = createSelector(
   selectIgEdit,
@@ -454,6 +472,18 @@ export const selectAllMessages = createSelector(
   selectAll,
 );
 
+export const selectCoConstraintGroups = createSelector(
+  selectIgEdit,
+  (state: IState) => {
+    return state.coConstraintGroups;
+  },
+);
+
+export const selectCoConstraintGroupEntites = createSelector(
+  selectCoConstraintGroups,
+  selectEntities,
+);
+
 export const selectMessagesEntites = createSelector(
   selectMessages,
   selectEntities,
@@ -490,12 +520,32 @@ export const selectDatatypesNodes = createSelector(
   },
 );
 
+export const selectCoConstraintGroupNodes = createSelector(
+  selectCoConstraintGroupEntites,
+  selectCoConstraintGroupRegistry,
+  (nodes: Dictionary<IDisplayElement>, registry: IRegistry) => {
+    return IgTOCNodeHelper.sortRegistry(nodes, registry);
+  },
+);
+
 export const selectMessagesNodes = createSelector(
   selectMessagesEntites,
   selectConformanceProfileRegistry,
   (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
     return registry.children.sort((a: ILink, b: ILink) => a.position - b.position).map((link) => messages[link.id]);
   },
+);
+
+export const selectCoConstraintGroupsById = createSelector(
+  selectCoConstraintGroupEntites,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
+);
+
+export const selectAllCoConstraintGroups = createSelector(
+  selectCoConstraintGroups,
+  selectAll,
 );
 
 export const selectStructure = createSelector(
@@ -510,14 +560,16 @@ export const selectToc = createSelector(
   selectMessagesNodes,
   selectSegmentsNodes,
   selectDatatypesNodes,
-  selectValueSetsNodes, (
+  selectValueSetsNodes,
+  selectCoConstraintGroupNodes, (
     structure: IContent[],
     messageNodes: IDisplayElement[],
     segmentsNodes: IDisplayElement[],
     datatypesNodes: IDisplayElement[],
     valueSetsNodes: IDisplayElement[],
+    coConstraintGroupNodes: IDisplayElement[],
 ) => {
-  return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
+  return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes);
 },
 );
 
@@ -526,14 +578,16 @@ export const selectProfileTree = createSelector(
   selectMessagesNodes,
   selectSegmentsNodes,
   selectDatatypesNodes,
-  selectValueSetsNodes, (
+  selectValueSetsNodes,
+  selectCoConstraintGroupNodes, (
     structure: IContent[],
     messageNodes: IDisplayElement[],
     segmentsNodes: IDisplayElement[],
     datatypesNodes: IDisplayElement[],
     valueSetsNodes: IDisplayElement[],
+    coConstraintGroupNodes: IDisplayElement[],
 ) => {
-  return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
+  return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes);
 },
 );
 

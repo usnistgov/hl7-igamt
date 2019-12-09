@@ -13,13 +13,14 @@ import { IResource } from '../../models/resource.interface';
 import { ConformanceStatementService } from '../../services/conformance-statement.service';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../services/resource-repository.service';
+import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { CsPropositionComponent } from '../cs-proposition/cs-proposition.component';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 import { BinaryOperator, Pattern, Statement } from '../pattern-dialog/cs-pattern.domain';
 import { PatternDialogComponent } from '../pattern-dialog/pattern-dialog.component';
 import { IAssertion, IIfThenAssertion } from './../../models/cs.interface';
 
-export type AssertionContrainer = IAssertionConformanceStatement | IFreeTextConformanceStatement | IPredicate;
+export type AssertionContainer = IAssertionConformanceStatement | IFreeTextConformanceStatement | IPredicate;
 
 export enum CsTab {
   SIMPLE = 'Simple',
@@ -39,10 +40,10 @@ export class CsDialogComponent implements OnDestroy {
   activeTab: CsTab;
   csType = ConstraintType;
   tabType = CsTab;
-  cs: AssertionContrainer;
+  cs: AssertionContainer;
   resource: IResource;
   statementsValidity: boolean[];
-  backUp: AssertionContrainer;
+  backUp: AssertionContainer;
   resourceType: Type;
   title: string;
   hideAdvanced: boolean;
@@ -53,9 +54,20 @@ export class CsDialogComponent implements OnDestroy {
   showContext: boolean;
   contextName: string;
   predicateMode: boolean;
+  assertionMode: boolean;
   predicateElementId: string;
   excludePaths: string[];
   options = ConditionalUsageOptions;
+  contextFilter: IHL7v2TreeFilter = {
+    hide: false,
+    restrictions: [
+      {
+        criterion: RestrictionType.TYPE,
+        allow: true,
+        value: [Type.CONFORMANCEPROFILE, Type.GROUP],
+      },
+    ],
+  };
 
   @ViewChildren(CsPropositionComponent) propositions: QueryList<CsPropositionComponent>;
   @ViewChild('csForm', { read: NgForm }) form: NgForm;
@@ -72,12 +84,28 @@ export class CsDialogComponent implements OnDestroy {
     this.ifThenPattern.putOne(new Statement('D', 0, null, 0), 0);
     this.ifThenPattern.putOne(new Statement('D', 0, null, 0), 1);
 
-    this.predicateMode = data.predicateMode;
+    this.predicateMode = data.predicateMode || data.assertionMode;
+    this.assertionMode = data.assertionMode;
     this.title = data.title;
+    this.excludePaths = data.excludePaths || [];
 
     this.predicateElementId = data.predicateElementId;
     if (this.predicateMode && this.predicateElementId) {
-      this.excludePaths = [this.predicateElementId];
+      this.excludePaths = [
+        ...this.excludePaths,
+        this.predicateElementId,
+      ];
+      this.contextFilter.restrictions.push({
+        criterion: RestrictionType.PATH,
+        allow: false,
+        combine: RestrictionCombinator.ENFORCE,
+        value: this.excludePaths.map((path) => {
+          return {
+            path,
+            excludeChildren: true,
+          };
+        }),
+      });
     }
 
     this.s_resource = data.resource.subscribe(
@@ -99,7 +127,13 @@ export class CsDialogComponent implements OnDestroy {
             },
           ];
           this.context = this.structure;
-          this.conformanceStatement = data.payload;
+
+          if (!this.assertionMode) {
+            this.conformanceStatement = data.payload;
+          } else {
+            this.setAssertion(data.assertion, data.context);
+          }
+
         });
       },
     );
@@ -187,7 +221,7 @@ export class CsDialogComponent implements OnDestroy {
     }
   }
 
-  set conformanceStatement(cs: IAssertionConformanceStatement | IFreeTextConformanceStatement | IPredicate) {
+  set conformanceStatement(cs: AssertionContainer) {
     if (cs) {
       if (cs.type === ConstraintType.ASSERTION) {
         this.pattern = this.csService.getCsPattern((cs as IAssertionConformanceStatement).assertion);
@@ -201,6 +235,25 @@ export class CsDialogComponent implements OnDestroy {
     } else {
       this.activeTab = undefined;
     }
+  }
+
+  setAssertion(assertion: IAssertion, context: IPath) {
+    this.cs = {
+      identifier: undefined,
+      type: undefined,
+      assertion: undefined,
+      context,
+    };
+
+    if (assertion) {
+      this.pattern = this.csService.getCsPattern(assertion);
+      this.activeTab = this.getTabForPattern(this.pattern);
+      this.cs.assertion = assertion;
+      this.cs.type = ConstraintType.ASSERTION;
+      this.backUp = _.cloneDeep(this.cs);
+    }
+
+    this.setContext(context);
   }
 
   updateAssertionDescription(assertion: IAssertion) {
@@ -255,10 +308,11 @@ export class CsDialogComponent implements OnDestroy {
   changeTab(item: CsTab) {
     this.statementsValidity = [];
     let payload;
+    let csTemp;
     switch (item) {
       case CsTab.FREE:
         payload = this.predicateMode ? this.csService.getFreePredicate() : this.csService.getFreeConformanceStatement();
-        this.cs = {
+        csTemp = {
           ...this.cs,
           ...payload,
           assertion: undefined,
@@ -268,7 +322,7 @@ export class CsDialogComponent implements OnDestroy {
         break;
       case CsTab.SIMPLE:
         payload = this.predicateMode ? this.csService.getAssertionPredicate(new Statement('D', 0, null, 0)) : this.csService.getAssertionConformanceStatement(new Statement('D', 0, null, 0));
-        this.cs = {
+        csTemp = {
           ...this.cs,
           ...payload.cs,
           identifier: this.cs ? this.cs.identifier : undefined,
@@ -279,7 +333,7 @@ export class CsDialogComponent implements OnDestroy {
         break;
       case CsTab.CONDITIONAL:
         payload = this.predicateMode ? this.csService.getAssertionPredicate(this.ifThenPattern) : this.csService.getAssertionConformanceStatement(this.ifThenPattern);
-        this.cs = {
+        csTemp = {
           ...this.cs,
           ...payload.cs,
           identifier: this.cs ? this.cs.identifier : undefined,
@@ -297,7 +351,7 @@ export class CsDialogComponent implements OnDestroy {
           payload = this.predicateMode ? this.csService.getAssertionPredicate(this.pattern.assertion) : this.csService.getAssertionConformanceStatement(this.pattern.assertion);
         }
 
-        this.cs = {
+        csTemp = {
           ...this.cs,
           ...payload ? payload.cs : undefined,
           identifier: this.cs ? this.cs.identifier : undefined,
@@ -307,6 +361,7 @@ export class CsDialogComponent implements OnDestroy {
         };
         break;
     }
+    this.cs = csTemp;
     this.activeTab = item;
   }
 

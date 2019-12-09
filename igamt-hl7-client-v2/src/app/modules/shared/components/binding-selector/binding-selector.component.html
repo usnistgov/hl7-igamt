@@ -1,7 +1,7 @@
 <h2 mat-dialog-title>Edit Binding</h2>
 <mat-dialog-content style="max-height: 800px; overflow-y:scroll">
   <div class="fixed-element">
-  <div>
+  <div *ngIf="locationInfo?.allowSingleCode && locationInfo?.allowValueSets">
     <p-radioButton [(ngModel)]="selectedBindingType" label="Value set" name="vs" value="VALUESET"></p-radioButton>
 
     <p-radioButton [(ngModel)]="selectedBindingType" [style]="{'margin-left': '50px'}" label="Single code" name="sg"

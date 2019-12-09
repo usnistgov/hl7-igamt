@@ -262,9 +262,7 @@
       <div style="height: 200px; width: 250px;">
         <app-structure-tree
           [tree]="tree"
-          [filter]="{
-            paths : excludePaths
-          }"
+          [filter]="treeFilter"
           [resourceType]="resourceType"
           [repository]="repository"
           (selection)="targetElement($event)"
@@ -298,9 +296,7 @@
       <div style="height: 200px; width: 250px;">
         <app-structure-tree
           [tree]="tree"
-          [filter]="{
-            paths : excludePaths
-          }"
+          [filter]="treeFilter"
           [resourceType]="resourceType"
           [repository]="repository"
           (selection)=" comparativeElement($event)"

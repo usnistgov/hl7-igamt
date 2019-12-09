@@ -35,7 +35,6 @@ export class BindingService {
       );
     })).pipe(
       map((vsList) => {
-        console.log(vsList);
         return vsList.map((vsB) => {
           const [binding, display] = vsB;
           return {

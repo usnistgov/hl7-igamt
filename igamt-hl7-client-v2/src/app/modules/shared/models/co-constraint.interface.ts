@@ -1,20 +1,47 @@
+import { ICardinalityRange } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { IValuesetBinding } from './binding.interface';
 import { ICoConstraint } from './co-constraint.interface';
+import { IAssertion, IPath } from './cs.interface';
+import { IResource } from './resource.interface';
 
-export interface ICoConstraintCollection {
-  id?: string;
-  coconstraintMode: CoConstraintMode;
-  baseSegment: string;
-  headers: ICoConstraintHeaders;
-  coconstraints: ICoConstraint[];
+export interface IStructureElementRef {
+  pathId: string;
+  name: string;
+  path: IPath;
 }
 
-export interface ICoConstraintTable extends ICoConstraintCollection {
+export interface ICoConstraintBindingContext {
+  context: IStructureElementRef;
+  bindings: ICoConstraintBindingSegment[];
+}
+
+export interface ICoConstraintBindingSegment {
+  segment: IStructureElementRef;
+  flavorId: string;
+  name: string;
+  tables: ICoConstraintTableConditionalBinding[];
+}
+
+export interface ICoConstraintTableConditionalBinding {
+  condition: IAssertion;
+  value: ICoConstraintTable;
+}
+
+export interface ICoConstraintTable {
+  id?: string;
+  type: CoConstraintMode;
+  baseSegment: string;
+  headers: ICoConstraintHeaders;
+  coConstraints: ICoConstraint[];
   groups: ICoConstraintGroupBinding[];
 }
 
-export interface ICoConstraintGroup extends ICoConstraintCollection {
+export interface ICoConstraintGroup extends IResource {
+  id: string;
+  baseSegment: string;
+  headers: ICoConstraintHeaders;
+  coConstraints: ICoConstraint[];
   name: string;
 }
 
@@ -29,7 +56,7 @@ export interface ICoConstraintGroupBindingRef extends ICoConstraintGroupBinding 
 
 export interface ICoConstraintGroupBindingContained extends ICoConstraintGroupBinding {
   name: string;
-  coconstraints: ICoConstraint[];
+  coConstraints: ICoConstraint[];
 }
 
 export interface ICoConstraintHeaders {
@@ -41,10 +68,12 @@ export interface ICoConstraintHeaders {
 export interface ICoConstraintHeader {
   type: CoConstraintHeaderType;
   key: string;
+  _keep?: boolean;
 }
 
 export interface IDataElementHeader extends ICoConstraintHeader {
   name: string;
+  cardinality: boolean;
   columnType: CoConstraintColumnType;
   elementInfo: IDataElementHeaderInfo;
 }
@@ -52,8 +81,9 @@ export interface IDataElementHeader extends ICoConstraintHeader {
 export interface IDataElementHeaderInfo {
   version: string;
   parent: string;
-  elementName: string;
+  datatype: string;
   location: number;
+  cardinality: ICardinalityRange;
   type: Type;
 }
 
@@ -73,6 +103,7 @@ export interface ICoConstraintCells {
 
 export interface ICoConstraintCell {
   type: CoConstraintColumnType;
+  cardinalityMax?: string;
 }
 
 export interface ICoConstraintCodeCell extends ICoConstraintCell {
