@@ -2,7 +2,7 @@ import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import { selectBindingConfig } from '../../../../root-store/config/config.reducer';
 import { EditorSave, EditorUpdate, LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
@@ -84,7 +84,6 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   }
 
   onDeactivate() {
-    this.ngOnDestroy();
   }
 
   change(change: IChange) {
