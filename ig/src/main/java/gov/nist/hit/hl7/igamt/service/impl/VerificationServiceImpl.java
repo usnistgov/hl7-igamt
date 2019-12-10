@@ -431,20 +431,20 @@ public class VerificationServiceImpl implements VerificationService {
     else positionPath = positionPath + "." + position;
     
     
-    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.max", "Field max should be integer or *", positionPath + "", "HIGH"));
+    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.max", "Field max should be integer or *", positionPath + "", "ERROR"));
     if(usage != null) {
-      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "HIGH"));
+      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "ERROR"));
     }
     
-    if(usage.equals(Usage.CAB) && !this.hasPredicate(sr.getId(), sebs)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "HIGH"));
+    if(usage.equals(Usage.CAB) && !this.hasPredicate(sr.getId(), sebs)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "ERROR"));
     
 
       
-      if(ref == null || ref.getId() != null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", positionPath + " SegmentRef info is mising", positionPath + "", "HIGH"));
+      if(ref == null || ref.getId() != null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", positionPath + " SegmentRef info is mising", positionPath + "", "FATAL"));
       else {
         Segment refSeg = this.segmentService.findById(ref.getId());
         
-        if(refSeg == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", "Segment is missing on DB", positionPath + "", "HIGH"));
+        if(refSeg == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", "Segment is missing on DB", positionPath + "", "ERROR"));
       }
    
     
@@ -469,14 +469,14 @@ public class VerificationServiceImpl implements VerificationService {
     if (positionPath == null) path = position + "";
     else positionPath = positionPath + "." + position;
     
-    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.name", "Name should be required.", positionPath + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.name", "Name should be required.", positionPath + "", "ERROR"));
     
-    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.max", "Field max should be integer or *", positionPath + "", "HIGH"));
+    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.max", "Field max should be integer or *", positionPath + "", "ERROR"));
     if(usage != null) {
-      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "HIGH"));
+      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "ERROR"));
     }
     
-    if(usage.equals(Usage.CAB) && !this.hasPredicate(group.getId(), sebs)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "HIGH"));
+    if(usage.equals(Usage.CAB) && !this.hasPredicate(group.getId(), sebs)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "ERROR"));
     
     if(name != null) {
       if (path == null) path = name;
@@ -505,7 +505,7 @@ public class VerificationServiceImpl implements VerificationService {
    */
   private void checkingFields(Segment segment, Set<Field> fields, DTSegVerificationResult result) {
     if(fields == null || fields.size() == 0) {
-      result.getErrors().add(new IgamtObjectError("STRUCTURE", "fields", "Segment should have one or more fields.", null, "HIGH"));
+      result.getErrors().add(new IgamtObjectError("STRUCTURE", "fields", "Segment should have one or more fields.", null, "ERROR"));
     } else {
       fields.forEach(f -> this.checkingField(segment, f, result));
     }
@@ -526,7 +526,7 @@ public class VerificationServiceImpl implements VerificationService {
    */
   private void checkingComponents(ComplexDatatype cDt, Set<Component> components, DTSegVerificationResult result) {
     if(components == null || components.size() == 0) {
-      result.getErrors().add(new IgamtObjectError("STRUCTURE", "components", "Complex Datatype should have one or more components.", null, "HIGH"));
+      result.getErrors().add(new IgamtObjectError("STRUCTURE", "components", "Complex Datatype should have one or more components.", null, "ERROR"));
     } else {
       components.forEach(c -> this.checkingComponent(cDt, c, result));
     }
@@ -544,14 +544,14 @@ public class VerificationServiceImpl implements VerificationService {
     String codeSystem = c.getCodeSystem();
     CodeUsage usage = c.getUsage();
     
-    if(!this.isNotNullNotEmpty(value)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.value", "value should be required.", c.getValue() + "", "HIGH"));
-    if(description == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.description", "Code " + c.getValue() + "'s description is missing.", c.getValue() + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.codeSystem", "codeSystem should be required.", c.getValue() + "", "HIGH"));
-    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.usage", "usage should be required.", c.getValue() + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(value)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.value", "value should be required.", c.getValue() + "", "ERROR"));
+    if(description == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.description", "Code " + c.getValue() + "'s description is missing.", c.getValue() + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.codeSystem", "codeSystem should be required.", c.getValue() + "", "ERROR"));
+    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.usage", "usage should be required.", c.getValue() + "", "ERROR"));
     
     valueset.getCodes().forEach(otherC -> {
       if(!otherC.getId().equals(c.getId())){
-        if ((otherC.getValue() + "-" + otherC.getCodeSystem()).equals(c.getValue() + "-" + c.getCodeSystem())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.value", "The code value and codesys pair is duplicated.", c.getValue() + "", "HIGH"));
+        if ((otherC.getValue() + "-" + otherC.getCodeSystem()).equals(c.getValue() + "-" + c.getCodeSystem())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.value", "The code value and codesys pair is duplicated.", c.getValue() + "", "ERROR"));
       }
     });
   }
@@ -574,38 +574,38 @@ public class VerificationServiceImpl implements VerificationService {
     String maxLength = c.getMaxLength();
     String minLength = c.getMinLength();
 
-    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.position", "Component position should be greater than 0", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.name", "Name should be required.", position + "", "HIGH"));
-    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "Component Ref should be required.", position + "", "HIGH"));
-    if(type == null || !type.equals(Type.COMPONENT)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.type", "Component type should be 'COMPONENT'.", position + "", "HIGH"));
-    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.usage", "Component usage should be required.", position + "", "HIGH"));
+    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.position", "Component position should be greater than 0", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.name", "Name should be required.", position + "", "ERROR"));
+    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "Component Ref should be required.", position + "", "ERROR"));
+    if(type == null || !type.equals(Type.COMPONENT)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.type", "Component type should be 'COMPONENT'.", position + "", "ERROR"));
+    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.usage", "Component usage should be required.", position + "", "ERROR"));
     
     if(this.isLengthAllowedComponent(c)) {
-      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component" + position + " length should be required.", position + "", "HIGH"));
-      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component length should defined using a single way.", position + "", "HIGH"));
-      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.maxLength", "Component maxLength is not defined.", position + "", "HIGH"));
-      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.minLength", "Component minLength is not defined.", position + "", "HIGH"));
-      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.minLength", "Component minLength is not integer.", position + "", "HIGH"));
-      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.maxLength", "Component maxLength should be integer or *", position + "", "HIGH"));   
+      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component" + position + " length should be required.", position + "", "WARNING"));
+      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component length should defined using a single way.", position + "", "ERROR"));
+      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.maxLength", "Component maxLength is not defined.", position + "", "ERROR"));
+      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.minLength", "Component minLength is not defined.", position + "", "ERROR"));
+      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.minLength", "Component minLength is not integer.", position + "", "ERROR"));
+      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.maxLength", "Component maxLength should be integer or *", position + "", "ERROR"));   
     }
     
     cDt.getComponents().forEach(otherC -> {
       if(!otherC.getId().equals(c.getId())){
-        if (otherC.getPosition() == c.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.position", "The component position is duplicated.", position + "", "HIGH"));
-        if (otherC.getName().equals(c.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.name", "The component name is duplicated.", position + "", "HIGH"));
+        if (otherC.getPosition() == c.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.position", "The component position is duplicated.", position + "", "ERROR"));
+        if (otherC.getName().equals(c.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.name", "The component name is duplicated.", position + "", "ERROR"));
       }
     });
     
-    if(usage.equals(Usage.CAB) && !this.hasPredicate(cDt, c.getId())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "HIGH"));
+    if(usage.equals(Usage.CAB) && !this.hasPredicate(cDt, c.getId())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "ERROR"));
     
     if(ref != null && ref.getId() != null) {
       Datatype childDt = this.datatypeService.findById(ref.getId());
-      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "The component child DT is missing.", position + "", "HIGH"));
+      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "The component child DT is missing.", position + "", "ERROR"));
             
       if(this.isPrimitiveDatatype(childDt)) {
         
       } else {
-        if(this.isNotNullNotEmpty(c.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "HIGH"));
+        if(this.isNotNullNotEmpty(c.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "ERROR"));
       }
       
       if (this.isValueSetOrSingleCodeAllowedComponent(c, childDt)) {
@@ -647,43 +647,43 @@ public class VerificationServiceImpl implements VerificationService {
     String max = f.getMax();
   
 
-    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.position", "Field position should be greater than 0", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.name", "Name should be required.", position + "", "HIGH"));
-    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.ref", "Field Ref should be required.", position + "", "HIGH"));
-    if(type == null || !type.equals(Type.FIELD)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.type", "Field type should be 'FIELD'.", position + "", "HIGH"));
-    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.usage", "Field usage should be required.", position + "", "HIGH"));
+    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.position", "Field position should be greater than 0", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.name", "Name should be required.", position + "", "ERROR"));
+    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.ref", "Field Ref should be required.", position + "", "ERROR"));
+    if(type == null || !type.equals(Type.FIELD)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.type", "Field type should be 'FIELD'.", position + "", "ERROR"));
+    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.usage", "Field usage should be required.", position + "", "ERROR"));
     
     if(this.isLengthAllowedComponent(f)) {
-      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.length", "Field length should be required.", position + "", "HIGH"));
-      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.length", "Field length should defined using a single way.", position + "", "HIGH"));
-      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.maxLength", "Field maxLength is not defined.", position + "", "HIGH"));
-      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.minLength", "Field minLength is not defined.", position + "", "HIGH"));
-      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.minLength", "Field minLength is not integer.", position + "", "HIGH"));
-      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.maxLength", "Field maxLength should be integer or *", position + "", "HIGH"));   
+      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.length", "Field length should be required.", position + "", "ERROR"));
+      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.length", "Field length should defined using a single way.", position + "", "ERROR"));
+      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.maxLength", "Field maxLength is not defined.", position + "", "ERROR"));
+      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.minLength", "Field minLength is not defined.", position + "", "ERROR"));
+      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.minLength", "Field minLength is not integer.", position + "", "ERROR"));
+      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.maxLength", "Field maxLength should be integer or *", position + "", "ERROR"));   
     }
    
-    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.max", "Field max should be integer or *", position + "", "HIGH"));
+    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.max", "Field max should be integer or *", position + "", "ERROR"));
     if(usage != null) {
-      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.min", "Field min should be greater than 0 if Usage is R", position + "", "HIGH"));
+      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.min", "Field min should be greater than 0 if Usage is R", position + "", "ERROR"));
     }
     
     segment.getChildren().forEach(otherF -> {
       if(!otherF.getId().equals(f.getId())){
-        if (otherF.getPosition() == f.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.position", "The field position is duplicated.", position + "", "HIGH"));
-        if (otherF.getName().equals(f.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.name", "The field name is duplicated.", position + "", "HIGH"));
+        if (otherF.getPosition() == f.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.position", "The field position is duplicated.", position + "", "ERROR"));
+        if (otherF.getName().equals(f.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.name", "The field name is duplicated.", position + "", "ERROR"));
       }
     });
     
-    if(usage.equals(Usage.CAB) && !this.hasPredicate(segment, f.getId())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "HIGH"));
+    if(usage.equals(Usage.CAB) && !this.hasPredicate(segment, f.getId())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "ERROR"));
     
     if(ref != null && ref.getId() != null) {
       Datatype childDt = this.datatypeService.findById(ref.getId());
-      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "The field child DT is missing.", position + "", "HIGH"));
+      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "The field child DT is missing.", position + "", "ERROR"));
             
       if(this.isPrimitiveDatatype(childDt)) {
         
       } else {
-        if(this.isNotNullNotEmpty(f.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "HIGH"));
+        if(this.isNotNullNotEmpty(f.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "ERROR"));
       }
       
       if (this.isValueSetOrSingleCodeAllowedField(f, childDt)) {
@@ -713,12 +713,12 @@ public class VerificationServiceImpl implements VerificationService {
     String codeSystem = internalSingleCode.getCodeSystem();
     String valueSetId = internalSingleCode.getValueSetId();
     
-    if(!this.isNotNullNotEmpty(code))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode Code is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode CodeSystem is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(valueSetId)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode valueset is missing", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(code))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode Code is not valid", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode CodeSystem is not valid", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(valueSetId)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode valueset is missing", position + "", "ERROR"));
     
     if (valueSetId != null) {
-      if(this.valuesetService.findById(valueSetId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode valueset is missing", position + "", "HIGH"));
+      if(this.valuesetService.findById(valueSetId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode valueset is missing", position + "", "ERROR"));
     }
   }
   
@@ -733,12 +733,12 @@ public class VerificationServiceImpl implements VerificationService {
     String codeSystem = internalSingleCode.getCodeSystem();
     String valueSetId = internalSingleCode.getValueSetId();
     
-    if(!this.isNotNullNotEmpty(code))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode Code is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode CodeSystem is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(valueSetId)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode valueset is missing", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(code))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode Code is not valid", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode CodeSystem is not valid", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(valueSetId)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode valueset is missing", position + "", "ERROR"));
     
     if (valueSetId != null) {
-      if(this.valuesetService.findById(valueSetId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode valueset is missing", position + "", "HIGH"));
+      if(this.valuesetService.findById(valueSetId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode valueset is missing", position + "", "ERROR"));
     }
   }
 
@@ -750,8 +750,8 @@ public class VerificationServiceImpl implements VerificationService {
     String value = externalSingleCode.getValue();
     String codeSystem = externalSingleCode.getCodeSystem();
     
-    if(!this.isNotNullNotEmpty(value))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.externalSingleCode", "The component's external SingleCode Code is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.externalSingleCode", "The component's external SingleCode CodeSystem is not valid", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(value))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.externalSingleCode", "The component's external SingleCode Code is not valid", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.externalSingleCode", "The component's external SingleCode CodeSystem is not valid", position + "", "ERROR"));
   }
 
   /**
@@ -764,8 +764,8 @@ public class VerificationServiceImpl implements VerificationService {
     String value = externalSingleCode.getValue();
     String codeSystem = externalSingleCode.getCodeSystem();
     
-    if(!this.isNotNullNotEmpty(value))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.externalSingleCode", "The component's external SingleCode Code is not valid", position + "", "HIGH"));
-    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.externalSingleCode", "The component's external SingleCode CodeSystem is not valid", position + "", "HIGH"));
+    if(!this.isNotNullNotEmpty(value))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.externalSingleCode", "The component's external SingleCode Code is not valid", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.externalSingleCode", "The component's external SingleCode CodeSystem is not valid", position + "", "ERROR"));
     
   }
   
@@ -777,9 +777,9 @@ public class VerificationServiceImpl implements VerificationService {
     for (ValuesetBinding vb : valuesetBindings) {
       for(String vsId : vb.getValueSets()){
         if(vsId == null) {
-          result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.valuesetBindings", "The component's valueset is null", position + "", "HIGH"));   
+          result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.valuesetBindings", "The component's valueset is null", position + "", "ERROR"));   
         }else {
-          if(this.valuesetService.findById(vsId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.valuesetBindings", "The component's valueset is missing", position + "", "HIGH"));   
+          if(this.valuesetService.findById(vsId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.valuesetBindings", "The component's valueset is missing", position + "", "ERROR"));   
         }
       }
     }
@@ -795,9 +795,9 @@ public class VerificationServiceImpl implements VerificationService {
     for (ValuesetBinding vb : valuesetBindings) {
       for(String vsId : vb.getValueSets()){
         if(vsId == null) {
-          result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.valuesetBindings", "The field's valueset is null", position + "", "HIGH"));   
+          result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.valuesetBindings", "The field's valueset is null", position + "", "ERROR"));   
         }else {
-          if(this.valuesetService.findById(vsId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.valuesetBindings", "The field's valueset is missing", position + "", "HIGH"));   
+          if(this.valuesetService.findById(vsId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.valuesetBindings", "The field's valueset is missing", position + "", "ERROR"));   
         }
       }
     }
@@ -957,22 +957,22 @@ public class VerificationServiceImpl implements VerificationService {
       int numberOfCodes = valueset.getNumberOfCodes(); 
       DomainInfo domainInfo = valueset.getDomainInfo();
       
-      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(bId)) result.getErrors().add(new IgamtObjectError("METADATA", "bindingIdentifier", "bindingIdentifier should be required.", null, "HIGH"));
-      if (name == null) result.getErrors().add(new IgamtObjectError("METADATA", "name", "name should be required.", null, "HIGH"));
-      if (extensibility == null) result.getErrors().add(new IgamtObjectError("METADATA", "extensibility", "extensibility should be required.", null, "HIGH"));
-      if (stability == null) result.getErrors().add(new IgamtObjectError("METADATA", "stability", "stability should be required.", null, "HIGH"));
-      if (contentDefinition == null) result.getErrors().add(new IgamtObjectError("METADATA", "contentDefinition", "contentDefinition should be required.", null, "HIGH"));
+      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(bId)) result.getErrors().add(new IgamtObjectError("METADATA", "bindingIdentifier", "bindingIdentifier should be required.", null, "ERROR"));
+      if (name == null) result.getErrors().add(new IgamtObjectError("METADATA", "name", "name should be required.", null, "ERROR"));
+      if (extensibility == null) result.getErrors().add(new IgamtObjectError("METADATA", "extensibility", "extensibility should be required.", null, "ERROR"));
+      if (stability == null) result.getErrors().add(new IgamtObjectError("METADATA", "stability", "stability should be required.", null, "ERROR"));
+      if (contentDefinition == null) result.getErrors().add(new IgamtObjectError("METADATA", "contentDefinition", "contentDefinition should be required.", null, "ERROR"));
       
       if(domainInfo == null) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "ERROR"));
       } else {
-        if (domainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "HIGH"));
+        if (domainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "ERROR"));
       }
       
       if(valueset.getCodes() == null || valueset.getCodes().size() == 0) {
-        if(numberOfCodes != 0) result.getErrors().add(new IgamtObjectError("METADATA", "numberOfCodes", "numberOfCodes is wrong", null, "HIGH"));
+        if(numberOfCodes != 0) result.getErrors().add(new IgamtObjectError("METADATA", "numberOfCodes", "numberOfCodes is wrong", null, "ERROR"));
       } else {
-        if(numberOfCodes != valueset.getCodes().size()) result.getErrors().add(new IgamtObjectError("METADATA", "numberOfCodes", "numberOfCodes is wrong", null, "HIGH"));
+        if(numberOfCodes != valueset.getCodes().size()) result.getErrors().add(new IgamtObjectError("METADATA", "numberOfCodes", "numberOfCodes is wrong", null, "ERROR"));
       }
       
     }
@@ -993,15 +993,15 @@ public class VerificationServiceImpl implements VerificationService {
       DomainInfo dtDomainInfo = datatype.getDomainInfo();
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(dtName)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "ERROR"));
       }
       
       if(dtDomainInfo == null) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "ERROR"));
       } else {
-        if (dtDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "HIGH"));
+        if (dtDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "ERROR"));
         if (!dtDomainInfo.getScope().equals(Scope.HL7STANDARD) && !this.isNotNullNotEmptyNotWhiteSpaceOnly(dtExt)) {
-          result.getErrors().add(new IgamtObjectError("METADATA", "ext", "Non-STD datatype should have extension name.", null, "HIGH"));
+          result.getErrors().add(new IgamtObjectError("METADATA", "ext", "Non-STD datatype should have extension name.", null, "ERROR"));
         }        
       }
     }
@@ -1020,15 +1020,15 @@ public class VerificationServiceImpl implements VerificationService {
       DomainInfo dtDomainInfo = segment.getDomainInfo();
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(dtName)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "ERROR"));
       }
       
       if(dtDomainInfo == null) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "ERROR"));
       } else {
-        if (dtDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "HIGH"));
+        if (dtDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "ERROR"));
         if (!dtDomainInfo.getScope().equals(Scope.HL7STANDARD) && !this.isNotNullNotEmptyNotWhiteSpaceOnly(dtExt)) {
-          result.getErrors().add(new IgamtObjectError("METADATA", "ext", "Non-STD datatype should have extension name.", null, "HIGH"));
+          result.getErrors().add(new IgamtObjectError("METADATA", "ext", "Non-STD datatype should have extension name.", null, "ERROR"));
         }        
       }
     }
@@ -1049,25 +1049,25 @@ public class VerificationServiceImpl implements VerificationService {
       String event = conformanceProfile.getEvent();
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(cpName)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "ERROR"));
       }
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(structId)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "structId", "structId should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "structId", "structId should be required.", null, "ERROR"));
       }
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(mType)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "messageType", "messageType should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "messageType", "messageType should be required.", null, "ERROR"));
       }
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(event)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "triggerEvent", "triggerEvent should be required.", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "triggerEvent", "triggerEvent should be required.", null, "ERROR"));
       }
       
       if(cpDomainInfo == null) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "HIGH"));
+        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "ERROR"));
       } else {
-        if (cpDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "HIGH"));     
+        if (cpDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "ERROR"));     
       }
     }
   }
@@ -1127,13 +1127,13 @@ public class VerificationServiceImpl implements VerificationService {
       
       if(dynamicMappingInfo != null && dynamicMappingInfo.getItems() != null) {
         for(DynamicMappingItem item : dynamicMappingInfo.getItems()) {
-          if(this.isNotNullNotEmptyNotWhiteSpaceOnly(item.getValue())) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.value", "The dynamicmpaping value is invalid", item.getValue() + "", "HIGH"));
+          if(this.isNotNullNotEmptyNotWhiteSpaceOnly(item.getValue())) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.value", "The dynamicmpaping value is invalid", item.getValue() + "", "ERROR"));
           String datatypeId = item.getDatatypeId();
           
-          if(datatypeId == null) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.datatypeId", "The dynamicmpaping dt id is null", item.getValue() + "", "HIGH"));
+          if(datatypeId == null) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.datatypeId", "The dynamicmpaping dt id is null", item.getValue() + "", "ERROR"));
           else {
             Datatype dt = this.datatypeService.findById(datatypeId);
-            if(dt == null) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.datatypeId", "The dynamicmpaping datattype is missing in the DB", item.getValue() + "", "HIGH"));
+            if(dt == null) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.datatypeId", "The dynamicmpaping datattype is missing in the DB", item.getValue() + "", "ERROR"));
           }
         }
       }
@@ -1179,10 +1179,10 @@ public class VerificationServiceImpl implements VerificationService {
         String id = l.getId();
         
         Valueset vs = this.valuesetService.findById(id);
-        if(vs == null) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.id", "The valueset is missing in the DB.", id + "", "HIGH"));
+        if(vs == null) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.id", "The valueset is missing in the DB.", id + "", "ERROR"));
         else {
-          if(vs.getDomainInfo().getScope() == null || !vs.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.scope", "The valueset scope info is wrong", id + "", "HIGH"));
-          if(vs.getDomainInfo().getVersion() == null || !vs.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.version", "The valueset version info is wrong", id + "", "HIGH"));
+          if(vs.getDomainInfo().getScope() == null || !vs.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.scope", "The valueset scope info is wrong", id + "", "ERROR"));
+          if(vs.getDomainInfo().getVersion() == null || !vs.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.version", "The valueset version info is wrong", id + "", "ERROR"));
         
           report.addValuesetVerificationResult(this.verifyValueset(vs));
         }
@@ -1199,10 +1199,10 @@ public class VerificationServiceImpl implements VerificationService {
         
         Datatype dt = this.datatypeService.findById(id);
         
-        if(dt == null) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.id", "The datatype is missing in the DB.", id + "", "HIGH"));
+        if(dt == null) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.id", "The datatype is missing in the DB.", id + "", "ERROR"));
         else {
-          if(dt.getDomainInfo().getScope() == null || !dt.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.scope", "The datatype scope info is wrong", id + "", "HIGH"));
-          if(dt.getDomainInfo().getVersion() == null || !dt.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.version", "The datatype version info is wrong", id + "", "HIGH"));
+          if(dt.getDomainInfo().getScope() == null || !dt.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.scope", "The datatype scope info is wrong", id + "", "ERROR"));
+          if(dt.getDomainInfo().getVersion() == null || !dt.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.version", "The datatype version info is wrong", id + "", "ERROR"));
         
           report.addDatatypeVerificationResult(this.verifyDatatype(dt));
         }
@@ -1218,10 +1218,10 @@ public class VerificationServiceImpl implements VerificationService {
         
         Segment s = this.segmentService.findById(id);
         
-        if(s == null) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.id", "The segment is missing in the DB.", id + "", "HIGH"));
+        if(s == null) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.id", "The segment is missing in the DB.", id + "", "ERROR"));
         else {
-          if(s.getDomainInfo().getScope() == null || !s.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.scope", "The segment scope info is wrong", id + "", "HIGH"));
-          if(s.getDomainInfo().getVersion() == null || !s.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.version", "The segment version info is wrong", id + "", "HIGH"));
+          if(s.getDomainInfo().getScope() == null || !s.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.scope", "The segment scope info is wrong", id + "", "ERROR"));
+          if(s.getDomainInfo().getVersion() == null || !s.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.version", "The segment version info is wrong", id + "", "ERROR"));
         
           report.addSegmentVerificationResult(this.verifySegment(s));
         }
@@ -1237,10 +1237,10 @@ public class VerificationServiceImpl implements VerificationService {
         
         ConformanceProfile cp = this.conformanceProfileService.findById(id);
         
-        if(cp == null) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.id", "The conformanceprofile is missing in the DB.", id + "", "HIGH"));
+        if(cp == null) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.id", "The conformanceprofile is missing in the DB.", id + "", "ERROR"));
         else {
-          if(cp.getDomainInfo().getScope() == null || !cp.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.scope", "The conformanceprofile scope info is wrong", id + "", "HIGH"));
-          if(cp.getDomainInfo().getVersion() == null || !cp.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.version", "The conformanceprofile version info is wrong", id + "", "HIGH"));
+          if(cp.getDomainInfo().getScope() == null || !cp.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.scope", "The conformanceprofile scope info is wrong", id + "", "ERROR"));
+          if(cp.getDomainInfo().getVersion() == null || !cp.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.version", "The conformanceprofile version info is wrong", id + "", "ERROR"));
         
           report.addConformanceProfileVerificationResult(this.verifyConformanceProfile(cp));
         }
