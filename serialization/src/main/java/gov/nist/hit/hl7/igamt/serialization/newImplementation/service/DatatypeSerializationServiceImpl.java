@@ -178,6 +178,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	@Override
 	public Element serializeDateTimeDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel, DatatypeExportConfiguration datatypeExportConfiguration) {
 	    DateTimeDatatype dateTimeDatatype =  (DateTimeDatatype) datatypeDataModel.getModel();
+	    if(dateTimeDatatype
+            .getDateTimeConstraints() !=null && dateTimeDatatype
+            .getDateTimeConstraints().getDateTimeComponentDefinitions() !=null)
 	    for (DateTimeComponentDefinition dateTimeComponentDefinition : dateTimeDatatype
 	        .getDateTimeConstraints().getDateTimeComponentDefinitions()) {
 	      Element dateTimeComponentDefinitionElement = new Element("DateTimeComponentDefinition");

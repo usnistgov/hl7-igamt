@@ -5,7 +5,7 @@ spring:
     allow-bean-definition-overriding: true
 
 server: 
-    port: 8091
+    port: 9000
     servlet:
       context-path: /
     error:

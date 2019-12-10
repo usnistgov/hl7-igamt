@@ -34,6 +34,11 @@ public interface ExportConfigurationService {
   public void deleteById(String id);
   public ExportConfiguration create(String username);
   public ExportConfiguration getDefaultConfig(boolean defaultConfig, String username);
+  /**
+   * @param id
+   * @param authentication
+   */
+  void selectDefault(String id, Authentication authentication);
 
 
 

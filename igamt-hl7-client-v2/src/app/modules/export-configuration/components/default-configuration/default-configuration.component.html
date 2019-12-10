@@ -24,7 +24,7 @@
       </div>
       <div class="list-content">
         <ng-container *ngFor="let item of filteredList()" >
-          <div [contextMenu]="contextMenu" class="config-list-item" (click)="open(item.id)" [ngClass]="{'config-list-item-selected': item.id === currentConfiguration?.id, 'config-list-item-default': item.defaultConfig === true }">
+          <div [contextMenu]="contextMenu" class="config-list-item" (click)="open(item.id)" [ngClass]="{'config-list-item-selected': item.id === currentConfiguration?.id, 'config-list-item-default': isDefault(item) }">
             {{item.configName}}
           </div>
           <context-menu #contextMenu>

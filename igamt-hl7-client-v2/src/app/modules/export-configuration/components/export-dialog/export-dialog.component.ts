@@ -36,7 +36,12 @@ export class ExportDialogComponent implements OnInit {
         return x.defaultConfig;
       },
     );
-
+    if (!this.selectedConfig) {
+      this.selectedConfig = this.configlist.find( (x) => {
+          return x.original;
+        },
+      );
+    }
     if (this.selectedConfig) {
       this.change(this.selectedConfig);
     }
