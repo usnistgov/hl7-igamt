@@ -178,4 +178,12 @@ export class DefaultConfigurationComponent implements OnInit {
   ngOnInit() {
     this.loadExportConfigurationList();
   }
+
+  isDefault(item: IExportConfigurationItemList) {
+    if (item.original) {
+      return this.configList.findIndex((x) => x.defaultConfig)  < 0;
+    } else {
+      return item.defaultConfig;
+    }
+  }
 }
