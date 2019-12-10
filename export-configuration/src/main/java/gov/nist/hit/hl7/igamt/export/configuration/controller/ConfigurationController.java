@@ -121,7 +121,11 @@ public class ConfigurationController {
 
   @RequestMapping(value = "api/configuration/delete", method = RequestMethod.POST,
       consumes = {"application/json"})
-  public @ResponseBody ResponseMessage deleteExportconfuguration(@RequestBody ExportConfiguration exportConfiguration){
+  public @ResponseBody ResponseMessage deleteExportconfuguration(@RequestBody ExportConfiguration exportConfiguration) throws Exception{
+    
+    if(exportConfiguration.isOriginal()) {
+      throw new Exception("The Default Configuration cannot be modified. Please create you own configuration");
+    }
     exportConfigurationService.delete(exportConfiguration);
     return new ResponseMessage<String>(Status.SUCCESS, "EXPORT_CONFIGURATION_DELETED", exportConfiguration.getId(), null);
   }
