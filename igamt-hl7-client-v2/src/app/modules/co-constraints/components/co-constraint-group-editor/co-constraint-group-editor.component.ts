@@ -3,7 +3,7 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, mergeMap, take, tap } from 'rxjs/operators';
+import { catchError, concatMap, distinctUntilChanged, filter, flatMap, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import { ICoConstraintGroup } from 'src/app/modules/shared/models/co-constraint.interface';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
@@ -85,14 +85,13 @@ export class CoConstraintGroupEditorComponent extends AbstractEditorComponent im
 
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
-      concatMap((id) => {
+      switchMap((id) => {
         return this.store.select(selectCoConstraintGroupsById, { id });
       }),
     );
   }
 
   onDeactivate() {
-    this.ngOnDestroy();
   }
 
   ngOnDestroy() {
