@@ -99,8 +99,8 @@ public class BootstrapApplication implements CommandLineRunner {
 
 //    @Autowired
 //    CoConstraintService ccService;
-  @Autowired
-  CoConstraintXmlGenerator ccXmlGen;
+//  @Autowired
+//  CoConstraintXmlGenerator ccXmlGen;
 //  
   @Autowired
   DatatypeService dataypeService;

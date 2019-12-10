@@ -13,6 +13,7 @@ export interface IgDocument extends IAbstractDomain {
   profileComponentRegistry: IRegistry;
   compositeProfileRegistry: IRegistry;
   conformanceProfileRegistry: IRegistry;
+  coConstraintGroupRegistry: IRegistry;
   valueSetRegistry: IRegistry;
   label?: any;
   derived: boolean;
@@ -24,4 +25,5 @@ export interface IGDisplayInfo {
   valueSets?: IDisplayElement[];
   datatypes?: IDisplayElement[];
   messages?: IDisplayElement[];
+  coConstraintGroups?: IDisplayElement[];
 }

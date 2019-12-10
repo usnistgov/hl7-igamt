@@ -16,7 +16,7 @@
   <div style="margin-top: 10px;" *ngIf="selectedConfig" >
     <label style="font-weight: bold;" >Would you like to override the configuration ?</label><br>
     <div style="display: flex; justify-content: center;">
-      <button (click)="customize()" class="btn btn-sn btn-primary" style="margin-right:5px;">
+      <button (click)="customize()" class="btn btn-sn btn-primary" style="margin-right:5px;" *ngIf="overrides$ | async">
         <i class="fa fa-cog"></i>
         Customize
         <span style="color: lightgray;" *ngIf="customized"> (Overrides Made) </span>

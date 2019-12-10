@@ -12,8 +12,8 @@ public class IGDisplayInfo {
 	private Set<DisplayElement> segments = new HashSet<DisplayElement>();
 	private Set<DisplayElement> datatypes = new HashSet<DisplayElement>();
 	private Set<DisplayElement> valueSets = new HashSet<DisplayElement>();
-	
-	
+	private Set<DisplayElement> coConstraintGroups = new HashSet<DisplayElement>();
+
 	public Ig getIg() {
 		return ig;
 	}
@@ -44,7 +44,10 @@ public class IGDisplayInfo {
 	public void setValueSets(Set<DisplayElement> valueSets) {
 		this.valueSets = valueSets;
 	}
-
-	
-	
+	public Set<DisplayElement> getCoConstraintGroups() {
+		return coConstraintGroups;
+	}
+	public void setCoConstraintGroups(Set<DisplayElement> coConstraintGroups) {
+		this.coConstraintGroups = coConstraintGroups;
+	}
 }

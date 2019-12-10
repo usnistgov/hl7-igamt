@@ -17,7 +17,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -40,7 +39,7 @@ public class SegmentDataModel implements Serializable {
 	private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
 	private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
 	private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
-	private CoConstraintTable coConstraintTable = new CoConstraintTable();
+//	private CoConstraintTable coConstraintTable = new CoConstraintTable();
 
 	private Set<FieldDataModel> fieldDataModels = new HashSet<FieldDataModel>();
 
@@ -76,13 +75,13 @@ public class SegmentDataModel implements Serializable {
 		this.valuesetMap = valuesetMap;
 	}
 
-	public CoConstraintTable getCoConstraintTable() {
-		return coConstraintTable;
-	}
-
-	public void setCoConstraintTable(CoConstraintTable coConstraintTable) {
-		this.coConstraintTable = coConstraintTable;
-	}
+//	public CoConstraintTable getCoConstraintTable() {
+//		return coConstraintTable;
+//	}
+//
+//	public void setCoConstraintTable(CoConstraintTable coConstraintTable) {
+//		this.coConstraintTable = coConstraintTable;
+//	}
 
 	/**
 	 * @param s

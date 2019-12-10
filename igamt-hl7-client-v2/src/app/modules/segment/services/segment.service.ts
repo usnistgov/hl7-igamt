@@ -36,13 +36,11 @@ export class SegmentService {
     if (obx.binding != null && obx.binding.children && obx.binding.children.length) {
       const obx2Binding = obx.binding.children.find((x: IStructureElementBinding) => x.locationInfo && x.locationInfo.position === 2);
       if (obx2Binding && obx2Binding.valuesetBindings.length > 0) {
-        console.log(obx2Binding.valuesetBindings);
         const vsList = obx2Binding.valuesetBindings.map((vsB) => {
           return vsB.valueSets;
         }).reduce((a, b) => {
           return a.concat(b);
         });
-        console.log(vsList);
         return forkJoin(vsList.map((vs) => this.valueSetService.getById(igId, vs))).pipe(
           map((valueSets) => {
             let values = [];

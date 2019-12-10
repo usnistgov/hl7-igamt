@@ -8,6 +8,7 @@ import {
   ICopyResourceResponse,
   IDeleteNode,
 } from '../../../modules/ig/models/toc/toc-operation.class';
+import { ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../../../modules/ig/models/toc/toc-operation.class';
 import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
@@ -22,6 +23,9 @@ export enum IgEditActionTypes {
   IgEditTocAddResource = '[Ig Edit TOC] Add Resource',
   AddResourceSuccess = '[Ig Edit TOC] Add Resource Success',
   AddResourceFailure = '[Ig Edit TOC] Add Resource Failure',
+  CreateCoConstraintGroup = '[Ig Edit TOC] Create CoConstraint Group',
+  CreateCoConstraintGroupSuccess = '[Ig Edit TOC] Create CoConstraint Group Success',
+  CreateCoConstraintGroupFailure = '[Ig Edit TOC] Create CoConstraint Group Failure',
   CopyResource = '[Ig Edit TOC] Copy Resource',
   CopyResourceSuccess = '[Ig Edit TOC] Copy Resource Success',
   CopyResourceFailure = '[Ig Edit TOC] Copy Resource Failure',
@@ -181,6 +185,25 @@ export class CopyResource implements Action {
   constructor(readonly payload: ICopyNode) {
   }
 }
+
+export class CreateCoConstraintGroup implements Action {
+  readonly type = IgEditActionTypes.CreateCoConstraintGroup;
+  constructor(readonly payload: ICreateCoConstraintGroup) {
+  }
+}
+
+export class CreateCoConstraintGroupSuccess implements Action {
+  readonly type = IgEditActionTypes.CreateCoConstraintGroupSuccess;
+  constructor(readonly payload: ICreateCoConstraintGroupResponse) {
+  }
+}
+
+export class CreateCoConstraintGroupFailure implements Action {
+  readonly type = IgEditActionTypes.CreateCoConstraintGroupFailure;
+  constructor(readonly payload: HttpErrorResponse) {
+  }
+}
+
 export class CopyResourceSuccess implements Action {
   readonly type = IgEditActionTypes.CopyResourceSuccess;
   constructor(readonly payload: ICopyResourceResponse) {
@@ -417,4 +440,7 @@ export type IgEditActions =
   | ImportResourceFromFileFailure
   | ToggleDelta
   | ToggleDeltaSuccess
+  | CreateCoConstraintGroupFailure
+  | CreateCoConstraintGroupSuccess
+  | CreateCoConstraintGroup
   | ToggleDeltaFailure;

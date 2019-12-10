@@ -30,7 +30,7 @@ import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
+// import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -730,7 +730,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                 "The value SHALL follow the Date/Time pattern 'YYYY[MM[DD[HH[MM[SS[.S[S[S[S]]]]]]]]][+/-ZZZZ]'.");
             elm_Constraint.appendChild(elm_Description);
             elm_Constraint.appendChild(this.innerXMLHandler("<Assertion><Format Path=\".\" Regex=\""
-                + XMLManager.parsingSpecialforXml("^(\\d{4}|\\d{6}|\\d{8}|\\d{10}|\\d{12}|\\d{14}|\\d{14}\\.\\d|\\d{14}\\.\\d{2}|\\d{14}\\.\\d{3}|\\d{14}\\.\\d{4})([+-]\\d{4})?$")
+                + XMLManager.parsingSpecialforXml(
+                    "^(\\d{4}|\\d{6}|\\d{8}|\\d{10}|\\d{12}|\\d{14}|\\d{14}\\.\\d|\\d{14}\\.\\d{2}|\\d{14}\\.\\d{3}|\\d{14}\\.\\d{4})([+-]\\d{4})?$")
                 + "\"/></Assertion>"));
             elm_ByID.appendChild(elm_Constraint);
           } else if (dt.getName().equals("DT")) {
@@ -740,10 +741,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             elm_Description
                 .appendChild("The value SHALL follow the Date/Time pattern 'YYYY[MM[DD]]'.");
             elm_Constraint.appendChild(elm_Description);
-            elm_Constraint.appendChild(
-                this.innerXMLHandler("<Assertion><Format Path=\".\" Regex=\"" 
-                    + XMLManager.parsingSpecialforXml("^(\\d{4}|\\d{6}|\\d{8})$") 
-                    + "\"/></Assertion>"));
+            elm_Constraint.appendChild(this.innerXMLHandler("<Assertion><Format Path=\".\" Regex=\""
+                + XMLManager.parsingSpecialforXml("^(\\d{4}|\\d{6}|\\d{8})$")
+                + "\"/></Assertion>"));
             elm_ByID.appendChild(elm_Constraint);
           } else if (dt.getName().equals("TM")) {
             Element elm_Constraint = new Element("Constraint");
@@ -753,7 +753,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                 "The value SHALL follow the Date/Time pattern 'HH[MM[SS[.S[S[S[S]]]]]][+/-ZZZZ]'.");
             elm_Constraint.appendChild(elm_Description);
             elm_Constraint.appendChild(this.innerXMLHandler("<Assertion><Format Path=\".\" Regex=\""
-                + XMLManager.parsingSpecialforXml("^(\\d{2}|\\d{4}|\\d{6}|\\d{6}\\.\\d|\\d{6}\\.\\d{2}|\\d{6}\\.\\d{3}|\\d{6}\\.\\d{4})([+-]\\d{4})?$")
+                + XMLManager.parsingSpecialforXml(
+                    "^(\\d{2}|\\d{4}|\\d{6}|\\d{6}\\.\\d|\\d{6}\\.\\d{2}|\\d{6}\\.\\d{3}|\\d{6}\\.\\d{4})([+-]\\d{4})?$")
                 + "\"/></Assertion>"));
             elm_ByID.appendChild(elm_Constraint);
           }
@@ -763,8 +764,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           Element elm_Description = new Element("Description");
           elm_Description.appendChild(dateTimeConstraints.getErrorMessage());
           elm_Constraint.appendChild(elm_Description);
-          elm_Constraint.appendChild(this
-              .innerXMLHandler("<Assertion><Format Path=\".\" Regex=\"" + XMLManager.parsingSpecialforXml(dateTimeConstraints.getRegex()) + "\"/></Assertion>"));
+          elm_Constraint.appendChild(this.innerXMLHandler("<Assertion><Format Path=\".\" Regex=\""
+              + XMLManager.parsingSpecialforXml(dateTimeConstraints.getRegex())
+              + "\"/></Assertion>"));
           elm_ByID.appendChild(elm_Constraint);
         }
       }
@@ -1190,42 +1192,43 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         }
 
         // #2 CoConstraint's Defined Dynamic Mapping
-        if (sModel.getCoConstraintTable() != null) {
-          CoConstraintTable coConstraintTable = sModel.getCoConstraintTable();
-          Set<String[]> dynamicMappingItems = coConstraintTable.generateDynamicMappingItems();
-
-          if (dynamicMappingItems != null) {
-            dynamicMappingItems.forEach(item -> {
-              if (item[0] != null && !item[0].isEmpty() && item[1] != null && !item[1].isEmpty()) {
-                DatatypeDataModel itemDTModel = igModel.findDatatype(item[1]);
-                if (itemDTModel != null) {
-                  Element elmCase = new Element("Case");
-                  elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
-                  elmCase.addAttribute(new Attribute("SecondValue", item[0]));
-                  if (igModel.getModel().getDomainInfo() != null
-                      && igModel.getModel().getDomainInfo().getVersion() != null
-                      && itemDTModel.getModel().getDomainInfo() != null
-                      && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
-                    if (igModel.getModel().getDomainInfo().getVersion()
-                        .equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
-                      elmCase.addAttribute(
-                          new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-                    } else {
-                      elmCase.addAttribute(new Attribute("Datatype",
-                          this.str(itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel()
-                              .getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-                    }
-                  } else {
-                    elmCase.addAttribute(
-                        new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-                  }
-
-                  elmMapping.appendChild(elmCase);
-                }
-              }
-            });
-          }
-        }
+        // if (sModel.getCoConstraintTable() != null) {
+        // CoConstraintTable coConstraintTable = sModel.getCoConstraintTable();
+        // Set<String[]> dynamicMappingItems = coConstraintTable.generateDynamicMappingItems();
+        //
+        // if (dynamicMappingItems != null) {
+        // dynamicMappingItems.forEach(item -> {
+        // if (item[0] != null && !item[0].isEmpty() && item[1] != null && !item[1].isEmpty()) {
+        // DatatypeDataModel itemDTModel = igModel.findDatatype(item[1]);
+        // if (itemDTModel != null) {
+        // Element elmCase = new Element("Case");
+        // elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
+        // elmCase.addAttribute(new Attribute("SecondValue", item[0]));
+        // if (igModel.getModel().getDomainInfo() != null
+        // && igModel.getModel().getDomainInfo().getVersion() != null
+        // && itemDTModel.getModel().getDomainInfo() != null
+        // && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
+        // if (igModel.getModel().getDomainInfo().getVersion()
+        // .equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
+        // elmCase.addAttribute(new Attribute("Datatype",
+        // this.str(itemDTModel.getModel().getLabel())));
+        // } else {
+        // elmCase.addAttribute(new Attribute("Datatype",
+        // this.str(itemDTModel.getModel().getLabel() + "_"
+        // + itemDTModel.getModel().getDomainInfo().getVersion()
+        // .replaceAll("\\.", "-"))));
+        // }
+        // } else {
+        // elmCase.addAttribute(
+        // new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+        // }
+        //
+        // elmMapping.appendChild(elmCase);
+        // }
+        // }
+        // });
+        // }
+        // }
 
         // #3 OBX-2 Dynamic Mapping
         String version = null;

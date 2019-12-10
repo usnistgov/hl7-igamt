@@ -1,19 +1,19 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, concatMap, filter, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/core/services/message.service';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
 import { Message, MessageType, UserMessage } from '../../../modules/core/models/message/message.class';
 import { IGDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
-import {IAddResourceFromFile, ICopyResourceResponse} from '../../../modules/ig/models/toc/toc-operation.class';
+import { IAddResourceFromFile, ICopyResourceResponse, ICreateCoConstraintGroupResponse } from '../../../modules/ig/models/toc/toc-operation.class';
 import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
 import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
 import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
+import { CreateCoConstraintGroup, CreateCoConstraintGroupFailure, CreateCoConstraintGroupSuccess } from './ig-edit.actions';
 import {
   AddResourceFailure,
   AddResourceSuccess,
@@ -109,6 +109,7 @@ export class IgEditEffects {
           ];
         }),
         catchError((error: HttpErrorResponse) => {
+          console.log(error);
           return of(
             new TurnOffLoader(),
             new IgEditResolverLoadFailure(error),
@@ -268,6 +269,7 @@ export class IgEditEffects {
       return this.message.actionFromError(action.error);
     }),
   );
+
   @Effect()
   copyResourceFailure$ = this.actions$.pipe(
     ofType(IgEditActionTypes.CopyResourceFailure),
@@ -275,11 +277,12 @@ export class IgEditEffects {
       return this.message.actionFromError(action.error);
     }),
   );
+
   @Effect()
   copyResourceSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.CopyResourceSuccess),
     map((action: CopyResourceSuccess) => {
-      return  this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource copied successfully ', null ));
+      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource copied successfully ', null));
     }),
   );
 
@@ -287,7 +290,7 @@ export class IgEditEffects {
   importResourceFromFileSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.ImportResourceFromFileSuccess),
     map((action: ImportResourceFromFileSuccess) => {
-      return  this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource imported successfully ', null ));
+      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource imported successfully ', null));
     }),
   );
 
@@ -298,6 +301,7 @@ export class IgEditEffects {
       return this.message.actionFromError(action.error);
     }),
   );
+
   @Effect()
   importResourceFromFileFailure$ = this.actions$.pipe(
     ofType(IgEditActionTypes.ImportResourceFromFileFailure),
@@ -305,6 +309,7 @@ export class IgEditEffects {
       return this.message.actionFromError(action.error);
     }),
   );
+
   @Effect()
   deleteResourceSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteResourceSuccess),
@@ -337,6 +342,7 @@ export class IgEditEffects {
       return this.finalizeAdd(doAdd);
     }),
   );
+
   @Effect()
   CopyResourceSuccess = this.actions$.pipe(
     ofType(IgEditActionTypes.ImportResourceFromFile),
@@ -386,6 +392,7 @@ export class IgEditEffects {
       return this.finalizeAdd(doAdd);
     }),
   );
+
   @Effect()
   igDeleteResource = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteResource),
@@ -409,10 +416,51 @@ export class IgEditEffects {
       );
     }),
   );
+
+  @Effect()
+  igCreateCoConstraintGroup = this.actions$.pipe(
+    ofType(IgEditActionTypes.CreateCoConstraintGroup),
+    switchMap((action: CreateCoConstraintGroup) => {
+      this.store.dispatch(new TurnOnLoader({
+        blockUI: true,
+      }));
+      return this.igService.createCoConstraintGroup(action.payload).pipe(
+        flatMap((response: Message<ICreateCoConstraintGroupResponse>) => {
+          return [
+            new TurnOffLoader(),
+            new CreateCoConstraintGroupSuccess(response.data),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new TurnOffLoader(),
+            new CreateCoConstraintGroupFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  coConstraintGroupFailure$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.CreateCoConstraintGroupFailure),
+    map((action: CreateCoConstraintGroupFailure) => {
+      return this.message.actionFromError(action.payload);
+    }),
+  );
+
+  @Effect()
+  coConstraintGroupSuccess$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.CreateCoConstraintGroupSuccess),
+    map((action: CreateCoConstraintGroupSuccess) => {
+      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'CoConstraint Group Created Successfully', null));
+    }),
+  );
+
   @Effect()
   displayDelta$ = this.actions$.pipe(
     ofType(IgEditActionTypes.ToggleDelta),
-    switchMap((action: ToggleDelta ) => {
+    switchMap((action: ToggleDelta) => {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
@@ -433,6 +481,7 @@ export class IgEditEffects {
       );
     }),
   );
+
   finalizeAdd(toDoo: Observable<Action>) {
     return combineLatest(
       this.store.select(selectTableOfContentChanged),
@@ -479,9 +528,6 @@ export class IgEditEffects {
     private store: Store<any>,
     private message: MessageService,
     private resourceService: ResourceService,
-    private rxjsHelper: RxjsStoreHelperService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
   ) {
   }
 

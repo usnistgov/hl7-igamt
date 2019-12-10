@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupRegistry;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
@@ -32,6 +33,7 @@ public class Ig extends AbstractDomain {
   private ProfileComponentRegistry profileComponentRegistry = new ProfileComponentRegistry();
   private CompositeProfileRegistry compositeProfileRegistry = new CompositeProfileRegistry();
   private ConformanceProfileRegistry conformanceProfileRegistry = new ConformanceProfileRegistry();
+  private CoConstraintGroupRegistry coConstraintGroupRegistry = new CoConstraintGroupRegistry();
   private DocumentExportConfiguration lastUserConfiguration;
 
   private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
@@ -137,6 +139,14 @@ public DocumentMetadata getMetadata() {
 
   public void setValueSetRegistry(ValueSetRegistry valueSetRegistry) {
     this.valueSetRegistry = valueSetRegistry;
+  }
+
+  public CoConstraintGroupRegistry getCoConstraintGroupRegistry() {
+    return coConstraintGroupRegistry;
+  }
+
+  public void setCoConstraintGroupRegistry(CoConstraintGroupRegistry coConstraintGroupRegistry) {
+    this.coConstraintGroupRegistry = coConstraintGroupRegistry;
   }
 
   /*

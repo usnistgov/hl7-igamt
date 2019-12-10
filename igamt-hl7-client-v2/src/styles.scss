@@ -141,6 +141,10 @@ body {
   cursor: inherit !important;
 }
 
+.node-content-wrapper {
+  width: 100%;
+}
+
 .tree-children {
   overflow: unset;
 }
@@ -296,6 +300,15 @@ body .ui-panel .ui-panel-titlebar .ui-panel-titlebar-icon {
   margin-right: 25px;
   margin-left: 25px;
   width: 80%;
+}
+
+.config-list-item {
+  margin-top: 3px;
+  cursor: pointer;
+}
+
+.notice {
+  background-color: pink !important;
 }
 
 .custom-card-title {

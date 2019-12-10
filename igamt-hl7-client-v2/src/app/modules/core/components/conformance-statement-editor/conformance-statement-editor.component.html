@@ -1,12 +1,15 @@
+<ng-template #headerControls>
+  <button class="btn btn-success btn-sm" (click)="createCs()" *ngIf="!(viewOnly$ | async)">
+    <i class="fa fa-plus"></i> New
+  </button>
+</ng-template>
+
+
 <!-- RESOURCE CS -->
 <ng-container *ngIf="editable$ | async as editableCs">
   <div class="header-title">
     <h5>List of conformance statements</h5>
-    <div>
-      <button class="btn btn-success btn-sm" (click)="createCs()" *ngIf="!(viewOnly$ | async)">
-        <i class="fa fa-plus"></i> New
-      </button>
-    </div>
+    <div></div>
   </div>
   <div class="panel-body">
     <ng-container *ngTemplateOutlet="csList; context: { $implicit: editableCs, tmpl: editable }"></ng-container>
