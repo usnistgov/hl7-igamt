@@ -40,28 +40,29 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.PositionAndPresence;
  */
 @Document(collection = "exportConfiguration")
 public class ExportConfiguration {
-	
-	private String configName;
-	@Id
-	private String id;
-	 
-	private DatatypeExportConfiguration datatypeExportConfiguration;
-	private SegmentExportConfiguration segmentExportConfiguration;
-	private ConformanceProfileExportConfiguration conformamceProfileExportConfiguration;
-	private ValueSetExportConfiguration valueSetExportConfiguration;
-	private AbstractDomainExportConfiguration abstractDomainExportConfiguration;
-	private ResourceExportConfiguration resourceExportConfiguration;
-	private DocumentMetadataConfiguration DocumentMetadataConfiguration;
-	
- 
+
+  private String configName;
+  @Id
+  private String id;
+  private boolean original; // true if it is the first time config
+
+  private DatatypeExportConfiguration datatypeExportConfiguration;
+  private SegmentExportConfiguration segmentExportConfiguration;
+  private ConformanceProfileExportConfiguration conformamceProfileExportConfiguration;
+  private ValueSetExportConfiguration valueSetExportConfiguration;
+  private AbstractDomainExportConfiguration abstractDomainExportConfiguration;
+  private ResourceExportConfiguration resourceExportConfiguration;
+  private DocumentMetadataConfiguration DocumentMetadataConfiguration;
+
+
   boolean defaultType = false;
   boolean defaultConfig = false;
   private String name;
   private Columns listedColumns;
   @Column(unique=true)
   private String username;
- 
-private boolean unboundHL7 = false;
+
+  private boolean unboundHL7 = false;
   private boolean unboundCustom = false;
   private boolean includeVaries = false;
   private boolean includeMessageTable = true;
@@ -112,11 +113,11 @@ private boolean unboundHL7 = false;
   private boolean datatypeLibraryIncludeSummary = true;
   private boolean datatypeLibraryIncludeDerived = false;
 
-public static ExportConfiguration populateRestOfExportConfiguration(ExportConfiguration exportConfiguration) {
-	SegmentExportConfiguration segmentExportConfiguration = new SegmentExportConfiguration(true, true, true,exportConfiguration.isIncludeSegmentTable()  ,exportConfiguration.isGreyOutOBX2FlavorColumn(), exportConfiguration.getSegmentsExport(), exportConfiguration.getFieldsExport(), exportConfiguration.getCoConstraintExportMode(), exportConfiguration.getSegmentColumn().getColumns(), exportConfiguration.getSegmentMetadataConfig());
-	exportConfiguration.setSegmentExportConfiguration(segmentExportConfiguration);
-	return exportConfiguration;
-}
+  public static ExportConfiguration populateRestOfExportConfiguration(ExportConfiguration exportConfiguration) {
+    SegmentExportConfiguration segmentExportConfiguration = new SegmentExportConfiguration(true, true, true,exportConfiguration.isIncludeSegmentTable()  ,exportConfiguration.isGreyOutOBX2FlavorColumn(), exportConfiguration.getSegmentsExport(), exportConfiguration.getFieldsExport(), exportConfiguration.getCoConstraintExportMode(), exportConfiguration.getSegmentColumn().getColumns(), exportConfiguration.getSegmentMetadataConfig());
+    exportConfiguration.setSegmentExportConfiguration(segmentExportConfiguration);
+    return exportConfiguration;
+  }
 
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();  
@@ -184,7 +185,7 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     PositionAndPresence positionAndPresence = new PositionAndPresence();
     positionAndPresence.setPosition(1);
     positionAndPresence.setPresence(true);
-    
+
     Columns listedColumns = new Columns();
     listedColumns.setCardinality(positionAndPresence);
     listedColumns.setElementName(positionAndPresence);
@@ -192,7 +193,7 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     listedColumns.setSegment(positionAndPresence);
     listedColumns.setUsage(positionAndPresence);
     defaultConfiguration.setListedColumns(listedColumns);
-    
+
     // Default column
     ArrayList<NameAndPositionAndPresence> messageColumnsDefaultList =
         new ArrayList<NameAndPositionAndPresence>();
@@ -202,8 +203,8 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     messageColumnsDefaultList.add(new NameAndPositionAndPresence("Element Name", 3, true, true));
     messageColumnsDefaultList.add(new NameAndPositionAndPresence("Usage", 5, true, setAllTrue));
     messageColumnsDefaultList
-        .add(new NameAndPositionAndPresence("Cardinality", 4, true, setAllTrue));
-//    messageColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 1, true, setAllTrue));
+    .add(new NameAndPositionAndPresence("Cardinality", 4, true, setAllTrue));
+    //    messageColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 1, true, setAllTrue));
 
     ArrayList<NameAndPositionAndPresence> segmentColumnsDefaultList =
         new ArrayList<NameAndPositionAndPresence>();
@@ -212,10 +213,10 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Usage", 4, true, setAllTrue));
     segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Cardinality", 5, true, setAllTrue));
     segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Length", 6, setAllTrue, setAllTrue));
-//    segmentColumnsDefaultList
-//        .add(new NameAndPositionAndPresence("Conformance Length", 2, setAllTrue, setAllTrue));
+    //    segmentColumnsDefaultList
+    //        .add(new NameAndPositionAndPresence("Conformance Length", 2, setAllTrue, setAllTrue));
     segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Value Set", 7, true, setAllTrue));
-//    segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 8, true, setAllTrue));
+    //    segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 8, true, setAllTrue));
 
 
 
@@ -223,26 +224,26 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
         new ArrayList<NameAndPositionAndPresence>();
 
     dataTypeColumnsDefaultList.add(new NameAndPositionAndPresence("Name", 1, true, true));
-//    dataTypeColumnsDefaultList
-//        .add(new NameAndPositionAndPresence("Conformance Length", 2, setAllTrue, setAllTrue));
+    //    dataTypeColumnsDefaultList
+    //        .add(new NameAndPositionAndPresence("Conformance Length", 2, setAllTrue, setAllTrue));
     dataTypeColumnsDefaultList
-        .add(new NameAndPositionAndPresence("Data Type", 3, true, setAllTrue));
+    .add(new NameAndPositionAndPresence("Data Type", 3, true, setAllTrue));
     dataTypeColumnsDefaultList.add(new NameAndPositionAndPresence("Usage", 4, true, setAllTrue));
     dataTypeColumnsDefaultList
-        .add(new NameAndPositionAndPresence("Length", 5, setAllTrue, setAllTrue));
+    .add(new NameAndPositionAndPresence("Length", 5, setAllTrue, setAllTrue));
     dataTypeColumnsDefaultList
-        .add(new NameAndPositionAndPresence("Value Set", 6, true, setAllTrue));
-//    dataTypeColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 7, true, setAllTrue));
+    .add(new NameAndPositionAndPresence("Value Set", 6, true, setAllTrue));
+    //    dataTypeColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 7, true, setAllTrue));
 
 
 
     defaultConfiguration.setDatatypeColumn(new ColumnsConfiguration(dataTypeColumnsDefaultList));
     defaultConfiguration.setSegmentColumn(new ColumnsConfiguration(segmentColumnsDefaultList));
     defaultConfiguration
-        .setProfileComponentColumn(new ColumnsConfiguration(segmentColumnsDefaultList));
+    .setProfileComponentColumn(new ColumnsConfiguration(segmentColumnsDefaultList));
     defaultConfiguration.setMessageColumn(new ColumnsConfiguration(messageColumnsDefaultList));
     defaultConfiguration
-        .setCompositeProfileColumn(new ColumnsConfiguration(messageColumnsDefaultList));
+    .setCompositeProfileColumn(new ColumnsConfiguration(messageColumnsDefaultList));
 
     ArrayList<NameAndPositionAndPresence> valuesetsDefaultList =
         new ArrayList<NameAndPositionAndPresence>();
@@ -255,13 +256,13 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
 
     defaultConfiguration.setValuesetColumn(new ColumnsConfiguration(valuesetsDefaultList));
     defaultConfiguration.setMaxCodeNumber(MAX_CODE);
-    
+
     ConstraintExportConfiguration constraintExportConfiguration = new ConstraintExportConfiguration(true,true);
-    
+
     //Setting AbstractDomainConfiguration
     AbstractDomainExportConfiguration abstractDomainExportConfiguration = new AbstractDomainExportConfiguration(true, true, true, false, false, false, true, false, true, true, false, true, true, false, true, true, true, deltaConfiguration);
-    
-    
+
+
     // Setting DatatypeExportConfiguration
     DatatypeExportConfiguration datatypeExportConfiguration = new DatatypeExportConfiguration(defaultConfiguration);
     datatypeExportConfiguration.setBinding(true);
@@ -277,7 +278,7 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     segmentExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
     segmentExportConfiguration.setDeltaMode(true);
     segmentExportConfiguration.setDeltaConfig(deltaConfiguration);
-    
+
     // Setting ConformanceProfileExportConfiguration
     ConformanceProfileExportConfiguration conformanceProfileExportConfiguration = new ConformanceProfileExportConfiguration(defaultConfiguration);
     conformanceProfileExportConfiguration.setIdentifier(true);
@@ -289,8 +290,8 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     conformanceProfileExportConfiguration.setDeltaMode(true);
     conformanceProfileExportConfiguration.setDeltaConfig(deltaConfiguration);
     conformanceProfileExportConfiguration.setListedColumns(listedColumns);
-//    conformanceProfileExportConfiguration.getMetadataConfig().setType(false);
-//    conformanceProfileExportConfiguration.getMetadataConfig().setRole(false);
+    //    conformanceProfileExportConfiguration.getMetadataConfig().setType(false);
+    //    conformanceProfileExportConfiguration.getMetadataConfig().setRole(false);
 
 
     // Setting ValueSetExportConfiguration
@@ -310,91 +311,91 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
 
 
   public DatatypeExportConfiguration getDatatypeExportConfiguration() {
-	return datatypeExportConfiguration;
-}
+    return datatypeExportConfiguration;
+  }
 
 
 
-public void setDatatypeExportConfiguration(DatatypeExportConfiguration datatypeExportConfiguration) {
-	this.datatypeExportConfiguration = datatypeExportConfiguration;
-}
+  public void setDatatypeExportConfiguration(DatatypeExportConfiguration datatypeExportConfiguration) {
+    this.datatypeExportConfiguration = datatypeExportConfiguration;
+  }
 
 
 
-public SegmentExportConfiguration getSegmentExportConfiguration() {
-	return segmentExportConfiguration;
-}
+  public SegmentExportConfiguration getSegmentExportConfiguration() {
+    return segmentExportConfiguration;
+  }
 
 
 
-public void setSegmentExportConfiguration(SegmentExportConfiguration segmentExportConfiguration) {
-	this.segmentExportConfiguration = segmentExportConfiguration;
-}
+  public void setSegmentExportConfiguration(SegmentExportConfiguration segmentExportConfiguration) {
+    this.segmentExportConfiguration = segmentExportConfiguration;
+  }
 
 
 
-public ConformanceProfileExportConfiguration getConformamceProfileExportConfiguration() {
-	return conformamceProfileExportConfiguration;
-}
+  public ConformanceProfileExportConfiguration getConformamceProfileExportConfiguration() {
+    return conformamceProfileExportConfiguration;
+  }
 
 
 
-public void setConformamceProfileExportConfiguration(
-		ConformanceProfileExportConfiguration conformamceProfileExportConfiguration) {
-	this.conformamceProfileExportConfiguration = conformamceProfileExportConfiguration;
-}
+  public void setConformamceProfileExportConfiguration(
+      ConformanceProfileExportConfiguration conformamceProfileExportConfiguration) {
+    this.conformamceProfileExportConfiguration = conformamceProfileExportConfiguration;
+  }
 
 
 
-public ValueSetExportConfiguration getValueSetExportConfiguration() {
-	return valueSetExportConfiguration;
-}
+  public ValueSetExportConfiguration getValueSetExportConfiguration() {
+    return valueSetExportConfiguration;
+  }
 
 
 
-public void setValueSetExportConfiguration(ValueSetExportConfiguration valueSetExportConfiguration) {
-	this.valueSetExportConfiguration = valueSetExportConfiguration;
-}
+  public void setValueSetExportConfiguration(ValueSetExportConfiguration valueSetExportConfiguration) {
+    this.valueSetExportConfiguration = valueSetExportConfiguration;
+  }
 
 
 
-public AbstractDomainExportConfiguration getAbstractDomainExportConfiguration() {
-	return abstractDomainExportConfiguration;
-}
+  public AbstractDomainExportConfiguration getAbstractDomainExportConfiguration() {
+    return abstractDomainExportConfiguration;
+  }
 
 
 
-public void setAbstractDomainExportConfiguration(AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
-	this.abstractDomainExportConfiguration = abstractDomainExportConfiguration;
-}
+  public void setAbstractDomainExportConfiguration(AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
+    this.abstractDomainExportConfiguration = abstractDomainExportConfiguration;
+  }
 
 
 
-public ResourceExportConfiguration getResourceExportConfiguration() {
-	return resourceExportConfiguration;
-}
+  public ResourceExportConfiguration getResourceExportConfiguration() {
+    return resourceExportConfiguration;
+  }
 
 
 
-public void setResourceExportConfiguration(ResourceExportConfiguration resourceExportConfiguration) {
-	this.resourceExportConfiguration = resourceExportConfiguration;
-}
+  public void setResourceExportConfiguration(ResourceExportConfiguration resourceExportConfiguration) {
+    this.resourceExportConfiguration = resourceExportConfiguration;
+  }
 
 
 
-public DocumentMetadataConfiguration getDocumentMetadataConfiguration() {
-	return DocumentMetadataConfiguration;
-}
+  public DocumentMetadataConfiguration getDocumentMetadataConfiguration() {
+    return DocumentMetadataConfiguration;
+  }
 
 
 
-public void setDocumentMetadataConfiguration(DocumentMetadataConfiguration documentMetadataConfiguration) {
-	DocumentMetadataConfiguration = documentMetadataConfiguration;
-}
+  public void setDocumentMetadataConfiguration(DocumentMetadataConfiguration documentMetadataConfiguration) {
+    DocumentMetadataConfiguration = documentMetadataConfiguration;
+  }
 
 
 
-public String getId() {
+  public String getId() {
     return id;
   }
 
@@ -425,14 +426,14 @@ public String getId() {
 
 
   public Columns getListedColumns() {
-	return listedColumns;
-}
+    return listedColumns;
+  }
 
-public void setListedColumns(Columns listedColumns) {
-	this.listedColumns = listedColumns;
-}
+  public void setListedColumns(Columns listedColumns) {
+    this.listedColumns = listedColumns;
+  }
 
-public void setName(String name) {
+  public void setName(String name) {
     this.name = name;
   }
 
@@ -544,12 +545,12 @@ public void setName(String name) {
   }
 
   public boolean isDefaultConfig() {
-		return defaultConfig;
-	}
+    return defaultConfig;
+  }
 
-	public void setDefaultConfig(boolean defaultConfig) {
-		this.defaultConfig = defaultConfig;
-	}
+  public void setDefaultConfig(boolean defaultConfig) {
+    this.defaultConfig = defaultConfig;
+  }
 
 
   public void setIncludeCompositeProfileTable(boolean includeCompositeProfileTable) {
@@ -918,16 +919,24 @@ public void setName(String name) {
 
 
   public void setDeltaConfig(
-          DeltaConfiguration deltaConfig) {
+      DeltaConfiguration deltaConfig) {
     this.deltaConfig = deltaConfig;
   }
 
   public String getConfigName() {
-		return configName;
-	}
+    return configName;
+  }
 
-	public void setConfigName(String configName) {
-		this.configName = configName;
-	}
+  public void setConfigName(String configName) {
+    this.configName = configName;
+  }
+
+  public boolean isOriginal() {
+    return original;
+  }
+
+  public void setOriginal(boolean original) {
+    this.original = original;
+  }
 
 }
