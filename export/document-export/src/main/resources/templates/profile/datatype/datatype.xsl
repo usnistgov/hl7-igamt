@@ -77,7 +77,7 @@
                             <xsl:text>Value</xsl:text>
                         </xsl:element>
                          <xsl:element name="th">
-                            <xsl:text>Predicate</xsl:text>
+                            <xsl:text>Format</xsl:text>
                         </xsl:element>
                         <xsl:element name="th">
                             <xsl:text>Usage</xsl:text>
