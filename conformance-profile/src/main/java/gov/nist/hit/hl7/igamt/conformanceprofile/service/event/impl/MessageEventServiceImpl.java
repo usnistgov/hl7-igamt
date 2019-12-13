@@ -10,16 +10,17 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.ResourcePicker;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.ResourcePickerList;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.VariableKey;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.MessageEvent;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.EventTreeData;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.EventTreeNode;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeData;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
-import gov.nist.hit.hl7.igamt.conformanceprofile.repository.event.MessageEventsRepository;
+import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
 
 
@@ -27,47 +28,38 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventServi
 public class MessageEventServiceImpl implements MessageEventService {
 
   @Autowired
-  MessageEventsRepository messageEventRepository;
+  MessageStructureRepository messageStructureRepository;
 
   public MessageEventServiceImpl() {
     // TODO Auto-generated constructor stub
   }
 
   @Override
-  public MessageEvent save(MessageEvent ev) {
-    return messageEventRepository.save(ev);
-  }
-
-  @Override
-  public List<MessageEventTreeNode> findByHl7Version(String hl7Version) {
-    return convertToMessageEventTreeNode(messageEventRepository.findByHl7Version(hl7Version));
-  }
-
-  private List<MessageEventTreeNode> convertToMessageEventTreeNode(
-      List<MessageEvent> messageEvents) {
+  public List<MessageEventTreeNode> convertMessageStructureToEventTree(List<MessageStructure> messageStructures) {
     List<MessageEventTreeNode> treeNodes = new ArrayList<MessageEventTreeNode>();
-
-    for (MessageEvent msgEvent : messageEvents) {
+    
+    for(MessageStructure structure: messageStructures ) {
+             
       MessageEventTreeData treedata = new MessageEventTreeData();
       MessageEventTreeNode treenode = new MessageEventTreeNode();
       treenode.setData(treedata);
 
-      treedata.setId(msgEvent.getId());
-      treedata.setHl7Version(msgEvent.getHl7Version());
-      treedata.setName(msgEvent.getName());
-      treedata.setType(msgEvent.getType());
-      treedata.setDescription(msgEvent.getDescription());
+      treedata.setId(structure.getId());
+      treedata.setHl7Version(structure.getDomainInfo().getVersion());
+      treedata.setName(structure.getStructID());
+      treedata.setType(Type.EVENTS);
+      treedata.setDescription(structure.getDescription());
       List<EventTreeNode> children= new ArrayList<EventTreeNode>();
 
-      for (Event ev : msgEvent.getChildren()) {
+      for (Event ev : structure.getEvents()) {
     	  
     	  
         EventTreeData data = new EventTreeData();
         data.setName(ev.getName());
         data.setHl7Version(ev.getHl7Version());
         data.setDescription(ev.getDescription());
-        data.setParentStructId(ev.getParentStructId());
-        data.setId(ev.getId());
+        data.setParentStructId(structure.getStructID());
+        data.setId(structure.getId());
         EventTreeNode node = new EventTreeNode();
         node.setName(ev.getName());
         node.setData(data);
@@ -83,6 +75,7 @@ public class MessageEventServiceImpl implements MessageEventService {
     }
     Collections.sort(treeNodes);
     return treeNodes;
+    
   }
 
 @Override
@@ -117,15 +110,7 @@ private Map<VariableKey, List<String>> createComplement(MessageEventTreeNode nod
 	return ret; 
 }
 
-/* (non-Javadoc)
- * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService#deleteAll()
- */
-@Override
-public void deleteAll() {
-  // TODO Auto-generated method stub
-  this.messageEventRepository.deleteAll();
-  
-}
+
 
 
 

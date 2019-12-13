@@ -38,7 +38,7 @@ public class Valueset extends Resource {
 	private ContentDefinition contentDefinition = ContentDefinition.Undefined;
 	private SourceType sourceType = SourceType.INTERNAL;
 	private int numberOfCodes;
-	
+	private String hl7Type; 
 	@org.springframework.data.annotation.Transient
 	private boolean includeCodes;
 	
@@ -176,6 +176,14 @@ public class Valueset extends Resource {
 
 	public void setCodes(Set<Code> codes) {
 		this.codes = codes;
+	}
+
+	public String getHl7Type() {
+		return hl7Type;
+	}
+
+	public void setHl7Type(String hl7Type) {
+		this.hl7Type = hl7Type;
 	};
 
 }

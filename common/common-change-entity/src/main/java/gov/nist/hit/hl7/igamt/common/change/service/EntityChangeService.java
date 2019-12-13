@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.common.config.service;
+package gov.nist.hit.hl7.igamt.common.change.service;
 
 import java.util.List;
 

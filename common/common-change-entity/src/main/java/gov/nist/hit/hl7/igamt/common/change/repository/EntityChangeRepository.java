@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.common.config.repository;
+package gov.nist.hit.hl7.igamt.common.change.repository;
 
 import java.util.List;
 

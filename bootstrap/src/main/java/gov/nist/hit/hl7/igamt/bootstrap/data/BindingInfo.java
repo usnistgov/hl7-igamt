@@ -9,27 +9,31 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.conformanceprofile.service.event;
-
-import java.util.List;
-
-import gov.nist.hit.hl7.igamt.common.base.wrappers.ResourcePickerList;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.MessageEvent;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
-
+package gov.nist.hit.hl7.igamt.bootstrap.data;
 
 /**
- * @author ena3
+ * @author Abdelghani El Ouakili
  *
  */
-public interface MessageEventService {
-  public List<MessageEventTreeNode> convertMessageStructureToEventTree(List<MessageStructure> messageStructures);
-
+public class BindingInfo {
+  String name;
+  String position;
+  String dtName;
+  String vs;
+  String version;
   /**
-   * @param list
-   * @return
+   * @param name
+   * @param position
+   * @param dtName
+   * @param vs
+   * @param version
    */
-  public ResourcePickerList convertToDisplay(List<MessageEventTreeNode> list);
-
+  public BindingInfo(String name, String position, String dtName, String vs, String version) {
+    super();
+    this.name = name;
+    this.position = position;
+    this.dtName = dtName;
+    this.vs = vs;
+    this.version = version;
+  }
 }

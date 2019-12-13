@@ -725,15 +725,29 @@ export class Hl7V2TreeService {
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
     const segmentRefs = this.getAllSegmentRef(confProfile.children);
+    const debug = [
+      ...segmentRefs,
+    ];
     return combineLatest(
       repository.getRefData(segmentRefs, Type.SEGMENT).pipe(
         take(1),
       ),
       from(segmentRefs).pipe(
         mergeMap((id) => {
-          return repository.getResource(Type.SEGMENT, id).pipe(take(1), map((res) => res as ISegment));
+          return repository.getResource(Type.SEGMENT, id).pipe(
+            take(1),
+            map((res) => res as ISegment),
+          );
+        }),
+        tap((segment) => {
+          const i = debug.findIndex((elm) => elm === segment.id);
+          debug.splice(i, 1);
+          console.log(debug);
         }),
         toArray(),
+        tap((segments) => {
+          console.log(segments);
+        }),
         map((segments) => {
           const segmentsMap = {};
           segments.forEach((segment) => {

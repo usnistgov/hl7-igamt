@@ -177,7 +177,6 @@ export class IgEditSidebarComponent implements OnInit {
       }),
     ).subscribe();
   }
-
   copy($event: ICopyResourceData) {
     const dialogRef = this.dialog.open(CopyResourceComponent, {
       data: { ...$event, targetScope: Scope.USER, title: this.getCopyTitle($event.element.type) },
@@ -198,7 +197,6 @@ export class IgEditSidebarComponent implements OnInit {
       }),
     ).subscribe();
   }
-
   delete($event: IDisplayElement) {
     this.igId$.pipe(
       take(1),
@@ -320,8 +318,6 @@ export class IgEditSidebarComponent implements OnInit {
       withLatestFrom(this.igId$),
       take(1),
       map(([result, igId]) => {
-
-        console.log([result]);
         this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: [result], type: $event.type }));
       }),
     ).subscribe();

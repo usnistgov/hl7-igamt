@@ -195,6 +195,7 @@ public class SegmentServiceImpl implements SegmentService {
 	public List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name) {
 		return segmentRepository.findByDomainInfoScopeAndDomainInfoVersionAndName(scope, version, name);
 	}
+	
 
 	@Override
 	public List<Segment> findByDomainInfoVersionAndName(String version, String name) {

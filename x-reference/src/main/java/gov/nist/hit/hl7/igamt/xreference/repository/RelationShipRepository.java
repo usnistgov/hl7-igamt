@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.xreference.igamt.repository;
+package gov.nist.hit.hl7.igamt.xreference.repository;
 
 import java.util.List;
 

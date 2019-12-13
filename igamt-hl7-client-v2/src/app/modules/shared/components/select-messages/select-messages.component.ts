@@ -62,6 +62,7 @@ export class SelectMessagesComponent implements OnInit {
     }
   }
   selectMessageEvent(obj: any) {
+      console.log(obj);
       const element: IAddingInfo = {
         originalId: obj.id,
         id: Guid.create().toString(),
