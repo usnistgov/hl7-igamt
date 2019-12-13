@@ -6,7 +6,6 @@ import { SegmentEditEffects } from '../../root-store/segment-edit/segment-edit.e
 import * as fromSegmentEdit from '../../root-store/segment-edit/segment-edit.reducer';
 import { CoConstraintsModule } from '../co-constraints/co-constraints.module';
 import { SharedModule } from '../shared/shared.module';
-import { CoconstraintsEditorComponent } from './components/coconstraints-editor/coconstraints-editor.component';
 import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';
 import { SegmentCrossRefsComponent } from './components/cross-refs/segment-cross-refs.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
@@ -24,7 +23,6 @@ import { SegmentService } from './services/segment.service';
     SegmentStructureEditorComponent,
     SegmentCrossRefsComponent,
     MetadataEditorComponent,
-    CoconstraintsEditorComponent,
     SegmentConformanceStatementEditorComponent,
     DeltaEditorComponent,
   ],
@@ -40,6 +38,6 @@ import { SegmentService } from './services/segment.service';
     SegmentService,
     SegmentEditEffects,
   ],
-  exports: [PredefEditorComponent, PostdefEditorComponent, MetadataEditorComponent, CoconstraintsEditorComponent, SegmentConformanceStatementEditorComponent],
+  exports: [PredefEditorComponent, PostdefEditorComponent, MetadataEditorComponent, SegmentConformanceStatementEditorComponent],
 })
 export class SegmentModule { }

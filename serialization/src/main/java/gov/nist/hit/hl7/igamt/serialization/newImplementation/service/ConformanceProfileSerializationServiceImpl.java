@@ -68,12 +68,24 @@ private DeltaService deltaService;
 			if(conformanceProfileExportConfiguration.getStructID()) {
 	        conformanceProfileElement.addAttribute(new Attribute("structID",
 	            conformanceProfile.getStructID() != null ? conformanceProfile.getStructID() : ""));}
+			if(conformanceProfileExportConfiguration.getMetadataConfig().isAuthor()) {
+		        conformanceProfileElement.addAttribute(new Attribute("author",
+		            conformanceProfile.getAuthors() != null ? convertListToString(conformanceProfile.getAuthors()) : ""));}
+			if(conformanceProfileExportConfiguration.getMetadataConfig().isOrganization()) {
+		        conformanceProfileElement.addAttribute(new Attribute("organization",
+		            conformanceProfile.getOrganization() != null ? conformanceProfile.getOrganization() : ""));}
+			if(conformanceProfileExportConfiguration.getMetadataConfig().isType()) {
+		        conformanceProfileElement.addAttribute(new Attribute("type",
+		            conformanceProfile.getProfileType() != null ? conformanceProfile.getProfileType().name() : ""));}
+			if(conformanceProfileExportConfiguration.getMetadataConfig().isRole()) {
+		        conformanceProfileElement.addAttribute(new Attribute("role",
+		            conformanceProfile.getRole() != null ? conformanceProfile.getRole().name() : ""));}
+			
 //	        Element bindingElement = super.serializeResourceBinding(conformanceProfile.getBinding(), this.valuesetNamesMap);
 //	        if (bindingElement != null) {
 //	          conformanceProfileElement.appendChild(bindingElement);
 //	        }
 	        if(!conformanceProfileDataModel.getConformanceStatements().isEmpty() || !conformanceProfileDataModel.getPredicateMap().isEmpty()) {
-		    	  System.out.println("BOOM");
 	        Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatements(), conformanceProfileDataModel.getPredicateMap(), conformanceProfileExportConfiguration.getConstraintExportConfiguration());
 	        if (constraints != null) {
 	        	conformanceProfileElement.appendChild(constraints);
@@ -102,25 +114,28 @@ private DeltaService deltaService;
 
 	        // Calculate conformanceProfile delta if the conformanceProfile has an origin
 		    if(conformanceProfile.getOrigin() != null) {
-			  Delta delta = deltaService.delta(Type.CONFORMANCEPROFILE, igDataModel.getModel().getId(), conformanceProfile.getId());
-			  List<StructureDelta> structureDelta = delta.getDelta().stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-			  if(structureDelta != null && structureDelta.size()>0) {
-				  Element changesElement = new Element("Changes");
-				  changesElement.addAttribute(new Attribute("mode", conformanceProfileExportConfiguration.getDeltaConfig().getMode().name()));
+				List<StructureDelta> structureDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
+			  	if(structureDelta != null){
+					List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+					if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
+						Element changesElement = new Element("Changes");
+						changesElement.addAttribute(new Attribute("mode", conformanceProfileExportConfiguration.getDeltaConfig().getMode().name()));
 
 //		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
-				  changesElement.addAttribute(new Attribute("updatedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.UPDATED)));
-				  changesElement.addAttribute(new Attribute("addedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.ADDED)));
-				  changesElement.addAttribute(new Attribute("deletedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.DELETED)));
-				  List<Element> deltaElements = this.serializeDelta(structureDelta, conformanceProfileExportConfiguration.getDeltaConfig());
-				  if (deltaElements != null) {
-				  	for (Element el : deltaElements){
-						changesElement.appendChild(el);
-					}
-				  	conformanceProfileElement.appendChild(changesElement);
+						changesElement.addAttribute(new Attribute("updatedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.UPDATED)));
+						changesElement.addAttribute(new Attribute("addedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.ADDED)));
+						changesElement.addAttribute(new Attribute("deletedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.DELETED)));
+						List<Element> deltaElements = this.serializeDelta(structureDeltaChanged, conformanceProfileExportConfiguration.getDeltaConfig());
+						if (deltaElements != null) {
+							for (Element el : deltaElements){
+								changesElement.appendChild(el);
+							}
+							conformanceProfileElement.appendChild(changesElement);
 
-				  }
-			  }
+						}
+					}
+				}
+
 		    }
 
 		    return igDataModelSerializationService.getSectionElement(conformanceProfileElement, conformanceProfileDataModel.getModel(), level, conformanceProfileExportConfiguration);
@@ -342,6 +357,17 @@ private DeltaService deltaService;
 
 		}
 		return changedElements;
+	}
+	
+	private String convertListToString(List<String> list) {
+		// Set<String> valuesetNameString = new HashSet<>();
+		// for (String name : valuesetNames) {
+		// valuesetLocationsString.add(String.valueOf(location));
+		// }
+		if(list != null && !list.isEmpty()) {
+			return String.join(", ", list);
+		}
+		return "";
 	}
 
 

@@ -20,8 +20,10 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
   _options: GroupOptions;
   selected: IDisplayElement;
   _selection: Subscription;
+
   @Input()
   anchor: TemplateRef<any>;
+
   @Input()
   set options(opts: IDisplayElement[]) {
     if (this._selection && !this._selection.closed) {
@@ -69,7 +71,12 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
   abstract filter(opts: IDisplayElement[], selected: IDisplayElement): GroupOptions;
 
   referenceChanged(event: IDisplayElement) {
-    this.onChange(this.getInputValue().id, event.id, this.property, ChangeType.UPDATE);
+    this.onChange(this.getInputValue(), {
+      id: event.id,
+      type: event.type,
+      name: event.fixedName,
+      version: event.domainInfo.version,
+    }, this.property, ChangeType.UPDATE);
   }
 
   ngOnInit() {

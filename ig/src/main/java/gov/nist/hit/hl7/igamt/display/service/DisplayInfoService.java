@@ -2,6 +2,8 @@ package gov.nist.hit.hl7.igamt.display.service;
 
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -21,7 +23,9 @@ public interface DisplayInfoService {
 	public Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry);
 	public Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
 	public Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
+	public Set<DisplayElement> convertCoConstraintGroupRegistry(CoConstraintGroupRegistry registry);
 	public DisplayElement convertDatatype(Datatype datatype);
+	public DisplayElement convertCoConstraintGroup(CoConstraintGroup group);
 	public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile);
 	public DisplayElement convertSegment(Segment segment);
 	public DisplayElement convertValueSet(Valueset valueset);

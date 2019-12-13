@@ -49,6 +49,10 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontConfigurationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
@@ -61,15 +65,15 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 @EnableScheduling
 public class BootstrapApplication implements CommandLineRunner {
 
-	private static final String EMAIL_PORT = "email.port";
-	private static final String EMAIL_PROTOCOL = "email.protocol";
-	private static final String EMAIL_HOST = "email.host";
-	private static final String EMAIL_ADMIN = "email.admin";
-	private static final String EMAIL_FROM = "email.from";
-	private static final String EMAIL_SUBJECT = "email.subject";
-	private static final String EMAIL_SMTP_AUTH = "email.smtp.auth";
-	private static final String EMAIL_DEBUG = "email.debug";
-	
+  private static final String EMAIL_PORT = "email.port";
+  private static final String EMAIL_PROTOCOL = "email.protocol";
+  private static final String EMAIL_HOST = "email.host";
+  private static final String EMAIL_ADMIN = "email.admin";
+  private static final String EMAIL_FROM = "email.from";
+  private static final String EMAIL_SUBJECT = "email.subject";
+  private static final String EMAIL_SMTP_AUTH = "email.smtp.auth";
+  private static final String EMAIL_DEBUG = "email.debug";
+
   public static void main(String[] args) {
     SpringApplication.run(BootstrapApplication.class, args);
   }
@@ -79,44 +83,49 @@ public class BootstrapApplication implements CommandLineRunner {
   
   @Autowired
   DataFixer dataFixer;
+  @Autowired
+  private ExportConfigurationRepository exportConfigurationRepository;
 
   @Autowired
   MessageEventFacory messageEventFactory;
 
   @Autowired
   Environment env;
-  
-//  @Autowired
-//  RelationShipService testCache;
 
-//  @Autowired
-//  DatatypeLibraryService dataypeLibraryService;
-//
-//  @Autowired
-//  DatatypeClassifier datatypeClassifier;
-
-//    @Autowired
-//    CoConstraintService ccService;
   @Autowired
-  CoConstraintXmlGenerator ccXmlGen;
-//  
+  private ExportConfigurationService exportConfigurationService;
+
+  //  @Autowired
+  //  RelationShipService testCache;
+
+  //  @Autowired
+  //  DatatypeLibraryService dataypeLibraryService;
+  //
+  //  @Autowired
+  //  DatatypeClassifier datatypeClassifier;
+
+  //    @Autowired
+  //    CoConstraintService ccService;
+  //  @Autowired
+  //  CoConstraintXmlGenerator ccXmlGen;
+  //  
   @Autowired
   DatatypeService dataypeService;
- 
+
   @Autowired
   SegmentService segmentService;
-  
+
   @Autowired
   ConformanceProfileService messageService;
   @Autowired
   BindingCollector bindingCollector;
-  
-//  
-//  @Autowired
-//  DatatypeClassificationService datatypeClassificationService;
-//  
 
-  
+  //  
+  //  @Autowired
+  //  DatatypeClassificationService datatypeClassificationService;
+  //  
+
+
   @Bean
   public JavaMailSenderImpl mailSender() {
     JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -124,8 +133,8 @@ public class BootstrapApplication implements CommandLineRunner {
     mailSender.setPort(Integer.valueOf(env.getProperty(EMAIL_PORT)));
     mailSender.setProtocol(env.getProperty(EMAIL_PROTOCOL));
     Properties javaMailProperties = new Properties();
-//    javaMailProperties.setProperty("email.smtp.auth", env.getProperty(EMAIL_SMTP_AUTH));
-//    javaMailProperties.setProperty("mail.debug", env.getProperty(EMAIL_DEBUG));
+    //    javaMailProperties.setProperty("email.smtp.auth", env.getProperty(EMAIL_SMTP_AUTH));
+    //    javaMailProperties.setProperty("mail.debug", env.getProperty(EMAIL_DEBUG));
 
     mailSender.setJavaMailProperties(javaMailProperties);
     return mailSender;
@@ -139,18 +148,18 @@ public class BootstrapApplication implements CommandLineRunner {
     templateMessage.setSubject(env.getProperty(EMAIL_SUBJECT));
     return templateMessage;
   }
-  
-//
-//   @Bean(name = "multipartResolver")
-//   public CommonsMultipartResolver multipartResolver() {
-//   CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-//   return multipartResolver;
-//   }
-//   
-//   @Bean
-//   public GridFsTemplate gridFsTemplate() throws Exception {
-//       return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter());
-//   }
+
+  //
+  //   @Bean(name = "multipartResolver")
+  //   public CommonsMultipartResolver multipartResolver() {
+  //   CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+  //   return multipartResolver;
+  //   }
+  //   
+  //   @Bean
+  //   public GridFsTemplate gridFsTemplate() throws Exception {
+  //       return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter());
+  //   }
   // @Bean
   // public FilterRegistrationBean jwtFilter() {
   // final FilterRegistrationBean registrationBean = new FilterRegistrationBean();Datatype
@@ -201,15 +210,32 @@ public class BootstrapApplication implements CommandLineRunner {
   // }
 
   //
-//   @PostConstruct
-//    void createMessageEvent() {
-//      messageEventFactory.createMessageEvent();
-//      System.out.println("done");
+//  @PostConstruct
+//  void createMessageEvent() {
+//    messageEventFactory.createMessageEvent();      
+//
+//    System.out.println("done");
+//
 //  }
-//  
-   //
+
+  
+  @PostConstruct
+  void generateDefaultExportConfig() {
+    
+    List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
+    if( originals !=null && originals.isEmpty()) {
+      ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
+      basicExportConfiguration.setConfigName("Default Export Configuration");
+      basicExportConfiguration.setOriginal(true);
+      basicExportConfiguration.setDefaultType(false);
+      basicExportConfiguration.setDefaultConfig(false);
+      exportConfigurationRepository.save(basicExportConfiguration);
+    }
+  }
+  //  
+  //
   //@PostConstruct
-   void createSharedConstant() {
+  void createSharedConstant() {
     Config constant = new Config();
     this.sharedConstantService.deleteAll();
 
@@ -224,9 +250,9 @@ public class BootstrapApplication implements CommandLineRunner {
     hl7Versions.add("2.8");
     hl7Versions.add("2.8.1");
     hl7Versions.add("2.8.2");
-   
+
     List<String> usages = new ArrayList<String>();
-   
+
     usages.add("R");
     usages.add("RE");
     usages.add("RC");
@@ -238,38 +264,38 @@ public class BootstrapApplication implements CommandLineRunner {
     String loginEndpoint = "api/accounts/login";
     String createDomainInput = "api/domains/new";
 
-    
+
     List<ConnectingInfo> connection = new ArrayList<ConnectingInfo>();
     connection.add(new ConnectingInfo("GVT", "https://hl7v2.gvt.nist.gov/gvt/", redirectToken, loginEndpoint,createDomainInput, 1));
-    
+
     connection.add(new ConnectingInfo("GVT-DEV", "https://hit-dev.nist.gov:8099/gvt/", redirectToken, loginEndpoint,createDomainInput, 2));
 
-    
+
     connection.add(new ConnectingInfo("IZ-TOOL-DEV", "https://hit-dev.nist.gov:8098/iztool/", redirectToken, loginEndpoint,createDomainInput, 3));
 
     connection.add(new ConnectingInfo("IZ-TOOL", "https://hl7v2-iz-r1.5-testing.nist.gov/iztool/", redirectToken, loginEndpoint,createDomainInput, 4)); 
     constant.setConnection(connection);    
     constant.setPhinvadsUrl("https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=");
-    
+
     constant.setValueSetBindingConfig(generateValueSetConfig(constant.getHl7Versions()));
-    
+
     HashMap<String, Object> froalaConfig = new HashMap<>();
     constant.setFroalaConfig(froalaConfig);
     sharedConstantService.save(constant);
-  
-   }
-   
+
+  }
+
   // @PostConstruct
-   void fixBindings() throws ValidationException {
-	   this.fixDatatypes(Scope.HL7STANDARD);
-	   this.fixMessages(Scope.HL7STANDARD);
-	   this.fixSegment(Scope.HL7STANDARD);
-   }
-   
-   
-   
-   
-   
+  void fixBindings() throws ValidationException {
+    this.fixDatatypes(Scope.HL7STANDARD);
+    this.fixMessages(Scope.HL7STANDARD);
+    this.fixSegment(Scope.HL7STANDARD);
+  }
+
+
+
+
+
   //
   // // @PostConstruct
   // void generateDatatypeLibrary()
@@ -527,5 +553,53 @@ public class BootstrapApplication implements CommandLineRunner {
 	  this.dataFixer.readCsv();
 	}
 
-	
+
+
+  //   @PostConstruct
+  //   void classifyDatatypes() throws DatatypeNotFoundException {
+  //   datatypeClassificationService.deleteAll();
+  //   System.out.println("Classifying dts");
+  //   datatypeClassifier.classify();
+  //   System.out.println("ENd of Classifying dts");
+  //  
+  //   }
+  //  
+  //@PostConstruct
+  //void testCache() {
+  //	testCache.deleteAll();
+  //
+  //  ResourceInfo info = new ResourceInfo();
+  //  info.setId("user");
+  //  info.setDomainInfo(null);
+  //  info.setType(null);
+  //  
+  //  ResourceInfo info1 = new ResourceInfo();
+  //  info1.setId("user1");
+  //  info1.setDomainInfo(null);
+  //  info1.setType(null);
+  //  
+  //  
+  //  RelationShip r1 = new RelationShip(info, info1, ReferenceType.STRUCTURE, "test");
+  //  RelationShip r2 = new RelationShip(info1, info, ReferenceType.STRUCTURE, "test");
+  //
+  //  
+  //  testCache.save(r1);
+  //  testCache.save(r2);
+  //  
+  //  System.out.println(testCache.findAll().size());
+  //  
+  //  List<RelationShip> dep =testCache.findAllDependencies("user");
+  //  List<RelationShip>  refs=testCache.findCrossReferences("user");
+  //  
+  //  List<RelationShip>  byType=testCache.findByPath("test");
+  //  List<RelationShip>  all=testCache.findAll();
+  //  
+  //  for( RelationShip r :all) {
+  //	  System.out.println(r.getId());
+  //  }
+  //  System.out.println(dep);
+  //  System.out.println(refs);
+  //
+  //}
+
 }

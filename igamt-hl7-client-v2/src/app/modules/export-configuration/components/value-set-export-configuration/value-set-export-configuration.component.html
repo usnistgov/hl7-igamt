@@ -1,63 +1,37 @@
-<!-- <p-checkbox binary="true" label="Include Valueset Table Options"></p-checkbox> -->
-<table class="table table-sm table-striped">
-  <tr>
-    <th>Usages</th>
-  </tr>
-  <!-- <tr>
-    <td>Value Sets to Export</td>
-  </tr>
-  <tr>
-    <td>
-      <p-checkbox disabled="true" label="R" binary="true"></p-checkbox><br>
-      <p-checkbox disabled="true" label="RE" binary="true"></p-checkbox><br>
-      <p-checkbox disabled="true" label="C" binary="true"></p-checkbox><br>
-      <p-checkbox label="O" binary="true"></p-checkbox><br>
-      <p-checkbox label="X" binary="true"></p-checkbox><br>
-    </td>
-  </tr> -->
-  <tr>
-    <td>Codes to export</td>
-  </tr>
-  <tr>
-    <td>
-      <p-checkbox label="R" binary="true" [(ngModel)]="config.codesExport.r" (onChange)="triggerChange()"></p-checkbox><br>
-      <p-checkbox label="P" binary="true" [(ngModel)]="config.codesExport.p" (onChange)="triggerChange()"></p-checkbox><br>
-      <p-checkbox label="E" binary="true" [(ngModel)]="config.codesExport.e" (onChange)="triggerChange()"></p-checkbox><br>
-    </td>
-  </tr>
-  <!-- <tr>
-    <th>
-      Max Number of Codes to Export
-    </th>
-  </tr>
-  <tr>
-    <td><input type="number" class="form-control" [(ngModel)]="config.maxCodeNumber" (onChange)="triggerChange()"></td>
-  </tr> -->
-  <tr>
-    <th>Metadata</th>
-  </tr>
-  <tr>
-    <div layout="column">
-      <div class="config-checkbox">
-        <p-checkbox
-            label="Stability" binary="true" [(ngModel)]="config.stability" (onChange)="triggerChange()"></p-checkbox>
+<div style="width: 100%; display: flex; align-items: flex-start;">
+  <div style="width: 100%;">
+
+    <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+      <h5 class="card-title title-text custom-card-title">Usages (Fields to Export)</h5>
+      <ul class="list-group list-group-flush">
+
+        <li class="list-group-item"><p-checkbox label="R" binary="true" [(ngModel)]="config.codesExport.r" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox label="P" binary="true" [(ngModel)]="config.codesExport.p" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox label="E" binary="true" [(ngModel)]="config.codesExport.e" (onChange)="triggerChange()"></p-checkbox></li>
+
+      </ul>
+    </div>
+
+    <div style="display: flex;">
+      <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;">
+        <h5 class="card-title title-text custom-card-title">Metadata</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><p-checkbox label="Stability" binary="true" [(ngModel)]="config.stability" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox label="Extensibility" binary="true" [(ngModel)]="config.extensibility" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox label="Content Definition" binary="true" [(ngModel)]="config.contentDefinition" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox label="URL" binary="true" [(ngModel)]="config.url" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox label="Type Internal/External" binary="true" [(ngModel)]="config.vsType" (onChange)="triggerChange()"></p-checkbox></li>
+        </ul>
       </div>
-      <div class="config-checkbox">
-        <p-checkbox
-          label="Extensibility" binary="true" [(ngModel)]="config.extensibility" (onChange)="triggerChange()"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox
-          label="Content Definition" binary="true" [(ngModel)]="config.contentDefinition" (onChange)="triggerChange()"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox
-            label="URL" binary="true" [(ngModel)]="config.url" (onChange)="triggerChange()"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox
-          label="Type Internal/External" binary="true" [(ngModel)]="config.vsType" (onChange)="triggerChange()"></p-checkbox>
+      <div class="card card-configuration" style="flex-grow: 1;" *ngIf="displayColumns" >
+        <h5 class="card-title title-text custom-card-title">Columns to export</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let c of config.columns">
+            <p-checkbox label= {{c.name}} binary="true" [(ngModel)]="c.present" (onChange)="triggerChange()"></p-checkbox>
+          </li>
+        </ul>
       </div>
     </div>
-  </tr>
-</table>
+
+  </div>
+</div>

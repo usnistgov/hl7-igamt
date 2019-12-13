@@ -1,6 +1,6 @@
 import {
   AfterViewInit,
-  ChangeDetectionStrategy, ChangeDetectorRef,
+  ChangeDetectorRef,
   Component,
   ElementRef,
   EventEmitter,
@@ -9,18 +9,18 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
-import {ContextMenuComponent} from 'ngx-contextmenu';
-import {SelectItem} from 'primeng/api';
-import {Scope} from '../../../shared/constants/scope.enum';
-import {Type} from '../../../shared/constants/type.enum';
-import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {NodeHelperService} from '../../../shared/services/node-helper.service';
-import {ValueSetService} from '../../../value-set/service/value-set.service';
-import {IAddNewWrapper, IAddWrapper} from '../../models/ig/add-wrapper.class';
-import {IClickInfo} from '../../models/toc/click-info.interface';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
+import { ContextMenuComponent } from 'ngx-contextmenu';
+import { SelectItem } from 'primeng/api';
+import { Scope } from '../../../shared/constants/scope.enum';
+import { Type } from '../../../shared/constants/type.enum';
+import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { NodeHelperService } from '../../../shared/services/node-helper.service';
+import { ValueSetService } from '../../../value-set/service/value-set.service';
+import { IAddNewWrapper, IAddWrapper } from '../../models/ig/add-wrapper.class';
+import { IClickInfo } from '../../models/toc/click-info.interface';
 
 @Component({
   selector: 'app-ig-toc',
@@ -29,13 +29,14 @@ import {IClickInfo} from '../../models/toc/click-info.interface';
 })
 export class IgTocComponent implements OnInit, AfterViewInit {
   optionsToDisplay: any;
-  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED'}];
+  deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
 
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
   @ViewChild('vsLib') vsLib: ElementRef;
   @ViewChild('dtLib') dtLib: ElementRef;
   @ViewChild('segLib') segLib: ElementRef;
   @ViewChild('cpLib') cpLib: ElementRef;
+  @ViewChild('ccgLib') ccgLib: ElementRef;
   @ViewChild('top') top: ElementRef;
   // TODO set type
   options;
@@ -107,7 +108,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   copySection(node) {
     const id = this.nodeHelperService.cloneNode(node);
     this.update();
-    this.router.navigate(['./text', id], {relativeTo: this.activatedRoute});
+    this.router.navigate(['./text', id], { relativeTo: this.activatedRoute });
 
   }
 
@@ -120,12 +121,12 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.addChildren.emit({ node, type, scope });
   }
 
-  importCSV(node, type: Type, scope: Scope)  {
+  importCSV(node, type: Type, scope: Scope) {
     this.addVSFromCSV.emit({ node, type, scope });
   }
 
   copyResource(node: TreeNode) {
-    this.copy.emit({element: {...node.data}, existing: node.parent.data.children});
+    this.copy.emit({ element: { ...node.data }, existing: node.parent.data.children });
   }
 
   exportCSVFileForVS(node: TreeNode) {
@@ -154,6 +155,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
       this.dtLib.nativeElement.scrollIntoView();
     } else if (type === 'valueSets') {
       this.vsLib.nativeElement.scrollIntoView();
+    } else if (type === 'coConstraintGroups') {
+      this.ccgLib.nativeElement.scrollIntoView();
     }
   }
 
@@ -188,7 +191,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     console.log($event);
   }
   createNew(node: IDisplayElement, type: Type) {
-    this.addChild.emit({node, type});
+    this.addChild.emit({ node, type });
   }
 
   filterByDelta($event: string[]) {

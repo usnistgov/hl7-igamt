@@ -15,7 +15,7 @@ import { ISegment } from '../models/segment.interface';
 import { BindingService } from './binding.service';
 import { IBindingValues, IElementBinding } from './hl7-v2-tree.service';
 import { PredicateService } from './predicate.service';
-import { AResourceRepositoryService } from './resource-repository.service';
+import { AResourceRepositoryService, IRefData } from './resource-repository.service';
 
 export interface IBindingMap {
   [bindingPath: string]: IBindingNode[];
@@ -247,8 +247,8 @@ export class Hl7V2TreeService {
     return loop(elm);
   }
 
-  getNodeName(node: IHL7v2TreeNode): string {
-    return this.getNameFromPath(this.getPathInfo(node), true);
+  getNodeName(node: IHL7v2TreeNode, appendName: boolean = false): string {
+    return this.getNameFromPath(this.getPathInfo(node), !appendName);
   }
 
   getPathInfo(node: IHL7v2TreeNode): IPathInfo {
@@ -275,7 +275,7 @@ export class Hl7V2TreeService {
         ];
       }
     };
-    console.log(loop(node));
+
     const chain: IPathInfo[] = loop(node);
     return chain.reverse().reduce((pV, cV) => {
       cV.child = pV;
@@ -573,6 +573,15 @@ export class Hl7V2TreeService {
     return values;
   }
 
+  createReference(refsData: IRefData, type: Type, id: string): BehaviorSubject<IResourceRef> {
+    return new BehaviorSubject({
+      type,
+      id,
+      name: refsData[id].name,
+      version: refsData[id].version,
+    });
+  }
+
   // tslint:disable-next-line: cognitive-complexity
   formatSegment(
     segment: ISegment,
@@ -580,14 +589,11 @@ export class Hl7V2TreeService {
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
-    return repository.getRefData(segment.children.map((child) => child.ref.id)).pipe(
+    return repository.getRefData(segment.children.map((child) => child.ref.id), Type.DATATYPE).pipe(
       take(1),
       map((refsData) => {
         return segment.children.map((child) => {
-          const reference = new BehaviorSubject({
-            type: Type.DATATYPE,
-            id: child.ref.id,
-          });
+          const reference = this.createReference(refsData, Type.DATATYPE, child.ref.id);
           const level = parent ? parent.data.level + 1 : 0;
           const bindings = this.mergeBindings(parent ? parent.data.bindings.children[child.id] || [] : [], child.id, { resource: Type.SEGMENT }, segment.binding ? segment.binding.children || [] : [], level);
           return {
@@ -623,6 +629,7 @@ export class Hl7V2TreeService {
               ref: reference,
               bindings,
             },
+            parent,
             leaf: refsData[child.ref.id].leaf,
             $hl7V2TreeHelpers: {
               ref$: reference.asObservable(),
@@ -643,14 +650,11 @@ export class Hl7V2TreeService {
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
     const components = datatype.components || [];
 
-    return repository.getRefData(components.map((child) => child.ref.id)).pipe(
+    return repository.getRefData(components.map((child) => child.ref.id), Type.DATATYPE).pipe(
       take(1),
       map((refsData) => {
         return components.map((child) => {
-          const reference = new BehaviorSubject({
-            type: Type.DATATYPE,
-            id: child.ref.id,
-          });
+          const reference = this.createReference(refsData, Type.DATATYPE, child.ref.id);
           const level = parent ? parent.data.level + 1 : 0;
           let parentBindings = [];
           let currentBindings = [];
@@ -690,6 +694,7 @@ export class Hl7V2TreeService {
               ref: reference,
               bindings,
             },
+            parent,
             leaf: refsData[child.ref.id].leaf,
             $hl7V2TreeHelpers: {
               ref$: reference.asObservable(),
@@ -724,7 +729,7 @@ export class Hl7V2TreeService {
       ...segmentRefs,
     ];
     return combineLatest(
-      repository.areLeafs(segmentRefs).pipe(
+      repository.getRefData(segmentRefs, Type.SEGMENT).pipe(
         take(1),
       ),
       from(segmentRefs).pipe(
@@ -752,8 +757,8 @@ export class Hl7V2TreeService {
         }),
       )).pipe(
         take(1),
-        map(([leafs, segments]) => {
-          return this.formatStructure(confProfile.binding ? confProfile.binding.children || [] : [], confProfile.children, segments, leafs, viewOnly, changeable, parent);
+        map(([refsData, segments]) => {
+          return this.formatStructure(confProfile.binding ? confProfile.binding.children || [] : [], confProfile.children, segments, refsData, viewOnly, changeable, parent);
         }),
       );
   }
@@ -763,19 +768,16 @@ export class Hl7V2TreeService {
     bindings: IStructureElementBinding[],
     structure: IMsgStructElement[],
     segments: { [id: string]: ISegment },
-    leafs: { [id: string]: boolean },
+    refsData: IRefData,
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): IHL7v2TreeNode[] {
     return structure.map((child) => {
-      const leaf = child.type === Type.SEGMENTREF ? leafs[(child as ISegmentRef).ref.id] : !(child as IGroup).children || (child as IGroup).children.length === 0;
-      const reference = new BehaviorSubject({
-        type: child.type === Type.SEGMENTREF ? Type.SEGMENT : child.type,
-        id: child.type === Type.SEGMENTREF ? (child as ISegmentRef).ref.id : undefined,
-      });
+      const leaf = child.type === Type.SEGMENTREF ? refsData[(child as ISegmentRef).ref.id].leaf : !(child as IGroup).children || (child as IGroup).children.length === 0;
+      const reference = child.type === Type.SEGMENTREF ? this.createReference(refsData, Type.SEGMENT, (child as ISegmentRef).ref.id) : undefined;
       const name = child.type === Type.GROUP ? child.name : segments[(child as ISegmentRef).ref.id].name;
       const level = parent ? parent.data.level + 1 : 0;
-      const bds = this.mergeBindings([], child.id, { resource: Type.COMPOSITEPROFILE }, bindings, level);
+      const bds = this.mergeBindings(parent ? parent.data.bindings.children[child.id] || [] : [], child.id, { resource: Type.COMPOSITEPROFILE }, bindings, level);
       let predicate;
       if (bds.values.predicateId && bds.values.predicateId.length > 0) {
         predicate = this.predicate.getPredicate('', bds.values.predicateId[0].value);
@@ -801,10 +803,11 @@ export class Hl7V2TreeService {
           },
           comments: child.comments || [],
           pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
-          ref: child.type === Type.SEGMENTREF ? reference : undefined,
+          ref: reference,
           bindings: bds,
         },
         leaf,
+        parent,
         $hl7V2TreeHelpers: {
           predicate$: predicate,
           ref$: child.type === Type.SEGMENTREF ? reference.asObservable() : undefined,
@@ -812,7 +815,7 @@ export class Hl7V2TreeService {
         },
       };
       childNode.children = [
-        ...((!leaf && child.type === Type.GROUP) ? this.formatStructure([], (child as IGroup).children, segments, leafs, viewOnly, changeable, childNode) : []),
+        ...((!leaf && child.type === Type.GROUP) ? this.formatStructure([], (child as IGroup).children, segments, refsData, viewOnly, changeable, childNode) : []),
       ];
       return childNode;
     }).sort((a, b) => a.data.position - b.data.position);

@@ -1,3 +1,4 @@
+import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { ExtendedModule } from '@angular/flex-layout';
@@ -14,12 +15,14 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DropdownModule } from 'primeng/dropdown';
 import {
-  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
+  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
 } from 'primeng/primeng';
+import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
 import { AlertsContainerComponent } from '../core/components/alerts-container/alerts-container.component';
 import { MessageService } from '../core/services/message.service';
+import { AddCoConstraintGroupComponent } from './components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
@@ -32,6 +35,7 @@ import { DeltaColumnComponent } from './components/delta-column/delta-column.com
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
 import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
+import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
@@ -58,6 +62,7 @@ import { NewPasswordFromComponent } from './components/new-password-from/new-pas
 import { PatternDialogComponent } from './components/pattern-dialog/pattern-dialog.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
+import { ResourceDropdownComponent } from './components/resource-dropdown/resource-dropdown.component';
 import { ResourcePickerComponent } from './components/resource-picker/resource-picker.component';
 import { ScopeBadgeComponent } from './components/scope-badge/scope-badge.component';
 import { SelectDatatypesComponent } from './components/select-datatypes/select-datatypes.component';
@@ -73,6 +78,7 @@ import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.comp
 import { UsageDialogComponent } from './components/usage-dialog/usage-dialog.component';
 import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.component';
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
+import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
@@ -107,9 +113,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     NamingDuplicationDirective,
     NamingConventionDirective,
     CopyResourceComponent,
-    ImportCsvValuesetComponent,
     SelectNameComponent,
     Hl7V2TreeComponent,
+    DtmStructureComponent,
     UsageComponent,
     CardinalityComponent,
     LengthComponent,
@@ -134,6 +140,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddResourceComponent,
     SelectResourceIdsComponent,
     ExportXmlDialogComponent,
+    VerifyIgDialogComponent,
     MinNumberDirective,
     MaxNumberDirective,
     DeltaTreeComponent,
@@ -143,6 +150,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AlertsContainerComponent,
     DynamicMappingComponent,
     DeriveDialogComponent,
+    AddCoConstraintGroupComponent,
+    ResourceDropdownComponent,
+    ImportCsvValuesetComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -167,6 +177,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     TreeModule,
     TreeTableModule,
     TableModule,
+    SelectButtonModule,
     ColorPickerModule,
     ContextMenuModule.forRoot({
       useBootstrap4: true,
@@ -176,6 +187,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AccordionModule,
     InputSwitchModule,
     TableModule,
+    SelectButtonModule,
     ExtendedModule,
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot(),
@@ -184,6 +196,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     OrganizationChartModule,
     PanelModule,
     AutoCompleteModule,
+    DragDropModule,
   ],
   exports: [
     CommonModule,
@@ -228,10 +241,10 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChipsModule,
     ResourcePickerComponent,
     CopyResourceComponent,
-    ImportCsvValuesetComponent,
     NamingDuplicationDirective,
     NamingConventionDirective,
     Hl7V2TreeComponent,
+    DtmStructureComponent,
     UsageComponent,
     CardinalityComponent,
     LengthComponent,
@@ -250,6 +263,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ConstantValueComponent,
     PredicateComponent,
     TableModule,
+    SelectButtonModule,
     ColorPickerModule,
     StructureTreeComponent,
     CsPropositionComponent,
@@ -258,6 +272,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ValueSetStructureComponent,
     AddResourceComponent,
     ExportXmlDialogComponent,
+    VerifyIgDialogComponent,
     MinNumberDirective,
     MaxNumberDirective,
     DeltaTreeComponent,
@@ -266,8 +281,10 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExportToolComponent,
     AlertsContainerComponent,
     DynamicMappingComponent,
+    AddCoConstraintGroupComponent,
+    ResourceDropdownComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, ImportCsvValuesetComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent, AddCoConstraintGroupComponent, ImportCsvValuesetComponent, VerifyIgDialogComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

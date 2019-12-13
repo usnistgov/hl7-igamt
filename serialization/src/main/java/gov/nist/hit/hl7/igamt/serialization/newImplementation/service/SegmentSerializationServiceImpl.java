@@ -116,14 +116,14 @@ private DeltaService deltaService;
 	      
 	   // Calculate segment delta if the segment has an origin
 	      if(segment.getOrigin() != null && segmentExportConfiguration.isDeltaMode()) {
-	    	  Delta delta = deltaService.delta(Type.SEGMENT, igDataModel.getModel().getId(), segment.getId());
-	    	  List<StructureDelta> structureDelta = delta.getDelta().stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-	    	  if(structureDelta != null) {
-	    		  Element deltaElement = this.serializeDelta(structureDelta, segmentExportConfiguration.getDeltaConfig());
-	    		   if (deltaElement != null) {
-    		          segmentElement.appendChild(deltaElement);
-    		        }
-	    	  }
+			  List<StructureDelta> structureDelta = deltaService.delta(Type.SEGMENT, segment);
+			  List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+			  if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
+					  Element deltaElement = this.serializeDelta(structureDeltaChanged, segmentExportConfiguration.getDeltaConfig());
+					  if (deltaElement != null) {
+						  segmentElement.appendChild(deltaElement);
+					  }
+			  }
 	      }
 	        
 

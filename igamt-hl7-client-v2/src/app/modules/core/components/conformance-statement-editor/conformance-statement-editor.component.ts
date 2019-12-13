@@ -329,4 +329,5 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   onDeactivate() {
     this.ngOnDestroy();
   }
+
 }

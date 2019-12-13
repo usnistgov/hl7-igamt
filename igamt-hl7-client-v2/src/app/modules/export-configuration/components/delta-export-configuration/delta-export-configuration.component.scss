@@ -1,6 +1,13 @@
 .custom-switch {
-  padding-left: 2.25rem;
-  padding-bottom: 1rem; // added for positioning
+}
+
+.off-label {
+  padding-top: 0.4rem;
+  left: -2.3rem;
+  padding-bottom: 0.1rem;
+  position: absolute;
+  margin-bottom: 0;
+  vertical-align: top;
 }
 
 .custom-control-label {
@@ -43,6 +50,101 @@
   -webkit-transform: translateX(1.5rem); //translateX(0.75rem);
   transform: translateX(1.5rem); //translateX(0.75rem);
 }
-.p-grid{
-    text-align: center;
+.p-grid {
+  text-align: center;
 }
+.color-container {
+  display: flex;
+  flex-direction: row;
+}
+.color-value {
+  padding-left: 15px;
+}
+.selected-color {
+  margin: 5px auto !important;
+}
+.color-label {
+  padding-top: 17px;
+  padding-left: 15px;
+  width: 100px;
+}
+
+.circle {
+  height: 30px;
+  width: 30px;
+  box-sizing: border-box;
+  border-radius: 100%;
+  border: 1px solid #dadada;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.14);
+  flex: 25px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
+.colors-container {
+  width: 90%;
+  margin: auto;
+}
+.colors {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: #f3f3f3;
+  padding: 15px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.23);
+  border-radius: 20px;
+}
+
+.color-line {
+  display: flex;
+  margin: auto;
+}
+.hex-code {
+  display: flex;
+  margin-top: 20px;
+}
+
+.hex-code p {
+  width: 50%;
+  text-align: center;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  line-height: 45px;
+}
+
+.g-input {
+  border: 1px solid #e8ebed;
+  height: 45px;
+  border-radius: 5px;
+  width: 120px;
+}
+
+.hex-code .g-input input {
+  border: none;
+  width: 100%;
+  margin-top: 14px;
+  text-transform: uppercase;
+  padding: 0 25px;
+  outline: none;
+  text-align: center;
+  letter-spacing: 1.5px;
+  color: #595b65;
+  box-sizing: border-box;
+}
+
+.colors-table {
+  width: 100%;
+}
+
+.triangle-color {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 20px 20px 20px;;
+  border-color: transparent transparent #f3f3f3 transparent;
+  line-height: 0px;
+  _border-color: #000000 #000000 #ffffff #000000;
+  _filter: progid:DXImageTransform.Microsoft.Chroma(color='#000000');
+  margin: auto;
+}
+

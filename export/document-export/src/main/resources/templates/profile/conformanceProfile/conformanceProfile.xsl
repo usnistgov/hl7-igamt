@@ -6,17 +6,28 @@
 	<xsl:import href="/templates/profile/resource/authorNotes.xsl" />
 	<xsl:import href="/templates/profile/resource/versionDisplay.xsl" />
 	<xsl:import href="/templates/profile/resource/postDef.xsl" />
+    <xsl:import href="/templates/profile/resource/organization.xsl" />
+    	<xsl:import href="/templates/profile/resource/author.xsl" />
+    	<xsl:import href="/templates/profile/resource/role.xsl" />
+    	<xsl:import href="/templates/profile/resource/type.xsl" />
 	<xsl:include href="/templates/profile/conformanceProfile/messageSegment.xsl" />
 	<xsl:include href="/templates/profile/messageConstraint.xsl" />
 	<xsl:include href="/templates/profile/conformanceProfile/messageSegmentsOrGroups.xsl" />
 	<xsl:include href="/templates/profile/valueset/valueSetBindingList.xsl" />
 	<xsl:include href="/templates/profile/commentList.xsl" />
 	<xsl:include href="/templates/profile/metadata.xsl" />
+	
 	<xsl:template match="ConformanceProfile">
 		<xsl:call-template name="PreDef" />
 		<xsl:call-template name="VersionDisplay" />
 		<xsl:call-template name="UsageNotes"/>
 		<xsl:call-template name="AuthorNotes" />
+		<xsl:call-template name="Organization" />
+		<xsl:call-template name="Role" />
+		<xsl:call-template name="Type" />
+		<xsl:call-template name="PostDef" />
+	
+	
 		<xsl:if test="$messageMetadata.display = 'true'">
 			<xsl:apply-templates select="Metadata">
 				<xsl:with-param name="hl7Version">
@@ -166,7 +177,6 @@
                     </xsl:call-template>
                 </xsl:if>
 		
-		<xsl:call-template name="PostDef" />
 		<xsl:if test="count(Text[@Type='UsageNote']) &gt; 0">
 			<xsl:element name="br" />
 			<xsl:element name="span">

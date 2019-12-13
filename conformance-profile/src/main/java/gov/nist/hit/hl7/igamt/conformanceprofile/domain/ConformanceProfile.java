@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Role;
@@ -37,6 +38,8 @@ public class ConformanceProfile extends Resource {
   private Role role;
   private List<MessageProfileIdentifier> profileIdentifier;
   private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
+  private List<CoConstraintBinding> coConstraintsBindings;
+
   private ResourceBinding binding;
 
   public String getMessageType() {
@@ -162,5 +165,13 @@ public class ConformanceProfile extends Resource {
 
   public void setProfileIdentifier(List<MessageProfileIdentifier> profileIdentifier) {
     this.profileIdentifier = profileIdentifier;
+  }
+
+  public List<CoConstraintBinding> getCoConstraintsBindings() {
+    return coConstraintsBindings;
+  }
+
+  public void setCoConstraintsBindings(List<CoConstraintBinding> coConstraintsBindings) {
+    this.coConstraintsBindings = coConstraintsBindings;
   }
 }

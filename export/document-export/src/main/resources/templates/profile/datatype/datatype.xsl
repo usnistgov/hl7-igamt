@@ -33,8 +33,91 @@
         	<xsl:element name="br"/>
         </xsl:if>
         <xsl:if test="@name = 'DTM'">
-            <xsl:apply-templates select="DateTimeDatatype"/>
-        </xsl:if>
+<!--             <xsl:apply-templates select="DateTimeDatatype"/>
+ -->      
+ <xsl:element name="span">
+            <xsl:element name="b">
+                Data Type Definition
+            </xsl:element>
+        </xsl:element>
+        <xsl:element name="span">
+            <xsl:element name="table">
+                <xsl:attribute name="class">
+                    <xsl:text>contentTable</xsl:text>
+                </xsl:attribute>
+                <xsl:element name="col">
+                    <xsl:attribute name="width">
+                        <xsl:text>5%</xsl:text>
+                    </xsl:attribute>
+                </xsl:element>
+                <xsl:element name="col">
+                    <xsl:attribute name="width">
+                        <xsl:text>40%</xsl:text>
+                    </xsl:attribute>
+                </xsl:element>
+                <xsl:element name="col">
+                    <xsl:attribute name="width">
+                        <xsl:text>40%</xsl:text>
+                    </xsl:attribute>
+                </xsl:element>
+                <xsl:element name="col">
+                    <xsl:attribute name="width">
+                        <xsl:text>15%</xsl:text>
+                    </xsl:attribute>
+                </xsl:element>
+                <xsl:element name="thead">
+                    <xsl:attribute name="class">
+                        <xsl:text>contentThead</xsl:text>
+                    </xsl:attribute>
+                    <xsl:element name="tr">
+                        <xsl:element name="th">
+                            <xsl:text>#</xsl:text>
+                        </xsl:element>
+                        <xsl:element name="th">
+                            <xsl:text>Value</xsl:text>
+                        </xsl:element>
+                         <xsl:element name="th">
+                            <xsl:text>Predicate</xsl:text>
+                        </xsl:element>
+                        <xsl:element name="th">
+                            <xsl:text>Usage</xsl:text>
+                        </xsl:element>
+                       
+                    </xsl:element>
+                </xsl:element>
+                <xsl:element name="tbody">
+                    <xsl:for-each select="DateTimeComponentDefinition">
+                        <xsl:sort select="@position" data-type="number"></xsl:sort>
+                        <xsl:element name="tr">
+                            <xsl:element name="td">
+                                <xsl:value-of select="@position"/>
+                            </xsl:element>
+                            <xsl:element name="td">
+                                <xsl:value-of select="@name"/>
+                            </xsl:element>
+                            <xsl:element name="td">
+                                <xsl:choose>
+                                    <xsl:when test="@format != ''">
+                                        <xsl:value-of select="@format"/>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:attribute name="class">
+                                            <xsl:text>greyCell</xsl:text>
+                                        </xsl:attribute>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:element>
+                            <xsl:element name="td">
+                                <xsl:value-of select="@usage"/>
+                            </xsl:element>
+                            
+                        </xsl:element>
+                    </xsl:for-each>
+                </xsl:element>
+            </xsl:element>
+        </xsl:element>
+   </xsl:if>
+ 
         <xsl:if test="@name != 'DTM'">
             <xsl:element name="span">
                 <xsl:element name="span">
@@ -143,11 +226,35 @@
                     <xsl:element name="tbody">
                         <xsl:for-each select="Component">
                             <xsl:sort select="@position" data-type="number"></xsl:sort>
-                            <xsl:call-template name="component">
-                                <xsl:with-param name="style"
-                                                select="'background-color:white;text-decoration:normal'"/>
-                                <xsl:with-param name="showConfLength" select="../@ShowConfLength"/>
-                            </xsl:call-template>
+
+                            <xsl:variable name="changedPosition" select="./@position" />
+
+                            <xsl:choose>
+                                <xsl:when test="not(../Changes/@mode) or ../Changes/@mode = 'HIGHLIGHT'">
+                                    <xsl:call-template name="component">
+                                        <xsl:with-param name="style"
+                                                        select="'background-color:white;text-decoration:normal'"/>
+                                        <xsl:with-param name="showConfLength" select="../@ShowConfLength"/>
+                                        <xsl:with-param name="changeClass" select="../Changes/Change[@position=$changedPosition]"  />
+                                        <xsl:with-param name="updatedColor" select="../Changes/@updatedColor" />
+                                        <xsl:with-param name="addedColor" select="../Changes/@addedColor" />
+                                        <xsl:with-param name="deletedColor" select="../Changes/@deletedColor" />
+                                    </xsl:call-template>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <xsl:if test="../Changes/Change[@position=$changedPosition]">
+                                        <xsl:call-template name="component">
+                                            <xsl:with-param name="style"
+                                                            select="'background-color:white;text-decoration:normal'"/>
+                                            <xsl:with-param name="showConfLength" select="../@ShowConfLength"/>
+                                            <xsl:with-param name="changeClass" select="../Changes/Change[@position=$changedPosition]"  />
+                                            <xsl:with-param name="updatedColor" select="../Changes/@updatedColor" />
+                                            <xsl:with-param name="addedColor" select="../Changes/@addedColor" />
+                                            <xsl:with-param name="deletedColor" select="../Changes/@deletedColor" />
+                                        </xsl:call-template>
+                                    </xsl:if>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </xsl:for-each>
                     </xsl:element>
                 </xsl:element>

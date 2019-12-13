@@ -1,48 +1,55 @@
-<div class="p-grid" style="padding: 10px;">
-  <div class="p-col-4">
+<div class="card card-configuration" style="flex-grow: 1; margin-top: 10px;">
+  <div class="custom-card-title" style="display: flex; justify-content: space-between; align-items: center;">
+    <h5 class="card-title title-text" style="font-weight: bold;">Delta</h5>
     <div class="custom-control custom-switch">
+      <div class="off-label">
+        Off
+      </div>
       <input type="checkbox" class="custom-control-input" id="customSwitches" [(ngModel)]="active"
         (ngModelChange)="triggerChange()">
-      <label class="custom-control-label" for="customSwitches">Delta</label>
+      <label class="custom-control-label" for="customSwitches">On</label>
     </div>
   </div>
-  <ng-container *ngIf="active">
-    <div class="p-col-8 p-grid">
-      <div class="p-col-2" style="padding-top: 13px;">
-        Mode
-      </div>
-      <div class="p-col-8 form-group">
-        <p-dropdown [options]="modeOptions" [styleClass]="'form-control form-control-dropdown'"
-          [(ngModel)]="config.mode" name="mode" placeholder="Mode" (ngModelChange)="triggerChange()"></p-dropdown>
+
+  <div style="padding: 1.25rem;" *ngIf="active" >
+    <label style="font-weight: bold; margin-top: 10px;">Export Mode</label>
+    <p-dropdown
+      [options]="modeOptions"
+      [styleClass]="'form-control form-control-dropdown'"
+      [(ngModel)]="config.mode" name="mode" placeholder="Mode" (ngModelChange)="triggerChange()"></p-dropdown>
+    <label style="font-weight: bold; margin-top: 10px;">Highlight Colors</label>
+    <table class="table table-sm colors-table" style="margin-bottom: 0px !important;">
+      <tr>
+        <th style="text-align: center;">Updated</th>
+        <th style="text-align: center;">Added</th>
+        <th style="text-align: center;">Deleted</th>
+      </tr>
+      <tr>
+        <td class="no-pad">
+          <div class="circle selected-color" [ngStyle]="{'background': config.colors.UPDATED}"
+            (click)="toggleColors('UPDATED')"></div>
+            <div class="triangle-color" *ngIf="openedFor === 'UPDATED'"></div>
+        </td>
+        <td class="no-pad">
+          <div class="circle selected-color" [ngStyle]="{'background': config.colors.ADDED}"
+            (click)="toggleColors('ADDED')"></div>
+            <div class="triangle-color" *ngIf="openedFor === 'ADDED'"></div>
+        </td>
+        <td class="no-pad">
+          <div class="circle selected-color" [ngStyle]="{'background': config.colors.DELETED}"
+            (click)="toggleColors('DELETED')"></div>
+            <div class="triangle-color" *ngIf="openedFor === 'DELETED'"></div>
+        </td>
+      </tr>
+
+    </table>
+    <div *ngIf="colorOpened" class="colors-container">
+      <div class="colors">
+        <div *ngFor="let shades of defaultColors" class="color-line">
+          <div *ngFor="let paint of shades" class="circle" [ngStyle]="{'background': paint}"
+            (click)="selectColor(openedFor, paint)"></div>
+        </div>
       </div>
     </div>
-    <div class="p-col-12 p-grid">
-      <div class="p-col-4 p-grid">
-        <div class="p-col-6" style="padding-top: 13px;">
-          Updated
-        </div>
-        <div class="p-col-6">
-          <p-colorPicker [(ngModel)]="config.colors.UPDATED" (ngModelChange)="triggerChange()"></p-colorPicker>
-        </div>
-      </div>
-      <div class="p-col-4 p-grid">
-        <div class="p-col-6" style="padding-top: 13px;">
-          Added
-        </div>
-        <div class="p-col-6">
-          <p-colorPicker [(ngModel)]="config.colors.ADDED" (ngModelChange)="triggerChange()"></p-colorPicker>
-        </div>
-      </div>
-      <div class="p-col-4 p-grid">
-        <div class="p-col-6" style="padding-top: 13px;">
-          Deleted
-        </div>
-        <div class="p-col-6">
-          <p-colorPicker [(ngModel)]="config.colors.DELETED" (ngModelChange)="triggerChange()"></p-colorPicker>
-        </div>
-      </div>
-
-    </div>
-  </ng-container>
-
+  </div>
 </div>

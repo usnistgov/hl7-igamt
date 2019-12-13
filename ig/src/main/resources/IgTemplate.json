@@ -1,154 +1,181 @@
 [
-{
-"label": "Introduction",
-"type":"TEXT",
-"position": 1,
-"children":[	{
-			"label" :"Purpose",
-			"position":1,
-			"type":"TEXT"
-			},
-			{
-			"label" :"Audience",
-			"type":"TEXT",
-			"position":2
-			},
-			{
-			"label" :"Organization of this guide",
-			"type":"TEXT",
-			
-			"position":3
-			},
-			{
-			"label" :"Referenced profiles - antecedents",
-			"type":"TEXT",
-			
-			"position":4
-			},
-			{
-			"label" :"Scope",
-			"type":"TEXT",
-			
-			"position":5,	
-			"children":[{ "label" :"In Scope",
-			"type":"TEXT",
-			
-						"position":1
-									},
-									{ "label" :"Out of Scope",
-									"type":"TEXT",
-									
-						"position":2
-									}
-			]
-			},
-			{"label": "Out of Scope",
-			"type":"TEXT",
-			
-			"position":6}
-	]
-},
-{
-"label" : "Use Cases",
-"type":"TEXT",
-
-"position":2,
-"children": [{
- "label" : "Actors",
- "type":"TEXT",
- 
- "position":1
- },{
- "label":"General Assumptions",
- "type":"TEXT",
- "position":2,
- "children" : [
- 	{"label" :"Assumptions","type":"TEXT",
- 	 "position":1 }
- 	,{"label": "Pre-conditions",
- 	"type":"TEXT",
- 	 "position" :2}
-	 ,{"label" : "Post-conditions",
-	 "type":"TEXT",
-	  "position" :3}
- 	]	
- },
- 
- {"label": "Use Case",
- "type":"TEXT",
-  "position":3,
- "children":[
- 		{"label" : "User Story",
- 		"type":"TEXT",
- 		 "position" : 1},
- 		{"label": "Specific Assumptions",
- 		"type":"TEXT",
- 		 "position": 2,
- 		"children": [{"label": "Assumptions",
- 		"type":"TEXT",
- 		 "position" :1}, {"label" :"Pre-conditions",
- 		 "type":"TEXT",
- 		  "position": 2 },{"label":"Post-conditions", 
- 		  "type":"TEXT",
- 		  "position":3}]
- 		
- 		},
- 		{"label" : "Scenario",
- 		"type":"TEXT",
- 		 "position":3},
- 		{"label":"Context",
- 		"type":"TEXT",
- 		 "position" :4}, 
- 		{"label":"Interaction Model",
- 		"type":"TEXT",
- 		 "position" : 5},
- 		{"label":"Functional Requirements",
- 		"type":"TEXT",
- 		 "position" : 6}
- 	
- ]
- 
- }
-]
-
-},{
-	"label": "Message Infrastructure",
-	"position": 3,
-	"type":"PROFILE",
-	
-	"children" : [
-	{
-	"label" : "Profile Components",
-	"type": "PROFILECOMPONENTREGISTRY",
-	"position":1
-	}, 
-	{
-	"label" : "Conformance Profiles",
-	"type": "CONFORMANCEPROFILEREGISTRY",
-	"position":2
-	
-	}, 
-	{"label": "Composite Profiles",
-	"type": "COMPOSITEPROFILEREGISTRY",
-	"position":3
-	},
-	{
-	"label" : "Segments And Field Description",
-	"type": "SEGMENTREGISTRY",
-	"position":4	
-	}, 
-	{
-	"label" : "Data Types",
-	"type": "DATATYPEREGISTRY",
-	"position":5
-	}, {
-	"label": "Value Sets",
-	"type":"VALUESETREGISTRY",
-	"position":6
-	
-	}	
-	]
-
-}
-
+  {
+    "label": "Introduction",
+    "type": "TEXT",
+    "position": 1,
+    "children": [
+      {
+        "label": "Purpose",
+        "position": 1,
+        "type": "TEXT"
+      },
+      {
+        "label": "Audience",
+        "type": "TEXT",
+        "position": 2
+      },
+      {
+        "label": "Organization of this guide",
+        "type": "TEXT",
+        "position": 3
+      },
+      {
+        "label": "Referenced profiles - antecedents",
+        "type": "TEXT",
+        "position": 4
+      },
+      {
+        "label": "Scope",
+        "type": "TEXT",
+        "position": 5,
+        "children": [
+          {
+            "label": "In Scope",
+            "type": "TEXT",
+            "position": 1
+          },
+          {
+            "label": "Out of Scope",
+            "type": "TEXT",
+            "position": 2
+          }
+        ]
+      },
+      {
+        "label": "Out of Scope",
+        "type": "TEXT",
+        "position": 6
+      }
+    ]
+  },
+  {
+    "label": "Use Cases",
+    "type": "TEXT",
+    "position": 2,
+    "children": [
+      {
+        "label": "Actors",
+        "type": "TEXT",
+        "position": 1
+      },
+      {
+        "label": "General Assumptions",
+        "type": "TEXT",
+        "position": 2,
+        "children": [
+          {
+            "label": "Assumptions",
+            "type": "TEXT",
+            "position": 1
+          },
+          {
+            "label": "Pre-conditions",
+            "type": "TEXT",
+            "position": 2
+          },
+          {
+            "label": "Post-conditions",
+            "type": "TEXT",
+            "position": 3
+          }
+        ]
+      },
+      {
+        "label": "Use Case",
+        "type": "TEXT",
+        "position": 3,
+        "children": [
+          {
+            "label": "User Story",
+            "type": "TEXT",
+            "position": 1
+          },
+          {
+            "label": "Specific Assumptions",
+            "type": "TEXT",
+            "position": 2,
+            "children": [
+              {
+                "label": "Assumptions",
+                "type": "TEXT",
+                "position": 1
+              },
+              {
+                "label": "Pre-conditions",
+                "type": "TEXT",
+                "position": 2
+              },
+              {
+                "label": "Post-conditions",
+                "type": "TEXT",
+                "position": 3
+              }
+            ]
+          },
+          {
+            "label": "Scenario",
+            "type": "TEXT",
+            "position": 3
+          },
+          {
+            "label": "Context",
+            "type": "TEXT",
+            "position": 4
+          },
+          {
+            "label": "Interaction Model",
+            "type": "TEXT",
+            "position": 5
+          },
+          {
+            "label": "Functional Requirements",
+            "type": "TEXT",
+            "position": 6
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "label": "Message Infrastructure",
+    "position": 3,
+    "type": "PROFILE",
+    "children": [
+      {
+        "label": "Profile Components",
+        "type": "PROFILECOMPONENTREGISTRY",
+        "position": 1
+      },
+      {
+        "label": "Conformance Profiles",
+        "type": "CONFORMANCEPROFILEREGISTRY",
+        "position": 2
+      },
+      {
+        "label": "Composite Profiles",
+        "type": "COMPOSITEPROFILEREGISTRY",
+        "position": 3
+      },
+      {
+        "label": "Segments And Field Description",
+        "type": "SEGMENTREGISTRY",
+        "position": 4
+      },
+      {
+        "label": "Data Types",
+        "type": "DATATYPEREGISTRY",
+        "position": 5
+      },
+      {
+        "label": "Co-Constraint Groups",
+        "type": "COCONSTRAINTGROUPREGISTRY",
+        "position": 6
+      },
+      {
+        "label": "Value Sets",
+        "type": "VALUESETREGISTRY",
+        "position": 7
+      }
+    ]
+  }
 ]
