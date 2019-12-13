@@ -4,7 +4,7 @@ import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { distinctUntilChanged, filter, map, tap, withLatestFrom } from 'rxjs/operators';
 import { IgDocument } from 'src/app/modules/ig/models/ig/ig-document.class';
-import {EditorSave, selectDelta} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { EditorSave, selectDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { EditorChange, EditorSaveFailure, EditorSaveSuccess, IgEditActionTypes, UpdateActiveResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Scope } from '../../../shared/constants/scope.enum';

@@ -9,7 +9,7 @@ import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
 import { PropertyType } from '../../../shared/models/save-change';
-import {FroalaService} from '../../../shared/services/froala.service';
+import { FroalaService } from '../../../shared/services/froala.service';
 import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 

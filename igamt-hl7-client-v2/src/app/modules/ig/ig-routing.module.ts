@@ -99,6 +99,10 @@ const routes: Routes = [
         path: 'valueset',
         loadChildren: 'src/app/modules/value-set/value-set.module#ValueSetModule',
       },
+      {
+        path: 'coconstraintgroup',
+        loadChildren: 'src/app/modules/co-constraints/co-constraints.module#CoConstraintsModule',
+      },
     ],
   },
   {

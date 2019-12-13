@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { LoadConformanceProfile } from '../../../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import { selectMessagesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
@@ -84,12 +83,18 @@ export class ConformanceProfileStructureEditorComponent extends StructureEditorC
       ]);
   }
 
+  isDTM(): Observable<boolean> {
+    return of(false);
+  }
+
   saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message<any>> {
     return this.conformanceProfileService.saveChanges(id, igId, changes);
   }
+
   getById(id: string): Observable<IConformanceProfile> {
     return this.conformanceProfileService.getById(id);
   }
+
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
     return selectMessagesById;
   }

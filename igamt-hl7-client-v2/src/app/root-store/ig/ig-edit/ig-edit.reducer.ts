@@ -1,13 +1,13 @@
-import {createEntityAdapter, EntityState} from '@ngrx/entity';
-import {IWorkspace} from 'src/app/modules/shared/models/editor.class';
-import {IResource} from 'src/app/modules/shared/models/resource.interface';
-import {IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
-import {IgTOCNodeHelper} from '../../../modules/ig/services/ig-toc-node-helper.service';
-import {Type} from '../../../modules/shared/constants/type.enum';
-import {IContent} from '../../../modules/shared/models/content.interface';
-import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
-import {IRegistry} from '../../../modules/shared/models/registry.interface';
-import {IgEditActions, IgEditActionTypes} from './ig-edit.actions';
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { IWorkspace } from 'src/app/modules/shared/models/editor.class';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
+import { Type } from '../../../modules/shared/constants/type.enum';
+import { IContent } from '../../../modules/shared/models/content.interface';
+import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
+import { IRegistry } from '../../../modules/shared/models/registry.interface';
+import { IgEditActions, IgEditActionTypes } from './ig-edit.actions';
 
 export interface IResourcesState {
   selected: IResource;
@@ -26,6 +26,7 @@ export interface IState {
   valueSets: EntityState<IDisplayElement>;
   datatypes: EntityState<IDisplayElement>;
   messages: EntityState<IDisplayElement>;
+  coConstraintGroups: EntityState<IDisplayElement>;
   sections: EntityState<IDisplayElement>;
   resources: IResourcesState;
   workspace: IWorkspace;
@@ -48,6 +49,10 @@ export const initialState: IState = {
     ids: [],
   },
   datatypes: {
+    entities: {},
+    ids: [],
+  },
+  coConstraintGroups: {
     entities: {},
     ids: [],
   },
@@ -98,6 +103,7 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         segments: igElementAdapter.upsertMany(action.igInfo.segments, state.segments),
         messages: igElementAdapter.upsertMany(action.igInfo.messages, state.messages),
         valueSets: igElementAdapter.upsertMany(action.igInfo.valueSets, state.valueSets),
+        coConstraintGroups: igElementAdapter.upsertMany(action.igInfo.coConstraintGroups, state.coConstraintGroups),
         sections: igElementAdapter.upsertMany(sections, state.sections),
       };
     case IgEditActionTypes.ToggleDeltaSuccess:
@@ -106,6 +112,7 @@ export function reducer(state = initialState, action: IgEditActions): IState {
       state.segments = igElementAdapter.removeAll(state.segments);
       state.messages = igElementAdapter.removeAll(state.messages);
       state.valueSets = igElementAdapter.removeAll(state.valueSets);
+      state.coConstraintGroups = igElementAdapter.removeAll(state.coConstraintGroups);
       console.log(action.igInfo.ig.segmentRegistry.children.length);
       return {
         ...state,
@@ -114,6 +121,7 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         segments: igElementAdapter.upsertMany(action.igInfo.segments, state.segments),
         messages: igElementAdapter.upsertMany(action.igInfo.messages, state.messages),
         valueSets: igElementAdapter.upsertMany(action.igInfo.valueSets, state.valueSets),
+        coConstraintGroups: igElementAdapter.upsertMany(action.igInfo.coConstraintGroups, state.coConstraintGroups),
         sections: igElementAdapter.upsertMany(newSections, state.sections),
         delta: action.deltaMode,
       };
@@ -176,25 +184,36 @@ export function reducer(state = initialState, action: IgEditActions): IState {
           datatypeRegistry: action.payload.ig.datatypeRegistry,
           segmentRegistry: action.payload.ig.segmentRegistry,
           valueSetRegistry: action.payload.ig.valueSetRegistry,
+          coConstraintGroupRegistry: action.payload.ig.coConstraintGroupRegistry,
           content: state.document.content,
         },
         datatypes: igElementAdapter.upsertMany(action.payload.datatypes, state.datatypes),
         segments: igElementAdapter.upsertMany(action.payload.segments, state.segments),
         messages: igElementAdapter.upsertMany(action.payload.messages, state.messages),
         valueSets: igElementAdapter.upsertMany(action.payload.valueSets, state.valueSets),
+        coConstraintGroups: igElementAdapter.upsertMany(action.payload.coConstraintGroups, state.coConstraintGroups),
+      };
+    case IgEditActionTypes.CreateCoConstraintGroupSuccess:
+      return {
+        ...state,
+        document: {
+          ...state.document,
+          coConstraintGroupRegistry: action.payload.registry,
+        },
+        coConstraintGroups: igElementAdapter.upsertOne(action.payload.display, state.coConstraintGroups),
       };
 
-      case IgEditActionTypes.ImportResourceFromFileSuccess:
-        if (action.payload.display.type === Type.VALUESET) {
-          return {
-            ...state,
-            document: { ...state.document, valueSetRegistry: action.payload.reg },
-            valueSets: igElementAdapter.upsertOne(action.payload.display, state.valueSets),
-          };
-        }
-        break;
+    case IgEditActionTypes.ImportResourceFromFileSuccess:
+      if (action.payload.display.type === Type.VALUESET) {
+        return {
+          ...state,
+          document: { ...state.document, valueSetRegistry: action.payload.reg },
+          valueSets: igElementAdapter.upsertOne(action.payload.display, state.valueSets),
+        };
+      }
+      break;
 
-      case IgEditActionTypes.CopyResourceSuccess:
+    case IgEditActionTypes.CopyResourceSuccess:
 
       if (action.payload.display.type === Type.VALUESET) {
         return {
@@ -287,7 +306,6 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         ...state,
         workspace: {
           ...state.workspace,
-          changeTime: new Date(),
           current: {
             ...(action.current ? action.current : state.workspace.current),
           },

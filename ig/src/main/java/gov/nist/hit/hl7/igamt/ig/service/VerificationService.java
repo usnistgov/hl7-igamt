@@ -4,24 +4,27 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.display.model.VerificationReport;
+import gov.nist.hit.hl7.igamt.display.model.XMLVerificationReport;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.CPVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.DTSegVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.VSVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.service.impl.VerificationResult;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 @Service("verificationService")
 public interface VerificationService {
 
-  VerificationReport verifyXMLs(String profileXML, String constraintXML, String valuesetXML);
+  XMLVerificationReport verifyXMLs(String profileXML, String constraintXML, String valuesetXML);
 
-  VerificationResult verifyValueset(Valueset valueset, String documentId, VerificationResult vr);
+  VSVerificationResult verifyValueset(Valueset valueset);
 
-  VerificationResult verifyDatatype(Datatype datatype, String documentId, VerificationResult vr);
+  DTSegVerificationResult verifyDatatype(Datatype datatype);
 
-  VerificationResult verifySegment(Segment segment, String documentId, VerificationResult vr);
+  DTSegVerificationResult verifySegment(Segment segment);
 
-  VerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile, String documentId, VerificationResult vr);
+  CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile);
   
-  VerificationResult verifyIg(String documentId);
+  VerificationReport verifyIg(String documentId);
 
 }

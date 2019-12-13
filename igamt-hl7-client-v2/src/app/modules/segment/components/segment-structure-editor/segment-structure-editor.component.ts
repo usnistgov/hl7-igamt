@@ -1,8 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { Observable, ReplaySubject, Subscription } from 'rxjs';
+import { Observable, of, ReplaySubject, Subscription } from 'rxjs';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
@@ -82,7 +81,12 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent<IS
         HL7v2TreeColumnType.CONFLENGTH,
         HL7v2TreeColumnType.TEXT,
         HL7v2TreeColumnType.COMMENT,
-      ]);
+      ],
+    );
+  }
+
+  isDTM(): Observable<boolean> {
+    return of(false);
   }
 
   saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message<any>> {

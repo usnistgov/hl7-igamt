@@ -1,0 +1,24 @@
+.error-INFO {
+    background-color: #b1daff;
+}
+
+.error-WARNING {
+    background-color: #ffea38;
+}
+
+.error-ERROR {
+    background-color: orange;
+}
+
+.error-FATAL {
+    background-color: #f41005;
+}
+
+.errorType-STRUCTURE {
+    background-color: #d400d4;
+}
+
+.errorType-METADATA {
+    background-color: #a7d6a9;
+}
+

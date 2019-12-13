@@ -248,9 +248,9 @@ public class XMLManager implements Serializable {
 		return returnXml;
 	}
 
-	public static String parsingSpecialforXml(String fileName) {
+	public static String parsingSpecialforXml(String input) {
 
-		CharBuffer cb = CharBuffer.wrap(fileName);
+		CharBuffer cb = CharBuffer.wrap(input);
 		String xmlString = "";
 		while (cb.hasRemaining()) {
 

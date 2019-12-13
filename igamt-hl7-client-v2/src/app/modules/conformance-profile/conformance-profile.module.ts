@@ -4,7 +4,9 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { ConformanceProfileEditEffects } from '../../root-store/conformance-profile-edit/conformance-profile-edit.effects';
 import * as fromConformanceProfile from '../../root-store/conformance-profile-edit/conformance-profile-edit.reducer';
+import { CoConstraintsModule } from '../co-constraints/co-constraints.module';
 import { SharedModule } from '../shared/shared.module';
+import { CoConstraintsBindingEditorComponent } from './components/co-constraints-binding-editor/co-constraints-binding-editor.component';
 import { ConfomanceProfileCrossRefsComponent } from './components/confomance-profile-cross-refs/confomance-profile-cross-refs.component';
 import { ConformanceProfileStructureEditorComponent } from './components/conformance-profile-structure-editor/conformance-profile-structure-editor.component';
 import { CPConformanceStatementEditorComponent } from './components/conformance-statement-editor/cp-conformance-statement-editor.component';
@@ -24,10 +26,12 @@ import { ConformanceProfileService } from './services/conformance-profile.servic
     CPConformanceStatementEditorComponent,
     DeltaEditorComponent,
     MetadataEditorComponent,
+    CoConstraintsBindingEditorComponent,
   ],
   imports: [
     CommonModule,
     ConformanceProfileRoutingModule,
+    CoConstraintsModule,
     SharedModule,
     EffectsModule.forFeature([ConformanceProfileEditEffects]),
     StoreModule.forFeature(fromConformanceProfile.featureName, fromConformanceProfile.reducer),

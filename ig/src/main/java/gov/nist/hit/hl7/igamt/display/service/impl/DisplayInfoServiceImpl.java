@@ -2,8 +2,14 @@ package gov.nist.hit.hl7.igamt.display.service.impl;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupRegistry;
+import gov.nist.hit.hl7.igamt.coconstraints.service.impl.SimpleCoConstraintService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +48,8 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 	  @Autowired
 	  ValuesetService valuesetService;
 
+	@Autowired
+	SimpleCoConstraintService coConstraintService;
 
 	@Override
 	public IGDisplayInfo covertIgToDisplay(Ig ig) {
@@ -51,6 +59,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		ret.setSegments(convertSegmentRegistry(ig.getSegmentRegistry()));
 		ret.setDatatypes(convertDatatypeRegistry(ig.getDatatypeRegistry()));
 		ret.setValueSets(convertValueSetRegistry(ig.getValueSetRegistry()));
+		ret.setCoConstraintGroups(convertCoConstraintGroupRegistry(ig.getCoConstraintGroupRegistry()));
 		return ret;
 	}
 
@@ -99,6 +108,23 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 	}
 
 	@Override
+	public Set<DisplayElement> convertCoConstraintGroupRegistry(CoConstraintGroupRegistry registry) {
+		Set<String> ids= this.gatherIds(registry.getChildren());
+		List<CoConstraintGroup> ccGroups = ids.stream().map((id) -> {
+			try {
+				return this.coConstraintService.findById(id);
+			} catch (CoConstraintGroupNotFoundException e) {
+				return null;
+			}
+		}).filter(Objects::nonNull).collect(Collectors.toList());
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(CoConstraintGroup ccGroup : ccGroups) {
+			ret.add(convertCoConstraintGroup(ccGroup));
+		}
+		return ret;
+	}
+
+	@Override
 	public DisplayElement convertDatatype(Datatype datatype) {
 		
 		DisplayElement displayElement= new DisplayElement();
@@ -112,7 +138,20 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setType(Type.DATATYPE);
 		displayElement.setOrigin(datatype.getOrigin());
 		return displayElement;
-		
+	}
+
+	@Override
+	public DisplayElement convertCoConstraintGroup(CoConstraintGroup group) {
+		Segment base =  this.segmentService.findById(group.getBaseSegment());
+		DisplayElement displayElement= new DisplayElement();
+		displayElement.setId(group.getId());
+		displayElement.setFixedName(base.getLabel());
+		displayElement.setVariableName(group.getName());
+		displayElement.setDomainInfo(base.getDomainInfo());
+		displayElement.setLeaf(true);
+		displayElement.setType(Type.COCONSTRAINTGROUP);
+
+		return displayElement;
 	}
 
 	@Override

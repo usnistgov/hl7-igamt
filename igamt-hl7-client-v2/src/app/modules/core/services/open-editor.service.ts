@@ -6,11 +6,12 @@ import { concatMap, flatMap, switchMap, take } from 'rxjs/operators';
 import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess, OpenEditor, OpenEditorBase, OpenEditorFailure } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectIgId } from '../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Type } from '../../shared/constants/type.enum';
+import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
 import { IUsages } from '../../shared/models/cross-reference';
 import { IDelta } from '../../shared/models/delta';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IResource } from '../../shared/models/resource.interface';
-import {IDynamicMappingInfo} from '../../shared/models/segment.interface';
+import { IDynamicMappingInfo } from '../../shared/models/segment.interface';
 import { RxjsStoreHelperService } from '../../shared/services/rxjs-store-helper.service';
 import { IResourceMetadata } from '../components/resource-metadata-editor/resource-metadata-editor.component';
 import { MessageType, UserMessage } from '../models/message/message.class';
@@ -75,6 +76,45 @@ export class OpenEditorService {
           editor: action.payload.editor,
           initial: {
             changes: {},
+            resource,
+          },
+        });
+        this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
+        return RxjsStoreHelperService.listenAndReact(this.actions$, {
+          [IgEditActionTypes.LoadResourceReferencesSuccess]: {
+            do: (loadSuccess: LoadResourceReferencesSuccess) => {
+              return of(openEditor);
+            },
+          },
+          [IgEditActionTypes.LoadResourceReferencesFailure]: {
+            do: (loadFailure: LoadResourceReferencesFailure) => {
+              return of(new OpenEditorFailure({ id: action.payload.id }));
+            },
+          },
+        });
+      },
+    );
+  }
+
+  openCoConstraintsBindingEditor<T extends IConformanceProfile, A extends OpenEditorBase>(
+    _action: string,
+    type: Type,
+    displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
+    resource$: Observable<T>,
+    notFoundMessage: string,
+  ): Observable<Action> {
+    return this.openEditor<T, A>(
+      _action,
+      displayElement$,
+      () => resource$,
+      notFoundMessage,
+      (action: A, resource: T, display: IDisplayElement) => {
+        const openEditor = new OpenEditor({
+          id: action.payload.id,
+          element: display,
+          editor: action.payload.editor,
+          initial: {
+            value: resource.coConstraintsBindings,
             resource,
           },
         });

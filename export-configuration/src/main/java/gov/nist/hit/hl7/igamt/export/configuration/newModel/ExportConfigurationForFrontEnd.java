@@ -5,6 +5,7 @@ public class ExportConfigurationForFrontEnd {
 	private String id;
 	private String configName;
 	private boolean defaultConfig;
+    private boolean original;
 	
 	public boolean isDefaultConfig() {
 		return defaultConfig;
@@ -24,6 +25,12 @@ public class ExportConfigurationForFrontEnd {
 	public void setConfigName(String configName) {
 		this.configName = configName;
 	}
+  public boolean isOriginal() {
+    return original;
+  }
+  public void setOriginal(boolean original) {
+    this.original = original;
+  }
 
 	
 	
