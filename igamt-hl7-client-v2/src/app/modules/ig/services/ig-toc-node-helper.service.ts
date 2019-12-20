@@ -110,9 +110,7 @@ export class IgTOCNodeHelper {
     } else {
       return [];
     }
-
   }
-
   static createSectionFromIDisplay(iDisplayElement: IDisplayElement, i: number): IContent {
     const ret = {
       id: iDisplayElement.id,
@@ -123,16 +121,16 @@ export class IgTOCNodeHelper {
       label: iDisplayElement.variableName,
       children: [],
     };
-    if (iDisplayElement.type === Type.TEXT || iDisplayElement.type === Type.PROFILE) {
-      ret.children = this.updateSections(iDisplayElement.children);
-    }
+    ret.children = this.updateSections(iDisplayElement.children);
     return ret;
   }
 
   static updateSections(children: IDisplayElement[]) {
     const ret: IContent[] = [];
-    for (let i = 0; i < children.length; i++) {
-      ret.push(this.createSectionFromIDisplay(children[i], i));
+    if (children) {
+      for (let i = 0; i < children.length; i++) {
+        ret.push(this.createSectionFromIDisplay(children[i], i));
+      }
     }
     return ret;
   }
@@ -165,11 +163,12 @@ export class IgTOCNodeHelper {
     }
   }
   static compare(a: IDisplayElement, b: IDisplayElement) {
-    const left = this.getFullName(a);
-    const right = this.getFullName(b);
+    const left = a.type !== Type.CONFORMANCEPROFILE ? this.getFullName(a) : a.position;
+    const right = b.type !== Type.CONFORMANCEPROFILE ? this.getFullName(b) : b.position;
     if (left < right) {
       return -1;
-    } else { return 1; }
-
+    } else {
+      return 1;
+    }
   }
 }

@@ -9,8 +9,10 @@ import java.rmi.server.ExportException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,6 +49,7 @@ import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
@@ -63,6 +66,7 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
@@ -465,11 +469,72 @@ public class IGDocumentController extends BaseController {
       @RequestBody Set<TextSection> content, Authentication authentication)
           throws IGNotFoundException, IGUpdateException {
 
-    UpdateResult updateResult = igService.updateAttribute(id, "content", content, Ig.class);
-    if (!updateResult.wasAcknowledged()) {
-      throw new IGUpdateException(id);
-    }
+    
+    Ig ig = this.findIgById(id);
+    processContent(content, ig);
+    // UpdateResult updateResult = igService.updateAttribute(id, "content", content, Ig.class);
+    //
+    igService.save(ig);
     return new ResponseMessage<Object>(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
+  }
+  
+  private void processContent(Set<TextSection> content, Ig ig){
+    Set<TextSection> newStructure = new HashSet<TextSection>();
+    for(TextSection section : content ) {
+      if(section.getType().equals(Type.TEXT)){
+        newStructure.add(section);
+      }else if(section.getType().equals(Type.PROFILE)) {
+        newStructure.add(processProfileSection(section,ig));
+      }
+    }
+    ig.setContent(newStructure);
+  }
+
+  /**
+   * @param section
+   * @return
+   */
+  private TextSection processProfileSection(TextSection section, Ig ig) {
+    // TODO Auto-generated method stub
+    TextSection profileSection =new TextSection();
+    profileSection.setDescription(section.getDescription());
+    profileSection.setPosition(section.getPosition());
+    profileSection.setLabel(section.getLabel());
+    profileSection.setId(section.getId());
+    profileSection.setType(section.getType());
+    
+    if( section.getType().equals(Type.PROFILE) ){
+    Set<TextSection> children = new HashSet<TextSection>(); 
+    if(section.getChildren() != null) {
+      for(TextSection child : section.getChildren()) {
+          children.add(processProfileSection(child, ig));
+          if(section.getType().equals(Type.CONFORMANCEPROFILEREGISTRY)) {
+            updateLibraryFromSection(child, ig.getConformanceProfileRegistry());
+          }
+        }
+      profileSection.setChildren(children);
+      }
+    }
+    return profileSection;
+
+  }
+
+  /**
+   * @param child
+   * @param conformanceProfileRegistry
+   */
+  private void updateLibraryFromSection(TextSection child,
+      Registry reg) {
+    
+    Map<String, Integer> positionMap = new HashMap();
+    if(child.getChildren() !=null) {
+      positionMap = child.getChildren().stream().collect(Collectors.toMap(TextSection::getId, TextSection::getPosition));
+    }
+    for(Link l : reg.getChildren()) {
+      if(positionMap.containsKey(l.getId())) {
+        l.setPosition(positionMap.get(l.getId()));
+      }
+    }
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/updatemetadata", method = RequestMethod.POST, produces = {

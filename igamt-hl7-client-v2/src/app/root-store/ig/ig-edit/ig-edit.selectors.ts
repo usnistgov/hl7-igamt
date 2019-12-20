@@ -532,7 +532,7 @@ export const selectMessagesNodes = createSelector(
   selectMessagesEntites,
   selectConformanceProfileRegistry,
   (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
-    return registry.children.sort((a: ILink, b: ILink) => a.position - b.position).map((link) => messages[link.id]);
+    return IgTOCNodeHelper.sortRegistry(messages, registry);
   },
 );
 
