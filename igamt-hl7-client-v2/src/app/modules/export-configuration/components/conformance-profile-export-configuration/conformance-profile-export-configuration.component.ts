@@ -15,6 +15,9 @@ export class ConformanceProfileExportConfigurationComponent implements OnInit {
   config: any;
 
   @Input()
+  viewOnly: boolean;
+
+  @Input()
   displayColumns: boolean;
 
   @Output()

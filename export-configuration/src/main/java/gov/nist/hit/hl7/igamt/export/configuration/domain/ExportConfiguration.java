@@ -122,6 +122,7 @@ public class ExportConfiguration {
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();  
     defaultConfiguration.setConfigName("");
+    defaultConfiguration.setOriginal(false);
     defaultConfiguration.setDefaultConfig(false);
     defaultConfiguration.setCoConstraintExportMode(CoConstraintExportMode.COMPACT);
     defaultConfiguration.setDefaultType(true);

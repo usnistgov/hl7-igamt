@@ -80,37 +80,33 @@ private DeltaService deltaService;
 			if(conformanceProfileExportConfiguration.getMetadataConfig().isRole()) {
 		        conformanceProfileElement.addAttribute(new Attribute("role",
 		            conformanceProfile.getRole() != null ? conformanceProfile.getRole().name() : ""));}
-			
-//	        Element bindingElement = super.serializeResourceBinding(conformanceProfile.getBinding(), this.valuesetNamesMap);
-//	        if (bindingElement != null) {
-//	          conformanceProfileElement.appendChild(bindingElement);
-//	        }
 	        if(!conformanceProfileDataModel.getConformanceStatements().isEmpty() || !conformanceProfileDataModel.getPredicateMap().isEmpty()) {
 	        Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatements(), conformanceProfileDataModel.getPredicateMap(), conformanceProfileExportConfiguration.getConstraintExportConfiguration());
 	        if (constraints != null) {
 	        	conformanceProfileElement.appendChild(constraints);
         }
 	        }
+	
+	        
 	        if (conformanceProfile.getChildren() != null
-	            && conformanceProfile.getChildren().size() > 0) {
-	        	List<MsgStructElement> msgStructElementList = conformanceProfile.getChildren().stream().sorted((e1, e2) -> 
-	        	e1.getPosition() - e2.getPosition()).collect(Collectors.toList());
+		            && conformanceProfile.getChildren().size() > 0) {
 	        	
-	          for (MsgStructElement msgStructElm : msgStructElementList) {
-	            	System.out.println("HERE1 position : " +  msgStructElm.getPosition() +" Name is : " + msgStructElm.getName());
-		            if (msgStructElm != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), msgStructElm.getUsage())) {
-//		            	System.out.println("HERE2 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
-	            if (msgStructElm != null) {
-//	              if(this.bindedGroupsAndSegmentRefs.contains(msgStructElm.getId())) {
-	                Element msgStructElement = this.serializeMsgStructElement(igDataModel, msgStructElm, 0, conformanceProfileExportConfiguration);
-	                if (msgStructElement != null) {
-	                  conformanceProfileElement.appendChild(msgStructElement);
-	                }
-	              }
-		            }
-//	            }
-	          }
-	        }
+		        	List<MsgStructElement> msgStructElementList = conformanceProfile.getChildren().stream().sorted((e1, e2) -> 
+		        	e1.getPosition() - e2.getPosition()).collect(Collectors.toList());
+		        	
+		          for (MsgStructElement messageStructElm : msgStructElementList) {
+			            if (messageStructElm != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), messageStructElm.getUsage())) {
+		            if (messageStructElm != null) {
+//		              if(this.bindedGroupsAndSegmentRefs.contains(msgStructElm.getId())) {
+		                Element msgStructElement = this.serializeMsgStructElement(igDataModel, messageStructElm, 0, conformanceProfileExportConfiguration);
+		                if (msgStructElement != null) {
+		                  conformanceProfileElement.appendChild(msgStructElement);
+		                }
+		              }
+			            }
+//		            }
+		          }
+		        }
 
 	        // Calculate conformanceProfile delta if the conformanceProfile has an origin
 		    if(conformanceProfile.getOrigin() != null) {
@@ -360,10 +356,6 @@ private DeltaService deltaService;
 	}
 	
 	private String convertListToString(List<String> list) {
-		// Set<String> valuesetNameString = new HashSet<>();
-		// for (String name : valuesetNames) {
-		// valuesetLocationsString.add(String.valueOf(location));
-		// }
 		if(list != null && !list.isEmpty()) {
 			return String.join(", ", list);
 		}

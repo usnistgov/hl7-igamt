@@ -23,6 +23,7 @@
 		<xsl:call-template name="UsageNotes"/>
 		<xsl:call-template name="AuthorNotes" />
 		<xsl:call-template name="Organization" />
+		<xsl:call-template name="Author" />
 		<xsl:call-template name="Role" />
 		<xsl:call-template name="Type" />
 		<xsl:call-template name="PostDef" />

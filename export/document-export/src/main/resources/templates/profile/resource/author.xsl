@@ -4,7 +4,11 @@
 		<xsl:if test="normalize-space(@author)!=''">
 <!-- 			<xsl:value-of disable-output-escaping="yes" select="concat('HL7 version : ' , @version)"></xsl:value-of>
  -->			
- 			<b>Author</b><xsl:value-of disable-output-escaping="yes" select="@author"></xsl:value-of>
+ 			<b>Authors : </b>
+ 			
+ 			<xsl:value-of disable-output-escaping="yes" select="@author"></xsl:value-of>
+ 			
+ 			
             <xsl:element name="br" />
 		</xsl:if>
 	</xsl:template>
