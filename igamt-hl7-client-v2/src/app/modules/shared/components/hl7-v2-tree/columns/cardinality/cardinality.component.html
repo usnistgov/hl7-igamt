@@ -1,8 +1,20 @@
 <ng-container *ngIf="range" [ngSwitch]="viewOnly">
   <ng-container *ngSwitchCase="false">
     <form #cardinalityForm="ngForm">
-      <input class="range-input" type="number" [name]="location + 'min'" [id]="location + 'min'"  placeholder="Min" min="0" [(ngModel)]="range.min" (ngModelChange)="minChange($event)"> ..
-      <input class="range-input" type="text" [name]="location + 'max'" [id]="location + 'max'" placeholder="Max" [(ngModel)]="range.max" (ngModelChange)="maxChange($event)">
+      <input class="range-input" type="number" id="min" name="min" required placeholder="Min" min="0" [(ngModel)]="range.min" (ngModelChange)="minChange($event)" #min="ngModel"> ..
+      <input class="range-input" type="text" id="max" name="max"  required placeholder="Max" [(ngModel)]="range.max" (ngModelChange)="maxChange($event)" #max="ngModel">
+      <div *ngIf="min.invalid || max.invalid" class="input-form-invalid-feedback"
+           style="margin-left: 10px;">
+        {{convertErrors(min, max)}}
+      </div>
+      <div *ngIf="!min.invalid && !max.invalid && (range.min >= range.max)" class="input-form-invalid-feedback"
+           style="margin-left: 10px;">
+        min is less than max
+      </div>
+      <div *ngIf="!min.invalid && !max.invalid && (range.min < 1 && usage.value === 'R')" class="input-form-invalid-feedback"
+           style="margin-left: 10px;">
+        min should be 1 or more.
+      </div>
     </form>
   </ng-container>
   <ng-container *ngSwitchCase="true">

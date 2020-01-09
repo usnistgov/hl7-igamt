@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { filter, map, takeWhile } from 'rxjs/operators';
 import { PropertyType } from 'src/app/modules/shared/models/save-change';
 import { Usage } from '../../../../constants/usage.enum';
@@ -16,6 +16,9 @@ export class CardinalityComponent extends HL7v2TreeColumnComponent<ICardinalityR
   range: ICardinalityRange;
   @ViewChild('cardinalityForm') form;
   alive = true;
+
+  @Input()
+  usage: string;
 
   constructor() {
     super([PropertyType.CARDINALITYMAX, PropertyType.CARDINALITYMIN]);
@@ -54,4 +57,27 @@ export class CardinalityComponent extends HL7v2TreeColumnComponent<ICardinalityR
     ).subscribe();
   }
 
+  convertErrors(min_errors:any, max_errors:any): string[] {
+    console.log(this.usage);
+    const errors = [];
+    for (const property in min_errors.control.errors) {
+      if (property === 'required') {
+        errors.push('min is required');
+        break;
+      } else if (min_errors.control.errors[property]) {
+        errors.push(min_errors.control.errors[property]);
+        break;
+      }
+    }
+    for (const property in max_errors.control.errors) {
+      if (property === 'required') {
+        errors.push('max is required');
+        break;
+      } else if (max_errors.control.errors[property]) {
+        errors.push(max_errors.control.errors[property]);
+        break;
+      }
+    }
+    return errors;
+  }
 }
