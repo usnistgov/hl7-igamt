@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { filter, map, takeWhile } from 'rxjs/operators';
 import { PropertyType } from 'src/app/modules/shared/models/save-change';
 import { Usage } from '../../../../constants/usage.enum';
@@ -16,6 +16,8 @@ export class CardinalityComponent extends HL7v2TreeColumnComponent<ICardinalityR
   range: ICardinalityRange;
   @ViewChild('cardinalityForm') form;
   alive = true;
+  @Input()
+  usage: Usage;
 
   constructor() {
     super([PropertyType.CARDINALITYMAX, PropertyType.CARDINALITYMIN]);
@@ -28,6 +30,10 @@ export class CardinalityComponent extends HL7v2TreeColumnComponent<ICardinalityR
 
   onInitValue(value: ICardinalityRange): void {
     this.range = { ...value };
+  }
+
+  hasValue(range) {
+    return range && range.min !== undefined && range.max !== undefined;
   }
 
   minChange(value: number) {
@@ -43,6 +49,7 @@ export class CardinalityComponent extends HL7v2TreeColumnComponent<ICardinalityR
       takeWhile(() => this.alive),
       filter((change) => change.propertyType === PropertyType.USAGE && change.location === this.location),
       map((change) => {
+        this.usage = change.propertyValue;
         if (change.propertyValue === Usage.R && this.range && this.range.min === 0) {
           this.range.min = 1;
           this.minChange(1);
