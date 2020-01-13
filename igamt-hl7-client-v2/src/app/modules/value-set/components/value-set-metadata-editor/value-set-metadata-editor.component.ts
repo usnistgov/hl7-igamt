@@ -59,6 +59,7 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
           label: 'Name',
           placeholder: 'Name',
           validators: [],
+          disabled: true,
           type: FieldType.TEXT,
           id: 'name',
           name: 'Name',

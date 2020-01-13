@@ -17,7 +17,7 @@ import { selectIgId } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { ToggleDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
-import { CollapseTOC, CreateCoConstraintGroup } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { CollapseTOC, CreateCoConstraintGroup, CreateCoConstraintGroupSuccess } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
 import { selectAllSegments } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
@@ -300,7 +300,14 @@ export class IgEditSidebarComponent implements OnInit {
           take(1),
           map((result) => {
             if (result) {
-              console.log(result);
+              RxjsStoreHelperService.listenAndReact(this.actions, {
+                [IgEditActionTypes.CreateCoConstraintGroupSuccess]: {
+                  do: (action: CreateCoConstraintGroupSuccess) => {
+                    this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
+                    return of();
+                  },
+                },
+              }).subscribe();
               this.store.dispatch(new CreateCoConstraintGroup({ documentId: igId, ...result }));
             }
           }),

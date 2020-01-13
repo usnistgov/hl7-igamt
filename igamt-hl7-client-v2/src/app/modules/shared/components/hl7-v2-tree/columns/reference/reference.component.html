@@ -1,10 +1,12 @@
 <ng-container *ngIf="ref" [ngSwitch]="viewOnly">
-    <p-dropdown [options]="_options" *ngSwitchCase="false" [appendTo]="anchor" dataKey="id" [(ngModel)]="ref" (ngModelChange)="referenceChanged($event)" [group]="true" [filter]="true" filterBy="value.fixedName,value.variableName">
+  <div *ngSwitchCase="false">
+    <div *ngIf="editMode" style="display: flex; justify-content: space-between;">
+      <p-dropdown  [options]="_options" [appendTo]="anchor" dataKey="id" [(ngModel)]="ref" (ngModelChange)="referenceChanged($event)" [group]="true" [filter]="true" filterBy="value.fixedName,value.variableName">
         <ng-template let-item pTemplate="selectedItem">
           <ng-container *ngIf="item.value">
-              <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
-              <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
-              <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
+            <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
+            <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
+            <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
           </ng-container>
         </ng-template>
         <ng-template let-item pTemplate="item">
@@ -12,12 +14,32 @@
           <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
           <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
         </ng-template>
-  </p-dropdown>
+      </p-dropdown>
+      <button class="btn btn-sm btn-danger" (click)="toggleEdit()">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+
+    <div *ngIf="!editMode" style="display: flex; justify-content: space-between;">
+      <div style="display: flex; align-items: center;">
+        <ng-container *ngTemplateOutlet="display; context : { $implicit : selected }"></ng-container>
+      </div>
+      <button class="btn btn-sm btn-primary" (click)="toggleEdit()">
+        <i class="fa fa-pencil"></i>
+      </button>
+    </div>
+  </div>
+
   <div *ngSwitchCase="true">
     <ng-container *ngIf="selected">
-        <app-scope-badge *ngIf="selected.domainInfo" [scope]="selected.domainInfo.scope" [version]="selected.domainInfo.version"></app-scope-badge>
-        <app-entity-bagde [type]="selected.type"></app-entity-bagde>
-        <span *ngIf="selected.fixedName"> {{selected.fixedName}}</span><span *ngIf="selected.variableName">{{ '_' + selected.variableName}}</span>
-      </ng-container>
+      <ng-container *ngTemplateOutlet="display; context : { $implicit : selected }"></ng-container>
+    </ng-container>
   </div>
 </ng-container>
+<ng-template #display let-selected >
+  <div>
+    <app-scope-badge *ngIf="selected.domainInfo" [scope]="selected.domainInfo.scope" [version]="selected.domainInfo.version"></app-scope-badge>
+    <app-entity-bagde [type]="selected.type"></app-entity-bagde>
+    <span *ngIf="selected.fixedName"> {{selected.fixedName}}</span><span *ngIf="selected.variableName">{{ '_' + selected.variableName}}</span>
+  </div>
+</ng-template>
