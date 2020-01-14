@@ -19,4 +19,5 @@ export class UsageDialogComponent implements OnInit {
 export interface IUsageDialogData {
   title: string;
   usages:  IUsages[];
+  documentId: string;
 }

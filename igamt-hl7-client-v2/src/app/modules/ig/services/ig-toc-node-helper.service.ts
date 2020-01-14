@@ -148,8 +148,12 @@ export class IgTOCNodeHelper {
       }
     }
   }
-  static sortRegistry(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
+  static sortRegistryByName(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
     return Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement) => this.compare(a, b));
+  }
+
+  static sortRegistryByPosition(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
+    return Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
   }
   static getFullName(node: IDisplayElement): string {
     if (node.fixedName && node.fixedName.length) {
@@ -163,8 +167,8 @@ export class IgTOCNodeHelper {
     }
   }
   static compare(a: IDisplayElement, b: IDisplayElement) {
-    const left = a.type !== Type.CONFORMANCEPROFILE ? this.getFullName(a) : a.position;
-    const right = b.type !== Type.CONFORMANCEPROFILE ? this.getFullName(b) : b.position;
+    const left = this.getFullName(a);
+    const right =this.getFullName(b);
     if (left < right) {
       return -1;
     } else {

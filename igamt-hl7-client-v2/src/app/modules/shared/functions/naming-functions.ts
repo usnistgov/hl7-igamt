@@ -14,7 +14,9 @@ export function isDuplicated(fixedName: string, variableName: string, domainInfo
 }
 
 export function validConvention(scope: Scope, type: Type, ext: string): IConventionError {
-  if (ext) {
+   const initial: IConventionError = {valid: true};
+
+   if (ext) {
     if (scope === Scope.SDTF) {
       if ( !isTowDigets(ext)) {
         return {valid: false, error: 'The extension must be 2 digets '};
@@ -26,9 +28,8 @@ export function validConvention(scope: Scope, type: Type, ext: string): IConvent
         return {valid: false, error: 'User extension is too long'};
       }
     }
-  } else {
-      return {valid: false, error: 'User extension is required'};
   }
+   return initial;
 }
 
 export function startWithLetter(ext) {

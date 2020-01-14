@@ -223,8 +223,13 @@ export class IgEditSidebarComponent implements OnInit {
                 data: {
                   title: 'Cross References found',
                   usages,
+                  documentId: id,
                 },
               });
+              this.router.events
+                .subscribe((h) => {
+                  dialogRef.close();
+                });
               dialogRef.afterClosed().subscribe(
               );
             }

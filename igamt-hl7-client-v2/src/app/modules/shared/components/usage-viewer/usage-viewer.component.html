@@ -41,7 +41,7 @@
   <ng-template let-columns="columns" let-expanded="expanded" let-index="rowIndex" let-node="node" let-rowData let-rowNode pTemplate="body">
     <tr>
       <td>
-      <app-display-section [element]="rowData.element"></app-display-section>
+      <app-display-ref [element]="rowData.element" [documentId]="igId"  [documentType]="'IGDOCUMENT'"></app-display-ref>
       </td>
       <td>
         <app-entity-bagde [type]="rowData.location.type"></app-entity-bagde>
