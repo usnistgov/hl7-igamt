@@ -3,7 +3,7 @@ import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
 import { Md5 } from 'md5-typescript';
 import { combineLatest, Observable, of } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { map, take, flatMap } from 'rxjs/operators';
 import { ICardinalityRange, IHL7v2TreeNode, IResourceKey } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../shared/constants/type.enum';
 import { ICoConstraintGroupBindingRef, ICoConstraintVariesCell, INarrativeHeader } from '../../shared/models/co-constraint.interface';
@@ -31,6 +31,7 @@ import {
 } from '../../shared/models/co-constraint.interface';
 import { IResource } from '../../shared/models/resource.interface';
 import { IField, ISegment } from '../../shared/models/segment.interface';
+import { BindingService } from '../../shared/services/binding.service';
 import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
 
 @Injectable({
@@ -38,7 +39,7 @@ import { AResourceRepositoryService } from '../../shared/services/resource-repos
 })
 export class CoConstraintEntityService {
 
-  constructor() { }
+  constructor(private binding: BindingService) { }
 
   mergeGroupWithTable(ccTable: ICoConstraintTable & ICoConstraintGroup, group: ICoConstraintGroup) {
     this.mergeHeaders(ccTable, ccTable.headers.selectors, group.headers.selectors);
@@ -207,22 +208,27 @@ export class CoConstraintEntityService {
       parent,
       repository.fetchResource(elmRef.type, elmRef.id)).pipe(
         take(1),
-        map(([p, resource]) => {
-          return {
-            key: pathId,
-            type: CoConstraintHeaderType.DATAELEMENT,
-            columnType,
-            cardinality: cardinalityConstraint,
-            name,
-            elementInfo: {
-              version: resource.domainInfo.version,
-              parent: p.name,
-              datatype: resource.name,
-              location: position,
-              cardinality,
-              type,
-            },
-          };
+        flatMap(([p, resource]) => {
+          return this.binding.getBingdingInfo(resource.domainInfo.version, p.name, resource.name, position, type).pipe(
+            map((bindingInfo) => {
+              return {
+                key: pathId,
+                type: CoConstraintHeaderType.DATAELEMENT,
+                columnType,
+                cardinality: cardinalityConstraint,
+                name,
+                elementInfo: {
+                  version: resource.domainInfo.version,
+                  parent: p.name,
+                  datatype: resource.name,
+                  location: position,
+                  cardinality,
+                  type,
+                  bindingInfo,
+                },
+              };
+            }),
+          );
         }),
       );
   }

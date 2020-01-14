@@ -1,9 +1,9 @@
 import { ICardinalityRange } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { IValuesetBinding } from './binding.interface';
-import { ICoConstraint } from './co-constraint.interface';
 import { IAssertion, IPath } from './cs.interface';
 import { IResource } from './resource.interface';
+import { IBindingLocationInfo } from '../components/binding-selector/binding-selector.component';
 
 export interface IStructureElementRef {
   pathId: string;
@@ -85,6 +85,7 @@ export interface IDataElementHeaderInfo {
   location: number;
   cardinality: ICardinalityRange;
   type: Type;
+  bindingInfo: IBindingLocationInfo;
 }
 
 export interface INarrativeHeader extends ICoConstraintHeader {

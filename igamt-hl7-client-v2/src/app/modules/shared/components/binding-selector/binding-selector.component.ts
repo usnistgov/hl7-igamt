@@ -27,6 +27,7 @@ export class BindingSelectorComponent<T> implements OnInit {
     { label: 'Required', value: IValuesetStrength.R }, { label: 'Suggested', value: IValuesetStrength.S }, { label: 'Unspecified', value: IValuesetStrength.U },
   ];
   locationInfo: IBindingLocationInfo;
+  excludeBindingStrength: boolean;
   private selectedValueSets: IValueSetBindingDisplay[] = [];
 
   constructor(
@@ -34,10 +35,12 @@ export class BindingSelectorComponent<T> implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: IBindingSelectorData,
     private valueSetService: ValueSetService,
     private store: Store<any>) {
+    this.excludeBindingStrength = data.excludeBindingStrength;
     this.selectedBindingType = this.data.existingBindingType ? this.data.existingBindingType : IBindingType.VALUESET;
     this.selectedSingleCode = this.data.selectedSingleCode;
     this.selectedValueSets = this.data.selectedValueSetBinding;
     this.locationInfo = this.data.locationInfo;
+    console.log(this.excludeBindingStrength);
   }
 
   submit() {
@@ -60,7 +63,7 @@ export class BindingSelectorComponent<T> implements OnInit {
     if (!this.selectedValueSets) {
       this.selectedValueSets = [];
     }
-    this.editableBinding = { valueSets: [], bindingStrength: IValuesetStrength.R, bindingLocation: this.getDefaultBindinglcation() };
+    this.editableBinding = { valueSets: [], bindingStrength: undefined, bindingLocation: this.getDefaultBindinglcation() };
     this.selectedValueSets.push(this.editableBinding);
   }
   submitValueSet(binding: IValueSetBindingDisplay, vs: IDisplayElement) {
@@ -158,6 +161,7 @@ export interface IBindingDataResult {
 export interface IBindingSelectorData {
   resources: IDisplayElement[];
   locationInfo: IBindingLocationInfo;
+  excludeBindingStrength: boolean;
   path: string;
   existingBindingType: IBindingType;
   selectedValueSetBinding: IValueSetBindingDisplay[];

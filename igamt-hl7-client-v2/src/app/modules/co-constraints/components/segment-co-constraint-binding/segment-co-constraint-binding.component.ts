@@ -51,12 +51,14 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   tableComponents: QueryList<CoConstraintTableComponent>;
   @Output()
   delete: EventEmitter<boolean>;
+  display$: Observable<IDisplayElement>;
 
   @Input()
   set value(binding: ICoConstraintBindingSegment) {
     this.binding = {
       ...binding,
     };
+    this.display$ = this.repository.getResourceDisplay(Type.SEGMENT, binding.flavorId);
     this.segment$ = this.getSegment(binding.flavorId);
   }
 
