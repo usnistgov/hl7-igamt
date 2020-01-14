@@ -56,7 +56,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
             ext: {
               label: 'Extension',
               placeholder: 'Extension',
-              validators: [validateUnity(existing, name, selectedResource.domainInfo), validateConvention(selectedResource.domainInfo.scope, selectedResource.type)],
+              validators: [validateUnity(existing, name, selectedResource.domainInfo), validateConvention(selectedResource.domainInfo.scope, selectedResource.type), Validators.required],
               type: FieldType.TEXT,
               id: 'extension',
               name: 'extension',
@@ -101,7 +101,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
       withLatestFrom(this.store.select(selectSelectedResource)),
       map(([exiting, selected ]) => {
         return exiting.filter((x) => x.id !== selected.id) ;
-      } ),
+      }),
     );
   }
 

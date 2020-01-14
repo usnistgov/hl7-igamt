@@ -51,6 +51,7 @@ export class MetadataEditorComponent extends ResourceMetadataEditorComponent imp
   }
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
+      take(1),
       concatMap((id) => {
         return this.store.select(selectSegmentsById, { id });
       }),
