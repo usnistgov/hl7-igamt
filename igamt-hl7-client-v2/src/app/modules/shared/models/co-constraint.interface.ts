@@ -1,9 +1,9 @@
+import { IBindingLocationInfo } from '../components/binding-selector/binding-selector.component';
 import { ICardinalityRange } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { IValuesetBinding } from './binding.interface';
 import { IAssertion, IPath } from './cs.interface';
 import { IResource } from './resource.interface';
-import { IBindingLocationInfo } from '../components/binding-selector/binding-selector.component';
 
 export interface IStructureElementRef {
   pathId: string;

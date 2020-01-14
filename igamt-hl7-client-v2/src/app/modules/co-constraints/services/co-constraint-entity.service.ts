@@ -3,7 +3,7 @@ import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
 import { Md5 } from 'md5-typescript';
 import { combineLatest, Observable, of } from 'rxjs';
-import { map, take, flatMap } from 'rxjs/operators';
+import { flatMap, map, take } from 'rxjs/operators';
 import { ICardinalityRange, IHL7v2TreeNode, IResourceKey } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../shared/constants/type.enum';
 import { ICoConstraintGroupBindingRef, ICoConstraintVariesCell, INarrativeHeader } from '../../shared/models/co-constraint.interface';

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 
 import { EMPTY, of } from 'rxjs';
-import { catchError, flatMap, map, mergeMap, switchMap, take, tap, concatMap } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import {
   LoadValueSet,
   LoadValueSetFailure,
@@ -123,10 +123,10 @@ export class ValueSetEditEffects {
   );
 
   constructor(private actions$: Actions<ValueSetEditActions>,
-    private valueSetService: ValueSetService,
-    private store: Store<any>,
-    private message: MessageService,
-    private editorHelper: OpenEditorService,
-    private crossReferenceService: CrossReferencesService,
+              private valueSetService: ValueSetService,
+              private store: Store<any>,
+              private message: MessageService,
+              private editorHelper: OpenEditorService,
+              private crossReferenceService: CrossReferencesService,
   ) { }
 }
