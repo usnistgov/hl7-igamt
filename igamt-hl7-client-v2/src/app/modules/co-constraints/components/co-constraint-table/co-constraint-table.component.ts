@@ -3,8 +3,9 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild 
 import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
-import { combineLatest, forkJoin, Observable, of, Subject } from 'rxjs';
+import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
+import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { SegmentService } from '../../../segment/services/segment.service';
 import { BindingSelectorComponent, IBindingLocationInfo } from '../../../shared/components/binding-selector/binding-selector.component';
@@ -329,9 +330,33 @@ export class CoConstraintTableComponent implements OnInit {
             value,
             label: value,
           };
+        }).sort((a, b) => {
+          return a.value > b.value ? 1 : -1;
         });
       }),
     ).subscribe();
+  }
+
+  datatypeValueChange(value, cell) {
+    const candidates = this.datatypes.filter((dt) => dt.fixedName === value);
+    if (candidates && candidates.length > 0) {
+      const found = candidates.find((dt) => dt.id === cell.datatypeId);
+      if (!found) {
+        if (candidates.length === 1) {
+          cell.datatypeId = candidates[0].id;
+        } else {
+          const standard = candidates.find((dt) => dt.domainInfo.scope === Scope.HL7STANDARD && dt.domainInfo.version === this._segment.domainInfo.version);
+          if (standard) {
+            cell.datatypeId = standard.id;
+          } else {
+            cell.datatypeId = null;
+          }
+        }
+      }
+    } else {
+      cell.datatypeId = null;
+    }
+    this.emitChange();
   }
 
   getCellTemplateForType(type: CoConstraintColumnType) {

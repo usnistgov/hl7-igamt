@@ -10,6 +10,10 @@ public class CoConstraintGroupBindingContained extends  CoConstraintGroupBinding
     protected String name;
     protected List<CoConstraint> coConstraints;
 
+    public CoConstraintGroupBindingContained() {
+        this.type = GroupBindingType.CONTAINED;
+    }
+
     public String getName() {
         return name;
     }

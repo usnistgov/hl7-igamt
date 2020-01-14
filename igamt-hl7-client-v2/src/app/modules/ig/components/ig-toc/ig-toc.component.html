@@ -162,13 +162,12 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COCONSTRAINTGROUP'">
-          <app-display-section [contextMenu]="coConstraintGroupContextMenu" #rla="routerLinkActive" [element]="node.data"
-                                [routerLink]="getElementUrl(node.data)" routerLinkActive></app-display-section>
-          <context-menu #coConstraintGroupContextMenu>
+          <app-display-section  #rla="routerLinkActive" [element]="node.data" [routerLink]="getElementUrl(node.data)" routerLinkActive></app-display-section>
+          <!-- <context-menu #coConstraintGroupContextMenu>
             <ng-template (execute)="deleteResource(node)" contextMenuItem>
               <i class="fa fa-remove"></i> Delete
             </ng-template>
-          </context-menu>
+          </context-menu> -->
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
         </ng-container>
 

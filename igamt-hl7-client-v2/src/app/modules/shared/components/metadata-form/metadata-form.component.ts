@@ -63,7 +63,6 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
     );
     this.dataSubscription = input.data.subscribe(
       (data) => {
-        console.log(data);
         this.metadataForm.patchValue(data, { emitEvent: false });
       },
     );

@@ -7,6 +7,7 @@ import {catchError, concatMap, flatMap, map, mergeMap, take, withLatestFrom} fro
 import { EditorSave, EditorSaveFailure, IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {selectIgId, selectSelectedResource} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
+import {validateConvention} from '../../../shared/functions/convention-factory';
 import {validateUnity} from '../../../shared/functions/unicity-factory';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
@@ -15,8 +16,6 @@ import { FroalaService } from '../../../shared/services/froala.service';
 import { Message } from '../../models/message/message.class';
 import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
-import {IResource} from "../../../shared/models/resource.interface";
-import {validateConvention} from "../../../shared/functions/convention-factory";
 
 export abstract class ResourceMetadataEditorComponent extends AbstractEditorComponent implements OnInit {
 
@@ -68,6 +67,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
               validators: [],
               type: FieldType.TEXT,
               id: 'description',
+              disabled: true,
               name: 'Description',
             },
             authorNotes: {

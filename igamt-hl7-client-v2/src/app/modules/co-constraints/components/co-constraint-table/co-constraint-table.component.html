@@ -270,15 +270,18 @@
           <strong>Value</strong>
         </td>
         <td>
+          <div #val ></div>
           <p-dropdown
             *ngIf="!viewOnly"
             [autoDisplayFirst]="false"
             [options]="datatypeOptions"
             [style]="{'width': '100%', 'min-width': 'inherit'}"
             placeholder="Datatype"
+            [appendTo]="val"
             [name]="fieldId + '-dtValue'"
+            [filter]="true"
             required
-            (ngModelChange)="emitChange()"
+            (ngModelChange)="datatypeValueChange($event, cell)"
             [(ngModel)]="cell.value" >
           </p-dropdown>
           <span *ngIf="viewOnly"> {{ cell.value }} </span>
@@ -289,12 +292,14 @@
           <strong>Flavor</strong>
         </td>
         <td>
+          <div #fl ></div>
           <app-resource-dropdown
             *ngIf="!viewOnly"
             [placeholder]="'Flavor'"
             [name]="fieldId + '-dtFlavor'"
             [filter]="true"
             [filterBy]="cell.value"
+            [appendTo]="fl"
             [(id)]="cell.datatypeId"
             (valueChange)="datatypeChange($event, row)"
             [resources]="datatypes"

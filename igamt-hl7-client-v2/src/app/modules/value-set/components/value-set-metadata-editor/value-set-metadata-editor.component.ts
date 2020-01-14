@@ -15,8 +15,8 @@ import {EditorID} from '../../../shared/models/editor.enum';
 import {IChange} from '../../../shared/models/save-change';
 import {FroalaService} from '../../../shared/services/froala.service';
 import {ValueSetService} from '../../service/value-set.service';
-import {FieldType} from "../../../shared/components/metadata-form/metadata-form.component";
-import {validateUnity} from "../../../shared/functions/unicity-factory";
+import {FieldType} from '../../../shared/components/metadata-form/metadata-form.component';
+import {validateUnity} from '../../../shared/functions/unicity-factory';
 
 @Component({
   selector: 'app-metadata-edit',
@@ -75,6 +75,7 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
               validators: [],
               type: FieldType.TEXT,
               id: 'name',
+              disabled: true,
               name: 'Name',
             },
             authorNotes: {
