@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import { Type } from '../../constants/type.enum';
 import { IDisplayElement } from '../../models/display-element.interface';
 
@@ -12,8 +13,11 @@ export class DisplaySectionComponent implements OnInit {
 
   @Input() element: IDisplayElement;
   @Input() hideDescription: boolean;
+  @Input()
+  inline: boolean;
 
-  constructor() {
+  constructor(    private router: Router,
+                  private activeRoute: ActivatedRoute) {
   }
 
   ngOnInit() {
@@ -28,7 +32,6 @@ export class DisplaySectionComponent implements OnInit {
         return getLabel(this.element.fixedName, this.element.variableName);
     }
   }
-
 }
 
 export function getLabel(fixedName, variableName) {

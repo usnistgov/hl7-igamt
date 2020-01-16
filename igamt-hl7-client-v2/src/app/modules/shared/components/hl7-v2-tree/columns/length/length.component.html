@@ -1,4 +1,4 @@
-<ng-container *ngIf="val && val.length && val.length.min !== 'NA' && val.length.max !== 'NA'" [ngSwitch]="viewOnly">
+<ng-container *ngIf="val && val.length" [ngSwitch]="viewOnly">
   <ng-container *ngSwitchCase="false">
     <div class="tt-cell">
       <div>
@@ -12,9 +12,6 @@
     </div>
   </ng-container>
   <ng-container *ngSwitchCase="true">
-      <ng-container [ngSwitch]="val && val.length && val.length.min !== 'NA' && val.length.max !== 'NA'">
-        <strong *ngSwitchCase="true">[{{val.length.min}} .. {{val.length.max}}]</strong>
-        <strong *ngSwitchCase="false">NA</strong>
-      </ng-container>
+    <strong>[{{val.length.min}} .. {{val.length.max}}]</strong>
   </ng-container>
 </ng-container>

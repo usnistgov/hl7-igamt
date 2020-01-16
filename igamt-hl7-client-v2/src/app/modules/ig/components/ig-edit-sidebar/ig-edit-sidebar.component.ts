@@ -71,7 +71,7 @@ export class IgEditSidebarComponent implements OnInit {
     private actions: Actions) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
-    this.store.select(selectDerived).subscribe((x) => this.derived = x);
+    this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.nodes$ = this.getNodes();
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
@@ -223,8 +223,13 @@ export class IgEditSidebarComponent implements OnInit {
                 data: {
                   title: 'Cross References found',
                   usages,
+                  documentId: id,
                 },
               });
+              this.router.events
+                .subscribe((h) => {
+                  dialogRef.close();
+                });
               dialogRef.afterClosed().subscribe(
               );
             }

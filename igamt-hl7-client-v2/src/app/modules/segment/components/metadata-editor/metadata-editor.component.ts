@@ -3,7 +3,7 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
 import { concatMap, take } from 'rxjs/operators';
-import { selectIgId, selectSegmentsById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {selectAllSegments, selectIgId, selectSegmentsById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { LoadSegment } from '../../../../root-store/segment-edit/segment-edit.actions';
 import { ResourceMetadataEditorComponent } from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
 import { Message } from '../../../core/models/message/message.class';
@@ -21,7 +21,6 @@ import { SegmentService } from '../../services/segment.service';
   styleUrls: ['../../../core/components/resource-metadata-editor/resource-metadata-editor.component.scss'],
 })
 export class MetadataEditorComponent extends ResourceMetadataEditorComponent implements OnInit {
-
   constructor(
     protected actions$: Actions,
     messageService: MessageService,
@@ -47,8 +46,12 @@ export class MetadataEditorComponent extends ResourceMetadataEditorComponent imp
     return new LoadSegment(resourceId);
   }
 
+  getExistingList(): Observable<IDisplayElement[]> {
+    return  this.store.select(selectAllSegments);
+  }
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
+      take(1),
       concatMap((id) => {
         return this.store.select(selectSegmentsById, { id });
       }),

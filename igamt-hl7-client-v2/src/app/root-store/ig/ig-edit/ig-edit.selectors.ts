@@ -500,7 +500,7 @@ export const selectValueSetsNodes = createSelector(
   selectValueSetsEntities,
   selectValueSetRegistry,
   (nodes: Dictionary<IDisplayElement>, registry: IRegistry) => {
-    return IgTOCNodeHelper.sortRegistry(nodes, registry);
+    return IgTOCNodeHelper.sortRegistryByName(nodes, registry);
   },
 );
 
@@ -508,7 +508,7 @@ export const selectSegmentsNodes = createSelector(
   selectSegmentsEntites,
   selectSegmentRegistry,
   (nodes: Dictionary<IDisplayElement>, registry: IRegistry) => {
-    return IgTOCNodeHelper.sortRegistry(nodes, registry);
+    return IgTOCNodeHelper.sortRegistryByName(nodes, registry);
   },
 );
 
@@ -516,7 +516,7 @@ export const selectDatatypesNodes = createSelector(
   selectDatatypesEntites,
   selectDatatypeRegistry,
   (nodes: Dictionary<IDisplayElement>, registry: IRegistry) => {
-    return IgTOCNodeHelper.sortRegistry(nodes, registry);
+    return IgTOCNodeHelper.sortRegistryByName(nodes, registry);
   },
 );
 
@@ -524,7 +524,7 @@ export const selectCoConstraintGroupNodes = createSelector(
   selectCoConstraintGroupEntites,
   selectCoConstraintGroupRegistry,
   (nodes: Dictionary<IDisplayElement>, registry: IRegistry) => {
-    return IgTOCNodeHelper.sortRegistry(nodes, registry);
+    return IgTOCNodeHelper.sortRegistryByName(nodes, registry);
   },
 );
 
@@ -532,7 +532,7 @@ export const selectMessagesNodes = createSelector(
   selectMessagesEntites,
   selectConformanceProfileRegistry,
   (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
-    return registry.children.sort((a: ILink, b: ILink) => a.position - b.position).map((link) => messages[link.id]);
+    return IgTOCNodeHelper.sortRegistryByPosition(messages, registry);
   },
 );
 

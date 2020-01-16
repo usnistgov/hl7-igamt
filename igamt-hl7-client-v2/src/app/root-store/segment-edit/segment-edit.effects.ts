@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { selectedSegment } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
