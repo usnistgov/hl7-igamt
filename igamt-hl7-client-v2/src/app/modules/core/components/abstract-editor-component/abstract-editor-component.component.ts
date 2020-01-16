@@ -24,7 +24,7 @@ export abstract class AbstractEditorComponent {
   readonly initial$: Observable<any>;
   readonly viewOnly$: Observable<boolean>;
   readonly ig$: Observable<IgDocument>;
-  protected documentId$: Observable<string>;
+  public documentId$: Observable<string>;
 
   @ViewChild('headerControls')
   readonly controls: TemplateRef<any>;
