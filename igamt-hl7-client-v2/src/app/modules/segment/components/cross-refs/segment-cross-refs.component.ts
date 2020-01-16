@@ -2,10 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { concatMap, map } from 'rxjs/operators';
+import {Observable, of} from 'rxjs';
+import {concatMap, map, take} from 'rxjs/operators';
 import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectSegmentsById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {selectIgId, selectSegmentsById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IUsages } from '../../../shared/models/cross-reference';
@@ -40,6 +40,7 @@ export class SegmentCrossRefsComponent extends AbstractEditorComponent implement
   }
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
+      take(1),
       concatMap((id) => {
         return this.store.select(selectSegmentsById, { id });
       }),
@@ -50,7 +51,7 @@ export class SegmentCrossRefsComponent extends AbstractEditorComponent implement
   }
 
   onEditorSave(action: EditorSave): Observable<Action> {
-    return undefined;
+    return of();
   }
 
   ngOnInit(): void {

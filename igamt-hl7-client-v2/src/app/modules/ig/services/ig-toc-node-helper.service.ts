@@ -110,9 +110,7 @@ export class IgTOCNodeHelper {
     } else {
       return [];
     }
-
   }
-
   static createSectionFromIDisplay(iDisplayElement: IDisplayElement, i: number): IContent {
     const ret = {
       id: iDisplayElement.id,
@@ -123,16 +121,16 @@ export class IgTOCNodeHelper {
       label: iDisplayElement.variableName,
       children: [],
     };
-    if (iDisplayElement.type === Type.TEXT || iDisplayElement.type === Type.PROFILE) {
-      ret.children = this.updateSections(iDisplayElement.children);
-    }
+    ret.children = this.updateSections(iDisplayElement.children);
     return ret;
   }
 
   static updateSections(children: IDisplayElement[]) {
     const ret: IContent[] = [];
-    for (let i = 0; i < children.length; i++) {
-      ret.push(this.createSectionFromIDisplay(children[i], i));
+    if (children) {
+      for (let i = 0; i < children.length; i++) {
+        ret.push(this.createSectionFromIDisplay(children[i], i));
+      }
     }
     return ret;
   }
@@ -150,8 +148,12 @@ export class IgTOCNodeHelper {
       }
     }
   }
-  static sortRegistry(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
+  static sortRegistryByName(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
     return Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement) => this.compare(a, b));
+  }
+
+  static sortRegistryByPosition(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
+    return Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
   }
   static getFullName(node: IDisplayElement): string {
     if (node.fixedName && node.fixedName.length) {
@@ -169,7 +171,8 @@ export class IgTOCNodeHelper {
     const right = this.getFullName(b);
     if (left < right) {
       return -1;
-    } else { return 1; }
-
+    } else {
+      return 1;
+    }
   }
 }

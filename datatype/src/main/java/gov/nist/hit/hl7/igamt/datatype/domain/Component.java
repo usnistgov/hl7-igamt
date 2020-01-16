@@ -11,6 +11,7 @@ public class Component extends SubStructElement {
   
   @DeltaField
   private String constantValue;
+  
   @DeltaField
   private Set<Comment> comments;
   
