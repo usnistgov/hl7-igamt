@@ -8,7 +8,7 @@ describe('DisplayRefComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DisplayRefComponent ]
+      declarations: [ DisplayRefComponent ],
     })
     .compileComponents();
   }));

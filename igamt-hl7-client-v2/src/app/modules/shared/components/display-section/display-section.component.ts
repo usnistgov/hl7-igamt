@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
 import { Type } from '../../constants/type.enum';
 import { IDisplayElement } from '../../models/display-element.interface';
-import {ActivatedRoute, Router} from '@angular/router';
 
 @Component({
   selector: 'app-display-section',

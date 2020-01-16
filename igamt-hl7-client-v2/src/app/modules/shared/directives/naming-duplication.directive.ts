@@ -1,9 +1,9 @@
 import {Directive, Input, OnInit} from '@angular/core';
 import {AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn} from '@angular/forms';
 import {isDuplicated} from '../functions/naming-functions';
+import {validateUnity} from '../functions/unicity-factory';
 import {IDisplayElement} from '../models/display-element.interface';
 import {IDomainInfo} from '../models/domain-info.interface';
-import {validateUnity} from '../functions/unicity-factory';
 
 @Directive({
   selector: '[appNamingDuplication]',

@@ -168,7 +168,7 @@ export class IgTOCNodeHelper {
   }
   static compare(a: IDisplayElement, b: IDisplayElement) {
     const left = this.getFullName(a);
-    const right =this.getFullName(b);
+    const right = this.getFullName(b);
     if (left < right) {
       return -1;
     } else {

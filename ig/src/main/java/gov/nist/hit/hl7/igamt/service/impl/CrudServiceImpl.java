@@ -121,12 +121,10 @@ public class CrudServiceImpl implements CrudService {
 	}
 
 	private void processSegmentorGroup(MsgStructElement segOrgroup, Set<String> ids) {
-		// TODO Auto-generated method stub
 		if (segOrgroup instanceof SegmentRef) {
 			SegmentRef ref = (SegmentRef) segOrgroup;
 			if (ref.getRef() != null && ref.getRef().getId() != null) {
 				ids.add(ref.getRef().getId());
-
 			}
 		} else if (segOrgroup instanceof Group) {
 			Group g = (Group) segOrgroup;

@@ -4,7 +4,7 @@ import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
 import { concatMap, switchMap, take } from 'rxjs/operators';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {selectAllDatatypes} from "src/app/root-store/ig/ig-edit/ig-edit.index";
+import {selectAllDatatypes} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
 import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ResourceMetadataEditorComponent } from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
