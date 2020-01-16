@@ -15,7 +15,7 @@
         <th rowspan="2" class="requirement-cell stick-header stick-top-none">ID</th>
         <th rowspan="2" class="requirement-cell stick-header stick-top-none">Usage</th>
         <th rowspan="2" class="requirement-cell column-border stick-header stick-top-none">Cardinality</th>
-        <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'If', list: value.headers.selectors, isDataHeader: true }"></ng-container>
+        <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'If', list: value.headers.selectors, isDataHeader: true, selector: true }"></ng-container>
         <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'Then', list: value.headers.constraints, isDataHeader: true  }"></ng-container>
         <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'Narratives', list: value.headers.narratives, isDataHeader: false  }"></ng-container>
       </tr>
@@ -39,11 +39,11 @@
   </table>
 
   <!-- COLUMNS TOP HEADER -->
-  <ng-template #columnHeader let-label let-list="list" let-isDataHeader="isDataHeader">
+  <ng-template #columnHeader let-selector="selector" let-label let-list="list" let-isDataHeader="isDataHeader">
     <th [attr.colspan]="listSize(list)" class="column-border stick-header stick-top-none">
       <div style="display: flex; justify-content: space-between;">
         <span>{{label}}</span>
-        <button class="btn btn-sm btn-primary" (click)="isDataHeader ? openDataColumnDialog(list) : openNarrativeColumnDialog(list)">
+        <button class="btn btn-sm btn-primary" (click)="isDataHeader ? openDataColumnDialog(list, selector) : openNarrativeColumnDialog(list)">
           <i class="fa fa-plus"></i>
         </button>
       </div>
@@ -96,12 +96,13 @@
 
   <!-- REQUIREMENTS -->
   <ng-template #usage let-elm let-disabled="disabled" let-fieldId="fieldId" let-viewOnly="viewOnly" >
+    <!-- {{usages | json}} -->
     <p-dropdown
       *ngIf="!viewOnly"
       [options]="usages"
       [style]="{'width': '60px', 'min-width': 'inherit'}"
       [disabled]="disabled"
-      (ngModelChange)="emitChange()"
+      (ngModelChange)="usageChange($event, elm)"
       [name]="fieldId + '-usage'"
       required
       [(ngModel)]="elm.usage" >
@@ -154,7 +155,7 @@
         </td>
         <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: cc.requirement, disabled :  i === 0 && group, fieldId : fieldId + '-req-' + i, viewOnly : viewOnly }"></ng-container></td>
         <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: cc.requirement, fieldId : fieldId + '-req-' + i, viewOnly : viewOnly }"></ng-container></td>
-        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.selectors, fieldId : fieldId + '-if-' + i, viewOnly : viewOnly }"></ng-container>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.selectors, fieldId : fieldId + '-if-' + i, viewOnly : viewOnly, excludeBindingStrength: true }"></ng-container>
         <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.constraints, fieldId : fieldId + '-then-' + i, viewOnly : viewOnly }"></ng-container>
         <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.narratives, fieldId : fieldId + '-nar-' + i, viewOnly : viewOnly }"></ng-container>
       </tr>
@@ -201,11 +202,11 @@
   </ng-template>
 
   <!-- CELLS -->
-  <ng-template #cellList let-headers="headers" let-cc let-fieldId="fieldId" let-viewOnly="viewOnly">
+  <ng-template #cellList let-excludeBindingStrength="excludeBindingStrength" let-headers="headers" let-cc let-fieldId="fieldId" let-viewOnly="viewOnly">
     <ng-container *ngIf="headers.length > 0; else emptyColumn">
       <ng-container *ngFor="let header of headers; let i = index">
         <td #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !header.cardinality, 'inside-border' : i !== (headers.length - 1) && !header.cardinality }" *ngIf="cc.cells[header.key]; else emptyColumn" >
-          <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor }"></ng-container>
+          <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor, excludeBindingStrength: excludeBindingStrength }"></ng-container>
         </td>
         <td *ngIf="header.cardinality" [ngClass]="{'column-border': i === (headers.length - 1), 'inside-border' :  i !== (headers.length - 1) }" style="vertical-align: middle; text-align: center;">
           <input *ngIf="!viewOnly" type="text" style="width: 100px;" [placeholder]="header.elementInfo.cardinality.max" [name]="fieldId + '-cardinality'" [(ngModel)]="cc.cells[header.key].cardinalityMax" (ngModelChange)="emitChange()" >
@@ -243,16 +244,17 @@
       <strong> Code System : </strong>
       <span> {{ cell.codeSystem }} </span>
     </div>
-    <p-multiSelect
+    <p-dropdown
       *ngIf="!viewOnly"
       [(ngModel)]="cell.locations"
       (ngModelChange)="emitChange()"
       [appendTo]="anchor"
-      [options]="locations"
+      [autoDisplayFirst]="false"
+      [options]="header?.elementInfo?.bindingInfo?.allowedBindingLocations"
       [name]="fieldId + '-location'"
       [style]="{ width : '100%', 'min-width': 'inherit'}"
       defaultLabel="Choose locations">
-    </p-multiSelect>
+    </p-dropdown>
     <div *ngIf="viewOnly && cell.locations">
       <strong> Locations : </strong>
       <span> {{ cell.locations | json }} </span>
@@ -281,7 +283,7 @@
             [name]="fieldId + '-dtValue'"
             [filter]="true"
             required
-            (ngModelChange)="datatypeValueChange($event, cell)"
+            (ngModelChange)="datatypeValueChange($event, cell, row)"
             [(ngModel)]="cell.value" >
           </p-dropdown>
           <span *ngIf="viewOnly"> {{ cell.value }} </span>
@@ -305,8 +307,8 @@
             [resources]="datatypes"
           ></app-resource-dropdown>
           <app-display-section
-            *ngIf="viewOnly"
-            [element]="getDatatype(cell.datatypeId)"
+            *ngIf="viewOnly && getDatatype(cell.datatypeId) as display"
+            [element]="display"
             [hideDescription]="true"
           >
           </app-display-section>
@@ -315,23 +317,24 @@
     </table>
   </ng-template>
 
-  <ng-template #valueSetCell let-header="header" let-cell let-viewOnly="viewOnly">
+  <ng-template #valueSetCell let-overrideBindingInfo="overrideBindingInfo" let-excludeBindingStrength="excludeBindingStrength" let-header="header" let-cell let-viewOnly="viewOnly">
     <div style="width: 100%; display: flex; justify-content: space-between; align-items: start;">
       <div style="margin-right: 5px; width: 100%;">
         <ng-container *ngFor="let item of cell.bindings">
-          <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit : item }"></ng-container>
+          <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit : item, bindingStrength : bindingStrength }"></ng-container>
         </ng-container>
       </div>
-      <button *ngIf="!viewOnly" class="btn btn-sm btn-primary" (click)="openVsPicker(cell, header)"><i class="fa fa-pencil"></i></button>
+      <button *ngIf="!viewOnly" class="btn btn-sm btn-primary" (click)="openVsPicker(cell, header, excludeBindingStrength, overrideBindingInfo)"><i class="fa fa-pencil"></i></button>
     </div>
   </ng-template>
 
   <ng-template #displayVsBinding let-vsBinding>
     <table class="table table-striped table-sm table-bordered" style="text-align: center; margin-bottom: 0;">
       <tr>
-        <td pTooltip="Binding Strength" tooltipPosition="top">
-          <strong>{{vsBinding.strength}}</strong>
+        <td pTooltip="Binding Strength" tooltipPosition="top" *ngIf="vsBinding.strength">
+          <strong >{{vsBinding.strength}}</strong>
         </td>
+        <td *ngIf="!vsBinding.strength"></td>
         <td pTooltip="Binding Locations" tooltipPosition="top">
           <strong>{{vsBinding.valuesetLocations.length > 0 ? (vsBinding.valuesetLocations | json) : '.'}}</strong>
         </td>
@@ -356,15 +359,15 @@
   </ng-template>
 
   <ng-template #variesCell let-header="header" let-id="id" let-cell let-viewOnly="viewOnly">
-    <div class="btn-group" style="width: 100%; border: 1px solid gray;" *ngIf="!cell.cellType && variesOptionMap[id] && variesOptionMap[id].length > 0">
-      <button *ngFor="let item of variesOptionMap[id]" class="btn btn-sm btn-light" (click)="setTemplateType(cell, item)">{{ item }}</button>
+    <div class="btn-group" style="width: 100%; border: 1px solid gray;" *ngIf="!cell.cellType && variesOptionMap[id] && variesOptionMap[id].allowed && variesOptionMap[id].allowed.length > 0">
+      <button *ngFor="let item of variesOptionMap[id].allowed" class="btn btn-sm btn-light" (click)="setTemplateType(cell, item)">{{ item }}</button>
     </div>
-    <div  style="width: 100%; text-align: center; color: lightgray;" *ngIf="!cell.cellType && (!variesOptionMap[id] || variesOptionMap[id].length === 0) && !viewOnly">
+    <div  style="width: 100%; text-align: center; color: lightgray;" *ngIf="!cell.cellType && (!variesOptionMap[id] || !variesOptionMap[id].allowed || variesOptionMap[id].allowed.length === 0) && !viewOnly">
       <strong>Select OBX-2 datatype (Coded Element or Primitive)</strong>
     </div>
     <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;" *ngIf="cell.cellType">
       <div style="width: 100%;">
-        <ng-container *ngTemplateOutlet="getCellTemplateForType(cell.cellType); context: { $implicit: cell.cellValue, header: header, viewOnly : viewOnly }"></ng-container>
+        <ng-container *ngTemplateOutlet="getCellTemplateForType(cell.cellType); context: { $implicit: cell.cellValue, header: header, viewOnly : viewOnly, overrideBindingInfo: variesOptionMap[id]?.bindingInfo }"></ng-container>
       </div>
       <i style="color: red; margin-left: 5px; font-size: 1.2em; cursor: pointer;" class="fa fa-times" (click)="clearVariesCell(cell)" *ngIf="!viewOnly" ></i>
     </div>

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 
-import {EMPTY, of} from 'rxjs';
-import {catchError, flatMap, map, mergeMap, switchMap, take, tap} from 'rxjs/operators';
+import { EMPTY, of } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import {
   LoadValueSet,
   LoadValueSetFailure,
@@ -15,35 +15,35 @@ import {
   ValueSetEditActionTypes,
 } from './value-set-edit.actions';
 
-import {HttpErrorResponse} from '@angular/common/http';
-import {Store} from '@ngrx/store';
-import {MessageService} from '../../modules/core/services/message.service';
-import {OpenEditorService} from '../../modules/core/services/open-editor.service';
-import {IValueSet} from '../../modules/shared/models/value-set.interface';
-import {CrossReferencesService} from '../../modules/shared/services/cross-references.service';
-import {ValueSetService} from '../../modules/value-set/service/value-set.service';
-import {TurnOffLoader, TurnOnLoader} from '../loader/loader.actions';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Store } from '@ngrx/store';
+import { MessageService } from '../../modules/core/services/message.service';
+import { OpenEditorService } from '../../modules/core/services/open-editor.service';
+import { IValueSet } from '../../modules/shared/models/value-set.interface';
+import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
+import { ValueSetService } from '../../modules/value-set/service/value-set.service';
+import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 
-import {Type} from '../../modules/shared/constants/type.enum';
-import {IUsages} from '../../modules/shared/models/cross-reference';
-import {LoadSelectedResource} from '../ig/ig-edit/ig-edit.actions';
+import { Type } from '../../modules/shared/constants/type.enum';
+import { IUsages } from '../../modules/shared/models/cross-reference';
+import { LoadSelectedResource } from '../ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../ig/ig-edit/ig-edit.index';
-import {selectedResourcePreDef} from '../ig/ig-edit/ig-edit.index';
-import {selectedResourceMetadata} from '../ig/ig-edit/ig-edit.index';
-import {selectedResourcePostDef} from '../ig/ig-edit/ig-edit.index';
+import { selectedResourcePreDef } from '../ig/ig-edit/ig-edit.index';
+import { selectedResourceMetadata } from '../ig/ig-edit/ig-edit.index';
+import { selectedResourcePostDef } from '../ig/ig-edit/ig-edit.index';
 
 @Injectable()
 export class ValueSetEditEffects {
   @Effect()
   loadValueSetEdits$ = this.actions$.pipe(
     ofType(ValueSetEditActionTypes.LoadValueSet),
-    switchMap((action: LoadValueSet) => {
+    concatMap((action: LoadValueSet) => {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
       return this.store.select(fromIgEdit.selectIgId).pipe(
         take(1),
-        mergeMap((x: string ) => {
+        mergeMap((x: string) => {
           return this.valueSetService.getById(x, action.id).pipe(
             take(1),
             flatMap((valueSet: IValueSet) => {
@@ -96,7 +96,7 @@ export class ValueSetEditEffects {
     this.valueSetNotFound,
   );
   @Effect()
-  openValueSetCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenValueSetCrossRefEditor >(
+  openValueSetCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenValueSetCrossRefEditor>(
     ValueSetEditActionTypes.OpenValueSetCrossRefEditor,
     fromIgEdit.selectValueSetById,
     Type.IGDOCUMENT,
@@ -128,5 +128,5 @@ export class ValueSetEditEffects {
               private message: MessageService,
               private editorHelper: OpenEditorService,
               private crossReferenceService: CrossReferencesService,
-              ) {}
-  }
+  ) { }
+}
