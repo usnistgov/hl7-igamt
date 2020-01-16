@@ -9,7 +9,6 @@ public class DataElementHeaderInfo {
     protected int location;
     protected CoConstraintCardinality cardinality;
     protected Type type;
-    protected BindingInfo bindingInfo;
 
     public String getVersion() {
         return version;
@@ -59,14 +58,6 @@ public class DataElementHeaderInfo {
         this.type = type;
     }
 
-    public BindingInfo getBindingInfo() {
-        return bindingInfo;
-    }
-
-    public void setBindingInfo(BindingInfo bindingInfo) {
-        this.bindingInfo = bindingInfo;
-    }
-
     public DataElementHeaderInfo clone() {
         DataElementHeaderInfo info = new DataElementHeaderInfo();
         info.setVersion(version);
@@ -75,7 +66,6 @@ public class DataElementHeaderInfo {
         info.setLocation(location);
         info.setCardinality(cardinality.clone());
         info.setType(type);
-        info.setBindingInfo(bindingInfo.clone());
         return info;
     }
 }

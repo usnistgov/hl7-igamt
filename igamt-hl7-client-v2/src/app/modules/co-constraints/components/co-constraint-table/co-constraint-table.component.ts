@@ -97,6 +97,10 @@ export class CoConstraintTableComponent implements OnInit {
     if (this._value && datatype) {
       this.initVariesOptionList(this.coconstraintEntity.getCoConstraintRowList(this._value), datatype);
     }
+
+    if (this._value) {
+      this.initBindingsValue(this._value.headers);
+    }
   }
 
   get value() {
@@ -124,15 +128,36 @@ export class CoConstraintTableComponent implements OnInit {
   locations = [
     {
       label: '1',
-      value: 1,
+      value: [
+        1,
+      ],
     },
     {
       label: '4',
-      value: 4,
+      value: [
+        4,
+      ],
     },
     {
       label: '10',
-      value: 10,
+      value: [
+        10,
+      ],
+    },
+    {
+      label: '1 or 4',
+      value: [
+        1,
+        4,
+      ],
+    },
+    {
+      label: '1 or 4 or 10',
+      value: [
+        1,
+        4,
+        10,
+      ],
     },
   ];
 
@@ -185,6 +210,25 @@ export class CoConstraintTableComponent implements OnInit {
     private repository: StoreResourceRepositoryService,
     private treeService: Hl7V2TreeService) {
     this.valueChange = new EventEmitter();
+  }
+
+  initBindingsValue(headers: ICoConstraintHeaders) {
+    const initHeaderInfo = (header: IDataElementHeader) => {
+      this.bindingsService.getBingdingInfo(header.elementInfo.version, header.elementInfo.parent, header.elementInfo.datatype, header.elementInfo.location, header.elementInfo.type).pipe(
+        take(1),
+        map((bindingsInfo) => {
+          console.log(bindingsInfo);
+          header.elementInfo.bindingInfo = bindingsInfo;
+        }),
+      ).subscribe();
+    };
+
+    headers.selectors.filter((elm) => elm.type === CoConstraintHeaderType.DATAELEMENT).forEach((elm) => {
+      initHeaderInfo(elm as IDataElementHeader);
+    });
+    headers.constraints.filter((elm) => elm.type === CoConstraintHeaderType.DATAELEMENT).forEach((elm) => {
+      initHeaderInfo(elm as IDataElementHeader);
+    });
   }
 
   initVariesOptionList(rows: ICoConstraint[], header: IDataElementHeader) {

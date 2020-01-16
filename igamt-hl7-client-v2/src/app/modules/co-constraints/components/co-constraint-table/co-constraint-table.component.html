@@ -96,14 +96,13 @@
 
   <!-- REQUIREMENTS -->
   <ng-template #usage let-elm let-disabled="disabled" let-fieldId="fieldId" let-viewOnly="viewOnly" >
-    <div #us></div>
+    <!-- {{usages | json}} -->
     <p-dropdown
       *ngIf="!viewOnly"
       [options]="usages"
       [style]="{'width': '60px', 'min-width': 'inherit'}"
       [disabled]="disabled"
       (ngModelChange)="usageChange($event, elm)"
-      [appendTo]="us"
       [name]="fieldId + '-usage'"
       required
       [(ngModel)]="elm.usage" >
@@ -250,7 +249,8 @@
       [(ngModel)]="cell.locations"
       (ngModelChange)="emitChange()"
       [appendTo]="anchor"
-      [options]="header.elementInfo.bindingInfo.allowedBindingLocations"
+      [autoDisplayFirst]="false"
+      [options]="header?.elementInfo?.bindingInfo?.allowedBindingLocations"
       [name]="fieldId + '-location'"
       [style]="{ width : '100%', 'min-width': 'inherit'}"
       defaultLabel="Choose locations">
@@ -367,7 +367,7 @@
     </div>
     <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;" *ngIf="cell.cellType">
       <div style="width: 100%;">
-        <ng-container *ngTemplateOutlet="getCellTemplateForType(cell.cellType); context: { $implicit: cell.cellValue, header: header, viewOnly : viewOnly, overrideBindingInfo: variesOptionMap[id].bindingInfo }"></ng-container>
+        <ng-container *ngTemplateOutlet="getCellTemplateForType(cell.cellType); context: { $implicit: cell.cellValue, header: header, viewOnly : viewOnly, overrideBindingInfo: variesOptionMap[id]?.bindingInfo }"></ng-container>
       </div>
       <i style="color: red; margin-left: 5px; font-size: 1.2em; cursor: pointer;" class="fa fa-times" (click)="clearVariesCell(cell)" *ngIf="!viewOnly" ></i>
     </div>
