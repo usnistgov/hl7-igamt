@@ -32,7 +32,7 @@
                 <th *ngSwitchCase="columnTypes.USAGE" style="width: 270px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
-                <th *ngSwitchCase="columnTypes.DATATYPE" style="width: 210px;" ttReorderableColumn ttResizableColumn>
+                <th *ngSwitchCase="columnTypes.DATATYPE" style="width: 240px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
                 <th *ngSwitchCase="columnTypes.SEGMENT" style="width: 250px;" ttReorderableColumn ttResizableColumn>
@@ -110,6 +110,7 @@
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [globalViewOnly]="viewOnly"
                     [location]="rowData.pathId"
+                    [usage]="rowData.usage.value"
                     [type]="rowData.type"
                     [position]="rowData.position"
                     [level]="rowData.level"

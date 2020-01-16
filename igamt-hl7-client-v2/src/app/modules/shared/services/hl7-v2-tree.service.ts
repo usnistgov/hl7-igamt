@@ -13,7 +13,6 @@ import { IRef } from '../models/ref.interface';
 import { IResource } from '../models/resource.interface';
 import { ISegment } from '../models/segment.interface';
 import { BindingService } from './binding.service';
-import { IBindingValues, IElementBinding } from './hl7-v2-tree.service';
 import { PredicateService } from './predicate.service';
 import { AResourceRepositoryService, IRefData } from './resource-repository.service';
 
@@ -725,9 +724,6 @@ export class Hl7V2TreeService {
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
     const segmentRefs = this.getAllSegmentRef(confProfile.children);
-    const debug = [
-      ...segmentRefs,
-    ];
     return combineLatest(
       repository.getRefData(segmentRefs, Type.SEGMENT).pipe(
         take(1),
@@ -739,15 +735,7 @@ export class Hl7V2TreeService {
             map((res) => res as ISegment),
           );
         }),
-        tap((segment) => {
-          const i = debug.findIndex((elm) => elm === segment.id);
-          debug.splice(i, 1);
-          console.log(debug);
-        }),
         toArray(),
-        tap((segments) => {
-          console.log(segments);
-        }),
         map((segments) => {
           const segmentsMap = {};
           segments.forEach((segment) => {

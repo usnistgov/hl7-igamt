@@ -18,6 +18,6 @@
     </form>
   </ng-container>
   <ng-container *ngSwitchCase="true">
-      <strong *ngIf="range.min && range.max">[{{range.min}} .. {{range.max}}]</strong>
-    </ng-container>
+    <strong *ngIf="hasValue(range)">[{{range.min}} .. {{range.max}}]</strong>
+  </ng-container>
 </ng-container>

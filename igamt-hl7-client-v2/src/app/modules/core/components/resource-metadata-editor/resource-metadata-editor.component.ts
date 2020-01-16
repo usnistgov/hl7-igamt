@@ -53,6 +53,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
           label: 'Description',
           placeholder: 'Description',
           validators: [],
+          disabled: true,
           type: FieldType.TEXT,
           id: 'description',
           name: 'Description',
