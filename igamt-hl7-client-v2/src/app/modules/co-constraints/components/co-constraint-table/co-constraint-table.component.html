@@ -4,6 +4,7 @@
   <label style="font-weight: bold;" >Table : </label>
 </ng-container>
 <form #tableForm="ngForm" >
+
   <table *ngIf="value" class="table table-bordered table-striped table-sm">
     <thead>
       <tr>
@@ -217,7 +218,7 @@
   </ng-template>
 
   <!-- CELLS -->
-  <ng-template #codeCell let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor">
+  <ng-template #codeCell let-overrideBindingInfo="overrideBindingInfo" let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor">
     <div style="width: 100%; display: flex; justify-content: space-between;" *ngIf="!viewOnly">
       <input
         type="text"
@@ -250,7 +251,7 @@
       (ngModelChange)="emitChange()"
       [appendTo]="anchor"
       [autoDisplayFirst]="false"
-      [options]="header?.elementInfo?.bindingInfo?.allowedBindingLocations"
+      [options]="overrideBindingInfo ? overrideBindingInfo.allowedBindingLocations : header?.elementInfo?.bindingInfo?.allowedBindingLocations"
       [name]="fieldId + '-location'"
       [style]="{ width : '100%', 'min-width': 'inherit'}"
       defaultLabel="Choose locations">
