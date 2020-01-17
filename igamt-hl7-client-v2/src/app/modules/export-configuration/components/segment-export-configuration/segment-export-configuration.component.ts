@@ -13,6 +13,9 @@ export class SegmentExportConfigurationComponent implements OnInit {
   @Input()
   displayColumns: boolean;
 
+  @Input()
+  viewOnly: boolean;
+
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
 

@@ -19,7 +19,7 @@ package gov.nist.hit.hl7.igamt.export.configuration.domain;
  */
 public enum CoConstraintExportMode {
 
-  COMPACT("Compact"), VERBOSE("Verbose");
+  COMPACT("Compact"), VERBOSE("Verbose"), NOEXPORT("Don't Export");
   
   public final String value;
 

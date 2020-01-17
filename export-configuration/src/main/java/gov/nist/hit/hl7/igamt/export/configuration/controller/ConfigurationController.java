@@ -71,7 +71,7 @@ public class ConfigurationController {
     exportConfigurationService.save(exportConfiguration, authentication );
     
     if(exportConfiguration.isOriginal()) {
-      throw new Exception("The Default Configuration cannot be modified. Please create you own configuration");
+      throw new Exception("The Default Configuration cannot be modified. Please create your own configuration");
     }
     return new ResponseMessage(Status.SUCCESS, "EXPORT_CONFIGURATION_SAVED", exportConfiguration.getId(), null);
   }

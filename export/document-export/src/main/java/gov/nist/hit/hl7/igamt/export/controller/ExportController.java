@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.export.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Types;
@@ -11,6 +13,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -102,6 +105,21 @@ public class ExportController {
 				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 				}
 				
+				if(format.toLowerCase().equals("html1")) {											  
+					   ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, configId);
+					   File coCons;
+					   response.setContentType("text/html");
+					   response.setHeader("Content-disposition",
+					   "attachment;filename=" + "CoconstraintExcel.xls");
+					   try {
+//					   coCons = new ClassPathResource("CoconstaintHTMLForConverting.html").getFile();
+					   InputStream targetStream = exportedFile.getContent();
+					   FileCopyUtils.copy(targetStream, response.getOutputStream());
+					   } catch (IOException e) {
+					   throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
+					   }
+					   } 
+					   
 				
 			} catch (Exception e) {
 				e.printStackTrace();

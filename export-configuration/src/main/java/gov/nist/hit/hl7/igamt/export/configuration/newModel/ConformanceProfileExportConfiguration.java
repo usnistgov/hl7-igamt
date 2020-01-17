@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.export.configuration.domain.CoConstraintExportMode;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ColumnsConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.MetadataConfiguration;
@@ -27,6 +28,8 @@ public class ConformanceProfileExportConfiguration extends ResourceExportConfigu
 	  private Columns listedColumns;
 	  private MetadataConfiguration metadataConfig;
 	  private ConstraintExportConfiguration constraintExportConfiguration;
+	  private CoConstraintExportMode coConstraintExportMode;
+
 
 
 	  /**
@@ -38,6 +41,7 @@ public class ConformanceProfileExportConfiguration extends ResourceExportConfigu
 	    this.columns = exportConfiguration.getMessageColumn().getColumns();
 	    this.metadataConfig = exportConfiguration.getMessageMetadataConfig();
 	    this.listedColumns = exportConfiguration.getListedColumns();
+	    this.coConstraintExportMode= exportConfiguration.getCoConstraintExportMode();
 	  }
 	  
 
@@ -63,6 +67,18 @@ public class ConformanceProfileExportConfiguration extends ResourceExportConfigu
 
 	
 
+
+
+
+	public CoConstraintExportMode getCoConstraintExportMode() {
+		return coConstraintExportMode;
+	}
+
+
+
+	public void setCoConstraintExportMode(CoConstraintExportMode coConstraintExportMode) {
+		this.coConstraintExportMode = coConstraintExportMode;
+	}
 
 
 

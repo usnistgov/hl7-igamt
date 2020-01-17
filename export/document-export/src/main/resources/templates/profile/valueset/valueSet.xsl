@@ -6,21 +6,21 @@
 	<xsl:import href="/templates/profile/valueset/valueSetAttributes.xsl" />
 	<xsl:import href="/templates/profile/valueset/codes.xsl" />
 	<xsl:import href="/templates/profile/valueset/codeSystems.xsl" />
-	<xsl:template match="Valueset" mode="toc">
+	<!-- <xsl:template match="Valueset" mode="toc">
 		<xsl:element name="a">
 			<xsl:attribute name="href">
                 <xsl:value-of select="concat('#{',@id,'}')" />
             </xsl:attribute>
 			<xsl:choose>
 				<xsl:when test="@Name!=''">
-					<xsl:value-of select="concat(@BindingIdentifier,' - ',@Name)" />
+					<xsl:value-of select="concat(@BindingIdentifier,' - AAAA ',@Name)" />
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:value-of select="@BindingIdentifier" />
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:element>
-	</xsl:template>
+	</xsl:template> -->
 
 	<xsl:template match="Valueset">
 		<xsl:call-template name="PreDef" />

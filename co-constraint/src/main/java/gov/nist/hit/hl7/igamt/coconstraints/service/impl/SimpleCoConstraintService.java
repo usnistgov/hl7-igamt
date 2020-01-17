@@ -56,6 +56,10 @@ public class SimpleCoConstraintService implements CoConstraintService {
             if(binding instanceof CoConstraintGroupBindingContained) {
                 return (CoConstraintGroupBindingContained) binding;
             } else {
+<<<<<<< HEAD
+            		
+=======
+>>>>>>> d5085e9d983cee87c5e615a132443eaddf222117
                 CoConstraintGroupBindingContained contained = new CoConstraintGroupBindingContained();
                 contained.setRequirement(binding.getRequirement());
 

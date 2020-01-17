@@ -12,6 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -47,6 +52,12 @@ private ConstraintSerializationService constraintSerializationService;
 @Autowired
 private DeltaService deltaService;
 
+@Autowired
+private CoConstraintSerializationService coConstraintSerializationService;
+
+@Autowired
+CoConstraintService coConstraintService;
+
 	@Override
 	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level,  int position,
 			ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) throws ResourceSerializationException {
@@ -80,37 +91,33 @@ private DeltaService deltaService;
 			if(conformanceProfileExportConfiguration.getMetadataConfig().isRole()) {
 		        conformanceProfileElement.addAttribute(new Attribute("role",
 		            conformanceProfile.getRole() != null ? conformanceProfile.getRole().name() : ""));}
-			
-//	        Element bindingElement = super.serializeResourceBinding(conformanceProfile.getBinding(), this.valuesetNamesMap);
-//	        if (bindingElement != null) {
-//	          conformanceProfileElement.appendChild(bindingElement);
-//	        }
 	        if(!conformanceProfileDataModel.getConformanceStatements().isEmpty() || !conformanceProfileDataModel.getPredicateMap().isEmpty()) {
 	        Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatements(), conformanceProfileDataModel.getPredicateMap(), conformanceProfileExportConfiguration.getConstraintExportConfiguration());
 	        if (constraints != null) {
 	        	conformanceProfileElement.appendChild(constraints);
         }
 	        }
+	
+	        
 	        if (conformanceProfile.getChildren() != null
-	            && conformanceProfile.getChildren().size() > 0) {
-	        	List<MsgStructElement> msgStructElementList = conformanceProfile.getChildren().stream().sorted((e1, e2) -> 
-	        	e1.getPosition() - e2.getPosition()).collect(Collectors.toList());
+		            && conformanceProfile.getChildren().size() > 0) {
 	        	
-	          for (MsgStructElement msgStructElm : msgStructElementList) {
-	            	System.out.println("HERE1 position : " +  msgStructElm.getPosition() +" Name is : " + msgStructElm.getName());
-		            if (msgStructElm != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), msgStructElm.getUsage())) {
-//		            	System.out.println("HERE2 : " +  msgStructElm.getName() +" " + msgStructElm.getId());
-	            if (msgStructElm != null) {
-//	              if(this.bindedGroupsAndSegmentRefs.contains(msgStructElm.getId())) {
-	                Element msgStructElement = this.serializeMsgStructElement(igDataModel, msgStructElm, 0, conformanceProfileExportConfiguration);
-	                if (msgStructElement != null) {
-	                  conformanceProfileElement.appendChild(msgStructElement);
-	                }
-	              }
-		            }
-//	            }
-	          }
-	        }
+		        	List<MsgStructElement> msgStructElementList = conformanceProfile.getChildren().stream().sorted((e1, e2) -> 
+		        	e1.getPosition() - e2.getPosition()).collect(Collectors.toList());
+		        	
+		          for (MsgStructElement messageStructElm : msgStructElementList) {
+			            if (messageStructElm != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), messageStructElm.getUsage())) {
+		            if (messageStructElm != null) {
+//		              if(this.bindedGroupsAndSegmentRefs.contains(msgStructElm.getId())) {
+		                Element msgStructElement = this.serializeMsgStructElement(igDataModel, messageStructElm, 0, conformanceProfileExportConfiguration);
+		                if (msgStructElement != null) {
+		                  conformanceProfileElement.appendChild(msgStructElement);
+		                }
+		              }
+			            }
+//		            }
+		          }
+		        }
 
 	        // Calculate conformanceProfile delta if the conformanceProfile has an origin
 		    if(conformanceProfile.getOrigin() != null) {
@@ -137,9 +144,43 @@ private DeltaService deltaService;
 				}
 
 		    }
+		    
+		    if (conformanceProfile.getCoConstraintsBindings() != null) {
+		    		for(CoConstraintBinding coConstraintBinding : conformanceProfile.getCoConstraintsBindings()) {
+		    			if(coConstraintBinding != null) {
+		    				if(coConstraintBinding.getBindings() != null) {
+		    		    			for(CoConstraintBindingSegment coConstraintBindingSegment : coConstraintBinding.getBindings() ) {
+		    		    				if(coConstraintBindingSegment != null) {
+		    		    					for(CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {
+		    		    						Element coConstraintsElement = null;
+		    		    						CoConstraintTable mergedCoConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableConditionalBinding.getValue());
+
+		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("COMPACT")) {
+			    		    						 coConstraintsElement = coConstraintSerializationService.SerializeCoConstraintCompact(mergedCoConstraintTable);
+		    		    						}
+		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("VERBOSE")) {
+			    		    						 coConstraintsElement = coConstraintSerializationService.SerializeCoConstraintVerbose(mergedCoConstraintTable);
+		    		    						}
+//		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("NOEXPORT")) {
+//			    		    						 coConstraintsElement = new Element("");
+//		    		    						}
+//		    		    						System.out.println("Coconstraint XML :" + coConstraintsElement.toXML());
+		    		    		    	        if (coConstraintsElement != null) {
+		    		    		    	        	conformanceProfileElement.appendChild(coConstraintsElement);
+		    		    		    	        }
+		    		    					}
+		    		    				}
+		    				}
+		    			}
+		    			
+		    		}
+		    }
+
+		    }
 
 		    return igDataModelSerializationService.getSectionElement(conformanceProfileElement, conformanceProfileDataModel.getModel(), level, conformanceProfileExportConfiguration);
-
+		    
+		    
 	      } catch (Exception exception) {
 	        throw new ResourceSerializationException(exception, Type.CONFORMANCEPROFILE,
 	        		conformanceProfileDataModel.getModel());
@@ -360,10 +401,6 @@ private DeltaService deltaService;
 	}
 	
 	private String convertListToString(List<String> list) {
-		// Set<String> valuesetNameString = new HashSet<>();
-		// for (String name : valuesetNames) {
-		// valuesetLocationsString.add(String.valueOf(location));
-		// }
 		if(list != null && !list.isEmpty()) {
 			return String.join(", ", list);
 		}

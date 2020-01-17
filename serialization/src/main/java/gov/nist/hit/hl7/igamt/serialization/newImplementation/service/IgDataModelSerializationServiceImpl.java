@@ -15,7 +15,6 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
-import gov.nist.hit.hl7.igamt.export.configuration.newModel.NewExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ResourceExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
@@ -63,8 +62,8 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 				metadata.getSpecificationName() != null ? metadata.getSpecificationName() : ""));
 		metadataElement.addAttribute(
 				new Attribute("identifier", metadata.getIdentifier() != null ? metadata.getIdentifier() : ""));
-//		metadataElement.addAttribute(new Attribute("implementationNotes",
-//				metadata.getImplementationNotes() != null ? metadata.getImplementationNotes() : ""));
+		metadataElement.addAttribute(new Attribute("subTitles",
+				metadata.getSubTitle() != null ? metadata.getSubTitle() : ""));
 		metadataElement
 		.addAttribute(new Attribute("orgName", metadata.getOrgName() != null ? metadata.getOrgName() : ""));
 		metadataElement.addAttribute(
