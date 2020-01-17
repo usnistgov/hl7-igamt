@@ -33,6 +33,9 @@
             <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox></li>
           </ul>
         </div>
+      </div>
+
+      <div style="display: flex; flex-grow: 1; flex-direction: column;">
         <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
           <h5 class="card-title title-text custom-card-title">Constraints</h5>
           <ul class="list-group list-group-flush">

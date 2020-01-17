@@ -75,7 +75,7 @@ public class ExportConfiguration {
 
   private boolean greyOutOBX2FlavorColumn = false;
 
-  private CoConstraintExportMode coConstraintExportMode = CoConstraintExportMode.COMPACT;
+  private CoConstraintExportMode coConstraintExportMode;
 
   private boolean includeDerived = false;
 
@@ -120,7 +120,7 @@ public class ExportConfiguration {
   }
 
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue) {
-    ExportConfiguration defaultConfiguration = new ExportConfiguration();  
+    ExportConfiguration defaultConfiguration = new ExportConfiguration();
     defaultConfiguration.setConfigName("");
     defaultConfiguration.setOriginal(false);
     defaultConfiguration.setDefaultConfig(false);
@@ -133,6 +133,12 @@ public class ExportConfiguration {
     defaultConfiguration.setIncludeValuesetsTable(true);
     defaultConfiguration.setIncludeCompositeProfileTable(true);
     defaultConfiguration.setIncludeProfileComponentTable(true);
+//    // CoConstraints config
+//    CoConstraintExportMode coConstraintExportMode;
+//    coConstraintExportMode.setCompact(true);
+//    coConstraintExportMode.setVerbose(false);
+//    coConstraintExportMode.setNoExport(false);
+//    defaultConfiguration.setCoConstraintExportMode(coConstraintExportMode);
     // Default Usages
     UsageConfiguration displayAll = new UsageConfiguration();
     UsageConfiguration displaySelectives = new UsageConfiguration();

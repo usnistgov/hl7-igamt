@@ -1,5 +1,6 @@
 export interface IExportConfiguration {
   configName: string;
+  coConstraintExportMode : any;
   id: string;
   defaultConfig: boolean;
   original : boolean;
@@ -177,6 +178,7 @@ export interface ISegmentExportConfiguration {
   dynamicMappingInfo: boolean;
   binding: boolean;
   constraintExportConfiguration: IConstraintExportConfiguration;
+  coConstraintExportMode : any;
   includeSegmentTable: boolean;
   greyOutOBX2FlavorColumn: boolean;
   segmentsExport: IUsageConfiguration;

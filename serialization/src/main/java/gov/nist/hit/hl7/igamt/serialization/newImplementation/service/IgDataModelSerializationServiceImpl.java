@@ -15,7 +15,6 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
-import gov.nist.hit.hl7.igamt.export.configuration.newModel.NewExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ResourceExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;

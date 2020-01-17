@@ -12,6 +12,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -46,6 +51,12 @@ private ConstraintSerializationService constraintSerializationService;
 
 @Autowired
 private DeltaService deltaService;
+
+@Autowired
+private CoConstraintSerializationService coConstraintSerializationService;
+
+@Autowired
+CoConstraintService coConstraintService;
 
 	@Override
 	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level,  int position,
@@ -133,9 +144,43 @@ private DeltaService deltaService;
 				}
 
 		    }
+		    
+		    if (conformanceProfile.getCoConstraintsBindings() != null) {
+		    		for(CoConstraintBinding coConstraintBinding : conformanceProfile.getCoConstraintsBindings()) {
+		    			if(coConstraintBinding != null) {
+		    				if(coConstraintBinding.getBindings() != null) {
+		    		    			for(CoConstraintBindingSegment coConstraintBindingSegment : coConstraintBinding.getBindings() ) {
+		    		    				if(coConstraintBindingSegment != null) {
+		    		    					for(CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {
+		    		    						Element coConstraintsElement = null;
+		    		    						CoConstraintTable mergedCoConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableConditionalBinding.getValue());
+
+		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("COMPACT")) {
+			    		    						 coConstraintsElement = coConstraintSerializationService.SerializeCoConstraintCompact(mergedCoConstraintTable);
+		    		    						}
+		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("VERBOSE")) {
+			    		    						 coConstraintsElement = coConstraintSerializationService.SerializeCoConstraintVerbose(mergedCoConstraintTable);
+		    		    						}
+//		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("NOEXPORT")) {
+//			    		    						 coConstraintsElement = new Element("");
+//		    		    						}
+//		    		    						System.out.println("Coconstraint XML :" + coConstraintsElement.toXML());
+		    		    		    	        if (coConstraintsElement != null) {
+		    		    		    	        	conformanceProfileElement.appendChild(coConstraintsElement);
+		    		    		    	        }
+		    		    					}
+		    		    				}
+		    				}
+		    			}
+		    			
+		    		}
+		    }
+
+		    }
 
 		    return igDataModelSerializationService.getSectionElement(conformanceProfileElement, conformanceProfileDataModel.getModel(), level, conformanceProfileExportConfiguration);
-
+		    
+		    
 	      } catch (Exception exception) {
 	        throw new ResourceSerializationException(exception, Type.CONFORMANCEPROFILE,
 	        		conformanceProfileDataModel.getModel());

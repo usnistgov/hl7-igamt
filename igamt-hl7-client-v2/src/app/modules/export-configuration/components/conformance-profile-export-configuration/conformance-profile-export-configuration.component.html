@@ -10,7 +10,6 @@
         <li class="list-group-item"><p-checkbox disabled="true" label="C" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.c"> </p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.o" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="X" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.x" (onChange)="triggerChange()"></p-checkbox></li>
-        <li >{{viewOnly}}</li>
 
       </ul>
     </div>
@@ -25,9 +24,27 @@
           </li>
         </ul>
       </div>
+      <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;">
+        <h5 class="card-title title-text custom-card-title">Metadata</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="HL7 Version" binary="true" [(ngModel)]="config.metadataConfig.hl7version" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Organization" binary="true" [(ngModel)]="config.metadataConfig.organization" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Author" binary="true" [(ngModel)]="config.metadataConfig.author" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Type" binary="true" [(ngModel)]="config.metadataConfig.type" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Role" binary="true" [(ngModel)]="config.metadataConfig.role" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox></li>
+          <!-- <li class="list-group-item"><p-checkbox label="Usage Notes " binary="true" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox></li> -->
+        </ul>
+      </div>
+
+     
       
 
       <div style="display: flex; flex-grow: 1; flex-direction: column;">
+       
+
         <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
           <h5 class="card-title title-text custom-card-title">Constraints</h5>
           <ul class="list-group list-group-flush">
@@ -36,20 +53,15 @@
           </ul>
         </div>
 
-        <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;">
-          <h5 class="card-title title-text custom-card-title">Metadata</h5>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="HL7 Version" binary="true" [(ngModel)]="config.metadataConfig.hl7version" (onChange)="triggerChange()"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Organization" binary="true" [(ngModel)]="config.metadataConfig.organization" (onChange)="triggerChange()"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Author" binary="true" [(ngModel)]="config.metadataConfig.author" (onChange)="triggerChange()"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Type" binary="true" [(ngModel)]="config.metadataConfig.type" (onChange)="triggerChange()"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Role" binary="true" [(ngModel)]="config.metadataConfig.role" (onChange)="triggerChange()"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox></li>
-            <!-- <li class="list-group-item"><p-checkbox label="Usage Notes " binary="true" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox></li> -->
-          </ul>
-        </div>
+
+      <!-- <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+        <h5 class="card-title title-text custom-card-title">CoConstraints</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><p-radioButton [disabled]="true" label="Compact Format" value="COMPACT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
+          <li class="list-group-item"><p-radioButton [disabled]="true" label="Verbose Format" value="VERBOSE" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
+          <li class="list-group-item"><p-radioButton [disabled]="true" label="Don't Export" value="NOEXPORT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
+        </ul>
+      </div> -->
 
       
       </div>
