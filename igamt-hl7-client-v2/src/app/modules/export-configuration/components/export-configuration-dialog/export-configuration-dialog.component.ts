@@ -47,7 +47,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.configurationName = data.configurationName;
     this.deltaMode$ = this.store.select(selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
-    this.store.select(selectDerived).subscribe((x) => this.derived = x);
+    this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.filter = this.initialConfig.exportFilterDecision;
     console.log(this.filter);
     this.defaultConfig = _.cloneDeep(data.decision.exportConfiguration);

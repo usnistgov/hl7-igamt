@@ -1,4 +1,4 @@
-<ng-container *ngIf="val && val.confLength !== 'NA'" [ngSwitch]="viewOnly">
+<ng-container *ngIf="val && val.confLength" [ngSwitch]="viewOnly">
   <ng-container *ngSwitchCase="false">
     <div class="tt-cell">
       <input class="range-input" type="text" [name]="location + 'conf-length'" [id]="location + 'conf-length'" placeholder="Conf Length" [(ngModel)]="val.confLength" (ngModelChange)="confLengthChange($event)">
@@ -8,9 +8,6 @@
     </div>
   </ng-container>
   <ng-container *ngSwitchCase="true">
-      <ng-container [ngSwitch]="val && val.confLength && val.confLength !== 'NA'">
-        <strong *ngSwitchCase="true">{{ val.confLength }}</strong>
-        <strong *ngSwitchCase="false">NA</strong>
-      </ng-container>
+    <strong *ngSwitchCase="true">{{ val.confLength }}</strong>
   </ng-container>
 </ng-container>

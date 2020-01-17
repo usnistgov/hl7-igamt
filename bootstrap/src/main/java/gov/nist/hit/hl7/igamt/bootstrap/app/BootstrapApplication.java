@@ -27,6 +27,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
@@ -59,8 +60,8 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 //@EnableMongoAuditing
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
     DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
-@EnableMongoRepositories("gov.nist.hit.hl7.igamt")
-@ComponentScan({"gov.nist.hit.hl7.igamt", "gov.nist.hit.hl7.auth.util.crypto","gov.nist.hit.hl7.auth.util.service"})
+@EnableMongoRepositories("gov.nist.hit.hl7")
+@ComponentScan({"gov.nist.hit.hl7", "gov.nist.hit.hl7.auth.util.crypto","gov.nist.hit.hl7.auth.util.service"})
 @EnableScheduling
 public class BootstrapApplication implements CommandLineRunner {
 
@@ -80,6 +81,8 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   ConfigService sharedConstantService;
   
+  @Autowired
+  DataFixer dataFixer;
   @Autowired
   private ExportConfigurationRepository exportConfigurationRepository;
 
@@ -216,7 +219,7 @@ public class BootstrapApplication implements CommandLineRunner {
 //  }
 
   
-  @PostConstruct
+  //@PostConstruct
   void generateDefaultExportConfig() {
     
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
@@ -316,134 +319,240 @@ public class BootstrapApplication implements CommandLineRunner {
   //
   // }
 
-  private HashMap<String, BindingInfo> generateValueSetConfig(List<String> versions) {
-    HashMap<String,BindingInfo> ret= new HashMap<String,BindingInfo>();
+	private HashMap<String, BindingInfo> generateValueSetConfig(List<String> versions) {
+		HashMap<String,BindingInfo> ret= new HashMap<String,BindingInfo>();
+		
+
+		ret.put("ID", BindingInfo.createSimple());
+		ret.put("IS", BindingInfo.createSimple());
+		
+		BindingLocationOption location1 = new BindingLocationOption();
+		location1.setValue(Arrays.asList(1));
+		location1.setLabel("1");
+		
+		BindingLocationOption location2 = new BindingLocationOption();
+		location2.setValue(Arrays.asList(2));
+		location2.setLabel("2");
+		
+
+		BindingLocationOption location4 = new BindingLocationOption();
+		location4.setValue(Arrays.asList(4));
+		location4.setLabel("4");
+		
+		BindingLocationOption location5 = new BindingLocationOption();
+		location5.setValue(Arrays.asList(5));
+		location5.setLabel("5");
+		
+		BindingLocationOption location2_5 = new BindingLocationOption();
+		location2_5.setValue(Arrays.asList(2,5));
+		location2_5.setLabel("2 or 5");
+	
+		
+		BindingLocationOption location10= new BindingLocationOption();
+		location10.setValue(Arrays.asList(10));
+		location10.setLabel("10");
+		
+		BindingLocationOption location1_4 = new BindingLocationOption();
+		location1_4.setValue(Arrays.asList(1,4));
+		location1_4.setLabel("1 or 4");
+		
+		BindingLocationOption location1_4_10 = new BindingLocationOption();
+		location1_4_10.setValue(Arrays.asList(1,4,10));
+		location1_4_10.setLabel("1 or 4 or 10");	
+		
+		HashMap<String, List<BindingLocationOption>> allowedBindingLocations_coded =new HashMap<String, List<BindingLocationOption>>();
+		
+		
+		List<BindingLocationOption> oldOptions1= Arrays.asList(location1,location4, location1_4);
+		List<BindingLocationOption> newOption1= Arrays.asList(location1,location4,location10, location1_4, location1_4_10);
+		List<BindingLocationOption> optionsHD= Arrays.asList(location1);
+		List<BindingLocationOption> optionsCSU= Arrays.asList(location2,location5,location2_5);
+		allowedBindingLocations_coded.put("2-3-1", oldOptions1);
+		allowedBindingLocations_coded.put("2-4", oldOptions1);
+
+		allowedBindingLocations_coded.put("2-5", oldOptions1);
+
+		allowedBindingLocations_coded.put("2-5-1", oldOptions1);
+		allowedBindingLocations_coded.put("2-6", oldOptions1);
+
+		allowedBindingLocations_coded.put("2-7", newOption1);
+		
+		allowedBindingLocations_coded.put("2-7-1", newOption1);
+		allowedBindingLocations_coded.put("2-8", newOption1);
+		
+		allowedBindingLocations_coded.put("2-8-1", newOption1);
+		allowedBindingLocations_coded.put("2-8-2", oldOptions1);
+		BindingInfo coded =  BindingInfo.createCoded();
+		coded.setAllowedBindingLocations(allowedBindingLocations_coded);
+		
+		ret.put("CE", coded);
+		ret.put("CWE", coded);
+		ret.put("CNE", coded);
+		ret.put("CF", coded);
+		BindingInfo CSUInfo =  BindingInfo.createCoded();
+		
+		HashMap<String, List<BindingLocationOption>> allowedBindingLocations_CSU =new HashMap<String, List<BindingLocationOption>>();
+		for(String v: versions) {
+			allowedBindingLocations_CSU.put(v.replace('.', '-'), optionsCSU);
+		}
+		CSUInfo.setAllowedBindingLocations(allowedBindingLocations_CSU);
+		ret.put("CSU", CSUInfo);
+		
+		BindingInfo HDInfo =  BindingInfo.createCoded();
+		HDInfo.setCoded(false);
+		HashMap<String, List<BindingLocationOption>> allowedBindingLocations_hd =new HashMap<String, List<BindingLocationOption>>();
+
+		for(String v: versions) {
+			allowedBindingLocations_hd.put(v.replace('.', '-'), optionsHD);
+		}
+		HDInfo.setAllowedBindingLocations(allowedBindingLocations_hd);
+		ret.put("HD",HDInfo);
+		
+		BindingInfo stInfo = BindingInfo.createSimple();
+		stInfo.setLocationIndifferent(false);
+		
+		Set<BindingLocationInfo> stExceptions = new HashSet<BindingLocationInfo>();
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AD", 3, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AD", 4, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AD", 5, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AUI", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"CNN", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"CX", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"EI", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"ERL", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"LA2", 11, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"LA2", 12, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"LA2", 13, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"ELD", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"OSD", 2, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"OSD", 3, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"PLN", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"PPN", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD", 4, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD",5, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD", 8, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XCN", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XON", 3, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XON", 10, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.SEGMENT,"PID", 23, versions ));
+		stInfo.setLocationExceptions(stExceptions);
+		ret.put("ST", stInfo);
+		
+		BindingInfo nmInfo = BindingInfo.createSimple();
+		nmInfo.setLocationIndifferent(false);
+		Set<BindingLocationInfo> nmExceptions = new HashSet<BindingLocationInfo>();
+		nmExceptions.add(new BindingLocationInfo(Type.DATATYPE,"CK", 1, versions ));
+		ret.put("NM", nmInfo);
+		
+		return ret;
+	}
 
 
-    ret.put("ID", BindingInfo.createSimple());
-    ret.put("IS", BindingInfo.createSimple());
+//   @PostConstruct
+//   void classifyDatatypes() throws DatatypeNotFoundException {
+//   datatypeClassificationService.deleteAll();
+//   System.out.println("Classifying dts");
+//   datatypeClassifier.classify();
+//   System.out.println("ENd of Classifying dts");
+//  
+//   }
+//  
+//@PostConstruct
+//void testCache() {
+//	testCache.deleteAll();
+//
+//  ResourceInfo info = new ResourceInfo();
+//  info.setId("user");
+//  info.setDomainInfo(null);
+//  info.setType(null);
+//  
+//  ResourceInfo info1 = new ResourceInfo();
+//  info1.setId("user1");
+//  info1.setDomainInfo(null);
+//  info1.setType(null);
+//  
+//  
+//  RelationShip r1 = new RelationShip(info, info1, ReferenceType.STRUCTURE, "test");
+//  RelationShip r2 = new RelationShip(info1, info, ReferenceType.STRUCTURE, "test");
+//
+//  
+//  testCache.save(r1);
+//  testCache.save(r2);
+//  
+//  System.out.println(testCache.findAll().size());
+//  
+//  List<RelationShip> dep =testCache.findAllDependencies("user");
+//  List<RelationShip>  refs=testCache.findCrossReferences("user");
+//  
+//  List<RelationShip>  byType=testCache.findByPath("test");
+//  List<RelationShip>  all=testCache.findAll();
+//  
+//  for( RelationShip r :all) {
+//	  System.out.println(r.getId());
+//  }
+//  System.out.println(dep);
+//  System.out.println(refs);
+//
+//}
 
-    BindingLocationOption location1 = new BindingLocationOption();
-    location1.setValue(Arrays.asList(1));
-    location1.setLabel("1");
+	
 
-    BindingLocationOption location2 = new BindingLocationOption();
-    location2.setValue(Arrays.asList(2));
-    location2.setLabel("2");
+	public void fixMessages(Scope scope) {
+		List<ConformanceProfile> resources = messageService.findByDomainInfoScope(scope.getValue()); 
+		for(ConformanceProfile r : resources) {
+			if(r.getBinding() !=null) {
+				fixBinding(r.getBinding());
+				messageService.save(r);
+			}
+		}
+	}
+	public void fixDatatypes(Scope scope) {
+		List<Datatype> resources = this.dataypeService.findByDomainInfoScope(scope.getValue()); 
+		for(Datatype r : resources) {
+			if(r.getBinding() !=null) {
+				fixBinding(r.getBinding());
+				dataypeService.save(r);
+			}
+		}	
+	}
+	public void fixSegment(Scope scope) throws ValidationException {
+		List<Segment> resources = this.segmentService.findByDomainInfoScope(scope.getValue()); 
+		for(Segment r : resources) {
+			if(r.getBinding() !=null) {
+				fixBinding(r.getBinding());
+				segmentService.save(r);
+			}
+		}
+	}
+	
+	public void fixBinding(ResourceBinding binding) {
+//		if(binding.getChildren() !=null && !binding.getChildren().isEmpty()) {
+//			for(StructureElementBinding elm: binding.getChildren()) {	
+//				if(elm.getValuesetBindings() != null) {
+//					for(ValuesetBinding vs: elm.getValuesetBindings()) {
+//						if(vs.getValuesetId() !=null) {
+//							List<String> list = new ArrayList<String>();
+//							list.add(vs.getValuesetId());
+//							vs.setValueSets(list);
+//						}
+//					}
+//				}
+//			}
+//		}	
+	}
+ 
+	//@PostConstruct
+	public void generateBindings() throws FileNotFoundException{
+	  this.bindingCollector.collect();
+	};
+	   
+	
+	//@PostConstruct
+	public void fixBinding() throws ValidationException {
+	  this.dataFixer.readCsv();
+	}
 
-
-    BindingLocationOption location4 = new BindingLocationOption();
-    location4.setValue(Arrays.asList(4));
-    location4.setLabel("4");
-
-    BindingLocationOption location5 = new BindingLocationOption();
-    location5.setValue(Arrays.asList(5));
-    location5.setLabel("5");
-
-    BindingLocationOption location2_5 = new BindingLocationOption();
-    location2_5.setValue(Arrays.asList(2,5));
-    location2_5.setLabel("2 or 5");
-
-
-    BindingLocationOption location10= new BindingLocationOption();
-    location10.setValue(Arrays.asList(10));
-    location10.setLabel("10");
-
-    BindingLocationOption location1_4 = new BindingLocationOption();
-    location1_4.setValue(Arrays.asList(1,4));
-    location1_4.setLabel("1 or 4");
-
-    BindingLocationOption location1_4_10 = new BindingLocationOption();
-    location1_4_10.setValue(Arrays.asList(1,4,10));
-    location1_4_10.setLabel("1 or 4 or 10");	
-
-    HashMap<String, List<BindingLocationOption>> allowedBindingLocations_coded =new HashMap<String, List<BindingLocationOption>>();
-
-
-    List<BindingLocationOption> oldOptions1= Arrays.asList(location1,location4, location1_4);
-    List<BindingLocationOption> newOption1= Arrays.asList(location1,location4,location10, location1_4, location1_4_10);
-    List<BindingLocationOption> optionsHD= Arrays.asList(location1);
-    List<BindingLocationOption> optionsCSU= Arrays.asList(location2,location5,location2_5);
-    allowedBindingLocations_coded.put("2-3-1", oldOptions1);
-    allowedBindingLocations_coded.put("2-4", oldOptions1);
-
-    allowedBindingLocations_coded.put("2-5", oldOptions1);
-
-    allowedBindingLocations_coded.put("2-5-1", oldOptions1);
-    allowedBindingLocations_coded.put("2-6", oldOptions1);
-
-    allowedBindingLocations_coded.put("2-7", newOption1);
-
-    allowedBindingLocations_coded.put("2-7-1", newOption1);
-    allowedBindingLocations_coded.put("2-8", newOption1);
-
-    allowedBindingLocations_coded.put("2-8-1", newOption1);
-    allowedBindingLocations_coded.put("2-8-2", oldOptions1);
-    BindingInfo coded =  BindingInfo.createCoded();
-    coded.setAllowedBindingLocations(allowedBindingLocations_coded);
-
-    ret.put("CE", coded);
-    ret.put("CWE", coded);
-    ret.put("CNE", coded);
-    ret.put("CF", coded);
-    BindingInfo CSUInfo =  BindingInfo.createCoded();
-
-    HashMap<String, List<BindingLocationOption>> allowedBindingLocations_CSU =new HashMap<String, List<BindingLocationOption>>();
-    for(String v: versions) {
-      allowedBindingLocations_CSU.put(v.replace('.', '-'), optionsCSU);
-    }
-    CSUInfo.setAllowedBindingLocations(allowedBindingLocations_CSU);
-    ret.put("CSU", CSUInfo);
-
-    BindingInfo HDInfo =  BindingInfo.createCoded();
-    HDInfo.setCoded(false);
-    HashMap<String, List<BindingLocationOption>> allowedBindingLocations_hd =new HashMap<String, List<BindingLocationOption>>();
-
-    for(String v: versions) {
-      allowedBindingLocations_hd.put(v.replace('.', '-'), optionsHD);
-    }
-    HDInfo.setAllowedBindingLocations(allowedBindingLocations_hd);
-    ret.put("HD",HDInfo);
-
-    BindingInfo stInfo = BindingInfo.createSimple();
-    stInfo.setLocationIndifferent(false);
-
-    Set<BindingLocationInfo> stExceptions = new HashSet<BindingLocationInfo>();
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AD", 3, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AD", 4, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AD", 5, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AUI", 1, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"CNN", 1, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"CX", 1, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"EI", 1, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"ERL", 1, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"LA2", 11, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"LA2", 12, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"LA2", 13, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"ELD", 1, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"OSD", 2, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"OSD", 3, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"PLN", 1, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"PPN", 1, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD", 1, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD", 4, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD",5, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD", 8, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XCN", 1, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XON", 3, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XON", 10, versions ));
-    stExceptions.add(new BindingLocationInfo(Type.SEGMENT,"PID", 23, versions ));
-    stInfo.setLocationExceptions(stExceptions);
-    ret.put("ST", stInfo);
-
-    BindingInfo nmInfo = BindingInfo.createSimple();
-    nmInfo.setLocationIndifferent(false);
-    Set<BindingLocationInfo> nmExceptions = new HashSet<BindingLocationInfo>();
-    nmExceptions.add(new BindingLocationInfo(Type.DATATYPE,"CK", 1, versions ));
-    ret.put("NM", nmInfo);
-
-    return ret;
-  }
 
 
   //   @PostConstruct
@@ -493,54 +602,4 @@ public class BootstrapApplication implements CommandLineRunner {
   //
   //}
 
-
-
-  public void fixMessages(Scope scope) {
-    List<ConformanceProfile> resources = messageService.findByDomainInfoScope(scope.getValue()); 
-    for(ConformanceProfile r : resources) {
-      if(r.getBinding() !=null) {
-        fixBinding(r.getBinding());
-        messageService.save(r);
-      }
-    }
-  }
-  public void fixDatatypes(Scope scope) {
-    List<Datatype> resources = this.dataypeService.findByDomainInfoScope(scope.getValue()); 
-    for(Datatype r : resources) {
-      if(r.getBinding() !=null) {
-        fixBinding(r.getBinding());
-        dataypeService.save(r);
-      }
-    }	
-  }
-  public void fixSegment(Scope scope) throws ValidationException {
-    List<Segment> resources = this.segmentService.findByDomainInfoScope(scope.getValue()); 
-    for(Segment r : resources) {
-      if(r.getBinding() !=null) {
-        fixBinding(r.getBinding());
-        segmentService.save(r);
-      }
-    }
-  }
-
-  public void fixBinding(ResourceBinding binding) {
-    //		if(binding.getChildren() !=null && !binding.getChildren().isEmpty()) {
-    //			for(StructureElementBinding elm: binding.getChildren()) {	
-    //				if(elm.getValuesetBindings() != null) {
-    //					for(ValuesetBinding vs: elm.getValuesetBindings()) {
-    //						if(vs.getValuesetId() !=null) {
-    //							List<String> list = new ArrayList<String>();
-    //							list.add(vs.getValuesetId());
-    //							vs.setValueSets(list);
-    //						}
-    //					}
-    //				}
-    //			}
-    //		}	
-  }
-
-  //@PostConstruct
-  public void generateBindings() throws FileNotFoundException{
-    this.bindingCollector.collect();
-  };
 }

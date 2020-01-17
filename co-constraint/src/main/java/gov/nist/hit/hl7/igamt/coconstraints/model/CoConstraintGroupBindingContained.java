@@ -14,6 +14,10 @@ public class CoConstraintGroupBindingContained extends  CoConstraintGroupBinding
     	this.type = GroupBindingType.CONTAINED;
     }
 
+    public CoConstraintGroupBindingContained() {
+        this.type = GroupBindingType.CONTAINED;
+    }
+
     public String getName() {
         return name;
     }

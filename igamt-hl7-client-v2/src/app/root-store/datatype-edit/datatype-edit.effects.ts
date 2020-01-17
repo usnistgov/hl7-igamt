@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { catchError, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { CrossReferencesService } from 'src/app/modules/shared/services/cross-references.service';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { MessageService } from '../../modules/core/services/message.service';
@@ -36,7 +36,7 @@ export class DatatypeEditEffects {
   @Effect()
   loadDatatype$ = this.actions$.pipe(
     ofType(DatatypeEditActionTypes.LoadDatatype),
-    switchMap((action: LoadDatatype) => {
+    concatMap((action: LoadDatatype) => {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));

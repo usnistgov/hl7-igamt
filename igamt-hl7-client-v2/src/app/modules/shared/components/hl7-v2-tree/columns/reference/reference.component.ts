@@ -20,6 +20,7 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
   _options: GroupOptions;
   selected: IDisplayElement;
   _selection: Subscription;
+  editMode: boolean;
 
   @Input()
   anchor: TemplateRef<any>;
@@ -33,6 +34,7 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
     this._selection = this.value$.pipe(
       filter((value) => !!value),
       tap((value) => {
+        this.editMode = false;
         this.selected = opts.find((elm) => elm.id === value.id);
         this._options = this.filter(opts, this.selected);
       }),
@@ -53,6 +55,10 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
         return 0;
       }
     }
+  }
+
+  toggleEdit() {
+    this.editMode = !this.editMode;
   }
 
   onInitValue(value: IResourceRef): void {
@@ -77,6 +83,7 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
       name: event.fixedName,
       version: event.domainInfo.version,
     }, this.property, ChangeType.UPDATE);
+    this.toggleEdit();
   }
 
   ngOnInit() {

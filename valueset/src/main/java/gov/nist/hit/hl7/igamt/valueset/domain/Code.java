@@ -28,6 +28,7 @@ public class Code implements Serializable{
   private String value;
   private String description;
   private String codeSystem;
+  private String codeSystemOid;
   private String comments;
   private CodeUsage usage;
   private String id;
@@ -93,5 +94,14 @@ public class Code implements Serializable{
   public void setId(String id) {
     this.id = id;
   }
+
+public String getCodeSystemOid() {
+	return codeSystemOid;
+}
+
+public void setCodeSystemOid(String codeSystemOid) {
+	this.codeSystemOid = codeSystemOid;
+}
+
 
 }

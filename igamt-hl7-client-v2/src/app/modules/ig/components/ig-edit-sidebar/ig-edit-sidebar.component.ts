@@ -17,7 +17,7 @@ import { selectIgId } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { ToggleDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
-import { CollapseTOC, CreateCoConstraintGroup } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { CollapseTOC, CreateCoConstraintGroup, CreateCoConstraintGroupSuccess } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
 import { selectAllSegments } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
@@ -71,7 +71,7 @@ export class IgEditSidebarComponent implements OnInit {
     private actions: Actions) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
-    this.store.select(selectDerived).subscribe((x) => this.derived = x);
+    this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.nodes$ = this.getNodes();
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
@@ -177,7 +177,6 @@ export class IgEditSidebarComponent implements OnInit {
       }),
     ).subscribe();
   }
-
   copy($event: ICopyResourceData) {
     const dialogRef = this.dialog.open(CopyResourceComponent, {
       data: { ...$event, targetScope: Scope.USER, title: this.getCopyTitle($event.element.type) },
@@ -198,7 +197,6 @@ export class IgEditSidebarComponent implements OnInit {
       }),
     ).subscribe();
   }
-
   delete($event: IDisplayElement) {
     this.igId$.pipe(
       take(1),
@@ -225,8 +223,13 @@ export class IgEditSidebarComponent implements OnInit {
                 data: {
                   title: 'Cross References found',
                   usages,
+                  documentId: id,
                 },
               });
+              this.router.events
+                .subscribe((h) => {
+                  dialogRef.close();
+                });
               dialogRef.afterClosed().subscribe(
               );
             }
@@ -302,7 +305,14 @@ export class IgEditSidebarComponent implements OnInit {
           take(1),
           map((result) => {
             if (result) {
-              console.log(result);
+              RxjsStoreHelperService.listenAndReact(this.actions, {
+                [IgEditActionTypes.CreateCoConstraintGroupSuccess]: {
+                  do: (action: CreateCoConstraintGroupSuccess) => {
+                    this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
+                    return of();
+                  },
+                },
+              }).subscribe();
               this.store.dispatch(new CreateCoConstraintGroup({ documentId: igId, ...result }));
             }
           }),
@@ -320,8 +330,6 @@ export class IgEditSidebarComponent implements OnInit {
       withLatestFrom(this.igId$),
       take(1),
       map(([result, igId]) => {
-
-        console.log([result]);
         this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: [result], type: $event.type }));
       }),
     ).subscribe();

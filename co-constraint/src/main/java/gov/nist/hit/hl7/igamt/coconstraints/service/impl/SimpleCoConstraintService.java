@@ -16,7 +16,6 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,7 +56,10 @@ public class SimpleCoConstraintService implements CoConstraintService {
             if(binding instanceof CoConstraintGroupBindingContained) {
                 return (CoConstraintGroupBindingContained) binding;
             } else {
+<<<<<<< HEAD
             		
+=======
+>>>>>>> d5085e9d983cee87c5e615a132443eaddf222117
                 CoConstraintGroupBindingContained contained = new CoConstraintGroupBindingContained();
                 contained.setRequirement(binding.getRequirement());
 

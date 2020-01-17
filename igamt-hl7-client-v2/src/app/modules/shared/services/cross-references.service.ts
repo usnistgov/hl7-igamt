@@ -38,15 +38,13 @@ export class CrossReferencesService {
   }
 
   getUsagesFromRelationShip(relations: IRelationShip[]): Observable<IUsages[]> {
+
         return from(relations).pipe(
+          take(1),
           mergeMap((r: IRelationShip) => {
-            this.store.dispatch(new TurnOnLoader({
-              blockUI: true,
-            }));
             return this.resourceRepo.getResourceDisplay(r.parent.type, r.parent.id).pipe(
               take(1),
               map((elm: IDisplayElement) => {
-                this.store.dispatch(new TurnOffLoader());
                 return {
                   usage: r.usage,
                   element: elm,
@@ -61,11 +59,11 @@ export class CrossReferencesService {
 
   findUsagesDisplay = (documentId: string, documentType: Type, elementType: Type, elementId: string): Observable<IUsages[]> => {
     return this.findUsages (documentId, documentType, elementType, elementId).pipe(
-
+      take(1),
       mergeMap( (rel: IRelationShip[]) => {
         return this.getUsagesFromRelationShip(rel);
         },
-        ),
+      ),
     );
   }
 }

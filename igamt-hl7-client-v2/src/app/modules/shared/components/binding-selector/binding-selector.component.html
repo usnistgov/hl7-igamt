@@ -28,7 +28,7 @@
     <p-table [value]="selectedValueSets" #vsTbl>
       <ng-template let-columns pTemplate="header">
       <tr>
-        <th>
+        <th *ngIf="!excludeBindingStrength">
           Binding Strength
         </th>
         <th *ngIf="data.locationInfo.allowedBindingLocations && data.locationInfo.allowedBindingLocations.length>1">
@@ -45,15 +45,15 @@
       <ng-template let-columns="columns" let-expanded="expanded" let-index="rowIndex" let-node="node" let-rowData
                    let-rowNode pTemplate="body">
     <tr>
-      <td>
+      <td *ngIf="!excludeBindingStrength">
         <span #anchor1></span>
-        <p-dropdown [(ngModel)]="rowData.bindingStrength" [appendTo]="anchor1" [style]="{'min-width': 'unset','width': '100%'}"
+        <p-dropdown [autoDisplayFirst]="false" [(ngModel)]="rowData.bindingStrength" [appendTo]="anchor1" [style]="{'min-width': 'unset','width': '100%'}"
                                                       [id]="'bindingStrength'+index" [name]="'bindingStrength'+index" [options]="bindingStrengthOptions"></p-dropdown>
       </td>
       <td  *ngIf="data.locationInfo.allowedBindingLocations && data.locationInfo.allowedBindingLocations.length>1">
         <span #anchor2></span>
 
-        <p-dropdown [(ngModel)]="rowData.bindingLocation" [appendTo]="anchor2" [style]="{'min-width': 'unset','width': '100%'}"
+        <p-dropdown [autoDisplayFirst]="false" [(ngModel)]="rowData.bindingLocation" [appendTo]="anchor2" [style]="{'min-width': 'unset','width': '100%'}"
                                                      [id]="'bindingLocation'+index" [name]="'bindingLocation'+index" [options]="data.locationInfo.allowedBindingLocations"></p-dropdown>
       </td>
       <td #anchor3>
@@ -69,7 +69,7 @@
         <div>
           <div style="display: flex; flex-direction: row">
             <div style="width:90%;">
-        <p-dropdown (ngModelChange)="submitValueSet(rowData, $event)" [(ngModel)]="temp" *ngIf="edit[index]" [appendTo]="anchor3"
+        <p-dropdown [autoDisplayFirst]="false" (ngModelChange)="submitValueSet(rowData, $event)" [(ngModel)]="temp" *ngIf="edit[index]" [appendTo]="anchor3"
                     [optionLabel]="'variableName'" [options]="data.resources" placeholder="select value set" [style]="{'minWidth': '100%'}">
           <ng-template let-item pTemplate="selectedItem">
             <ng-container *ngIf="item.value">

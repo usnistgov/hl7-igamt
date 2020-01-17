@@ -13,7 +13,6 @@ import { IRef } from '../models/ref.interface';
 import { IResource } from '../models/resource.interface';
 import { ISegment } from '../models/segment.interface';
 import { BindingService } from './binding.service';
-import { IBindingValues, IElementBinding } from './hl7-v2-tree.service';
 import { PredicateService } from './predicate.service';
 import { AResourceRepositoryService, IRefData } from './resource-repository.service';
 
@@ -731,7 +730,10 @@ export class Hl7V2TreeService {
       ),
       from(segmentRefs).pipe(
         mergeMap((id) => {
-          return repository.getResource(Type.SEGMENT, id).pipe(take(1), map((res) => res as ISegment));
+          return repository.getResource(Type.SEGMENT, id).pipe(
+            take(1),
+            map((res) => res as ISegment),
+          );
         }),
         toArray(),
         map((segments) => {

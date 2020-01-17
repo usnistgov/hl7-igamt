@@ -50,6 +50,7 @@ export class DataHeaderDialogComponent implements OnInit {
     { label: 'Code', value: CoConstraintColumnType.CODE },
   ];
 
+  selector: boolean;
   constraints = [];
 
   constructor(
@@ -57,6 +58,7 @@ export class DataHeaderDialogComponent implements OnInit {
     private ccEntityService: CoConstraintEntityService,
     private treeService: Hl7V2TreeService,
     public dialogRef: MatDialogRef<DataHeaderDialogComponent>) {
+    this.selector = data.selector;
     this.structure = data.structure;
     this.excludePaths = data.excludePaths;
     this.repository = data.repository;

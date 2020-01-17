@@ -34,6 +34,7 @@ import { CsPropositionComponent } from './components/cs-proposition/cs-propositi
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
 import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
+import { DisplayRefComponent } from './components/display-ref/display-ref.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
@@ -153,6 +154,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddCoConstraintGroupComponent,
     ResourceDropdownComponent,
     ImportCsvValuesetComponent,
+    DisplayRefComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -283,6 +285,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DynamicMappingComponent,
     AddCoConstraintGroupComponent,
     ResourceDropdownComponent,
+    DisplayRefComponent,
   ],
   entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent, AddCoConstraintGroupComponent, ImportCsvValuesetComponent, VerifyIgDialogComponent],
 })

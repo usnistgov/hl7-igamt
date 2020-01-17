@@ -69,6 +69,7 @@ public class ConformanceProfile extends Resource {
   public ConformanceProfile() {
     super();
     super.setType(Type.CONFORMANCEPROFILE);
+    this.profileType= ProfileType.HL7;
   }
 
   public Set<SegmentRefOrGroup> getChildren() {
@@ -125,6 +126,17 @@ public class ConformanceProfile extends Resource {
       elm.binding = binding;
   }
 
+  public ConformanceProfile(MessageStructure elm, String event) {
+    super();
+    this.children= elm.getChildren();
+    this.messageType = elm.getMessageType();
+    this.event = event;
+    this.structID = elm.getStructID();
+    this.binding = elm.getBinding();
+    this.setDomainInfo(elm.getDomainInfo());
+  }
+  
+  
   public ConformanceProfile clone() {
       ConformanceProfile elm= new ConformanceProfile();
       complete(elm);

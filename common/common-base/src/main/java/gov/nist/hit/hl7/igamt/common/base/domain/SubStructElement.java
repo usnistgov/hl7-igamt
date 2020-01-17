@@ -10,6 +10,9 @@ public class SubStructElement extends StructureElement {
   private String minLength;
   @DeltaField
   private String confLength;
+  
+  private LengthType lengthType;
+  
   private Ref ref;
 
   public static final String NA = "NA";
@@ -60,6 +63,16 @@ public class SubStructElement extends StructureElement {
 
   public void setRef(Ref ref) {
     this.ref = ref;
+  }
+
+
+  public LengthType getLengthType() {
+    return lengthType;
+  }
+
+
+  public void setLengthType(LengthType lengthType) {
+    this.lengthType = lengthType;
   }
 
 }
