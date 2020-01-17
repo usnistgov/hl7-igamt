@@ -13,7 +13,7 @@ export class DatatypeExportConfigurationComponent implements OnInit {
 
   @Input()
   displayColumns: boolean;
-  
+
   @Input()
   viewOnly: boolean;
 
