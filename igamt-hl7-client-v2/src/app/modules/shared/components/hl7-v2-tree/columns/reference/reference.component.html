@@ -37,9 +37,5 @@
   </div>
 </ng-container>
 <ng-template #display let-selected >
-  <div>
-    <app-scope-badge *ngIf="selected.domainInfo" [scope]="selected.domainInfo.scope" [version]="selected.domainInfo.version"></app-scope-badge>
-    <app-entity-bagde [type]="selected.type"></app-entity-bagde>
-    <span *ngIf="selected.fixedName"> {{selected.fixedName}}</span><span *ngIf="selected.variableName">{{ '_' + selected.variableName}}</span>
-  </div>
+  <app-display-ref [documentId]="documentId" [element]="selected" [hideDescription]="true"></app-display-ref>
 </ng-template>

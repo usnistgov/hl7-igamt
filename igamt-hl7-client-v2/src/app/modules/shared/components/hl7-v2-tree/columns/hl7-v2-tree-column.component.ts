@@ -8,6 +8,10 @@ export abstract class HL7v2TreeColumnComponent<T> {
   @Input()
   type: Type;
   @Input()
+  documentType: Type;
+  @Input()
+  documentId: string;
+  @Input()
   changeEvent: Observable<IChange>;
   @Input()
   location: string;
