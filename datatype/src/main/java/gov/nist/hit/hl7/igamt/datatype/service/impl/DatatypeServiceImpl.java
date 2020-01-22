@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +38,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
@@ -981,7 +973,18 @@ public class DatatypeServiceImpl implements DatatypeService {
 						c.setConfLength((String) item.getPropertyValue());
 					}
 				}
-			} else if (item.getPropertyType().equals(PropertyType.DATATYPE)) {
+			} else if (item.getPropertyType().equals(PropertyType.LENGTHTYPE)) {
+				Component c = this.findComponentById(d, item.getLocation());
+				if (c != null) {
+					item.setOldPropertyValue(c.getLengthType());
+					if (item.getPropertyValue() == null) {
+						c.setLengthType(LengthType.UNSET);
+					} else {
+						c.setLengthType(LengthType.valueOf((String) item.getPropertyValue()));
+					}
+				}
+			}
+		    else if (item.getPropertyType().equals(PropertyType.DATATYPE)) {
 				Component c = this.findComponentById(d, item.getLocation());
 				if (c != null) {
 					item.setOldPropertyValue(c.getRef());

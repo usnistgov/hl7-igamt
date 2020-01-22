@@ -1,9 +1,11 @@
 package gov.nist.hit.hl7.igamt.coconstraints.model;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 public class StructureElementRef {
     private String pathId;
+    private Type type;
     private String name;
     private Path path;
 
@@ -29,5 +31,13 @@ public class StructureElementRef {
 
     public void setPath(Path path) {
         this.path = path;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 }
