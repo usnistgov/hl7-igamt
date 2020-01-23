@@ -8,6 +8,7 @@ import { IResource } from './resource.interface';
 export interface IStructureElementRef {
   pathId: string;
   name: string;
+  type?: Type;
   path: IPath;
 }
 

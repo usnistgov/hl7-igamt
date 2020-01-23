@@ -16,9 +16,10 @@ import { MessageService } from '../../../core/services/message.service';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { ICoConstraintBindingContext, ICoConstraintBindingSegment } from '../../../shared/models/co-constraint.interface';
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';
+import { IPath } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { ChangeType, PropertyType } from '../../../shared/models/save-change';
-import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
+import { Hl7V2TreeService, IPathInfo } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { ConformanceProfileService } from '../../services/conformance-profile.service';
 
@@ -201,6 +202,7 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
               pathId: result.context.node.data.pathId,
               path: result.context.path,
               name: result.context.name,
+              type: result.context.node.data.type,
             },
             bindings: [],
           };

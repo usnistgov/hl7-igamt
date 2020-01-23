@@ -160,7 +160,7 @@ body {
   min-height: 200px !important;
 }
 
-
+//--- pattern dialog
 .ui-dropdown-panel {
   top: inherit !important;
   left: inherit !important;
@@ -176,10 +176,6 @@ body {
 
 .pattern.ui-organizationchart .ui-organizationchart-node-content.ui-statement {
   padding: 0;
-  //background-color:#495ebb;
-  //color: white;
-  //text-align: center;
-  //border: 1px solid #495ebb;
 }
 
 // Higher than the header's z-index
@@ -335,6 +331,10 @@ body .ui-panel .ui-panel-titlebar .ui-panel-titlebar-icon {
 
 .configuration-dialog-container .mat-dialog-container {
   padding: 0px !important;
+}
+
+.treetable-light {
+  color: darkgray;
 }
 
 

@@ -9,6 +9,7 @@ public class ExportTools {
 	public static Boolean CheckUsage(UsageConfiguration usageConfiguration, Usage usage) {
 		return usageConfiguration.isC() && usage.equals(Usage.C) ||
 				usageConfiguration.isO() && usage.equals(Usage.O) ||
+				usageConfiguration.isCab() && usage.equals(Usage.CAB) ||
 				usageConfiguration.isR() && usage.equals(Usage.R) ||
 				usageConfiguration.isRe() && usage.equals(Usage.RE) ||
 				usageConfiguration.isX() && usage.equals(Usage.X);
