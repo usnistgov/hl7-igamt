@@ -40,7 +40,7 @@ export class BindingSelectorComponent<T> implements OnInit {
     this.selectedSingleCode = this.data.selectedSingleCode;
     this.selectedValueSets = this.data.selectedValueSetBinding;
     this.locationInfo = this.data.locationInfo;
-    console.log(this.excludeBindingStrength);
+    console.log(this.data.locationInfo);
   }
 
   submit() {
@@ -133,7 +133,6 @@ export interface IBindingLocationItem {
 
 export interface IBindingLocationInfo {
   allowedBindingLocations: IBindingLocationItem[];
-  singleCodeAllowed: boolean;
   multiple: boolean;
   coded: boolean;
   allowSingleCode: boolean;

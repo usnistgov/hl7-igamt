@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { ChangeType, PropertyType } from 'src/app/modules/shared/models/save-change';
+import { LengthType } from '../../../../constants/length-type.enum';
 import { ILengthRange } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
 
@@ -12,7 +13,7 @@ export class LengthComponent extends HL7v2TreeColumnComponent<ILengthAndConfLeng
 
   val: ILengthAndConfLength;
   @Output()
-  remove: EventEmitter<ILengthAndConfLength>;
+  updateLengthType: EventEmitter<LengthType>;
 
   onInitValue(value: ILengthAndConfLength): void {
     this.val = {
@@ -21,8 +22,8 @@ export class LengthComponent extends HL7v2TreeColumnComponent<ILengthAndConfLeng
   }
 
   constructor() {
-    super([PropertyType.LENGTHMIN, PropertyType.LENGTHMAX, PropertyType.CONFLENGTH]);
-    this.remove = new EventEmitter();
+    super([PropertyType.LENGTHMIN, PropertyType.LENGTHMAX, PropertyType.LENGTHTYPE]);
+    this.updateLengthType = new EventEmitter();
     this.value$.subscribe((live) => {
       this.val = live;
     });
@@ -37,19 +38,12 @@ export class LengthComponent extends HL7v2TreeColumnComponent<ILengthAndConfLeng
   }
 
   clear() {
-    this.onChange<string>(this.getInputValue().length.min + '', 'NA', PropertyType.LENGTHMIN, ChangeType.UPDATE);
-    this.onChange<string>(this.getInputValue().length.max + '', 'NA', PropertyType.LENGTHMAX, ChangeType.UPDATE);
-    this.onChange<string>(this.getInputValue().confLength + '', '*', PropertyType.CONFLENGTH, ChangeType.UPDATE);
+    this.onChange<string>(this.getInputValue().lengthType, LengthType.ConfLength, PropertyType.LENGTHTYPE, ChangeType.UPDATE);
+    this.updateLengthType.emit(LengthType.ConfLength);
+  }
 
-    this.val = {
-      length: {
-        min: 'NA',
-        max: 'NA',
-      },
-      confLength: '*',
-    };
-
-    this.remove.emit(this.val);
+  active() {
+    return this.val.lengthType === LengthType.Length;
   }
 
   ngOnInit() {
@@ -60,4 +54,5 @@ export class LengthComponent extends HL7v2TreeColumnComponent<ILengthAndConfLeng
 export interface ILengthAndConfLength {
   length: ILengthRange;
   confLength: string;
+  lengthType: LengthType;
 }

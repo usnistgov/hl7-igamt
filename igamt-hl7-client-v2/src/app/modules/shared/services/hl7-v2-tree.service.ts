@@ -238,7 +238,7 @@ export class Hl7V2TreeService {
       if (node.type === Type.GROUP || node.type === Type.SEGMENT || node.type === Type.SEGMENTREF || node.type === Type.DATATYPE) {
         return node.name + separator + post;
       } else if (node.type === Type.CONFORMANCEPROFILE) {
-        return post;
+        return node.name;
       } else {
         return node.position + separator + post + desc;
       }
@@ -612,6 +612,7 @@ export class Hl7V2TreeService {
                 min: child.minLength,
                 max: child.maxLength,
               },
+              lengthType: child.lengthType,
               changeable,
               viewOnly,
               level,
@@ -677,6 +678,7 @@ export class Hl7V2TreeService {
                 min: child.minLength,
                 max: child.maxLength,
               },
+              lengthType: child.lengthType,
               changeable,
               viewOnly,
               level,

@@ -208,7 +208,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
         obx_info.setDatatype(obx_dt.getName());
         obx_info.setVersion(obx_dt.getDomainInfo().getVersion());
         obx_info.setCardinality(cardinality);
-
         obx_header.setElementInfo(obx_info);
 
         return obx_header;
