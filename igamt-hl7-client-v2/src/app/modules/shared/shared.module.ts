@@ -13,6 +13,7 @@ import { ToastyModule } from 'ng2-toasty';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
 import {
   AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
@@ -184,7 +185,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ContextMenuModule.forRoot({
       useBootstrap4: true,
     }),
-    DragDropModule,
     RadioButtonModule,
     AccordionModule,
     InputSwitchModule,
@@ -198,6 +198,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     OrganizationChartModule,
     PanelModule,
     AutoCompleteModule,
+    PrimeNgDragDrop,
     DragDropModule,
   ],
   exports: [
@@ -215,6 +216,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     CardModule,
     AccordionModule,
     CheckboxModule,
+    PrimeNgDragDrop,
     ReactiveFormsModule,
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
