@@ -7,7 +7,8 @@
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.r"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.re"></p-checkbox></li>
-        <li class="list-group-item"><p-checkbox disabled="true" label="C" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.c"> </p-checkbox></li>
+        <li class="list-group-item"><p-checkbox disabled="true" label="C(a/b)" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.cab"> </p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.c"> </p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.o" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="X" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.x" (onChange)="triggerChange()"></p-checkbox></li>
 
@@ -54,14 +55,14 @@
         </div>
 
 
-      <!-- <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+      <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
         <h5 class="card-title title-text custom-card-title">CoConstraints</h5>
         <ul class="list-group list-group-flush">
           <li class="list-group-item"><p-radioButton [disabled]="true" label="Compact Format" value="COMPACT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
           <li class="list-group-item"><p-radioButton [disabled]="true" label="Verbose Format" value="VERBOSE" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
           <li class="list-group-item"><p-radioButton [disabled]="true" label="Don't Export" value="NOEXPORT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
         </ul>
-      </div> -->
+      </div>
 
       
       </div>
