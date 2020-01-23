@@ -1,32 +1,15 @@
 <h2 mat-dialog-title>Edit Binding</h2>
-<mat-dialog-content style="max-height: 800px; overflow-y:scroll">
-  <div class="fixed-element">
-  <div *ngIf="locationInfo?.allowSingleCode && locationInfo?.allowValueSets">
+<div style="display: flex; flex-direction: column; justify-content: space-between;">
+  <div *ngIf="locationInfo?.allowSingleCode && locationInfo?.allowValueSets"
+       style="display: flex; flex-direction: row;justify-content: flex-end">
     <p-radioButton [(ngModel)]="selectedBindingType" label="Value set" name="vs" value="VALUESET"></p-radioButton>
 
-    <p-radioButton [(ngModel)]="selectedBindingType" [style]="{'margin-left': '50px'}" label="Single code" name="sg"
+    <p-radioButton [(ngModel)]="selectedBindingType" [style]="{'margin-left': '5px'}" label="Single code" name="sg"
                    value="SINGLECODE"></p-radioButton>
   </div>
-
-     <div #vsDrpD></div>
-  <p-dropdown (ngModelChange)="loadCodes($event)" *ngIf="selectedBindingType!=='VALUESET'" [(ngModel)]="selectedValueSet"
-              [optionLabel]="'variableName'" [options]="data.resources" [appendTo]="vsDrpD" placeholder="select value set" [style]="{'minWidth':'100%'}">
-    <ng-template let-item pTemplate="selectedItem">
-      <ng-container *ngIf="item.value">
-        <app-display-section [element]="item.value"></app-display-section>
-      </ng-container>
-    </ng-template>
-    <ng-template let-item pTemplate="item">
-      <app-display-section [element]="item.value"></app-display-section>
-    </ng-template>
-  </p-dropdown>
-
-
-  </div>
-
   <div *ngIf="selectedBindingType=='VALUESET'" class="vs-binding">
-    <p-table [value]="selectedValueSets" #vsTbl>
-      <ng-template let-columns pTemplate="header">
+    <table class="table table-sm">
+      <thead class="ptable-thead-mimmic">
       <tr>
         <th *ngIf="!excludeBindingStrength">
           Binding Strength
@@ -38,68 +21,97 @@
           Value Sets
         </th>
         <th style="width: 50px;">
-          <button (click)="addBinding()" class="btn btn-sm btn-info" style="float: right" *ngIf="data.locationInfo.allowedBindingLocations && data.locationInfo.allowedBindingLocations.length>1 || !selectedValueSets||!selectedValueSets.length"><i class="fa fa-plus"></i></button>
+          <button (click)="addBinding()"
+                  *ngIf="data.locationInfo.allowedBindingLocations && data.locationInfo.allowedBindingLocations.length>1 || !selectedValueSets||!selectedValueSets.length"
+                  class="btn btn-sm btn-primary">
+            <i class="fa fa-plus"></i></button>
         </th>
       </tr>
-      </ng-template>
-      <ng-template let-columns="columns" let-expanded="expanded" let-index="rowIndex" let-node="node" let-rowData
-                   let-rowNode pTemplate="body">
-    <tr>
-      <td *ngIf="!excludeBindingStrength">
-        <span #anchor1></span>
-        <p-dropdown [autoDisplayFirst]="false" [(ngModel)]="rowData.bindingStrength" [appendTo]="anchor1" [style]="{'min-width': 'unset','width': '100%'}"
-                                                      [id]="'bindingStrength'+index" [name]="'bindingStrength'+index" [options]="bindingStrengthOptions"></p-dropdown>
-      </td>
-      <td  *ngIf="data.locationInfo.allowedBindingLocations && data.locationInfo.allowedBindingLocations.length>1">
-        <span #anchor2></span>
+      </thead>
+      <tbody class="ptable-tbody-mimmic">
+      <tr *ngFor="let rowData of selectedValueSets; index as index"
+          style="background-color: inherit; border: 1px solid #c8c8c8;">
+        <td *ngIf="!excludeBindingStrength">
+          <span #anchor1></span>
+          <p-dropdown [(ngModel)]="rowData.bindingStrength" [appendTo]="anchor1" [autoDisplayFirst]="false"
+                      [id]="'bindingStrength'+index"
+                      [name]="'bindingStrength'+index" [options]="bindingStrengthOptions"
+                      [style]="{'min-width': 'unset','width': '100%'}"></p-dropdown>
+        </td>
+        <td *ngIf="data.locationInfo.allowedBindingLocations && data.locationInfo.allowedBindingLocations.length>1">
+          <span #anchor2></span>
 
-        <p-dropdown [autoDisplayFirst]="false" [(ngModel)]="rowData.bindingLocation" [appendTo]="anchor2" [style]="{'min-width': 'unset','width': '100%'}"
-                                                     [id]="'bindingLocation'+index" [name]="'bindingLocation'+index" [options]="data.locationInfo.allowedBindingLocations"></p-dropdown>
-      </td>
-      <td #anchor3>
-        <div *ngFor="let vs of rowData.valueSets; index as i" style="display: flex; flex-direction: row;">
-          <div style="width:90%;">
-          <app-display-section [element]="vs"></app-display-section>
-          </div>
-          <div style="width: 10%">
-            <button (click)="removeValueSet(rowData, i)" class="btn btn-danger btn-sm">
-              <i class="fa fa-remove"></i></button>
-          </div>
-        </div>
-        <div>
-          <div style="display: flex; flex-direction: row">
-            <div style="width:90%;">
-        <p-dropdown [autoDisplayFirst]="false" (ngModelChange)="submitValueSet(rowData, $event)" [(ngModel)]="temp" *ngIf="edit[index]" [appendTo]="anchor3"
-                    [optionLabel]="'variableName'" [options]="data.resources" placeholder="select value set" [style]="{'minWidth': '100%'}">
-          <ng-template let-item pTemplate="selectedItem">
-            <ng-container *ngIf="item.value">
-              <app-display-section [element]="item.value"></app-display-section>
-            </ng-container>
-          </ng-template>
-          <ng-template let-item pTemplate="item">
-            <app-display-section [element]="item.value"></app-display-section>
-          </ng-template>
-        </p-dropdown>
+          <p-dropdown [(ngModel)]="rowData.bindingLocation" [appendTo]="anchor2" [autoDisplayFirst]="false"
+                      [id]="'bindingLocation'+index"
+                      [name]="'bindingLocation'+index" [options]="data.locationInfo.allowedBindingLocations"
+                      [style]="{'min-width': 'unset','width': '100%'}"></p-dropdown>
+        </td>
+        <td #anchor3 style="padding: 5px;">
+          <div *ngFor="let vs of rowData.valueSets; index as i" style="display: flex; flex-direction: row; justify-content: space-between;">
+            <div>
+              <app-display-section [element]="vs" [hideDescription]="true"></app-display-section>
             </div>
-            <div style="width: 10%">
-              <button (click)="edit[index]=!edit[index]" class="btn btn-danger btn-sm" style="height: 100%" *ngIf="edit[index]"><i class="fa fa-remove"></i></button>
-              <button (click)="addValueSet(rowData, index)" class="btn btn-info btn-sm" *ngIf="!edit[index]"><i class="fa fa-plus"></i></button>
+            <div>
+              <button (click)="removeValueSet(rowData, i)" class="btn btn-danger btn-sm" style="margin-left: 5px;">
+                <i class="fa fa-remove"></i></button>
             </div>
           </div>
-        </div>
-      </td>
-      <td style="width: 50px;">
-      <button class="btn btn-sm btn-danger" (click)="removeBinding(index)">
-        <i class="fa fa-remove" ></i>
-      </button>
-      </td>
-    </tr>
-      </ng-template>
-    </p-table>
+          <div>
+            <div style="display: flex; flex-direction: row; justify-content: space-between;" >
+              <div style="width: 100%">
+                <p-dropdown (ngModelChange)="submitValueSet(rowData, $event)" *ngIf="edit[index]"
+                            [(ngModel)]="temp" [appendTo]="anchor3" [autoDisplayFirst]="false"
+                            [optionLabel]="'variableName'" [options]="data.resources"
+                            placeholder="select value set" [style]="{'minWidth': '100%'}">
+                  <ng-template let-item pTemplate="selectedItem">
+                    <ng-container *ngIf="item.value">
+                      <app-display-section [element]="item.value"></app-display-section>
+                    </ng-container>
+                  </ng-template>
+                  <ng-template let-item pTemplate="item">
+                    <app-display-section [element]="item.value"></app-display-section>
+                  </ng-template>
+                </p-dropdown>
+              </div>
+              <div>
+                <button (click)="edit[index]=!edit[index]" *ngIf="edit[index]" style="margin-left: 5px;" class="btn btn-danger btn-sm"
+                        style="height: 100%"><i class="fa fa-remove"></i></button>
+                <button (click)="addValueSet(rowData, index)" *ngIf="!edit[index]" style="margin-left: 5px;" class="btn btn-primary btn-sm"><i
+                  class="fa fa-plus"></i></button>
+              </div>
+            </div>
+          </div>
+        </td>
+        <td style="width: 50px; text-align: center">
+          <button (click)="removeBinding(index)" class="btn btn-sm btn-danger" >
+            <i class="fa fa-remove"></i>
+          </button>
+        </td>
+      </tr>
+      </tbody>
+    </table>
   </div>
-  <div class="select-binding-container" *ngIf="selectedBindingType=='SINGLECODE'">
-    <div class="loaded">
-        <div *ngIf="currentValueSet && currentValueSet.codes">
+
+
+  <div *ngIf="selectedBindingType=='SINGLECODE'" class="single-container">
+
+    <div #vsDrpD>
+      <p-dropdown (ngModelChange)="loadCodes($event)" *ngIf="selectedBindingType!=='VALUESET'"
+                  [(ngModel)]="selectedValueSet"
+                  [appendTo]="vsDrpD" [optionLabel]="'variableName'" [options]="data.resources"
+                  [style]="{'minWidth':'100%'}" placeholder="select value set">
+        <ng-template let-item pTemplate="selectedItem">
+          <ng-container *ngIf="item.value">
+            <app-display-section [element]="item.value"></app-display-section>
+          </ng-container>
+        </ng-template>
+        <ng-template let-item pTemplate="item">
+          <app-display-section [element]="item.value"></app-display-section>
+        </ng-template>
+      </p-dropdown>
+    </div>
+
+    <div style="display: flex; flex-direction: row; justify-content: space-between; margin-top: 10px;"  class="loaded-codes" *ngIf="currentValueSet && currentValueSet.codes && !selectedSingleCode">
           <p-table #tb2 [globalFilterFields]="['value','label']" [style]="{'height': '100%', 'minHeight': '100%'}"
                    [value]="currentValueSet.codes" scrollHeight="100%" scrollable="true"
                    sortField="bindingIdentifier">
@@ -127,7 +139,7 @@
                   Code System
                 </th>
                 <th class="header-padding" style="width:65px">
-                  Add
+                  Select
                 </th>
               </tr>
             </ng-template>
@@ -145,43 +157,57 @@
                 </td>
                 <td style="width:65px">
                   <button (click)="selectCode(rowData)" class="btn-primary btn btn-sm">
-                    <i class="fa fa-plus"></i>
+                    <i class="fa fa-check"></i>
                   </button>
                 </td>
               </tr>
             </ng-template>
           </p-table>
-        </div>
-      </div>
-    <div class="selected" >
-      <div *ngIf="selectedSingleCode" class="single-code-info">
-        <div style="display:flex; flex-direction: row; padding: 2px">
-          <div>
-            <strong> Code: </strong>
-          </div>
-          {{selectedSingleCode.code}}
-        </div>
-        <div style="display:flex; flex-direction: row; padding: 2px">
-          <div>
-            <strong> Code System: </strong>
-          </div>
-          {{selectedSingleCode.codeSystem}}
-        </div>
-
-        <div style="display:flex; flex-direction: row; padding: 2px">
-          <app-entity-bagde type="VALUESET"></app-entity-bagde>
-          <app-display-section [element]="selectedSingleCode.valueSet"></app-display-section>
-        </div>
-        <div style="display:flex; flex-direction: row; justify-content: right; align-self: flex-end;" >
-          <button type="button" label="Cancel" class="btn btn-sm btn-danger"  (click)="clearCode()"><i class="fa fa-remove"></i>remove</button>
-        </div>
-      </div>
     </div>
 
+    <div class="selected-code" *ngIf="selectedSingleCode">
+
+      <div slyle="display: flex; flex-direction: column;">
+        <div style="display: flex; flex-direction: row; justify-content: space-between; padding: 5px 0px 5px;">
+
+          <strong><label>Selected code</label></strong>
+          <div style="display:flex; flex-direction: row; justify-content: right; align-self: flex-end;">
+            <button (click)="clearCode()" class="btn btn-sm btn-danger" label="Cancel" type="button">
+              <i class="fa fa-remove"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <table class="table table-sm table-bordered table-striped">
+        <tbody>
+          <tr>
+            <td> <strong> Code </strong> </td>
+            <td> {{selectedSingleCode.code}}</td>
+          </tr>
+          <tr>
+            <td>
+              <strong> Code system </strong>
+            </td>
+           <td>
+             {{selectedSingleCode.codeSystem}}
+           </td>
+          </tr>
+          <tr>
+            <td>
+              <strong> Value set </strong>
+            </td>
+            <td>
+              <app-display-section [element]="selectedSingleCode.valueSet"></app-display-section>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-</mat-dialog-content>
-<mat-dialog-actions style="justify-content: flex-end;">
-  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
-  <button (click)="submit()" class="btn btn-sm btn-success">Submit</button>
-</mat-dialog-actions>
+  <mat-dialog-actions style="justify-content: flex-end;">
+    <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+    <button (click)="submit()" class="btn btn-sm btn-success">Submit</button>
+  </mat-dialog-actions>
+
+</div>

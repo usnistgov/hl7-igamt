@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, of, pipe } from 'rxjs';
-import { catchError, filter, flatMap, map, switchMap, take } from 'rxjs/operators';
+import {catchError, concatMap, filter, flatMap, map, switchMap, take} from 'rxjs/operators';
 import { CoConstraintGroupService } from '../../modules/co-constraints/services/co-constraint-group.service';
 import { MessageService } from '../../modules/core/services/message.service';
 import { SegmentService } from '../../modules/segment/services/segment.service';
@@ -21,7 +21,7 @@ export class CoConstraintGroupEditEffects {
   @Effect()
   loadCoConstraintGroup$ = this.actions$.pipe(
     ofType(CoConstraintGroupEditActionTypes.LoadCoConstraintGroup),
-    switchMap((action: LoadCoConstraintGroup) => {
+    concatMap((action: LoadCoConstraintGroup) => {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
