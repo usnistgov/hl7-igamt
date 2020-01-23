@@ -142,16 +142,18 @@ public class ExportConfiguration {
     // Default Usages
     UsageConfiguration displayAll = new UsageConfiguration();
     UsageConfiguration displaySelectives = new UsageConfiguration();
-    displaySelectives.setC(true);
+    displaySelectives.setC(false);
     displaySelectives.setX(setAllTrue);
     displaySelectives.setO(setAllTrue);
     displaySelectives.setR(true);
     displaySelectives.setRe(true);
+    displaySelectives.setCab(true);
     CodeUsageConfiguration codeUsageExport = new CodeUsageConfiguration();
     codeUsageExport.setE(setAllTrue);
     codeUsageExport.setP(true);
     codeUsageExport.setR(true);
-    displayAll.setC(true);
+    displayAll.setC(false);
+    displayAll.setCab(true);
     displayAll.setRe(true);
     displayAll.setX(false);
     displayAll.setO(false);
