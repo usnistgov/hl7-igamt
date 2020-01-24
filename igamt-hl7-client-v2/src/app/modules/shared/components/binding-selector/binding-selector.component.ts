@@ -92,6 +92,7 @@ export class BindingSelectorComponent<T> implements OnInit {
   }
 
   loadCodes($event) {
+    this.selectedSingleCode = null;
     this.store.dispatch(new TurnOnLoader({ blockUI: true }));
     this.getById($event.id).subscribe(
       (x) => {

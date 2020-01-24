@@ -87,8 +87,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 //	        }
 //	      }
 	      if (datatype instanceof ComplexDatatype) {
+	    	  System.out.println("ComplexDatatype");
 	        datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel,datatypeExportConfiguration);
 	      } else if (datatype instanceof DateTimeDatatype) {
+	    	  System.out.println("DateTime");
 	        datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel, datatypeExportConfiguration);
 	      }
 	      if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
@@ -180,7 +182,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	    DateTimeDatatype dateTimeDatatype =  (DateTimeDatatype) datatypeDataModel.getModel();
 	    if(dateTimeDatatype
             .getDateTimeConstraints() !=null && dateTimeDatatype
-            .getDateTimeConstraints().getDateTimeComponentDefinitions() !=null)
+            .getDateTimeConstraints().getDateTimeComponentDefinitions() !=null) {
 	    for (DateTimeComponentDefinition dateTimeComponentDefinition : dateTimeDatatype
 	        .getDateTimeConstraints().getDateTimeComponentDefinitions()) {
 	      Element dateTimeComponentDefinitionElement = new Element("DateTimeComponentDefinition");
@@ -208,6 +210,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	                : ""));
 	        datatypeElement.appendChild(dateTimeComponentDefinitionElement);
 	      }
+	    }
 	    }
 	    return datatypeElement;
 	  }

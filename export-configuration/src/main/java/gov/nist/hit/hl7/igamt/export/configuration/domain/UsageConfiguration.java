@@ -27,21 +27,23 @@ public class UsageConfiguration {
 
   private boolean r = true;
   private boolean re = true;
-  private boolean c = true;
+  private boolean c = false;
   private boolean x = false;
   private boolean o = false;
+  private boolean cab = true;
 
   public UsageConfiguration() {
     super();
   }
 
-  public UsageConfiguration(boolean r, boolean re, boolean c, boolean x, boolean o) {
+  public UsageConfiguration(boolean r, boolean re, boolean c, boolean x, boolean o, boolean cab) {
     super();
     this.r = r;
     this.re = re;
     this.c = c;
     this.x = x;
     this.o = o;
+    this.cab=cab;
   }
 
   public boolean isR() {
@@ -119,5 +121,13 @@ public class UsageConfiguration {
 	  }
 	return usages;
   }
+
+public boolean isCab() {
+	return cab;
+}
+
+public void setCab(boolean cab) {
+	this.cab = cab;
+}
 
 }

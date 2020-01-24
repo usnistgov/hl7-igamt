@@ -1,16 +1,14 @@
-.select-binding-container {
+.single-container {
   display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding:5px;
+  flex-direction: column;
+  padding-top: 10px;
   height: 100%;
 }
 
-.selected {
-  height: 100%;
+.selected-code {
 }
 
-.loaded {
+.loaded-codes {
   height: 100%;
 
 }
@@ -22,5 +20,7 @@
   border: 2px dashed;
 }
 .vs-binding {
-  min-height: 500px;
+  padding-top: 10px;
 }
+
+

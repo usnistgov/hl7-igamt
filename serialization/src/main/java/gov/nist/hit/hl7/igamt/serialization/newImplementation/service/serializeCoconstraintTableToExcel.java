@@ -1,179 +1,186 @@
-//package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
-//
-//import java.io.ByteArrayOutputStream;
-//
-//import org.apache.poi.hssf.util.HSSFColor;
-//import org.apache.poi.ss.usermodel.BorderStyle;
-//import org.apache.poi.ss.usermodel.Cell;
-//import org.apache.poi.ss.usermodel.CellStyle;
-//import org.apache.poi.ss.usermodel.FillPatternType;
-//import org.apache.poi.ss.usermodel.IndexedColors;
-//import org.apache.poi.ss.usermodel.Row;
-//import org.apache.poi.ss.util.CellRangeAddress;
-//import org.apache.poi.xssf.usermodel.XSSFFont;
-//import org.apache.poi.xssf.usermodel.XSSFSheet;
-//import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-//
-//import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeader;
-//import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeaders;
-//
-//public class serializeCoconstraintTableToExcel {
-//	
-//
-//	
-//
-//	public ByteArrayOutputStream exportToExcel(String id) {
-////		final String FILE_NAME = "/Users/ynb4/Desktop/MyFirstExcelTryout.xlsx";
-//		final int HEADER_FONT_SIZE = 20;
+package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.poi.hssf.util.HSSFColor;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeader;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeaders;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.model.ColumnType;
+import gov.nist.hit.hl7.igamt.coconstraints.model.DataElementHeader;
+
+public class serializeCoconstraintTableToExcel {
+	
+
+	
+
+	public ByteArrayOutputStream exportToExcel(CoConstraintTable coConstraintTable) {
+//		final String FILE_NAME = "/Users/ynb4/Desktop/MyFirstExcelTryout.xlsx";
+		final int HEADER_FONT_SIZE = 20;
 //		if (coConstraintService.getCoConstraintForSegment(id) != null) {
 //			CoConstraintTable coConstraintTable = coConstraintService.getCoConstraintForSegment(id);
-//
-//			XSSFWorkbook workbook = new XSSFWorkbook();
-//			XSSFSheet sheet = workbook.createSheet("Coconstaints Export");
-//			
-//
-//			CoConstraintHeaders headers = coConstraintTable.getHeaders();
-////			CoConstraintTableContent content = coConstraintTable.getContent();
-//			
-//			//Defining styles for headers   
-//			 XSSFFont ifHeaderFont = workbook.createFont();
-//			 ifHeaderFont.setFontHeightInPoints((short) HEADER_FONT_SIZE);
-//			 ifHeaderFont.setBold(true);
-//			 ifHeaderFont.setColor(HSSFColor.WHITE.index);
-//			 
-//			 XSSFFont thenHeaderFont = workbook.createFont();
-//			 thenHeaderFont.setFontHeightInPoints((short) HEADER_FONT_SIZE);
-//			 thenHeaderFont.setBold(true);
-//		      
-//            CellStyle ifHeaderStyle = workbook.createCellStyle();
-//            ifHeaderStyle.setFillForegroundColor(IndexedColors.ROYAL_BLUE.getIndex());
+
+			XSSFWorkbook workbook = new XSSFWorkbook();
+			XSSFSheet sheet = workbook.createSheet("Coconstaints Export");
+			
+
+			CoConstraintHeaders headers = coConstraintTable.getHeaders();
+//			CoConstraintTableContent content = coConstraintTable.getContent();
+			
+			//Defining styles for headers   
+			 XSSFFont ifHeaderFont = workbook.createFont();
+			 ifHeaderFont.setFontHeightInPoints((short) HEADER_FONT_SIZE);
+			 ifHeaderFont.setBold(true);
+			 ifHeaderFont.setColor(HSSFColor.WHITE.index);
+			 
+			 XSSFFont thenHeaderFont = workbook.createFont();
+			 thenHeaderFont.setFontHeightInPoints((short) HEADER_FONT_SIZE);
+			 thenHeaderFont.setBold(true);
+		      
+            CellStyle ifHeaderStyle = workbook.createCellStyle();
+            ifHeaderStyle.setFillForegroundColor(IndexedColors.ROYAL_BLUE.getIndex());
+            ifHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
+            ifHeaderStyle.setFont(ifHeaderFont);
 //            ifHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-//            ifHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
-//            ifHeaderStyle.setFont(ifHeaderFont);
 //            ifHeaderStyle.setBorderBottom(BorderStyle.MEDIUM);
 //            ifHeaderStyle.setBorderTop(BorderStyle.MEDIUM);
 //            ifHeaderStyle.setBorderRight(BorderStyle.MEDIUM);
 //            ifHeaderStyle.setBorderLeft(BorderStyle.MEDIUM);
-//
-//            
-//            CellStyle thenHeaderStyle = workbook.createCellStyle();
-//            thenHeaderStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+
+            
+            CellStyle thenHeaderStyle = workbook.createCellStyle();
+            thenHeaderStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+            thenHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
+            thenHeaderStyle.setFont(thenHeaderFont);
 //            thenHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-//            thenHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
-//            thenHeaderStyle.setFont(thenHeaderFont);
 //            thenHeaderStyle.setBorderBottom(BorderStyle.MEDIUM);
 //            thenHeaderStyle.setBorderTop(BorderStyle.MEDIUM);
 //            thenHeaderStyle.setBorderRight(BorderStyle.MEDIUM);
 //            thenHeaderStyle.setBorderLeft(BorderStyle.MEDIUM);
-//
-//
-//            CellStyle userHeaderStyle = workbook.createCellStyle();
-//            userHeaderStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+
+
+            CellStyle userHeaderStyle = workbook.createCellStyle();
+            userHeaderStyle.setFillForegroundColor(IndexedColors.GREEN.getIndex());
+            userHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
+            userHeaderStyle.setFont(thenHeaderFont);
 //            userHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-//            userHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
-//            userHeaderStyle.setFont(thenHeaderFont);
 //            userHeaderStyle.setBorderBottom(BorderStyle.MEDIUM);
 //            userHeaderStyle.setBorderTop(BorderStyle.MEDIUM);
 //            userHeaderStyle.setBorderRight(BorderStyle.MEDIUM);
 //            userHeaderStyle.setBorderLeft(BorderStyle.MEDIUM);
-//            
-//            CellStyle usageAndCardinalityStyle = workbook.createCellStyle();
-//            usageAndCardinalityStyle.setAlignment(CellStyle.ALIGN_CENTER);
+            
+            CellStyle usageAndCardinalityStyle = workbook.createCellStyle();
+            usageAndCardinalityStyle.setAlignment(CellStyle.ALIGN_CENTER);
 //            usageAndCardinalityStyle.setBorderBottom(BorderStyle.MEDIUM);
 //            usageAndCardinalityStyle.setBorderTop(BorderStyle.MEDIUM);
 //            usageAndCardinalityStyle.setBorderRight(BorderStyle.MEDIUM);
 //            usageAndCardinalityStyle.setBorderLeft(BorderStyle.MEDIUM);
-//            
-//			//Counting headers
-//			int headerCount = countNumberOfColumnInSelector(headers.getSelectors())+ countNumberOfColumnInData(headers.getData())+headers.getUser().size();
-//			System.out.println("hERE " +headers.getUser().size());
-//			// Builing headerRows
-//			int rowNumber = 0;
-//			int headerCellNumber = 0;
-//			Row headerRow = sheet.createRow(rowNumber++);
-//			Row headerRow2 = sheet.createRow(rowNumber++);
-//			Cell usageHeaderCell = headerRow.createCell(headerCellNumber++);
-//			usageHeaderCell.setCellValue("Usage");
-//			usageHeaderCell.setCellStyle(usageAndCardinalityStyle);
-//			Cell usageHeaderCell2 = headerRow2.createCell(headerCellNumber);
-//			usageHeaderCell2.setCellValue("Usage");
-//			usageHeaderCell2.setCellStyle(usageAndCardinalityStyle);
-//			sheet.addMergedRegion(new CellRangeAddress(0,1,0,0));
-//			
-//			Cell cardinalityHeaderCell = headerRow.createCell(headerCellNumber++);
-//			cardinalityHeaderCell.setCellStyle(usageAndCardinalityStyle);
-//			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
-//			cardinalityHeaderCell.setCellValue("Cardinality");
-//			headerCellNumber++;
-//			
-//			Cell ifCell = headerRow.createCell(headerCellNumber);
-//			headerCellNumber=headerCellNumber+headers.getSelectors().size();
-//			ifCell.setCellValue("IF");
-//		    ifCell.setCellStyle(ifHeaderStyle);
-//		    
-//			Cell thenCell = headerRow.createCell(countNumberOfColumnInSelector(headers.getSelectors())+3);
-//			headerCellNumber=headerCellNumber+headers.getData().size();
-//			thenCell.setCellValue("THEN");
-//			thenCell.setCellStyle(thenHeaderStyle);
-//			
-//			Cell userCell = headerRow.createCell(countNumberOfColumnInSelector(headers.getSelectors())+countNumberOfColumnInData(headers.getData())+3);
-//			headerCellNumber=headerCellNumber+headers.getSelectors().size();
-//			userCell.setCellValue("USER");
-//			userCell.setCellStyle(userHeaderStyle);
-//			
-//			headerCellNumber=3;
-//			for (CoConstraintHeader coConstraintTableHeader : headers.getSelectors()) {
-//				if(coConstraintTableHeader.getContent().getType().equals(CellType.Code)) {
-//					Cell cell = headerRow2.createCell(headerCellNumber++);
-//					cell.setCellValue(coConstraintTableHeader.getLabel());
-//					Cell cell2 = headerRow2.createCell(headerCellNumber++);
-//					cell2.setCellValue(coConstraintTableHeader.getLabel());
+            
+			//Counting headers
+			int headerCount = countNumberOfColumnInSelector(headers.getSelectors())+ countNumberOfColumnInData(headers.getConstraints())+headers.getNarratives().size();
+//			System.out.println("hERE " +headers..size());
+			// Builing headerRows
+			int rowNumber = 0;
+			int headerCellNumber = 0;
+			Row headerRow = sheet.createRow(rowNumber++);
+			Row headerRow2 = sheet.createRow(rowNumber++);
+			Cell usageHeaderCell = headerRow.createCell(headerCellNumber++);
+			usageHeaderCell.setCellValue("Usage");
+			usageHeaderCell.setCellStyle(usageAndCardinalityStyle);
+			Cell usageHeaderCell2 = headerRow2.createCell(headerCellNumber);
+			usageHeaderCell2.setCellValue("Usage");
+			usageHeaderCell2.setCellStyle(usageAndCardinalityStyle);
+			sheet.addMergedRegion(new CellRangeAddress(0,1,0,0));
+			
+			Cell cardinalityHeaderCell = headerRow.createCell(headerCellNumber++);
+			cardinalityHeaderCell.setCellStyle(usageAndCardinalityStyle);
+			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
+			cardinalityHeaderCell.setCellValue("Cardinality");
+			headerCellNumber++;
+			
+			Cell ifCell = headerRow.createCell(headerCellNumber);
+			headerCellNumber=headerCellNumber+headers.getSelectors().size();
+			ifCell.setCellValue("IF");
+		    ifCell.setCellStyle(ifHeaderStyle);
+		    
+			Cell thenCell = headerRow.createCell(countNumberOfColumnInSelector(headers.getSelectors())+3);
+			headerCellNumber=headerCellNumber+headers.getConstraints().size();
+			thenCell.setCellValue("THEN");
+			thenCell.setCellStyle(thenHeaderStyle);
+			
+			Cell userCell = headerRow.createCell(countNumberOfColumnInSelector(headers.getSelectors())+countNumberOfColumnInData(headers.getConstraints())+3);
+			headerCellNumber=headerCellNumber+headers.getSelectors().size();
+			userCell.setCellValue("USER");
+			userCell.setCellStyle(userHeaderStyle);
+			
+			headerCellNumber=3;
+			for (CoConstraintHeader coConstraintTableHeader : headers.getSelectors()) {
+				if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.CODE)) {
+					Cell cell = headerRow2.createCell(headerCellNumber++);
+					cell.setCellValue("coConstraintTableHeader");
+					Cell cell2 = headerRow2.createCell(headerCellNumber++);
+					cell2.setCellValue("coConstraintTableHeader");
+					cell.setCellStyle(ifHeaderStyle);
+					cell2.setCellStyle(ifHeaderStyle);
+					sheet.addMergedRegion(new CellRangeAddress(1,1,cell.getColumnIndex(),cell.getColumnIndex()+1));
 //					cell.setCellStyle(ifHeaderStyle);
-//					cell2.setCellStyle(ifHeaderStyle);
-//					sheet.addMergedRegion(new CellRangeAddress(1,1,cell.getColumnIndex(),cell.getColumnIndex()+1));
-////					cell.setCellStyle(ifHeaderStyle);
-////					headerCellNumber++;
-//				}else {
-//					Cell cell = headerRow2.createCell(headerCellNumber++);
-//					cell.setCellValue(coConstraintTableHeader.getLabel());
-//					cell.setCellStyle(ifHeaderStyle);
-//				}
-//			}
-//			for (CoConstraintHeader coConstraintTableHeader : headers.getData()) {
-//				if(coConstraintTableHeader.getTemplate() != null && coConstraintTableHeader.getTemplate().equals(CellTemplateType.Varies)) {
-//					Cell cell1 = headerRow2.createCell(headerCellNumber++);
-//					cell1.setCellValue(coConstraintTableHeader.getLabel());
-//					cell1.setCellStyle(thenHeaderStyle);
-//					Cell cell2 = headerRow2.createCell(headerCellNumber++);
-//					cell2.setCellValue(coConstraintTableHeader.getLabel());
-//					cell2.setCellStyle(thenHeaderStyle);
-//					sheet.addMergedRegion(new CellRangeAddress(1,1,cell1.getColumnIndex(),cell2.getColumnIndex()));
-////					headerCellNumber++;
-//				}else {
-//					Cell cell = headerRow2.createCell(headerCellNumber++);
-//					cell.setCellValue(coConstraintTableHeader.getLabel());
-//					cell.setCellStyle(thenHeaderStyle);
-//
-//				}
-//			}
-//			for (CoConstraintHeader coConstraintTableHeader : headers.getUser()) {
-//				Cell cell = headerRow2.createCell(headerCellNumber++);
-//				cell.setCellValue(coConstraintTableHeader.getLabel());
-//				cell.setCellStyle(userHeaderStyle);
-//			}
-//
-//						sheet.addMergedRegion(new CellRangeAddress(0,0,ifCell.getColumnIndex(),thenCell.getColumnIndex()-1));
-//						sheet.addMergedRegion(new CellRangeAddress(0,0,thenCell.getColumnIndex(),userCell.getColumnIndex()-1));
-//						if(headers.getUser().size() != 1) {
-//						sheet.addMergedRegion(new CellRangeAddress(0,0,userCell.getColumnIndex(),userCell.getColumnIndex()+headers.getUser().size()-1));
-//						}
-//						System.out.println("Here6 :" + userCell.getColumnIndex());
-//
-//
-//			for (CoConstraintTableRow coConstraintTableRow : coConstraintTable.getContent().getFree()) {
-//				serializeRowToExcel(workbook, coConstraintTable, coConstraintTableRow, sheet, rowNumber++);
-//			}
-//
+//					headerCellNumber++;
+				}else {
+					Cell cell = headerRow2.createCell(headerCellNumber++);
+					cell.setCellValue("coConstraintTableHeader");
+					cell.setCellStyle(ifHeaderStyle);
+				}
+			}
+			for (CoConstraintHeader coConstraintTableHeader : headers.getConstraints()) {
+				if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.VARIES)) {
+					Cell cell1 = headerRow2.createCell(headerCellNumber++);
+					cell1.setCellValue("coConstraintTableHeader");
+					cell1.setCellStyle(thenHeaderStyle);
+					Cell cell2 = headerRow2.createCell(headerCellNumber++);
+					cell2.setCellValue("coConstraintTableHeader");
+					cell2.setCellStyle(thenHeaderStyle);
+					sheet.addMergedRegion(new CellRangeAddress(1,1,cell1.getColumnIndex(),cell2.getColumnIndex()));
+//					headerCellNumber++;
+				}else {
+					Cell cell = headerRow2.createCell(headerCellNumber++);
+					cell.setCellValue("coConstraintTableHeader");
+					cell.setCellStyle(thenHeaderStyle);
+
+				}
+			}
+			for (CoConstraintHeader coConstraintTableHeader : headers.getNarratives()) {
+				Cell cell = headerRow2.createCell(headerCellNumber++);
+				cell.setCellValue("coConstraintTableHeader");
+				cell.setCellStyle(userHeaderStyle);
+			}
+
+						sheet.addMergedRegion(new CellRangeAddress(0,0,ifCell.getColumnIndex(),thenCell.getColumnIndex()-1));
+						sheet.addMergedRegion(new CellRangeAddress(0,0,thenCell.getColumnIndex(),userCell.getColumnIndex()-1));
+						if(headers.getNarratives().size() != 1) {
+						sheet.addMergedRegion(new CellRangeAddress(0,0,userCell.getColumnIndex(),userCell.getColumnIndex()+headers.getNarratives().size()-1));
+						}
+						System.out.println("Here6 :" + userCell.getColumnIndex());
+
+
+			for (CoConstraint coConstraintTableRow : coConstraintTable.getCoConstraints()) {
+				serializeRowToExcel(workbook, coConstraintTable, coConstraintTableRow, sheet, rowNumber++);
+			}
+
 //			for (CoConstraintTableGroup coConstraintTableGroup : content.getGroups()) {
 //				//Defining styles qnd fonts for groups headers
 ////				 XSSFFont groupHeader = workbook.createFont();
@@ -231,155 +238,162 @@
 //				System.out.println("look2 :" + sheet.isPrintGridlines());
 //
 //			}
-//
-//			System.out.println("Creating excel");
-//			try {
-//				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-//				workbook.write(outputStream);
+
+			System.out.println("Creating excel");
+			try {
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+				workbook.write(outputStream);
 //				workbook.close();
-//				return outputStream;
-//			} catch (FileNotFoundException e) {
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//
-//			System.out.println("Done");
-//
-//			for(int i = 0; i <= headerCount+22; i++) {
-//				sheet.autoSizeColumn(i);
-//			}
-//			
-//		
-//
-//		}
-//
-//		return null;
-//	}
-//
-//	private void serializeRowToExcel(XSSFWorkbook workbook,CoConstraintTable coConstraintTable, CoConstraintTableRow coConstraintTableRow,
-//			XSSFSheet sheet, int rowNumber) {
-//		// Defining row Styles	
-//		final int ROW_FONT_SIZE = 15;
-//
-//		
-//		 XSSFFont tableRowFont = workbook.createFont();
-//		 tableRowFont.setFontHeightInPoints((short) ROW_FONT_SIZE);
-//		 
-//		   CellStyle ifRowStyle = workbook.createCellStyle();
-//           ifRowStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
+				return outputStream;
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			System.out.println("Done");
+
+			for(int i = 0; i <= headerCount+22; i++) {
+				sheet.autoSizeColumn(i);
+			}
+			
+		
+
+		
+
+		return null;
+	}
+
+	private void serializeRowToExcel(XSSFWorkbook workbook,CoConstraintTable coConstraintTable, CoConstraint coConstraintTableRow,
+			XSSFSheet sheet, int rowNumber) {
+		// Defining row Styles	
+		final int ROW_FONT_SIZE = 15;
+
+		
+		 XSSFFont tableRowFont = workbook.createFont();
+		 tableRowFont.setFontHeightInPoints((short) ROW_FONT_SIZE);
+		 
+		   CellStyle ifRowStyle = workbook.createCellStyle();
+           ifRowStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
+           ifRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
+           ifRowStyle.setFont(tableRowFont);
 //           ifRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-//           ifRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
-//           ifRowStyle.setFont(tableRowFont);
 //           ifRowStyle.setBorderBottom(BorderStyle.MEDIUM);
 //           ifRowStyle.setBorderTop(BorderStyle.MEDIUM);
 //           ifRowStyle.setBorderRight(BorderStyle.MEDIUM);
 //           ifRowStyle.setBorderLeft(BorderStyle.MEDIUM);
-//           
-//           CellStyle thenRowStyle = workbook.createCellStyle();
-//           thenRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
-//           thenRowStyle.setFont(tableRowFont);
+           
+           CellStyle thenRowStyle = workbook.createCellStyle();
+           thenRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
+           thenRowStyle.setFont(tableRowFont);
 //           thenRowStyle.setBorderBottom(BorderStyle.MEDIUM);
 //           thenRowStyle.setBorderTop(BorderStyle.MEDIUM);
 //           thenRowStyle.setBorderRight(BorderStyle.MEDIUM);
 //           thenRowStyle.setBorderLeft(BorderStyle.MEDIUM);
-//
-//           CellStyle userRowStyle = workbook.createCellStyle();
-//           userRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
-//           userRowStyle.setFont(tableRowFont);
+
+           CellStyle userRowStyle = workbook.createCellStyle();
+           userRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
+           userRowStyle.setFont(tableRowFont);
 //           userRowStyle.setBorderBottom(BorderStyle.MEDIUM);
 //           userRowStyle.setBorderTop(BorderStyle.MEDIUM);
 //           userRowStyle.setBorderRight(BorderStyle.MEDIUM);
 //           userRowStyle.setBorderLeft(BorderStyle.MEDIUM);
-//           
-//           CellStyle usageAndCardinalityStyle = workbook.createCellStyle();
-//           usageAndCardinalityStyle.setAlignment(CellStyle.ALIGN_CENTER);
+           
+           CellStyle usageAndCardinalityStyle = workbook.createCellStyle();
+           usageAndCardinalityStyle.setAlignment(CellStyle.ALIGN_CENTER);
 //           usageAndCardinalityStyle.setBorderBottom(BorderStyle.MEDIUM);
 //           usageAndCardinalityStyle.setBorderTop(BorderStyle.MEDIUM);
 //           usageAndCardinalityStyle.setBorderRight(BorderStyle.MEDIUM);
 //           usageAndCardinalityStyle.setBorderLeft(BorderStyle.MEDIUM);
-//
-//           
-//		Row row = sheet.createRow(rowNumber);
-//		int cellNumber = 0;
-//		Cell usageCell = row.createCell(cellNumber++);
-//		usageCell.setCellValue(coConstraintTableRow.getRequirements().getUsage().name());
-//		usageCell.setCellStyle(usageAndCardinalityStyle);
-//		Cell cardinalityCell1 = row.createCell(cellNumber++);
-//		cardinalityCell1.setCellValue(coConstraintTableRow.getRequirements().getCardinality().getMin());
-//		cardinalityCell1.setCellStyle(usageAndCardinalityStyle);
-//		Cell cardinalityCell2 = row.createCell(cellNumber++);
-//		cardinalityCell2.setCellValue(coConstraintTableRow.getRequirements().getCardinality().getMax());
-//		cardinalityCell2.setCellStyle(usageAndCardinalityStyle);
-//
-//
-//		for (CoConstraintTableHeader coConstraintTableHeader : coConstraintTable.getHeaders().getSelectors()) {
-//			for (String cellId : coConstraintTableRow.getCells().keySet()) {
-//				if (cellId.equals(coConstraintTableHeader.getId())) {
-//					if(coConstraintTableRow.getCells().get(cellId).getType().equals(CellType.Code)) {
-//						Cell location = row.createCell(cellNumber++);
-//						Cell value = row.createCell(cellNumber++);
+
+           
+		Row row = sheet.createRow(rowNumber);
+		int cellNumber = 0;
+		Cell usageCell = row.createCell(cellNumber++);
+		usageCell.setCellValue(coConstraintTableRow.getRequirement().getUsage().name());
+		usageCell.setCellStyle(usageAndCardinalityStyle);
+		Cell cardinalityCell1 = row.createCell(cellNumber++);
+		cardinalityCell1.setCellValue(coConstraintTableRow.getRequirement().getCardinality().getMin());
+		cardinalityCell1.setCellStyle(usageAndCardinalityStyle);
+		Cell cardinalityCell2 = row.createCell(cellNumber++);
+		cardinalityCell2.setCellValue(coConstraintTableRow.getRequirement().getCardinality().getMax());
+		cardinalityCell2.setCellStyle(usageAndCardinalityStyle);
+
+
+		for (CoConstraintHeader coConstraintTableHeader : coConstraintTable.getHeaders().getSelectors()) {
+			for (String cellId : coConstraintTableRow.getCells().keySet()) {
+				if (cellId.equals(coConstraintTableHeader.getKey())) {
+					if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.CODE)) {
+						Cell location = row.createCell(cellNumber++);
+						Cell value = row.createCell(cellNumber++);
 //						location.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)).split("\\|")[0]);
 //						value.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)).split("\\|")[1]);
-//						location.setCellStyle(ifRowStyle);
-//						value.setCellStyle(ifRowStyle);
-//
-//					}else {
-//						Cell cell = row.createCell(cellNumber++);
-//						cell.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)));
-//						cell.setCellStyle(ifRowStyle);
-//
-//					}
-//
-//				}
-//			}
-//		}
-//		for (CoConstraintTableHeader coConstraintTableHeader : coConstraintTable.getHeaders().getData()) {
-//			for (String cellId : coConstraintTableRow.getCells().keySet()) {
-//				if (cellId.equals(coConstraintTableHeader.getId())) {
-//					if(coConstraintTableHeader.getTemplate() != null && coConstraintTableHeader.getTemplate().equals(CellTemplateType.Varies)) {
-//						if(coConstraintTableRow.getCells().get(cellId).getType().equals(CellType.Code)) {
-//							Cell location = row.createCell(cellNumber++);
-//							Cell value = row.createCell(cellNumber++);
+						location.setCellValue("location");
+						value.setCellValue("value");
+						location.setCellStyle(ifRowStyle);
+						value.setCellStyle(ifRowStyle);
+
+					}else {
+						Cell cell = row.createCell(cellNumber++);
+						cell.setCellValue("value else");
+						cell.setCellStyle(ifRowStyle);
+
+					}
+
+				}
+			}
+		}
+		for (CoConstraintHeader coConstraintTableHeader : coConstraintTable.getHeaders().getConstraints()) {
+			for (String cellId : coConstraintTableRow.getCells().keySet()) {
+				if (cellId.equals(coConstraintTableHeader.getKey())) {
+					if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.VARIES)) {
+						if(coConstraintTableRow.getCells().get(cellId).getType().equals(ColumnType.CODE)) {
+							Cell location = row.createCell(cellNumber++);
+							Cell value = row.createCell(cellNumber++);
 //							location.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)).split("\\|")[0]);
 //							value.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)).split("\\|")[1]);
-//							location.setCellStyle(thenRowStyle);
-//							value.setCellStyle(thenRowStyle);
-//							location.setCellStyle(thenRowStyle);
-//						}else {
-//							Cell cell1 = row.createCell(cellNumber++);
+							location.setCellValue("location");
+							value.setCellValue("value");
+							location.setCellStyle(thenRowStyle);
+							value.setCellStyle(thenRowStyle);
+							location.setCellStyle(thenRowStyle);
+						}else {
+							Cell cell1 = row.createCell(cellNumber++);
 //							cell1.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)));
-//							cell1.setCellStyle(thenRowStyle);
-//							Cell cell2 = row.createCell(cellNumber++);
-//							cell2.setCellStyle(thenRowStyle);
-//							sheet.addMergedRegion(new CellRangeAddress(rowNumber,rowNumber,cell1.getColumnIndex(),cell2.getColumnIndex()));
-////							cellNumber++;
-//						}
-//					}else {
-//						Cell cell = row.createCell(cellNumber++);
+							cell1.setCellValue("cell1");
+							cell1.setCellStyle(thenRowStyle);
+							Cell cell2 = row.createCell(cellNumber++);
+							cell2.setCellStyle(thenRowStyle);
+							sheet.addMergedRegion(new CellRangeAddress(rowNumber,rowNumber,cell1.getColumnIndex(),cell2.getColumnIndex()));
+//							cellNumber++;
+						}
+					}else {
+						Cell cell = row.createCell(cellNumber++);
 //						cell.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)));
-//						cell.setCellStyle(thenRowStyle);
-//					}
-//				}
-//			}
-//		}
-//		for (CoConstraintTableHeader coConstraintTableHeader : coConstraintTable.getHeaders().getUser()) {
-//			for (String cellId : coConstraintTableRow.getCells().keySet()) {
-//				if (cellId.equals(coConstraintTableHeader.getId())) {
-//					Cell cell = row.createCell(cellNumber++);
+						cell.setCellValue("cell");
+						cell.setCellStyle(thenRowStyle);
+					}
+				}
+			}
+		}
+		for (CoConstraintHeader coConstraintTableHeader : coConstraintTable.getHeaders().getNarratives()) {
+			for (String cellId : coConstraintTableRow.getCells().keySet()) {
+				if (cellId.equals(coConstraintTableHeader.getKey())) {
+					Cell cell = row.createCell(cellNumber++);
 //					cell.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)));
-//					cell.setCellStyle(userRowStyle);
-//				}
-//			}
-//		}
-//
-//		cellNumber = 0;
-//		for(int i = 0; i <= 922; i++) {
-//			sheet.autoSizeColumn(i);
-//		}
-//
-//	}
-//
+					cell.setCellValue("cell");
+					cell.setCellStyle(userRowStyle);
+				}
+			}
+		}
+
+		cellNumber = 0;
+		for(int i = 0; i <= 922; i++) {
+			sheet.autoSizeColumn(i);
+		}
+
+	}
+
 //	public String writeValueToCell(CoConstraintTableCell coConstraintTableCell) {
 //		String value = "";
 //		switch (coConstraintTableCell.getType()) {
@@ -444,52 +458,52 @@
 //		return value;
 //
 //	}
-//	public int countNumberOfColumnInSelector(List<CoConstraintTableHeader> list) {
-//		int doubleColumnCount=0;
-//		for(CoConstraintTableHeader coConstraintTableHeader : list) {
-//			if(coConstraintTableHeader.getContent().getType().equals(CellType.Code)) {
-//				doubleColumnCount++;
+	public int countNumberOfColumnInSelector(List<CoConstraintHeader> list) {
+		int doubleColumnCount=0;
+		for(CoConstraintHeader coConstraintTableHeader : list) {
+			if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.CODE)) {
+				doubleColumnCount++;
+			}
+		}
+		return doubleColumnCount+list.size();
+	}
+
+	public int countNumberOfColumnInData(List<CoConstraintHeader> list) {
+		int doubleColumnCount=0;
+		for(CoConstraintHeader coConstraintTableHeader : list) {
+			if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.VARIES)) {
+				doubleColumnCount++;
+			}
+		}
+		return doubleColumnCount+list.size();
+	}
+	
+//	private void replaceId(C content, Map<String, String> datatypes) {
+//		if (content.getFree() != null) {
+//			List<IgnoreCell> flavorCells = content.getFree().stream().map(row -> {
+//				return row.getCells().entrySet().stream().filter(cell -> {
+//					return cell.getValue() instanceof IgnoreCell;
+//				}).map(ignore -> {
+//					return (IgnoreCell) ignore.getValue();
+//				}).collect(Collectors.toList());
+//			}).reduce(new ArrayList<IgnoreCell>(), (x, y) -> {
+//				x.addAll(y);
+//				return x;
+//			});
+//
+//			for (IgnoreCell cell : flavorCells) {
+//				if (datatypes.containsKey(cell.getValue())) {
+//					cell.setValue(datatypes.get(cell.getValue()));
+//				}
 //			}
 //		}
-//		return doubleColumnCount+list.size();
-//	}
 //
-//	public int countNumberOfColumnInData(List<CoConstraintTableHeader> list) {
-//		int doubleColumnCount=0;
-//		for(CoConstraintTableHeader coConstraintTableHeader : list) {
-//			if(coConstraintTableHeader.getTemplate() != null && coConstraintTableHeader.getTemplate().equals(CellTemplateType.Varies)) {
-//				doubleColumnCount++;
+//		if (content.getGroups() != null) {
+//			for (CoConstraintTableGroup group : content.getGroups()) {
+//				this.replaceId(group.getContent(), datatypes);
 //			}
 //		}
-//		return doubleColumnCount+list.size();
 //	}
-//	
-////	private void replaceId(C content, Map<String, String> datatypes) {
-////		if (content.getFree() != null) {
-////			List<IgnoreCell> flavorCells = content.getFree().stream().map(row -> {
-////				return row.getCells().entrySet().stream().filter(cell -> {
-////					return cell.getValue() instanceof IgnoreCell;
-////				}).map(ignore -> {
-////					return (IgnoreCell) ignore.getValue();
-////				}).collect(Collectors.toList());
-////			}).reduce(new ArrayList<IgnoreCell>(), (x, y) -> {
-////				x.addAll(y);
-////				return x;
-////			});
-////
-////			for (IgnoreCell cell : flavorCells) {
-////				if (datatypes.containsKey(cell.getValue())) {
-////					cell.setValue(datatypes.get(cell.getValue()));
-////				}
-////			}
-////		}
-////
-////		if (content.getGroups() != null) {
-////			for (CoConstraintTableGroup group : content.getGroups()) {
-////				this.replaceId(group.getContent(), datatypes);
-////			}
-////		}
-////	}
-//
-//
-//}
+
+
+}
