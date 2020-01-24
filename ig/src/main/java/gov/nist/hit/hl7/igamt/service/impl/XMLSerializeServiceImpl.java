@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,7 +214,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
               Element elmComponent = new Element("Component");
 
               elmComponent.addAttribute(new Attribute("Name", this.str(c.getName())));
-              elmComponent.addAttribute(new Attribute("Usage", this.str(c.getUsage().toString())));
+              elmComponent.addAttribute(new Attribute("Usage", this.str(this.changeCABtoC(c.getUsage()).toString())));
 
               String childDTId = c.getRef().getId();
               Datatype childDT = this.datatypeService.findById(childDTId);
@@ -1003,7 +1004,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
             elmComponent.addAttribute(new Attribute("Name", this.str(c.getModel().getName())));
             elmComponent
-                .addAttribute(new Attribute("Usage", this.str(c.getModel().getUsage().toString())));
+                .addAttribute(new Attribute("Usage", this.str(this.changeCABtoC(c.getModel().getUsage()).toString())));
 
             if (igModel.getModel().getDomainInfo() != null
                 && igModel.getModel().getDomainInfo().getVersion() != null
@@ -1356,7 +1357,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             Element elmField = new Element("Field");
             elmField.addAttribute(new Attribute("Name", this.str(f.getModel().getName())));
             elmField
-                .addAttribute(new Attribute("Usage", this.str(f.getModel().getUsage().toString())));
+                .addAttribute(new Attribute("Usage", this.str(this.changeCABtoC(f.getModel().getUsage()).toString())));
 
             if (igModel.getModel().getDomainInfo() != null
                 && igModel.getModel().getDomainInfo().getVersion() != null
@@ -1524,7 +1525,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       elmGroup.addAttribute(
           new Attribute("Name", this.str(segmentRefOrGroupDataModel.getModel().getName())));
       elmGroup.addAttribute(new Attribute("Usage",
-          this.str(segmentRefOrGroupDataModel.getModel().getUsage().toString())));
+          this.str(this.changeCABtoC(segmentRefOrGroupDataModel.getModel().getUsage()).toString())));
       elmGroup.addAttribute(
           new Attribute("Min", this.str(segmentRefOrGroupDataModel.getModel().getMin() + "")));
       elmGroup.addAttribute(
@@ -1575,7 +1576,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       }
 
       elmSegment.addAttribute(new Attribute("Usage",
-          this.str(segmentRefOrGroupDataModel.getModel().getUsage().toString())));
+          this.str(this.changeCABtoC(segmentRefOrGroupDataModel.getModel().getUsage()).toString())));
       elmSegment.addAttribute(
           new Attribute("Min", this.str(segmentRefOrGroupDataModel.getModel().getMin() + "")));
       elmSegment.addAttribute(
@@ -1639,6 +1640,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
   private String str(String value) {
     return value != null ? value : "";
+  }
+
+  private Usage changeCABtoC(Usage value) {
+    return Usage.CAB.equals(value) ? Usage.C : value;
   }
 
   @Override

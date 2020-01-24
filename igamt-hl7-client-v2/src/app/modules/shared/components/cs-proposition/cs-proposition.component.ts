@@ -164,7 +164,7 @@ export class CsPropositionComponent implements OnInit {
 
   @Input()
   set context(ctx: IPath) {
-    if (this.assertion && this._context) {
+    if (this.assertion) {
       this.assertion.complement = {
         ...this.assertion.complement,
         path: undefined,
@@ -294,8 +294,7 @@ export class CsPropositionComponent implements OnInit {
         const statement = this.getStatementLiteral(this.assertion.complement);
         const comparisonTarget = this.getOccurenceLiteral(this.assertion.complement);
         const comparison = `${comparisonTarget.toLowerCase()} ${this.valueOrBlank(compNode)}`;
-        this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)}
-        ${this.statementType === StatementType.COMPARATIVE ? comparison : ''}`;
+        this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)} ${this.statementType === StatementType.COMPARATIVE ? comparison : ''}`;
         this.valueChange.emit(this.assertion);
       }),
     ).subscribe();
