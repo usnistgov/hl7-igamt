@@ -366,8 +366,6 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
                     }
                 }
             }
-
-            // }
             return segmentRegistryElement;
         } catch (Exception exception) {
             throw new RegistrySerializationException(exception, section, segmentRegistry);

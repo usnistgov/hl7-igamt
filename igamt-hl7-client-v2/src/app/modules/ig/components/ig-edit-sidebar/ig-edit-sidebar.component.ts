@@ -6,7 +6,11 @@ import { Store } from '@ngrx/store';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of } from 'rxjs';
 import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
-import { IgEditActionTypes, ImportResourceFromFile } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {
+  IgEditActionTypes,
+  ImportResourceFromFile,
+  ImportResourceFromFileSuccess
+} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   CopyResource, CopyResourceSuccess,
   DeleteResource,
@@ -172,8 +176,18 @@ export class IgEditSidebarComponent implements OnInit {
       map(([result, igId]) => {
         console.log([result]);
         console.log([igId]);
+        if (result && result.redirect) {
+          RxjsStoreHelperService.listenAndReact(this.actions, {
+            [IgEditActionTypes.ImportResourceFromFileSuccess]: {
+              do: (action: ImportResourceFromFileSuccess) => {
+                this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
+                return of();
+              },
+            },
+          }).subscribe();
+        }
 
-        this.store.dispatch(new ImportResourceFromFile(igId, Type.VALUESET, Type.IGDOCUMENT, result));
+        this.store.dispatch(new ImportResourceFromFile(igId, Type.VALUESET, Type.IGDOCUMENT, result.file));
       }),
     ).subscribe();
   }
@@ -185,6 +199,7 @@ export class IgEditSidebarComponent implements OnInit {
       filter((x) => x !== undefined),
       withLatestFrom(this.igId$),
       map(([result, igId]) => {
+       if (result && result.redirect) {
         RxjsStoreHelperService.listenAndReact(this.actions, {
           [IgEditActionTypes.CopyResourceSuccess]: {
             do: (action: CopyResourceSuccess) => {
@@ -193,7 +208,8 @@ export class IgEditSidebarComponent implements OnInit {
             },
           },
         }).subscribe();
-        this.store.dispatch(new CopyResource({ documentId: igId, selected: result }));
+       }
+       this.store.dispatch(new CopyResource({ documentId: igId, selected: result.flavor }));
       }),
     ).subscribe();
   }
