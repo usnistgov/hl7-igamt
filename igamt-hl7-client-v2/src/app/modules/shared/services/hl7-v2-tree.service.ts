@@ -238,7 +238,7 @@ export class Hl7V2TreeService {
       if (node.type === Type.GROUP || node.type === Type.SEGMENT || node.type === Type.SEGMENTREF || node.type === Type.DATATYPE) {
         return node.name + separator + post;
       } else if (node.type === Type.CONFORMANCEPROFILE) {
-        return node.name;
+        return post ? post : node.name;
       } else {
         return node.position + separator + post + desc;
       }
