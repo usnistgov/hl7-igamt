@@ -16,6 +16,8 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeader;
@@ -23,17 +25,24 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeaders;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.coconstraints.model.ColumnType;
 import gov.nist.hit.hl7.igamt.coconstraints.model.DataElementHeader;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 
-public class serializeCoconstraintTableToExcel {
+
+@Service
+public class SerializeCoconstraintTableToExcel {
 	
+	@Autowired
+	private ConformanceProfileService conformanceProfileService;
 
-	
-
-	public ByteArrayOutputStream exportToExcel(CoConstraintTable coConstraintTable) {
+	public ByteArrayOutputStream exportToExcel(CoConstraintTable coConstraintTable1) {
 //		final String FILE_NAME = "/Users/ynb4/Desktop/MyFirstExcelTryout.xlsx";
 		final int HEADER_FONT_SIZE = 20;
 //		if (coConstraintService.getCoConstraintForSegment(id) != null) {
 //			CoConstraintTable coConstraintTable = coConstraintService.getCoConstraintForSegment(id);
+		
+		ConformanceProfile conformanceProfile = conformanceProfileService.findById("5e2874487ca5c06e4a2283af");
+		CoConstraintTable coConstraintTable = conformanceProfile.getCoConstraintsBindings().get(0).getBindings().get(0).getTables().get(0).getValue();
 
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet("Coconstaints Export");
@@ -238,6 +247,10 @@ public class serializeCoconstraintTableToExcel {
 //				System.out.println("look2 :" + sheet.isPrintGridlines());
 //
 //			}
+			
+			for(int i = 0; i <= headerCount+22; i++) {
+				sheet.autoSizeColumn(i);
+			}
 
 			System.out.println("Creating excel");
 			try {
@@ -252,15 +265,6 @@ public class serializeCoconstraintTableToExcel {
 			}
 
 			System.out.println("Done");
-
-			for(int i = 0; i <= headerCount+22; i++) {
-				sheet.autoSizeColumn(i);
-			}
-			
-		
-
-		
-
 		return null;
 	}
 

@@ -231,6 +231,9 @@ public class BootstrapApplication implements CommandLineRunner {
       basicExportConfiguration.setDefaultConfig(false);
       exportConfigurationRepository.save(basicExportConfiguration);
     }
+
+    
+
   }
   //  
   //

@@ -160,18 +160,8 @@ export class IgService {
     form.submit();
   }
 
-  exportAsWord(igId, decision: any) {
-    const form = document.createElement('form');
-    form.action = this.EXPORT_URL + igId + '/word';
-    form.method = 'POST';
-    const json = document.createElement('input');
-    json.type = 'hidden';
-    json.name = 'json';
-    json.value = JSON.stringify(decision);
-    form.appendChild(json);
-    form.style.display = 'none';
-    document.body.appendChild(form);
-    form.submit();
+  exportAsWord(igId: string, decision: any, configurationId: string) {
+    this.submitForm(decision, this.EXPORT_URL + igId + '/configuration/' + configurationId + '/word');
   }
 
   export(igId, decision: any, format: string) {
@@ -194,6 +184,10 @@ export class IgService {
 
   exportAsHtmlQuick(igId: string) {
     this.submitForm(null, this.EXPORT_URL + igId + '/quickHtml');
+  }
+
+  exportAsWordQuick(igId: string) {
+    this.submitForm(null, this.EXPORT_URL + igId + '/quickWord');
   }
 
   submitForm(decision: any, end_point: string) {
