@@ -9,7 +9,7 @@ import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rx
 import {
   IgEditActionTypes,
   ImportResourceFromFile,
-  ImportResourceFromFileSuccess
+  ImportResourceFromFileSuccess,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   CopyResource, CopyResourceSuccess,

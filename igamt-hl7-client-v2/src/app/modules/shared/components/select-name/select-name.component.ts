@@ -1,9 +1,9 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
 import {Scope} from '../../constants/scope.enum';
+import {Type} from '../../constants/type.enum';
 import {IAddingInfo} from '../../models/adding-info';
 import {IDisplayElement} from '../../models/display-element.interface';
-import {Type} from '../../constants/type.enum';
 
 @Component({
   selector: 'app-select-name',
