@@ -80,6 +80,14 @@ export class Hl7V2TreeService {
 
   constructor(private predicate: PredicateService, private bindingService: BindingService) { }
 
+  pathToString(path: IPath) {
+    if (!path) {
+      return '';
+    } else {
+      return path.elementId + (path.instanceParameter ? ('[' + path.instanceParameter + ']') : '') + this.pathToString(path.child);
+    }
+  }
+
   cloneViewTree(tree: TreeNode[]): TreeNode[] {
     return tree ? tree.map((node: TreeNode) => {
       return {

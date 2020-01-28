@@ -185,10 +185,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	public Element serializeDateTimeDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel, DatatypeExportConfiguration datatypeExportConfiguration) {
 	    DateTimeDatatype dateTimeDatatype =  (DateTimeDatatype) datatypeDataModel.getModel();
 	    if(dateTimeDatatype
-            .getDateTimeConstraints() !=null && dateTimeDatatype
-            .getDateTimeConstraints().getDateTimeComponentDefinitions() !=null) {
+            .getDateTimeConstraints() !=null) {
 	    for (DateTimeComponentDefinition dateTimeComponentDefinition : dateTimeDatatype
 	        .getDateTimeConstraints().getDateTimeComponentDefinitions()) {
+	    	if(dateTimeComponentDefinition != null) {
 	      Element dateTimeComponentDefinitionElement = new Element("DateTimeComponentDefinition");
 	      if (dateTimeComponentDefinition != null) {
 	        dateTimeComponentDefinitionElement.addAttribute(new Attribute("description",
@@ -214,6 +214,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	                : ""));
 	        datatypeElement.appendChild(dateTimeComponentDefinitionElement);
 	      }
+	    }
 	    }
 	    }
 	    return datatypeElement;
