@@ -78,29 +78,26 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   exportWord() {
-    this.getDecision().pipe(
-      map((decision) => {
-        const dialogRef = this.dialog.open(ExportConfigurationDialogComponent, {
-          maxWidth: '95vw',
-          maxHeight: '90vh',
-          width: '95vw',
-          height: '95vh',
-          data: {
-            toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
-            decision,
-          },
-        });
-        dialogRef.afterClosed().pipe(
-          filter((y) => y !== undefined),
-
-          withLatestFrom(this.getIgId()),
-          take(1),
-          map(([result, igId]) => {
-            this.igService.exportAsWord(igId, result);
-          }),
-        ).subscribe();
-      }),
-    ).subscribe();
+    combineLatest(
+      this.getIgId(),
+      this.exportConfigurationService.getAllExportConfigurations()).pipe(
+        map(([igId, configurations]) => {
+          console.log(igId);
+          const dialogRef = this.dialog.open(ExportDialogComponent, {
+            data: {
+              toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
+              igId,
+              configurations,
+            },
+          });
+          dialogRef.afterClosed().pipe(
+            filter((y) => y !== undefined),
+            map((result) => {
+              this.igService.exportAsWord(igId, result.decision, result.configurationId);
+            }),
+          ).subscribe();
+        }),
+      ).subscribe();
   }
 
   getDecision() {
@@ -132,6 +129,10 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
 
   exportQuickHTML() {
     this.getIgId().subscribe((id) => this.igService.exportAsHtmlQuick(id));
+  }
+
+  exportQuickWORD() {
+    this.getIgId().subscribe((id) => this.igService.exportAsWordQuick(id));
   }
 
   verifyIG() {

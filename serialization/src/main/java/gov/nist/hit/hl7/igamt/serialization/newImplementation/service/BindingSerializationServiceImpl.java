@@ -122,6 +122,10 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 						structureElementBinding.getLocationInfo() != null
 								? structureElementBinding.getLocationInfo().getName()
 								: ""));
+				structureElementBindingElement.addAttribute(new Attribute("Position1",
+						structureElementBinding.getLocationInfo() != null
+								? String.valueOf(structureElementBinding.getLocationInfo().getPosition())
+								: ""));
 				structureElementBindingElement
 						.addAttribute(
 								new Attribute("LocationInfoPosition",
@@ -183,6 +187,9 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 			valuesetBindingElement.addAttribute(new Attribute("bindingLocation",
 					valuesetBinding.getValueSets() != null
 							? location : ""));
+			valuesetBindingElement.addAttribute(new Attribute("Position2",
+					valuesetBinding.getValuesetLocations() != null
+							? location : ""));
 			valuesetBindingElement.addAttribute(new Attribute("locations",
 					valuesetBinding.getValuesetLocations() != null
 							? convertValuesetLocationsToString(location, valuesetBinding.getValuesetLocations())
@@ -219,6 +226,24 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 			}
 		}
 		return name+"-"+location;
+	}
+	
+	private String getLocationIntFromMap(Map<String, Set<ValuesetBindingDataModel>> valuesetMap,
+			ValuesetBinding valuesetBinding) {
+		String location = "Not found in MAP";
+		for (Set<ValuesetBindingDataModel> set : valuesetMap.values()) {
+			for (ValuesetBindingDataModel valuesetBindingDataModel : set) {
+				if (valuesetBindingDataModel.getValuesetBinding().getValueSets()
+						.equals(valuesetBinding.getValueSets())) {
+					for (String key : valuesetMap.keySet()) {
+						if (valuesetMap.get(key).equals(set)) {
+							location = key;
+						}
+					}
+				}
+			}
+		}
+		return location;
 	}
 
 	private String convertValuesetNamesToString(List<String> list) {

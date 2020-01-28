@@ -25,6 +25,7 @@ export class IgService {
 
   readonly EXPORT_URL = '/api/export/ig/';
   readonly IG_END_POINT = '/api/igdocuments/';
+  readonly CONFIGURATION = '/configuration/';
 
   constructor(private http: HttpClient, private location: LocationStrategy) {
   }
@@ -160,18 +161,8 @@ export class IgService {
     form.submit();
   }
 
-  exportAsWord(igId, decision: any) {
-    const form = document.createElement('form');
-    form.action = this.EXPORT_URL + igId + '/word';
-    form.method = 'POST';
-    const json = document.createElement('input');
-    json.type = 'hidden';
-    json.name = 'json';
-    json.value = JSON.stringify(decision);
-    form.appendChild(json);
-    form.style.display = 'none';
-    document.body.appendChild(form);
-    form.submit();
+  exportAsWord(igId: string, decision: any, configurationId: string) {
+    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/word');
   }
 
   export(igId, decision: any, format: string) {
@@ -189,11 +180,15 @@ export class IgService {
   }
 
   exportAsHtml(igId: string, decision: any, configurationId: string) {
-    this.submitForm(decision, this.EXPORT_URL + igId + '/configuration/' + configurationId + '/html');
+    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/html');
   }
 
   exportAsHtmlQuick(igId: string) {
     this.submitForm(null, this.EXPORT_URL + igId + '/quickHtml');
+  }
+
+  exportAsWordQuick(igId: string) {
+    this.submitForm(null, this.EXPORT_URL + igId + '/quickWord');
   }
 
   submitForm(decision: any, end_point: string) {
@@ -236,7 +231,7 @@ export class IgService {
   }
 
   getExportFirstDecision(igId: string, configId: string): Observable<IExportConfigurationGlobal> {
-    return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + igId + '/configuration/' + configId + '/getFilteredDocument');
+    return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + igId + this.CONFIGURATION + configId + '/getFilteredDocument');
   }
 
   importFromFile(documentId, resourceType: Type, targetType: Type, file: any) {

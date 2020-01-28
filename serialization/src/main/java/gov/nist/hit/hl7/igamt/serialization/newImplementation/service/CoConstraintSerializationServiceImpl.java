@@ -144,11 +144,13 @@ public class CoConstraintSerializationServiceImpl implements  CoConstraintSerial
 		th.addAttribute(new Attribute("colspan", String.valueOf(calculateHeadersNumber(coConstraintTable.getHeaders().getConstraints()))));
 		th.appendChild("THEN");
 		tr.appendChild(th);
+		if(!coConstraintTable.getHeaders().getNarratives().isEmpty()) {
 		th = new Element("th");
 		th.addAttribute(new Attribute("class", "greenHeader"));
 		th.addAttribute(new Attribute("colspan", String.valueOf(coConstraintTable.getHeaders().getNarratives().size())));
 		th.appendChild("NARRATIVES");
 		tr.appendChild(th);
+		}
 		thead.appendChild(tr);
 		tr = new Element("tr");
 		for (CoConstraintHeader coConstraintHeader : coConstraintTable.getHeaders().getSelectors()) {
@@ -256,16 +258,17 @@ public class CoConstraintSerializationServiceImpl implements  CoConstraintSerial
 			case VALUESET:
 				ValueSetCell vSCell = (ValueSetCell) coConstraintTableCell;
 				Element table3 = new Element("table");
-				table3.addAttribute(new Attribute("border-bottom", "1px"));
+				table3.addAttribute(new Attribute("style", "border : none"));
 				if(vSCell.getBindings() != null) {
 				for(ValuesetBinding valuesetBinding : vSCell.getBindings()) {
-					Element trTable = new Element("tr");	
+//				Element trTable = new Element("tr");	
+//				trTable.addAttribute(new Attribute("style", "border : none"));
 				Element trV1 = new Element("tr");
 				Element trV2 = new Element("tr");
 				Element trV3 = new Element("tr");
-				trTable.appendChild(trV1);
-				trTable.appendChild(trV2);
-				trTable.appendChild(trV3);
+				table3.appendChild(trV1);
+				table3.appendChild(trV2);
+				table3.appendChild(trV3);
 				Element tdV1 = new Element("td");
 				Element tdV2 = new Element("td");
 				Element tdV3 = new Element("td");
@@ -278,8 +281,8 @@ public class CoConstraintSerializationServiceImpl implements  CoConstraintSerial
 				tdV1.appendChild("Strength : " + valuesetBinding.getStrength());
 				tdV2.appendChild("Location: " + valuesetBinding.getValuesetLocations().toString());
 				tdV3.appendChild("Valuesets : " + generateValuesetNames(valuesetBinding.getValueSets()));
-				table3.appendChild(trTable);
-				}
+//				table3.appendChild(trTable);
+				}	
 				}else {
 					table3 = null;
 				}
