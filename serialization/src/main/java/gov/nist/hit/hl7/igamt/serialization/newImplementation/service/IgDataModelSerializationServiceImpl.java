@@ -10,18 +10,15 @@ import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ResourceExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
-import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
@@ -32,6 +29,9 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 
 	@Autowired
 	private SectionSerializationService sectionSerializationService;
+	
+	@Autowired
+	private FroalaSerializationUtil frolaCleaning;
 
 	@Override
 	public Element serializeIgDocument(IgDataModel igDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException {
@@ -67,7 +67,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		metadataElement
 		.addAttribute(new Attribute("orgName", metadata.getOrgName() != null ? metadata.getOrgName() : ""));
 		metadataElement.addAttribute(
-				new Attribute("coverPicture", metadata.getCoverPicture() != null ? metadata.getCoverPicture() : ""));
+				new Attribute("coverPicture", metadata.getCoverPicture() != null ? "aade49bd-1af7-4061-81d2-60b8fb6eee60b.png" : ""));
 		metadataElement
 		.addAttribute(new Attribute("subTitle", metadata.getSubTitle() != null ? metadata.getSubTitle() : ""));
 
@@ -136,10 +136,10 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 					abstractDomain.getUsername() != null ? abstractDomain.getUsername() : ""));
 						if(abstractDomainExportConfiguration != null && abstractDomainExportConfiguration.isAuthorNotes()) {
 			element.addAttribute(new Attribute("authorNotes",
-					abstractDomain.getAuthorNotes() != null ? abstractDomain.getAuthorNotes(): ""));}
+					abstractDomain.getAuthorNotes() != null ? frolaCleaning.cleanFroalaInput(abstractDomain.getAuthorNotes()): ""));}
 						if(abstractDomainExportConfiguration != null && abstractDomainExportConfiguration.isUsageNotes()) {
 			element.addAttribute(new Attribute("usageNotes",
-					abstractDomain.getUsageNotes() != null ? abstractDomain.getUsageNotes() : ""));}
+					abstractDomain.getUsageNotes() != null ? frolaCleaning.cleanFroalaInput(abstractDomain.getUsageNotes()) : ""));}
 		}
 		return element;
 	}
@@ -178,7 +178,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 
 
 	public String formatStringData(String str) {
-		return FroalaSerializationUtil.cleanFroalaInput(str);
+		return frolaCleaning.cleanFroalaInput(str);
 	}
 
 	public String getElementName(Type type) {

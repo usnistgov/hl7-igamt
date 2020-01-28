@@ -28,6 +28,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -45,6 +46,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
 	@Autowired
 	private DeltaService deltaService;
+	
+	@Autowired
+	private FroalaSerializationUtil frolaCleaning;
 
 	@Override
 	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration) throws SerializationException {
@@ -143,7 +147,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	          componentElement.addAttribute(new Attribute("minLength",
 	              component.getMinLength() != null ? component.getMinLength() : ""));
 	          componentElement.addAttribute(
-	              new Attribute("text", component.getText() != null ? component.getText() : ""));
+	              new Attribute("text", component.getText() != null ? frolaCleaning.cleanFroalaInput(component.getText()) : ""));
 	          componentElement
 	              .addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
 	          if (datatypeDataModel != null && datatypeDataModel.getValuesetMap() != null && datatypeDataModel.getValuesetMap().containsKey(component.getPosition() + "")) {

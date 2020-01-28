@@ -44,6 +44,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.IgDataModelSerializationService;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 @Service
@@ -51,6 +52,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 	@Autowired
 	IgService igService;
+	@Autowired
+	FroalaSerializationUtil cleaner;
 
 	@Autowired
 	ExportConfigurationService exportConfigurationService;
@@ -68,7 +71,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 	@Autowired
 	private SegmentService segmentService;
-
+	
 	@Autowired
 	private ConformanceProfileService conformanceProfileService;
 
@@ -316,4 +319,5 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		return null;
 	}
 
+	
 }
