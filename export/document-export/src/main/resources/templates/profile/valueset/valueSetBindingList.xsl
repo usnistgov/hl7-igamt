@@ -82,7 +82,8 @@
                     <!-- <xsl:for-each select="Binding/StructureElementBindings/StructureElementBinding/ValuesetBinding"> -->
                                         <xsl:for-each select=".//ValuesetBinding">
                     
-                        <xsl:sort select="@location" data-type="text" order="ascending" />
+                        <xsl:sort lang="langage-code" data-type="number" select="../@Position1"  order="ascending" />
+                    
                         <xsl:element name="tr">
                             <xsl:attribute name="class">
                                 <xsl:text>contentTr</xsl:text>
