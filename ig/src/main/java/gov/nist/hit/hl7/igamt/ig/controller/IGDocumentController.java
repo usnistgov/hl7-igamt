@@ -915,7 +915,7 @@ public class IGDocumentController extends BaseController {
     AddResourceResponse response = new AddResourceResponse();
     response.setId(clone.getId());
     response.setReg(ig.getConformanceProfileRegistry());
-    response.setDisplay(displayInfoService.convertConformanceProfile(clone));
+    response.setDisplay(displayInfoService.convertConformanceProfile(clone,ig.getConformanceProfileRegistry().getChildren().size()+1));
 
     return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
         clone.getId(), false, clone.getUpdateDate(), response);
@@ -1055,7 +1055,7 @@ public class IGDocumentController extends BaseController {
     ig = igService.save(ig);
     IGDisplayInfo info = new IGDisplayInfo();
     info.setIg(ig);
-    info.setMessages(displayInfoService.convertConformanceProfiles(objects.getConformanceProfiles()));
+    info.setMessages(displayInfoService.convertConformanceProfiles(objects.getConformanceProfiles(), ig.getConformanceProfileRegistry()));
     info.setSegments(displayInfoService.convertSegments(objects.getSegments()));
     info.setDatatypes(displayInfoService.convertDatatypes(objects.getDatatypes()));
     info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
@@ -1283,7 +1283,6 @@ public class IGDocumentController extends BaseController {
       throws IGNotFoundException {
 
     Ig ig = findIgById(id);
-    displayInfoService.covertIgToDisplay(ig);
     return displayInfoService.covertIgToDisplay(ig);
   }
 

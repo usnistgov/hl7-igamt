@@ -1,16 +1,20 @@
 <h5 mat-dialog-title> {{data.title}}
 </h5>
-<mat-dialog-content style="height: 200px; width: 400px;">
-  <div class="upload-section" *ngIf="!viewOnly">
+
+<mat-dialog-content>
+  <div *ngIf="!viewOnly" class="upload-section">
   <span *ngIf="file" class="upload-span filename">
-    <i class="fa fa-times clear" (click)="clear()"></i>
+    <i (click)="clear()" class="fa fa-times clear"></i>
     {{file.name}}
   </span>
     <span *ngIf="!file" class="upload-span upload-text">CLICK OR DROP HERE</span>
-    <input #fileInput class="upload file-upload" type="file" accept="text/csv">
+    <input #fileInput accept="text/csv" class="upload file-upload" type="file">
   </div>
 </mat-dialog-content>
-<mat-dialog-actions style="justify-content: flex-end;">
-  <button  class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="cancel()">Cancel</button>
-  <button  class="btn btn-sm btn-success" [disabled]="!this.preview" (click)="submit()">Submit</button>
+<mat-dialog-actions style=" display: flex;justify-content: space-between">
+  <p-checkbox [(ngModel)]="redirect" binary="true" label="redirect to the created value sets"></p-checkbox>
+  <div style="justify-content: flex-end;margin-left:5px;">
+    <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+    <button (click)="submit()" [disabled]="!this.preview" class="btn btn-sm btn-success">Submit</button>
+  </div>
 </mat-dialog-actions>

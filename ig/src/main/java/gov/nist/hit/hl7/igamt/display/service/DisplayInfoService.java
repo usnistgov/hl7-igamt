@@ -26,13 +26,25 @@ public interface DisplayInfoService {
 	public Set<DisplayElement> convertCoConstraintGroupRegistry(CoConstraintGroupRegistry registry);
 	public DisplayElement convertDatatype(Datatype datatype);
 	public DisplayElement convertCoConstraintGroup(CoConstraintGroup group);
-	public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile);
+	public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile, int position);
 	public DisplayElement convertSegment(Segment segment);
 	public DisplayElement convertValueSet(Valueset valueset);
 	public Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
-	public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles);
+//	public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles);
 	public Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes);
 	public Set<DisplayElement> convertSegments(Set<Segment> segments);
+  /**
+   * @param conformanceProfile
+   * @param position
+   * @return
+   */
+  /**
+   * @param conformanceProfiles
+   * @param conformanceProfileRegistry
+   * @return
+   */
+  public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles,
+      ConformanceProfileRegistry conformanceProfileRegistry);
 
 	
 }
