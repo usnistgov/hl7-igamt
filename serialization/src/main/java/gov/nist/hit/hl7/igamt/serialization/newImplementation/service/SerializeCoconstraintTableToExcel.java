@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.poi.hssf.util.HSSFColor;
@@ -20,13 +21,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintCell;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeader;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeaders;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CodeCell;
 import gov.nist.hit.hl7.igamt.coconstraints.model.ColumnType;
 import gov.nist.hit.hl7.igamt.coconstraints.model.DataElementHeader;
+import gov.nist.hit.hl7.igamt.coconstraints.model.DatatypeCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.NarrativeHeader;
+import gov.nist.hit.hl7.igamt.coconstraints.model.ValueCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.ValueSetCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.VariesCell;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import nu.xom.Attribute;
+import nu.xom.Element;
 
 
 @Service
@@ -34,6 +50,15 @@ public class SerializeCoconstraintTableToExcel {
 	
 	@Autowired
 	private ConformanceProfileService conformanceProfileService;
+	
+	@Autowired
+	DatatypeService datatypeService;
+	
+	@Autowired
+	CoConstraintService coConstraintService;
+	
+	@Autowired
+	ValuesetService valuesetService;
 
 	public ByteArrayOutputStream exportToExcel(CoConstraintTable coConstraintTable1) {
 //		final String FILE_NAME = "/Users/ynb4/Desktop/MyFirstExcelTryout.xlsx";
@@ -55,14 +80,14 @@ public class SerializeCoconstraintTableToExcel {
 			 XSSFFont ifHeaderFont = workbook.createFont();
 			 ifHeaderFont.setFontHeightInPoints((short) HEADER_FONT_SIZE);
 			 ifHeaderFont.setBold(true);
-			 ifHeaderFont.setColor(HSSFColor.WHITE.index);
+//			 ifHeaderFont.setColor(HSSFColor.WHITE.index);
 			 
 			 XSSFFont thenHeaderFont = workbook.createFont();
 			 thenHeaderFont.setFontHeightInPoints((short) HEADER_FONT_SIZE);
 			 thenHeaderFont.setBold(true);
 		      
             CellStyle ifHeaderStyle = workbook.createCellStyle();
-            ifHeaderStyle.setFillForegroundColor(IndexedColors.ROYAL_BLUE.getIndex());
+//            ifHeaderStyle.setFillForegroundColor(IndexedColors.ROYAL_BLUE.getIndex());
             ifHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
             ifHeaderStyle.setFont(ifHeaderFont);
 //            ifHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -141,7 +166,8 @@ public class SerializeCoconstraintTableToExcel {
 			for (CoConstraintHeader coConstraintTableHeader : headers.getSelectors()) {
 				if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.CODE)) {
 					Cell cell = headerRow2.createCell(headerCellNumber++);
-					cell.setCellValue("coConstraintTableHeader");
+					String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name()  + " " + ((DataElementHeader) coConstraintTableHeader).getName();
+					cell.setCellValue(headerLabel);
 					Cell cell2 = headerRow2.createCell(headerCellNumber++);
 					cell2.setCellValue("coConstraintTableHeader");
 					cell.setCellStyle(ifHeaderStyle);
@@ -150,15 +176,17 @@ public class SerializeCoconstraintTableToExcel {
 //					cell.setCellStyle(ifHeaderStyle);
 //					headerCellNumber++;
 				}else {
+					String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name()  + " " + ((DataElementHeader) coConstraintTableHeader).getName();
 					Cell cell = headerRow2.createCell(headerCellNumber++);
-					cell.setCellValue("coConstraintTableHeader");
+					cell.setCellValue(headerLabel);
 					cell.setCellStyle(ifHeaderStyle);
 				}
 			}
 			for (CoConstraintHeader coConstraintTableHeader : headers.getConstraints()) {
 				if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.VARIES)) {
+					String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name()  + " " + ((DataElementHeader) coConstraintTableHeader).getName();
 					Cell cell1 = headerRow2.createCell(headerCellNumber++);
-					cell1.setCellValue("coConstraintTableHeader");
+					cell1.setCellValue(headerLabel);
 					cell1.setCellStyle(thenHeaderStyle);
 					Cell cell2 = headerRow2.createCell(headerCellNumber++);
 					cell2.setCellValue("coConstraintTableHeader");
@@ -166,22 +194,24 @@ public class SerializeCoconstraintTableToExcel {
 					sheet.addMergedRegion(new CellRangeAddress(1,1,cell1.getColumnIndex(),cell2.getColumnIndex()));
 //					headerCellNumber++;
 				}else {
+					String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name()  + " " + ((DataElementHeader) coConstraintTableHeader).getName();
 					Cell cell = headerRow2.createCell(headerCellNumber++);
-					cell.setCellValue("coConstraintTableHeader");
+					cell.setCellValue(headerLabel);
 					cell.setCellStyle(thenHeaderStyle);
 
 				}
 			}
 			for (CoConstraintHeader coConstraintTableHeader : headers.getNarratives()) {
+				String headerLabel =  "TEXT " + ((NarrativeHeader) coConstraintTableHeader).getTitle();
 				Cell cell = headerRow2.createCell(headerCellNumber++);
-				cell.setCellValue("coConstraintTableHeader");
+				cell.setCellValue(headerLabel);
 				cell.setCellStyle(userHeaderStyle);
 			}
 
 						sheet.addMergedRegion(new CellRangeAddress(0,0,ifCell.getColumnIndex(),thenCell.getColumnIndex()-1));
 						sheet.addMergedRegion(new CellRangeAddress(0,0,thenCell.getColumnIndex(),userCell.getColumnIndex()-1));
 						if(headers.getNarratives().size() != 1) {
-						sheet.addMergedRegion(new CellRangeAddress(0,0,userCell.getColumnIndex(),userCell.getColumnIndex()+headers.getNarratives().size()-1));
+//						sheet.addMergedRegion(new CellRangeAddress(0,0,userCell.getColumnIndex(),userCell.getColumnIndex()+headers.getNarratives().size()-1));
 						}
 						System.out.println("Here6 :" + userCell.getColumnIndex());
 
@@ -330,16 +360,14 @@ public class SerializeCoconstraintTableToExcel {
 					if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.CODE)) {
 						Cell location = row.createCell(cellNumber++);
 						Cell value = row.createCell(cellNumber++);
-//						location.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)).split("\\|")[0]);
-//						value.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)).split("\\|")[1]);
-						location.setCellValue("location");
-						value.setCellValue("value");
+						location.setCellValue(WriteValueToCellExcel(coConstraintTableRow.getCells().get(cellId),((DataElementHeader) coConstraintTableHeader).getColumnType()).split(", ")[0]);
+						value.setCellValue(WriteValueToCellExcel(coConstraintTableRow.getCells().get(cellId),((DataElementHeader) coConstraintTableHeader).getColumnType()).split(", ")[1]);
 						location.setCellStyle(ifRowStyle);
 						value.setCellStyle(ifRowStyle);
 
 					}else {
 						Cell cell = row.createCell(cellNumber++);
-						cell.setCellValue("value else");
+						cell.setCellValue(WriteValueToCellExcel(coConstraintTableRow.getCells().get(cellId),((DataElementHeader) coConstraintTableHeader).getColumnType()));
 						cell.setCellStyle(ifRowStyle);
 
 					}
@@ -354,17 +382,14 @@ public class SerializeCoconstraintTableToExcel {
 						if(coConstraintTableRow.getCells().get(cellId).getType().equals(ColumnType.CODE)) {
 							Cell location = row.createCell(cellNumber++);
 							Cell value = row.createCell(cellNumber++);
-//							location.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)).split("\\|")[0]);
-//							value.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)).split("\\|")[1]);
-							location.setCellValue("location");
-							value.setCellValue("value");
+							location.setCellValue(WriteValueToCellExcel(coConstraintTableRow.getCells().get(cellId),((DataElementHeader) coConstraintTableHeader).getColumnType()).split("\\r?\\n")[0]);
+							value.setCellValue(WriteValueToCellExcel(coConstraintTableRow.getCells().get(cellId),((DataElementHeader) coConstraintTableHeader).getColumnType()).split("\\r?\\n")[1]);
 							location.setCellStyle(thenRowStyle);
 							value.setCellStyle(thenRowStyle);
 							location.setCellStyle(thenRowStyle);
 						}else {
 							Cell cell1 = row.createCell(cellNumber++);
-//							cell1.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)));
-							cell1.setCellValue("cell1");
+							cell1.setCellValue(WriteValueToCellExcel(coConstraintTableRow.getCells().get(cellId),((DataElementHeader) coConstraintTableHeader).getColumnType()));
 							cell1.setCellStyle(thenRowStyle);
 							Cell cell2 = row.createCell(cellNumber++);
 							cell2.setCellStyle(thenRowStyle);
@@ -373,8 +398,7 @@ public class SerializeCoconstraintTableToExcel {
 						}
 					}else {
 						Cell cell = row.createCell(cellNumber++);
-//						cell.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)));
-						cell.setCellValue("cell");
+						cell.setCellValue(WriteValueToCellExcel(coConstraintTableRow.getCells().get(cellId),((DataElementHeader) coConstraintTableHeader).getColumnType()));
 						cell.setCellStyle(thenRowStyle);
 					}
 				}
@@ -384,8 +408,7 @@ public class SerializeCoconstraintTableToExcel {
 			for (String cellId : coConstraintTableRow.getCells().keySet()) {
 				if (cellId.equals(coConstraintTableHeader.getKey())) {
 					Cell cell = row.createCell(cellNumber++);
-//					cell.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)));
-					cell.setCellValue("cell");
+					cell.setCellValue(WriteValueToCellExcel(coConstraintTableRow.getCells().get(cellId),ColumnType.VALUE));
 					cell.setCellStyle(userRowStyle);
 				}
 			}
@@ -462,6 +485,78 @@ public class SerializeCoconstraintTableToExcel {
 //		return value;
 //
 //	}
+	
+	public String WriteValueToCellExcel(CoConstraintCell coConstraintTableCell, ColumnType columnType ) {
+		String cellValue ="";		
+		switch (columnType) {
+		case CODE:
+			CodeCell codeCell = (CodeCell) coConstraintTableCell;
+			String location = "";
+			for (int i : codeCell.getLocations()) {
+				if (codeCell.getLocations().size() == 1) {
+					location = String.valueOf(codeCell.getLocations().get(0));
+				} else if (codeCell.getLocations().size() == 2) {
+					location = codeCell.getLocations().get(0) + " or " + codeCell.getLocations().get(1);
+				} else if (codeCell.getLocations().size() == 3) {
+					location = codeCell.getLocations().get(0) + " or " + codeCell.getLocations().get(1)
+							+ " or " + codeCell.getLocations().get(2);
+				} else {
+					location = location + "or" + i;
+				}
+			}
+			cellValue = "Code : " + codeCell.getCode() + ", " + "Code System : " + codeCell.getCodeSystem() + ", " + "location : " + location;
+			break;
+
+		case VALUE:
+			ValueCell dataCell = (ValueCell) coConstraintTableCell;
+			if(dataCell.getValue() != null) {
+				cellValue = dataCell.getValue();	
+			} else {
+				cellValue = "";
+			}
+			break;
+
+		case VALUESET:
+			ValueSetCell vSCell = (ValueSetCell) coConstraintTableCell;
+
+			if(vSCell.getBindings() != null) {
+			for(ValuesetBinding valuesetBinding : vSCell.getBindings()) {
+				cellValue = "Strength : " + valuesetBinding.getStrength()+ ", "+ "Location: " + valuesetBinding.getValuesetLocations().toString() +"Valuesets : " + ", "+ generateValuesetNames(valuesetBinding.getValueSets());
+						}
+			}else {
+				cellValue = "";
+			}
+			break;
+
+		case VARIES:
+			VariesCell variesCell = (VariesCell) coConstraintTableCell;
+			if(variesCell.getCellType() != null) {
+				cellValue = WriteValueToCellExcel( variesCell.getCellValue(), variesCell.getCellType());
+			} else {
+				cellValue = "";
+			}
+				
+//			if(coConstraintTableCell.getCardinalityMax() != null) {
+//				Element tdCard = new Element("td");
+//				tdCard.appendChild(coConstraintTableCell.getCardinalityMax());
+//				tdCell.appendChild(tdCard);
+//			}
+			break;
+
+		case DATATYPE:		
+			DatatypeCell datatypeCell = (DatatypeCell) coConstraintTableCell;
+			Datatype datatype = datatypeService.findById(datatypeCell.getDatatypeId());
+			if(datatype != null) {
+				cellValue = "Value : " + datatype.getName() + "\n" + "Flavor : " + datatype.getLabel();
+			} else {
+				cellValue = "";
+			}				
+			break;
+		}
+		
+	return cellValue;
+}
+	
 	public int countNumberOfColumnInSelector(List<CoConstraintHeader> list) {
 		int doubleColumnCount=0;
 		for(CoConstraintHeader coConstraintTableHeader : list) {
@@ -508,6 +603,16 @@ public class SerializeCoconstraintTableToExcel {
 //			}
 //		}
 //	}
+	public String generateValuesetNames(List<String> ids){
+		List<String> valuesetBindings = new ArrayList<String>();
+		if(ids != null) {
+		for(String id : ids) {
+			Valueset vs = valuesetService.findById(id);
+			valuesetBindings.add(vs.getBindingIdentifier());
+			}
+		}
+		return valuesetBindings.toString();
+	}
 
 
 }

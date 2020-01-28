@@ -135,38 +135,38 @@ public class ExportController {
 		}
 	}
 	
-//	@RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-//	public @ResponseBody void exportIgDocumentHtml(@PathVariable("igId") String igId,
-//			HttpServletResponse response, FormData formData) throws ExportException {
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		if (authentication != null) {
-//			try {
-//				String username = authentication.getPrincipal().toString();				
-//			    Ig igDocument = igService.findById(igId);
-//			    ExportedFile exportedFile;
-//			    if(igDocument.getLastUserConfiguration() != null) {
-//					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, igDocument.getLastUserConfiguration().getDecision(), igDocument.getLastUserConfiguration().getConfigId());
-//			    }
-//			    else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
-//			    		ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
-//					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId());
-//			    } 
-//			    else {
-//		    		ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
-//				 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId());
-//
-//			    }
-//				response.setContentType("text/html");
-//				response.setHeader("Content-disposition",
-//						"attachment;filename=" + exportedFile.getFileName());
-//				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());		
-//			} catch (Exception e) {
-//				throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
-//			}
-//		} else {
-//			throw new AuthenticationCredentialsNotFoundException("No Authentication");
-//		}
-//	}
+	@RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	public @ResponseBody void exportIgDocumentHtml(@PathVariable("igId") String igId,
+			HttpServletResponse response, FormData formData) throws ExportException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null) {
+			try {
+				String username = authentication.getPrincipal().toString();				
+			    Ig igDocument = igService.findById(igId);
+			    ExportedFile exportedFile;
+			    if(igDocument.getLastUserConfiguration() != null) {
+					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, igDocument.getLastUserConfiguration().getDecision(), igDocument.getLastUserConfiguration().getConfigId());
+			    }
+			    else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
+			    		ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
+					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId());
+			    } 
+			    else {
+		    		ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
+				 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId());
+
+			    }
+				response.setContentType("text/html");
+				response.setHeader("Content-disposition",
+						"attachment;filename=" + exportedFile.getFileName());
+				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());		
+			} catch (Exception e) {
+				throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
+			}
+		} else {
+			throw new AuthenticationCredentialsNotFoundException("No Authentication");
+		}
+	}
 	
 	@RequestMapping(value = "/api/export/ig/{igId}/quickWord", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	public @ResponseBody void exportIgDocumentWord(@PathVariable("igId") String igId,
@@ -201,26 +201,26 @@ public class ExportController {
 		}
 	}
 	
-	 @RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST)
-	  public @ResponseBody void exportCoConstraintsToExcel(@PathVariable("igId") String id,
-	  		HttpServletResponse response) throws ExportException {
-		 System.out.println("We inside EXCEL");
-	  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	  	if (authentication != null) {
-	  		String username = authentication.getPrincipal().toString();
-	  		ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(null);
-	  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-	  		response.setHeader("Content-disposition",
-	  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
-	  		try {
-	  			response.getOutputStream().write(excelFile.toByteArray());
-	  		} catch (IOException e) {
-	  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
-	  		}
-	  	} else {
-	  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-	  	}
-	  }
+//	 @RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST)
+//	  public @ResponseBody void exportCoConstraintsToExcel(@PathVariable("igId") String id,
+//	  		HttpServletResponse response) throws ExportException {
+//		 System.out.println("We inside EXCEL");
+//	  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//	  	if (authentication != null) {
+//	  		String username = authentication.getPrincipal().toString();
+//	  		ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(null);
+//	  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+//	  		response.setHeader("Content-disposition",
+//	  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
+//	  		try {
+//	  			response.getOutputStream().write(excelFile.toByteArray());
+//	  		} catch (IOException e) {
+//	  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
+//	  		}
+//	  	} else {
+//	  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+//	  	}
+//	  }
 
 	@RequestMapping(value = "/api/export/igdocuments/{id}/configuration/{configId}/getFilteredDocument", method = RequestMethod.GET)
 	public @ResponseBody ExportConfigurationGlobal getFilteredDocument(@PathVariable("id") String id, @PathVariable("configId") String configId,

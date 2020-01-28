@@ -25,6 +25,7 @@ export class IgService {
 
   readonly EXPORT_URL = '/api/export/ig/';
   readonly IG_END_POINT = '/api/igdocuments/';
+  readonly CONFIGURATION = '/configuration/';
 
   constructor(private http: HttpClient, private location: LocationStrategy) {
   }
@@ -161,7 +162,7 @@ export class IgService {
   }
 
   exportAsWord(igId: string, decision: any, configurationId: string) {
-    this.submitForm(decision, this.EXPORT_URL + igId + '/configuration/' + configurationId + '/word');
+    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/word');
   }
 
   export(igId, decision: any, format: string) {
@@ -179,7 +180,7 @@ export class IgService {
   }
 
   exportAsHtml(igId: string, decision: any, configurationId: string) {
-    this.submitForm(decision, this.EXPORT_URL + igId + '/configuration/' + configurationId + '/html');
+    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/html');
   }
 
   exportAsHtmlQuick(igId: string) {
@@ -230,7 +231,7 @@ export class IgService {
   }
 
   getExportFirstDecision(igId: string, configId: string): Observable<IExportConfigurationGlobal> {
-    return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + igId + '/configuration/' + configId + '/getFilteredDocument');
+    return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + igId + this.CONFIGURATION + configId + '/getFilteredDocument');
   }
 
   importFromFile(documentId, resourceType: Type, targetType: Type, file: any) {
