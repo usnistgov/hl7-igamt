@@ -23,6 +23,7 @@ export class ImportCsvValuesetComponent implements ControlValueAccessor, OnInit 
   url: string;
   preview: string | ArrayBuffer;
   viewOnly = false;
+  redirect = true;
 
   constructor(public dialogRef: MatDialogRef<ImportCsvValuesetComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any, private host: ElementRef<HTMLInputElement>) {
@@ -67,7 +68,7 @@ export class ImportCsvValuesetComponent implements ControlValueAccessor, OnInit 
   }
 
   submit() {
-    this.dialogRef.close(this.file);
+    this.dialogRef.close({redirect: this.redirect, file: this.file});
   }
   cancel() {
     this.dialogRef.close();

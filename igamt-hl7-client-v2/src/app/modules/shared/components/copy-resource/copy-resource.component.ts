@@ -14,6 +14,7 @@ export class CopyResourceComponent implements OnInit {
   @ViewChild(SelectNameComponent) child;
 
   flavor: IAddingInfo;
+  redirect = true;
 
   constructor(public dialogRef: MatDialogRef<CopyResourceComponent>,
               @Inject(MAT_DIALOG_DATA) public data: ICopyResourceData) {
@@ -26,8 +27,7 @@ export class CopyResourceComponent implements OnInit {
   }
 
   submit() {
-    console.log(this.flavor);
-    this.dialogRef.close(this.flavor);
+    this.dialogRef.close({redirect: this.redirect, flavor: this.flavor});
   }
   cancel() {
     this.dialogRef.close();

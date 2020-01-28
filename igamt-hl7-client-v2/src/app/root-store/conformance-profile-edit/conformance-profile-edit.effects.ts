@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { catchError, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import {catchError, concatMap, flatMap, map, mergeMap, switchMap, take} from 'rxjs/operators';
 import { IConformanceProfile } from 'src/app/modules/shared/models/conformance-profile.interface';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { ConformanceProfileService } from '../../modules/conformance-profile/services/conformance-profile.service';
@@ -33,7 +33,7 @@ export class ConformanceProfileEditEffects {
   @Effect()
   loadConformanceProfile$ = this.actions$.pipe(
     ofType(ConformanceProfileEditActionTypes.LoadConformanceProfile),
-    switchMap((action: LoadConformanceProfile) => {
+    concatMap((action: LoadConformanceProfile) => {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));

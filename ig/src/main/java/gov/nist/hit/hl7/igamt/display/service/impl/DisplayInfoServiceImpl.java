@@ -1,7 +1,9 @@
 package gov.nist.hit.hl7.igamt.display.service.impl;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -76,11 +78,11 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 
 	@Override
 	public Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry) {
-		Set<String> ids= this.gatherIds(registry.getChildren());
-		List<ConformanceProfile> conformanceProfiles = this.conformanceProfileService.findByIdIn(ids);
+		Map<String, Integer> positionMap= this.gatherIdsAndPositions(registry.getChildren());
+		List<ConformanceProfile> conformanceProfiles = this.conformanceProfileService.findByIdIn(positionMap.keySet());
 		Set<DisplayElement> ret = new HashSet<DisplayElement>();
 		for(ConformanceProfile cf : conformanceProfiles) {
-			ret.add(convertConformanceProfile(cf));
+			ret.add(convertConformanceProfile(cf, positionMap.get(cf.getId())));
 		}
 		return ret;
 	}
@@ -155,13 +157,14 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 	}
 
 	@Override
-	public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile) {
+	public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile, int position) {
 		DisplayElement displayElement= new DisplayElement();
 		displayElement.setId(conformanceProfile.getId());
 		displayElement.setDomainInfo(conformanceProfile.getDomainInfo());
 		displayElement.setDescription(conformanceProfile.getDescription());
 		displayElement.setDifferantial(conformanceProfile.getOrigin() !=null);
 		displayElement.setLeaf(false);
+		displayElement.setPosition(position);
 		displayElement.setVariableName(conformanceProfile.getName());
 		displayElement.setType(Type.CONFORMANCEPROFILE);
 		displayElement.setOrigin(conformanceProfile.getOrigin());
@@ -203,6 +206,11 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		links.forEach(link -> results.add(link.getId()));
 		return results;
 	}
+	
+	   private Map<String, Integer> gatherIdsAndPositions(Set<Link> links) {
+	       Map<String, Integer> result = links.stream().collect(Collectors.toMap(Link::getId, Link::getPosition));
+	         return result;
+	    }
 
 	@Override
 	public Set<DisplayElement> convertValueSets(Set<Valueset> valueSets) {
@@ -215,10 +223,12 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 	}
 
 	@Override
-	public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles) {
+	public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles, ConformanceProfileRegistry registry) {
 		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		
+		Map<String, Integer> positionsMap= gatherIdsAndPositions(registry.getChildren());
 		for(ConformanceProfile cp : conformanceProfiles) {
-			ret.add(this.convertConformanceProfile(cp));
+			ret.add(this.convertConformanceProfile(cp, positionsMap.get(cp.getId())));
 		}
 		return ret;
 	}
