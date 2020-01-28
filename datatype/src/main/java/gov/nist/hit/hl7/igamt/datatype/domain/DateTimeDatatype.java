@@ -11,10 +11,9 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
-import java.util.Date;
+import java.util.ArrayList;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 
 
 
@@ -24,6 +23,10 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
  */
 public class DateTimeDatatype extends PrimitiveDatatype {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
   private DateTimeConstraints dateTimeConstraints;
 
   public DateTimeDatatype() {
@@ -31,7 +34,49 @@ public class DateTimeDatatype extends PrimitiveDatatype {
   }
 
   public DateTimeConstraints getDateTimeConstraints() {
-    return dateTimeConstraints;
+    if(this.dateTimeConstraints == null || this.dateTimeConstraints.getDateTimeComponentDefinitions() == null) {
+      this.dateTimeConstraints = new DateTimeConstraints();
+      if (this.getName().equals("DTM")) {
+        this.dateTimeConstraints.setDateTimeComponentDefinitions(new ArrayList<DateTimeComponentDefinition>());
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(1, "Year", "YYYY", Usage.R));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(2, "Month", "MM", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(3, "Day", "DD", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(4, "Hour", "HH", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(5, "Minute", "MM", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(6, "Second", "SS", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(7, "1/10 second", "S...", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(8, "1/100 second", ".S..", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(9, "1/1000 second", "..S.", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(10, "1/10000 second", "...S", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(11, "Time Zone", "+/-ZZZZ", Usage.O));
+        
+        this.dateTimeConstraints.setErrorMessage("The value SHALL follow the Date/Time pattern 'YYYY[MM[DD[HH[MM[SS[.S[S[S[S]]]]]]]]][+/-ZZZZ]'.");
+        this.dateTimeConstraints.setRegex("^(\\d{4}|\\d{6}|\\d{8}|\\d{10}|\\d{12}|\\d{14}|\\d{14}\\.\\d|\\d{14}\\.\\d{2}|\\d{14}\\.\\d{3}|\\d{14}\\.\\d{4})([+-]\\d{4})?$");
+      } else if (this.getName().equals("DT")) {
+        this.dateTimeConstraints.setDateTimeComponentDefinitions(new ArrayList<DateTimeComponentDefinition>());
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(1, "Year", "YYYY", Usage.R));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(2, "Month", "MM", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(3, "Day", "DD", Usage.O));
+        
+        this.dateTimeConstraints.setErrorMessage("The value SHALL follow the Date/Time pattern 'YYYY[MM[DD]]'.");
+        this.dateTimeConstraints.setRegex("^(\\d{4}|\\d{6}|\\d{8})$");
+      }  else if (this.getName().equals("TM")) {
+        this.dateTimeConstraints.setDateTimeComponentDefinitions(new ArrayList<DateTimeComponentDefinition>());
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(4, "Hour", "HH", Usage.R));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(5, "Minute", "MM", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(6, "Second", "SS", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(7, "1/10 second", "S...", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(8, "1/100 second", ".S..", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(9, "1/1000 second", "..S.", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(10, "1/10000 second", "...S", Usage.O));
+        this.dateTimeConstraints.getDateTimeComponentDefinitions().add(new DateTimeComponentDefinition(11, "Time Zone", "+/-ZZZZ", Usage.O));
+        
+        this.dateTimeConstraints.setErrorMessage("The value SHALL follow the Date/Time pattern 'HH[MM[SS[.S[S[S[S]]]]]][+/-ZZZZ]'.");
+        this.dateTimeConstraints.setRegex("^(\\d{2}|\\d{4}|\\d{6}|\\d{6}\\.\\d|\\d{6}\\.\\d{2}|\\d{6}\\.\\d{3}|\\d{6}\\.\\d{4})([+-]\\d{4})?$");
+      }
+      
+      return this.dateTimeConstraints;
+    } else return this.dateTimeConstraints;
   }
 
   public void setDateTimeConstraints(DateTimeConstraints dateTimeConstraints) {
