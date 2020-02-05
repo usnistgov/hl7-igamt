@@ -108,6 +108,17 @@ public class DeltaServiceImpl implements DeltaService {
 
       return new Delta(sourceInfo, targetInfo, structure);
 
+    } else if(type.equals(Type.VALUESET)) {
+
+      Valueset target = this.valuesetService.findById(entityId);
+      Valueset source = this.valuesetService.findById(target.getOrigin());
+
+      DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), null, source.getDescription(), source.getId());
+      DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), null, target.getDescription(), target.getId());
+
+      ValuesetDelta valuesetDelta = entityDeltaService.valueset(source, target);
+
+      return new Delta(sourceInfo, targetInfo, valuesetDelta);
     }
 
     return null;

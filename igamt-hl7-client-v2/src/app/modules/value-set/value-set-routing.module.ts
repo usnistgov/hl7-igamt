@@ -5,6 +5,7 @@ import {
   LoadValueSet, OpenValueSetCrossRefEditor, OpenValueSetMetadataEditor, OpenValueSetPostDefEditor,
   OpenValueSetPreDefEditor, OpenValueSetStructureEditor,
   ValueSetEditActionTypes,
+  OpenValueSetDeltaEditor,
 } from '../../root-store/value-set-edit/value-set-edit.actions';
 import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
 import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
@@ -16,6 +17,7 @@ import {ValueSetMetadataEditorComponent} from './components/value-set-metadata-e
 import {ValueSetPostdefEditorComponent} from './components/value-set-postdef-editor/value-set-postdef-editor.component';
 import {ValueSetPredefEditorComponent} from './components/value-set-predef-editor/value-set-predef-editor.component';
 import {ValueSetStructureEditorComponent} from './components/value-set-structure-editor/value-set-structure-editor.component';
+import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
 
 const routes: Routes = [
   {
@@ -125,6 +127,25 @@ const routes: Routes = [
           idKey: 'valuesetId',
           resourceType: Type.VALUESET,
           action: OpenValueSetCrossRefEditor,
+        },
+      },
+      {
+        path: 'delta',
+        component: DeltaEditorComponent,
+        canActivate: [IgEditorActivateGuard],
+        canDeactivate: [IgEditSaveDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.VALUESET_DELTA,
+            title: 'Delta',
+            resourceType: Type.VALUESET,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenValueSetDeltaEditor,
+          idKey: 'valuesetId',
         },
       },
     ],

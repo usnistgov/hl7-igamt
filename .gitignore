@@ -43,3 +43,13 @@ hl7-igamt.log.2019-10-24.0.gz
 *.gz
 *node_modules*
 igamt-hl7-client/dist
+segments2.3.1.csv
+segments2.4.csv
+segments2.5.1.csv
+segments2.5.csv
+segments2.6.csv
+segments2.7.1.csv
+segments2.7.csv
+segments2.8.1.csv
+segments2.8.2.csv
+segments2.8.csv

@@ -31,6 +31,8 @@ import * as fromIgEdit from '../ig/ig-edit/ig-edit.index';
 import {selectedResourcePreDef} from '../ig/ig-edit/ig-edit.index';
 import {selectedResourceMetadata} from '../ig/ig-edit/ig-edit.index';
 import {selectedResourcePostDef} from '../ig/ig-edit/ig-edit.index';
+import { DeltaService } from 'src/app/modules/shared/services/delta.service';
+import { OpenDatatypeDeltaEditor } from '../datatype-edit/datatype-edit.actions';
 
 @Injectable()
 export class ValueSetEditEffects {
@@ -122,11 +124,21 @@ export class ValueSetEditEffects {
     this.valueSetNotFound,
   );
 
+  @Effect()
+  openDeltaEditor$ = this.editorHelper.openDeltaEditor<OpenDatatypeDeltaEditor>(
+    ValueSetEditActionTypes.OpenValueSetDeltaEditor,
+    Type.VALUESET,
+    fromIgEdit.selectValueSetById,
+    this.deltaService.getDeltaFromOrigin,
+    this.valueSetNotFound,
+  );
+
   constructor(private actions$: Actions<ValueSetEditActions>,
               private valueSetService: ValueSetService,
               private store: Store<any>,
               private message: MessageService,
               private editorHelper: OpenEditorService,
               private crossReferenceService: CrossReferencesService,
+              private deltaService: DeltaService,
               ) {}
   }

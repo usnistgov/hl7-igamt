@@ -10,9 +10,10 @@ import { ValueSetPredefEditorComponent } from './components/value-set-predef-edi
 import { ValueSetStructureEditorComponent } from './components/value-set-structure-editor/value-set-structure-editor.component';
 import {ValueSetService} from './service/value-set.service';
 import {ValueSetRoutingModule} from './value-set-routing.module';
+import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
 
 @NgModule({
-  declarations: [ValueSetCrossRefsComponent, ValueSetMetadataEditorComponent, ValueSetPredefEditorComponent, ValueSetPostdefEditorComponent, ValueSetStructureEditorComponent],
+  declarations: [ValueSetCrossRefsComponent, ValueSetMetadataEditorComponent, ValueSetPredefEditorComponent, ValueSetPostdefEditorComponent, ValueSetStructureEditorComponent, DeltaEditorComponent],
   imports: [
     CommonModule,
     ValueSetRoutingModule,

@@ -87,6 +87,7 @@ import { StoreResourceRepositoryService } from './services/resource-repository.s
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 
 @NgModule({
   declarations: [
@@ -153,6 +154,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddCoConstraintGroupComponent,
     ResourceDropdownComponent,
     ImportCsvValuesetComponent,
+    ValuesetDeltaComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -283,6 +285,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DynamicMappingComponent,
     AddCoConstraintGroupComponent,
     ResourceDropdownComponent,
+    ValuesetDeltaComponent,
   ],
   entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent, AddCoConstraintGroupComponent, ImportCsvValuesetComponent, VerifyIgDialogComponent],
 })
