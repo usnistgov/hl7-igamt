@@ -41,6 +41,20 @@ export class CoConstraintEntityService {
 
   constructor(private binding: BindingService) { }
 
+  exportAsExcel(table: ICoConstraintTable) {
+    const form = document.createElement('form');
+    form.action = '/api/export/coconstraintTable';
+    form.method = 'POST';
+    const json = document.createElement('input');
+    json.type = 'hidden';
+    json.name = 'json';
+    json.value = JSON.stringify(table);
+    form.appendChild(json);
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
+  }
+
   mergeGroupWithTable(ccTable: ICoConstraintTable & ICoConstraintGroup, group: ICoConstraintGroup) {
     this.mergeHeaders(ccTable, ccTable.headers.selectors, group.headers.selectors);
     this.mergeHeaders(ccTable, ccTable.headers.constraints, group.headers.constraints);

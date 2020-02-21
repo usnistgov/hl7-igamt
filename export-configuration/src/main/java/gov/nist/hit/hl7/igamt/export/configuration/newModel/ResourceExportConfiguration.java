@@ -17,21 +17,23 @@ public class ResourceExportConfiguration extends AbstractDomainExportConfigurati
 				createdFrom, authorNotes, usageNotes, from, version, domainCompatibilityVersion,deltaMode, deltaConfig);
 		// TODO Auto-generated constructor stub
 	}
-	private Boolean preDef = false;
-	 private Boolean postDef = false;
-	  
-	public Boolean getPreDef() {
+	private boolean preDef = true;
+	 private boolean postDef = true;
+	 
+	public boolean isPreDef() {
 		return preDef;
 	}
-	public void setPreDef(Boolean preDef) {
+	public void setPreDef(boolean preDef) {
 		this.preDef = preDef;
 	}
-	public Boolean getPostDef() {
+	public boolean isPostDef() {
 		return postDef;
 	}
-	public void setPostDef(Boolean postDef) {
+	public void setPostDef(boolean postDef) {
 		this.postDef = postDef;
 	}
+	  
+
 	  
 	  
 	  
