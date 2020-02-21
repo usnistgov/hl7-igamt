@@ -13,7 +13,6 @@ import { IRef } from '../models/ref.interface';
 import { IResource } from '../models/resource.interface';
 import { ISegment } from '../models/segment.interface';
 import { BindingService } from './binding.service';
-import { IBindingValues, IElementBinding } from './hl7-v2-tree.service';
 import { PredicateService } from './predicate.service';
 import { AResourceRepositoryService, IRefData } from './resource-repository.service';
 
@@ -80,6 +79,14 @@ export interface IPathInfo {
 export class Hl7V2TreeService {
 
   constructor(private predicate: PredicateService, private bindingService: BindingService) { }
+
+  pathToString(path: IPath) {
+    if (!path) {
+      return '';
+    } else {
+      return path.elementId + (path.instanceParameter ? ('[' + path.instanceParameter + ']') : '') + this.pathToString(path.child);
+    }
+  }
 
   cloneViewTree(tree: TreeNode[]): TreeNode[] {
     return tree ? tree.map((node: TreeNode) => {
@@ -239,7 +246,7 @@ export class Hl7V2TreeService {
       if (node.type === Type.GROUP || node.type === Type.SEGMENT || node.type === Type.SEGMENTREF || node.type === Type.DATATYPE) {
         return node.name + separator + post;
       } else if (node.type === Type.CONFORMANCEPROFILE) {
-        return post;
+        return post ? post : node.name;
       } else {
         return node.position + separator + post + desc;
       }
@@ -613,6 +620,7 @@ export class Hl7V2TreeService {
                 min: child.minLength,
                 max: child.maxLength,
               },
+              lengthType: child.lengthType,
               changeable,
               viewOnly,
               level,
@@ -678,6 +686,7 @@ export class Hl7V2TreeService {
                 min: child.minLength,
                 max: child.maxLength,
               },
+              lengthType: child.lengthType,
               changeable,
               viewOnly,
               level,
@@ -725,9 +734,6 @@ export class Hl7V2TreeService {
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
     const segmentRefs = this.getAllSegmentRef(confProfile.children);
-    const debug = [
-      ...segmentRefs,
-    ];
     return combineLatest(
       repository.getRefData(segmentRefs, Type.SEGMENT).pipe(
         take(1),
@@ -739,15 +745,7 @@ export class Hl7V2TreeService {
             map((res) => res as ISegment),
           );
         }),
-        tap((segment) => {
-          const i = debug.findIndex((elm) => elm === segment.id);
-          debug.splice(i, 1);
-          console.log(debug);
-        }),
         toArray(),
-        tap((segments) => {
-          console.log(segments);
-        }),
         map((segments) => {
           const segmentsMap = {};
           segments.forEach((segment) => {

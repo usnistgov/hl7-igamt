@@ -298,6 +298,7 @@ export function reducer(state = initialState, action: IgEditActions): IState {
           flags: {
             ...state.workspace.flags,
             changed: false,
+            valid: true,
           },
         },
       };

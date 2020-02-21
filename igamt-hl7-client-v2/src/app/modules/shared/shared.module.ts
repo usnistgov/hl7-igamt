@@ -13,6 +13,7 @@ import { ToastyModule } from 'ng2-toasty';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
+import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
 import {
   AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
@@ -34,6 +35,7 @@ import { CsPropositionComponent } from './components/cs-proposition/cs-propositi
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
 import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
+import { DisplayRefComponent } from './components/display-ref/display-ref.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
@@ -155,6 +157,7 @@ import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-del
     ResourceDropdownComponent,
     ImportCsvValuesetComponent,
     ValuesetDeltaComponent,
+    DisplayRefComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -184,7 +187,6 @@ import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-del
     ContextMenuModule.forRoot({
       useBootstrap4: true,
     }),
-    DragDropModule,
     RadioButtonModule,
     AccordionModule,
     InputSwitchModule,
@@ -198,6 +200,7 @@ import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-del
     OrganizationChartModule,
     PanelModule,
     AutoCompleteModule,
+    PrimeNgDragDrop,
     DragDropModule,
   ],
   exports: [
@@ -215,6 +218,7 @@ import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-del
     CardModule,
     AccordionModule,
     CheckboxModule,
+    PrimeNgDragDrop,
     ReactiveFormsModule,
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
@@ -286,6 +290,7 @@ import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-del
     AddCoConstraintGroupComponent,
     ResourceDropdownComponent,
     ValuesetDeltaComponent,
+    DisplayRefComponent,
   ],
   entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent, AddCoConstraintGroupComponent, ImportCsvValuesetComponent, VerifyIgDialogComponent],
 })

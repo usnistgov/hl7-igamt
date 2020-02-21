@@ -16,7 +16,6 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -47,6 +46,66 @@ public class SimpleCoConstraintService implements CoConstraintService {
     public CoConstraintGroup saveCoConstraintGroup(CoConstraintGroup group) {
         return this.coConstraintGroupRepository.save(group);
     }
+
+    @Override
+    public CoConstraintTable resolveRefAndMerge(CoConstraintTable table) {
+        CoConstraintHeaders headers = new CoConstraintHeaders();
+        this.mergeHeaders(headers, table.getHeaders());
+
+        List<CoConstraintGroupBinding> bindings = table.getGroups().stream().map((binding) -> {
+            if(binding instanceof CoConstraintGroupBindingContained) {
+                return (CoConstraintGroupBindingContained) binding;
+            } else {
+                CoConstraintGroupBindingContained contained = new CoConstraintGroupBindingContained();
+                contained.setRequirement(binding.getRequirement());
+
+                try {
+                    CoConstraintGroup group = this.findById(((CoConstraintGroupBindingRef) binding).getRefId());
+                    contained.setName(group.getName());
+                    contained.setCoConstraints(group.getCoConstraints());
+                    this.mergeHeaders(headers, group.getHeaders());
+
+                    return contained;
+                } catch (CoConstraintGroupNotFoundException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+        }).filter((elm) -> {
+            return elm != null;
+        }).collect(Collectors.toList());
+
+        CoConstraintTable clone = new CoConstraintTable();
+        clone.setBaseSegment(table.getBaseSegment());
+        clone.setId(table.getId());
+        clone.setCoConstraints(table.getCoConstraints());
+        clone.setTableType(table.getTableType());
+        clone.setHeaders(headers);
+        clone.setGroups(bindings);
+
+        return clone;
+    }
+
+    public void mergeHeaders(CoConstraintHeaders origin, CoConstraintHeaders target) {
+        this.mergeHeader(origin.getSelectors(), target.getSelectors());
+        this.mergeHeader(origin.getConstraints(), target.getConstraints());
+        this.mergeHeader(origin.getNarratives(), target.getNarratives());
+
+    }
+
+    public void mergeHeader(List<CoConstraintHeader> origin, List<CoConstraintHeader>  target) {
+        target.forEach((header) -> {
+            boolean exists = origin.stream().filter((elm) -> {
+                return elm.getKey().equals(header.getKey());
+            }).findAny().isPresent();
+
+            if(!exists) {
+                origin.add(header);
+            }
+        });
+    }
+
+
 
     @Override
     public CoConstraintGroup clone(String id, Map<String, String> datatypes, Map<String, String> valueSets) {
@@ -149,7 +208,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
         obx_info.setDatatype(obx_dt.getName());
         obx_info.setVersion(obx_dt.getDomainInfo().getVersion());
         obx_info.setCardinality(cardinality);
-
         obx_header.setElementInfo(obx_info);
 
         return obx_header;

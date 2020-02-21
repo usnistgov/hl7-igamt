@@ -1,8 +1,10 @@
-<div class="label-grid" [ngClass]="{
+<div [ngClass]="{
     'delta-changed':element.delta === 'UPDATED',
     'delta-deleted':element.delta === 'DELETED',
-    'delta-added':element.delta === 'ADDED'
-  }">
+    'delta-added':element.delta === 'ADDED',
+    'inline-label': inline,
+    'relative-label': !inline
+  }" style="cursor: pointer;">
   <app-entity-bagde [type]="element.type"></app-entity-bagde>
   <app-scope-badge [scope]="element.domainInfo.scope" [version]="element.domainInfo.version">
   </app-scope-badge>

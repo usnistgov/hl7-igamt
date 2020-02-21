@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { LengthType } from '../../constants/length-type.enum';
 import { Type } from '../../constants/type.enum';
 import { IComment } from '../../models/comment.interface';
 import { IValueSetBindingConfigMap } from '../../models/config.class';
@@ -65,6 +66,7 @@ export interface IHL7v2TreeNode extends TreeNode {
     length?: ILengthRange,
     comments?: IComment[],
     constantValue?: IStringValue,
+    lengthType?: LengthType,
     pathId: string,
     changeable?: boolean,
     viewOnly?: boolean,
@@ -220,9 +222,8 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
     });
   }
 
-  updateLength(value: ILengthAndConfLength, row: { node: IHL7v2TreeNode }) {
-    row.node.data.length = value.length;
-    row.node.data.confLength = value.confLength;
+  updateLength(value: LengthType, row: { node: IHL7v2TreeNode }) {
+    row.node.data.lengthType = value;
   }
 
   onNodeExpand(event) {

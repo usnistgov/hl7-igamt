@@ -160,7 +160,7 @@ body {
   min-height: 200px !important;
 }
 
-
+//--- pattern dialog
 .ui-dropdown-panel {
   top: inherit !important;
   left: inherit !important;
@@ -176,10 +176,6 @@ body {
 
 .pattern.ui-organizationchart .ui-organizationchart-node-content.ui-statement {
   padding: 0;
-  //background-color:#495ebb;
-  //color: white;
-  //text-align: center;
-  //border: 1px solid #495ebb;
 }
 
 // Higher than the header's z-index
@@ -335,4 +331,44 @@ body .ui-panel .ui-panel-titlebar .ui-panel-titlebar-icon {
 
 .configuration-dialog-container .mat-dialog-container {
   padding: 0px !important;
+}
+
+.treetable-light {
+  color: darkgray;
+}
+
+
+//.scroll-trigger {
+//  background: black !important;
+//  grid-template-columns: fit-content(10%) fit-content(10%) max-content;
+//}
+
+
+element.style {
+  /* min-width: 300px; */
+  /* z-index: 1001; */
+  /* top: 469.812px; */
+  /* left: 401.578px; */
+  /* transform: translateY(0px); */
+  /* opacity: 1; */
+}
+body .ui-dropdown-panel {
+  padding: 0;
+  z-index: 9999;
+  border: 1px solid #c8c8c8;
+  background-color: #ffffff;
+  box-shadow: 0 3px 6px 0 rgba(0, 0, 0, 0.16);
+}
+
+.ptable-thead-mimmic > tr > th {
+  padding: 0.571em 0.857em;
+  border: 1px solid #c8c8c8;
+  font-weight: 700;
+  color: #333333;
+  background-color: #f4f4f4;
+}
+
+.ptable-tbody-mimmic > tr > td {
+  background-color: inherit;
+  border: 1px solid #c8c8c8;
 }

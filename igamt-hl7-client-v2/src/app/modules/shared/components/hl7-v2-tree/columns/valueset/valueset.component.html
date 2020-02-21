@@ -61,12 +61,10 @@
         <strong>{{vsBinding.bindingLocation.length > 0 ? (vsBinding.bindingLocation | json) : '.'}}</strong>
       </td>
     </tr>
-    <tr *ngFor="let item of vsBinding.valueSets" >
+    <tr *ngFor="let item of vsBinding.valueSets">
       <td colspan="3">
         <div [pTooltip]="item?.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
-          <app-entity-bagde [type]="item.type"></app-entity-bagde>
-          <app-scope-badge *ngIf="item.domainInfo" [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
-          <strong *ngIf="item.variableName" style="margin-left: 5px;"> {{item.variableName}}</strong>
+           <app-display-ref [documentId]="documentId" [element]="item" [hideDescription]="true"></app-display-ref>
         </div>
       </td>
     </tr>
@@ -74,7 +72,7 @@
 </ng-template>
 
 <ng-template #displaySingleCode let-singleCode let-ctx="context">
-  <table class="table table-striped table-sm table-bordered" style="text-align: center;">
+  <table class="table table-striped table-sm table-bordered" style="text-align: center;  margin-bottom: 0;">
     <tr>
       <td rowspan="2" style="width: 10px;" class="binding-sg" >
       </td>
@@ -90,10 +88,8 @@
     </tr>
     <tr>
       <td colspan="3">
-        <div [pTooltip]="singleCode.valueSet.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
-          <app-entity-bagde [type]="singleCode.valueSet.type"></app-entity-bagde>
-          <app-scope-badge *ngIf="singleCode.valueSet.domainInfo" [scope]="singleCode.valueSet.domainInfo.scope" [version]="singleCode.valueSet.domainInfo.version"></app-scope-badge>
-          <strong *ngIf="singleCode.valueSet.variableName" style="margin-left: 5px;"> {{singleCode.valueSet.variableName}}</strong>
+        <div [pTooltip]="singleCode.valueSet?.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
+          <app-display-ref [documentId]="documentId" [element]="singleCode.valueSet" [hideDescription]="true"></app-display-ref>
         </div>
       </td>
     </tr>

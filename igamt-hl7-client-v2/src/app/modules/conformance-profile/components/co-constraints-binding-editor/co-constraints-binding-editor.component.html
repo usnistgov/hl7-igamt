@@ -15,7 +15,7 @@
           <div style="display: flex; align-items: center;">
             <i class="fa fa-chevron-down" style="margin-right: 10px;" *ngIf="expansionPanelView[binding.context.pathId]"></i>
             <i class="fa fa-chevron-right" style="margin-right: 10px;" *ngIf="!expansionPanelView[binding.context.pathId]"></i>
-            <app-entity-bagde [type]="'GROUP'" ></app-entity-bagde>
+            <app-entity-bagde [type]="binding.context.type" ></app-entity-bagde>
             <h6 class="title-text" style="margin-left: 10px !important;" >{{ binding.context.name }}</h6>
           </div>
           <button class="btn btn-sm btn-danger margin-right" (click)="deleteContextBinding(bindings, binding, binding.context.pathId, i)" >

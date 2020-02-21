@@ -27,10 +27,12 @@
 		<xsl:param name="inlineConstraint" />
 
 		
-		<xsl:call-template name="PreDef" />
 		<xsl:call-template name="VersionDisplay" />
 		<xsl:call-template name="UsageNotes"/>
 		<xsl:call-template name="AuthorNotes" />
+				<xsl:call-template name="PreDef" />
+				<xsl:call-template name="PostDef" />
+	
 
 		<xsl:if test="$segmentMetadata.display = 'true'">
 			<xsl:apply-templates select="Metadata">
@@ -239,7 +241,6 @@
 			<xsl:apply-templates select="./Binding/CommentList" />
 		</xsl:if>
 
-		<xsl:call-template name="PostDef" />
 
 		<xsl:for-each select="Field">
 			<xsl:sort select="@Position" data-type="number"></xsl:sort>

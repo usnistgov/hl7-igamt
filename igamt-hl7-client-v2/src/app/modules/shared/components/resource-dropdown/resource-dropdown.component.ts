@@ -21,6 +21,8 @@ export class ResourceDropdownComponent implements OnInit {
   @Input()
   name: string;
   @Input()
+  appendTo: any;
+  @Input()
   filter: boolean;
   @Input()
   set filterBy(value: string) {

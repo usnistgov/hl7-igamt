@@ -1,10 +1,18 @@
 <div style="background-color: #f7f7f7; padding: 5px;" *ngIf="segment$ | async as segment">
 
-  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-    <div style="display: flex; align-items: center; justify-content: flex-start; margin-top: 10px;">
-      <strong style="margin-right: 10px !important;"> Co-Constraint Tables for Segment </strong>
-      <app-entity-bagde [type]="'SEGMENT'" ></app-entity-bagde>
-      <h6 class="title-text" style="margin-left: 10px !important;" > {{ binding.segment.name }} </h6>
+  <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
+    <div>
+      <div style="display: flex; align-items: center; justify-content: flex-start;">
+        <strong style="margin-right: 10px !important;"> Co-Constraint Tables for Segment </strong>
+        <app-entity-bagde [type]="'SEGMENT'" ></app-entity-bagde>
+        <h6 class="title-text" style="margin-left: 10px !important;" > {{ binding.segment.name }} </h6>
+      </div>
+      <div style="display: flex; align-items: center; justify-content: flex-start;">
+        <strong style="margin-right: 10px !important;"> Flavor </strong>
+        <ng-container *ngIf="display$ | async as display">
+          <app-display-section [element]="display" [hideDescription]="true" ></app-display-section>
+        </ng-container>
+      </div>
     </div>
     <div>
       <button class="btn btn-sm btn-primary" style="margin-right: 10px;" (click)="createTable(binding, segment)" >

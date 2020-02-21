@@ -14,17 +14,19 @@ import {IResourcePickerData} from '../../models/resource-picker-data.interface';
 export class AddResourceComponent implements OnInit {
   model: IAddingInfo;
   @ViewChild(NgForm) child;
+  redirect = true;
 
   constructor(public dialogRef: MatDialogRef<AddResourceComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IAddResourceData) {
-    this.model = {  originalId: null,
-    id: null,
-    name: '',
-    type: this.data.type,
-    ext: '',
-    flavor : true,
-    includeChildren : true,
-    url : ''};
+    this.model = {
+      originalId: null,
+      id: null,
+      name: '',
+      type: this.data.type,
+      ext: '',
+      flavor : true,
+      includeChildren : true,
+      url : ''};
   }
 
   ngOnInit() {

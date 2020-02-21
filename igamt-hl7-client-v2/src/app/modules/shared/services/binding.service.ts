@@ -52,7 +52,6 @@ export class BindingService {
       map((valueSetBindingConfig) => {
         const ret: IBindingLocationInfo = {
           allowedBindingLocations: [],
-          singleCodeAllowed: false,
           multiple: false,
           coded: false,
           allowSingleCode: false,
@@ -64,8 +63,8 @@ export class BindingService {
           if (config.locationIndifferent || contains(config.locationExceptions, version, location, type, parent)) {
             ret.multiple = config.multiple;
             ret.allowValueSets = true;
-            ret.singleCodeAllowed = config.allowSingleCode;
-            ret.coded = config.allowSingleCode;
+            ret.allowSingleCode = config.allowSingleCode;
+            ret.coded = config.coded;
             if (config.allowedBindingLocations) {
               const versionKey = version.replace(/\./g, '-');
               if (config.allowedBindingLocations[versionKey]) {

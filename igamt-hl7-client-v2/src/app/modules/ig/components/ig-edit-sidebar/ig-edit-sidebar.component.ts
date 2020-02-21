@@ -6,7 +6,11 @@ import { Store } from '@ngrx/store';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of } from 'rxjs';
 import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
-import { IgEditActionTypes, ImportResourceFromFile } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {
+  IgEditActionTypes,
+  ImportResourceFromFile,
+  ImportResourceFromFileSuccess,
+} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   CopyResource, CopyResourceSuccess,
   DeleteResource,
@@ -17,7 +21,7 @@ import { selectIgId } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { ToggleDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
-import { CollapseTOC, CreateCoConstraintGroup } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { CollapseTOC, CreateCoConstraintGroup, CreateCoConstraintGroupSuccess } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
 import { selectAllSegments } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
@@ -71,7 +75,7 @@ export class IgEditSidebarComponent implements OnInit {
     private actions: Actions) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
-    this.store.select(selectDerived).subscribe((x) => this.derived = x);
+    this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.nodes$ = this.getNodes();
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
@@ -172,8 +176,18 @@ export class IgEditSidebarComponent implements OnInit {
       map(([result, igId]) => {
         console.log([result]);
         console.log([igId]);
+        if (result && result.redirect) {
+          RxjsStoreHelperService.listenAndReact(this.actions, {
+            [IgEditActionTypes.ImportResourceFromFileSuccess]: {
+              do: (action: ImportResourceFromFileSuccess) => {
+                this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
+                return of();
+              },
+            },
+          }).subscribe();
+        }
 
-        this.store.dispatch(new ImportResourceFromFile(igId, Type.VALUESET, Type.IGDOCUMENT, result));
+        this.store.dispatch(new ImportResourceFromFile(igId, Type.VALUESET, Type.IGDOCUMENT, result.file));
       }),
     ).subscribe();
   }
@@ -185,6 +199,7 @@ export class IgEditSidebarComponent implements OnInit {
       filter((x) => x !== undefined),
       withLatestFrom(this.igId$),
       map(([result, igId]) => {
+       if (result && result.redirect) {
         RxjsStoreHelperService.listenAndReact(this.actions, {
           [IgEditActionTypes.CopyResourceSuccess]: {
             do: (action: CopyResourceSuccess) => {
@@ -193,7 +208,8 @@ export class IgEditSidebarComponent implements OnInit {
             },
           },
         }).subscribe();
-        this.store.dispatch(new CopyResource({ documentId: igId, selected: result }));
+       }
+       this.store.dispatch(new CopyResource({ documentId: igId, selected: result.flavor }));
       }),
     ).subscribe();
   }
@@ -223,8 +239,13 @@ export class IgEditSidebarComponent implements OnInit {
                 data: {
                   title: 'Cross References found',
                   usages,
+                  documentId: id,
                 },
               });
+              this.router.events
+                .subscribe((h) => {
+                  dialogRef.close();
+                });
               dialogRef.afterClosed().subscribe(
               );
             }
@@ -300,7 +321,14 @@ export class IgEditSidebarComponent implements OnInit {
           take(1),
           map((result) => {
             if (result) {
-              console.log(result);
+              RxjsStoreHelperService.listenAndReact(this.actions, {
+                [IgEditActionTypes.CreateCoConstraintGroupSuccess]: {
+                  do: (action: CreateCoConstraintGroupSuccess) => {
+                    this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
+                    return of();
+                  },
+                },
+              }).subscribe();
               this.store.dispatch(new CreateCoConstraintGroup({ documentId: igId, ...result }));
             }
           }),

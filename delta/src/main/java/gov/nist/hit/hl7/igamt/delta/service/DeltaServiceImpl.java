@@ -340,7 +340,7 @@ public class DeltaServiceImpl implements DeltaService {
         ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
 
         List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
-        DisplayElement elm= this.displayInfoService.convertConformanceProfile(target);
+        DisplayElement elm= this.displayInfoService.convertConformanceProfile(target,l.getPosition());
         elm.setDelta(summarize(structure));
         return elm;
         
@@ -389,7 +389,7 @@ public class DeltaServiceImpl implements DeltaService {
       case CONFORMANCEPROFILEREGISTRY: {
         
         ConformanceProfile target = this.conformanceProfileService.findById(l.getId());
-        DisplayElement elm= this.displayInfoService.convertConformanceProfile(target);
+        DisplayElement elm= this.displayInfoService.convertConformanceProfile(target,l.getPosition());
         elm.setDelta(action);
         return elm;
         

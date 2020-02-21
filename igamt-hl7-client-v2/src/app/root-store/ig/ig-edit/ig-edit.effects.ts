@@ -68,6 +68,7 @@ export class IgEditEffects {
         take(1),
         mergeMap((igId) => {
           return this.resourceService.getResources(action.payload.id, action.payload.resourceType, igId).pipe(
+            take(1),
             flatMap((resources: IResource[]) => {
               return [
                 new TurnOffLoader(),
@@ -92,7 +93,6 @@ export class IgEditEffects {
       return this.message.actionFromError(action.error);
     }),
   );
-
   @Effect()
   igEditResolverLoad$ = this.actions$.pipe(
     ofType(IgEditActionTypes.IgEditResolverLoad),
@@ -102,6 +102,7 @@ export class IgEditEffects {
       }));
 
       return this.igService.getIgInfo(action.id).pipe(
+        take(1),
         flatMap((igInfo: IGDisplayInfo) => {
           return [
             new TurnOffLoader(),
@@ -401,6 +402,7 @@ export class IgEditEffects {
         blockUI: true,
       }));
       return this.igService.deleteResource(action.payload.documentId, action.payload.element).pipe(
+        take(1),
         flatMap((response: Message<any>) => {
           return [
             new TurnOffLoader(),
@@ -425,6 +427,7 @@ export class IgEditEffects {
         blockUI: true,
       }));
       return this.igService.createCoConstraintGroup(action.payload).pipe(
+        take(1),
         flatMap((response: Message<ICreateCoConstraintGroupResponse>) => {
           return [
             new TurnOffLoader(),

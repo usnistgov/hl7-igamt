@@ -1,20 +1,23 @@
-<ng-container *ngIf="val && val.length && val.length.min !== 'NA' && val.length.max !== 'NA'" [ngSwitch]="viewOnly">
-  <ng-container *ngSwitchCase="false">
-    <div class="tt-cell">
-      <div>
-        <input class="range-input" style="margin-right: 5px;" type="number" [name]="location + 'min-length'" [id]="location + 'min-length'"  placeholder="Min" min="0" [(ngModel)]="val.length.min" (ngModelChange)="minChange($event)">
+<ng-container *ngIf="val && val.length" [ngSwitch]="viewOnly">
+  <ng-container *ngSwitchCase="false" [ngSwitch]="active()">
+    <div class="tt-cell" *ngSwitchCase="true" >
+      <div style="display: flex; width: 100%;">
+        <input class="range-input" style="margin-right: 5px;" type="text" [name]="location + 'min-length'" [id]="location + 'min-length'" placeholder="Min" min="0" [(ngModel)]="val.length.min" (ngModelChange)="minChange($event)">
         <span style="margin-right: 5px;"> .. </span>
         <input class="range-input" type="text" [name]="location + 'max-length'" [id]="location + 'max-length'" placeholder="Max" [(ngModel)]="val.length.max" (ngModelChange)="maxChange($event)">
       </div>
-      <button class="btn btn-sm btn-danger" (click)="clear()" style="margin-right: 5px;">
+      <button class="btn btn-sm btn-danger" (click)="clear()">
         <i class="fa fa-times"></i>
       </button>
     </div>
+    <div *ngSwitchCase="false">
+      <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: false }"></ng-container>
+    </div>
   </ng-container>
   <ng-container *ngSwitchCase="true">
-      <ng-container [ngSwitch]="val && val.length && val.length.min !== 'NA' && val.length.max !== 'NA'">
-        <strong *ngSwitchCase="true">[{{val.length.min}} .. {{val.length.max}}]</strong>
-        <strong *ngSwitchCase="false">NA</strong>
-      </ng-container>
+    <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: active() }"></ng-container>
   </ng-container>
 </ng-container>
+<ng-template #display let-val let-active="active">
+  <strong [ngClass]="{ 'treetable-light': !active }" >[{{val.length.min}} .. {{val.length.max}}]</strong>
+</ng-template>

@@ -9,8 +9,10 @@ import java.rmi.server.ExportException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,6 +49,7 @@ import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
@@ -63,6 +66,7 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
@@ -159,13 +163,13 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   PredicateRepository predicateRepository;
-  
+
   @Autowired
   MessageStructureRepository  messageStructureRepository;
 
   @Autowired
   DisplayInfoService displayInfoService;
-  
+
   @Autowired
   VerificationService verificationService;
 
@@ -455,21 +459,76 @@ public class IGDocumentController extends BaseController {
    * @param id
    * @param authentication
    * @return
-   * @throws IGNotFoundException
-   * @throws IGUpdateException
+   * @throws Exception 
    */
   @RequestMapping(value = "/api/igdocuments/{id}/update/sections", method = RequestMethod.POST, produces = {
   "application/json" })
 
   public @ResponseBody ResponseMessage<Object> updateSections(@PathVariable("id") String id,
       @RequestBody Set<TextSection> content, Authentication authentication)
-          throws IGNotFoundException, IGUpdateException {
-
-    UpdateResult updateResult = igService.updateAttribute(id, "content", content, Ig.class);
-    if (!updateResult.wasAcknowledged()) {
-      throw new IGUpdateException(id);
-    }
+          throws Exception {
+    Ig ig = this.findIgById(id);
+    cleanContent(content, ig);
+    igService.save(ig);
     return new ResponseMessage<Object>(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
+  }
+
+  private void cleanContent(Set<TextSection> content, Ig ig) throws Exception {
+    TextSection registry  = findRegistryByType(Type.CONFORMANCEPROFILEREGISTRY, content);
+    if(registry == null ) {
+      throw new Exception("CONFORMANCEPROFILEREGISTRY not found");    
+    }else {
+      if(registry.getChildren() != null) {
+        Map<String, Integer> positionMap = new HashMap<String, Integer>();
+        positionMap = registry.getChildren().stream().collect(Collectors.toMap(TextSection::getId, TextSection::getPosition));
+
+        for(Link l : ig.getConformanceProfileRegistry().getChildren()) {
+          if(positionMap.containsKey(l.getId())) {
+            l.setPosition(positionMap.get(l.getId()));
+          }
+        }
+      }
+      registry.setChildren(new HashSet<TextSection>()); 
+    }
+
+  }
+
+
+
+
+  /**
+   * @param conformanceprofileregistry
+   * @return
+   */
+  private TextSection findRegistryByType(Type type, Set<TextSection> content) {
+    for(TextSection section: content) {
+      if(section.getType().equals(Type.PROFILE)) {
+        for(TextSection child : section.getChildren()) {
+          if(child.getType().equals(type)) {
+            return child;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * @param child
+   * @param conformanceProfileRegistry
+   */
+  private void updateLibraryFromSection(TextSection child,
+      Registry reg) {
+
+    Map<String, Integer> positionMap = new HashMap<String, Integer>();
+    if(child.getChildren() != null) {
+      positionMap = child.getChildren().stream().collect(Collectors.toMap(TextSection::getId, TextSection::getPosition));
+    }
+    for(Link l : reg.getChildren()) {
+      if(positionMap.containsKey(l.getId())) {
+        l.setPosition(positionMap.get(l.getId()));
+      }
+    }
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/updatemetadata", method = RequestMethod.POST, produces = {
@@ -498,9 +557,9 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<List<MessageEventTreeNode>> getMessageEvents(
       @PathVariable("version") String version, Authentication authentication) {
     try {
-      
-      
-    List<MessageStructure>  allStuctures= messageStructureRepository.findByDomainInfoVersion(version);
+
+
+      List<MessageStructure>  allStuctures= messageStructureRepository.findByDomainInfoVersion(version);
 
       List<MessageEventTreeNode> list = messageEventService.convertMessageStructureToEventTree(allStuctures);
 
@@ -532,8 +591,8 @@ public class IGDocumentController extends BaseController {
       Ig empty = igService.createEmptyIg();
       Set<String> savedIds = new HashSet<String>();
       for (AddingInfo ev : wrapper.getMsgEvts()) {
-        
-        
+
+
         MessageStructure profile = messageStructureRepository.findOneById(ev.getOriginalId());
         if (profile != null) {
           ConformanceProfile clone = new ConformanceProfile(profile, ev.getName());
@@ -543,12 +602,13 @@ public class IGDocumentController extends BaseController {
           clone.getDomainInfo().setScope(Scope.USER);
           clone.setEvent(ev.getName());
           clone.setName(ev.getExt());
+          clone.setMessageType(profile.getMessageType());
           // clone.setIdentifier(ev.getExt());
           clone = conformanceProfileService.save(clone);
           savedIds.add(clone.getId());
         }
       }
-     
+
       empty.setUsername(username);
       DomainInfo info = new DomainInfo();
       info.setScope(Scope.USER);
@@ -855,7 +915,7 @@ public class IGDocumentController extends BaseController {
     AddResourceResponse response = new AddResourceResponse();
     response.setId(clone.getId());
     response.setReg(ig.getConformanceProfileRegistry());
-    response.setDisplay(displayInfoService.convertConformanceProfile(clone));
+    response.setDisplay(displayInfoService.convertConformanceProfile(clone,ig.getConformanceProfileRegistry().getChildren().size()+1));
 
     return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
         clone.getId(), false, clone.getUpdateDate(), response);
@@ -995,7 +1055,7 @@ public class IGDocumentController extends BaseController {
     ig = igService.save(ig);
     IGDisplayInfo info = new IGDisplayInfo();
     info.setIg(ig);
-    info.setMessages(displayInfoService.convertConformanceProfiles(objects.getConformanceProfiles()));
+    info.setMessages(displayInfoService.convertConformanceProfiles(objects.getConformanceProfiles(), ig.getConformanceProfileRegistry()));
     info.setSegments(displayInfoService.convertSegments(objects.getSegments()));
     info.setDatatypes(displayInfoService.convertDatatypes(objects.getDatatypes()));
     info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
@@ -1042,11 +1102,11 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/co-constraint-group/create", method = RequestMethod.POST, produces = {
-          "application/json" })
+  "application/json" })
   public ResponseMessage<CoConstraintGroupCreateResponse> createCoConstraint(
-          @PathVariable("id") String id,
-          @RequestBody CoConstraintGroupCreateWrapper coConstraintGroupCreateWrapper,
-          Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, SegmentNotFoundException {
+      @PathVariable("id") String id,
+      @RequestBody CoConstraintGroupCreateWrapper coConstraintGroupCreateWrapper,
+      Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, SegmentNotFoundException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     CoConstraintGroup group = this.coConstraintService.createCoConstraintGroupPrototype(coConstraintGroupCreateWrapper.getBaseSegment());
@@ -1064,13 +1124,13 @@ public class IGDocumentController extends BaseController {
     CoConstraintGroupCreateResponse response = new CoConstraintGroupCreateResponse(group.getId(), ig.getCoConstraintGroupRegistry(), this.displayInfoService.convertCoConstraintGroup(group));
 
     return new ResponseMessage<CoConstraintGroupCreateResponse>(Status.SUCCESS, "", "CoConstraint Group Created Successfully", ig.getId(), false,
-            ig.getUpdateDate(), response);
+        ig.getUpdateDate(), response);
   }
 
   @RequestMapping(value = "/api/igdocuments/{documentId}/coconstraints/group/segment/{id}", method = RequestMethod.GET, produces = {"application/json" })
   public List<DisplayElement> getCoConstraintGroupForSegment(@PathVariable("id") String id,
-                                                             @PathVariable("documentId") String documentId,
-                                                             Authentication authentication) throws CoConstraintGroupNotFoundException {
+      @PathVariable("documentId") String documentId,
+      Authentication authentication) throws CoConstraintGroupNotFoundException {
     List<CoConstraintGroup> groups = this.coConstraintService.findByBaseSegmentAndDocumentIdAndUsername(id, documentId, authentication.getName());
     return groups.stream().map(this.displayInfoService::convertCoConstraintGroup).collect(Collectors.toList());
   }
@@ -1190,12 +1250,12 @@ public class IGDocumentController extends BaseController {
       clone.setDerived(true); 
     }
     clone.setCreationDate(new Date());
-    
+
     clone = igService.save(clone);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", clone.getId(), false,
         clone.getUpdateDate(), clone.getId());
   }
-  
+
   @RequestMapping(value = "/api/igdocuments/{id}/publish", method = RequestMethod.POST, produces = {
   "application/json" })
   public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id, Authentication authentication)
@@ -1223,17 +1283,16 @@ public class IGDocumentController extends BaseController {
       throws IGNotFoundException {
 
     Ig ig = findIgById(id);
-    displayInfoService.covertIgToDisplay(ig);
     return displayInfoService.covertIgToDisplay(ig);
   }
-  
+
   @RequestMapping(value = "/api/igdocuments/{id}/delta", method = RequestMethod.GET, produces = {
   "application/json" })
   public @ResponseBody IGDisplayInfo getDeltaDisplay(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException {
 
     Ig ig = findIgById(id);
-    
+
     displayInfoService.covertIgToDisplay(ig);
     return displayInfoService.covertIgToDisplay(ig);
   }
@@ -1402,7 +1461,7 @@ public class IGDocumentController extends BaseController {
         newVS = this.valuesetService.save(newVS);
         newVS.getDomainInfo().setScope(Scope.USER);
         newVS.setUsername(ig.getUsername());
-      
+
 
         ig.getValueSetRegistry().getChildren()
         .add(new Link(newVS.getId(), newVS.getDomainInfo(), ig.getValueSetRegistry().getChildren().size() + 1));
@@ -1475,63 +1534,63 @@ public class IGDocumentController extends BaseController {
       throw new PredicateNotFoundException(id);
     }
   }
-  
-  
-//  @RequestMapping(value = "/api/verification/xml", method = RequestMethod.POST, produces = {"application/json"})
-//  public @ResponseBodyVerificationReport verifyXML(@RequestBody String profileXML,
-//      @RequestBody String constraintXML, @RequestBody String valuesetXML,
-//      Authentication authentication) {
-//    return this.verificationService.verifyXMLs(profileXML, constraintXML, valuesetXML);
-//  }
-//
-//  @RequestMapping(value = "/api/verification/valueset", method = RequestMethod.POST, produces = {"application/json"})
-//  public @ResponseBody VerificationResult verifyValueset(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Valueset valueset, Authentication authentication) {
-//    return this.verificationService.verifyValueset(valueset, documentId, null);
-//  }
-//  
-//  @RequestMapping(value = "/api/verification/datatype", method = RequestMethod.POST, produces = {"application/json"})
-//  public @ResponseBody VerificationResult verifyDatatype(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Datatype datatype, Authentication authentication) {
-//    return this.verificationService.verifyDatatype(datatype, documentId, null);
-//  }
-//  
-//  @RequestMapping(value = "/api/verification/segment", method = RequestMethod.POST, produces = {"application/json"})
-//  public @ResponseBody VerificationResult verifySegment(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Segment segment, Authentication authentication) {
-//    return this.verificationService.verifySegment(segment, documentId, null);
-//  }
-//  
-//  @RequestMapping(value = "/api/verification/conformance-profile", method = RequestMethod.POST, produces = {"application/json"})
-//  public @ResponseBody VerificationResult verifyConformanceProfile(@RequestParam(name = "dId", required = true) String documentId, @RequestBody ConformanceProfile conformanceProfile, Authentication authentication) {
-//    return this.verificationService.verifyConformanceProfile(conformanceProfile, documentId, null);
-//  }
-//  
-//  @RequestMapping(value = "/api/verification/{documentId}/valueset/{valuesetId}", method = RequestMethod.GET, produces = {"application/json"})
-//  public @ResponseBody VerificationResult verifyValuesetById(@PathVariable("documentId") String documentId, @PathVariable("valuesetId") String valuesetId, Authentication authentication) {
-//    Valueset vs = this.valuesetService.findById(valuesetId);
-//    if(vs != null) return this.verificationService.verifyValueset(vs, documentId, null);
-//    return null;
-//  }
-//  
-//  @RequestMapping(value = "/api/verification/{documentId}/datatype/{datatypeId}", method = RequestMethod.GET, produces = {"application/json"})
-//  public @ResponseBody VerificationResult verifyDatatypeById(@PathVariable("documentId") String documentId, @PathVariable("datatypeId") String datatypeId, Authentication authentication) {
-//    Datatype dt = this.datatypeService.findById(datatypeId);
-//    if (dt != null) return this.verificationService.verifyDatatype(dt, documentId, null);
-//    return null;
-//  }
-//  
-//  @RequestMapping(value = "/api/verification/{documentId}/segment/{segmentId}", method = RequestMethod.GET, produces = {"application/json"})
-//  public @ResponseBody VerificationResult verifySegmentById(@PathVariable("documentId") String documentId, @PathVariable("segmentId") String segmentId, Authentication authentication) {
-//    Segment sg = this.segmentService.findById(segmentId);
-//    if (sg != null) return this.verificationService.verifySegment(sg, documentId, null);
-//    return null;
-//  }
-//  
-//  @RequestMapping(value = "/api/verification/{documentId}/conformance-profile/{conformanceProfileId}", method = RequestMethod.GET, produces = {"application/json"})
-//  public @ResponseBody VerificationResult verifyConformanceProfileById(@PathVariable("documentId") String documentId, @PathVariable("conformanceProfileId") String conformanceProfileId, Authentication authentication) {
-//    ConformanceProfile cp = this.conformanceProfileService.findById(conformanceProfileId);
-//    if (cp != null) return this.verificationService.verifyConformanceProfile(cp, documentId, null);
-//    return null;
-//  }
-  
+
+
+  //  @RequestMapping(value = "/api/verification/xml", method = RequestMethod.POST, produces = {"application/json"})
+  //  public @ResponseBodyVerificationReport verifyXML(@RequestBody String profileXML,
+  //      @RequestBody String constraintXML, @RequestBody String valuesetXML,
+  //      Authentication authentication) {
+  //    return this.verificationService.verifyXMLs(profileXML, constraintXML, valuesetXML);
+  //  }
+  //
+  //  @RequestMapping(value = "/api/verification/valueset", method = RequestMethod.POST, produces = {"application/json"})
+  //  public @ResponseBody VerificationResult verifyValueset(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Valueset valueset, Authentication authentication) {
+  //    return this.verificationService.verifyValueset(valueset, documentId, null);
+  //  }
+  //  
+  //  @RequestMapping(value = "/api/verification/datatype", method = RequestMethod.POST, produces = {"application/json"})
+  //  public @ResponseBody VerificationResult verifyDatatype(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Datatype datatype, Authentication authentication) {
+  //    return this.verificationService.verifyDatatype(datatype, documentId, null);
+  //  }
+  //  
+  //  @RequestMapping(value = "/api/verification/segment", method = RequestMethod.POST, produces = {"application/json"})
+  //  public @ResponseBody VerificationResult verifySegment(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Segment segment, Authentication authentication) {
+  //    return this.verificationService.verifySegment(segment, documentId, null);
+  //  }
+  //  
+  //  @RequestMapping(value = "/api/verification/conformance-profile", method = RequestMethod.POST, produces = {"application/json"})
+  //  public @ResponseBody VerificationResult verifyConformanceProfile(@RequestParam(name = "dId", required = true) String documentId, @RequestBody ConformanceProfile conformanceProfile, Authentication authentication) {
+  //    return this.verificationService.verifyConformanceProfile(conformanceProfile, documentId, null);
+  //  }
+  //  
+  //  @RequestMapping(value = "/api/verification/{documentId}/valueset/{valuesetId}", method = RequestMethod.GET, produces = {"application/json"})
+  //  public @ResponseBody VerificationResult verifyValuesetById(@PathVariable("documentId") String documentId, @PathVariable("valuesetId") String valuesetId, Authentication authentication) {
+  //    Valueset vs = this.valuesetService.findById(valuesetId);
+  //    if(vs != null) return this.verificationService.verifyValueset(vs, documentId, null);
+  //    return null;
+  //  }
+  //  
+  //  @RequestMapping(value = "/api/verification/{documentId}/datatype/{datatypeId}", method = RequestMethod.GET, produces = {"application/json"})
+  //  public @ResponseBody VerificationResult verifyDatatypeById(@PathVariable("documentId") String documentId, @PathVariable("datatypeId") String datatypeId, Authentication authentication) {
+  //    Datatype dt = this.datatypeService.findById(datatypeId);
+  //    if (dt != null) return this.verificationService.verifyDatatype(dt, documentId, null);
+  //    return null;
+  //  }
+  //  
+  //  @RequestMapping(value = "/api/verification/{documentId}/segment/{segmentId}", method = RequestMethod.GET, produces = {"application/json"})
+  //  public @ResponseBody VerificationResult verifySegmentById(@PathVariable("documentId") String documentId, @PathVariable("segmentId") String segmentId, Authentication authentication) {
+  //    Segment sg = this.segmentService.findById(segmentId);
+  //    if (sg != null) return this.verificationService.verifySegment(sg, documentId, null);
+  //    return null;
+  //  }
+  //  
+  //  @RequestMapping(value = "/api/verification/{documentId}/conformance-profile/{conformanceProfileId}", method = RequestMethod.GET, produces = {"application/json"})
+  //  public @ResponseBody VerificationResult verifyConformanceProfileById(@PathVariable("documentId") String documentId, @PathVariable("conformanceProfileId") String conformanceProfileId, Authentication authentication) {
+  //    ConformanceProfile cp = this.conformanceProfileService.findById(conformanceProfileId);
+  //    if (cp != null) return this.verificationService.verifyConformanceProfile(cp, documentId, null);
+  //    return null;
+  //  }
+
   @RequestMapping(value = "/api/igdocuments/{igid}/verify", method = RequestMethod.GET, produces = {"application/json"})
   public @ResponseBody VerificationReport verifyConformanceProfileById(@PathVariable("igid") String igid, Authentication authentication) {
     Ig ig = this.igService.findById(igid);

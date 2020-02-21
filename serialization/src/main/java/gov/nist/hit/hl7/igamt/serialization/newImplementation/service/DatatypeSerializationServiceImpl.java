@@ -28,6 +28,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -45,6 +46,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
 	@Autowired
 	private DeltaService deltaService;
+	
+	@Autowired
+	private FroalaSerializationUtil frolaCleaning;
 
 	@Override
 	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration) throws SerializationException {
@@ -87,8 +91,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 //	        }
 //	      }
 	      if (datatype instanceof ComplexDatatype) {
+	    	  System.out.println("ComplexDatatype");
 	        datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel,datatypeExportConfiguration);
 	      } else if (datatype instanceof DateTimeDatatype) {
+	    	  System.out.println("DateTime");
 	        datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel, datatypeExportConfiguration);
 	      }
 	      if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
@@ -141,7 +147,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	          componentElement.addAttribute(new Attribute("minLength",
 	              component.getMinLength() != null ? component.getMinLength() : ""));
 	          componentElement.addAttribute(
-	              new Attribute("text", component.getText() != null ? component.getText() : ""));
+	              new Attribute("text", component.getText() != null ? frolaCleaning.cleanFroalaInput(component.getText()) : ""));
 	          componentElement
 	              .addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
 	          if (datatypeDataModel != null && datatypeDataModel.getValuesetMap() != null && datatypeDataModel.getValuesetMap().containsKey(component.getPosition() + "")) {
@@ -179,10 +185,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	public Element serializeDateTimeDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel, DatatypeExportConfiguration datatypeExportConfiguration) {
 	    DateTimeDatatype dateTimeDatatype =  (DateTimeDatatype) datatypeDataModel.getModel();
 	    if(dateTimeDatatype
-            .getDateTimeConstraints() !=null && dateTimeDatatype
-            .getDateTimeConstraints().getDateTimeComponentDefinitions() !=null)
+            .getDateTimeConstraints() !=null) {
 	    for (DateTimeComponentDefinition dateTimeComponentDefinition : dateTimeDatatype
 	        .getDateTimeConstraints().getDateTimeComponentDefinitions()) {
+	    	if(dateTimeComponentDefinition != null) {
 	      Element dateTimeComponentDefinitionElement = new Element("DateTimeComponentDefinition");
 	      if (dateTimeComponentDefinition != null) {
 	        dateTimeComponentDefinitionElement.addAttribute(new Attribute("description",
@@ -208,6 +214,8 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	                : ""));
 	        datatypeElement.appendChild(dateTimeComponentDefinitionElement);
 	      }
+	    }
+	    }
 	    }
 	    return datatypeElement;
 	  }

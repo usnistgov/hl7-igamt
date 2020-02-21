@@ -25,10 +25,12 @@
             }
         </xsl:text>
         <xsl:text>.contentTable { width:100%; border-spacing: 0px;border-collapse: collapse; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px ; border-left-width: 1px; }</xsl:text>
+         <xsl:text>.CoConsContentTable { width:100%; border-spacing: 0px;border-collapse: inherit; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px ; border-left-width: 1px; }</xsl:text>  
+        <xsl:text>.groupTable { width:100%; border-spacing: 1px;border-collapse: collapse; border-top-width: 2px; border-right-width: 1px; border-bottom-width: 1px ; border-left-width: 1px; }</xsl:text>
         <xsl:text>.groupContentTable {border: 1px solid black; width:100%; border-spacing: 0px;border-collapse: collapse; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px ; border-left-width: 1px; }</xsl:text>
         <xsl:text>.contentThead { background:#F0F0F0; color:#B21A1C; align:center; }</xsl:text>
         <xsl:text>.noBorderTable { border:none }</xsl:text>
-        <xsl:text>.ifContentThead { background:rgb(21, 101, 192)}</xsl:text>
+        <xsl:text>.ifContentThead { background:rgb(0, 128, 255)}</xsl:text>
         <xsl:text>.ifContent{ background:#b1daff}</xsl:text>
         <xsl:text>img {text-align:center;}</xsl:text>
         <xsl:text>.contentTr { background-color:white; text-decoration:normal; }</xsl:text>
@@ -40,7 +42,7 @@
         <xsl:text>.lightGreyCell{background-color:#F0F0F0;}</xsl:text>
         <xsl:text>.lightBlueCell{background-color:#b5d6fd;}</xsl:text>
         <xsl:text>.lightPinkCell{background-color:#ffe6e6;}</xsl:text>
-        <xsl:text>.greenHeader{background-color:rgb(76, 175, 80);}</xsl:text>
+        <xsl:text>.greenHeader{background-color:rgb(204, 255, 153);}</xsl:text>
    		<xsl:text>.alignCenter{text-align:center;}</xsl:text>
         <xsl:text>.greenContent{background-color:#a7d6a9;}</xsl:text>
         

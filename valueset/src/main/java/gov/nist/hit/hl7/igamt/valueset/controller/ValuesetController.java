@@ -67,7 +67,7 @@ public class ValuesetController extends BaseController {
 	public @ResponseBody ResponseMessage<List<Valueset>> findDisplayFormatByScopeAndVersion(@PathVariable String version,
 			@PathVariable String scope, Authentication authentication) {
 		return new ResponseMessage<List<Valueset>>(Status.SUCCESS, "", "", null, false, null,
-				valuesetService.findDisplayFormatByScopeAndVersion(scope, version));
+				valuesetService.findByDomainInfoScopeAndDomainInfoVersion(scope, version));
 	}
 
 	@RequestMapping(value = "/api/valuesets/{scope}/info", method = RequestMethod.GET, produces = {

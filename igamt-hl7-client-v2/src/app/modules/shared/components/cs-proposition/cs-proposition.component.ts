@@ -32,7 +32,6 @@ export class CsPropositionComponent implements OnInit {
   _tree: TreeNode[];
 
   res: IResource;
-
   subjectName: string;
   compareName: string;
 
@@ -143,12 +142,15 @@ export class CsPropositionComponent implements OnInit {
         this.subjectName = name;
       }),
     ).subscribe();
-    this.getName(this.treeService.concatPath(this.context, assertion.complement.path)).pipe(
-      take(1),
-      map((name) => {
-        this.compareName = name;
-      }),
-    ).subscribe();
+
+    if (assertion.complement.path) {
+      this.getName(this.treeService.concatPath(this.context, assertion.complement.path)).pipe(
+        take(1),
+        map((name) => {
+          this.compareName = name;
+        }),
+      ).subscribe();
+    }
 
     this.valueChange.emit(assertion);
   }
@@ -164,24 +166,6 @@ export class CsPropositionComponent implements OnInit {
 
   @Input()
   set context(ctx: IPath) {
-    if (this.assertion && this._context) {
-      this.assertion.complement = {
-        ...this.assertion.complement,
-        path: undefined,
-        occurenceIdPath: undefined,
-        occurenceLocationStr: undefined,
-        occurenceValue: undefined,
-        occurenceType: undefined,
-      };
-
-      this.assertion.subject = {
-        path: undefined,
-        occurenceIdPath: undefined,
-        occurenceLocationStr: undefined,
-        occurenceValue: undefined,
-        occurenceType: undefined,
-      };
-    }
     this._context = ctx;
   }
 
@@ -294,8 +278,7 @@ export class CsPropositionComponent implements OnInit {
         const statement = this.getStatementLiteral(this.assertion.complement);
         const comparisonTarget = this.getOccurenceLiteral(this.assertion.complement);
         const comparison = `${comparisonTarget.toLowerCase()} ${this.valueOrBlank(compNode)}`;
-        this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)}
-        ${this.statementType === StatementType.COMPARATIVE ? comparison : ''}`;
+        this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)} ${this.statementType === StatementType.COMPARATIVE ? comparison : ''}`;
         this.valueChange.emit(this.assertion);
       }),
     ).subscribe();
@@ -414,7 +397,14 @@ export class CsPropositionComponent implements OnInit {
   }
 
   nodeValid(elm: ISubject | IComplement) {
-    return !!elm.path && !!elm.occurenceIdPath;
+    return !!elm.path && !!elm.occurenceIdPath && this.pathValid(this.context, elm.path);
+  }
+
+  pathValid(context: IPath, path: IPath) {
+    const ctx = this.treeService.pathToString(context);
+    const elm = this.treeService.pathToString(path);
+
+    return elm.startsWith(ctx);
   }
 
   verbValid() {

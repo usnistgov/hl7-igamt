@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { LengthType } from 'src/app/modules/shared/constants/length-type.enum';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
 import { ILengthAndConfLength } from '../length/length.component';
@@ -12,7 +13,7 @@ export class ConformanceLengthComponent extends HL7v2TreeColumnComponent<ILength
 
   val: ILengthAndConfLength;
   @Output()
-  remove: EventEmitter<ILengthAndConfLength>;
+  updateLengthType: EventEmitter<LengthType>;
 
   onInitValue(value: ILengthAndConfLength): void {
     this.val = {
@@ -21,8 +22,8 @@ export class ConformanceLengthComponent extends HL7v2TreeColumnComponent<ILength
   }
 
   constructor() {
-    super([PropertyType.LENGTHMIN, PropertyType.LENGTHMAX, PropertyType.CONFLENGTH]);
-    this.remove = new EventEmitter();
+    super([PropertyType.LENGTHTYPE, PropertyType.CONFLENGTH]);
+    this.updateLengthType = new EventEmitter();
     this.value$.subscribe((live) => {
       this.val = live;
     });
@@ -33,19 +34,12 @@ export class ConformanceLengthComponent extends HL7v2TreeColumnComponent<ILength
   }
 
   clear() {
-    this.onChange<string>(this.getInputValue().length.min + '', '0', PropertyType.LENGTHMIN, ChangeType.UPDATE);
-    this.onChange<string>(this.getInputValue().length.max + '', '*', PropertyType.LENGTHMAX, ChangeType.UPDATE);
-    this.onChange<string>(this.getInputValue().confLength + '', 'NA', PropertyType.CONFLENGTH, ChangeType.UPDATE);
+    this.onChange<string>(this.getInputValue().lengthType, LengthType.Length, PropertyType.LENGTHTYPE, ChangeType.UPDATE);
+    this.updateLengthType.emit(LengthType.Length);
+  }
 
-    this.val = {
-      length: {
-        min: '0',
-        max: '*',
-      },
-      confLength: 'NA',
-    };
-
-    this.remove.emit(this.val);
+  active() {
+    return this.val.lengthType === LengthType.ConfLength;
   }
 
   ngOnInit() {

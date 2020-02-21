@@ -27,6 +27,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -50,6 +51,10 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 
     @Autowired
     private ValuesetSerializationService valuesetSerializationService;
+    
+    @Autowired
+    private FroalaSerializationUtil frolaCleaning;
+
 
     @Override
     public Element SerializeSection(Section section, int level, IgDataModel igDataModel,
@@ -101,13 +106,12 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
                 section.getId(), section.getLabel());
         if (section.getDescription() != null && !section.getDescription().isEmpty()) {
             Element sectionContentElement = new Element("SectionContent");
-            sectionContentElement.appendChild(section.getDescription());
+            sectionContentElement.appendChild(frolaCleaning.cleanFroalaInput(section.getDescription()));
             sectionElement.appendChild(sectionContentElement);
         }
         sectionElement.addAttribute(new Attribute("type", section.getType() != null ? section.getType().name() : ""));
         sectionElement.addAttribute(new Attribute("h", String.valueOf(level)));
         return sectionElement;
-
     }
 
     @Override
@@ -366,8 +370,6 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
                     }
                 }
             }
-
-            // }
             return segmentRegistryElement;
         } catch (Exception exception) {
             throw new RegistrySerializationException(exception, section, segmentRegistry);

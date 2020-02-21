@@ -75,7 +75,7 @@ public class ExportConfiguration {
 
   private boolean greyOutOBX2FlavorColumn = false;
 
-  private CoConstraintExportMode coConstraintExportMode = CoConstraintExportMode.COMPACT;
+  private CoConstraintExportMode coConstraintExportMode;
 
   private boolean includeDerived = false;
 
@@ -120,8 +120,9 @@ public class ExportConfiguration {
   }
 
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue) {
-    ExportConfiguration defaultConfiguration = new ExportConfiguration();  
+    ExportConfiguration defaultConfiguration = new ExportConfiguration();
     defaultConfiguration.setConfigName("");
+    defaultConfiguration.setOriginal(false);
     defaultConfiguration.setDefaultConfig(false);
     defaultConfiguration.setCoConstraintExportMode(CoConstraintExportMode.COMPACT);
     defaultConfiguration.setDefaultType(true);
@@ -132,19 +133,27 @@ public class ExportConfiguration {
     defaultConfiguration.setIncludeValuesetsTable(true);
     defaultConfiguration.setIncludeCompositeProfileTable(true);
     defaultConfiguration.setIncludeProfileComponentTable(true);
+//    // CoConstraints config
+//    CoConstraintExportMode coConstraintExportMode;
+//    coConstraintExportMode.setCompact(true);
+//    coConstraintExportMode.setVerbose(false);
+//    coConstraintExportMode.setNoExport(false);
+//    defaultConfiguration.setCoConstraintExportMode(coConstraintExportMode);
     // Default Usages
     UsageConfiguration displayAll = new UsageConfiguration();
     UsageConfiguration displaySelectives = new UsageConfiguration();
-    displaySelectives.setC(true);
+    displaySelectives.setC(false);
     displaySelectives.setX(setAllTrue);
     displaySelectives.setO(setAllTrue);
     displaySelectives.setR(true);
     displaySelectives.setRe(true);
+    displaySelectives.setCab(true);
     CodeUsageConfiguration codeUsageExport = new CodeUsageConfiguration();
     codeUsageExport.setE(setAllTrue);
     codeUsageExport.setP(true);
     codeUsageExport.setR(true);
-    displayAll.setC(true);
+    displayAll.setC(false);
+    displayAll.setCab(true);
     displayAll.setRe(true);
     displayAll.setX(false);
     displayAll.setO(false);

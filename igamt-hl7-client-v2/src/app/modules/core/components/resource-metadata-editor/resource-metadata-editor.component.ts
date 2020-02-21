@@ -1,12 +1,14 @@
 import { OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import {FormGroup, ValidatorFn, Validators} from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, concatMap, flatMap, take } from 'rxjs/operators';
+import {catchError, concatMap, flatMap, map, mergeMap, take, withLatestFrom} from 'rxjs/operators';
 import { EditorSave, EditorSaveFailure, IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {selectIgId, selectSelectedResource} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
+import {validateConvention} from '../../../shared/functions/convention-factory';
+import {validateUnity} from '../../../shared/functions/unicity-factory';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
@@ -17,7 +19,7 @@ import { AbstractEditorComponent } from '../abstract-editor-component/abstract-e
 
 export abstract class ResourceMetadataEditorComponent extends AbstractEditorComponent implements OnInit {
 
-  metadataFormInput: IMetadataFormInput<IResourceMetadata>;
+  metadataFormInput$: Observable<IMetadataFormInput<IResourceMetadata>>;
   froalaConfig$: Observable<any>;
   constructor(
     readonly editor: IEditorMetadata,
@@ -28,55 +30,79 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
     this.froalaConfig$ = froalaService.getConfig();
     const authorNotes = 'Author Notes';
     const usageNotes = 'Usage Notes';
-    this.metadataFormInput = {
-      viewOnly: this.viewOnly$,
-      data: this.currentSynchronized$,
-      model: {
-        name: {
-          label: 'Name',
-          placeholder: 'Name',
-          validators: [],
-          type: FieldType.TEXT,
-          id: 'name',
-          disabled: true,
-          name: 'name',
-        },
-        ext: {
-          label: 'Extension',
-          placeholder: 'Extension',
-          validators: [],
-          type: FieldType.TEXT,
-          id: 'extension',
-          name: 'extension',
-        },
-        description: {
-          label: 'Description',
-          placeholder: 'Description',
-          validators: [],
-          type: FieldType.TEXT,
-          id: 'description',
-          name: 'Description',
-        },
-        authorNotes: {
-          label: authorNotes,
-          placeholder: authorNotes,
-          validators: [],
-          enum: [],
-          type: FieldType.RICH,
-          id: 'authornotes',
-          name: authorNotes,
-        },
-        usageNotes: {
-          label: usageNotes,
-          placeholder: usageNotes,
-          validators: [],
-          enum: [],
-          type: FieldType.RICH,
-          id: 'usagenotes',
-          name: usageNotes,
-        },
-      },
-    };
+    const selectedResource$ = this.store.select(selectSelectedResource);
+    const name$ = this.store.select(selectSelectedResource).pipe(
+      map((resource) => {
+        return resource.name;
+      }),
+    );
+
+    this.metadataFormInput$ = combineLatest(selectedResource$, name$, this.getOthers()).pipe(
+      take(1),
+      map(([ selectedResource, name, existing]) => {
+       return {
+          viewOnly: this.viewOnly$,
+          data: this.currentSynchronized$,
+          model: {
+            name: {
+              label: 'Name',
+              placeholder: 'Name',
+              validators: [],
+              type: FieldType.TEXT,
+              id: 'name',
+              disabled: true,
+              name: 'name',
+            },
+            ext: {
+              label: 'Extension',
+              placeholder: 'Extension',
+              validators: [validateUnity(existing, name, selectedResource.domainInfo), validateConvention(selectedResource.domainInfo.scope, selectedResource.type), Validators.required],
+              type: FieldType.TEXT,
+              id: 'extension',
+              name: 'extension',
+            },
+            description: {
+              label: 'Description',
+              placeholder: 'Description',
+              validators: [],
+              type: FieldType.TEXT,
+              id: 'description',
+              disabled: true,
+              name: 'Description',
+            },
+            authorNotes: {
+              label: authorNotes,
+              placeholder: authorNotes,
+              validators: [],
+              enum: [],
+              type: FieldType.RICH,
+              id: 'authornotes',
+              name: authorNotes,
+            },
+            usageNotes: {
+              label: usageNotes,
+              placeholder: usageNotes,
+              validators: [],
+              enum: [],
+              type: FieldType.RICH,
+              id: 'usagenotes',
+              name: usageNotes,
+            },
+          },
+        };
+    }),
+    );
+  }
+
+  abstract getExistingList(): Observable<IDisplayElement[]>;
+  getOthers(): Observable<IDisplayElement[]> {
+    return this.getExistingList().pipe(
+      take(1),
+      withLatestFrom(this.store.select(selectSelectedResource)),
+      map(([exiting, selected ]) => {
+        return exiting.filter((x) => x.id !== selected.id) ;
+      }),
+    );
   }
 
   dataChange(form: FormGroup) {
