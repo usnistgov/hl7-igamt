@@ -1,0 +1,9 @@
+<div style="display: flex; flex-direction: row; justify-content: flex-end">
+
+  <button class="btn-primary btn-sm" (click)="addSection()"><i class="fa fa-plus"></i></button>
+
+</div>
+
+<li *ngFor="let l of list" [routerLink]="['./users-guides/'+l.id]" routerLinkActive="active" class="doc-link"  #rla="routerLinkActive">
+  <span>{{l.label}}</span>
+</li>

@@ -176,7 +176,6 @@ export class IgEditEffects {
       );
     }),
   );
-
   @Effect()
   igEditSaveTOC$ = this.actions$.pipe(
     ofType(IgEditActionTypes.TableOfContentSave),
