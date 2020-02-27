@@ -168,7 +168,7 @@ private DeltaService deltaService;
 		             
 		              }
 		              fieldElement.addAttribute(
-		                  new Attribute("usage", field.getUsage() != null ? field.getUsage().name() : ""));
+		                  new Attribute("usage", field.getUsage() != null ? field.getUsage().toString() : ""));
 		              if (segmentDataModel != null && segmentDataModel.getValuesetMap() != null && segmentDataModel.getValuesetMap().containsKey(field.getPosition() + "")) {
 		  	        	String vs = segmentDataModel.getValuesetMap().get(field.getPosition()+"").stream().map((element) -> {
 		                  	return element.getBindingIdentifier();

@@ -98,6 +98,8 @@ public class UsageConfiguration {
         return this.isX();
       case O:
         return this.isO();
+      case CAB:
+    	  return this.isCab();
       default:
         return false;
     }

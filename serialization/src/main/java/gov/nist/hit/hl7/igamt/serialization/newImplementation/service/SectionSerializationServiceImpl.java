@@ -303,6 +303,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
             }
             return conformanceProfileRegistryElement;
         } catch (Exception exception) {
+        	exception.printStackTrace();
             throw new RegistrySerializationException(exception, section, conformanceProfileRegistry);
         }
 

@@ -178,7 +178,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		HashMap<String, Boolean> bindedPaths = new HashMap<String, Boolean>();
 		for (Field child : s.getChildren()) {
 			if (child.getRef() != null && child.getRef().getId() != null) {
-				if (child.getUsage() != null && config.getDatatypesExport().isBinded(child.getUsage())) {
+				if (child.getUsage() != null && config.getSegmentExportConfiguration().getFieldsExport().isBinded(child.getUsage())) {
 					datatypesIds.add(child.getRef().getId());
 					decision.getDatatypesFilterMap().put(child.getRef().getId(), true);
 					bindedPaths.put(child.getId(), true);
@@ -207,7 +207,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		Set<String> datatypesIds = new HashSet<String>();
 		for (Component child : dt.getComponents()) {
 			if (child.getRef() != null && child.getRef().getId() != null) {
-				if (child.getUsage() != null && config.getDatatypesExport().isBinded(child.getUsage())) {
+				if (child.getUsage() != null && config.getDatatypeExportConfiguration().getComponentExport().isBinded(child.getUsage())) {
 					datatypesIds.add(child.getRef().getId());
 					decision.getDatatypesFilterMap().put(child.getRef().getId(), true);
 					bindedPaths.put(child.getId(), true);
@@ -228,7 +228,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			if (segOrgroup instanceof SegmentRef) {
 				SegmentRef ref = (SegmentRef) segOrgroup;
 				if (ref.getRef() != null && ref.getRef().getId() != null) {
-					if (ref.getUsage() != null && config.getSegmentsExport().isBinded(ref.getUsage())) {
+					if (ref.getUsage() != null && config.getConformamceProfileExportConfiguration().getSegmentORGroupsMessageExport().isBinded(ref.getUsage())) {
 						segmentsIds.add(ref.getRef().getId());
 						decision.getSegmentFilterMap().put(ref.getRef().getId(), true);
 						bindedPaths.put(ref.getId(), true);
@@ -247,7 +247,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		if (segOrgroup instanceof SegmentRef) {
 			SegmentRef ref = (SegmentRef) segOrgroup;
 			if (ref.getRef() != null && ref.getRef().getId() != null) {
-				if (ref.getUsage() != null && config.getSegmentsExport().isBinded(ref.getUsage())) {
+				if (ref.getUsage() != null && config.getConformamceProfileExportConfiguration().getSegmentORGroupsMessageExport().isBinded(ref.getUsage())) {
 					ids.add(ref.getRef().getId());
 					bindedPaths.put(path, true);
 					decision.getSegmentFilterMap().put(ref.getRef().getId(), true);

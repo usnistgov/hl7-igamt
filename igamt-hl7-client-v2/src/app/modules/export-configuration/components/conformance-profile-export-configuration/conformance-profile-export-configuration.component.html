@@ -58,9 +58,9 @@
       <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
         <h5 class="card-title title-text custom-card-title">CoConstraints</h5>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item"><p-radioButton [disabled]="true" label="Compact Format" value="COMPACT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
-          <li class="list-group-item"><p-radioButton [disabled]="true" label="Verbose Format" value="VERBOSE" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
-          <li class="list-group-item"><p-radioButton [disabled]="true" label="Don't Export" value="NOEXPORT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
+          <li class="list-group-item"><p-radioButton [disabled]="viewOnly" label="Compact Format" value="COMPACT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
+          <li class="list-group-item"><p-radioButton [disabled]="viewOnly" label="Verbose Format" value="VERBOSE" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
+          <li class="list-group-item"><p-radioButton [disabled]="viewOnly" label="Don't Export" value="NOEXPORT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
         </ul>
       </div>
 

@@ -343,7 +343,7 @@ public class CoConstraintSerializationServiceImpl implements  CoConstraintSerial
 		}
 		tr.appendChild(td);
 		td = new Element("td");
-		td.appendChild(coConstraintTableRow.getRequirement().getUsage().name());
+		td.appendChild(coConstraintTableRow.getRequirement().getUsage().toString());
 		tr.appendChild(td);
 		td = new Element("td");
 		td.appendChild(Integer.toString(coConstraintTableRow.getRequirement().getCardinality().getMin()));
@@ -399,7 +399,7 @@ public class CoConstraintSerializationServiceImpl implements  CoConstraintSerial
 		th.appendChild("");
 		tr.appendChild(th);
 		th = new Element("th");
-		th.appendChild(coConstraintGroupBinding.getRequirement().getUsage().name());
+		th.appendChild(coConstraintGroupBinding.getRequirement().getUsage().toString());
 		tr.appendChild(th);
 		th = new Element("th");
 		th.appendChild(Integer.toString(coConstraintGroupBinding.getRequirement().getCardinality().getMin()));
@@ -470,7 +470,7 @@ public class CoConstraintSerializationServiceImpl implements  CoConstraintSerial
 		th.addAttribute(new Attribute("class", "lightPinkCell"));
 		if(coConstraintGroupBinding != null && coConstraintGroupBinding.getType().equals(GroupBindingType.CONTAINED)) {
 		th.appendChild("Group name : " + ((CoConstraintGroupBindingContained) coConstraintGroupBinding).getName() + "  |  " + "Usage : "
-				+ coConstraintGroupBinding.getRequirement().getUsage().name() + "  |  " + "Cardinality : ["
+				+ coConstraintGroupBinding.getRequirement().getUsage().toString() + "  |  " + "Cardinality : ["
 				+ Integer.toString(coConstraintGroupBinding.getRequirement().getCardinality().getMin()) + " : "
 				+ coConstraintGroupBinding.getRequirement().getCardinality().getMax() + "]");
 		}
