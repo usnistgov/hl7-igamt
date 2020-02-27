@@ -20,14 +20,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -135,7 +139,7 @@ public class ExportController {
 		}
 	}
 	
-	@RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	@RequestMapping(value = "/api/export/ig/{igId}/quickHtml1", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	public @ResponseBody void exportIgDocumentHtml(@PathVariable("igId") String igId,
 			HttpServletResponse response, FormData formData) throws ExportException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -167,6 +171,32 @@ public class ExportController {
 			throw new AuthenticationCredentialsNotFoundException("No Authentication");
 		}
 	}
+	
+	@RequestMapping(value = "/api/export/coconstraintTable", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	public @ResponseBody void exportCoconstraintTable(FormData formData, HttpServletResponse response) throws ExportException, JsonParseException, JsonMappingException, IOException {
+		 System.out.println("We inside EXCEL");
+		  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		  	if(formData.getJson() != null) {
+				ObjectMapper mapper = new ObjectMapper();
+				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+				CoConstraintTable coConstraintTable = mapper.readValue(formData.getJson(), CoConstraintTable.class);
+				if (authentication != null) {
+			  		String username = authentication.getPrincipal().toString();
+			  		ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(coConstraintTable);
+			  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+			  		response.setHeader("Content-disposition",
+			  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
+			  		try {
+			  			response.getOutputStream().write(excelFile.toByteArray());
+			  		} catch (IOException e) {
+			  			throw new ExportException(e, "Error while sending back excel Document for coconstraintTable with id " + coConstraintTable.getId());
+			  		}
+			  	} else {
+			  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+			  	}
+			}
+		  	
+		  }
 	
 	@RequestMapping(value = "/api/export/ig/{igId}/quickWord", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	public @ResponseBody void exportIgDocumentWord(@PathVariable("igId") String igId,
@@ -201,26 +231,26 @@ public class ExportController {
 		}
 	}
 	
-//	 @RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST)
-//	  public @ResponseBody void exportCoConstraintsToExcel(@PathVariable("igId") String id,
-//	  		HttpServletResponse response) throws ExportException {
-//		 System.out.println("We inside EXCEL");
-//	  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//	  	if (authentication != null) {
-//	  		String username = authentication.getPrincipal().toString();
-//	  		ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(null);
-//	  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-//	  		response.setHeader("Content-disposition",
-//	  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
-//	  		try {
-//	  			response.getOutputStream().write(excelFile.toByteArray());
-//	  		} catch (IOException e) {
-//	  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
-//	  		}
-//	  	} else {
-//	  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-//	  	}
-//	  }
+	 @RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST)
+	  public @ResponseBody void exportCoConstraintsToExcel(@PathVariable("igId") String id,
+	  		HttpServletResponse response) throws ExportException {
+		 System.out.println("We inside EXCEL");
+	  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	  	if (authentication != null) {
+	  		String username = authentication.getPrincipal().toString();
+	  		ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(null);
+	  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+	  		response.setHeader("Content-disposition",
+	  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
+	  		try {
+	  			response.getOutputStream().write(excelFile.toByteArray());
+	  		} catch (IOException e) {
+	  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
+	  		}
+	  	} else {
+	  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+	  	}
+	  }
 
 	@RequestMapping(value = "/api/export/igdocuments/{id}/configuration/{configId}/getFilteredDocument", method = RequestMethod.GET)
 	public @ResponseBody ExportConfigurationGlobal getFilteredDocument(@PathVariable("id") String id, @PathVariable("configId") String configId,

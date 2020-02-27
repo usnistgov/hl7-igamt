@@ -28,7 +28,6 @@
 		<xsl:call-template name="Role" />
 		<xsl:call-template name="Type" />
 			<xsl:call-template name="PreDef" />
-				<xsl:call-template name="PostDef" />
 				
 		<br />				
 
@@ -136,6 +135,8 @@
 			<xsl:apply-templates select="./Binding/CommentList" />
 		</xsl:if>
 
+				<xsl:call-template name="PostDef" />
+
 		<xsl:if test="count(Constraints/ConformanceStatement)  &gt; 0">
 
 			<!-- <xsl:if test="count(./Constraint[@Type='cs']) &gt; 0"> -->
@@ -185,22 +186,34 @@
 					select="Text[@Type='UsageNote']" />
 			</xsl:element>
 		</xsl:if>
-					<xsl:apply-templates select="./coconstraints" />		
+					<xsl:apply-templates select="coConstraintsElement" />		
 		
 		
 	</xsl:template>
 	
 	
 
-	<xsl:template match="coconstraints">
+	<xsl:template match="coConstraintsElement">
 		<xsl:element name="br" />
 		<xsl:element name="span">
 			<xsl:element name="b">
 				<xsl:text>Co-Constraints</xsl:text>
 			</xsl:element>
 		</xsl:element>
-		<xsl:copy-of select="table" />
+		<xsl:element name="br" />
+				<xsl:element name="br" />
+		<xsl:element name="span">
+				<xsl:text>CoConstraint Condition : </xsl:text>
+				        <xsl:value-of select="./coConstraintCondition"/>
+				        		<xsl:element name="br" />
+			</xsl:element>
+					<xsl:element name="br" />			
+		<xsl:copy-of select="./coConstraintsTable/coconstraints/table" />
 	</xsl:template>
+	
+	
+	
+	
 
 
 
