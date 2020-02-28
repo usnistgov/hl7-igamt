@@ -21,6 +21,9 @@
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Content Definition" binary="true" [(ngModel)]="config.contentDefinition" (onChange)="triggerChange()"></p-checkbox></li>
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="URL" binary="true" [(ngModel)]="config.url" (onChange)="triggerChange()"></p-checkbox></li>
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Type Internal/External" binary="true" [(ngModel)]="config.vsType" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox></li>
+          
         </ul>
       </div>
       <div class="card card-configuration" style="flex-grow: 1;" *ngIf="displayColumns" >

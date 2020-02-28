@@ -32,7 +32,7 @@
         	</xsl:apply-templates>
         	<xsl:element name="br"/>
         </xsl:if>
-        <xsl:if test="@name = 'DTM'">
+        <xsl:if test="@name = 'DTM' or @name = 'DT' ">
 <!--             <xsl:apply-templates select="DateTimeDatatype"/>
  -->      
  <xsl:element name="span">

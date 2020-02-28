@@ -64,6 +64,7 @@
 		<xsl:if test="count(CodeSystems/CodeSystem) &gt; 0">
 			<xsl:apply-templates select="CodeSystems"/>
 		</xsl:if>
-		<xsl:call-template name="PostDef" />
+				<xsl:call-template name="PostDef" />
+		
 	</xsl:template>
 </xsl:stylesheet>

@@ -72,6 +72,10 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     this.delete = new EventEmitter<boolean>();
   }
 
+  exportAsExcel(table: ICoConstraintTable) {
+    this.ccService.exportAsExcel(table);
+  }
+
   triggerRemove() {
     this.delete.emit(true);
   }
