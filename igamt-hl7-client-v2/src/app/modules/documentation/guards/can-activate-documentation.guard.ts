@@ -7,7 +7,6 @@ import {filter, map, pluck, switchMap, take, tap} from 'rxjs/operators';
 import {selectRouteParams} from '../../../root-store';
 import {
   DocumentationActionTypes, OpenDocumentationEditor, OpenDocumentationSectionFailure,
-  OpenDocumentationSectionSuccess,
 } from '../../../root-store/documentation/documentation.actions';
 import {TurnOffLoader, TurnOnLoader} from '../../../root-store/loader/loader.actions';
 import {IEditorMetadata} from '../../shared/models/editor.enum';
@@ -45,11 +44,14 @@ export class CanActivateDocumentationGuard implements CanActivate {
     } else {
 
       return this.store.select(selectRouteParams).pipe(
-        take(1),
+         take(1),
         pluck(elementId),
         switchMap((id) => {
           const subject: ReplaySubject<boolean> = new ReplaySubject<boolean>();
           this.actions$.pipe(
+            tap((x) => {
+              console.log(id);
+            }),
             ofType(DocumentationActionTypes.OpenDocumentationEditor, DocumentationActionTypes.OpenDocumentationSectionFailure),
             filter((action: OpenDocumentationEditor | OpenDocumentationSectionFailure) => action.payload.id === id),
             tap((x) => {

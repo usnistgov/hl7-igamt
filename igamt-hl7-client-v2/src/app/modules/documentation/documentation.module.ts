@@ -9,11 +9,12 @@ import { DocumentationContentComponent } from './components/documentation-conten
 import { DocumentationEditorComponent } from './components/documentation-editor/documentation-editor.component';
 import { DocumentationListComponent } from './components/documentation-list/documentation-list.component';
 import { DocumentationSideBarComponent } from './components/documentation-side-bar/documentation-side-bar.component';
+import { DocumentationSubtitleComponent } from './components/documentation-subtitle/documentation-subtitle.component';
 import {DocumentationResolver} from './documentation-resolver';
 import { DocumentationRoutingModule } from './documentation-routing.module';
 
 @NgModule({
-  declarations: [DocumentationContainerComponent, DocumentationSideBarComponent, DocumentationContentComponent, DocumentationEditorComponent, DocumentationListComponent],
+  declarations: [DocumentationContainerComponent, DocumentationSideBarComponent, DocumentationContentComponent, DocumentationEditorComponent, DocumentationListComponent, DocumentationSubtitleComponent],
   imports: [
     CommonModule,
     DocumentationRoutingModule,

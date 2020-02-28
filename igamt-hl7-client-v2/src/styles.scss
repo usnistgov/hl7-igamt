@@ -241,9 +241,7 @@ body {
   padding: 0px !important;
 }
 
-body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a {
-  background-color: #162986 !important;
-}
+
 
 body .ui-table .ui-table-tbody > tr:nth-child(even).ui-state-highlight {
   background-color: inherit !important;
@@ -371,4 +369,30 @@ body .ui-dropdown-panel {
 .ptable-tbody-mimmic > tr > td {
   background-color: inherit;
   border: 1px solid #c8c8c8;
+}
+
+:host ::ng-deep  .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a {
+  background-color: black !important;
+}
+:host ::ng-deep  .ui-accordion-header:not(.ui-state-disabled).ui-state-active a {
+  background-color: black !important;
+}
+
+:host  .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a {
+ background-color: #162986 !important;
+}
+
+
+.doc-accordion .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a {
+  background-color: #ffec9d !important;
+  border: 1px solid #ffec9d;
+  color: black;
+}
+.doc-accordion .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a:hover {
+
+  color: black;
+}
+
+.doc-accordion  .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a .ui-accordion-toggle-icon {
+  color: black !important;
 }

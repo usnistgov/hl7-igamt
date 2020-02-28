@@ -1,11 +1,11 @@
-import { TestBed, async, inject } from '@angular/core/testing';
+import { async, inject, TestBed } from '@angular/core/testing';
 
 import { CanDeactivateDocumentationGuard } from './can-deactivate-documentation.guard';
 
 describe('CanDeactivateDocumentationGuard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [CanDeactivateDocumentationGuard]
+      providers: [CanDeactivateDocumentationGuard],
     });
   });
 

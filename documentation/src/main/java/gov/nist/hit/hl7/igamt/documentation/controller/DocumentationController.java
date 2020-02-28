@@ -10,6 +10,8 @@
  * that they have been modified.
  */
 package gov.nist.hit.hl7.igamt.documentation.controller;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,25 +50,63 @@ public class DocumentationController {
 	"application/json" })
 	public @ResponseBody Documentation save(Authentication authentication, @RequestBody Documentation documentation) throws Exception
 	{
+		documentation.setDateUpdated(new Date());
+		documentation.setAuthors(authentication.getPrincipal().toString());
 		return documentationRepo.save(documentation);
 
 	}
-
-	@RequestMapping(value = "/api/documentations/{id}", method = RequestMethod.DELETE, produces = {
+	@RequestMapping(value = "/api/documentations/add", method = RequestMethod.POST, produces = {
 	"application/json" })
-	public void delete(@PathVariable("id") String id, Authentication authentication) throws Exception
+	public @ResponseBody Documentation save(Authentication authentication, @RequestBody DocumentationAddWrapper documentation) throws Exception
 	{
-		documentationRepo.deleteById(id);
+		Documentation doc = new Documentation();
+		doc.setAuthors(authentication.getPrincipal().toString());
+		doc.setDateUpdated(new Date());
+		doc.setType(documentation.getDocumentationType());
+		doc.setPosition(documentation.getIndex());
+		doc.setLabel("New Section");
+		
+		return documentationRepo.save(doc);
 
 	}
 
-	  @RequestMapping(value = "/api/documentations/test", method = RequestMethod.GET, produces = {
-	  "application/json" })
 
-	  public @ResponseBody String ssss(
-	      Authentication authentication)  {
-	      return "test";
-	    }
+	@RequestMapping(value = "/api/documentations/updateList", method = RequestMethod.POST, produces = {
+	"application/json" })
+	public @ResponseBody List<Documentation> save(Authentication authentication, @RequestBody List<Documentation> documentation) throws Exception
+	{
+		return documentationRepo.saveAll(documentation);
+
+	}
+
+
+	@RequestMapping(value = "/api/documentations/delete/{id}", method = RequestMethod.POST, produces = {
+	"application/json" })
+	public List<Documentation> deleteAndUpdatePositions(@PathVariable("id") String id, Authentication authentication,  @RequestBody List<Documentation> documentations) throws Exception
+	{
+		List<Documentation> ret = new ArrayList<Documentation>();
+		int index = 0; 
+		for(int i=0; i<documentations.size();i++ ) {
+			if(documentations.get(i).getId() != null && documentations.get(i).getId().equals(id)) {
+				documentationRepo.deleteById(id);
+			}else {
+				index = index+1;
+				documentations.get(i).setPosition(index);
+				documentationRepo.save(documentations.get(i));
+			}
+
+		}
+		return ret;
+
+	}
+
+	@RequestMapping(value = "/api/documentations/test", method = RequestMethod.GET, produces = {
+	"application/json" })
+
+	public @ResponseBody String ssss(
+			Authentication authentication)  {
+		return "test";
+	}
 	@RequestMapping(value = "/api/documentations/getAll", method = RequestMethod.GET, produces = {
 	"application/json" })
 	public List<Documentation> getAll(Authentication authentication) throws Exception

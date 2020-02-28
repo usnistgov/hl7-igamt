@@ -1,3 +1,4 @@
+import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {Guid} from 'guid-typescript';
 import {DocumentationScope, DocumentationType, IDocumentation} from '../../models/documentation.interface';
@@ -9,9 +10,11 @@ import {DocumentationScope, DocumentationType, IDocumentation} from '../../model
 })
 export class DocumentationListComponent implements OnInit {
   @Output()
-  add: EventEmitter<IDocumentation> = new EventEmitter<IDocumentation>();
+  add: EventEmitter<any> = new EventEmitter<any>();
   @Output()
-  delete: EventEmitter<IDocumentation> = new EventEmitter<IDocumentation>();
+  delete: EventEmitter<any> = new EventEmitter<any>();
+  @Output()
+  reorder: EventEmitter<IDocumentation[]> = new EventEmitter<IDocumentation[]>();
   constructor() {
   }
 
@@ -26,15 +29,46 @@ export class DocumentationListComponent implements OnInit {
 
   addSection() {
     this.add.emit({
-      id: Guid.create().toString(),
-      label: 'New Section',
-      description: '',
-      position: this.list.length + 1,
-      type: this.documentationType,
-      scope: DocumentationScope.USER,
+      index: this.list.length + 1,
+      documentationType: this.documentationType,
     });
   }
-  deleteSection(setion: IDocumentation) {
-    this.delete.emit(setion);
+  getLinkByType( section: IDocumentation) {
+    switch (this.documentationType) {
+      case DocumentationType.FAQ:
+        return './faqs/' + section.id;
+        break;
+      case DocumentationType.GLOSSARY:
+        return './glossary/' + section.id;
+        break;
+        case DocumentationType.IMPLEMENTATIONDECISION:
+          return './implementation-decisions/' + section.id;
+          break;
+          case DocumentationType.RELEASENOTE:
+            return './releases-notes/' + section.id;
+            break;
+            case DocumentationType.USERGUIDE:
+              return './users-guides/' + section.id;
+              break;
+              case DocumentationType.USERNOTES:
+                return './users-notes/' + section.id;
+                break;
+      default :
+        return '';
+        break;
+    }
+  }
+  drop(event: CdkDragDrop<string[]>) {
+    moveItemInArray(this.list, event.previousIndex, event.currentIndex);
+    for (let i = 0; i < this.list.length; i++) {
+      this.list[i].position = i + 1;
+    }
+    this.reorder.emit(this.list);
+  }
+  deleteDocument(doc: IDocumentation) {
+    this.delete.emit({
+      id: doc.id,
+      list: this.list,
+    });
   }
 }

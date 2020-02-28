@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { DocumentationEffects } from './documentation.effects';
 
 describe('DocumentationEffects', () => {
-  let actions$: Observable<any>;
+  const actions$: Observable<any> = null;
   let effects: DocumentationEffects;
 
   beforeEach(() => {

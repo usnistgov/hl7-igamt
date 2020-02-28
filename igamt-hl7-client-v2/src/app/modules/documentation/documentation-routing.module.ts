@@ -9,8 +9,6 @@ import {Type} from '../shared/constants/type.enum';
 import {EditorID} from '../shared/models/editor.enum';
 import {DocumentationContainerComponent} from './components/documentation-container/documentation-contrainer.component';
 import {DocumentationContentComponent} from './components/documentation-content/documentation-content.component';
-import {DocumentationEditorComponent} from './components/documentation-editor/documentation-editor.component';
-import {DocumentationResolver} from './documentation-resolver';
 import {CanActivateDocumentationGuard} from './guards/can-activate-documentation.guard';
 import {CanDeactivateDocumentationGuard} from './guards/can-deactivate-documentation.guard';
 import {DocumentationLoaderGuard} from './guards/documentation-loader.guard';
@@ -33,6 +31,62 @@ const routes: Routes = [
           editorMetadata: {
             id: EditorID.SECTION_NARRATIVE,
             resourceType: Type.SECTION,
+            title: 'Users Guides',
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: false,
+          },
+          idKey: 'id',
+          action: OpenDocumentationSection,
+        },
+      },
+
+      { path: 'faqs/:id', component: DocumentationContentComponent,
+        canDeactivate: [CanDeactivateDocumentationGuard],
+        canActivate: [CanActivateDocumentationGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.SECTION_NARRATIVE,
+            resourceType: Type.SECTION,
+            title: 'faqs',
+
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: false,
+          },
+          idKey: 'id',
+          action: OpenDocumentationSection,
+        },
+      },
+
+      { path: 'implementation-decisions/:id', component: DocumentationContentComponent,
+        canDeactivate: [CanDeactivateDocumentationGuard],
+        canActivate: [CanActivateDocumentationGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.SECTION_NARRATIVE,
+            resourceType: Type.SECTION,
+            title: 'Implementation Decisions',
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: false,
+          },
+          idKey: 'id',
+          action: OpenDocumentationSection,
+        },
+      },
+
+      { path: 'releases-notes/:id', component: DocumentationContentComponent,
+        canDeactivate: [CanDeactivateDocumentationGuard],
+        canActivate: [CanActivateDocumentationGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.SECTION_NARRATIVE,
+            resourceType: Type.SECTION,
+            title: 'Release Notes',
           },
           onLeave: {
             saveEditor: true,
@@ -43,13 +97,42 @@ const routes: Routes = [
         },
       },
 
-      {path: 'faqs/:id', component: DocumentationContentComponent, canDeactivate: [CanDeactivateDocumentationGuard]},
+      { path: 'users-notes/:id', component: DocumentationContentComponent,
+        canDeactivate: [CanDeactivateDocumentationGuard],
+        canActivate: [CanActivateDocumentationGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.SECTION_NARRATIVE,
+            resourceType: Type.SECTION,
+            title: 'Users Notes',
 
-      {path: 'implementation-decesions/:id', component: DocumentationContentComponent, canDeactivate: [CanDeactivateDocumentationGuard]},
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: false,
+          },
+          idKey: 'id',
+          action: OpenDocumentationSection,
+        },
+      },
 
-      {path: 'implementation-decisions/:id', component: DocumentationContentComponent, canDeactivate: [CanDeactivateDocumentationGuard]},
-
-      {path: 'implementation-decesions/:id', component: DocumentationContentComponent, canDeactivate: [CanDeactivateDocumentationGuard]},
+      { path: 'glossary/:id', component: DocumentationContentComponent,
+        canDeactivate: [CanDeactivateDocumentationGuard],
+        canActivate: [CanActivateDocumentationGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.SECTION_NARRATIVE,
+            resourceType: Type.SECTION,
+            title: 'Glossary',
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: false,
+          },
+          idKey: 'id',
+          action: OpenDocumentationSection,
+        },
+      },
     ],
   },
 ];

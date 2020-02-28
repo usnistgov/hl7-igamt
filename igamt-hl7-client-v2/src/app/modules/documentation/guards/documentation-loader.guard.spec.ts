@@ -1,11 +1,11 @@
-import { TestBed, async, inject } from '@angular/core/testing';
+import { async, inject, TestBed } from '@angular/core/testing';
 
 import { DocumentationLoaderGuard } from './documentation-loader.guard';
 
 describe('DocumentationLoaderGuard', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [DocumentationLoaderGuard]
+      providers: [DocumentationLoaderGuard],
     });
   });
 

@@ -2,15 +2,15 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 
 import {Action, Store} from '@ngrx/store';
-import {combineLatest} from 'rxjs';
-import {flatMap, map, mergeMap, switchMap, take, tap} from 'rxjs/operators';
-import {Message, MessageType, UserMessage} from '../../modules/core/models/message/message.class';
+import {flatMap, map, mergeMap, switchMap, take} from 'rxjs/operators';
+import {MessageType, UserMessage} from '../../modules/core/models/message/message.class';
 import {MessageService} from '../../modules/core/services/message.service';
 import {IDocumentation} from '../../modules/documentation/models/documentation.interface';
 import {DocumentationService} from '../../modules/documentation/service/documentation.service';
-import {IgEditActionTypes, OpenEditor, OpenEditorFailure, OpenNarrativeEditorNode} from '../ig/ig-edit/ig-edit.actions';
-import {TurnOffLoader} from '../loader/loader.actions';
+import {TurnOffLoader, TurnOnLoader} from '../loader/loader.actions';
 import {
+  AddDocument, AddDocumentationState, AddDocumentSuccess,
+  DeleteDocument, DeleteDocumentationState, DeleteDocumentSuccess,
   DocumentationActionTypes,
   DocumentationsActions,
   DocumentationToolBarSave,
@@ -19,7 +19,7 @@ import {
   LoadDocumentationsSuccess,
   OpenDocumentationEditor,
   OpenDocumentationSection,
-  ToggleEditMode,
+  ToggleEditMode, UpdateDocumentationList, UpdateDocumentationListSuccess,
   UpdateDocumentationState,
 } from './documentation.actions';
 import {selectDocumentationById, selectWorkspaceCurrent} from './documentation.reducer';
@@ -34,19 +34,20 @@ export class DocumentationEffects {
         take(1),
         flatMap((doc: IDocumentation[]) => {
           return [new TurnOffLoader(),
-                   new LoadDocumentationsSuccess(doc)];
+                   new LoadDocumentationsSuccess(doc),
+          ];
           },
         ),
       );
     }),
   );
-  @Effect()
-  loadDocumentationsSuccess$ = this.actions$.pipe(
-    ofType(DocumentationActionTypes.LoadDocumentationsSuccess),
-    map((action: LoadDocumentationsSuccess) => {
-      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource imported successfully ', null));
-    }),
-  );
+  // @Effect()
+  // loadDocumentationsSuccess$ = this.actions$.pipe(
+  //   ofType(DocumentationActionTypes.LoadDocumentationsSuccess),
+  //   map((action: LoadDocumentationsSuccess) => {
+  //     return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource imported successfully ', null));
+  //   }),
+  // );
 
   @Effect()
   loadDocumentationsFailure$ = this.actions$.pipe(
@@ -66,7 +67,7 @@ export class DocumentationEffects {
             if ( !section  || !section.id) {
               return [
                 this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, 'Could not find section with ID ' + action.payload.id)),
-                new OpenEditorFailure({ id: action.payload.id }),
+               // new OpenEditorFailure({ id: action.payload.id }),
               ];
             } else {
               return [
@@ -93,7 +94,9 @@ export class DocumentationEffects {
           mergeMap( (obj: any) => {
             return  this.documentationService.save(obj.data).pipe(
               flatMap((doc: IDocumentation) => {
-                  return [new TurnOffLoader(), new UpdateDocumentationState(doc), new ToggleEditMode(false)];
+                  return [new TurnOffLoader(),
+                    new UpdateDocumentationState(doc),
+                    new ToggleEditMode(false)];
                 },
               ),
             );
@@ -102,6 +105,80 @@ export class DocumentationEffects {
     }),
   );
 
+  @Effect()
+  updateDocumentations$ = this.actions$.pipe(
+    ofType(DocumentationActionTypes.UpdateDocumentationList),
+    switchMap((action: UpdateDocumentationList) => {
+      this.store.dispatch( new TurnOnLoader({
+        blockUI: true,
+      }));
+      return this.documentationService.updateList(action.list).pipe(
+        take(1),
+        flatMap((doc: IDocumentation[]) => {
+            return [
+              new TurnOffLoader(),
+              new UpdateDocumentationListSuccess(doc),
+            ];
+          },
+        ),
+      );
+    }),
+  );
+
+  @Effect()
+  delete = this.actions$.pipe(
+    ofType(DocumentationActionTypes.DeleteDocument),
+    switchMap((action: DeleteDocument) => {
+      this.store.dispatch( new TurnOnLoader({
+        blockUI: true,
+      }));
+      return this.documentationService.delete( action.id, action.list).pipe(
+        take(1),
+        flatMap((doc: IDocumentation[]) => {
+            return [
+              new TurnOffLoader(),
+              new UpdateDocumentationListSuccess(doc),
+              new DeleteDocumentationState(action.id),
+              this.message.userMessageToAction(new UserMessage<never>(MessageType.SUCCESS, 'Section Deleted Successfully ')),
+
+            ];
+          },
+        ),
+      );
+    }),
+  );
+
+  @Effect()
+  add = this.actions$.pipe(
+    ofType(DocumentationActionTypes.AddDocument),
+    switchMap((action: AddDocument) => {
+      this.store.dispatch( new TurnOnLoader({
+        blockUI: true,
+      }));
+      return this.documentationService.add( action.documentationType, action.index).pipe(
+        take(1),
+        flatMap((doc: IDocumentation) => {
+            return [
+              new TurnOffLoader(),
+              new AddDocumentSuccess(doc),
+            ];
+          },
+        ),
+      );
+    }),
+  );
+  @Effect()
+  addDocumentSuccess$ = this.actions$.pipe(
+    ofType(DocumentationActionTypes.AddDocumentSuccess),
+    flatMap(
+      (action: AddDocumentSuccess) => {
+        return [
+          new TurnOffLoader(),
+          new AddDocumentationState(action.documentation),
+          new ToggleEditMode(true),
+        ];
+    }),
+  );
   constructor(private actions$: Actions<DocumentationsActions>, private documentationService: DocumentationService ,
               private store: Store<any>, private message: MessageService) {
   }

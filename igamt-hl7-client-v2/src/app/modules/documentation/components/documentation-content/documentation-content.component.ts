@@ -19,16 +19,16 @@ import {
   DocumentationEditorChange,
 } from '../../../../root-store/documentation/documentation.actions';
 import * as fromDocumentation from '../../../../root-store/documentation/documentation.reducer';
+import {selectEditMode} from '../../../../root-store/documentation/documentation.reducer';
+import {UpdateActiveResource} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {MessageService} from '../../../core/services/message.service';
-import {IWorkspaceActive, IWorkspaceCurrent} from '../../../shared/models/editor.class';
-import {IEditorMetadata} from '../../../shared/models/editor.enum';
+import {IWorkspaceCurrent} from '../../../shared/models/editor.class';
 import {
   IDocumentation,
   IDocumentationWorkspaceActive,
   IDocumentationWorkspaceCurrent,
 } from '../../models/documentation.interface';
 import {DocumentationService} from '../../service/documentation.service';
-import {selectEditMode} from '../../../../root-store/documentation/documentation.reducer';
 
 @Component({
   selector: 'app-documentation-content',
@@ -79,15 +79,8 @@ export class DocumentationContentComponent implements  OnInit {
   dataChange(form: FormGroup) {
     this.editorChange(form.getRawValue(), form.valid);
   }
-
-  editorDisplayNode(): Observable<IDocumentation> {
-    return null;
-  }
-
   onDeactivate() {
-    console.log("")
-    return null;
-
+    return of(true);
   }
   ngOnInit(): void {
   }

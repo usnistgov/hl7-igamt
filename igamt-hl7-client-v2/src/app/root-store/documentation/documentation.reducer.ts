@@ -4,10 +4,9 @@ import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {
   DocumentationType,
   IDocumentation,
-  IDocumentationWorkspace,
+  IDocumentationWorkspace, IDocumentationWorkspaceActive, IDocumentationWorkspaceCurrent,
 } from '../../modules/documentation/models/documentation.interface';
-import { DocumentationActionTypes, DocumentationsActions } from './documentation.actions';
-
+import {DocumentationActionTypes, DocumentationsActions, UpdateDocumentationListSuccess} from './documentation.actions';
 export interface IState {
   documentations: EntityState<IDocumentation>;
   workspace: IDocumentationWorkspace;
@@ -18,9 +17,12 @@ export interface IState {
 export const initialState: IState = {
     documentations: {  entities: {}, ids: []},
     workspace: {
-      active: undefined,
-      initial: undefined,
-      current: undefined,
+      active: {
+        display: null,
+        editor: { id: null},
+      },
+      initial: {},
+      current: {},
       changeTime: undefined,
       flags: {
         changed: false,
@@ -64,8 +66,6 @@ export const selectDocumentationById = createSelector(
     return sections[props.id];
   },
 );
-
-
 export const selectAllDocumentations = createSelector(
 
   selectDocumentations,
@@ -75,10 +75,7 @@ export const selectAllDocumentations = createSelector(
 export const selectDocumentationByType = createSelector(
   selectAllDocumentations,
   ( sections: IDocumentation[], props: { type: DocumentationType }) => {
-
-    console.log(sections);
-    console.log(props);
-    return sections.filter((x) => x.type === props.type);
+    return sections.filter((x) => x.type === props.type).sort((n1, n2) => n1.position - n2.position);
   },
 );
 export const selectWorkspace = createSelector(
@@ -94,6 +91,26 @@ export const selectWorkspaceActive = createSelector(
   },
 );
 
+export const selectEditorTitle = createSelector(
+  selectWorkspaceActive,
+  (state: IDocumentationWorkspaceActive) => {
+    if (state.editor) {
+      return state.editor.title;
+    } else {
+      return '';
+    }
+  },
+);
+export const selectSubTitle = createSelector(
+  selectWorkspaceActive,
+  (state: IDocumentationWorkspaceActive) => {
+    if (state.display) {
+       return state.display.label;
+    } else {
+      return '';
+    }
+  },
+);
 export const selectWorkspaceCurrentIsValid = createSelector(
   selectWorkspace,
   (state: IDocumentationWorkspace) => {
@@ -121,12 +138,30 @@ export const selectWorkspaceCurrent = createSelector(
   },
 );
 
+export const selectLatestUpdate = createSelector(
+  selectWorkspaceCurrent,
+  (state: IDocumentationWorkspaceCurrent) => {
+    return {
+      time: state.data.dateUpdated ,
+      author: state.data.authors,
+    };
+  },
+);
+
 export const selectWorkspaceCurrentIsChanged = createSelector(
   selectWorkspace,
   (state: IDocumentationWorkspace) => {
     return state.flags.changed;
   },
 );
+
+function  getUpdates(list: IDocumentation[]) {
+  return  list.map((x) => {
+    return {id: x.id, changes : {...x}};
+    },
+  );
+}
+
 export function reducer(state = initialState, action: DocumentationsActions): IState {
   switch (action.type) {
 
@@ -139,9 +174,16 @@ export function reducer(state = initialState, action: DocumentationsActions): IS
     case DocumentationActionTypes.AddDocumentationState:
       return {... state, documentations: documentationEntityAdapter.upsertOne(action.payload, state.documentations)};
     case DocumentationActionTypes.DeleteDocumentationState:
-      return {... state, documentations: documentationEntityAdapter.removeOne(action.payload.id, state.documentations)};
+      return {... state, documentations: documentationEntityAdapter.removeOne(action.id, state.documentations)};
     case DocumentationActionTypes.UpdateDocumentationState:
-      return {... state, documentations: documentationEntityAdapter.updateOne({id: action.payload.id, changes: {... action.payload}}, state.documentations)};
+      return {... state, editMode: false, documentations: documentationEntityAdapter.updateOne({id: action.payload.id, changes: {... action.payload}}, state.documentations),
+        workspace: {... state.workspace, flags: {changed: false, valid: true}, current: action.payload, initial: action.payload, active: {... state.workspace.active,
+      display: action.payload}},
+      };
+    case DocumentationActionTypes.UpdateDocumentationListSuccess:
+      return {... state, editMode: false, documentations: documentationEntityAdapter.updateMany(
+        getUpdates(action.list), state.documentations),
+      };
     case DocumentationActionTypes.OpenDocumentationEditor:
       return {
         ...state,
@@ -198,6 +240,7 @@ export function reducer(state = initialState, action: DocumentationsActions): IS
             valid: true,
           },
         },
+        editMode: false,
       };
       case DocumentationActionTypes.DocumentationEditorSaveSuccess:
       return {

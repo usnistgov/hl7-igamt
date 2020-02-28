@@ -38,13 +38,17 @@ export class DocumentationService {
     return this.http.get<IDocumentation[]>('api/documentations/getAll');
   }
 
+  updateList(list: IDocumentation[]): Observable<IDocumentation[]> {
+    return this.http.post<IDocumentation[]>('api/documentations/updateList', list);
+  }
+
   save(documentation: IDocumentation): Observable<IDocumentation> {
     return this.http.post<IDocumentation>( 'api/documentations/save', documentation);
   }
-  delete(documentation: IDocumentation): Observable<Message<string>> {
-    return this.http.delete<Message<string>>( 'api/documentations/delete/' + documentation.id);
+  delete(id: string, list: IDocumentation[]): Observable<IDocumentation[]> {
+    return this.http.post<IDocumentation[]>( '/api/documentations/delete/' + id, list);
   }
-  add(documentation: IDocumentation): Observable<Message<string>> {
-    return this.http.delete<Message<string>>( 'api/documentations/add/' + documentation.id);
+  add(documentationType: DocumentationType, index: number): Observable<IDocumentation> {
+    return this.http.post<IDocumentation>( 'api/documentations/add/', {documentationType, index});
   }
 }

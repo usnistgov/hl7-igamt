@@ -20,13 +20,15 @@ export class DocumentationEditorComponent implements OnInit {
   @Input()
   set data(data: IDocumentation) {
     console.log(data);
-    this.sectionForm.patchValue(data, { emitEvent: true });
+    this.sectionForm.patchValue(data, { emitEvent: false });
     console.log(this.sectionForm);
 
   }
 
   constructor(private froalaService: FroalaService) {
     this.form = new EventEmitter<FormGroup>();
+    this.froalaConfig$ = this.froalaService.getDocumentationConfig();
+
     this.sectionForm = new FormGroup({
       id: new FormControl(''),
       label: new FormControl('', [Validators.required]),
@@ -41,14 +43,13 @@ export class DocumentationEditorComponent implements OnInit {
 
   ngOnInit() {
     this.sectionForm.valueChanges
-      .pipe(debounceTime(0))
+      .pipe(debounceTime(200))
       .subscribe(
         (change) => {
-          console.log(this.sectionForm);
+          console.log('HAS CHANGED');
           this.form.emit(this.sectionForm);
         },
       );
-    this.froalaConfig$ = this.froalaService.getConfig();
   }
 
   getDescription() {
