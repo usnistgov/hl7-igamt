@@ -430,10 +430,10 @@ public class IGDocumentController extends BaseController {
       return new ResponseMessage<Object>(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, ig.getId(), new Date());
     }
   }
-  
 
-  
-  
+
+
+
 
   /**
    * 
@@ -472,12 +472,12 @@ public class IGDocumentController extends BaseController {
       @RequestBody Set<TextSection> content, Authentication authentication)
           throws Exception {
     Ig ig = this.findIgById(id);
-    cleanContent(content, ig);
+    updateAndClean(content, ig);
     igService.save(ig);
     return new ResponseMessage<Object>(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
   }
 
-  private void cleanContent(Set<TextSection> content, Ig ig) throws Exception {
+  private void updateAndClean(Set<TextSection> content, Ig ig) throws Exception {
     TextSection registry  = findRegistryByType(Type.CONFORMANCEPROFILEREGISTRY, content);
     if(registry == null ) {
       throw new Exception("CONFORMANCEPROFILEREGISTRY not found");    
@@ -492,9 +492,14 @@ public class IGDocumentController extends BaseController {
           }
         }
       }
-      registry.setChildren(new HashSet<TextSection>()); 
+      TextSection profile  = findRegistryByType(Type.PROFILE, content);
+      if( profile !=null  && !profile.getChildren().isEmpty()) {
+        for(TextSection profileChild : profile.getChildren() ) {
+          profileChild.setChildren(new HashSet<TextSection>()); 
+        }
+      }
+      ig.setContent(content);
     }
-
   }
 
 
@@ -1372,14 +1377,13 @@ public class IGDocumentController extends BaseController {
     if (s.getId().equals(sectionId)) {
       return s;
     }
-    if (s.getChildren() != null && s.getChildren().size() > 0) {
+    if (s.getChildren() != null && !s.getChildren().isEmpty()) {
       for (TextSection ss : s.getChildren()) {
         TextSection ret = findSectionInside(ss, sectionId);
         if (ret != null) {
           return ret;
-        }
+        } 
       }
-      return null;
     }
     return null;
   }
