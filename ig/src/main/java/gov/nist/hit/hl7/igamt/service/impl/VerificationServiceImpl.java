@@ -34,6 +34,7 @@ import org.xml.sax.SAXException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -421,33 +422,91 @@ public class VerificationServiceImpl implements VerificationService {
   private void chekcingSegmentRef(ConformanceProfile conformanceProfile, SegmentRef sr, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
     int position = sr.getPosition();
     Usage usage = sr.getUsage();
-    
     int min = sr.getMin();
     String max = sr.getMax();
-    
     Ref ref = sr.getRef();
+    Segment refSeg = null;
     
-    if (positionPath == null) path = position + "";
-    else positionPath = positionPath + "." + position;
-    
-    
-    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.max", "Field max should be integer or *", positionPath + "", "ERROR"));
-    if(usage != null) {
-      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "ERROR"));
+    if (positionPath == null) {
+      positionPath = position + "";
+    } else {
+      positionPath = positionPath + "." + position;
     }
     
-    if(usage.equals(Usage.CAB) && !this.hasPredicate(sr.getId(), sebs)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "ERROR"));
     
-
-      
-      if(ref == null || ref.getId() != null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", positionPath + " SegmentRef info is mising", positionPath + "", "FATAL"));
+    // Ref value Check
+    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", positionPath + " SegmentRef info is mising", positionPath + "", "FATAL"));
+    else {
+      refSeg = this.segmentService.findById(ref.getId());
+      // DATA Acessability check
+      if(refSeg == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", "Segment is missing on DB", positionPath + "", "ERROR"));
       else {
-        Segment refSeg = this.segmentService.findById(ref.getId());
+        if (path == null) {
+          path = refSeg.getName();
+        } else {
+          path = path + "." + refSeg.getName();
+        }
         
-        if(refSeg == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", "Segment is missing on DB", positionPath + "", "ERROR"));
+        this.checkUsageVerificationError(conformanceProfile, usage, positionPath, path, result);
+        this.checkCardinalityVerificationError(conformanceProfile, usage, min, max, positionPath, path, result);
+      } 
+    }
+  }
+
+
+  /**
+   * @param usage
+   * @param min
+   * @param max
+   * @param positionPath
+   * @param path
+   * @param result
+   */
+  private void checkCardinalityVerificationError(ConformanceProfile conformanceProfile, Usage usage, int min, String max, String positionPath, String path, CPVerificationResult result) {
+    // TODO Auto-generated method stub
+//    if(usage != null) {
+//      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.min", "Field min should be greater than 0 if Usage is R", positionPath + "", "ERROR"));
+//    }
+//    
+//    if(usage.equals(Usage.CAB) && !this.hasPredicate(sr.getId(), sebs)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.predicate", "Usage is C(A/B), but predicate is missing.", positionPath + "", "ERROR"));
+  }
+
+  /**
+   * @param usage
+   * @param positionPath
+   * @param result
+   */
+  private void checkUsageVerificationError(ConformanceProfile conformanceProfile, Usage usage, String positionPath, String path, CPVerificationResult result) {
+    /*
+     * Usage_MISSING  in {node} of {target}, Usage is missing
+     * Usage_Value_Base    in {node} of {target}, Usage should be one of R/RE/C/C(a/b)/O/X/B/W
+     * Usage_Value_Constraintable  in {node} of {target}, Usage should be one of R/RE/C/C(a/b)/O/X/B
+     * Usage_Value_Implementable   in {node} of {target}, Usage should be one of R/RE/C(a/b)/X
+     * Usage_Value_Any in {node} of {target}, Usage must be one of R/RE/C/C(a/b)/O/X/B/W
+     */
+    if (usage == null) {
+      result.getErrors().add(new IgamtObjectError("STRUCTURE", "Usage_MISSING", "At " + path + " Usage is missing", positionPath + "", "ERROR"));
+    } else {
+      if (conformanceProfile.getProfileType() != null) {
+        if (conformanceProfile.getProfileType().equals(ProfileType.HL7)) {
+          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B) || usage.equals(Usage.W))) {
+            result.getErrors().add(new IgamtObjectError("STRUCTURE", "Usage_Value_Base", "At " + path + " Usage should be one of R/RE/C/C(a/b)/O/X/B/W", positionPath + "", "Warning"));
+          }
+        } else if (conformanceProfile.getProfileType().equals(ProfileType.Constrainable)) {
+          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B))) {
+            result.getErrors().add(new IgamtObjectError("STRUCTURE", "Usage_Value_Constraintable", "At " + path + " Usage should be one of R/RE/C/C(a/b)/O/X/B", positionPath + "", "Warning"));
+          }
+        } else if (conformanceProfile.getProfileType().equals(ProfileType.Implementation)) {
+          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.CAB) || usage.equals(Usage.X))) {
+            result.getErrors().add(new IgamtObjectError("STRUCTURE", "Usage_Value_Implementable", "At " + path + " Usage should be one of R/RE/C(a/b)/X", positionPath + "", "Warning"));
+          }
+        } else {
+          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B) || usage.equals(Usage.W))) {
+            result.getErrors().add(new IgamtObjectError("STRUCTURE", "Usage_Value_Any", "At " + path + " Usage must be one of R/RE/C/C(a/b)/O/X/B/W", positionPath + "", "ERROR"));
+          }
+        }
       }
-   
-    
+    }
   }
 
   /**
