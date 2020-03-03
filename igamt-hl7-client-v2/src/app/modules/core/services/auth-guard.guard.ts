@@ -29,7 +29,6 @@ export class AuthenticatedGuard implements CanActivate {
       );
   }
 }
-
 @Injectable({
   providedIn: 'root',
 })

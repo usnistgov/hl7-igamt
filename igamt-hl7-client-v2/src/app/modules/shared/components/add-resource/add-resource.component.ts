@@ -5,7 +5,6 @@ import {Scope} from '../../constants/scope.enum';
 import {Type} from '../../constants/type.enum';
 import {IAddingInfo, SourceType} from '../../models/adding-info';
 import {IDisplayElement} from '../../models/display-element.interface';
-import {IResourcePickerData} from '../../models/resource-picker-data.interface';
 @Component({
   selector: 'app-add-resource',
   templateUrl: './add-resource.component.html',

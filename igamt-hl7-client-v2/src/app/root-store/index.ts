@@ -4,6 +4,7 @@ import { ActionReducerMap } from '@ngrx/store';
 import * as fromAuth from './authentication/authentication.reducer';
 import * as fromConfig from './config/config.reducer';
 import * as formCreateIg from './create-ig/create-ig.reducer';
+import * as fromDocumentation from './documentation/documentation.reducer';
 import * as fromLoader from './loader/loader.reducer';
 import * as fromPageMessages from './page-messages/page-messages.reducer';
 import * as fromLoadedResources from './resource-loader/resource-loader.reducer';
@@ -15,6 +16,7 @@ export interface IRouteState {
   pageMessages: fromPageMessages.IState;
   config: fromConfig.IState;
   loadedResources: fromLoadedResources.IState;
+  documentation:  fromDocumentation.IState;
   router: RouterReducerState;
 }
 
@@ -25,6 +27,7 @@ export const reducers: ActionReducerMap<IRouteState> = {
   pageMessages: fromPageMessages.reducer,
   config: fromConfig.reducer,
   loadedResources: fromLoadedResources.reducer,
+  documentation: fromDocumentation.reducer,
   router: routerReducer,
 };
 
