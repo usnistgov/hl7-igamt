@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {MatDialog} from '@angular/material';
 import {ActivatedRoute} from '@angular/router';
@@ -27,6 +27,11 @@ import {DocumentationService} from '../../service/documentation.service';
 export class DocumentationContainerComponent implements OnInit {
 
   viewOnly$: Observable<boolean>;
+  collapsed: boolean;
+  @ViewChild('resize', { read: ElementRef })
+  resize: ElementRef;
+  dragging: boolean;
+  positionX: string;
   admin$: Observable<boolean>;
   editMode$: Observable<boolean>;
   valid: Observable<boolean>;
