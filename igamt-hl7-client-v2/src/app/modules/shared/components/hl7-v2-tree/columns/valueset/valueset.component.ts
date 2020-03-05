@@ -16,7 +16,7 @@ import {
 } from '../../../binding-selector/binding-selector.component';
 import { IValueSetBindingDisplay } from '../../../binding-selector/binding-selector.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
-
+import * as _ from 'lodash';
 export interface IValueSetOrSingleCodeBindings {
   valueSetBindings: Array<IBinding<IValuesetBinding[]>>;
   singleCodeBindings: Array<IBinding<InternalSingleCode>>;
@@ -109,7 +109,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
 
   selectedValueSetBinding(vsOrCode: IValueSetOrSingleCodeDisplay): IValueSetBindingDisplay[] {
     if (vsOrCode && vsOrCode.type === IBindingType.VALUESET) {
-      return vsOrCode.value as IValueSetBindingDisplay[];
+      return _.cloneDeep(vsOrCode.value) as IValueSetBindingDisplay[];
     } else {
       return undefined;
     }
@@ -117,7 +117,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
 
   selectedSingleCode(vsOrCode: IValueSetOrSingleCodeDisplay): ISingleCodeDisplay {
     if (vsOrCode && vsOrCode.type === IBindingType.SINGLECODE) {
-      return vsOrCode.value as ISingleCodeDisplay;
+      return _.cloneDeep(vsOrCode.value) as ISingleCodeDisplay;
     } else {
       return undefined;
     }

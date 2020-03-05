@@ -32,6 +32,8 @@ export class DocumentationSideBarComponent implements OnInit {
   @Input()
   userNotes: IDocumentation[];
   @Input()
+  admin: boolean;
+  @Input()
   glossary: IDocumentation[];
   ngOnInit() {
   }

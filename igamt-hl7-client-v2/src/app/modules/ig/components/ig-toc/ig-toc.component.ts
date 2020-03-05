@@ -69,9 +69,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
       actionMapping: {
         mouse: {
           drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
-
-            console.log(from);
-            console.log(to);
             if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
@@ -198,7 +195,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   filterByDelta($event: string[]) {
-    console.log('filter called');
     this.tree.treeModel.filterNodes((node) => node.data.delta != null && $event.indexOf(node.data.delta) > -1 && node.data.Type !== Type.TEXT);
   }
 }

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.documentation.domain.Documentation;
+import gov.nist.hit.hl7.igamt.documentation.domain.DocumentationType;
 import gov.nist.hit.hl7.igamt.documentation.repository.DocumentationRepository;
 
 
@@ -111,7 +112,14 @@ public class DocumentationController {
 	"application/json" })
 	public List<Documentation> getAll(Authentication authentication) throws Exception
 	{
-		return documentationRepo.findAll();
+		List<Documentation> ret = new ArrayList<Documentation>();
+		ret.addAll(documentationRepo.findByType(DocumentationType.IMPLEMENTATIONDECISION));
+		ret.addAll(documentationRepo.findByType(DocumentationType.GLOSSARY));
+		ret.addAll(documentationRepo.findByType(DocumentationType.RELEASENOTE));
+		ret.addAll(documentationRepo.findByType(DocumentationType.USERGUIDE));
+		ret.addAll(documentationRepo.findByType(DocumentationType.FAQ));
+		ret.addAll(documentationRepo.findByTypeAndAuthors(DocumentationType.USERNOTES, authentication.getPrincipal().toString()));
+		return ret;
 
 	}
 }

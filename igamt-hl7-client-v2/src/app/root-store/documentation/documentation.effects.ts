@@ -18,7 +18,7 @@ import {
   LoadDocumentationsFailure,
   LoadDocumentationsSuccess,
   OpenDocumentationEditor,
-  OpenDocumentationSection,
+  OpenDocumentationSection, OpenDocumentationSectionFailure,
   ToggleEditMode, UpdateDocumentationList, UpdateDocumentationListSuccess,
   UpdateDocumentationState,
 } from './documentation.actions';
@@ -67,7 +67,7 @@ export class DocumentationEffects {
             if ( !section  || !section.id) {
               return [
                 this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, 'Could not find section with ID ' + action.payload.id)),
-               // new OpenEditorFailure({ id: action.payload.id }),
+               new OpenDocumentationSectionFailure({ id: action.payload.id }),
               ];
             } else {
               return [
@@ -140,7 +140,6 @@ export class DocumentationEffects {
               new UpdateDocumentationListSuccess(doc),
               new DeleteDocumentationState(action.id),
               this.message.userMessageToAction(new UserMessage<never>(MessageType.SUCCESS, 'Section Deleted Successfully ')),
-
             ];
           },
         ),
