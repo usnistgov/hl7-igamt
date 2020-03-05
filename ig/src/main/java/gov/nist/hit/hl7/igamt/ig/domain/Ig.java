@@ -26,6 +26,11 @@ import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 @Document
 public class Ig extends AbstractDomain {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
   private DocumentMetadata metadata = new DocumentMetadata();
   private Set<TextSection> content = new HashSet<TextSection>();
   private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
@@ -35,18 +40,17 @@ public class Ig extends AbstractDomain {
   private ConformanceProfileRegistry conformanceProfileRegistry = new ConformanceProfileRegistry();
   private CoConstraintGroupRegistry coConstraintGroupRegistry = new CoConstraintGroupRegistry();
   private DocumentExportConfiguration lastUserConfiguration;
-
   private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
 
   public DocumentExportConfiguration getLastUserConfiguration() {
-	return lastUserConfiguration;
-}
+    return lastUserConfiguration;
+  }
 
-public void setLastUserConfiguration(DocumentExportConfiguration lastUserConfiguration) {
-	this.lastUserConfiguration = lastUserConfiguration;
-}
+  public void setLastUserConfiguration(DocumentExportConfiguration lastUserConfiguration) {
+    this.lastUserConfiguration = lastUserConfiguration;
+  }
 
-public DocumentMetadata getMetadata() {
+  public DocumentMetadata getMetadata() {
     return metadata;
   }
 
@@ -148,12 +152,7 @@ public DocumentMetadata getMetadata() {
   public void setCoConstraintGroupRegistry(CoConstraintGroupRegistry coConstraintGroupRegistry) {
     this.coConstraintGroupRegistry = coConstraintGroupRegistry;
   }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
-   */
+  
   @Override
   public String getLabel() {
     return this.getName();

@@ -19,7 +19,7 @@
       <button ngbDropdownItem (click)="exportXML()">XML</button>
     </div>
   </div>
-  <button *ngIf="!viewOnly" (click)="verifyIG()"  class="btn btn-success btn-sm toolbar-button" type="button">
+  <button *ngIf="!viewOnly" (click)="verifyIG(true)"  class="btn btn-success btn-sm toolbar-button" type="button">
     <i class="fa fa-check"></i>
     Verify
   </button>

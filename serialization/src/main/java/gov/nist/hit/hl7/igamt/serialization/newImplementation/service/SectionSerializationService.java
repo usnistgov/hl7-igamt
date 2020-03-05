@@ -2,7 +2,6 @@ package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
-import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
@@ -19,8 +18,4 @@ public interface SectionSerializationService {
 	public Element SerializeSegmentRegistry(Section section, int level, IgDataModel igDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException;
 	public Element SerializeConformanceProfileRegistry(Section section, int level, IgDataModel igDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException;
 	public Element SerializeDatatypeRegistry(Section section, int level, IgDataModel igDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException;
-
-
-
-
 }

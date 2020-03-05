@@ -37,6 +37,7 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -52,6 +53,9 @@ BindingSerializationService bindingSerializationService;
 @Autowired
 ConstraintSerializationService constraintSerializationService;
 	
+@Autowired
+private FroalaSerializationUtil frolaCleaning;
+
 @Autowired
 private DeltaService deltaService;
 
@@ -149,7 +153,7 @@ private DeltaService deltaService;
 		              fieldElement.addAttribute(new Attribute("minLength",
 		                  field.getMinLength() != null ? field.getMinLength() : ""));
 		              fieldElement.addAttribute(
-		                  new Attribute("text", field.getText() != null ? field.getText() : ""));
+		                  new Attribute("text", field.getText() != null ? frolaCleaning.cleanFroalaInput(field.getText()) : ""));
 		              fieldElement.addAttribute(new Attribute("custom", String.valueOf(field.isCustom())));
 		              fieldElement.addAttribute(new Attribute("max", String.valueOf(field.getMax())));
 		              fieldElement.addAttribute(new Attribute("min", String.valueOf(field.getMin())));

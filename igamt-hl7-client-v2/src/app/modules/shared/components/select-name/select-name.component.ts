@@ -26,14 +26,14 @@ export class SelectNameComponent implements OnInit {
 
   ngOnInit() {
   }
-  emitData() {
+  emitData($event) {
     this.flavor.emit({
       originalId: this.element.id,
       id: null,
       name: this.element.fixedName,
       type: this.element.type,
       domainInfo: { ...this.element.domainInfo, scope: this.targetScope },
-      ext: this.element.variableName,
+      ext: $event,
       flavor: true,
     });
   }

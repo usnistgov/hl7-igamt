@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.util;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -26,16 +27,29 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.stereotype.Service;
 
+import com.mongodb.client.gridfs.model.GridFSFile;
 import com.mongodb.gridfs.GridFSDBFile;
+
+import gov.nist.hit.hl7.igamt.files.service.FileStorageService;
 
 /**
  *
  * @author Maxence Lefort on May 14, 2018.
  */
-public class FroalaSerializationUtil {
 
-  public static  String cleanFroalaInput(String input) {
+@Service
+public class FroalaSerializationUtil {
+  @Autowired
+  FileStorageService fileStorageService;
+  @Autowired
+  GridFsOperations gridFsOperations;
+
+
+  public String cleanFroalaInput(String input) {
     input = input.replace("<br>", "<br />");
     if (input.contains("<pre>")) {
       input = input.replace("\n", "<br />");
@@ -74,11 +88,11 @@ public class FroalaSerializationUtil {
                 elementImg.attr("src").substring(elementImg.attr("src").indexOf("name=") + 5);
             ext = FilenameUtils.getExtension(filename);
             // TODO add images
-            // GridFSDBFile dbFile = fileStorageService.findOneByFilename(filename);
-            // if (dbFile != null) {
-            // imgis = dbFile.getInputStream();
-            // bytes = IOUtils.toByteArray(imgis);
-            // }
+            GridFSFile dbFile = fileStorageService.findOneByFilename(filename);
+            if (dbFile != null) {
+              imgis = gridFsOperations.getResource(dbFile).getInputStream();
+              bytes = IOUtils.toByteArray(imgis);
+            }
           } else {
             String filename = elementImg.attr("src");
             ext = FilenameUtils.getExtension(filename);
@@ -173,5 +187,42 @@ public class FroalaSerializationUtil {
       elementToBeRemoved.remove();
     }
   }
+
+
+  public String getImageSrc(String src){
+    InputStream imgis = null;
+    String ext = null;
+    byte[] bytes = null;
+    String texEncImg =null; 
+    try {
+
+      if (src.indexOf("name=") != -1) {
+        String filename =
+            src.substring(src.indexOf("name=") + 5);
+        ext = FilenameUtils.getExtension(filename);
+        // TODO add images
+        GridFSFile dbFile = fileStorageService.findOneByFilename(filename);
+        if (dbFile != null) {
+          imgis = gridFsOperations.getResource(dbFile).getInputStream();
+          bytes = IOUtils.toByteArray(imgis);
+
+
+          if (bytes != null && bytes.length > 0) {
+            String imgEnc = Base64.getEncoder().encodeToString(bytes);
+            texEncImg = "data:image/" + ext + ";base64," + imgEnc;
+          }
+       
+        }
+      }
+
+    }catch (Exception e) {
+      e.printStackTrace();
+      
+    }
+    return texEncImg;
+
+    }
+
+
 
 }

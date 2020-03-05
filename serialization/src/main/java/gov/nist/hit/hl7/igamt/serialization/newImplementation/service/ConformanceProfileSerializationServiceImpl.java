@@ -33,6 +33,7 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -57,6 +58,9 @@ private CoConstraintSerializationService coConstraintSerializationService;
 
 @Autowired
 CoConstraintService coConstraintService;
+
+@Autowired
+private FroalaSerializationUtil frolaCleaning;
 
 	@Override
 	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level,  int position,
@@ -256,7 +260,7 @@ CoConstraintService coConstraintService;
 	      segmentRefElement.addAttribute(new Attribute("description",
 	          segment.getDescription() != null ? segment.getDescription() : ""));
 	      segmentRefElement.addAttribute(
-	          new Attribute("text", segmentRef.getText() != null ? segmentRef.getText() : ""));
+	          new Attribute("text", segmentRef.getText() != null ? frolaCleaning.cleanFroalaInput(segmentRef.getText()) : ""));
 	      segmentRefElement.addAttribute(
 	          new Attribute("max", segmentRef.getMax() != null ? segmentRef.getMax() : ""));
 	      segmentRefElement.addAttribute(new Attribute("min", String.valueOf(segmentRef.getMin())));

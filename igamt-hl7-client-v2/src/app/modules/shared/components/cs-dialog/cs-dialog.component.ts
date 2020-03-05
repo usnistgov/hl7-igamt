@@ -395,7 +395,7 @@ export class CsDialogComponent implements OnDestroy {
   }
 
   reset() {
-    this.conformanceStatement = this.backUp;
+    this.conformanceStatement = _.cloneDeep(this.backUp);
   }
 
   getTabForPattern(pattern: Pattern): CsTab {

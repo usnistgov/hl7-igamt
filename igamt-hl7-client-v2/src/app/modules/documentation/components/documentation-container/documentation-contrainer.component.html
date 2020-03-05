@@ -1,0 +1,52 @@
+<div class="page-container-nopad">
+  <div class="wrapper">
+    <div class="alerts">
+      <app-alerts-container></app-alerts-container>
+    </div>
+    <div class="titlebar">
+     <h5> IGAMT Documentation </h5>
+    </div>
+    <div [ngStyle]="{'grid-template-columns': '[sidebar] minmax(min-content, '+ (!collapsed ? positionX : '45px') +') [resize-bar] 4px [container] minmax(600px, 8fr)'}"
+         class="page-container">
+      <div class="container-section" *ngIf="title$ |async">
+        <div class="toolbar-controls">
+      <div>
+        <strong> {{ title$ | async}} > {{subTitle$ | async}}</strong>
+      </div>
+                    <div *ngIf="(editMode$ | async) && (admin$ |async)">
+                      <button class="btn btn-sm btn-success toolbar-button" [disabled]="!(valid |async) || !(changed| async)" (click)="save()">
+                        <i class="fa fa-save"></i>  Save
+                      </button>
+                      <button class="btn btn-sm btn-danger toolbar-button" [disabled]="!(changed| async)" (click)="reset()">
+                        <i class="fa fa-trash"></i> Reset
+                      </button>
+                    </div>
+                    <div *ngIf=" !(editMode$ | async) && (admin$ |async)">
+                      <button class="btn btn-sm btn-secondary toolbar-button" (click)="edit()">
+                        <i class="fa fa-pencil"></i>
+                      </button>
+                    </div>
+        </div>
+        <div class="titlebar-content">
+
+          <app-documentation-subtitle [updateInfo]="updateInfo$| async" ></app-documentation-subtitle>
+
+        </div>
+        <div class="container-content" *ngIf="(active$|async)">
+          <router-outlet style="display: none;">
+
+
+          </router-outlet>
+
+        </div>
+      </div>
+      <div #resize [ngStyle]="{'background-color': dragging ? 'blue' : ''}" class="resize-bar"></div>
+      <div class="sidebar-content" id="sidebar-content">
+        <app-documentation-side-bar [userguides]="userGuides$ |async" [decisions]="decisions$ |async" [faqs]="faqs$ |async"
+                  [glossary]="glossary$| async" [releaseNotes]="releaseNotes$ |async" [userNotes]="userNotes$ |async" class=""></app-documentation-side-bar>
+
+      </div>
+    </div>
+  </div>
+</div>
+

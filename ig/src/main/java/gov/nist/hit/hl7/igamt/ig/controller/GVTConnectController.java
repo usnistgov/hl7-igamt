@@ -52,6 +52,8 @@ public class GVTConnectController extends BaseController {
       throw new GVTLoginException(e.getMessage());
     }
   }
+  
+  
 
 
   @RequestMapping(value = "/api/testing/domains", method = RequestMethod.GET, produces = {"application/json"})

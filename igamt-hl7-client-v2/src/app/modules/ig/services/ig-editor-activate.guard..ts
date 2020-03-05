@@ -12,7 +12,6 @@ import { IEditorMetadata } from '../../shared/models/editor.enum';
 
 @Injectable()
 export class IgEditorActivateGuard implements CanActivate {
-
   constructor(
     private router: Router,
     private store: Store<any>,
