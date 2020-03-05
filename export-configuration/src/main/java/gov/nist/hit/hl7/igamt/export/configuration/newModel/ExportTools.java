@@ -12,7 +12,10 @@ public class ExportTools {
 				usageConfiguration.isCab() && usage.equals(Usage.CAB) ||
 				usageConfiguration.isR() && usage.equals(Usage.R) ||
 				usageConfiguration.isRe() && usage.equals(Usage.RE) ||
+				usageConfiguration.isRe() && usage.equals(Usage.RE) ||
+				usageConfiguration.isRe() && usage.equals(Usage.RE) ||
 				usageConfiguration.isX() && usage.equals(Usage.X);
+		
 	}
 	
 //	public static Boolean CheckUsageForValueSets(CodeUsageConfiguration usageConfiguration, CodeUsage usage) {

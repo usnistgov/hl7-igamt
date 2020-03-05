@@ -10,6 +10,8 @@
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.componentExport.c"> </p-checkbox></li>   
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="true" [(ngModel)]="config.componentExport.o" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="X" binary="true" [(ngModel)]="config.componentExport.x" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="B" binary="false" [(ngModel)]="config.componentExport.b" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="W" binary="false" [(ngModel)]="config.componentExport.w" (onChange)="triggerChange()"></p-checkbox></li>
       </ul>
     </div>
 
