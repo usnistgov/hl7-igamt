@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Type } from '../../constants/type.enum';
 import { DeltaAction, IDeltaNode, IDeltaReference } from '../../models/delta';
-import { ColumnOptions, HL7v2TreeColumnType, IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 import { IValuesetDelta } from '../../models/valueset-delta';
+import { ColumnOptions, HL7v2TreeColumnType, IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 
 @Component({
   selector: 'app-valueset-delta',

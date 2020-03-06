@@ -14,9 +14,9 @@ describe('ValuesetDeltaEditorComponent', () => {
   }));
 
   beforeEach(() => {
-    // fixture = TestBed.createComponent(ValuesetDeltaEditorComponent);
-    // component = fixture.componentInstance;
-    // fixture.detectChanges();
+    fixture = TestBed.createComponent(ValuesetDeltaEditorComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   it('should create', () => {
