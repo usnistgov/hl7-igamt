@@ -10,11 +10,12 @@
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.componentExport.c"> </p-checkbox></li>   
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="true" [(ngModel)]="config.componentExport.o" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="X" binary="true" [(ngModel)]="config.componentExport.x" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="B" binary="false" [(ngModel)]="config.componentExport.b" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="W" binary="false" [(ngModel)]="config.componentExport.w" (onChange)="triggerChange()"></p-checkbox></li>
       </ul>
     </div>
 
     <div style="display: flex;">
-
       <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;" *ngIf="displayColumns">
         <h5 class="card-title title-text custom-card-title">Columns to export</h5>
         <ul class="list-group list-group-flush">
@@ -23,7 +24,6 @@
           </li>
         </ul>
       </div>
-
 
       <div style="display: flex; flex-grow: 1; flex-direction: column;">
 

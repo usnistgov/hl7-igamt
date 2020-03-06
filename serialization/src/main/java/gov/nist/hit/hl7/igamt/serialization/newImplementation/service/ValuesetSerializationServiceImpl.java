@@ -71,7 +71,7 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	              displayCode.getValue() != null ? displayCode.getValue() : ""));
 	          codeRefElement.addAttribute(new Attribute("codeSystem", displayCode.getCodeSystem()));
 	          codeRefElement.addAttribute(new Attribute("usage",
-	              displayCode.getUsage() != null ? displayCode.getUsage().name() : ""));
+	              displayCode.getUsage() != null ? displayCode.getUsage().toString() : ""));
 	          codeRefElement.addAttribute(new Attribute("description",
 	              displayCode.getDescription() != null ? displayCode.getDescription() : ""));
 	          codeRefElement.addAttribute(new Attribute("comment",
@@ -108,11 +108,10 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	  
 	}
 	
-	public  Boolean CheckUsageForValueSets(CodeUsageConfiguration usageConfiguration, CodeUsage usage) {
+	public Boolean CheckUsageForValueSets(CodeUsageConfiguration usageConfiguration, CodeUsage usage) {
 	return usageConfiguration.isR() && usage.equals(CodeUsage.R) ||
 			usageConfiguration.isP() && usage.equals(CodeUsage.P) ||
-			usageConfiguration.isE() && usage.equals(CodeUsage.E);
-			
+			usageConfiguration.isE() && usage.equals(CodeUsage.E);			
 }
 
 	private String getCodSystemDispaly(Set<String> codeSystems) {

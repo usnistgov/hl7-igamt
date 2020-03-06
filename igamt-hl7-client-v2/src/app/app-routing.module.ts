@@ -42,6 +42,10 @@ const routes: Routes = [
     loadChildren: './modules/ig/ig.module#IgModule',
   },
   {
+    path: 'documentation',
+    loadChildren: './modules/documentation/documentation.module#DocumentationModule',
+  },
+  {
     path: '**', component: ErrorPageComponent,
   },
 ];

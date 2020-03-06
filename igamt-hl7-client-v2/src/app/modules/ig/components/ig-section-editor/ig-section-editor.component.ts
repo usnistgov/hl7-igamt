@@ -28,8 +28,7 @@ export class IgSectionEditorComponent extends AbstractEditorComponent {
     actions$: Actions,
     private igService: IgService,
     private messageService: MessageService) {
-    super(
-      {
+    super({
         id: EditorID.SECTION_NARRATIVE,
         resourceType: Type.TEXT,
       },

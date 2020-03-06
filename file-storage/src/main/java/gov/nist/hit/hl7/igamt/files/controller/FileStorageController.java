@@ -109,6 +109,20 @@ public class FileStorageController {
     }
   }
   
+  @ResponseBody
+  @RequestMapping(value = "/api/storage/file", method = RequestMethod.DELETE)
+  public void delete(@RequestParam(value="ig", required=false) String ig, @RequestParam(value="type", required=false) String type,@RequestParam(value="id", required=false) String id,  
+      HttpServletRequest request, Authentication authentication)
+      throws UploadImageFileException {
+    try {
+//      GridFSFile dbFile = storageService.findOneByFilename(filename);
+//      GridFsResource resource = template.getResource(dbFile.getFilename());
+    } catch (RuntimeException e) {
+      throw new UploadImageFileException(e);
+    } catch (Exception e) {
+      throw new UploadImageFileException(e);
+    }
+  }
 
 
 

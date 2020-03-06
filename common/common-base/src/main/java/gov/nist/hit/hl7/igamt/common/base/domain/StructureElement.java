@@ -5,7 +5,7 @@ import java.io.Serializable;
 import gov.nist.diff.annotation.DeltaField;
 import gov.nist.diff.annotation.DeltaIdentity;
 
-public class StructureElement implements Serializable{
+public class StructureElement implements Serializable {
 
   private String id;
   @DeltaField
@@ -14,6 +14,9 @@ public class StructureElement implements Serializable{
   private int position;
   @DeltaField
   private Usage usage;
+  @DeltaField
+  private Usage oldUsage;
+  
   @DeltaField
   private Type type;
   @DeltaField
@@ -84,12 +87,20 @@ public class StructureElement implements Serializable{
   public void setId(String id) {
     this.id = id;
   }
-
+  
   public String getName() {
     return name;
   }
-
+  
   public void setName(String name) {
     this.name = name;
+  }
+  
+  public Usage getOldUsage() {
+    return oldUsage;
+  }
+
+  public void setOldUsage(Usage oldUsage) {
+    this.oldUsage = oldUsage;
   }
 }

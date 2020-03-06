@@ -124,6 +124,7 @@
 		<module>constraint</module>
 		<module>delta</module>
 		<module>diff-utils</module>
+		<module>documentation</module>
 		<module>bootstrap</module>
 	</modules>
   

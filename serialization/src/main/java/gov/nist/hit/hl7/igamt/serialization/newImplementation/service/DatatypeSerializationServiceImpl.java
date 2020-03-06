@@ -184,8 +184,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	@Override
 	public Element serializeDateTimeDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel, DatatypeExportConfiguration datatypeExportConfiguration) {
 	    DateTimeDatatype dateTimeDatatype =  (DateTimeDatatype) datatypeDataModel.getModel();
-	    if(dateTimeDatatype
-            .getDateTimeConstraints() !=null) {
+	    if(dateTimeDatatype.getDateTimeConstraints() !=null) {
 	    for (DateTimeComponentDefinition dateTimeComponentDefinition : dateTimeDatatype
 	        .getDateTimeConstraints().getDateTimeComponentDefinitions()) {
 	    	if(dateTimeComponentDefinition != null) {
@@ -210,7 +209,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	            new Attribute("position", String.valueOf(dateTimeComponentDefinition.getPosition())));
 	        dateTimeComponentDefinitionElement.addAttribute(new Attribute("usage",
 	            dateTimeComponentDefinition.getUsage() != null
-	                ? dateTimeComponentDefinition.getUsage().name()
+	                ? dateTimeComponentDefinition.getUsage().toString()
 	                : ""));
 	        datatypeElement.appendChild(dateTimeComponentDefinitionElement);
 	      }

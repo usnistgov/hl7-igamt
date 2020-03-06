@@ -272,11 +272,11 @@ public class BootstrapApplication implements CommandLineRunner {
      */
 
 
-    //@PostConstruct
+    @PostConstruct
     void generateDefaultExportConfig() {
 
       List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
-      if( originals !=null && originals.isEmpty()) {
+      if( originals == null || originals.isEmpty()) {
         ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
         basicExportConfiguration.setConfigName("Default Export Configuration");
         basicExportConfiguration.setOriginal(true);

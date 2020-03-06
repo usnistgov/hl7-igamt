@@ -156,14 +156,28 @@ private FroalaSerializationUtil frolaCleaning;
 		    		    			for(CoConstraintBindingSegment coConstraintBindingSegment : coConstraintBinding.getBindings() ) {
 		    		    				if(coConstraintBindingSegment != null) {
 		    		    					for(CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {
-		    		    						Element coConstraintsElement = null;
+		    		    						Element coConstraintsElement = new Element("coConstraintsElement");
 		    		    						CoConstraintTable mergedCoConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableConditionalBinding.getValue());
 
 		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("COMPACT")) {
-			    		    						 coConstraintsElement = coConstraintSerializationService.SerializeCoConstraintCompact(mergedCoConstraintTable);
+		    		    							if(coConstraintTableConditionalBinding.getCondition() != null) {
+		    		    							Element coConstraintCondition = new Element("coConstraintCondition");
+		    		    							coConstraintCondition.appendChild(coConstraintTableConditionalBinding.getCondition().getDescription());
+			    		    						coConstraintsElement.appendChild(coConstraintCondition);
+		    		    							}
+			    		    						Element coConstraintsTable = new Element("coConstraintsTable");
+			    		    						coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintCompact(mergedCoConstraintTable));
+			    		    						coConstraintsElement.appendChild(coConstraintsTable);
 		    		    						}
 		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("VERBOSE")) {
-			    		    						 coConstraintsElement = coConstraintSerializationService.SerializeCoConstraintVerbose(mergedCoConstraintTable);
+		    		    							if(coConstraintTableConditionalBinding.getCondition() != null) {
+			    		    						 Element coConstraintCondition = new Element("coConstraintCondition");
+			    		    							coConstraintCondition.appendChild(coConstraintTableConditionalBinding.getCondition().getDescription());
+				    		    						coConstraintsElement.appendChild(coConstraintCondition);
+		    		    							}
+				    		    						Element coConstraintsTable = new Element("coConstraintsTable");
+				    		    						coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintVerbose(mergedCoConstraintTable));
+				    		    						coConstraintsElement.appendChild(coConstraintsTable);
 		    		    						}
 //		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("NOEXPORT")) {
 //			    		    						 coConstraintsElement = new Element("");
@@ -252,7 +266,7 @@ private FroalaSerializationUtil frolaCleaning;
 	      segmentRefElement.addAttribute(new Attribute("min", String.valueOf(segmentRef.getMin())));
 	      segmentRefElement.addAttribute(new Attribute("type", Type.SEGMENTREF.name()));
 	      segmentRefElement.addAttribute(new Attribute("usage",
-	          segmentRef.getUsage() != null ? segmentRef.getUsage().name() : ""));
+	          segmentRef.getUsage() != null ? segmentRef.getUsage().toString() : ""));
 	      segmentRefElement.addAttribute(new Attribute("iDRef", segmentRef.getId()));
 	      segmentRefElement.addAttribute(new Attribute("iDSeg", segmentRef.getRef().getId()));
 	      if (segment != null && segment.getName() != null) {
