@@ -1,0 +1,159 @@
+<p-panel [toggleable]="true" collapseIcon="pi pi-fw pi-chevron-down" expandIcon="pi pi-fw pi-chevron-right"
+  header="Value Set Attributes" [style]="{'margin-bottom':'5px;'}">
+  <div class="value-set-attributes">
+    <div class="value-set-attributes-col">
+      <strong>
+        Extensibility:
+      </strong>
+      <span style="display: inline-flex;">
+        <ng-container *ngTemplateOutlet="diff; context : { $implicit: compare.delta.extensibility }"></ng-container>
+      </span>
+    </div>
+    <div class="value-set-attributes-col">
+      <strong>
+        Stability:
+      </strong>
+      <span style="display: inline-flex;">
+        <ng-container *ngTemplateOutlet="diff; context : { $implicit: compare.delta.stability }"></ng-container>
+      </span>
+    </div>
+    <div class="value-set-attributes-col">
+      <strong>
+        Content Definition:
+      </strong>
+      <span style="display: inline-flex;">
+        <ng-container *ngTemplateOutlet="diff; context : { $implicit: compare.delta.contentDefinition }"></ng-container>
+      </span>
+    </div>
+  </div>
+
+  <div class="code-system-container">
+    <span class="code-system-label">
+      <strong> Source code Systems: </strong>
+    </span>
+    <!-- <span *ngFor="let codeSys of valueSet.codeSystems" class="code-system-badge">
+      {{codeSys}}
+      <i (click)="deleteCodeSystem(codeSys)" *ngIf="!viewOnly" class="fa fa-remove"
+        style="color: red; cursor: pointer;"></i>
+    </span> -->
+  </div>
+</p-panel>
+<p-table #dt1 [columns]="selectedColumns" [reorderableColumns]="true" sortField="value" [resizableColumns]="false"
+  [value]="compare.delta.codes">
+  <ng-template pTemplate="caption">
+    <div class="codes-toolbar">
+      <div style="text-align:left">
+        <p-multiSelect [(ngModel)]="selectedColumns" [options]="cols" [style]="{minWidth: '200px'}"
+          defaultLabel="Choose Columns" id="columns" name="columns" optionLabel="header"
+          selectedItemsLabel="{0} columns selected"></p-multiSelect>
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-columns pTemplate="header">
+    <tr>
+      <th *ngFor="let col of columns" [pSortableColumn]="col.field" pReorderableColumn pResizableColumn>
+        {{col.field}}
+        <p-sortIcon [field]="col.field"></p-sortIcon>
+      </th>
+    </tr>
+
+    <tr>
+      <th *ngFor="let col of columns" [ngSwitch]="col.field" class="ui-fluid" style="background:#c8c8c8;">
+        <input (input)="dt1.filter($event.target.value, col.field, col.filterMatchMode)"
+          [placeholder]="' Search by '+col.header" [value]="dt1.filters[col.field]?.value" pInputText type="text">
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template let-columns="columns" let-index="rowIndex" let-rowData pTemplate="body">
+    <tr #anchor *ngIf="!viewOnly" [pSelectableRow]="rowData"
+      [ngClass]="{'added-row': rowData.action === 'ADDED', 'deleted-row': rowData.action === 'DELETED'  }">
+      <ng-container *ngFor="let col of columns" [ngSwitch]="col.field">
+        <ng-container *ngSwitchCase="'usage'">
+          <td [class]="cellClass(rowData.usage.action)">
+            <div #anchor>
+              <ng-container *ngTemplateOutlet="diff; context : { $implicit: rowData.usage }"></ng-container>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container *ngSwitchCase="'codeSystem'">
+          <td [class]="cellClass(rowData.codeSystem.action)">
+            <div #anchor>
+              <ng-container *ngTemplateOutlet="diff; context : { $implicit: rowData.codeSystem }"></ng-container>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container *ngSwitchCase="'description'">
+          <td [class]="cellClass(rowData.description.action)">
+            <div #anchor>
+              <ng-container *ngTemplateOutlet="diff; context : { $implicit: rowData.description }"></ng-container>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container *ngSwitchCase="'value'">
+          <td [class]="cellClass(rowData.value.action)">
+            <div #anchor>
+              <ng-container *ngTemplateOutlet="diff; context : { $implicit: rowData.value }"></ng-container>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container *ngSwitchCase="'comments'">
+          <td [class]="cellClass(rowData.comments.action)">
+            <div #anchor>
+              <ng-container *ngTemplateOutlet="diff; context : { $implicit: rowData.comments }"></ng-container>
+            </div>
+          </td>
+        </ng-container>
+      </ng-container>
+
+    </tr>
+
+    <tr *ngIf="viewOnly" [pSelectableRow]="rowData">
+      <td *ngIf="!viewOnly" style="width: 3em">
+        <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+      </td>
+      <td *ngFor="let col of columns" [ngSwitch]="col.field">
+        {{rowData[col.field]}}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+<ng-template #diff let-delta let-styleCurrent="styleCurrent" let-stylePrevious="stylePrevious"
+  let-styleUnchanged="styleUnchanged">
+  <ng-container *ngIf="delta">
+    <app-delta-column [action]="delta.action" [currentValue]="delta.current" [previousValue]="delta.previous"
+      [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged">
+      <ng-template #default let-value>
+        {{value}}
+      </ng-template>
+    </app-delta-column>
+  </ng-container>
+</ng-template>
+<ng-template #reference let-reference>
+  <ng-container *ngIf="reference">
+    <app-delta-column [action]="referenceAction(reference)" [currentValue]="{
+        id: reference.id.current,
+        domainInfo: reference.domainInfo.current,
+        label: reference.label.current
+      }" [previousValue]="{
+        id: reference.id.previous,
+        domainInfo: reference.domainInfo.previous,
+        label: reference.label.previous
+      }">
+      <ng-template #default let-value>
+        <app-entity-bagde [type]="reference.type"></app-entity-bagde>
+        <app-scope-badge *ngIf="value.domainInfo" [scope]="value.domainInfo.scope" [version]="value.domainInfo.version">
+        </app-scope-badge>
+        <span> {{ value.label }}</span>
+      </ng-template>
+    </app-delta-column>
+  </ng-container>
+</ng-template>
+<ng-template #vsList let-list>
+  <ng-container *ngFor="let item of list">
+    <div [pTooltip]="item.name" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
+      <app-entity-bagde [type]="'VALUESET'"></app-entity-bagde>
+      <app-scope-badge [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
+      <strong style="margin-left: 5px;"> {{item.label}}</strong>
+    </div>
+  </ng-container>
+</ng-template>

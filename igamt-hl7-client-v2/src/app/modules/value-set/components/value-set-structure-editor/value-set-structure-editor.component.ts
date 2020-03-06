@@ -5,7 +5,7 @@ import { SelectItem } from 'primeng/api';
 import { Observable, of } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
 import { LoadValueSet } from 'src/app/root-store/value-set-edit/value-set-edit.actions';
-import { selectIgId, selectValueSetById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectedResourceHasOrigin, selectIgId, selectValueSetById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../core/models/message/message.class';
 import { MessageService } from '../../../core/services/message.service';
@@ -30,6 +30,7 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
   @Input()
   viewOnly: boolean;
   codeSystemOptions: any[];
+  hasOrigin$: Observable<boolean>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -52,6 +53,7 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
       ],
       [
       ]);
+    this.hasOrigin$ = this.store.select(selectedResourceHasOrigin);
     this.resource$.subscribe((resource: IValueSet) => {
       this.cols = [];
       this.cols.push({ field: 'value', header: 'Value' });
