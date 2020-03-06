@@ -1,5 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import * as _ from 'lodash';
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, take, takeUntil, takeWhile, tap } from 'rxjs/operators';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
@@ -16,7 +17,6 @@ import {
 } from '../../../binding-selector/binding-selector.component';
 import { IValueSetBindingDisplay } from '../../../binding-selector/binding-selector.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
-import * as _ from 'lodash';
 export interface IValueSetOrSingleCodeBindings {
   valueSetBindings: Array<IBinding<IValuesetBinding[]>>;
   singleCodeBindings: Array<IBinding<InternalSingleCode>>;
