@@ -1,8 +1,8 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 public enum Usage {
-R("R"),RE("RE"),X("X"),C("C"),CAB("C(A/B)"),O("O"), B("B"), W("W"), CE("CE");
-  
+R("R"),RE("RE"),X("X"),C("C"),CAB("CAB"),O("O"), B("B"), W("W");
+ 
   Usage(String value) {
     this.value = value;
   }
