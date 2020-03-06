@@ -80,6 +80,7 @@ import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.comp
 import { UsageDialogComponent } from './components/usage-dialog/usage-dialog.component';
 import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.component';
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
+import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
@@ -89,7 +90,6 @@ import { StoreResourceRepositoryService } from './services/resource-repository.s
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 
 @NgModule({
   declarations: [

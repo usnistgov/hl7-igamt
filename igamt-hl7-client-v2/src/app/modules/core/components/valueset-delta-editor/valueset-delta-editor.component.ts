@@ -5,13 +5,13 @@ import { TreeNode } from 'primeng/primeng';
 import { Observable, of } from 'rxjs';
 import { concatMap, map, pluck } from 'rxjs/operators';
 import { IDelta } from 'src/app/modules/shared/models/delta';
+import { ICodeDelta, IValuesetDelta } from 'src/app/modules/shared/models/valueset-delta';
 import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
-import { IValuesetDelta, ICodeDelta } from 'src/app/modules/shared/models/valueset-delta';
 
 export abstract class ValuesetDeltaEditorComponent extends AbstractEditorComponent implements OnInit {
 
@@ -33,12 +33,11 @@ export abstract class ValuesetDeltaEditorComponent extends AbstractEditorCompone
       pluck('value'),
       map((delta: IValuesetDelta) => {
         if (delta) {
-          console.log(delta)
           return {
             ...delta,
             delta: {
               ...delta.delta,
-              codes: this.prepare(delta.delta.codes)
+              codes: this.prepare(delta.delta.codes),
             },
           };
         }

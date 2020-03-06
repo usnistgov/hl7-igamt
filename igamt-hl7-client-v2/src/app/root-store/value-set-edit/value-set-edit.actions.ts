@@ -12,7 +12,7 @@ export enum ValueSetEditActionTypes {
   OpenValueSetStructureEditor = '[ValueSet Edit] Open Value Set Structure Editor',
   OpenValueSetCrossRefEditor = '[ValueSet Edit]Open Value Set Cross References Editor',
   OpenValueSetMetadataEditor = '[ValueSet Edit] Open Value Set Metadata Editor',
-  OpenValueSetDeltaEditor = '[ValueSet Edit] Open Value Set Delta Editor'
+  OpenValueSetDeltaEditor = '[ValueSet Edit] Open Value Set Delta Editor',
 }
 
 export class LoadValueSet implements Action {

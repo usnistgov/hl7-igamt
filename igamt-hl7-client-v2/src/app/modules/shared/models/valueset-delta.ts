@@ -1,7 +1,7 @@
 import { TreeNode } from 'primeng/api';
 import { Type } from '../constants/type.enum';
+import { IDeltaInfo, IDeltaNode } from './delta';
 import { IDomainInfo } from './domain-info.interface';
-import { IDeltaNode, IDeltaInfo } from './delta';
 
 export interface IValuesetDelta {
   type: Type;
