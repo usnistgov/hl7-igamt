@@ -64,14 +64,16 @@ public class SerializeCoconstraintTableToExcel {
 	@Autowired
 	ValuesetService valuesetService;
 
-	public ByteArrayOutputStream exportToExcel(CoConstraintTable coConstraintTable1) {
+	public ByteArrayOutputStream exportToExcel(CoConstraintTable coConstraintTableNotMerged) {
 //		final String FILE_NAME = "/Users/ynb4/Desktop/MyFirstExcelTryout.xlsx";
 		final int HEADER_FONT_SIZE = 20;
 //		if (coConstraintService.getCoConstraintForSegment(id) != null) {
 //			CoConstraintTable coConstraintTable = coConstraintService.getCoConstraintForSegment(id);
 		
-		ConformanceProfile conformanceProfile = conformanceProfileService.findById("5e2874487ca5c06e4a2283af");
-		CoConstraintTable coConstraintTable = conformanceProfile.getCoConstraintsBindings().get(0).getBindings().get(0).getTables().get(0).getValue();
+//		ConformanceProfile conformanceProfile = conformanceProfileService.findById("5e2874487ca5c06e4a2283af");
+//		CoConstraintTable coConstraintTable = conformanceProfile.getCoConstraintsBindings().get(0).getBindings().get(0).getTables().get(0).getValue();
+
+		CoConstraintTable coConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableNotMerged);
 
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet("Coconstaints Export");
@@ -216,10 +218,14 @@ public class SerializeCoconstraintTableToExcel {
 				cell.setCellStyle(userHeaderStyle);
 			}
 
+			if(thenCell.getColumnIndex() - ifCell.getColumnIndex() != 1){
 						sheet.addMergedRegion(new CellRangeAddress(0,0,ifCell.getColumnIndex(),thenCell.getColumnIndex()-1));
+			}
+			if(userCell.getColumnIndex() - thenCell.getColumnIndex() != 1){
 						sheet.addMergedRegion(new CellRangeAddress(0,0,thenCell.getColumnIndex(),userCell.getColumnIndex()-1));
+			}
 						if(headers.getNarratives().size() != 1) {
-//						sheet.addMergedRegion(new CellRangeAddress(0,0,userCell.getColumnIndex(),userCell.getColumnIndex()+headers.getNarratives().size()-1));
+						sheet.addMergedRegion(new CellRangeAddress(0,0,userCell.getColumnIndex(),userCell.getColumnIndex()+headers.getNarratives().size()-1));
 						}
 						System.out.println("Here6 :" + userCell.getColumnIndex());
 

@@ -112,6 +112,10 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   public ExportConfiguration getDefaultConfig(boolean defaultConfig, String username) {
     return exportConfigurationRepository.findOneByDefaultConfigAndUsername(defaultConfig, username);
   }
+  
+  public ExportConfiguration getOriginalConfig(boolean isOriginal) {
+	    return exportConfigurationRepository.findOneByOriginal(isOriginal);
+	  }
 
 
 

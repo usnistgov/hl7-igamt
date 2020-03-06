@@ -209,7 +209,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	            new Attribute("position", String.valueOf(dateTimeComponentDefinition.getPosition())));
 	        dateTimeComponentDefinitionElement.addAttribute(new Attribute("usage",
 	            dateTimeComponentDefinition.getUsage() != null
-	                ? dateTimeComponentDefinition.getUsage().name()
+	                ? dateTimeComponentDefinition.getUsage().toString()
 	                : ""));
 	        datatypeElement.appendChild(dateTimeComponentDefinitionElement);
 	      }

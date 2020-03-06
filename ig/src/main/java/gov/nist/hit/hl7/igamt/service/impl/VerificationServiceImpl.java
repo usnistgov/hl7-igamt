@@ -1628,6 +1628,7 @@ public class VerificationServiceImpl implements VerificationService {
     Ig ig = this.igService.findById(documentId);
     IgVerificationResult result = new IgVerificationResult(ig);
     
+    /*
     ValueSetRegistry valueSetRegistry = ig.getValueSetRegistry();
     
     if(valueSetRegistry.getChildren() != null) {
@@ -1685,6 +1686,7 @@ public class VerificationServiceImpl implements VerificationService {
         
       } 
     }
+    */
     
     ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
     if(conformanceProfileRegistry.getChildren() != null) {

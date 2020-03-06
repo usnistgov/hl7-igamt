@@ -54,6 +54,8 @@ export class ExportDialogComponent implements OnInit {
       take(1),
       map((decision) => {
         console.log(decision);
+        console.log(this.selectedConfig.configName);
+
         const tocDialog = this.dialog.open(ExportConfigurationDialogComponent, {
           maxWidth: '95vw',
           maxHeight: '90vh',
