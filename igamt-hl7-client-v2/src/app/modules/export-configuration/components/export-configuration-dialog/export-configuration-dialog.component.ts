@@ -6,13 +6,13 @@ import { TreeNode } from 'angular-tree-component';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
 import { map, take, withLatestFrom } from 'rxjs/operators';
-import { ToggleDelta } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { ToggleDelta } from '../../../../root-store/document/document-edit/ig-edit.actions';
 import {
   selectAllDatatypes, selectAllMessages, selectAllSegments, selectAllValueSets,
   selectDelta,
   selectDerived,
   selectIgId, selectValueSets, selectValueSetsNodes,
-} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+} from '../../../../root-store/document/document-edit/ig-edit.selectors';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IExportConfigurationGlobal } from '../../models/config.interface';

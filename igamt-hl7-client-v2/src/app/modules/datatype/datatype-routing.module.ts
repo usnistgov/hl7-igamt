@@ -10,9 +10,9 @@ import {
   OpenDatatypeStructureEditor,
 } from '../../root-store/datatype-edit/datatype-edit.actions';
 import { OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from '../../root-store/datatype-edit/datatype-edit.actions';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
+import { DataLoaderResolverService } from '../document/services/data-loader-resolver.service';
+import { IgEditorActivateGuard } from '../document/services/ig-editor-activate.guard.';
+import { IgEditSaveDeactivateGuard } from '../document/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { DatatypeConformanceStatementEditorComponent } from './components/conformance-statement-editor/datatype-conformance-statement-editor.component';

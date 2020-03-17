@@ -11,10 +11,10 @@ import {MessageService} from '../../modules/core/services/message.service';
 import {ResourceService} from '../../modules/shared/services/resource.service';
 import {RxjsStoreHelperService} from '../../modules/shared/services/rxjs-store-helper.service';
 import {
-  CreateIgActions,
+  CreateDocumentActions,
   LoadMessageEventsFailure,
   LoadMessageEventsSuccess,
-} from '../create-ig/create-ig.actions';
+} from '../create-ig/create-document.actions';
 import {TurnOnLoader} from '../loader/loader.actions';
 import {
   LoadResource, LoadResourceFailure,

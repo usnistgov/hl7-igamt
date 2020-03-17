@@ -4,7 +4,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot, Resolve, Router, RouterStateSna
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { concatMap, map, mergeMap, take } from 'rxjs/operators';
-import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import * as fromIgDocumentEdit from 'src/app/root-store/document/document-edit/ig-edit.index';
 import { Type } from '../constants/type.enum';
 import { CrossReferencesService } from '../services/cross-references.service';
 

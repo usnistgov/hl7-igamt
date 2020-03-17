@@ -7,8 +7,8 @@ import { catchError, concatMap, distinctUntilChanged, filter, flatMap, map, merg
 import { ICoConstraintGroup } from 'src/app/modules/shared/models/co-constraint.interface';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
-import { EditorSave, EditorUpdate, IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectAllDatatypes, selectCoConstraintGroupsById, selectIgId, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { EditorSave, EditorUpdate, IgEditResolverLoad } from '../../../../root-store/document/document-edit/ig-edit.actions';
+import { selectAllDatatypes, selectCoConstraintGroupsById, selectIgId, selectValueSetsNodes } from '../../../../root-store/document/document-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { MessageService } from '../../../core/services/message.service';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';

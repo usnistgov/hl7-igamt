@@ -5,7 +5,7 @@ import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
-import { selectDatatypesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectDatatypesById } from '../../../../root-store/document/document-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../core/models/message/message.class';
 import { MessageService } from '../../../core/services/message.service';

@@ -6,7 +6,7 @@ import {
   IDocumentation,
 } from '../../modules/documentation/models/documentation.interface';
 import {IEditorMetadata} from '../../modules/shared/models/editor.enum';
-import {IgEditActionTypes} from '../ig/ig-edit/ig-edit.actions';
+import {IgEditActionTypes} from '../document/document-edit/ig-edit.actions';
 
 export enum DocumentationActionTypes {
   LoadDocumentations = '[Documentation] Load Documentations',

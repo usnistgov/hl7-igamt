@@ -5,15 +5,15 @@ import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import {catchError, concatMap, flatMap, map, mergeMap, switchMap, take} from 'rxjs/operators';
 import { IConformanceProfile } from 'src/app/modules/shared/models/conformance-profile.interface';
-import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import * as fromIgEdit from 'src/app/root-store/document/document-edit/ig-edit.index';
 import { ConformanceProfileService } from '../../modules/conformance-profile/services/conformance-profile.service';
 import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { ICPConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { LoadSelectedResource, OpenEditor, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
-import { selectedConformanceProfile, selectedResourcePostDef, selectedResourcePreDef, selectIgId, selectMessagesById } from '../ig/ig-edit/ig-edit.selectors';
+import { LoadSelectedResource, OpenEditor, OpenEditorBase } from '../document/document-edit/ig-edit.actions';
+import { selectedConformanceProfile, selectedResourcePostDef, selectedResourcePreDef, selectIgId, selectMessagesById } from '../document/document-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import {
   ConformanceProfileEditActions,

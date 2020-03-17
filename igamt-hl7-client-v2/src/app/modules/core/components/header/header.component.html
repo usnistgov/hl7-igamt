@@ -30,13 +30,24 @@
           </button>
         </div>
       </li>
-      <li class="nav-item" ngbDropdown>
+      <li [ngClass]="{'active': isIG | async }" class="nav-item" ngbDropdown>
         <span class="nav-link" ngbDropdownToggle>Data Type Libraries</span>
         <div ngbDropdownMenu>
-          <button ngbDropdownItem>Create Data Types Library</button>
-          <button ngbDropdownItem>User's Data Types Libraries</button>
-          <button ngbDropdownItem>Published Data Types Libraries</button>
-          <button ngbDropdownItem>Data Types Evolution</button>
+          <button [routerLink]="[ '/datatype-library/create']" ngbDropdownItem routerLinkActive="active-dropdown">
+            Create new Data Type Library
+          </button>
+          <button [queryParams]="{ type : 'USER' }" [routerLink]="[ '/datatype-library/list']" ngbDropdownItem
+                  routerLinkActive="active-dropdown">
+            User's new Data Type Library
+          </button>
+          <button [queryParams]="{ type : 'PUBLISHED' }" [routerLink]="[ '/datatype-library/list']" ngbDropdownItem
+                  routerLinkActive="active-dropdown">
+            Published Data Type Libraries
+          </button>
+          <button *ngIf="isAdmin | async" [queryParams]="{ type : 'ALL' }" [routerLink]="[ '/datatype-library/list']"
+                  ngbDropdownItem routerLinkActive="active-dropdown">
+            All Data Type Library
+          </button>
         </div>
       </li>
 

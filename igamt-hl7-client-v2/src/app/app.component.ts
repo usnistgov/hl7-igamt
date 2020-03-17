@@ -6,7 +6,7 @@ import { map } from 'rxjs/operators';
 import { BootstrapCheckAuthStatus } from './root-store/authentication/authentication.actions';
 import { selectIsLoggedIn } from './root-store/authentication/authentication.reducer';
 import { LoadConfig } from './root-store/config/config.actions';
-import { selectFullScreen } from './root-store/ig/ig-edit/ig-edit.selectors';
+import { selectFullScreen } from './root-store/document/document-edit/ig-edit.selectors';
 import * as fromLoader from './root-store/loader/loader.reducer';
 
 @Component({

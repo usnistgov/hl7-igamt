@@ -5,8 +5,8 @@ import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
-import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { selectedSegment } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import * as fromIgEdit from 'src/app/root-store/document/document-edit/ig-edit.index';
+import { selectedSegment } from 'src/app/root-store/document/document-edit/ig-edit.index';
 import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { SegmentService } from '../../modules/segment/services/segment.service';
@@ -15,8 +15,8 @@ import { IConformanceStatementList } from '../../modules/shared/models/cs-list.i
 import { ISegment } from '../../modules/shared/models/segment.interface';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { LoadSelectedResource, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
-import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef, selectIgId } from '../ig/ig-edit/ig-edit.selectors';
+import { LoadSelectedResource, OpenEditorBase } from '../document/document-edit/ig-edit.actions';
+import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef, selectIgId } from '../document/document-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import {
   LoadSegment,

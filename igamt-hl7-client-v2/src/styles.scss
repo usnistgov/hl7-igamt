@@ -396,3 +396,7 @@ body .ui-dropdown-panel {
 .doc-accordion  .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a .ui-accordion-toggle-icon {
   color: black !important;
 }
+
+app-form-input.ng-invalid > div > .form-control{
+  background: red !important;
+}

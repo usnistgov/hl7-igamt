@@ -5,7 +5,7 @@ import {Store} from '@ngrx/store';
 import {TurnOffLoader, TurnOnLoader} from '../../../../root-store/loader/loader.actions';
 import {AddMessage, ClearAll} from '../../../../root-store/page-messages/page-messages.actions';
 import {MessageType, UserMessage} from '../../../core/models/message/message.class';
-import {IgService} from '../../../ig/services/ig.service';
+import {IgService} from '../../../document/services/ig.service';
 import {IConnectingInfo} from '../../models/config.class';
 import {IDisplayElement} from '../../models/display-element.interface';
 import {ISelectedIds} from '../select-resource-ids/select-resource-ids.component';

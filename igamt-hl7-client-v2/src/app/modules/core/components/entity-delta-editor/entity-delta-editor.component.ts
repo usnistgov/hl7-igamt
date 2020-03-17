@@ -5,7 +5,7 @@ import { TreeNode } from 'primeng/primeng';
 import { Observable, of } from 'rxjs';
 import { concatMap, map, pluck } from 'rxjs/operators';
 import { IDelta } from 'src/app/modules/shared/models/delta';
-import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { EditorSave } from '../../../../root-store/document/document-edit/ig-edit.actions';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';

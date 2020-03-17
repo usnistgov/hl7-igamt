@@ -3,7 +3,7 @@ import { routerReducer, RouterReducerState } from '@ngrx/router-store';
 import { ActionReducerMap } from '@ngrx/store';
 import * as fromAuth from './authentication/authentication.reducer';
 import * as fromConfig from './config/config.reducer';
-import * as formCreateIg from './create-ig/create-ig.reducer';
+import * as formCreateIg from './create-ig/create-document.reducer';
 import * as fromDocumentation from './documentation/documentation.reducer';
 import * as fromLoader from './loader/loader.reducer';
 import * as fromPageMessages from './page-messages/page-messages.reducer';

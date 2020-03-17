@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.interface';
 import { IEditorMetadata } from '../../modules/shared/models/editor.enum';
-import { OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
+import { OpenEditorBase } from '../document/document-edit/ig-edit.actions';
 
 export enum CoConstraintGroupEditActionTypes {
   LoadCoConstraintGroup = '[CoConstraintGroupEdit] Load CoConstraints Group',

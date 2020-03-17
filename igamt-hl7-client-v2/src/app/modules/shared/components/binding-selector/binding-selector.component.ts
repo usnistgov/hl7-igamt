@@ -3,7 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
-import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectIgId } from '../../../../root-store/document/document-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../../../../root-store/loader/loader.actions';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IBindingType, IValuesetStrength } from '../../models/binding.interface';

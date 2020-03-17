@@ -160,8 +160,6 @@ public class DatatypeLibraryController {
             .compareTo(l2.getName())).collect(Collectors.toList());
 
     return ordred;
-
-
   }
 
   @RequestMapping(value = "/api/datatype-library/create", method = RequestMethod.POST,

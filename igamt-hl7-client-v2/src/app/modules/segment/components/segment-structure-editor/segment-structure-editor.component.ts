@@ -5,7 +5,7 @@ import { Observable, of, ReplaySubject, Subscription } from 'rxjs';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
-import { selectSegmentsById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectSegmentsById } from '../../../../root-store/document/document-edit/ig-edit.selectors';
 import { LoadSegment } from '../../../../root-store/segment-edit/segment-edit.actions';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../core/models/message/message.class';

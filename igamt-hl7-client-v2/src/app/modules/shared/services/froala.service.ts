@@ -4,8 +4,8 @@ import {Store} from '@ngrx/store';
 import {combineLatest, Observable, pipe} from 'rxjs';
 import {map, take, withLatestFrom} from 'rxjs/operators';
 import {selectBindingConfig, selectFroalaConfig} from '../../../root-store/config/config.reducer';
+import {selectIgId, selectWorkspaceActive} from '../../../root-store/document/document-edit/ig-edit.selectors';
 import * as fromDocumentation from '../../../root-store/documentation/documentation.reducer';
-import {selectIgId, selectWorkspaceActive} from '../../../root-store/ig/ig-edit/ig-edit.selectors';
 
 @Injectable({
   providedIn: 'root',
@@ -62,7 +62,7 @@ export class FroalaService {
               'froalaEditor.image.removed': ($img, obj1, obj2) => {
                 const index = obj2[0].src.indexOf('=');
                 const name = obj2[0].src.substring(index + 1);
-                this.http.delete('/api/storage/file?name=' + name + '&ig=' + igId + '&type=' + active.editor.resourceType + '&id=' + active.display.id).subscribe();
+                this.http.delete('/api/storage/file?name=' + name + '&document=' + igId + '&type=' + active.editor.resourceType + '&id=' + active.display.id).subscribe();
               },
             },
           };
@@ -87,7 +87,7 @@ export class FroalaService {
             'froalaEditor.image.removed': ($img, obj1, obj2) => {
               const index = obj2[0].src.indexOf('=');
               const name = obj2[0].src.substring(index + 1);
-              this.http.delete('/api/storage/file?name=' + name + '&ig=' + 'doc' + '&type=' + active.editor.resourceType + '&id=' + active.display.id).pipe(take(1)).subscribe();
+              this.http.delete('/api/storage/file?name=' + name + '&document=' + 'doc' + '&type=' + active.editor.resourceType + '&id=' + active.display.id).pipe(take(1)).subscribe();
             },
           },
         };

@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { IEditorMetadata } from '../../modules/shared/models/editor.enum';
-import { OpenEditorBase } from '../ig/ig-edit/ig-edit.index';
+import { OpenEditorBase } from '../document/document-edit/ig-edit.index';
 import { IConformanceProfile } from './../../modules/shared/models/conformance-profile.interface';
 
 export enum ConformanceProfileEditActionTypes {

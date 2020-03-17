@@ -3,7 +3,7 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
 import { concatMap, take } from 'rxjs/operators';
-import {selectAllSegments, selectIgId, selectSegmentsById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {selectAllSegments, selectIgId, selectSegmentsById} from '../../../../root-store/document/document-edit/ig-edit.selectors';
 import { LoadSegment } from '../../../../root-store/segment-edit/segment-edit.actions';
 import { ResourceMetadataEditorComponent } from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
 import { Message } from '../../../core/models/message/message.class';

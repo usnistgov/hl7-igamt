@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
-import { LoadResourceReferences } from '../../../root-store/ig/ig-edit/ig-edit.actions';
+import { LoadResourceReferences } from '../../../root-store/document/document-edit/ig-edit.actions';
 import {
   selectDatatypesById,
   selectLoadedResourceById,
@@ -10,7 +10,7 @@ import {
   selectReferencesAreLeaf,
   selectSegmentsById,
   selectValueSetById,
-} from '../../../root-store/ig/ig-edit/ig-edit.selectors';
+} from '../../../root-store/document/document-edit/ig-edit.selectors';
 import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';

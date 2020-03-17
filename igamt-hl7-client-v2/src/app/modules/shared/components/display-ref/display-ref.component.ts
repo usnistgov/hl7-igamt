@@ -23,7 +23,7 @@ export class DisplayRefComponent implements OnInit {
   }
 
   redirect() {
-    this.router.navigate(['/ig/' + this.documentId + '/' + this.element.type.toLowerCase() + '/' + this.element.id]);
+    this.router.navigate(['/document/' + this.documentId + '/' + this.element.type.toLowerCase() + '/' + this.element.id]);
 
   }
 }

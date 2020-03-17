@@ -1,0 +1,39 @@
+<div class="page-container-nopad">
+  <div class="wrapper">
+
+    <div class="alerts">
+      <app-alerts-container></app-alerts-container>
+    </div>
+
+    <div class="titlebar">
+      <app-document-edit-titlebar [metadata]="titleBar | async"></app-document-edit-titlebar>
+    </div>
+
+    <div [ngStyle]="{'grid-template-columns': '[sidebar] minmax(min-content, '+ (!collapsed ? positionX : '45px') +') [resize-bar] 4px [container] minmax(600px, 8fr)'}"
+         class="page-container">
+      <div class="container-section">
+        <app-document-edit-toolbar class="toolbar-controls"></app-document-edit-toolbar>
+        <app-document-edit-active-titlebar [active]="activeWorkspace | async" [controls]="activeComponent?.controls"
+                                     [header]="activeComponent?.header"
+                                     class="titlebar-content"></app-document-edit-active-titlebar>
+        <div class="container-content">
+          <router-outlet (activate)="activateComponent($event)" (deactivate)="deactivateComponent($event)"
+                         style="display: none;"></router-outlet>
+        </div>
+      </div>
+      <div #resize [ngStyle]="{'background-color': dragging ? 'blue' : ''}" class="resize-bar"></div>
+      <ng-container *ngIf="!collapsed">
+        <app-document-edit-sidebar class="sidebar" [deltaMode]="deltaMode$ |async"></app-document-edit-sidebar>
+      </ng-container>
+      <ng-container *ngIf="collapsed">
+        <div style="background-color: white;">
+          <div style="height: 40px; display: flex; align-items: center; justify-content: flex-start;">
+            <button (click)= "expandToc()" class="btn btn-sm btn-default"
+                    style="border: 1px solid grey; border-radius: 50%; width: 35px; height: 35px; margin-left: 5px;"><i
+              class="fa fa-chevron-right"></i></button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>

@@ -10,8 +10,8 @@ import { SegmentService } from '../../modules/segment/services/segment.service';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.interface';
 import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
-import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesSuccess, LoadSelectedResource, OpenEditor } from '../ig/ig-edit/ig-edit.actions';
-import { selectCoConstraintGroupsById, selectedCoConstraintGroup, selectedDatatype } from '../ig/ig-edit/ig-edit.selectors';
+import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesSuccess, LoadSelectedResource, OpenEditor } from '../document/document-edit/ig-edit.actions';
+import { selectCoConstraintGroupsById, selectedCoConstraintGroup, selectedDatatype } from '../document/document-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import { CoConstraintGroupEditActions, CoConstraintGroupEditActionTypes, LoadCoConstraintGroup, LoadCoConstraintGroupFailure, LoadCoConstraintGroupSuccess, OpenCoConstraintGroupEditor } from './co-constraint-group-edit.actions';
 

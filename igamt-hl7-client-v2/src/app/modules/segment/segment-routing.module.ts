@@ -11,9 +11,9 @@ import {
   SegmentEditActionTypes,
 } from '../../root-store/segment-edit/segment-edit.actions';
 import { OpenSegmentDeltaEditor } from '../../root-store/segment-edit/segment-edit.actions';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
+import { DataLoaderResolverService } from '../document/services/data-loader-resolver.service';
+import { IgEditorActivateGuard } from '../document/services/ig-editor-activate.guard.';
+import { IgEditSaveDeactivateGuard } from '../document/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';

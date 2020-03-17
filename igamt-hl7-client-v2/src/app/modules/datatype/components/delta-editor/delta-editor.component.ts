@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { selectDatatypesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectDatatypesById } from '../../../../root-store/document/document-edit/ig-edit.selectors';
 import { EntityDeltaEditorComponent } from '../../../core/components/entity-delta-editor/entity-delta-editor.component';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';

@@ -7,8 +7,8 @@ import { combineLatest, Observable, ReplaySubject, Subject, Subscription, throwE
 import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
-import { EditorSave, EditorUpdate, LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectAllDatatypes, selectAllSegments, selectIgId, selectMessagesById, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { EditorSave, EditorUpdate, LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/document/document-edit/ig-edit.actions';
+import { selectAllDatatypes, selectAllSegments, selectIgId, selectMessagesById, selectValueSetsNodes } from '../../../../root-store/document/document-edit/ig-edit.selectors';
 import { CoConstraintBindingDialogComponent, IBindingDialogResult } from '../../../co-constraints/components/co-constraint-binding-dialog/co-constraint-binding-dialog.component';
 import { CoConstraintEntityService } from '../../../co-constraints/services/co-constraint-entity.service';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';

@@ -1,23 +1,23 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { IgEditActionTypes, IgEditResolverLoad, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
+import { IgEditActionTypes, IgEditResolverLoad, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/document/document-edit/ig-edit.actions';
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
+import { CreateIGComponent } from '../document/components/create-ig/create-ig.component';
+import { DocumentEditContainerComponent } from '../document/components/document-edit-container/document-edit-container.component';
+import { DocumentListContainerComponent } from '../document/components/document-list-container/document-list-container.component';
+import { DocumentMetadataEditorComponent } from '../document/components/document-metadata-editor/document-metadata-editor.component';
+import { DocumentSectionEditorComponent } from '../document/components/document-section-editor/document-section-editor.component';
+import { DataLoaderResolverService } from '../document/services/data-loader-resolver.service';
+import { IgEditorActivateGuard } from '../document/services/ig-editor-activate.guard.';
+import { IgEditSaveDeactivateGuard } from '../document/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { AuthenticatedGuard } from './../core/services/auth-guard.guard';
-import { CreateIGComponent } from './components/create-ig/create-ig.component';
-import { IgEditContainerComponent } from './components/ig-edit-container/ig-edit-container.component';
-import { IgListContainerComponent } from './components/ig-list-container/ig-list-container.component';
-import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
-import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
-import { DataLoaderResolverService } from './services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from './services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from './services/ig-editor-deactivate.service';
 
 const routes: Routes = [
   {
     path: 'list',
-    component: IgListContainerComponent,
+    component: DocumentListContainerComponent,
     canActivate: [AuthenticatedGuard],
   },
   {
@@ -31,7 +31,7 @@ const routes: Routes = [
   },
   {
     path: ':igId',
-    component: IgEditContainerComponent,
+    component: DocumentEditContainerComponent,
     data: {
       routeParam: 'igId',
       loadAction: IgEditResolverLoad,
@@ -48,7 +48,7 @@ const routes: Routes = [
       },
       {
         path: 'metadata',
-        component: IgMetadataEditorComponent,
+        component: DocumentMetadataEditorComponent,
         canActivate: [IgEditorActivateGuard],
         data: {
           editorMetadata: {
@@ -67,7 +67,7 @@ const routes: Routes = [
       },
       {
         path: 'text/:sectionId',
-        component: IgSectionEditorComponent,
+        component: DocumentSectionEditorComponent,
         canActivate: [IgEditorActivateGuard],
         data: {
           editorMetadata: {

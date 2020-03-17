@@ -6,7 +6,7 @@ import * as _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
-import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { EditorSave, EditorUpdate } from '../../../../root-store/document/document-edit/ig-edit.actions';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IConformanceStatementList, ICPConformanceStatementList } from '../../../shared/models/cs-list.interface';

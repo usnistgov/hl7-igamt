@@ -15,12 +15,12 @@ import {
   withLatestFrom,
 } from 'rxjs/operators';
 import {selectIsAdmin} from '../../../../root-store/authentication/authentication.reducer';
+import {UpdateActiveResource} from '../../../../root-store/document/document-edit/ig-edit.actions';
 import {
   DocumentationEditorChange,
 } from '../../../../root-store/documentation/documentation.actions';
-import * as fromDocumentation from '../../../../root-store/documentation/documentation.reducer';
 import {selectEditMode} from '../../../../root-store/documentation/documentation.reducer';
-import {UpdateActiveResource} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import * as fromDocumentation from '../../../../root-store/documentation/documentation.reducer';
 import {MessageService} from '../../../core/services/message.service';
 import {IWorkspaceCurrent} from '../../../shared/models/editor.class';
 import {

@@ -5,14 +5,14 @@ import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError 
 import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import { selectBindingConfig } from '../../../../root-store/config/config.reducer';
-import { EditorSave, EditorUpdate, LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { EditorSave, EditorUpdate, LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/document/document-edit/ig-edit.actions';
 import {
   selectAllDatatypes,
   selectAllSegments,
   selectedResourceHasOrigin,
   selectValueSetsNodes,
-} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+} from '../../../../root-store/document/document-edit/ig-edit.selectors';
+import { selectIgId } from '../../../../root-store/document/document-edit/ig-edit.selectors';
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';

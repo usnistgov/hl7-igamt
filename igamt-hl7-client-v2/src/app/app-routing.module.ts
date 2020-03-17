@@ -8,6 +8,9 @@ import { RegisterComponent } from './modules/core/components/register/register.c
 import { ResetPasswordRequestComponent } from './modules/core/components/reset-password-request/reset-password-request.component';
 import { NewPasswordResolver } from './modules/core/resolvers/new-password.resolver';
 import { NotAuthenticatedGuard } from './modules/core/services/auth-guard.guard';
+import {Type} from "./modules/shared/constants/type.enum";
+import {Scope} from "./modules/shared/constants/scope.enum";
+import {DocumentTypeGuard} from "./modules/guards/document-type.guard";
 
 const routes: Routes = [
   {
@@ -39,7 +42,11 @@ const routes: Routes = [
   },
   {
     path: 'ig',
-    loadChildren: './modules/ig/ig.module#IgModule',
+    loadChildren: './modules/ig/ig.module#IgModule', data: {type: Type.IGDOCUMENT, scope: Scope.USER}, canActivate: [DocumentTypeGuard],
+  },
+  {
+    path: 'datatype-library',
+    loadChildren: './modules/datatype-library/datatype-library.module#DatatypeLibraryModule', data: {type: Type.DATATYPERELIBRARY, scope: Scope.USER}, canActivate: [DocumentTypeGuard],
   },
   {
     path: 'documentation',

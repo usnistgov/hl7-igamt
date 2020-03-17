@@ -6,9 +6,9 @@ import {
   OpenValueSetPreDefEditor, OpenValueSetStructureEditor,
   ValueSetEditActionTypes,
 } from '../../root-store/value-set-edit/value-set-edit.actions';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
+import { DataLoaderResolverService } from '../document/services/data-loader-resolver.service';
+import { IgEditorActivateGuard } from '../document/services/ig-editor-activate.guard.';
+import { IgEditSaveDeactivateGuard } from '../document/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import {ValueSetCrossRefsComponent} from './components/value-set-cross-refs/value-set-cross-refs.component';

@@ -3,7 +3,7 @@ import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { LoadConformanceProfile } from '../../../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
-import { selectMessagesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectMessagesById } from '../../../../root-store/document/document-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../core/models/message/message.class';
 import { MessageService } from '../../../core/services/message.service';

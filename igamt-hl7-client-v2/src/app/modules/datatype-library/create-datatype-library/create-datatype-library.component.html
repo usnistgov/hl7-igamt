@@ -1,0 +1,25 @@
+<div class="create-layout">
+  <div class="title">
+    <h5>Create new Data type Library</h5>
+  </div>
+  <div class="alerts">
+    <app-alerts-container></app-alerts-container>
+  </div>
+  <div class="metadata">
+    <form [formGroup]="metaDataForm">
+
+    <app-form-input formControlName="title" id="title" label="IG Document Title*" name="Title"
+                      placeholder="Data type Library Title" type="text"></app-form-input>
+    </form>
+  </div>
+  <div class="messages">
+    <app-select-datatypes [hl7Versions]="hl7Version$ | async" (selected)="selectVersion($event)" [table]="resources$ |async" (added)="updateAdded($event)"></app-select-datatypes>
+
+  </div>
+
+  <div class="submit">
+    <button class="btn btn-primary"
+            type="submit">Create IG Document
+    </button>
+  </div>
+</div>

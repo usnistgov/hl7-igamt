@@ -23,7 +23,7 @@ export class HeaderComponent implements OnInit {
     this.isIG = store.select(fromRoot.selectRouterURL).pipe(
       map(
         (url: string) => {
-          return url.startsWith('/ig/');
+          return url.startsWith('/document/');
         },
       ),
     );

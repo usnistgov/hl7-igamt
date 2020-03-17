@@ -4,7 +4,7 @@ import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ConformanceStatementEditorComponent } from 'src/app/modules/core/components/conformance-statement-editor/conformance-statement-editor.component';
-import { selectedConformanceProfile, selectMessagesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectedConformanceProfile, selectMessagesById } from '../../../../root-store/document/document-edit/ig-edit.selectors';
 import { Message } from '../../../core/models/message/message.class';
 import { MessageService } from '../../../core/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';

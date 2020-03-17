@@ -26,11 +26,11 @@ import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 
 import { Type } from '../../modules/shared/constants/type.enum';
 import { IUsages } from '../../modules/shared/models/cross-reference';
-import { LoadSelectedResource } from '../ig/ig-edit/ig-edit.actions';
-import * as fromIgEdit from '../ig/ig-edit/ig-edit.index';
-import { selectedResourcePreDef } from '../ig/ig-edit/ig-edit.index';
-import { selectedResourceMetadata } from '../ig/ig-edit/ig-edit.index';
-import { selectedResourcePostDef } from '../ig/ig-edit/ig-edit.index';
+import { LoadSelectedResource } from '../document/document-edit/ig-edit.actions';
+import * as fromIgEdit from '../document/document-edit/ig-edit.index';
+import { selectedResourcePreDef } from '../document/document-edit/ig-edit.index';
+import { selectedResourceMetadata } from '../document/document-edit/ig-edit.index';
+import { selectedResourcePostDef } from '../document/document-edit/ig-edit.index';
 
 @Injectable()
 export class ValueSetEditEffects {
