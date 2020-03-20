@@ -3,8 +3,10 @@ import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
+import { IUsageConfiguration } from '../../../../../export-configuration/models/default-export-configuration.interface';
 import { Type } from '../../../../constants/type.enum';
-import { UsageOptions } from '../../../../constants/usage.enum';
+import { Usage } from '../../../../constants/usage.enum';
+import { Hl7Config } from '../../../../models/config.class';
 import { IPredicate } from '../../../../models/predicate.interface';
 import { IResource } from '../../../../models/resource.interface';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
@@ -15,6 +17,11 @@ import { CsDialogComponent } from '../../../cs-dialog/cs-dialog.component';
 import { IStringValue } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
 
+export interface IUsageOption {
+  label: string;
+  value: Usage;
+}
+
 @Component({
   selector: 'app-usage',
   templateUrl: './usage.component.html',
@@ -22,7 +29,7 @@ import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
 })
 export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> implements OnInit {
 
-  options = UsageOptions;
+  options: IUsageOption[];
 
   usage: IStringValue;
   @Input()
@@ -37,6 +44,33 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   repository: AResourceRepositoryService;
   @Input()
   context: Type;
+
+  @Input()
+  set usages({ original, config }: { original: Usage, config: Hl7Config }) {
+    const includeW = original === 'W';
+    const includeB = original === 'B';
+
+    this.options = config.usages.map((u) => {
+      return {
+        label: u === 'CAB' ? 'C (A/B)' : u,
+        value: u as Usage,
+      };
+    }).filter((elm) => {
+      if (elm.value === Usage.W && includeW) {
+        return true;
+      }
+
+      if (elm.value === Usage.B && includeB) {
+        return true;
+      }
+
+      if (elm.value === Usage.W || elm.value === Usage.B) {
+        return false;
+      }
+
+      return true;
+    });
+  }
 
   @Input()
   set predicate({ igId, predicates }: { igId: string, predicates: Array<IBinding<string>> }) {
@@ -163,6 +197,10 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   }
 
   modelChange(event: any): void {
+    if (event.value !== 'CAB') {
+      this.clear();
+    }
+
     this.onChange<string>(this.getInputValue().value, event.value, PropertyType.USAGE, ChangeType.UPDATE);
   }
 
