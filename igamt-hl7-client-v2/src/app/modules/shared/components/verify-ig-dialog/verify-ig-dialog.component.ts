@@ -20,13 +20,17 @@ export class VerifyIgDialogComponent implements OnInit {
     console.log(this.data);
 
     if (this.data && this.data.igId) {
-      this.http.get<any[]>('/api/igdocuments/' + this.data.igId + '/verify').subscribe((x) => {
-        this.reports = x;
-
-        this.errorCounts = this.countErrors(this.reports);
-
-        console.log(this.reports);
-      });
+      if(this.data.type === 'Verification') {
+        this.http.get<any[]>('/api/igdocuments/' + this.data.igId + '/verification').subscribe((x) => {
+          this.reports = x;
+          this.errorCounts = this.countErrors(this.reports);
+        });
+      } else if(this.data.type === 'Compliance') {
+        this.http.get<any[]>('/api/igdocuments/' + this.data.igId + '/compliance').subscribe((x) => {
+          this.reports = x;
+          this.errorCounts = this.countErrors(this.reports);
+        });
+      }
     }
 
   }
@@ -46,31 +50,46 @@ export class VerifyIgDialogComponent implements OnInit {
     let numOfCPError = 0;
     let numOfIGError = 0;
 
-    reports.valuesetVerificationResults.forEach((item) => {
-      numOfVSError = numOfVSError + item.errors.length;
-      totalNumOfError = totalNumOfError + item.errors.length;
-    });
+    if(reports) {
+      if(reports.valuesetVerificationResults) {
+        reports.valuesetVerificationResults.forEach((item) => {
+          numOfVSError = numOfVSError + item.errors.length;
+          totalNumOfError = totalNumOfError + item.errors.length;
+        });
+      }
 
-    reports.datatypeVerificationResults.forEach((item) => {
-      numOfDTError = numOfDTError + item.errors.length;
-      totalNumOfError = totalNumOfError + item.errors.length;
-    });
+      if(reports.datatypeVerificationResults) {
+        reports.datatypeVerificationResults.forEach((item) => {
+          numOfDTError = numOfDTError + item.errors.length;
+          totalNumOfError = totalNumOfError + item.errors.length;
+        });
+      }
 
-    reports.segmentVerificationResults.forEach((item) => {
-      numOfSEGError = numOfSEGError + item.errors.length;
-      totalNumOfError = totalNumOfError + item.errors.length;
-    });
+      if(reports.segmentVerificationResults) {
+        reports.segmentVerificationResults.forEach((item) => {
+          numOfSEGError = numOfSEGError + item.errors.length;
+          totalNumOfError = totalNumOfError + item.errors.length;
+        });
+      }
 
-    reports.conformanceProfileVerificationResults.forEach((item) => {
-      numOfCPError = numOfCPError + item.errors.length;
-      totalNumOfError = totalNumOfError + item.errors.length;
-    });
-    numOfIGError = numOfIGError + reports.igVerificationResult.errors.length;
-    totalNumOfError = totalNumOfError + reports.igVerificationResult.errors.length;
+      if(reports.conformanceProfileVerificationResults) {
+        reports.conformanceProfileVerificationResults.forEach((item) => {
+          numOfCPError = numOfCPError + item.errors.length;
+          totalNumOfError = totalNumOfError + item.errors.length;
+        });
+      }
 
-    return [totalNumOfError, numOfVSError, numOfDTError, numOfSEGError, numOfCPError, numOfIGError];
+      numOfIGError = numOfIGError + reports.igVerificationResult.errors.length;
+      totalNumOfError = totalNumOfError + reports.igVerificationResult.errors.length;
+
+      return [totalNumOfError, numOfVSError, numOfDTError, numOfSEGError, numOfCPError, numOfIGError];
+    }
+
+    return [0, 0, 0, 0, 0, 0];
+
   }
 }
 export interface IVerifyIgDialogData {
   igId: string;
+  type: string;
 }

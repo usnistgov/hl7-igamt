@@ -1599,10 +1599,17 @@ public class IGDocumentController extends BaseController {
   //    return null;
   //  }
 
-  @RequestMapping(value = "/api/igdocuments/{igid}/verify", method = RequestMethod.GET, produces = {"application/json"})
-  public @ResponseBody VerificationReport verifyConformanceProfileById(@PathVariable("igid") String igid, Authentication authentication) {
+  @RequestMapping(value = "/api/igdocuments/{igid}/verification", method = RequestMethod.GET, produces = {"application/json"})
+  public @ResponseBody VerificationReport verificationIGById(@PathVariable("igid") String igid, Authentication authentication) {
     Ig ig = this.igService.findById(igid);
     if (ig != null) return this.verificationService.verifyIg(igid);
+    return null;
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{igid}/compliance", method = RequestMethod.GET, produces = {"application/json"})
+  public @ResponseBody VerificationReport complianceIGById(@PathVariable("igid") String igid, Authentication authentication) {
+    Ig ig = this.igService.findById(igid);
+    if (ig != null) return this.verificationService.verifyIgForCompliance(igid);
     return null;
   }
 }
