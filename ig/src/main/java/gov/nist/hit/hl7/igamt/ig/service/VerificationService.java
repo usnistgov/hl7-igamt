@@ -26,5 +26,7 @@ public interface VerificationService {
   CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile);
   
   VerificationReport verifyIg(String documentId);
+  
+  VerificationReport verifyIgForCompliance(String documentId);
 
 }

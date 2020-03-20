@@ -19,10 +19,13 @@
       <button ngbDropdownItem (click)="exportXML()">XML</button>
     </div>
   </div>
-  <button *ngIf="!viewOnly" (click)="verifyIG(true)"  class="btn btn-success btn-sm toolbar-button" type="button">
-    <i class="fa fa-check"></i>
-    Verify
-  </button>
+  <div ngbDropdown class="d-inline-block">
+    <button class="btn btn-secondary btn-sm toolbar-button" id="verifyDown" ngbDropdownToggle>Verify</button>
+    <div ngbDropdownMenu aria-labelledby="exportDropDown">
+      <button ngbDropdownItem (click)="verifyIG('Verification')">Verification</button>
+      <button ngbDropdownItem (click)="verifyIG('Compliance')">Compliance</button>
+    </div>
+  </div>
   <button *ngIf="!viewOnly" class="btn btn-primary btn-sm toolbar-button" type="button">
     <i class="fa fa-share"></i>
     Share

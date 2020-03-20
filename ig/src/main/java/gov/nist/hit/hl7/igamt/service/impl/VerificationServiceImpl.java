@@ -70,6 +70,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationResult;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VSVerificationResult;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationResult;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
@@ -371,14 +372,19 @@ public class VerificationServiceImpl implements VerificationService {
     this.checkingSegmentRefOrGroups(conformanceProfile, conformanceProfile.getChildren(), result, null, null, sebs);
   }
   
-  /**
-   * @param conformanceProfile
-   * @param children
-   * @param vr
-   * @param sebs 
-   */
+  private void checkingStructureForConformanceProfileForCompliance(ConformanceProfile conformanceProfile, CPVerificationResult result) {
+    Set<StructureElementBinding> sebs = null;
+    if(conformanceProfile.getBinding() != null) sebs = conformanceProfile.getBinding().getChildren();
+    this.checkingSegmentRefOrGroupsForCompliance(conformanceProfile, conformanceProfile.getChildren(), result, null, null, sebs);
+  }
+  
+  private void checkingSegmentRefOrGroupsForCompliance(ConformanceProfile conformanceProfile, Set<SegmentRefOrGroup> segmentRefOrGroups, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+    if (segmentRefOrGroups != null) {
+      segmentRefOrGroups.forEach(srog -> this.checkingSegmentRefOrGroupForCompliance(conformanceProfile, srog, result, positionPath, path, this.findSEB(sebs, srog.getId())));
+    }
+  }
+  
   private void checkingSegmentRefOrGroups(ConformanceProfile conformanceProfile, Set<SegmentRefOrGroup> segmentRefOrGroups, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
-    
     if (segmentRefOrGroups != null) {
       segmentRefOrGroups.forEach(srog -> this.checkingSegmentRefOrGroup(conformanceProfile, srog, result, positionPath, path, this.findSEB(sebs, srog.getId())));
     }
@@ -398,13 +404,14 @@ public class VerificationServiceImpl implements VerificationService {
     return null;
   }
 
-  /**
-   * @param conformanceProfile
-   * @param srog
-   * @param vr
-   * @param set 
-   * @return
-   */
+  private void checkingSegmentRefOrGroupForCompliance(ConformanceProfile conformanceProfile, SegmentRefOrGroup srog, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+    if(srog instanceof SegmentRef) {
+      this.chekcingSegmentRefForCompliance(conformanceProfile, (SegmentRef)srog, result, positionPath, path, sebs);
+    } else if(srog instanceof Group) {
+      this.checkingGroupForCompliance(conformanceProfile, (Group)srog, result, positionPath, path, sebs);
+    } 
+  }
+  
   private void checkingSegmentRefOrGroup(ConformanceProfile conformanceProfile, SegmentRefOrGroup srog, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
     if(srog instanceof SegmentRef) {
       this.chekcingSegmentRef(conformanceProfile, (SegmentRef)srog, result, positionPath, path, sebs);
@@ -413,14 +420,45 @@ public class VerificationServiceImpl implements VerificationService {
     } 
   }
 
-  /**
-   * @param conformanceProfile
-   * @param srog
-   * @param vr
-   * @param positionPath
-   * @param path
-   * @param sebs
-   */
+  private void chekcingSegmentRefForCompliance(ConformanceProfile conformanceProfile, SegmentRef sr, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+    int position = sr.getPosition();
+    Usage usage = sr.getUsage();
+    int min = sr.getMin();
+    String max = sr.getMax();
+    Ref ref = sr.getRef();
+    Segment segment = null;
+    
+    if (positionPath == null) {
+      positionPath = position + "";
+    } else {
+      positionPath = positionPath + "." + position;
+    }
+    
+    // Ref value Check
+    if(ref != null && ref.getId() != null) {
+      segment = this.segmentService.findById(ref.getId());
+      // DATA Acessability check
+      if(segment != null) {
+        if (path == null) {
+          path = segment.getName();
+        } else {
+          path = path + "." + segment.getName();
+        }
+        
+        this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max));
+        this.checkUsageVerificationErrorForCompliance(conformanceProfile, usage, positionPath, path, result);
+        this.checkCardinalityVerificationErrorForCompliance(conformanceProfile, usage, min, max, positionPath, path, result);
+        
+        if(segment.getChildren() != null) {
+          
+          for(Field field : segment.getChildren() ){
+            this.checkFieldForConformanceProfileForCompliance(conformanceProfile, field, positionPath, path, result); 
+          }
+        }
+      } 
+    }
+  }
+  
   private void chekcingSegmentRef(ConformanceProfile conformanceProfile, SegmentRef sr, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
     int position = sr.getPosition();
     Usage usage = sr.getUsage();
@@ -451,14 +489,7 @@ public class VerificationServiceImpl implements VerificationService {
         
         this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max));
         this.checkUsageVerificationError(conformanceProfile, usage, positionPath, path, result);
-        this.checkCardinalityVerificationError(conformanceProfile, usage, min, max, positionPath, path, result);
-        
-        if(segment.getChildren() != null) {
-          
-          for(Field field : segment.getChildren() ){
-            this.checkFieldForConformanceProfile(conformanceProfile, field, positionPath, path, result); 
-          }
-        }
+        this.checkCardinalityVerificationError(usage, min, max, positionPath, path, result);
       } 
     }
   }
@@ -471,18 +502,25 @@ public class VerificationServiceImpl implements VerificationService {
    * @param path
    * @param result
    */
-  private void checkFieldForConformanceProfile(ConformanceProfile conformanceProfile, Field field, String positionPath, String path, CPVerificationResult result) {
+  private void checkFieldForConformanceProfileForCompliance(ConformanceProfile conformanceProfile, Field field, String positionPath, String path, CPVerificationResult result) {
     int position = field.getPosition();
     Usage usage = field.getUsage();
     int min = field.getMin();
     String max = field.getMax();
     Ref ref = field.getRef();
+    
+    String minLength = field.getMinLength();
+    String maxLength = field.getMaxLength();
+    String confLength = field.getConfLength();
+    
     positionPath = positionPath + "." + position;
     path = path + "." + position;
     
     this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max));
-    this.checkUsageVerificationError(conformanceProfile, usage, positionPath, path, result);
-    this.checkCardinalityVerificationError(conformanceProfile, usage, min, max, positionPath, path, result);
+    this.checkUsageVerificationErrorForCompliance(conformanceProfile, usage, positionPath, path, result);
+    this.checkCardinalityVerificationErrorForCompliance(conformanceProfile, usage, min, max, positionPath, path, result);
+    this.checkLengthVerificationErorrForCompliance(conformanceProfile, field, minLength, maxLength, confLength, positionPath, path, result);
+    
     if (ref != null && ref.getId() != null) {
       Datatype datatype = this.datatypeService.findById(ref.getId());
       
@@ -491,13 +529,113 @@ public class VerificationServiceImpl implements VerificationService {
           ComplexDatatype cDT = (ComplexDatatype)datatype;
           if(cDT.getComponents() != null && cDT.getComponents().size() > 0) {
             for(Component component : cDT.getComponents() ){
-              this.checkComponentForConformanceProfile(conformanceProfile, component, positionPath, path, result); 
+              this.checkComponentForConformanceProfileForCompliance(conformanceProfile, component, positionPath, path, result); 
             }
           }
         }
       }
     }
-    
+  }
+  
+  private void checkLengthVerificationErorrForCompliance(ConformanceProfile conformanceProfile, Field field, String minLength, String maxLength, String confLength, String positionPath, String path, CPVerificationResult result) {
+    //TODO
+  }
+  
+  private void checkLengthVerificationErorr(Field field, String minLength, String maxLength, String confLength, String positionPath, String path, VerificationResult result) {
+    if(this.isLengthAllowedComponent(field)) {
+      
+      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) {
+        result.getErrors().add(new IgamtObjectError("STRUCTURE", "Length_Duplicated", "Both Length or ConfLength are defiend for " + path + ".", positionPath + "", "Warning"));
+      }
+      if (this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) {
+        result.getErrors().add(new IgamtObjectError("STRUCTURE", "Length_Missing", "Length or ConfLength should be defiend for " + path + " that has primitive datatype.", positionPath + "", "Warning"));
+      } else {
+        if (!this.isNullOrNA(minLength)) {
+          if(!this.isInt(minLength)) {
+            result.getErrors().add(new IgamtObjectError("STRUCTURE", "MinLength_FORMAT", "Min Length should be number for " + path,  positionPath, "Warning"));
+          }
+        }
+        
+        if (!this.isNullOrNA(maxLength)) {
+          if(!this.isIntOrStar(maxLength)) {
+            result.getErrors().add(new IgamtObjectError("STRUCTURE", "MaxLength_FORMAT", "Max Length should be number or star(*) for " + path,  positionPath, "Warning"));
+          }
+        }
+        
+        if (!this.isNullOrNA(confLength)) {
+          if(!confLength.contains("#") && !confLength.contains("=")) {
+            result.getErrors().add(new IgamtObjectError("STRUCTURE", "ConfLength_FORMAT", "Either # or = should be used for truncation in " + path,  positionPath, "Warning"));
+          }
+        }
+        
+        if (!this.isNullOrNA(minLength) && !this.isNullOrNA(maxLength)) {
+          if(!maxLength.equals("*")) {
+            if(this.isInt(minLength) && this.isInt(maxLength)) {
+              int minLengthInt = Integer.parseInt(minLength);
+              int maxLengthInt = Integer.parseInt(maxLength);
+              
+              if(minLengthInt > maxLengthInt) {
+                result.getErrors().add(new IgamtObjectError("STRUCTURE", "Length_Range", "In " + path + ", " + " MIN Length value is bigger than MAX Length",  positionPath, "Warning"));
+              }
+            }
+          }
+        }
+      }  
+    } else {
+      if(!this.isNullOrNA(confLength) || (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) {
+        result.getErrors().add(new IgamtObjectError("STRUCTURE", "Length_NotAllowable", "Length and ConfLength are not allowable for " + path + ".", positionPath + "", "Warning"));
+      }
+    }
+  }
+  
+  private void checkLengthVerificationErorrForCompliance(ConformanceProfile conformanceProfile, Component component, String minLength, String maxLength, String confLength, String positionPath, String path, CPVerificationResult result) {
+  
+  }
+  
+  private void checkLengthVerificationErorr(Component component, String minLength, String maxLength, String confLength, String positionPath, String path, VerificationResult result) {
+    if(this.isLengthAllowedComponent(component)) {
+      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) {
+        result.getErrors().add(new IgamtObjectError("STRUCTURE", "Length_Duplicated", "Both Length or ConfLength are defiend for " + path + ".", positionPath + "", "Warning"));
+      }
+      if (this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) {
+        result.getErrors().add(new IgamtObjectError("STRUCTURE", "Length_Missing", "Length or ConfLength should be defiend for " + path + " that has primitive datatype.", positionPath + "", "Warning"));
+      } else {
+        if (!this.isNullOrNA(minLength)) {
+          if(!this.isInt(minLength)) {
+            result.getErrors().add(new IgamtObjectError("STRUCTURE", "MinLength_FORMAT", "Min Length should be number for " + path,  positionPath, "Warning"));
+          }
+        }
+        
+        if (!this.isNullOrNA(maxLength)) {
+          if(!this.isIntOrStar(maxLength)) {
+            result.getErrors().add(new IgamtObjectError("STRUCTURE", "MaxLength_FORMAT", "Max Length should be number or star(*) for " + path,  positionPath, "Warning"));
+          }
+        }
+        
+        if (!this.isNullOrNA(confLength)) {
+          if(!confLength.contains("#") && !confLength.contains("=")) {
+            result.getErrors().add(new IgamtObjectError("STRUCTURE", "ConfLength_FORMAT", "Either # or = should be used for truncation in " + path,  positionPath, "Warning"));
+          }
+        }
+        
+        if (!this.isNullOrNA(minLength) && !this.isNullOrNA(maxLength)) {
+          if(!maxLength.equals("*")) {
+            if(this.isInt(minLength) && this.isInt(maxLength)) {
+              int minLengthInt = Integer.parseInt(minLength);
+              int maxLengthInt = Integer.parseInt(maxLength);
+              
+              if(minLengthInt > maxLengthInt) {
+                result.getErrors().add(new IgamtObjectError("STRUCTURE", "Length_Values", "In " + path + ", " + " MIN Length value is bigger than MAX Length",  positionPath, "Warning"));
+              }
+            }
+          }
+        }
+      }  
+    } else {
+      if(!this.isNullOrNA(confLength) || (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) {
+        result.getErrors().add(new IgamtObjectError("STRUCTURE", "Length_NotAllowable", "Length and ConfLength are not allowable for " + path + ".", positionPath + "", "Warning"));
+      }
+    }
   }
 
   /**
@@ -507,16 +645,22 @@ public class VerificationServiceImpl implements VerificationService {
    * @param path
    * @param result
    */
-  private void checkComponentForConformanceProfile(ConformanceProfile conformanceProfile, Component component, String positionPath, String path, CPVerificationResult result) {
+  private void checkComponentForConformanceProfileForCompliance(ConformanceProfile conformanceProfile, Component component, String positionPath, String path, CPVerificationResult result) {
     int position = component.getPosition();
     Usage usage = component.getUsage();
     Ref ref = component.getRef();
+    String minLength = component.getMinLength();
+    String maxLength = component.getMaxLength();
+    String confLength = component.getConfLength();
+    
     positionPath = positionPath + "." + position;
     path = path + "." + position;
     
     this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, null, null));
-    this.checkUsageVerificationError(conformanceProfile, usage, positionPath, path, result);
-
+    this.checkUsageVerificationErrorForCompliance(conformanceProfile, usage, positionPath, path, result);
+    this.checkLengthVerificationErorrForCompliance(conformanceProfile, component, minLength, maxLength, confLength, positionPath, path, result);
+    
+    
     if (ref != null && ref.getId() != null) {
       Datatype datatype = this.datatypeService.findById(ref.getId());
       
@@ -525,40 +669,46 @@ public class VerificationServiceImpl implements VerificationService {
           ComplexDatatype cDT = (ComplexDatatype)datatype;
           if(cDT.getComponents() != null && cDT.getComponents().size() > 0) {
             for(Component childComponent : cDT.getComponents() ){
-              this.checkComponentForConformanceProfile(conformanceProfile, childComponent, positionPath, path, result); 
+              this.checkComponentForConformanceProfileForCompliance(conformanceProfile, childComponent, positionPath, path, result); 
             }
           }
         }
       }
     }
-    
   }
 
-  /**
-   * @param usage
-   * @param min
-   * @param max
-   * @param positionPath
-   * @param path
-   * @param result
-   */
-  private void checkCardinalityVerificationError(ConformanceProfile conformanceProfile, Usage usage, int min, String max, String positionPath, String path, CPVerificationResult result) {
-    /*
-     * Cardinality_NULL   In {node} of {target}, Cardinality is missing   Conformance
-     * Cardinality_Range   In {node} of {target}, MIN Cardinality value is bigger than MAX Cardinality Conformance
-     * MIN_Cardinality_Format  In {node} of {target}, MIN cardinality value should be number   
-     * MAX_Cardinality_Format  In {node} of {target}, MAX cardinality value should be number or '*'    
-     * MAX_Cardinality_UsageX  In {node} of {target}, MAX cardinality value should be 0, if the USAGE is X.    Conformance
-     * MIN_Cardinality_UsageR  In {node} of {target}, MIN cardinality value should be bigger than 1, if the USAGE is R Conformance
-     * 
-     * MIN_Cardinality_UsageRE  In {node} of {target}, MIN cardinality value should be 0, if the USAGE is RE    Conformance                                                             
-     * MIN_Cardinality_UsageO  In {node} of {target}, MIN cardinality value should be 0, if the USAGE is O Conformance                                                             
-     * MIN_Cardinality_UsageC  In {node} of {target}, MIN cardinality value should be 0, if the USAGE is C Conformance                                                             
-     * MIN_Cardinality_UsageCAB    In {node} of {target}, MIN cardinality value should be 0, if the USAGE is CAB   Conformance                                                             
-     * MIN_Cardinality_UsageB  In {node} of {target}, MIN cardinality value should be 0, if the USAGE is B Conformance                                                             
-     * MIN_Cardinality_UsageW  In {node} of {target}, MIN cardinality value should be 0, if the USAGE is W Conformance                                                             
-     */
-    
+  private void checkCardinalityVerificationErrorForCompliance(ConformanceProfile conformanceProfile, Usage usage, int min, String max, String positionPath, String path, CPVerificationResult result) {
+    if(max != null) {
+      if(this.isIntOrStar(max)) {
+        if(this.isInt(max)) {          
+          ComplianceObject complianceParentObject = this.parentComplianceMap.get(positionPath);
+          if(complianceParentObject != null && complianceParentObject.getMax() != null && complianceParentObject.getMin() != null) {
+            Integer parentMin = complianceParentObject.getMin();
+            String parentMax = complianceParentObject.getMax();
+            
+            if(parentMin != null) {
+              if(parentMin > min) {
+                result.getErrors().add(new IgamtObjectError("Compliance", "MIN_Cardinality_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned Min cardinality of " + min + " is not compliant with Min cardinality of " + parentMin, positionPath + "", "Warning"));
+              }
+            }
+            
+            if(parentMax != null && max != null && this.isIntOrStar(max) && this.isIntOrStar(parentMax)) {
+              if(!max.equals("*")) {
+                int childMaxInt = Integer.parseInt(max);
+                int parentMaxInt = Integer.parseInt(parentMax);
+                
+                if(parentMaxInt < childMaxInt) {
+                  result.getErrors().add(new IgamtObjectError("Compliance", "MAX_Cardinality_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned Max cardinality of " + childMaxInt + " is not compliant with Max cardinality of " + parentMaxInt, positionPath + "", "Warning"));
+                }
+              }
+            }
+          }
+        }
+      } 
+    }
+  }
+  
+  private void checkCardinalityVerificationError(Usage usage, int min, String max, String positionPath, String path, VerificationResult result) {
     if(max == null) {
       result.getErrors().add(new IgamtObjectError("Verification", "Cardinality_NULL", "At " + path + " Usage is missing", positionPath + "", "ERROR"));
     } else {
@@ -601,75 +751,16 @@ public class VerificationServiceImpl implements VerificationService {
               result.getErrors().add(new IgamtObjectError("Verification", "MIN_Cardinality_UsageW", "At " + path + " MIN cardinality value should be 0, if the USAGE is W.", positionPath + "", "Warning"));
             }
           }
-          
-          ComplianceObject complianceParentObject = this.parentComplianceMap.get(positionPath);
-          if(complianceParentObject != null && complianceParentObject.getMax() != null && complianceParentObject.getMin() != null) {
-            Integer parentMin = complianceParentObject.getMin();
-            String parentMax = complianceParentObject.getMax();
-            
-            if(parentMin != null) {
-              if(parentMin > min) {
-                result.getErrors().add(new IgamtObjectError("Compliance", "MIN_Cardinality_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned Min cardinality of " + min + " is not compliant with Min cardinality of " + parentMin, positionPath + "", "Warning"));
-              }
-            }
-            
-            if(parentMax != null && max != null && this.isIntOrStar(max) && this.isIntOrStar(parentMax)) {
-              if(!max.equals("*")) {
-                int childMaxInt = Integer.parseInt(max);
-                int parentMaxInt = Integer.parseInt(parentMax);
-                
-                if(parentMaxInt < childMaxInt) {
-                  result.getErrors().add(new IgamtObjectError("Compliance", "MAX_Cardinality_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned Max cardinality of " + childMaxInt + " is not compliant with Max cardinality of " + parentMaxInt, positionPath + "", "Warning"));
-                }
-              }
-            }
-          }
-          
         }
-        
-        
       } else {
         result.getErrors().add(new IgamtObjectError("Verification", "MAX_Cardinality_Format", "At " + path + " MAX cardinality value should be number or '*'", positionPath + "", "ERROR"));
       }
-      
     }
   }
 
-  /**
-   * @param usage
-   * @param positionPath
-   * @param result
-   */
-  private void checkUsageVerificationError(ConformanceProfile conformanceProfile, Usage usage, String positionPath, String path, CPVerificationResult result) {
-    /*
-     * Usage_MISSING  in {node} of {target}, Usage is missing
-     * Usage_Value_Base    in {node} of {target}, Usage should be one of R/RE/C/C(a/b)/O/X/B/W
-     * Usage_Value_Constraintable  in {node} of {target}, Usage should be one of R/RE/C/C(a/b)/O/X/B
-     * Usage_Value_Implementable   in {node} of {target}, Usage should be one of R/RE/C(a/b)/X
-     * Usage_Value_Any in {node} of {target}, Usage must be one of R/RE/C/C(a/b)/O/X/B/W
-     */
-    if (usage == null) {
-      result.getErrors().add(new IgamtObjectError("Verification", "Usage_MISSING", "At " + path + " Usage is missing", positionPath + "", "ERROR"));
-    } else {
+  private void checkUsageVerificationErrorForCompliance(ConformanceProfile conformanceProfile, Usage usage, String positionPath, String path, CPVerificationResult result) {
+    if (usage != null) {
       if (conformanceProfile != null && conformanceProfile.getProfileType() != null) {
-        if (conformanceProfile.getProfileType().equals(ProfileType.HL7)) {
-          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B) || usage.equals(Usage.W))) {
-            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Base", "At " + path + " Usage should be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage, positionPath + "", "Warning"));
-          }
-        } else if (conformanceProfile.getProfileType().equals(ProfileType.Constrainable)) {
-          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B))) {
-            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Constraintable", "At " + path + " Usage should be one of R/RE/C/C(a/b)/O/X/B, " + "Current Usage is " + usage, positionPath + "", "Warning"));
-          }
-        } else if (conformanceProfile.getProfileType().equals(ProfileType.Implementation)) {
-          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.CAB) || usage.equals(Usage.X))) {
-            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Implementable", "At " + path + " Usage should be one of R/RE/C(a/b)/X, " + "Current Usage is " + usage, positionPath + "", "Warning"));
-          }
-        } else {
-          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B) || usage.equals(Usage.W))) {
-            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Any", "At " + path + " Usage must be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage, positionPath + "", "ERROR"));
-          }
-        }
-        
         ComplianceObject complianceParentObject = this.parentComplianceMap.get(positionPath);
         if(complianceParentObject != null && complianceParentObject.getUsage() != null) {
           Usage parentUsage = complianceParentObject.getUsage();
@@ -711,15 +802,66 @@ public class VerificationServiceImpl implements VerificationService {
       }
     }
   }
+  
+  private void checkUsageVerificationError(ConformanceProfile conformanceProfile, Usage usage, String positionPath, String path, VerificationResult result) {
+    if (usage == null) {
+      result.getErrors().add(new IgamtObjectError("Verification", "Usage_MISSING", "At " + path + " Usage is missing", positionPath + "", "ERROR"));
+    } else {
+      if (conformanceProfile != null && conformanceProfile.getProfileType() != null) {
+        if (conformanceProfile.getProfileType().equals(ProfileType.HL7)) {
+          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B) || usage.equals(Usage.W))) {
+            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Base", "At " + path + " Usage should be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage, positionPath + "", "Warning"));
+          }
+        } else if (conformanceProfile.getProfileType().equals(ProfileType.Constrainable)) {
+          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B))) {
+            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Constraintable", "At " + path + " Usage should be one of R/RE/C/C(a/b)/O/X/B, " + "Current Usage is " + usage, positionPath + "", "Warning"));
+          }
+        } else if (conformanceProfile.getProfileType().equals(ProfileType.Implementation)) {
+          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.CAB) || usage.equals(Usage.X))) {
+            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Implementable", "At " + path + " Usage should be one of R/RE/C(a/b)/X, " + "Current Usage is " + usage, positionPath + "", "Warning"));
+          }
+        } else {
+          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B) || usage.equals(Usage.W))) {
+            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Any", "At " + path + " Usage must be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage, positionPath + "", "ERROR"));
+          }
+        }
+      }
+    }
+  }
 
-  /**
-   * @param conformanceProfile
-   * @param srog
-   * @param vr
-   * @param positionPath
-   * @param path
-   * @param sebs 
-   */
+
+  private void checkingGroupForCompliance(ConformanceProfile conformanceProfile, Group group, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+    String name = group.getName();
+    int position = group.getPosition();
+    Usage usage = group.getUsage();
+    
+    int min = group.getMin();
+    String max = group.getMax();
+    
+    
+    if (positionPath == null) {
+      positionPath = position + "";
+    } else {
+      positionPath = positionPath + "." + position;
+    }    
+    
+    if (this.isNotNullNotEmpty(name)) {
+      if (path == null) path = name;
+      else path = path + "." + name;
+      
+      this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max));
+      
+      this.checkUsageVerificationErrorForCompliance(conformanceProfile, usage, positionPath, path, result);
+      this.checkCardinalityVerificationErrorForCompliance(conformanceProfile, usage, min, max, positionPath, path, result);
+      
+      if(group.getChildren() != null) {
+        for (SegmentRefOrGroup child : group.getChildren()) {
+          this.checkingSegmentRefOrGroupForCompliance(conformanceProfile, child, result, positionPath, path, this.findSEB(sebs, child.getId()));
+        } 
+      } 
+    }
+  }
+  
   private void checkingGroup(ConformanceProfile conformanceProfile, Group group, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
     String name = group.getName();
     int position = group.getPosition();
@@ -744,7 +886,7 @@ public class VerificationServiceImpl implements VerificationService {
       this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max));
       
       this.checkUsageVerificationError(conformanceProfile, usage, positionPath, path, result);
-      this.checkCardinalityVerificationError(conformanceProfile, usage, min, max, positionPath, path, result);
+      this.checkCardinalityVerificationError(usage, min, max, positionPath, path, result);
       
       if(group.getChildren() != null) {
         for (SegmentRefOrGroup child : group.getChildren()) {
@@ -790,7 +932,7 @@ public class VerificationServiceImpl implements VerificationService {
    */
   private void checkingComponents(ComplexDatatype cDt, Set<Component> components, DTSegVerificationResult result) {
     if(components == null || components.size() == 0) {
-      result.getErrors().add(new IgamtObjectError("STRUCTURE", "components", "Complex Datatype should have one or more components.", null, "ERROR"));
+      result.getErrors().add(new IgamtObjectError("STRUCTURE", "components_missing", "Complex Datatype should have one or more components.", null, "ERROR"));
     } else {
       components.forEach(c -> this.checkingComponent(cDt, c, result));
     }
@@ -838,40 +980,29 @@ public class VerificationServiceImpl implements VerificationService {
     String maxLength = c.getMaxLength();
     String minLength = c.getMinLength();
 
-    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.position", "Component position should be greater than 0", position + "", "ERROR"));
-    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.name", "Name should be required.", position + "", "ERROR"));
-    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "Component Ref should be required.", position + "", "ERROR"));
-    if(type == null || !type.equals(Type.COMPONENT)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.type", "Component type should be 'COMPONENT'.", position + "", "ERROR"));
-    if(usage == null) {
-      result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.usage", "Component usage should be required.", position + "", "ERROR"));
-    } else {
-      if(usage.equals(Usage.CAB) && !this.hasPredicate(cDt, c.getId())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "ERROR"));
-    }
-    
-    if(this.isLengthAllowedComponent(c)) {
-      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component" + position + " length should be required.", position + "", "WARNING"));
-      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component length should defined using a single way.", position + "", "ERROR"));
-      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.maxLength", "Component maxLength is not defined.", position + "", "ERROR"));
-      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.minLength", "Component minLength is not defined.", position + "", "ERROR"));
-      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.minLength", "Component minLength is not integer.", position + "", "ERROR"));
-      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.maxLength", "Component maxLength should be integer or *", position + "", "ERROR"));   
-    }
+    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "position_missing", "Component position should be greater than 0", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "name_missing", "Name should be required.", position + "", "ERROR"));
+    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "ref_missing", "Component Ref should be required.", position + "", "ERROR"));
+    if(type == null || !type.equals(Type.COMPONENT)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "type_missing", "Component type should be 'COMPONENT'.", position + "", "ERROR"));
+
+    this.checkUsageVerificationError(null, usage, position + "", cDt.getLabel() + "." + position, result);
+    this.checkLengthVerificationErorr(c, minLength, maxLength, confLength, "", cDt.getLabel() + "." + position, result);
     
     cDt.getComponents().forEach(otherC -> {
       if(!otherC.getId().equals(c.getId())){
-        if (otherC.getPosition() == c.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.position", "The component position is duplicated.", position + "", "ERROR"));
-        if (otherC.getName().equals(c.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.name", "The component name is duplicated.", position + "", "ERROR"));
+        if (otherC.getPosition() == c.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "position_duplicated", "The component position is duplicated.", position + "", "ERROR"));
+        if (otherC.getName().equals(c.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "name_missing", "The component name is duplicated.", position + "", "ERROR"));
       }
     });
     
     if(ref != null && ref.getId() != null) {
       Datatype childDt = this.datatypeService.findById(ref.getId());
-      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "The component child DT is missing.", position + "", "ERROR"));
+      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "ref_missing", "The component child DT is missing.", position + "", "ERROR"));
             
       if(this.isPrimitiveDatatype(childDt)) {
         
       } else {
-        if(this.isNotNullNotEmpty(c.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "ERROR"));
+        if(this.isNotNullNotEmpty(c.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "constantValue_notAllowed", "This ConstantValue is not allowed for this component.", position + "", "ERROR"));
       }
       
       if (this.isValueSetOrSingleCodeAllowedComponent(c, childDt)) {
@@ -913,43 +1044,30 @@ public class VerificationServiceImpl implements VerificationService {
     String max = f.getMax();
   
 
-    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.position", "Field position should be greater than 0", position + "", "ERROR"));
-    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.name", "Name should be required.", position + "", "ERROR"));
-    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.ref", "Field Ref should be required.", position + "", "ERROR"));
-    if(type == null || !type.equals(Type.FIELD)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.type", "Field type should be 'FIELD'.", position + "", "ERROR"));
-    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.usage", "Field usage should be required.", position + "", "ERROR"));
+    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "position", "Field position should be greater than 0", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "name_missing", "Name should be required.", position + "", "ERROR"));
+    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "ref_missing", "Field Ref should be required.", position + "", "ERROR"));
+    if(type == null || !type.equals(Type.FIELD)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "type.missing", "Field type should be 'FIELD'.", position + "", "ERROR"));
     
-    if(this.isLengthAllowedComponent(f)) {
-      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.length", "Field length should be required.", position + "", "ERROR"));
-      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.length", "Field length should defined using a single way.", position + "", "ERROR"));
-      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.maxLength", "Field maxLength is not defined.", position + "", "ERROR"));
-      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.minLength", "Field minLength is not defined.", position + "", "ERROR"));
-      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.minLength", "Field minLength is not integer.", position + "", "ERROR"));
-      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.maxLength", "Field maxLength should be integer or *", position + "", "ERROR"));   
-    }
-   
-    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.max", "Field max should be integer or *", position + "", "ERROR"));
-    if(usage != null) {
-      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.min", "Field min should be greater than 0 if Usage is R", position + "", "ERROR"));
-      if(usage.equals(Usage.CAB) && !this.hasPredicate(segment, f.getId())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "ERROR"));
-    }
+    this.checkUsageVerificationError(null, usage, position + "", segment.getLabel() + "-" + position, result);
+    this.checkCardinalityVerificationError(usage, min, max, position + "", segment.getLabel() + "-" + position, result);
+    this.checkLengthVerificationErorr(f, minLength, maxLength, confLength, position + "", segment.getLabel() + "-" + position, result);
     
     segment.getChildren().forEach(otherF -> {
       if(!otherF.getId().equals(f.getId())){
-        if (otherF.getPosition() == f.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.position", "The field position is duplicated.", position + "", "ERROR"));
-        if (otherF.getName().equals(f.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.name", "The field name is duplicated.", position + "", "ERROR"));
+        if (otherF.getPosition() == f.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "poisition_duplicated", "The field position is duplicated.", position + "", "ERROR"));
+        if (otherF.getName().equals(f.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "name_duplicated", "The field name is duplicated.", position + "", "ERROR"));
       }
     });
     
-    
     if(ref != null && ref.getId() != null) {
       Datatype childDt = this.datatypeService.findById(ref.getId());
-      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "The field child DT is missing.", position + "", "ERROR"));
+      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "Datatype_missing", "The field DT is missing.", position + "", "ERROR"));
             
       if(this.isPrimitiveDatatype(childDt)) {
         
       } else {
-        if(this.isNotNullNotEmpty(f.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "ERROR"));
+        if(this.isNotNullNotEmpty(f.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "constantValue_notAllowed", "This ConstantValue is not allowed for this component.", position + "", "ERROR"));
       }
       
       if (this.isValueSetOrSingleCodeAllowedField(f, childDt)) {
@@ -1415,6 +1533,22 @@ public class VerificationServiceImpl implements VerificationService {
     return segment.getName().equals("OBX");
   }
 
+  private CPVerificationResult verifyConformanceProfileForCompliance(ConformanceProfile conformanceProfile) {
+    CPVerificationResult result = new CPVerificationResult(conformanceProfile);
+
+    //0. Create parentMap for Compliance Checking
+    if(conformanceProfile.getOrigin() != null) {
+      ConformanceProfile parentConformanceProfile = this.conformanceProfileService.findById(conformanceProfile.getOrigin());
+      Set<StructureElementBinding> sebs = null;
+      if (parentConformanceProfile.getBinding() != null) sebs = parentConformanceProfile.getBinding().getChildren();
+      this.travelSegmentRefOrGroups(parentConformanceProfile, parentConformanceProfile.getChildren(), null, null, sebs);
+    }
+    
+    this.checkingStructureForConformanceProfileForCompliance(conformanceProfile, result);
+    
+    return result;
+  }
+  
   @Override
   public CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile) {
     CPVerificationResult result = new CPVerificationResult(conformanceProfile);
@@ -1628,7 +1762,7 @@ public class VerificationServiceImpl implements VerificationService {
     Ig ig = this.igService.findById(documentId);
     IgVerificationResult result = new IgVerificationResult(ig);
     
-    /*
+
     ValueSetRegistry valueSetRegistry = ig.getValueSetRegistry();
     
     if(valueSetRegistry.getChildren() != null) {
@@ -1686,7 +1820,7 @@ public class VerificationServiceImpl implements VerificationService {
         
       } 
     }
-    */
+
     
     ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
     if(conformanceProfileRegistry.getChildren() != null) {
@@ -1702,6 +1836,34 @@ public class VerificationServiceImpl implements VerificationService {
           if(cp.getDomainInfo().getVersion() == null || !cp.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.version", "The conformanceprofile version info is wrong", id + "", "ERROR"));
         
           report.addConformanceProfileVerificationResult(this.verifyConformanceProfile(cp));
+        }
+        
+      } 
+    }
+    
+    report.setIgVerificationResult(result);
+    return report;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.ig.service.VerificationService#verifyIgForCompliance(java.lang.String)
+   */
+  @Override
+  public VerificationReport verifyIgForCompliance(String documentId) {
+    parentComplianceMap = new HashMap<String,ComplianceObject>();
+    childComplianceMap = new HashMap<String,ComplianceObject>();
+    VerificationReport report = new VerificationReport();
+    Ig ig = this.igService.findById(documentId);
+    IgVerificationResult result = new IgVerificationResult(ig);
+    
+    ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
+    
+    if(conformanceProfileRegistry.getChildren() != null) {
+      for(Link l : conformanceProfileRegistry.getChildren()) {
+        String id = l.getId();
+        ConformanceProfile cp = this.conformanceProfileService.findById(id);
+        if(cp != null) {
+          report.addConformanceProfileVerificationResult(this.verifyConformanceProfileForCompliance(cp));
         }
         
       } 
