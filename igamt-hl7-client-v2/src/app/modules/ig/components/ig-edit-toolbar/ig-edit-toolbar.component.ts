@@ -139,7 +139,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     if (type || type === 'Verification' || type === 'Compliance') {
       this.getIgId().subscribe((igId) => {
         const dialogRef = this.dialog.open(VerifyIgDialogComponent, {
-          data: {igId, type}
+          data: {igId, type},
         });
 
         dialogRef.afterClosed().pipe().subscribe();
