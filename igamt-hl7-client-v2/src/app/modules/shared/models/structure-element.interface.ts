@@ -8,6 +8,7 @@ export interface IStructureElement {
   name: string;
   position: number;
   usage: Usage;
+  oldUsage: Usage;
   type: Type;
   text?: string;
   custom?: boolean;

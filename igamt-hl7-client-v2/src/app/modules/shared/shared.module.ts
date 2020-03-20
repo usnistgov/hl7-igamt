@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { ExtendedModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatRadioModule } from '@angular/material';
+import { MatFormFieldModule, MatRadioModule, MatSelectModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { NgbAlert, NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -11,6 +11,7 @@ import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
 import { ToastyModule } from 'ng2-toasty';
 import { ContextMenuModule } from 'ngx-contextmenu';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
@@ -61,6 +62,7 @@ import { LoginFormComponent } from './components/login-form/login-form.component
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
+import { NgxDropdownComponent } from './components/ngx-dropdown/ngx-dropdown.component';
 import { PatternDialogComponent } from './components/pattern-dialog/pattern-dialog.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
@@ -158,6 +160,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportCsvValuesetComponent,
     ValuesetDeltaComponent,
     DisplayRefComponent,
+    NgxDropdownComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -202,6 +205,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AutoCompleteModule,
     PrimeNgDragDrop,
     DragDropModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    NgxMatSelectSearchModule,
   ],
   exports: [
     CommonModule,
@@ -245,6 +251,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     FroalaViewModule,
     MetadataFormComponent,
     ChipsModule,
+    NgxDropdownComponent,
     ResourcePickerComponent,
     CopyResourceComponent,
     NamingDuplicationDirective,

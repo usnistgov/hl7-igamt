@@ -159,6 +159,7 @@ export class Hl7V2TreeService {
         position: node.data.position,
         type: node.data.type,
         usage: cloneTextValue(node.data.usage),
+        oldUsage: node.data.oldUsage,
         text: cloneTextValue(node.data.text),
         cardinality: cloneRange(node.data.cardinality) as ICardinalityRange,
         length: cloneRange(node.data.length) as ILengthRange,
@@ -599,6 +600,7 @@ export class Hl7V2TreeService {
     return repository.getRefData(segment.children.map((child) => child.ref.id), Type.DATATYPE).pipe(
       take(1),
       map((refsData) => {
+
         return segment.children.map((child) => {
           const reference = this.createReference(refsData, Type.DATATYPE, child.ref.id);
           const level = parent ? parent.data.level + 1 : 0;
@@ -612,6 +614,7 @@ export class Hl7V2TreeService {
               usage: {
                 value: child.usage,
               },
+              oldUsage: child.oldUsage,
               cardinality: {
                 min: child.min,
                 max: child.max,
@@ -682,6 +685,7 @@ export class Hl7V2TreeService {
               usage: {
                 value: child.usage,
               },
+              oldUsage: child.oldUsage,
               length: {
                 min: child.minLength,
                 max: child.maxLength,
@@ -789,6 +793,7 @@ export class Hl7V2TreeService {
           usage: {
             value: child.usage,
           },
+          oldUsage: child.oldUsage,
           cardinality: {
             min: child.min,
             max: child.max,
