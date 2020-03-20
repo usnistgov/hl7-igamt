@@ -288,7 +288,7 @@ public class BootstrapApplication implements CommandLineRunner {
     }
     //  
     //
-    @PostConstruct
+   // @PostConstruct
     void updateGVTURL() {
       Config constant =  this.sharedConstantService.findOne();
       String redirectToken = "#/uploadTokens";
