@@ -148,6 +148,8 @@ public class ExportConfiguration {
     displaySelectives.setR(true);
     displaySelectives.setRe(true);
     displaySelectives.setCab(true);
+    displaySelectives.setB(false);
+    displaySelectives.setW(false);
     CodeUsageConfiguration codeUsageExport = new CodeUsageConfiguration();
     codeUsageExport.setE(setAllTrue);
     codeUsageExport.setP(true);
@@ -158,6 +160,8 @@ public class ExportConfiguration {
     displayAll.setX(false);
     displayAll.setO(false);
     displayAll.setR(true);
+    displayAll.setB(false);
+    displayAll.setW(false);
     DeltaExportConfigMode deltaMode = DeltaExportConfigMode.HIGHLIGHT;
     HashMap<DeltaAction,String> colors = new HashMap<>();
     colors.put(DeltaAction.ADDED, "#a7d6a9");
@@ -214,7 +218,6 @@ public class ExportConfiguration {
     messageColumnsDefaultList
     .add(new NameAndPositionAndPresence("Cardinality", 4, true, setAllTrue));
     //    messageColumnsDefaultList.add(new NameAndPositionAndPresence("Comment", 1, true, setAllTrue));
-
     ArrayList<NameAndPositionAndPresence> segmentColumnsDefaultList =
         new ArrayList<NameAndPositionAndPresence>();
     segmentColumnsDefaultList.add(new NameAndPositionAndPresence("Name", 1, true, true));

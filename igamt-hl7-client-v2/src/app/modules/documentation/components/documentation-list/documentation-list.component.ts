@@ -22,6 +22,8 @@ export class DocumentationListComponent implements OnInit {
   list: IDocumentation[];
 
   @Input()
+  admin: boolean;
+  @Input()
   documentationType: DocumentationType;
 
   ngOnInit() {

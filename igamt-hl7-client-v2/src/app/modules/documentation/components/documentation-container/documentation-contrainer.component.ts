@@ -10,6 +10,7 @@ import {
   DocumentationToolBarSave, ToggleEditMode,
 } from '../../../../root-store/documentation/documentation.actions';
 import {
+  isUser,
   selectDocumentationByType,
   selectEditMode, selectEditorTitle, selectLatestUpdate, selectSubTitle, selectWorkspaceActive,
   selectWorkspaceCurrentIsChanged,
@@ -49,8 +50,11 @@ export class DocumentationContainerComponent implements OnInit {
   changeTime$: any;
   updateInfo$: any;
   active$: Observable<IDocumentationWorkspaceActive>;
+  isUser$: Observable<boolean>;
+
   constructor(private route: ActivatedRoute, private documentationService: DocumentationService, private store: Store<any>, private dialog: MatDialog) {
     this.admin$ = this.store.select(selectIsAdmin);
+    this.isUser$ = this.store.select(isUser);
     this.editMode$ = this.store.select(selectEditMode);
     this.title$ = this.store.select(selectEditorTitle);
     this.subTitle$ = this.store.select(selectSubTitle);

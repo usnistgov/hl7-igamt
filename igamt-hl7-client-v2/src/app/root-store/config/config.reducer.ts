@@ -29,7 +29,6 @@ export const getHl7ConfigState = createSelector(
 export const getHl7Versions = createSelector(
   getHl7ConfigState,
   (state: Hl7Config) => {
-    console.log(state);
     return state.hl7Versions; },
 );
 
@@ -41,7 +40,6 @@ export const getHl7Usages = createSelector(
 export const selectBindingConfig = createSelector(
   getHl7ConfigState,
   (state) => {
-    console.log(state);
     return state.valueSetBindingConfig;
   },
 );

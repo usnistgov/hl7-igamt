@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.delta.domain;
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 
 public class StructureDeltaData {
 
@@ -10,6 +11,7 @@ public class StructureDeltaData {
     private Integer position;
     private Type type;
     private DeltaNode<Usage> usage;
+    private DeltaNode<CodeUsage> codeUsage;
     private DeltaNode<String> constantValue;
     private DeltaNode<String> minLength;
     private DeltaNode<String> maxLength;
@@ -56,6 +58,15 @@ public class StructureDeltaData {
     public void setUsage(DeltaNode<Usage> usage) {
         this.crunchAction(usage.getAction());
         this.usage = usage;
+    }
+
+    public DeltaNode<CodeUsage> getCodeUsage() {
+        return codeUsage;
+    }
+
+    public void setCodeUsage(DeltaNode<CodeUsage> codeUsage) {
+        this.crunchAction(codeUsage.getAction());
+        this.codeUsage = codeUsage;
     }
 
     public DeltaNode<String> getConstantValue() {

@@ -44,6 +44,7 @@ export class DocumentationContentComponent implements  OnInit {
   readonly currentSynchronized$: Observable<any>;
   readonly initial$: Observable<any>;
   readonly viewOnly$: Observable<boolean>;
+  readonly admin$: Observable<boolean>;
   constructor(
     private actions$: Actions,
     private documentationService: DocumentationService,
