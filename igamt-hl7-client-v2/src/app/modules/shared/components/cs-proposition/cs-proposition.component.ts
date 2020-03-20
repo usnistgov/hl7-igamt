@@ -8,7 +8,7 @@ import { Type } from '../../constants/type.enum';
 import { ComparativeType, ConformanceStatementType, DeclarativeType, OccurrenceType, PropositionType, StatementType, VerbType } from '../../models/conformance-statements.domain';
 import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
-import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
+import { Hl7V2TreeService, IPathInfo } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { ICardinalityRange, IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
@@ -62,6 +62,7 @@ export class CsPropositionComponent implements OnInit {
     description: '',
   };
 
+  subjectIsComplex: boolean;
   subjectRepeatMax: number;
   complementRepeatMax: number;
 
@@ -73,26 +74,14 @@ export class CsPropositionComponent implements OnInit {
 
   treeFilter: IHL7v2TreeFilter = {
     hide: false,
-    restrictions: [
-      {
-        criterion: RestrictionType.PRIMITIVE,
-        allow: true,
-        value: true,
-      },
-    ],
+    restrictions: [],
   };
 
   @Input()
   set excludePaths(paths: string[]) {
-    this.treeFilter.restrictions = [
-      {
-        criterion: RestrictionType.PRIMITIVE,
-        allow: true,
-        value: true,
-      },
+    this.treeFilter.restrictions.push(
       {
         criterion: RestrictionType.PATH,
-        combine: RestrictionCombinator.ENFORCE,
         allow: false,
         value: paths.map((path) => {
           return {
@@ -101,7 +90,7 @@ export class CsPropositionComponent implements OnInit {
           };
         }),
       },
-    ];
+    );
   }
 
   @Input()
@@ -138,16 +127,16 @@ export class CsPropositionComponent implements OnInit {
 
     this.getName(this.treeService.concatPath(this.context, assertion.subject.path)).pipe(
       take(1),
-      map((name) => {
-        this.subjectName = name;
+      map((info) => {
+        this.setSubject(info);
       }),
     ).subscribe();
 
     if (assertion.complement.path) {
       this.getName(this.treeService.concatPath(this.context, assertion.complement.path)).pipe(
         take(1),
-        map((name) => {
-          this.compareName = name;
+        map((info) => {
+          this.compareName = info.name;
         }),
       ).subscribe();
     }
@@ -162,6 +151,16 @@ export class CsPropositionComponent implements OnInit {
   @Input()
   set type(type: ConformanceStatementType) {
     this.csType = type;
+    if (this.csType === ConformanceStatementType.STATEMENT) {
+      this.treeFilter.restrictions.push(
+        {
+          criterion: RestrictionType.PRIMITIVE,
+          combine: RestrictionCombinator.ENFORCE,
+          allow: true,
+          value: true,
+        },
+      );
+    }
   }
 
   @Input()
@@ -233,6 +232,11 @@ export class CsPropositionComponent implements OnInit {
     { label: 'does not contain one of the values in the list: { \‘VALUE 1\’ (DESCRIPTION), \'VALUE 2\' (DESCRIPTION), \'VALUE N\' (DESCRIPTION) }.', value: PropositionType.NOT_CONTAINS_VALUES_DESC },
   ];
 
+  complex_statements_allowed: string[] = [
+    PropositionType.VALUED,
+    PropositionType.NOT_VALUED,
+  ];
+
   labelsMap = {};
   id: string;
 
@@ -256,7 +260,13 @@ export class CsPropositionComponent implements OnInit {
 
   statementList() {
     if (this.csType === ConformanceStatementType.PROPOSITION) {
-      return this.proposition_statements;
+      return this.proposition_statements.filter((st) => {
+        if (this.subjectIsComplex) {
+          return this.complex_statements_allowed.indexOf(st.value) !== -1;
+        } else {
+          return true;
+        }
+      });
     } else {
       if (this.statementType === StatementType.DECLARATIVE) {
         return this.declarative_statements;
@@ -277,8 +287,8 @@ export class CsPropositionComponent implements OnInit {
         const verb = this.labelsMap[this.assertion.verbKey];
         const statement = this.getStatementLiteral(this.assertion.complement);
         const comparisonTarget = this.getOccurenceLiteral(this.assertion.complement);
-        const comparison = `${comparisonTarget.toLowerCase()} ${this.valueOrBlank(compNode)}`;
-        this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)} ${this.statementType === StatementType.COMPARATIVE ? comparison : ''}`;
+        const comparison = `${comparisonTarget.toLowerCase()} ${this.valueOrBlank(compNode.name)}`;
+        this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node.name)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)} ${this.statementType === StatementType.COMPARATIVE ? comparison : ''}`;
         this.valueChange.emit(this.assertion);
       }),
     ).subscribe();
@@ -453,12 +463,22 @@ export class CsPropositionComponent implements OnInit {
     };
   }
 
+  setSubject(info: {
+    name: string,
+    nodeInfo: IPathInfo,
+  }) {
+    this.subjectName = info.name;
+    if (info.nodeInfo) {
+      this.subjectIsComplex = !info.nodeInfo.leaf;
+    }
+  }
+
   targetElement(event) {
     this.changeElement(event, this.assertion.subject);
     this.getName(this.treeService.concatPath(this.context, event.path)).pipe(
       take(1),
-      map((name) => {
-        this.subjectName = name;
+      map((info) => {
+        this.setSubject(info);
       }),
     ).subscribe();
     this.subjectRepeatMax = this.repeatMax(event.node.data.cardinality);
@@ -468,8 +488,8 @@ export class CsPropositionComponent implements OnInit {
     this.changeElement(event, this.assertion.complement);
     this.getName(this.treeService.concatPath(this.context, event.path)).pipe(
       take(1),
-      map((name) => {
-        this.compareName = name;
+      map((info) => {
+        this.compareName = info.name;
       }),
     ).subscribe();
     this.complementRepeatMax = this.repeatMax(event.node.data.cardinality);
@@ -480,20 +500,39 @@ export class CsPropositionComponent implements OnInit {
     elm.occurenceIdPath = event.node.data.id;
     elm.occurenceValue = undefined;
     elm.occurenceType = undefined;
+
+    if (!event.node.leaf && this.assertion.complement.complementKey && this.complex_statements_allowed.indexOf(this.assertion.complement.complementKey) === -1) {
+      this.assertion.complement.complementKey = undefined;
+      this.changeStatement();
+    }
+
     this.change();
   }
 
-  getName(path: IPath): Observable<string> {
+  getName(path: IPath): Observable<{ name: string, nodeInfo: IPathInfo }> {
     if (!path) {
-      return of('');
+      return of({ name: '', nodeInfo: undefined });
     }
 
     return this.treeService.getPathName(this.res, this.repository, path.child).pipe(
       take(1),
       map((pathInfo) => {
-        return this.treeService.getNameFromPath(pathInfo);
+        const name = this.treeService.getNameFromPath(pathInfo);
+        const nodeInfo = this.getLeaf(pathInfo);
+        return {
+          name,
+          nodeInfo,
+        };
       }),
     );
+  }
+
+  getLeaf(pInfo: IPathInfo): IPathInfo {
+    if (!pInfo.child) {
+      return pInfo;
+    } else {
+      return this.getLeaf(pInfo.child);
+    }
   }
 
   repeatMax(cardinality: ICardinalityRange) {

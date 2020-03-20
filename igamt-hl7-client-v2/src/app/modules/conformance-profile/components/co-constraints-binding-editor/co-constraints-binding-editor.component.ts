@@ -58,6 +58,10 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
 
   changes: Subject<IChange>;
 
+  formMap: {
+    [id: string]: boolean;
+  } = {};
+
   public structure: IHL7v2TreeNode[];
   public segments: Observable<IDisplayElement[]>;
   public datatypes: Observable<IDisplayElement[]>;
@@ -268,6 +272,19 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
       contextId,
       segment: value,
     });
+  }
+
+  formValid(path: string, validity: boolean) {
+    this.formMap[path] = validity;
+  }
+
+  isFormValid(): boolean {
+    for (const key of Object.keys(this.formMap)) {
+      if (!this.formMap[key]) {
+        return false;
+      }
+    }
+    return true;
   }
 
   registerChange(change: IChange) {

@@ -125,7 +125,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
 
   editBinding() {
     const dialogRef = this.dialog.open(BindingSelectorComponent, {
-       data: {
+      data: {
         resources: this.valueSets,
         locationInfo: this.bindingInfo,
         path: null,
@@ -300,6 +300,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
           }
         } else {
           this.editable.next({ type: IBindingType.VALUESET, value: undefined });
+          this.freeze$ = of();
         }
       },
     );
