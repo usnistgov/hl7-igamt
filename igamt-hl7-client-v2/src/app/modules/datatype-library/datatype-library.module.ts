@@ -7,8 +7,8 @@ import { DocumentModule } from '../document/document.module';
 import { ExportConfigurationModule } from '../export-configuration/export-configuration.module';
 import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
-import { DatatypeLibraryRoutingModule } from './datatype-library-routing.module';
 import { CreateDatatypeLibraryComponent } from './create-datatype-library/create-datatype-library.component';
+import { DatatypeLibraryRoutingModule } from './datatype-library-routing.module';
 
 @NgModule({
   declarations: [CreateDatatypeLibraryComponent],

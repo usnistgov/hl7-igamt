@@ -42,6 +42,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
@@ -68,10 +70,8 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.service.EvolutionComparatorService
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.DeltaTreeNode;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.CopyWrapper;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.CreatingWrapper;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 //import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsNode;
 //import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
@@ -165,18 +165,18 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/create", method = RequestMethod.POST,
       produces = {"application/json"})
 
-  public @ResponseBody ResponseMessage<DatatypeLibrary> create(@RequestBody CreatingWrapper wrapper,
+  public @ResponseBody ResponseMessage<DatatypeLibrary> create(@RequestBody CreationWrapper wrapper,
       Authentication authentication) throws JsonParseException, JsonMappingException,
       FileNotFoundException, IOException, AddingException, DatatypeNotFoundException {
 
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary empty = dataypeLibraryService.createEmptyDatatypeLibrary();
-    if (wrapper.getToAdd() != null || !wrapper.getToAdd().isEmpty()) {
+    if (wrapper.getAdded()!= null || !wrapper.getAdded().isEmpty()) {
 
       Set<String> savedIds = new HashSet<String>();
-      for (AddingInfo elm : wrapper.getToAdd()) {
+      for (AddingInfo elm : wrapper.getAdded()) {
         List<Datatype> datatypes = datatypeService.findByNameAndVersionAndScope(elm.getName(),
-            elm.getDomainInfo().getVersion(), elm.getSourceScope().toString());
+            elm.getDomainInfo().getVersion(), elm.getDomainInfo().getScope().toString());
 
         if (datatypes != null && !datatypes.isEmpty()) {
           Datatype clone = datatypes.get(0).clone();
@@ -189,7 +189,7 @@ public class DatatypeLibraryController {
           savedIds.add(clone.getId());
         } else {
           throw new DatatypeNotFoundException(elm.getName(), elm.getDomainInfo().getVersion(),
-              elm.getSourceScope().toString());
+              elm.getDomainInfo().getScope().toString());
         }
       }
 
@@ -206,41 +206,41 @@ public class DatatypeLibraryController {
 
   }
 
-  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/add", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage<AddDatatypeResponseDisplay> addDatatypes(@PathVariable("id") String id,
-      @RequestBody AddingWrapper wrapper, Authentication authentication)
-      throws IGNotFoundException, AddingException {
-    String username = authentication.getPrincipal().toString();
-    DatatypeLibrary lib = dataypeLibraryService.findById(id);
-    Set<String> savedIds = new HashSet<String>();
-    for (AddingInfo elm : wrapper.getToAdd()) {
-      if (elm.isFlavor()) {
-        Datatype datatype = datatypeService.findOneByNameAndVersionAndScope(elm.getName(),
-            elm.getDomainInfo().getVersion(), elm.getSourceScope().toString());
-        if (datatype != null) {
-          Datatype clone = datatype.clone();
-          clone.setDomainInfo(elm.getDomainInfo());
-          clone.setUsername(username);
-          clone.setId(null);
-          clone.setName(datatype.getName());
-          clone.setExt(elm.getExt());
-          clone = datatypeService.save(clone);
-          savedIds.add(clone.getId());
-        }
-      } else {
-        savedIds.add(elm.getId());
-      }
-    }
-    AddDatatypeResponseObject objects =
-        dataypeLibraryService.addDatatypes(savedIds, lib, lib.getDomainInfo().getScope());
-
-
-    return new ResponseMessage<AddDatatypeResponseDisplay>(Status.SUCCESS, "", "Datatype Library Created", id, false, lib.getUpdateDate(), displayConverterService.convertDatatypeResponseToDisplay(objects));
-
-    
-
-  }
+//  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/add", method = RequestMethod.POST,
+//      produces = {"application/json"})
+//  public ResponseMessage<AddDatatypeResponseDisplay> addDatatypes(@PathVariable("id") String id,
+//      @RequestBody AddingWrapper wrapper, Authentication authentication)
+//      throws IGNotFoundException, AddingException {
+//    String username = authentication.getPrincipal().toString();
+//    DatatypeLibrary lib = dataypeLibraryService.findById(id);
+//    Set<String> savedIds = new HashSet<String>();
+//    for (AddingInfo elm : wrapper) {
+//      if (elm.isFlavor()) {
+//        Datatype datatype = datatypeService.findOneByNameAndVersionAndScope(elm.getName(),
+//            elm.getDomainInfo().getVersion(), elm.getSourceScope().toString());
+//        if (datatype != null) {
+//          Datatype clone = datatype.clone();
+//          clone.setDomainInfo(elm.getDomainInfo());
+//          clone.setUsername(username);
+//          clone.setId(null);
+//          clone.setName(datatype.getName());
+//          clone.setExt(elm.getExt());
+//          clone = datatypeService.save(clone);
+//          savedIds.add(clone.getId());
+//        }
+//      } else {
+//        savedIds.add(elm.getId());
+//      }
+//    }
+//    AddDatatypeResponseObject objects =
+//        dataypeLibraryService.addDatatypes(savedIds, lib, lib.getDomainInfo().getScope());
+//
+//
+//    return new ResponseMessage<AddDatatypeResponseDisplay>(Status.SUCCESS, "", "Datatype Library Created", id, false, lib.getUpdateDate(), displayConverterService.convertDatatypeResponseToDisplay(objects));
+//
+//    
+//
+//  }
 
 
   @RequestMapping(value = "/api/datatype-library/{id}/display", method = RequestMethod.GET,

@@ -16,7 +16,7 @@ export class SelectDatatypesComponent implements OnInit {
   @Input()
   table: any;
   @Input()
-  existing: IDisplayElement[];
+  existing: IDisplayElement[] = [];
   @ViewChild('dt1') tableRef: Table;
   selectedData: IAddingInfo[] = [];
   @Output() selected = new EventEmitter<string>();

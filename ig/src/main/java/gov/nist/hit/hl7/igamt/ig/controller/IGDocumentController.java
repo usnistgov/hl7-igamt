@@ -63,6 +63,7 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
@@ -86,11 +87,6 @@ import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGMetaDataDisplay;
 import gov.nist.hit.hl7.igamt.display.model.XMLVerificationReport;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddResourceResponse;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
@@ -599,9 +595,7 @@ public class IGDocumentController extends BaseController {
       String username = authentication.getPrincipal().toString();
       Ig empty = igService.createEmptyIg();
       Set<String> savedIds = new HashSet<String>();
-      for (AddingInfo ev : wrapper.getMsgEvts()) {
-
-
+      for (AddingInfo ev : wrapper.getAdded()) {
         MessageStructure profile = messageStructureRepository.findOneById(ev.getOriginalId());
         if (profile != null) {
           ConformanceProfile clone = new ConformanceProfile(profile, ev.getName());

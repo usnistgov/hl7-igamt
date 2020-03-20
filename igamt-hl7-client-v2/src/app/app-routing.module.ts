@@ -46,7 +46,7 @@ const routes: Routes = [
   },
   {
     path: 'datatype-library',
-    loadChildren: './modules/datatype-library/datatype-library.module#DatatypeLibraryModule', data: {type: Type.DATATYPERELIBRARY, scope: Scope.USER}, canActivate: [DocumentTypeGuard],
+    loadChildren: './modules/datatype-library/datatype-library.module#DatatypeLibraryModule', data: {type: Type.DATATYPELIBRARY, scope: Scope.USER}, canActivate: [DocumentTypeGuard],
   },
   {
     path: 'documentation',

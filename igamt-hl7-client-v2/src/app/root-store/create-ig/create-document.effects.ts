@@ -4,12 +4,13 @@ import {Router} from '@angular/router';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Store} from '@ngrx/store';
 import {of} from 'rxjs';
-import {catchError, map, mergeMap} from 'rxjs/operators';
+import {catchError, concatMap, map, mergeMap, withLatestFrom} from 'rxjs/operators';
 import {Message} from '../../modules/core/models/message/message.class';
 import {MessageService} from '../../modules/core/services/message.service';
 import {MessageEventTreeNode} from '../../modules/document/models/message-event/message-event.class';
 import {IgService} from '../../modules/document/services/ig.service';
 import {RxjsStoreHelperService} from '../../modules/shared/services/rxjs-store-helper.service';
+import {selectDocumentType} from '../document/document.reducer';
 import {TurnOnLoader} from '../loader/loader.actions';
 import {
   CreateDocument,
@@ -47,19 +48,20 @@ export class CreateDocumentEffects {
 
   @Effect()
   createIg$ = this.actions$.pipe(
-    ofType(CreateDocumentActionTypes.CreateIg),
-    mergeMap((action: CreateIg) => {
+    ofType(CreateDocumentActionTypes.CreateDocument),
+    withLatestFrom(this.store.select(selectDocumentType)),
+    mergeMap(([action, type]) => {
       this.store.dispatch(new TurnOnLoader({
         blockUI: false,
       }));
-      return this.igService.createIntegrationProfile(action.payload).pipe(
+      return this.igService.createDocument(action.payload, type).pipe(
         map((resp: Message<string>) => {
           console.log(resp);
-          return new CreateIgSuccess(resp);
+          return new CreateDocumentSuccess(resp);
         })
         , catchError(
           (err: HttpErrorResponse) => {
-            return of(new CreateIgFailure(err));
+            return of(new CreateDocumentFailure(err));
           })
         ,
       );

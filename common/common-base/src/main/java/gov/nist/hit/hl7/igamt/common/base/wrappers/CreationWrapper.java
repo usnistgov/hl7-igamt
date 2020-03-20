@@ -1,17 +1,17 @@
-package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
+package gov.nist.hit.hl7.igamt.common.base.wrappers;
 
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class CreationWrapper {
 	
   private Scope scope;
-  private List<AddingInfo> msgEvts;
+  private List<AddingInfo> added;
   private DocumentMetadata metadata;
-
+  private Type type;
   public CreationWrapper() {
     super();
   }
@@ -24,9 +24,9 @@ public class CreationWrapper {
     this.metadata = metadata;
   }
 
-  public CreationWrapper(List<AddingInfo> msgEvts, DocumentMetadata metadata) {
+  public CreationWrapper(List<AddingInfo> added, DocumentMetadata metadata) {
     super();
-    this.setMsgEvts(msgEvts);
+    this.setAdded(added);
     this.metadata = metadata;
   }
 
@@ -38,11 +38,19 @@ public class CreationWrapper {
     this.scope = scope;
   }
 
-  public List<AddingInfo> getMsgEvts() {
-	return msgEvts;
+  public List<AddingInfo> getAdded() {
+	return added;
   }
 
-  public void setMsgEvts(List<AddingInfo> msgEvts) {
-	this.msgEvts = msgEvts;
+  public void setAdded(List<AddingInfo> added) {
+	this.added = added;
+  }
+
+  public Type getType() {
+    return type;
+  }
+
+  public void setType(Type type) {
+    this.type = type;
   }
 }

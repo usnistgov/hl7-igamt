@@ -138,7 +138,7 @@ export class DocumentListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-success',
                 icon: 'fa-plus',
                 action: (item: IgListItem) => {
-                  this.ig.cloneIg(item.id, CloneModeEnum.CLONE, null).subscribe(
+                  this.ig.cloneIg(item.id, CloneModeEnum.CLONE, null, Type.IGDOCUMENT).subscribe(
                     (response: Message<string>) => {
                       this.store.dispatch(this.message.messageToAction(response));
                       this.router.navigate(['ig', response.data]);
@@ -179,7 +179,7 @@ export class DocumentListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-scondary',
                 icon: 'fa fa-map-marker',
                 action: (item: IgListItem) => {
-                  this.ig.cloneIg(item.id, CloneModeEnum.DERIVE, null).subscribe(
+                  this.ig.cloneIg(item.id, CloneModeEnum.DERIVE, null, null).subscribe(
                     (response: Message<string>) => {
                       this.store.dispatch(this.message.messageToAction(response));
                       this.router.navigate(['ig', response.data]);

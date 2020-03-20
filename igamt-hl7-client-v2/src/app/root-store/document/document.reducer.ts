@@ -1,10 +1,10 @@
 import {ActionReducerMap, createFeatureSelector, createSelector} from '@ngrx/store';
 import {IDocumentType} from '../../modules/document/document.type';
+import {Scope} from '../../modules/shared/constants/scope.enum';
+import {Type} from '../../modules/shared/constants/type.enum';
 import * as fromIgEdit from './document-edit/ig-edit.reducer';
 import * as fromIgList from './document-list/document-list.reducer';
 import {DocumentActions, DocumentActionTypes} from './document.actions';
-import {Type} from "../../modules/shared/constants/type.enum";
-import {Scope} from "../../modules/shared/constants/scope.enum";
 
 // Feature
 export const featureName = 'ig';
@@ -34,7 +34,7 @@ export function typereducer(state: IDocumentType = initialState.type, action: Do
 export const reducers: ActionReducerMap<IState> = {
   list: fromIgList.reducer,
   edit: fromIgEdit.reducer,
-  type: typereducer
+  type: typereducer,
 };
 
 export const selectIgFeature = createFeatureSelector(featureName);
@@ -50,7 +50,7 @@ export const selectIgEdit = createSelector(
     return state ? state.edit : undefined;
   },
 );
-export const selectFeatureType = createSelector(
+export const selectDocumentType = createSelector(
   selectIgFeature,
   (state: IState) => {
     return state ? state.type : undefined;

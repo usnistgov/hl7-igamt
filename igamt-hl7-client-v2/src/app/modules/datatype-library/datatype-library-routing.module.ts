@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { IgEditActionTypes, IgEditResolverLoad, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/document/document-edit/ig-edit.actions';
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
+import {CreateDocumentComponent} from '../document/components/create-document/create-document.component';
 import { DocumentEditContainerComponent } from '../document/components/document-edit-container/document-edit-container.component';
 import { DocumentListContainerComponent } from '../document/components/document-list-container/document-list-container.component';
 import { DocumentMetadataEditorComponent } from '../document/components/document-metadata-editor/document-metadata-editor.component';
@@ -22,7 +23,7 @@ const routes: Routes = [
   },
   {
     path: 'create',
-    component: CreateDatatypeLibraryComponent,
+    component: CreateDocumentComponent,
     canActivate: [AuthenticatedGuard],
   },
   {

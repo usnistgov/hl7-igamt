@@ -36,11 +36,6 @@ export class CreateDatatypeLibraryComponent implements OnInit {
   selectVersion($event: string) {
     this.store.dispatch(new LoadResource({ type: Type.DATATYPE, scope: Scope.HL7STANDARD, version: $event }));
   }
-
-  setSelected($event: IAddingInfo[]) {
-  //  this.selectedEvents = $event;
-  }
-
   submit() {
 
   }

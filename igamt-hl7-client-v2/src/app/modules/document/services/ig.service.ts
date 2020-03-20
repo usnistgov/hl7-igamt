@@ -4,12 +4,14 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
+import {Scope} from '../../shared/constants/scope.enum';
 import { Type } from '../../shared/constants/type.enum';
 import { IConnectingInfo } from '../../shared/models/config.class';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { INarrative } from '../components/document-section-editor/document-section-editor.component';
+import {IDocumentType} from '../document.type';
 import { IDocumentCreationWrapper } from '../models/ig/document-creation.interface';
 import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
@@ -17,6 +19,7 @@ import { MessageEventTreeNode } from '../models/message-event/message-event.clas
 import { IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse, ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
+import {DocumentAdapterService} from './document-adapter.service';
 
 @Injectable({
   providedIn: 'root',
@@ -27,7 +30,7 @@ export class IgService {
   readonly IG_END_POINT = '/api/igdocuments/';
   readonly CONFIGURATION = '/configuration/';
 
-  constructor(private http: HttpClient, private location: LocationStrategy) {
+  constructor(private http: HttpClient, private location: LocationStrategy, private adapter: DocumentAdapterService) {
   }
 
   igToIDisplayElement(ig: IgDocument): IDisplayElement {
@@ -44,8 +47,8 @@ export class IgService {
     };
   }
 
-  cloneIg(id: string, mode: CloneModeEnum, data: any): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/clone', { mode, data }).pipe();
+  cloneIg(id: string, mode: CloneModeEnum, data: any, type: Type): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.adapter.getEndPoint(type, null) + id + '/clone', { mode, data }).pipe();
   }
 
   publish(id: string): Observable<Message<string>> {
@@ -56,8 +59,8 @@ export class IgService {
     return this.http.get<Message<MessageEventTreeNode[]>>(this.IG_END_POINT + 'findMessageEvents/' + hl7Version);
   }
 
-  createIntegrationProfile(wrapper: IDocumentCreationWrapper): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.IG_END_POINT + 'create/', wrapper);
+  createDocument(wrapper: IDocumentCreationWrapper, documentType: IDocumentType): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.adapter.getEndPoint(documentType.type, documentType.scope) + 'create/', wrapper);
   }
 
   getIgInfo(id: string): Observable<IGDisplayInfo> {
@@ -247,4 +250,5 @@ export class IgService {
       return this.getIgInfo(id);
     }
   }
+
 }

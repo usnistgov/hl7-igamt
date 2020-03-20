@@ -12,9 +12,11 @@
       </app-form-input>
     </form>
   </div>
-  <div class="messages">
-    <app-select-messages (messages)="setSelected($event)" (selected)="getVersion($event)" [hl7Versions]=" hl7Version$ | async"
+  <div class="messages" >
+    <app-select-messages *ngIf="(documentType$ |async)?.type === 'IGDOCUMENT'" (messages)="updateAdded($event)" (selected)="getVersion($event)" [hl7Versions]=" hl7Version$ | async"
                          [table]="table$ | async "></app-select-messages>
+    <app-select-datatypes *ngIf="(documentType$ |async)?.type === 'DATATYPELIBRARY' " [hl7Versions]="hl7Version$ | async" (selected)="getVersion($event)" [table]="table$ |async" (added)="updateAdded($event)"></app-select-datatypes>
+
   </div>
 
   <div class="submit">

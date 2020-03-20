@@ -12,7 +12,7 @@ import * as fromIg from '../../root-store/document/document.reducer';
 import { ExportConfigurationModule } from '../export-configuration/export-configuration.module';
 import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
-import { CreateIGComponent } from './components/create-ig/create-ig.component';
+import { CreateDocumentComponent } from './components/create-document/create-document.component';
 import { DocumentEditActiveTitlebarComponent } from './components/document-edit-active-titlebar/document-edit-active-titlebar.component';
 import { DocumentEditContainerComponent } from './components/document-edit-container/document-edit-container.component';
 import { DocumentEditSidebarComponent } from './components/document-edit-sidebar/document-edit-sidebar.component';
@@ -38,7 +38,7 @@ import { IgService } from './services/ig.service';
     DocumentEditSidebarComponent,
     DocumentEditToolbarComponent,
     DocumentEditTitlebarComponent,
-    CreateIGComponent,
+    CreateDocumentComponent,
     DocumentTocComponent,
     NarrativeSectionFormComponent,
     DocumentEditActiveTitlebarComponent,
