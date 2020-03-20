@@ -34,6 +34,8 @@ export class DocumentationSideBarComponent implements OnInit {
   @Input()
   admin: boolean;
   @Input()
+  authenticated: boolean;
+  @Input()
   glossary: IDocumentation[];
   ngOnInit() {
   }

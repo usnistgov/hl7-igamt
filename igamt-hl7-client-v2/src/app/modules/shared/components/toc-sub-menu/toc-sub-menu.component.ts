@@ -49,10 +49,10 @@ export class TocSubMenuComponent implements OnInit {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'conformance-statement', 'Conformance statements', Icons.TABLE));
       }
 
-      if (type === 'segment' && this.element.fixedName === 'OBX') {
-        ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'co-constraint', 'Co-Constraints', Icons.TABLE));
-        ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'dynamic-mapping', 'Dynamic mapping', Icons.TABLE));
-      }
+      // if (type === 'segment' && this.element.fixedName === 'OBX') {
+      //   ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'co-constraint', 'Co-Constraints', Icons.TABLE));
+      //   ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'dynamic-mapping', 'Dynamic mapping', Icons.TABLE));
+      // }
 
       if (type === 'conformanceprofile') {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'co-constraint', 'Co-Constraints', Icons.TABLE));
