@@ -4,7 +4,7 @@ import {MatDialog} from '@angular/material';
 import {ActivatedRoute} from '@angular/router';
 import {Store} from '@ngrx/store';
 import {combineLatest, Observable, Subscription} from 'rxjs';
-import {selectIsAdmin} from '../../../../root-store/authentication/authentication.reducer';
+import {selectIsAdmin, selectIsLoggedIn} from '../../../../root-store/authentication/authentication.reducer';
 import {
   DocumentationEditorReset,
   DocumentationToolBarSave, ToggleEditMode,
@@ -51,9 +51,11 @@ export class DocumentationContainerComponent implements OnInit {
   updateInfo$: any;
   active$: Observable<IDocumentationWorkspaceActive>;
   isUser$: Observable<boolean>;
+  isAuthenticated$: Observable<boolean>;
 
   constructor(private route: ActivatedRoute, private documentationService: DocumentationService, private store: Store<any>, private dialog: MatDialog) {
     this.admin$ = this.store.select(selectIsAdmin);
+    this.isAuthenticated$ = this.store.select(selectIsLoggedIn);
     this.isUser$ = this.store.select(isUser);
     this.editMode$ = this.store.select(selectEditMode);
     this.title$ = this.store.select(selectEditorTitle);

@@ -1,12 +1,21 @@
 .active{
-  background: #ffec9d;
-  color: black;
+  /*background: #b2e2ff !important;*/
+  background:  #ffec9d !important;
+
 }
 
 .doc-link{
-  font-size: 20px;
-  word-break: break-all;
+  font-size: 14px;
   cursor:pointer;
+  color: #337ab7;
+  background: #fffcf0;
+  padding: 10px 15px;
+  word-break: break-all;
+  font-family: RobotoDraft, Roboto, sans-serif;
+  margin: 2px;
+  box-sizing: border-box;
+  border-radius: 4px;
+  cursor: move;
 }
 
 
@@ -28,6 +37,11 @@
 
 .doc-link:last-child {
   border: none;
+}
+.doc-link:hover {
+  border: none;
+  background: white;
+
 }
 
 .doc-list.cdk-drop-list-dragging .doc-link:not(.cdk-drag-placeholder) {

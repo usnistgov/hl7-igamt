@@ -39,7 +39,7 @@ export class AuthInterceptor implements HttpInterceptor {
                 this.store.dispatch(new AddMessage(new UserMessage(MessageType.FAILED, 'Login Required')));
               }
 
-              const dialogRef = this.dialog.open(TimeoutLoginDialogComponent);
+              const dialogRef = this.dialog.open(TimeoutLoginDialogComponent, { disableClose: true });
               return dialogRef.afterClosed().pipe(
                 flatMap((result) => {
                   if (result) {

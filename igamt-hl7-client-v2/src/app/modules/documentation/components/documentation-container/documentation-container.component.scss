@@ -34,7 +34,7 @@
   grid-gap: 0px;
   color: #444;
   background-color: #d6d6d6e3;
-  grid-template-columns: [sidebar] minmax(min-content, 2fr) [resize-bar] 4px [container] minmax(600px, 8fr);
+  grid-template-columns: [sidebar] minmax(min-content, 2fr) [resize-bar] 4px [container] minmax(400px, 5fr);
   grid-template-rows: [page-container-row] auto;
   overflow: hidden;
 }
