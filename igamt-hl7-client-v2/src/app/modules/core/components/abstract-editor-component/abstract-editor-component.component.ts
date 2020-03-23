@@ -22,10 +22,12 @@ export abstract class AbstractEditorComponent {
   readonly current$: Observable<IWorkspaceCurrent>;
   readonly currentSynchronized$: Observable<any>;
   readonly initial$: Observable<any>;
-  readonly viewOnly$: Observable<boolean>;
+  protected _viewOnly$: Observable<boolean>;
   readonly ig$: Observable<IgDocument>;
   public documentId$: Observable<string>;
-
+  get viewOnly$() {
+    return this._viewOnly$;
+  }
   @ViewChild('headerControls')
   readonly controls: TemplateRef<any>;
   @ViewChild('headerTitle')
@@ -48,7 +50,7 @@ export abstract class AbstractEditorComponent {
       distinctUntilChanged(),
     );
     this.current$ = this.store.select<IWorkspaceCurrent>(fromIgEdit.selectWorkspaceCurrent);
-    this.viewOnly$ = combineLatest(
+    this._viewOnly$ = combineLatest(
       this.store.select(fromIgEdit.selectViewOnly),
       this.store.select(selectDelta),
       this.store.select(fromIgEdit.selectWorkspaceActive).pipe(
