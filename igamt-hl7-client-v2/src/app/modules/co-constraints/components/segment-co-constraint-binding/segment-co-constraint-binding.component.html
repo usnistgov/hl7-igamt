@@ -67,6 +67,7 @@
           [datatypes]="datatypes"
           [valueSets]="valueSets"
           (valueChange)="tableChange($event, i)"
+          (formValue)="formChange($event, i)"
           [igId]="igId" >
         </app-co-constraint-table>
       </div>

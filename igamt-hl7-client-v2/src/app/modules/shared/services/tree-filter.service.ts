@@ -81,15 +81,15 @@ export class TreeFilterService {
     const combined = restrictions.filter((elm) => !elm.combine || elm.combine === RestrictionCombinator.ACCUMULATE);
     const enforced = restrictions.filter((elm) => elm.combine === RestrictionCombinator.ENFORCE);
 
-    const evaluate = (list: Array<ITreeRestriction<any>>): boolean => {
-      let keep = false;
+    const evaluate = (list: Array<ITreeRestriction<any>>, init: boolean, op: (a: boolean, b: boolean) => boolean): boolean => {
+      let keep = init;
       for (const restriction of list) {
-        keep = keep || this.allow(restriction.allow, this.pass(node, restriction));
+        keep = op(keep, this.allow(restriction.allow, this.pass(node, restriction)));
       }
       return keep;
     };
 
-    return evaluate(combined) && (enforced.length === 0 || evaluate(enforced));
+    return evaluate(combined, false, (a, b) => a || b) && (enforced.length === 0 || evaluate(enforced, true, (a, b) => a && b));
   }
 
   pathIsProhibited(path: string, list: IPathValue[]): boolean {

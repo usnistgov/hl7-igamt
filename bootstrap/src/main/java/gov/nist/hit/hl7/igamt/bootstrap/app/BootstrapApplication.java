@@ -62,6 +62,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontConfigurati
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant;
 
 @SpringBootApplication
 //@EnableMongoAuditing
@@ -293,7 +294,25 @@ public class BootstrapApplication implements CommandLineRunner {
     }
     //  
     //
-    //@PostConstruct
+   // @PostConstruct
+    void updateGVTURL() {
+      Config constant =  this.sharedConstantService.findOne();
+      String redirectToken = "#/uploadTokens";
+      String loginEndpoint = "api/accounts/login";
+      String createDomainInput = "api/domains/new";
+
+      List<ConnectingInfo> connection = new ArrayList<ConnectingInfo>();
+      connection.add(new ConnectingInfo("GVT", "https://hl7v2.gvt.nist.gov/gvt/", redirectToken, loginEndpoint,createDomainInput, 1));
+
+      connection.add(new ConnectingInfo("GVT-DEV", "https://hit-dev.nist.gov:8092/gvt/", redirectToken, loginEndpoint,createDomainInput, 2));
+
+      connection.add(new ConnectingInfo("IZ-TOOL-DEV", "https://hit-dev.nist.gov:8098/iztool/", redirectToken, loginEndpoint,createDomainInput, 3));
+
+      connection.add(new ConnectingInfo("IZ-TOOL", "https://hl7v2-iz-r1.5-testing.nist.gov/iztool/", redirectToken, loginEndpoint,createDomainInput, 4)); 
+      constant.setConnection(connection); 
+      this.sharedConstantService.save(constant);
+    }
+    
     void createSharedConstant() {
       Config constant = new Config();
       this.sharedConstantService.deleteAll();
@@ -327,8 +346,7 @@ public class BootstrapApplication implements CommandLineRunner {
       List<ConnectingInfo> connection = new ArrayList<ConnectingInfo>();
       connection.add(new ConnectingInfo("GVT", "https://hl7v2.gvt.nist.gov/gvt/", redirectToken, loginEndpoint,createDomainInput, 1));
 
-      connection.add(new ConnectingInfo("GVT-DEV", "https://hit-dev.nist.gov:8099/gvt/", redirectToken, loginEndpoint,createDomainInput, 2));
-
+      connection.add(new ConnectingInfo("GVT-DEV", "https://hit-dev.nist.gov:8092/gvt/", redirectToken, loginEndpoint,createDomainInput, 2));
 
       connection.add(new ConnectingInfo("IZ-TOOL-DEV", "https://hit-dev.nist.gov:8098/iztool/", redirectToken, loginEndpoint,createDomainInput, 3));
 

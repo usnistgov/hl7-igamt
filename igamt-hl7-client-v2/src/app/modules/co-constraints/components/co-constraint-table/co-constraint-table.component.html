@@ -98,16 +98,18 @@
   <!-- REQUIREMENTS -->
   <ng-template #usage let-elm let-disabled="disabled" let-fieldId="fieldId" let-viewOnly="viewOnly" >
     <!-- {{usages | json}} -->
-    <p-dropdown
-      *ngIf="!viewOnly"
-      [options]="usages"
-      [style]="{'width': '60px', 'min-width': 'inherit'}"
-      [disabled]="disabled"
-      (ngModelChange)="usageChange($event, elm)"
-      [name]="fieldId + '-usage'"
-      required
-      [(ngModel)]="elm.usage" >
-    </p-dropdown>
+    <div style="width: 60px;">
+      <app-ngx-dropdown
+        *ngIf="!viewOnly"
+        [(ngModel)]="elm.usage"
+        [name]="fieldId + '-usage'"
+        [disabled]="disabled"
+        (ngModelChange)="usageChange($event, elm)"
+        [required]="true"
+        [values]="usages">
+      </app-ngx-dropdown>
+    </div>
+
     <strong *ngIf="viewOnly">{{elm.usage}}</strong>
   </ng-template>
 
@@ -176,7 +178,7 @@
         <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: group.requirement, fieldId : 'g-' + index  }"></ng-container></td>
         <td class="requirement-cell"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, fieldId : 'g-' + index  }"></ng-container></td>
         <td [attr.colspan]="numberOfColumns()" style="vertical-align: middle;">
-          <input class="form-control" type="text" [name]="'g-' + index + '-name'" [(ngModel)]="group.name" placeholder="Group Name">
+          <input class="form-control" type="text" [name]="'g-' + index + '-name'" [(ngModel)]="group.name" (ngModelChange)="emitChange()" placeholder="Group Name">
         </td>
       </tr>
     </tbody>
@@ -245,17 +247,15 @@
       <strong> Code System : </strong>
       <span> {{ cell.codeSystem }} </span>
     </div>
-    <p-dropdown
+    <app-ngx-dropdown
       *ngIf="!viewOnly"
       [(ngModel)]="cell.locations"
-      (ngModelChange)="emitChange()"
-      [appendTo]="anchor"
-      [autoDisplayFirst]="false"
-      [options]="overrideBindingInfo ? overrideBindingInfo.allowedBindingLocations : header?.elementInfo?.bindingInfo?.allowedBindingLocations"
+      placeholder="Binding Locations"
       [name]="fieldId + '-location'"
-      [style]="{ width : '100%', 'min-width': 'inherit'}"
-      defaultLabel="Choose locations">
-    </p-dropdown>
+      (ngModelChange)="emitChange()"
+      [required]="true"
+      [values]="overrideBindingInfo ? overrideBindingInfo.allowedBindingLocations : header?.elementInfo?.bindingInfo?.allowedBindingLocations">
+    </app-ngx-dropdown>
     <div *ngIf="viewOnly && cell.locations">
       <strong> Locations : </strong>
       <span> {{ cell.locations | json }} </span>
@@ -273,20 +273,17 @@
           <strong>Value</strong>
         </td>
         <td>
-          <div #val ></div>
-          <p-dropdown
-            *ngIf="!viewOnly"
-            [autoDisplayFirst]="false"
-            [options]="datatypeOptions"
-            [style]="{'width': '100%', 'min-width': 'inherit'}"
-            placeholder="Datatype"
-            [appendTo]="val"
-            [name]="fieldId + '-dtValue'"
-            [filter]="true"
-            required
-            (ngModelChange)="datatypeValueChange($event, cell, row)"
-            [(ngModel)]="cell.value" >
-          </p-dropdown>
+          <app-ngx-dropdown
+          *ngIf="!viewOnly"
+          [(ngModel)]="cell.value"
+          placeholder="Datatype"
+          [name]="fieldId + '-dtValue'"
+          (ngModelChange)="datatypeValueChange($event, cell, row)"
+          [filter]="true"
+          [required]="true"
+          [filterFn]="filterDatatypeValue"
+          [values]="datatypeOptions">
+          </app-ngx-dropdown>
           <span *ngIf="viewOnly"> {{ cell.value }} </span>
         </td>
       </tr>
@@ -302,6 +299,7 @@
             [name]="fieldId + '-dtFlavor'"
             [filter]="true"
             [filterBy]="cell.value"
+            [required]="true"
             [appendTo]="fl"
             [(id)]="cell.datatypeId"
             (valueChange)="datatypeChange($event, row)"

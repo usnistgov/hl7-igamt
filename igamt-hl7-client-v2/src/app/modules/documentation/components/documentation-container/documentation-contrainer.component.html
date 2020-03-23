@@ -40,7 +40,7 @@
       <div #resize [ngStyle]="{'background-color': dragging ? 'blue' : ''}" class="resize-bar"></div>
       <div class="sidebar-content" id="sidebar-content">
         <app-documentation-side-bar [userguides]="userGuides$ |async" [decisions]="decisions$ |async" [faqs]="faqs$ |async"
-                  [glossary]="glossary$| async" [releaseNotes]="releaseNotes$ |async" [userNotes]="userNotes$ |async" [admin]="admin$ |async"></app-documentation-side-bar>
+                  [glossary]="glossary$| async" [releaseNotes]="releaseNotes$ |async" [userNotes]="userNotes$ |async" [admin]="admin$ |async" [authenticated]="isAuthenticated$ | async"></app-documentation-side-bar>
 
       </div>
     </div>

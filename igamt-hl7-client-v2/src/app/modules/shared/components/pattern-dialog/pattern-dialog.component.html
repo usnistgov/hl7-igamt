@@ -3,7 +3,7 @@
     <strong>Drag Operators     <i class="fa fa-hand-o-right" aria-hidden="true" style="font-size: 1.2em;"></i></strong>
     <div class="btn-group" role="group" >
       <ng-container *ngFor="let op of operatorList; let i = index" >
-        <button pDraggable="operator" type="button" class="btn btn-dark" *ngIf="!condition || op.type !== 'IF-THEN'"  (onDragStart)="dragStartOp($event,op)" (onDragEnd)="dragEndOp($event)">
+        <button pDraggable="operator" type="button" class="btn btn-dark" *ngIf="!condition || op.data.type !== 'IF-THEN'"  (onDragStart)="dragStartOp($event,op)" (onDragEnd)="dragEndOp($event)">
           {{op.data.type}}
         </button>
       </ng-container>
