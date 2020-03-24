@@ -198,6 +198,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setVariableName(valueset.getBindingIdentifier());
 		displayElement.setType(Type.VALUESET);
 		displayElement.setOrigin(valueset.getOrigin());
+		displayElement.setFlavor(valueset.isFlavor());
 		return displayElement;
 	}
 

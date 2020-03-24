@@ -18,4 +18,5 @@ export interface IAddingInfo {
   numberOfChildren?: number;
   includeChildren?: boolean;
   url?: string;
+  oid?: string;
 }

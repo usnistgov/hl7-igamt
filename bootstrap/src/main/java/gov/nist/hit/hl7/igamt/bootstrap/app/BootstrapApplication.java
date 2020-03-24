@@ -29,6 +29,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
@@ -154,6 +155,11 @@ public class BootstrapApplication implements CommandLineRunner {
     templateMessage.setFrom(env.getProperty(EMAIL_FROM));
     templateMessage.setSubject(env.getProperty(EMAIL_SUBJECT));
     return templateMessage;
+  }
+  
+  @Bean()
+  public FhirContext fhirR4Context() {
+	return FhirContext.forR4();
   }
 
   //

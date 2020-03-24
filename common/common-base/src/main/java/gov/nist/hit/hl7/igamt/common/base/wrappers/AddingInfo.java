@@ -19,6 +19,7 @@ public class AddingInfo {
 	private boolean numberOfChildren;
 	private SourceType sourceType;
 	private String url;
+	private String oid;
 	
 	public String getOriginalId() {
 		return originalId;
@@ -98,5 +99,12 @@ public class AddingInfo {
 	}
 	public void setUrl(String url) {
 		this.url = url;
+	}
+	public String getOid() {
+		return oid;
+	}
+	public void setOid(String oid) {
+		this.oid = oid;
 	} 
+	
 }

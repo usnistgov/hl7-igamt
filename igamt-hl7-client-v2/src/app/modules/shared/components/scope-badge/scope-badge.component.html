@@ -6,7 +6,9 @@
     HL7 <span style="font-size: 0.9em; font-weight: 300;">{{version}}</span>
   </span>
 
-  <span *ngSwitchCase="'PHINVADS'" class="badge scope-badge-phinvads">
+  <span *ngSwitchCase="'PHINVADS'"
+    [ngClass]="{'scope-badge-phinvads': !flavor, 'scope-badge-user': flavor}"
+    class="badge">
     PHIN <span style="font-size: 0.9em; font-weight: 300;"></span>
   </span>
   <span *ngSwitchCase="'PRELOADED'" class="badge scope-badge-preloaded">
