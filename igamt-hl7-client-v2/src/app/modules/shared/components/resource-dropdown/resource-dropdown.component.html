@@ -1,27 +1,12 @@
-<p-dropdown
-  [autoDisplayFirst]="false"
-  [options]="filtered"
-  [optionLabel]="'id'"
-  [placeholder]="placeholder"
-  [name]="name"
-  [appendTo]="appendTo"
-  required
-  dataKey="id"
-  [(ngModel)]="selectedResource"
-  (ngModelChange)="change($event)"
-  [style]="{'width': '100%', 'min-width': 'inherit'}"
-  [filter]="filter"
-  filterBy="value.fixedName,value.variableName">
-  <ng-template let-item pTemplate="selectedItem">
-    <ng-container *ngIf="item.value">
-        <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
-        <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
-        <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
-    </ng-container>
+<app-ngx-dropdown type="Entity" [values]="filtered" [filter]="true" [required]="required" [filterFn]="filterFn" [placeholder]="placeholder" [(ngModel)]="selectedResource" (ngModelChange)="change($event)">
+  <ng-template #selected let-item>
+    <app-scope-badge *ngIf="item.domainInfo" [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
+    <app-entity-bagde [type]="item.type"></app-entity-bagde>
+    <span *ngIf="item.fixedName"> {{item.fixedName}}</span><span *ngIf="item.variableName">{{ '_' + item.variableName}}</span>
   </ng-template>
-  <ng-template let-item pTemplate="item">
-    <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
-    <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
-    <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
+  <ng-template #item let-item>
+    <app-scope-badge *ngIf="item.domainInfo" [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
+    <app-entity-bagde [type]="item.type"></app-entity-bagde>
+    <span *ngIf="item.fixedName"> {{item.fixedName}}</span><span *ngIf="item.variableName">{{ '_' + item.variableName}}</span>
   </ng-template>
-</p-dropdown>
+</app-ngx-dropdown>

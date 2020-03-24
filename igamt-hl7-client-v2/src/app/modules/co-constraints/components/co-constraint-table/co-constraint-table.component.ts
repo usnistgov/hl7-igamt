@@ -109,6 +109,8 @@ export class CoConstraintTableComponent implements OnInit {
 
   @Output()
   valueChange: EventEmitter<ICoConstraintTable & ICoConstraintGroup>;
+  @Output()
+  formValue: EventEmitter<NgForm>;
 
   usages = [
     {
@@ -210,6 +212,7 @@ export class CoConstraintTableComponent implements OnInit {
     private repository: StoreResourceRepositoryService,
     private treeService: Hl7V2TreeService) {
     this.valueChange = new EventEmitter();
+    this.formValue = new EventEmitter();
   }
 
   initBindingsValue(headers: ICoConstraintHeaders) {
@@ -279,6 +282,10 @@ export class CoConstraintTableComponent implements OnInit {
         this.addImportedGroup(action.payload);
         break;
     }
+  }
+
+  filterDatatypeValue = (str: string, values: any[]) => {
+    return values.filter((v) => str === '' || v.value.includes(str));
   }
 
   loadGroupRef(group: ICoConstraintGroupBindingRef) {
@@ -362,6 +369,7 @@ export class CoConstraintTableComponent implements OnInit {
 
   emitChange() {
     this.valueChange.emit(this.value);
+    this.formValue.emit(this.form);
   }
 
   getGroup(id: string): Observable<ICoConstraintGroup> {

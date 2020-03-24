@@ -95,6 +95,10 @@
                     [repository]="repository"
                     [position]="rowData.position"
                     [value]="rowData.usage"
+                    [usages]="{
+                      original : rowData.oldUsage,
+                      config: config
+                    }"
                     [level]="rowData.level"
                     [anchor]="anchor"
                     [context]="type"

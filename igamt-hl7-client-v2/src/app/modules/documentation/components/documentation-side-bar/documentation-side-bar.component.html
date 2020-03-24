@@ -1,5 +1,5 @@
 <div style="overflow: scroll">
-  <p-accordion [multiple]="true" class="doc-accordion">
+  <p-accordion [multiple]="false" class="doc-accordion">
     <p-accordionTab header="User Guides">
       <app-documentation-list [list]="userguides" [documentationType]="'USERGUIDE'" (add)="addSection($event)" (delete)="deleteSection($event)" (reorder)="reorder($event)" [admin]="admin"> </app-documentation-list>
     </p-accordionTab>
@@ -12,7 +12,7 @@
     <p-accordionTab header="Releases Notes">
       <app-documentation-list [list]="releaseNotes" [documentationType]="'RELEASENOTE'" (add)="addSection($event)" (delete)="deleteSection($event)" (reorder)="reorder($event)" [admin]="admin"> </app-documentation-list>
     </p-accordionTab>
-    <p-accordionTab header="My Notes">
+    <p-accordionTab header="My Notes" *ngIf="authenticated">
       <app-documentation-list [list]="userNotes" [documentationType]="'USERNOTES'" (add)="addSection($event)" (delete)="deleteSection($event)" (reorder)="reorder($event)" [admin]="admin"> </app-documentation-list>
     </p-accordionTab>
     <p-accordionTab header="Glossary">
