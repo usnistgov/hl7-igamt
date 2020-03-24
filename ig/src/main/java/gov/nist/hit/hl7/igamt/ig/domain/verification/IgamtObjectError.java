@@ -11,54 +11,66 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.verification;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+
 /**
  * @author jungyubw
  *
  */
 public class IgamtObjectError {  
-  private String errorType;
-  private String errorTarget;
-  private String errorDescription;
-  private String errorLocation;
+  private String code;
+  private String target;
+  private Type targetType;
+  private String description;
+  private String location;
   
   private String severity;
   
   public IgamtObjectError(){
     super();
   }
-
-  public IgamtObjectError(String errorType, String errorTarget,
-      String errorDescription, String errorLocation, String severity) {
+  
+  public IgamtObjectError(String code, String target, Type targetType, String description,
+      String location, String severity) {
     super();
-    this.errorType = errorType;
-    this.errorTarget = errorTarget;
-    this.errorDescription = errorDescription;
-    this.errorLocation = errorLocation;
+    this.code = code;
+    this.target = target;
+    this.targetType = targetType;
+    this.description = description;
+    this.location = location;
     this.severity = severity;
   }
 
-  public String getErrorType() {
-    return errorType;
+  public String getCode() {
+    return code;
   }
 
-  public void setErrorType(String errorType) {
-    this.errorType = errorType;
+  public void setCode(String code) {
+    this.code = code;
   }
 
-  public String getErrorDescription() {
-    return errorDescription;
+  public String getTarget() {
+    return target;
   }
 
-  public void setErrorDescription(String errorDescription) {
-    this.errorDescription = errorDescription;
+  public void setTarget(String target) {
+    this.target = target;
   }
 
-  public String getErrorLocation() {
-    return errorLocation;
+  public String getDescription() {
+    return description;
   }
 
-  public void setErrorLocation(String errorLocation) {
-    this.errorLocation = errorLocation;
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getLocation() {
+    return location;
+  }
+
+  public void setLocation(String location) {
+    this.location = location;
   }
 
   public String getSeverity() {
@@ -69,13 +81,14 @@ public class IgamtObjectError {
     this.severity = severity;
   }
 
-  public String getErrorTarget() {
-    return errorTarget;
+  public Type getTargetType() {
+    return targetType;
   }
 
-  public void setErrorTarget(String errorTarget) {
-    this.errorTarget = errorTarget;
+  public void setTargetType(Type targetType) {
+    this.targetType = targetType;
   }
+  
   
   
 

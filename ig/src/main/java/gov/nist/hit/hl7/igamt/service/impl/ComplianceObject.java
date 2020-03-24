@@ -23,18 +23,22 @@ public class ComplianceObject {
   private Usage usage;
   private Integer min;
   private String max;
+  private String minLength;
+  private String maxLength;
   
   public ComplianceObject() {
     super();
   }
   
-  public ComplianceObject(String positionPath, String path, Usage usage, Integer min, String max) {
+  public ComplianceObject(String positionPath, String path, Usage usage, Integer min, String max, String minLength, String maxLength) {
     super();
     this.positionPath = positionPath;
     this.path = path;
     this.usage = usage;
     this.min = min;
     this.max = max;
+    this.minLength = minLength;
+    this.maxLength = maxLength;
   }
   
   public String getPositionPath() {
@@ -66,6 +70,22 @@ public class ComplianceObject {
   }
   public void setMax(String max) {
     this.max = max;
+  }
+
+  public String getMinLength() {
+    return minLength;
+  }
+
+  public void setMinLength(String minLength) {
+    this.minLength = minLength;
+  }
+
+  public String getMaxLength() {
+    return maxLength;
+  }
+
+  public void setMaxLength(String maxLength) {
+    this.maxLength = maxLength;
   }
   
   
