@@ -2,7 +2,43 @@
 
 <p-progressBar mode="indeterminate" *ngIf="!reports"></p-progressBar>
 
-<mat-dialog-content *ngIf="reports">
+<mat-dialog-content *ngIf="reports && data.type === 'Compliance'">
+    <div><label><span class="badge error-FATAL">FATAL</span>: ????</label></div>
+    <div><label><span class="badge error-ERROR">ERROR</span>: ???</label></div>
+    <div><label><span class="badge error-WARNING">WARNING</span>: ??</label></div>
+    <div><label><span class="badge error-INFO">INFORMATIONAL</span>: ?</label></div>
+    <p-accordion>
+        <p-accordionTab header="Conformance Profiles Compliance Results">
+            <p-table *ngIf="reports.conformanceProfileComplianceResults" [value]="reports.conformanceProfileComplianceResults">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 30em">Name</th>
+                        <th>Errors</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr *ngIf="item.errors && item.errors.length > 0">
+                        <td>
+                            <app-scope-badge [scope]="item.metadata.domainInfo.scope" [version]="item.metadata.domainInfo.version"></app-scope-badge>
+                            <span> {{item.metadata.name}}<ng-container *ngIf="item.metadata.extension">{{'-' + item.metadata.extension}}</ng-container></span>
+                        </td>
+                        <td>
+                            <ul>
+                                <li *ngFor="let error of item.errors">
+                                    <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
+                                    <span class="badge">{{error.code}}</span>&nbsp;
+                                    <span>{{error.description}}</span>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-accordionTab>
+    </p-accordion>
+</mat-dialog-content>
+
+<mat-dialog-content *ngIf="reports && data.type === 'Verification'">
     <div><label><span class="badge error-FATAL">FATAL</span>: IGAMT cannot generate the XML profile; Downstream tools would not be able to process XML</label></div>
     <div><label><span class="badge error-ERROR">ERROR</span>: IGAMT can generate the XML, user should fix in the profile before exporting XML and using downstream tools</label></div>
     <div><label><span class="badge error-WARNING">WARNING</span>: User should consider providing correct values not necessary for downstream tools process.</label></div>
@@ -128,6 +164,9 @@
         </p-accordionTab>
     </p-accordion>
 </mat-dialog-content>
+
+
+
 <mat-dialog-actions style="justify-content: flex-end;">
     <button (click)="cancel()" class="btn btn-sm btn-info" style="margin-right: 5px;">Close</button>
 </mat-dialog-actions>
