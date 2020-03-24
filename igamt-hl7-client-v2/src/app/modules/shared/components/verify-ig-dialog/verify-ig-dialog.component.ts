@@ -28,7 +28,7 @@ export class VerifyIgDialogComponent implements OnInit {
       } else if (this.data.type === 'Compliance') {
         this.http.get<any[]>('/api/igdocuments/' + this.data.igId + '/compliance').subscribe((x) => {
           this.reports = x;
-          this.errorCounts = this.countErrors(this.reports);
+          console.log(this.reports);
         });
       }
     }

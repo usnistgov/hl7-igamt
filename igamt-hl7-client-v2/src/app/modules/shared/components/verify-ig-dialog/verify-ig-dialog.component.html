@@ -1,19 +1,20 @@
-<h2 mat-dialog-title>Verification Reports for IG</h2>
+<h2 mat-dialog-title>{{data.type}} Reports for IG</h2>
 
 <p-progressBar mode="indeterminate" *ngIf="!reports"></p-progressBar>
 
 <mat-dialog-content *ngIf="reports">
-    <label><span class="badge error-FATAL">FATAL</span>: A severe error that causes your IG to crash, resulting in the loss or corruption of unsaved data.</label>
-    <label><span class="badge error-ERROR">ERROR</span>: A severe error that might cause the loss or corruption of unsaved data. Immediate action must be taken to prevent losing data.</label>
-    <label><span class="badge error-WARNING">WARNING</span>: Action must be taken at some stage to prevent a severe error from occurring in the future.</label>
-    <label><span class="badge error-INFO">INFO</span>: An informative message, usually describing server activity. No action is necessary.</label>
+    <div><label><span class="badge error-FATAL">FATAL</span>: IGAMT cannot generate the XML profile; Downstream tools would not be able to process XML</label></div>
+    <div><label><span class="badge error-ERROR">ERROR</span>: IGAMT can generate the XML, user should fix in the profile before exporting XML and using downstream tools</label></div>
+    <div><label><span class="badge error-WARNING">WARNING</span>: User should consider providing correct values not necessary for downstream tools process.</label></div>
+    <div><label><span class="badge error-INFO">INFORMATIONAL</span>: User should consider changing the value.</label></div>
+
     <p-accordion *ngIf="errorCounts">
         <p-accordionTab header="IG Document Verification Results ({{errorCounts[5]}} errors found)">
             <ul *ngIf="reports.igVerificationResult && errorCounts && errorCounts[5] > 0">
                 <li *ngFor="let error of reports.igVerificationResult.errors">
                     <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
-                    <span class="badge errorType-{{error.errorType}}">{{error.errorType}}</span>&nbsp;
-                    <span>{{error.errorDescription}}</span>
+                    <span class="badge">{{error.code}}</span>&nbsp;
+                    <span>{{error.description}}</span>
                 </li>
             </ul>
         </p-accordionTab>
@@ -35,8 +36,8 @@
                             <ul>
                                 <li *ngFor="let error of item.errors">
                                     <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
-                                    <span class="badge errorType-{{error.errorType}}">{{error.errorType}}</span>&nbsp;
-                                    <span>{{error.errorDescription}}</span>
+                                    <span class="badge">{{error.code}}</span>&nbsp;
+                                    <span>{{error.description}}</span>
                                 </li>
                             </ul>
                         </td>
@@ -62,8 +63,8 @@
                             <ul>
                                 <li *ngFor="let error of item.errors">
                                     <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
-                                    <span class="badge errorType-{{error.errorType}}">{{error.errorType}}</span>&nbsp;
-                                    <span>{{error.errorDescription}}</span>
+                                    <span class="badge">{{error.code}}</span>&nbsp;
+                                    <span>{{error.description}}</span>
                                 </li>
                             </ul>
                         </td>
@@ -89,8 +90,8 @@
                             <ul>
                                 <li *ngFor="let error of item.errors">
                                     <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
-                                    <span class="badge errorType-{{error.errorType}}">{{error.errorType}}</span>&nbsp;
-                                    <span>{{error.errorDescription}}</span>
+                                    <span class="badge">{{error.code}}</span>&nbsp;
+                                    <span>{{error.description}}</span>
                                 </li>
                             </ul>
                         </td>
@@ -116,8 +117,8 @@
                             <ul>
                                 <li *ngFor="let error of item.errors">
                                     <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
-                                    <span class="badge errorType-{{error.errorType}}">{{error.errorType}}</span>&nbsp;
-                                    <span>{{error.errorDescription}}</span>
+                                    <span class="badge">{{error.code}}</span>&nbsp;
+                                    <span>{{error.description}}</span>
                                 </li>
                             </ul>
                         </td>

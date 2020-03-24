@@ -14,6 +14,22 @@
     background-color: #f41005;
 }
 
+.error-Info {
+    background-color: #b1daff;
+}
+
+.error-Warning {
+    background-color: #ffea38;
+}
+
+.error-Error {
+    background-color: orange;
+}
+
+.error-Fatal {
+    background-color: #f41005;
+}
+
 .errorType-STRUCTURE {
     background-color: #d400d4;
 }
