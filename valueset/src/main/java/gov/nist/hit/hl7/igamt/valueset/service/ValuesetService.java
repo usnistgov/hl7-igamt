@@ -23,6 +23,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 /**
  *
@@ -85,4 +86,6 @@ public interface ValuesetService {
 
 	public void applyChanges(Valueset s, List<ChangeItemDomain> cItems, String documentId)
 			throws JsonProcessingException, IOException;
+	
+	public Set<String> extractCodeSystemsFromCodes(Set<Code> codes);
 }

@@ -2,10 +2,12 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { SelectItem } from 'primeng/api';
-import { Observable, of } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
+import { combineLatest, Observable, of } from 'rxjs';
+import { map, mergeMap, take } from 'rxjs/operators';
+import { Scope } from 'src/app/modules/shared/constants/scope.enum';
+import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { LoadValueSet } from 'src/app/root-store/value-set-edit/value-set-edit.actions';
-import { selectedResourceHasOrigin, selectIgId, selectValueSetById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectDelta, selectedResourceHasOrigin, selectIgId, selectValueSetById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../core/models/message/message.class';
 import { MessageService } from '../../../core/services/message.service';
@@ -31,7 +33,9 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
   viewOnly: boolean;
   codeSystemOptions: any[];
   hasOrigin$: Observable<boolean>;
-
+  get viewOnly$() {
+    return this._viewOnly$;
+  }
   constructor(
     readonly repository: StoreResourceRepositoryService,
     private valueSetService: ValueSetService,
@@ -53,6 +57,18 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
       ],
       [
       ]);
+    this._viewOnly$ = combineLatest(
+      this.store.select(fromIgEdit.selectViewOnly),
+      this.store.select(selectDelta),
+      this.store.select(fromIgEdit.selectWorkspaceActive).pipe(
+        map((active) => {
+          return active.display.domainInfo && !(active.display.domainInfo.scope === Scope.USER || (active.display.domainInfo.scope === Scope.PHINVADS && active.display.flavor));
+        }),
+      )).pipe(
+        map(([vOnly, delta, notUser]) => {
+          return vOnly || notUser || delta;
+        }),
+      );
     this.hasOrigin$ = this.store.select(selectedResourceHasOrigin);
     this.resource$.subscribe((resource: IValueSet) => {
       this.cols = [];

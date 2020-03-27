@@ -123,6 +123,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
+import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
@@ -174,6 +175,10 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   SimpleCoConstraintService coConstraintService;
+  
+  @Autowired
+  private FhirHandlerService fhirHandlerService;
+
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
@@ -1179,68 +1184,118 @@ public class IGDocumentController extends BaseController {
         ig.getUpdateDate(), info);
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST, produces = {
-  "application/json" })
-  public ResponseMessage<IGDisplayInfo> addValueSets(@PathVariable("id") String id,
-      @RequestBody AddingWrapper wrapper, Authentication authentication)
-          throws IGNotFoundException, AddingException {
-    String username = authentication.getPrincipal().toString();
-    Ig ig = findIgById(id);
-    Set<String> savedIds = new HashSet<String>();
-    for (AddingInfo elm : wrapper.getSelected()) {
+	@RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST, produces = {
+	"application/json" })
+	public ResponseMessage<IGDisplayInfo> addValueSets(@PathVariable("id") String id,
+		@RequestBody AddingWrapper wrapper, Authentication authentication)
+		throws IGNotFoundException, AddingException {
+	String username = authentication.getPrincipal().toString();
+	Ig ig = findIgById(id);
+	Set<String> savedIds = new HashSet<String>();
+	for (AddingInfo elm : wrapper.getSelected()) {
 
-      if (elm.isFlavor()) {
-        if(elm.getOriginalId() !=null) {
-          Valueset valueset = valuesetService.findById(elm.getOriginalId());
-          if (valueset != null) {
-            Valueset clone = valueset.clone();
-            clone.getDomainInfo().setScope(Scope.USER);
-            if(!elm.isIncludeChildren()) {
-              clone.setSourceType(SourceType.EXTERNAL);
-              clone.setCodes(new HashSet<Code>());	
-            }
-            clone.setUsername(username);
-            clone.setBindingIdentifier(elm.getName());
-            clone.setSourceType(elm.getSourceType());
-            clone = valuesetService.save(clone);
-            ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
-            savedIds.add(clone.getId());
-          }
-        } else {
-          Valueset valueset= new Valueset();
-          DomainInfo info = new DomainInfo();
-          info.setScope(Scope.USER);
-          info.setVersion(null);
-          valueset.setDomainInfo(info);
-          if(!elm.isIncludeChildren()) {
-            valueset.setSourceType(SourceType.EXTERNAL);
-            valueset.setCodes(new HashSet<Code>());	
-          } else {
-            valueset.setSourceType(SourceType.INTERNAL);
-          }
-          valueset.setUsername(username);
-          valueset.setBindingIdentifier(elm.getName());
-          valueset.setUrl(elm.getUrl());
-          Valueset saved = valuesetService.save(valueset);
-          ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
-          savedIds.add(saved.getId());
+		if (elm.isFlavor()) {
+			if (elm.getOriginalId() != null) {
+				Valueset valueset = valuesetService.findById(elm.getOriginalId());
+				if (valueset != null) {
+					Valueset clone = valueset.clone();
+					clone.getDomainInfo().setScope(Scope.USER);
+					if (!elm.isIncludeChildren()) {
+						clone.setSourceType(SourceType.EXTERNAL);
+						clone.setCodes(new HashSet<Code>());
+					}
+					clone.setUsername(username);
+					clone.setBindingIdentifier(elm.getName());
+					clone.setSourceType(elm.getSourceType());
+					clone = valuesetService.save(clone);
+					ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
+					savedIds.add(clone.getId());
+				}
+			} else {
+				if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+					// Import phinvads as flavor
+					Valueset valueset = new Valueset();
+					DomainInfo info = new DomainInfo();
+					info.setScope(Scope.PHINVADS);
+					info.setVersion(elm.getDomainInfo().getVersion());
+					valueset.setDomainInfo(info);
+					if (!elm.isIncludeChildren()) {
+						valueset.setSourceType(SourceType.EXTERNAL);
+						valueset.setCodes(new HashSet<Code>());
+					} else {
+						valueset.setSourceType(SourceType.INTERNAL);
+						// Get codes from vocab service
+						if (elm.getOid() != null) {
+							Set<Code> vsCodes = fhirHandlerService.getValusetCodes(elm.getOid());
+							valueset.setCodes(vsCodes);
+							valueset.setCodeSystems(valuesetService.extractCodeSystemsFromCodes(vsCodes));
+						}
+					}
+					valueset.setUsername(username);
+					valueset.setBindingIdentifier(elm.getName());
+					valueset.setUrl(elm.getUrl());
+					valueset.setOid(elm.getOid());
+					valueset.setFlavor(true);
+					Valueset saved = valuesetService.save(valueset);
+					ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+					savedIds.add(saved.getId());
+				} else {
+					// Create new valueset
+					Valueset valueset = new Valueset();
+					DomainInfo info = new DomainInfo();
+					info.setScope(Scope.USER);
+					info.setVersion(null);
+					valueset.setDomainInfo(info);
+					if (!elm.isIncludeChildren()) {
+						valueset.setSourceType(SourceType.EXTERNAL);
+						valueset.setCodes(new HashSet<Code>());
+					} else {
+						valueset.setSourceType(SourceType.INTERNAL);
+					}
+					valueset.setUsername(username);
+					valueset.setBindingIdentifier(elm.getName());
+					valueset.setUrl(elm.getUrl());
+					Valueset saved = valuesetService.save(valueset);
+					ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+					savedIds.add(saved.getId());
 
-        }
+				}
 
-      } else {
-        ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
-        savedIds.add(elm.getId());
-      }
-    }
-    AddValueSetResponseObject objects = crudService.addValueSets(savedIds, ig);
-    igService.save(ig);
-    IGDisplayInfo info = new IGDisplayInfo();
-    info.setIg(ig);
-    info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
+			}
 
-    return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "", "Value Sets Added Succesfully", ig.getId(), false,
-        ig.getUpdateDate(), info);
-  }
+		} else {
+			if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+	
+				Valueset valueset = new Valueset();
+				DomainInfo info = new DomainInfo();
+				info.setScope(Scope.PHINVADS);
+				info.setVersion(elm.getDomainInfo().getVersion());
+				valueset.setDomainInfo(info);
+				valueset.setSourceType(SourceType.EXTERNAL);
+				valueset.setUsername(username);
+				valueset.setBindingIdentifier(elm.getName());
+				valueset.setUrl(elm.getUrl());
+				valueset.setOid(elm.getOid());
+				valueset.setFlavor(false);
+				Valueset saved = valuesetService.save(valueset);
+				ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+				savedIds.add(saved.getId());
+			} else {
+				ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
+				savedIds.add(elm.getId());
+			}
+
+		}
+	}
+	AddValueSetResponseObject objects = crudService.addValueSets(savedIds, ig);
+	igService.save(ig);
+	IGDisplayInfo info = new IGDisplayInfo();
+	info.setIg(ig);
+	info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
+	
+	return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "", "Value Sets Added Succesfully", ig.getId(), false,
+			ig.getUpdateDate(), info);
+}
 
   @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
