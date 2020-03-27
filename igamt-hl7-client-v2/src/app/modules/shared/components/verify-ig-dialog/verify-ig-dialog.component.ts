@@ -9,7 +9,8 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 })
 export class VerifyIgDialogComponent implements OnInit {
   reports: any;
-  errorCounts: number[];
+  errorCounts: number[][];
+  igVerificationResultTable: any[] = [];
   constructor(private http: HttpClient, public dialogRef: MatDialogRef<VerifyIgDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IVerifyIgDialogData) {
     this.reports = null;
@@ -42,49 +43,97 @@ export class VerifyIgDialogComponent implements OnInit {
   }
 
   countErrors(reports) {
-    let totalNumOfError = 0;
-    let numOfVSError = 0;
-    let numOfDTError = 0;
-    let numOfSEGError = 0;
-    let numOfCPError = 0;
-    let numOfIGError = 0;
+    let numOfVSError = [0, 0, 0, 0];
+    let numOfDTError = [0, 0, 0, 0];
+    let numOfSEGError = [0, 0, 0, 0];
+    let numOfCPError = [0, 0, 0, 0];
+    let numOfIGError = [0, 0, 0, 0];
+
+    this.igVerificationResultTable = [];
 
     if (reports) {
       if (reports.valuesetVerificationResults) {
         reports.valuesetVerificationResults.forEach((item) => {
-          numOfVSError = numOfVSError + item.errors.length;
-          totalNumOfError = totalNumOfError + item.errors.length;
+          item.errors.forEach((e) => {
+            if(e.severity === 'FATAL') {
+              numOfVSError[0] = numOfVSError[0] + 1;
+            } else if(e.severity === 'ERROR') {
+              numOfVSError[1] = numOfVSError[1] + 1;
+            } else if(e.severity === 'WARNING') {
+              numOfVSError[2] = numOfVSError[2] + 1;
+            } else if(e.severity === 'INFO') {
+              numOfVSError[3] = numOfVSError[3] + 1;
+            }
+          });
         });
       }
 
       if (reports.datatypeVerificationResults) {
         reports.datatypeVerificationResults.forEach((item) => {
-          numOfDTError = numOfDTError + item.errors.length;
-          totalNumOfError = totalNumOfError + item.errors.length;
+          item.errors.forEach((e) => {
+            if(e.severity === 'FATAL') {
+              numOfDTError[0] = numOfDTError[0] + 1;
+            } else if(e.severity === 'ERROR') {
+              numOfDTError[1] = numOfDTError[1] + 1;
+            } else if(e.severity === 'WARNING') {
+              numOfDTError[2] = numOfDTError[2] + 1;
+            } else if(e.severity === 'INFO') {
+              numOfDTError[3] = numOfDTError[3] + 1;
+            }
+          });
         });
       }
 
       if (reports.segmentVerificationResults) {
         reports.segmentVerificationResults.forEach((item) => {
-          numOfSEGError = numOfSEGError + item.errors.length;
-          totalNumOfError = totalNumOfError + item.errors.length;
+          item.errors.forEach((e) => {
+            if(e.severity === 'FATAL') {
+              numOfSEGError[0] = numOfSEGError[0] + 1;
+            } else if(e.severity === 'ERROR') {
+              numOfSEGError[1] = numOfSEGError[1] + 1;
+            } else if(e.severity === 'WARNING') {
+              numOfSEGError[2] = numOfSEGError[2] + 1;
+            } else if(e.severity === 'INFO') {
+              numOfSEGError[3] = numOfSEGError[3] + 1;
+            }
+          });
         });
       }
 
       if (reports.conformanceProfileVerificationResults) {
         reports.conformanceProfileVerificationResults.forEach((item) => {
-          numOfCPError = numOfCPError + item.errors.length;
-          totalNumOfError = totalNumOfError + item.errors.length;
+          item.errors.forEach((e) => {
+            if(e.severity === 'FATAL') {
+              numOfCPError[0] = numOfCPError[0] + 1;
+            } else if(e.severity === 'ERROR') {
+              numOfCPError[1] = numOfCPError[1] + 1;
+            } else if(e.severity === 'WARNING') {
+              numOfCPError[2] = numOfCPError[2] + 1;
+            } else if(e.severity === 'INFO') {
+              numOfCPError[3] = numOfCPError[3] + 1;
+            }
+          });
         });
       }
 
-      numOfIGError = numOfIGError + reports.igVerificationResult.errors.length;
-      totalNumOfError = totalNumOfError + reports.igVerificationResult.errors.length;
+      reports.igVerificationResult.errors.forEach((e) => {
+        console.log(e);
 
-      return [totalNumOfError, numOfVSError, numOfDTError, numOfSEGError, numOfCPError, numOfIGError];
+        this.igVerificationResultTable.push(e);
+
+        if(e.severity === 'FATAL') {
+          numOfIGError[0] = numOfIGError[0] + 1;
+        } else if(e.severity === 'ERROR') {
+          numOfIGError[1] = numOfIGError[1] + 1;
+        } else if(e.severity === 'WARNING') {
+          numOfIGError[2] = numOfIGError[2] + 1;
+        } else if(e.severity === 'INFO') {
+          numOfIGError[3] = numOfIGError[3] + 1;
+        }
+      });
     }
 
-    return [0, 0, 0, 0, 0, 0];
+    return [numOfVSError, numOfDTError, numOfSEGError, numOfCPError, numOfIGError];
 
   }
 }
