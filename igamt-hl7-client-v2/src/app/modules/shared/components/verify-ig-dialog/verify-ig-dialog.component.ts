@@ -59,11 +59,11 @@ export class VerifyIgDialogComponent implements OnInit {
   }
 
   countErrors(reports) {
-    const numOfVSError = [0, 0, 0, 0];
-    const numOfDTError = [0, 0, 0, 0];
-    const numOfSEGError = [0, 0, 0, 0];
-    const numOfCPError = [0, 0, 0, 0];
-    const numOfIGError = [0, 0, 0, 0];
+    let numOfVSError = [0, 0, 0, 0];
+    let numOfDTError = [0, 0, 0, 0];
+    let numOfSEGError = [0, 0, 0, 0];
+    let numOfCPError = [0, 0, 0, 0];
+    let numOfIGError = [0, 0, 0, 0];
 
     this.igVerificationResultTable = [];
 
