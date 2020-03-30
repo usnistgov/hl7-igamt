@@ -45,13 +45,13 @@ export class VerifyIgDialogComponent implements OnInit {
   addErrorNumbers(numOfError, errors) {
     errors.forEach((e) => {
       if (e.severity === 'FATAL') {
-        numOfError[0] = numOfVSError[0] + 1;
+        numOfError[0] = numOfError[0] + 1;
       } else if (e.severity === 'ERROR') {
-        numOfError[1] = numOfVSError[1] + 1;
+        numOfError[1] = numOfError[1] + 1;
       } else if (e.severity === 'WARNING') {
-        numOfError[2] = numOfVSError[2] + 1;
+        numOfError[2] = numOfError[2] + 1;
       } else if (e.severity === 'INFO') {
-        numOfError[3] = numOfVSError[3] + 1;
+        numOfError[3] = numOfError[3] + 1;
       }
     });
 
@@ -70,29 +70,29 @@ export class VerifyIgDialogComponent implements OnInit {
     if (reports) {
       if (reports.valuesetVerificationResults) {
         reports.valuesetVerificationResults.forEach((item) => {
-          numOfVSError = addErrorNumbers(numOfVSError, item.errors);
+          numOfVSError = this.addErrorNumbers(numOfVSError, item.errors);
         });
       }
 
       if (reports.datatypeVerificationResults) {
         reports.datatypeVerificationResults.forEach((item) => {
-          numOfDTError = addErrorNumbers(numOfDTError, item.errors);
+          numOfDTError = this.addErrorNumbers(numOfDTError, item.errors);
         });
       }
 
       if (reports.segmentVerificationResults) {
         reports.segmentVerificationResults.forEach((item) => {
-          numOfSEGError = addErrorNumbers(numOfSEGError, item.errors);
+          numOfSEGError = this.addErrorNumbers(numOfSEGError, item.errors);
         });
       }
 
       if (reports.conformanceProfileVerificationResults) {
         reports.conformanceProfileVerificationResults.forEach((item) => {
-          numOfCPError = addErrorNumbers(numOfCPError, item.errors);
+          numOfCPError = this.addErrorNumbers(numOfCPError, item.errors);
         });
       }
 
-      numOfIGError = addErrorNumbers(numOfIGError, reports.igVerificationResult.errors);
+      numOfIGError = this.addErrorNumbers(numOfIGError, reports.igVerificationResult.errors);
     }
 
     return [numOfVSError, numOfDTError, numOfSEGError, numOfCPError, numOfIGError];
