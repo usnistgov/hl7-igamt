@@ -42,95 +42,57 @@ export class VerifyIgDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  addErrorNumbers(numOfError, errors) {
+    errors.forEach((e) => {
+      if (e.severity === 'FATAL') {
+        numOfError[0] = numOfVSError[0] + 1;
+      } else if (e.severity === 'ERROR') {
+        numOfError[1] = numOfVSError[1] + 1;
+      } else if (e.severity === 'WARNING') {
+        numOfError[2] = numOfVSError[2] + 1;
+      } else if (e.severity === 'INFO') {
+        numOfError[3] = numOfVSError[3] + 1;
+      }
+    });
+
+    return numOfError;
+  }
+
   countErrors(reports) {
-    let numOfVSError = [0, 0, 0, 0];
-    let numOfDTError = [0, 0, 0, 0];
-    let numOfSEGError = [0, 0, 0, 0];
-    let numOfCPError = [0, 0, 0, 0];
-    let numOfIGError = [0, 0, 0, 0];
+    const numOfVSError = [0, 0, 0, 0];
+    const numOfDTError = [0, 0, 0, 0];
+    const numOfSEGError = [0, 0, 0, 0];
+    const numOfCPError = [0, 0, 0, 0];
+    const numOfIGError = [0, 0, 0, 0];
 
     this.igVerificationResultTable = [];
 
     if (reports) {
       if (reports.valuesetVerificationResults) {
         reports.valuesetVerificationResults.forEach((item) => {
-          item.errors.forEach((e) => {
-            if(e.severity === 'FATAL') {
-              numOfVSError[0] = numOfVSError[0] + 1;
-            } else if(e.severity === 'ERROR') {
-              numOfVSError[1] = numOfVSError[1] + 1;
-            } else if(e.severity === 'WARNING') {
-              numOfVSError[2] = numOfVSError[2] + 1;
-            } else if(e.severity === 'INFO') {
-              numOfVSError[3] = numOfVSError[3] + 1;
-            }
-          });
+          numOfVSError = addErrorNumbers(numOfVSError, item.errors);
         });
       }
 
       if (reports.datatypeVerificationResults) {
         reports.datatypeVerificationResults.forEach((item) => {
-          item.errors.forEach((e) => {
-            if(e.severity === 'FATAL') {
-              numOfDTError[0] = numOfDTError[0] + 1;
-            } else if(e.severity === 'ERROR') {
-              numOfDTError[1] = numOfDTError[1] + 1;
-            } else if(e.severity === 'WARNING') {
-              numOfDTError[2] = numOfDTError[2] + 1;
-            } else if(e.severity === 'INFO') {
-              numOfDTError[3] = numOfDTError[3] + 1;
-            }
-          });
+          numOfDTError = addErrorNumbers(numOfDTError, item.errors);
         });
       }
 
       if (reports.segmentVerificationResults) {
         reports.segmentVerificationResults.forEach((item) => {
-          item.errors.forEach((e) => {
-            if(e.severity === 'FATAL') {
-              numOfSEGError[0] = numOfSEGError[0] + 1;
-            } else if(e.severity === 'ERROR') {
-              numOfSEGError[1] = numOfSEGError[1] + 1;
-            } else if(e.severity === 'WARNING') {
-              numOfSEGError[2] = numOfSEGError[2] + 1;
-            } else if(e.severity === 'INFO') {
-              numOfSEGError[3] = numOfSEGError[3] + 1;
-            }
-          });
+          numOfSEGError = addErrorNumbers(numOfSEGError, item.errors);
         });
       }
 
       if (reports.conformanceProfileVerificationResults) {
         reports.conformanceProfileVerificationResults.forEach((item) => {
-          item.errors.forEach((e) => {
-            if(e.severity === 'FATAL') {
-              numOfCPError[0] = numOfCPError[0] + 1;
-            } else if(e.severity === 'ERROR') {
-              numOfCPError[1] = numOfCPError[1] + 1;
-            } else if(e.severity === 'WARNING') {
-              numOfCPError[2] = numOfCPError[2] + 1;
-            } else if(e.severity === 'INFO') {
-              numOfCPError[3] = numOfCPError[3] + 1;
-            }
-          });
+          numOfCPError = addErrorNumbers(numOfCPError, item.errors);
         });
       }
 
-      reports.igVerificationResult.errors.forEach((e) => {
-        console.log(e);
-
-        this.igVerificationResultTable.push(e);
-
-        if(e.severity === 'FATAL') {
-          numOfIGError[0] = numOfIGError[0] + 1;
-        } else if(e.severity === 'ERROR') {
-          numOfIGError[1] = numOfIGError[1] + 1;
-        } else if(e.severity === 'WARNING') {
-          numOfIGError[2] = numOfIGError[2] + 1;
-        } else if(e.severity === 'INFO') {
-          numOfIGError[3] = numOfIGError[3] + 1;
-        }
-      });
+      numOfIGError = addErrorNumbers(numOfIGError, reports.igVerificationResult.errors);
     }
 
     return [numOfVSError, numOfDTError, numOfSEGError, numOfCPError, numOfIGError];
