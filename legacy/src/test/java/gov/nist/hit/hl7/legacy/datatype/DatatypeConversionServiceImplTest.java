@@ -35,7 +35,7 @@ public class DatatypeConversionServiceImplTest {
     
     Datatype oldDatatype = new DatatypeConversionServiceImpl().findOldDatatype(testId);
     gov.nist.hit.hl7.igamt.datatype.domain.Datatype newDatatype = new DatatypeConversionServiceImpl().convert(testId);
-    assertEquals("ID should be same!", oldDatatype.getId(), newDatatype.getId().getId());
+    assertEquals("ID should be same!", oldDatatype.getId(), newDatatype.getId());
     
     if(newDatatype instanceof ComplexDatatype) {
       assertEquals("Number of Components mismached.", oldDatatype.getComponents().size(), ((ComplexDatatype)newDatatype).getComponents().size());

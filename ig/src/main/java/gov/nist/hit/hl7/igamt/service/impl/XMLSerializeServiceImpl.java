@@ -2040,18 +2040,26 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
         break;
       case regex:
-        result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + complement.getValue()
+        result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + complement.getValue()
             + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
         break;
       case positiveInteger:
-        result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "^[1-9]\\d*$"
+        result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + "^[1-9]\\d*$"
+            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+        break;
+      case LOINC:
+        result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "LOINC"
+            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+        break;
+      case SNOMED:
+        result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "SNOMED"
             + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
         break;
       case sequentially:
         result = "<SetID Path=\"" + sPathStr + "\"/>";
         break;
       case iso:
-        result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "[0-2](\\.(0|[1-9][0-9]*))*"
+        result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + "[0-2](\\.(0|[1-9][0-9]*))*"
             + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
         break;
       case cEarlier:
