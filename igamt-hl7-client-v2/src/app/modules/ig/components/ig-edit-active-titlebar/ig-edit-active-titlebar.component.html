@@ -16,7 +16,7 @@
 
 <ng-template #defaultHeader let-active let-options="options">
     <h5 class="title-text">
-      <app-scope-badge *ngIf="active.display.domainInfo" [scope]="active.display.domainInfo.scope" [version]="active.display.domainInfo.version"></app-scope-badge>
+      <app-scope-badge *ngIf="active.display.domainInfo" [scope]="active.display.domainInfo.scope" [version]="active.display.domainInfo.version" [flavor]="active.display.flavor"></app-scope-badge>
       <app-entity-bagde [type]="active.display.type"></app-entity-bagde>
       <span *ngIf="active.display.type !== 'IGDOCUMENT'" >
         <span *ngIf="active.display.path"> {{active.display.path}} </span>
