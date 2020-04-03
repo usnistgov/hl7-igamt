@@ -1266,7 +1266,6 @@ public class IGDocumentController extends BaseController {
 					ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
 					savedIds.add(saved.getId());
 				}
-
 			}
 
 		} else {
