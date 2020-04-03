@@ -16,6 +16,7 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
+import { TabViewModule } from 'primeng/tabview';
 import {
   AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
 } from 'primeng/primeng';
@@ -208,6 +209,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MatSelectModule,
     MatFormFieldModule,
     NgxMatSelectSearchModule,
+    TabViewModule
   ],
   exports: [
     CommonModule,
