@@ -3,10 +3,6 @@
 <p-progressBar mode="indeterminate" *ngIf="!reports"></p-progressBar>
 
 <mat-dialog-content *ngIf="reports && data.type === 'Compliance'">
-    <div><label><span class="badge error-FATAL">FATAL</span>: ????</label></div>
-    <div><label><span class="badge error-ERROR">ERROR</span>: ???</label></div>
-    <div><label><span class="badge error-WARNING">WARNING</span>: ??</label></div>
-    <div><label><span class="badge error-INFO">INFORMATIONAL</span>: ?</label></div>
     <p-accordion>
         <p-accordionTab header="Conformance Profiles Compliance Results">
             <p-table *ngIf="reports.conformanceProfileComplianceResults" [value]="reports.conformanceProfileComplianceResults">
@@ -26,7 +22,7 @@
                             <ul>
                                 <li *ngFor="let error of item.errors">
                                     <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
-                                    <span class="badge">{{error.code}}</span>&nbsp;
+                                    <span class="badge error-code">{{error.code}}</span>&nbsp;
                                     <span>{{error.description}}</span>
                                 </li>
                             </ul>
@@ -45,17 +41,46 @@
     <div><label><span class="badge error-INFO">INFORMATIONAL</span>: User should consider changing the value.</label></div>
 
     <p-accordion *ngIf="errorCounts">
-        <p-accordionTab header="IG Document Verification Results ({{errorCounts[5]}} errors found)">
-            <ul *ngIf="reports.igVerificationResult && errorCounts && errorCounts[5] > 0">
+        <p-accordionTab>
+            <p-header>
+                IG Document Verification Results <span class="badge error-FATAL">{{errorCounts[4][0]}}</span><span class="badge error-ERROR">{{errorCounts[4][1]}}</span><span class="badge error-WARNING">{{errorCounts[4][2]}}</span><span class="badge error-INFO">{{errorCounts[4][3]}}</span>
+            </p-header>
+<!--
+            <p-table [value]="igVerificationResultTable">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 15em">Error Code</th>
+                        <th style="width: 5em">Severity</th>
+                        <th style="width: 5em">Location</th>
+                        <th>Description</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-item>
+                    <tr>
+                        <td><span class="badge error-code">{{item.code}}</span></td>
+                        <td><span class="badge error-{{item.severity}}">{{item.severity}}</span></td>&nbsp;
+                        <td>
+                            <app-scope-badge [scope]="item.targetMeta.domainInfo.scope" [version]="item.targetMeta.domainInfo.version"></app-scope-badge>
+                            <span> {{item.targetMeta.name}}<ng-container *ngIf="item.targetMeta.extension">{{'-' + item.targetMeta.extension}}</ng-container></span>
+                        </td>
+                        <td>{{item.description}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+-->
+            <ul *ngIf="reports.igVerificationResult">
                 <li *ngFor="let error of reports.igVerificationResult.errors">
                     <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
-                    <span class="badge">{{error.code}}</span>&nbsp;
+                    <span class="badge error-code">{{error.code}}</span>&nbsp;
                     <span>{{error.description}}</span>
                 </li>
             </ul>
         </p-accordionTab>
-        <p-accordionTab header="Conformance Profiles Verification Results ({{errorCounts[4]}} errors found)">
-            <p-table *ngIf="reports.conformanceProfileVerificationResults && errorCounts && errorCounts[4] > 0" [value]="reports.conformanceProfileVerificationResults">
+        <p-accordionTab>
+            <p-header>
+                Conformance Profiles Verification Results <span class="badge error-FATAL">{{errorCounts[3][0]}}</span><span class="badge error-ERROR">{{errorCounts[3][1]}}</span><span class="badge error-WARNING">{{errorCounts[3][2]}}</span><span class="badge error-INFO">{{errorCounts[3][3]}}</span>
+            </p-header>
+            <p-table *ngIf="reports.conformanceProfileVerificationResults" [value]="reports.conformanceProfileVerificationResults">
                 <ng-template pTemplate="header">
                     <tr>
                         <th style="width: 30em">Name</th>
@@ -72,7 +97,7 @@
                             <ul>
                                 <li *ngFor="let error of item.errors">
                                     <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
-                                    <span class="badge">{{error.code}}</span>&nbsp;
+                                    <span class="badge error-code">{{error.code}}</span>&nbsp;
                                     <span>{{error.description}}</span>
                                 </li>
                             </ul>
@@ -81,8 +106,11 @@
                 </ng-template>
             </p-table>
         </p-accordionTab>
-        <p-accordionTab header="Segments Verification Results ({{errorCounts[3]}} errors found)">
-            <p-table *ngIf="reports.segmentVerificationResults && errorCounts && errorCounts[3] > 0" [value]="reports.segmentVerificationResults">
+        <p-accordionTab>
+            <p-header>
+                Segments Verification Results <span class="badge error-FATAL">{{errorCounts[2][0]}}</span><span class="badge error-ERROR">{{errorCounts[2][1]}}</span><span class="badge error-WARNING">{{errorCounts[2][2]}}</span><span class="badge error-INFO">{{errorCounts[2][3]}}</span>
+            </p-header>
+            <p-table *ngIf="reports.segmentVerificationResults" [value]="reports.segmentVerificationResults">
                 <ng-template pTemplate="header">
                     <tr>
                         <th style="width: 30em">Name</th>
@@ -99,7 +127,7 @@
                             <ul>
                                 <li *ngFor="let error of item.errors">
                                     <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
-                                    <span class="badge">{{error.code}}</span>&nbsp;
+                                    <span class="badge error-code">{{error.code}}</span>&nbsp;
                                     <span>{{error.description}}</span>
                                 </li>
                             </ul>
@@ -108,8 +136,11 @@
                 </ng-template>
             </p-table>
         </p-accordionTab>
-        <p-accordionTab header="Datatypes Verification Results ({{errorCounts[2]}} errors found)">
-            <p-table *ngIf="reports.datatypeVerificationResults && errorCounts && errorCounts[2] > 0" [value]="reports.datatypeVerificationResults">
+        <p-accordionTab>
+            <p-header>
+                Datatypes Verification Results <span class="badge error-FATAL">{{errorCounts[1][0]}}</span><span class="badge error-ERROR">{{errorCounts[1][1]}}</span><span class="badge error-WARNING">{{errorCounts[1][2]}}</span><span class="badge error-INFO">{{errorCounts[1][3]}}</span>
+            </p-header>
+            <p-table *ngIf="reports.datatypeVerificationResults" [value]="reports.datatypeVerificationResults">
                 <ng-template pTemplate="header">
                     <tr>
                         <th style="width: 30em">Name</th>
@@ -126,7 +157,7 @@
                             <ul>
                                 <li *ngFor="let error of item.errors">
                                     <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
-                                    <span class="badge">{{error.code}}</span>&nbsp;
+                                    <span class="badge error-code">{{error.code}}</span>&nbsp;
                                     <span>{{error.description}}</span>
                                 </li>
                             </ul>
@@ -135,8 +166,11 @@
                 </ng-template>
             </p-table>
         </p-accordionTab>
-        <p-accordionTab header="Valuesets Verification Results ({{errorCounts[1]}} errors found)">
-            <p-table *ngIf="reports.valuesetVerificationResults && errorCounts && errorCounts[1] > 0" [value]="reports.valuesetVerificationResults">
+        <p-accordionTab>
+            <p-header>
+                Valuesets Verification Results <span class="badge error-FATAL">{{errorCounts[0][0]}}</span><span class="badge error-ERROR">{{errorCounts[0][1]}}</span><span class="badge error-WARNING">{{errorCounts[0][2]}}</span><span class="badge error-INFO">{{errorCounts[0][3]}}</span>
+            </p-header>
+            <p-table *ngIf="reports.valuesetVerificationResults" [value]="reports.valuesetVerificationResults">
                 <ng-template pTemplate="header">
                     <tr>
                         <th style="width: 30em">Name</th>
@@ -153,7 +187,7 @@
                             <ul>
                                 <li *ngFor="let error of item.errors">
                                     <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
-                                    <span class="badge">{{error.code}}</span>&nbsp;
+                                    <span class="badge error-code">{{error.code}}</span>&nbsp;
                                     <span>{{error.description}}</span>
                                 </li>
                             </ul>
