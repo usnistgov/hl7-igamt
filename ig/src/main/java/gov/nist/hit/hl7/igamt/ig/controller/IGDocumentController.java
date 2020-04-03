@@ -1265,7 +1265,6 @@ public class IGDocumentController extends BaseController {
 					Valueset saved = valuesetService.save(valueset);
 					ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
 					savedIds.add(saved.getId());
-
 				}
 
 			}
