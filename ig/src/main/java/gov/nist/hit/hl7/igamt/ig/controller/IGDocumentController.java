@@ -1267,7 +1267,6 @@ public class IGDocumentController extends BaseController {
 					savedIds.add(saved.getId());
 				}
 			}
-
 		} else {
 			if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
 	
