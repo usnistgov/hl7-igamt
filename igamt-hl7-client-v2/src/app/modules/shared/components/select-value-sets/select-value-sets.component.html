@@ -114,7 +114,7 @@
           {{rowData.sourceType}}
         </td>
         <td>
-          <p-checkbox [id]="rowData.id" [name]="rowData.id+'includeCode'" *ngIf="scope=='PHINVADS' && rowData.flavor" [(ngModel)]="rowData.includeChildren" binary="true" (ngModelChange)="switchType(rowData)"></p-checkbox>
+          <p-checkbox [id]="rowData.id" [name]="rowData.id+'includeCode'" *ngIf="scope=='PHINVADS' && rowData.flavor && rowData.numberOfChildren <= 500" [(ngModel)]="rowData.includeChildren" binary="true" (ngModelChange)="switchType(rowData)"></p-checkbox>
           <span class="badge badge-info" style="margin-left: 5px;"> {{rowData.numberOfChildren}}</span>
         </td>
         <td>

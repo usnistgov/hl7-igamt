@@ -1222,8 +1222,14 @@ public class IGDocumentController extends BaseController {
 					if (!elm.isIncludeChildren()) {
 						valueset.setSourceType(SourceType.EXTERNAL);
 						valueset.setCodes(new HashSet<Code>());
+						valueset.setExtensibility(Extensibility.Closed);
+						valueset.setStability(Stability.Dynamic);
+						valueset.setContentDefinition(ContentDefinition.Extensional);
 					} else {
 						valueset.setSourceType(SourceType.INTERNAL);
+						valueset.setExtensibility(Extensibility.Open);
+						valueset.setStability(Stability.Static);
+						valueset.setContentDefinition(ContentDefinition.Extensional);
 						// Get codes from vocab service
 						if (elm.getOid() != null) {
 							Set<Code> vsCodes = fhirHandlerService.getValusetCodes(elm.getOid());
@@ -1236,6 +1242,7 @@ public class IGDocumentController extends BaseController {
 					valueset.setUrl(elm.getUrl());
 					valueset.setOid(elm.getOid());
 					valueset.setFlavor(true);
+					
 					Valueset saved = valuesetService.save(valueset);
 					ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
 					savedIds.add(saved.getId());
@@ -1258,11 +1265,8 @@ public class IGDocumentController extends BaseController {
 					Valueset saved = valuesetService.save(valueset);
 					ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
 					savedIds.add(saved.getId());
-
 				}
-
 			}
-
 		} else {
 			if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
 	
@@ -1277,6 +1281,9 @@ public class IGDocumentController extends BaseController {
 				valueset.setUrl(elm.getUrl());
 				valueset.setOid(elm.getOid());
 				valueset.setFlavor(false);
+				valueset.setExtensibility(Extensibility.Closed);
+				valueset.setStability(Stability.Dynamic);
+				valueset.setContentDefinition(ContentDefinition.Extensional);
 				Valueset saved = valuesetService.save(valueset);
 				ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
 				savedIds.add(saved.getId());
