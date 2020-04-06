@@ -1,0 +1,58 @@
+<div class="page-container-nopad">
+  <div class="wrapper">
+
+    <div class="alerts">
+      <!-- ALERTS -->
+    </div>
+
+    <div class="titlebar">
+      <!-- TITLEBAR -->
+      <ng-container *ngTemplateOutlet="titleBarTemplate; context: { $implicit: titleBar | async }" ></ng-container>
+    </div>
+
+    <div class="utils">
+      <!-- TABS -->
+    </div>
+
+    <div class="page-container"
+        [ngStyle]="{
+          'grid-template-columns': '[sidebar] minmax(min-content, '+ (!collapsed ? positionX : '45px') +') [resize-bar] 4px [container] minmax(600px, 8fr)'
+        }"
+    >
+
+      <div class="container-section">
+
+        <div class="toolbar-controls" >
+          <!-- TOOLBAR -->
+        </div>
+        <div class="titlebar-content">
+          <!-- ACTIVE TITLEBAR -->
+        </div>
+
+        <div class="container-content">
+          <!-- EDITOR CONTENT -->
+        </div>
+      </div>
+
+      <!-- RESIZE BAR -->
+      <div #resize [ngStyle]="{'background-color': dragging ? 'blue' : ''}" class="resize-bar"></div>
+
+      <!-- SIDE NOT COLLAPSED -->
+      <ng-container *ngIf="!collapsed">
+        <!-- SIDEBAR -->
+      </ng-container>
+
+      <!-- SIDEBAR COLLAPSED -->
+      <ng-container *ngIf="collapsed">
+        <div style="background-color: white;">
+          <div class="collapsed-side-bar-btn-container">
+            <button (click)= "expandToc()" class="btn btn-sm btn-default collapsed-side-bar-btn">
+              <i class="fa fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+</div>

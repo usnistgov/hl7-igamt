@@ -32,9 +32,7 @@ export enum IgEditActionTypes {
   DeleteResource = '[Ig Edit TOC] Delete Resource',
   DeleteResourceSuccess = '[Ig Edit TOC] Delete Resource Success',
   DeleteResourceFailure = '[Ig Edit TOC] Delete Resource Failure',
-  UpdateActiveResource = '[Ig Edit Editor] Update Active Resource Display',
-  OpenEditor = '[Ig Edit Open] Open Editor',
-  OpenEditorFailure = '[Ig Edit Open] Open Editor Failure',
+
   OpenNarrativeEditorNode = '[Ig Edit TOC Narrative] Open Narrative Editor Node',
   OpenIgMetadataEditorNode = '[Ig Edit TOC Ig Metadata] Open Ig Metadata Editor Node',
   OpenConformanceProfileEditorNode = '[Ig Edit TOC Conformance Profile] Open Conformance Profile Editor Node',
@@ -48,6 +46,8 @@ export enum IgEditActionTypes {
   TableOfContentSaveSuccess = '[Ig Edit TOC Save] Save Table Of Content Success',
   TableOfContentSaveFailure = '[Ig Edit TOC Save] Save Table Of Content Failure',
 
+  OpenEditor = '[Ig Edit Open] Open Editor',
+  OpenEditorFailure = '[Ig Edit Open] Open Editor Failure',
   EditorInitialize = '[Ig Edit Initialize] Initialize Editor Data',
   EditorChange = '[Ig Edit Change] Register Change Data',
   EditorReset = '[Ig Edit Reset] Reset Data',
@@ -55,6 +55,8 @@ export enum IgEditActionTypes {
   EditorUpdate = '[Editor Update] Update editor without changes',
   EditorSaveSuccess = '[Editor Save Success] Editor Save Success',
   EditorSaveFailure = '[Editor Save Failure] Editor Save Failure',
+  UpdateActiveResource = '[Ig Edit Editor] Update Active Resource Display',
+
   LoadSelectedResource = '[Router Resolver] Load Selected Resource',
   LoadResourceReferences = '[Ig Resource References] Load Resource References',
   LoadResourceReferencesSuccess = '[Ig Resource References] Load Resource References Success',
@@ -65,7 +67,7 @@ export enum IgEditActionTypes {
   ToggleFullScreen = '[Ig Edit] Toggle Fullscreen',
   ImportResourceFromFile = '[Ig Edit] Import resource from file',
   ImportResourceFromFileSuccess = '[Ig Edit] Import resource from file Success',
-  ImportResourceFromFileFailure= '[Ig Edit] Import resource from file Failure',
+  ImportResourceFromFileFailure = '[Ig Edit] Import resource from file Failure',
   ToggleDelta = '[Ig Edit] Toggle DELTA Delta',
   ToggleDeltaSuccess = '[Ig Edit] Toggle DELTA Success',
   ToggleDeltaFailure = '[Ig Edit] Toggle DELTA Failure',
@@ -152,13 +154,13 @@ export class IgEditTocAddResource implements Action {
 
 export class ImportResourceFromFile implements Action {
   readonly type = IgEditActionTypes.ImportResourceFromFile;
-  constructor(readonly documentId, readonly resourceType: Type , readonly targetType: Type, readonly file: any ) {
+  constructor(readonly documentId, readonly resourceType: Type, readonly targetType: Type, readonly file: any) {
   }
 }
 
 export class ImportResourceFromFileSuccess implements Action {
   readonly type = IgEditActionTypes.ImportResourceFromFileSuccess;
-  constructor(readonly payload: IAddResourceFromFile ) {
+  constructor(readonly payload: IAddResourceFromFile) {
   }
 }
 

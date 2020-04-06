@@ -117,3 +117,18 @@
   background-color: white;
   padding: 10px;
 }
+
+.collapsed-side-bar-btn-container {
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.collapsed-side-bar-btn {
+  border: 1px solid grey;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  margin-left: 5px;
+}

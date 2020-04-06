@@ -5,8 +5,21 @@ import { filter, repeat, skipUntil, takeUntil, tap } from 'rxjs/operators';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { ClearIgEdit, ExpandTOC } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import { DamController } from '../../../dam-framework/services/dam-widget.controller';
 import { IWorkspaceActive } from '../../../shared/models/editor.class';
 import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.component';
+
+export class IgDamController extends DamController {
+
+  constructor(private store: Store<fromIgEdit.IState>) {
+    super();
+  }
+
+  getTitleBarInfo(payload: any): Observable<any> {
+    return this.store.select(fromIgEdit.selectTitleBar);
+  }
+
+}
 
 @Component({
   selector: 'app-ig-edit-container',
@@ -14,6 +27,8 @@ import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.componen
   styleUrls: ['./ig-edit-container.component.scss'],
 })
 export class IgEditContainerComponent implements OnInit, AfterViewInit, OnDestroy {
+
+  controller: IgDamController;
 
   titleBar: Observable<ITitleBarMetadata>;
   collapsed: boolean;
@@ -37,6 +52,7 @@ export class IgEditContainerComponent implements OnInit, AfterViewInit, OnDestro
       },
     );
     this.positionX = '2fr';
+    this.controller = new IgDamController(store);
   }
 
   expandToc() {

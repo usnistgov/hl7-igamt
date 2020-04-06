@@ -1,4 +1,9 @@
-<div class="page-container-nopad">
+<app-dam-layout [controller]="controller">
+  <ng-template #titleBar let-titleBar>
+    <app-ig-edit-titlebar [metadata]="titleBar"></app-ig-edit-titlebar>
+  </ng-template>
+</app-dam-layout>
+<!-- <div class="page-container-nopad">
   <div class="wrapper">
 
     <div class="alerts">
@@ -9,6 +14,20 @@
       <app-ig-edit-titlebar [metadata]="titleBar | async"></app-ig-edit-titlebar>
     </div>
 
+    <div class="utils">
+      <ul class="nav nav-pills">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Document View</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Custom Structure Editor</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Verification Report <i class="fa fa-times" style="margin-left: 5px; color: red;"></i></a>
+        </li>
+      </ul>
+    </div>
+
     <div [ngStyle]="{'grid-template-columns': '[sidebar] minmax(min-content, '+ (!collapsed ? positionX : '45px') +') [resize-bar] 4px [container] minmax(600px, 8fr)'}"
          class="page-container">
       <div class="container-section">
@@ -16,7 +35,9 @@
         <app-ig-edit-active-titlebar [active]="activeWorkspace | async" [controls]="activeComponent?.controls"
                                      [header]="activeComponent?.header"
                                      class="titlebar-content"></app-ig-edit-active-titlebar>
+
         <div class="container-content">
+
           <router-outlet (activate)="activateComponent($event)" (deactivate)="deactivateComponent($event)"
                          style="display: none;"></router-outlet>
         </div>
@@ -36,4 +57,4 @@
       </ng-container>
     </div>
   </div>
-</div>
+</div> -->

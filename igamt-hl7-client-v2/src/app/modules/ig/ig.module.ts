@@ -30,6 +30,7 @@ import { IgEditorActivateGuard } from './services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from './services/ig-editor-deactivate.service';
 import { IgListService } from './services/ig-list.service';
 import { IgService } from './services/ig.service';
+import { DamFrameworkModule } from '../dam-framework/dam-framework.module';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { IgService } from './services/ig.service';
     ExportGvtComponent,
   ],
   imports: [
+    DamFrameworkModule,
     IgRoutingModule,
     EffectsModule.forFeature([IgListEffects, CreateIgEffects, IgEditEffects]),
     StoreModule.forFeature(fromIg.featureName, fromIg.reducers),
