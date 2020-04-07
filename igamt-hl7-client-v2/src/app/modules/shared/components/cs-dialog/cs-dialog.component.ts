@@ -3,8 +3,9 @@ import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as _ from 'lodash';
-import { Observable, of, Subscription } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { map, take, tap } from 'rxjs/operators';
+import * as vk from 'vkbeautify';
 import { Type } from '../../constants/type.enum';
 import { ConditionalUsageOptions } from '../../constants/usage.enum';
 import { AssertionMode, ConstraintType, IAssertionConformanceStatement, IFreeTextConformanceStatement, INotAssertion, IOperatorAssertion, IPath } from '../../models/cs.interface';
@@ -68,6 +69,11 @@ export class CsDialogComponent implements OnDestroy {
       },
     ],
   };
+  xmlExpression: Subject<{
+    isSet: boolean;
+    value: string;
+  }>;
+  xmlVisible = true;
 
   @ViewChildren(CsPropositionComponent) propositions: QueryList<CsPropositionComponent>;
   @ViewChild('csForm', { read: NgForm }) form: NgForm;
@@ -83,6 +89,11 @@ export class CsDialogComponent implements OnDestroy {
     this.ifThenPattern = new BinaryOperator('D', 'IF-THEN', null, 0);
     this.ifThenPattern.putOne(new Statement('D', 0, null, 0), 0);
     this.ifThenPattern.putOne(new Statement('D', 0, null, 0), 1);
+
+    this.xmlExpression = new BehaviorSubject({
+      isSet: false,
+      value: undefined,
+    });
 
     this.predicateMode = data.predicateMode || data.assertionMode;
     this.assertionMode = data.assertionMode;
@@ -209,16 +220,45 @@ export class CsDialogComponent implements OnDestroy {
       return false;
     } else if (this.activeTab === CsTab.FREE && this.form) {
       return this.form.valid;
-    } else if (this.activeTab !== CsTab.FREE && this.form && this.propositions && this.propositions.length > 0) {
+    } else if (this.activeTab !== CsTab.FREE && this.form) {
+      return this.statementsValid() && this.form.valid;
+    } else {
+      return false;
+    }
+  }
+
+  generateXMLExpression() {
+    const processValue = (value: string) => {
+      this.xmlVisible = true;
+      this.xmlExpression.next({
+        isSet: true,
+        value: vk.xml(value),
+      });
+    };
+
+    if (this.statementsValid()) {
+      if (this.predicateMode) {
+        return this.csService.generateXMLfromPredicate(this.cs as IPredicate, this.resource.id).pipe(
+          tap(processValue),
+        ).subscribe();
+      } else {
+        return this.csService.generateXMLfromCs(this.cs, this.resource.id).pipe(
+          tap(processValue),
+        ).subscribe();
+      }
+    }
+  }
+
+  statementsValid() {
+    if (this.propositions && this.propositions.length > 0) {
       let statementsValidity = true;
       this.propositions.forEach((p) => {
         statementsValidity = statementsValidity && p.complete();
       });
 
-      return statementsValidity && this.form.valid;
-    } else {
-      return false;
+      return statementsValidity;
     }
+    return false;
   }
 
   set conformanceStatement(cs: AssertionContainer) {
@@ -240,6 +280,7 @@ export class CsDialogComponent implements OnDestroy {
   setAssertion(assertion: IAssertion, context: IPath) {
     this.cs = {
       identifier: undefined,
+      level: this.resourceType,
       type: undefined,
       assertion: undefined,
       context,
@@ -294,6 +335,11 @@ export class CsDialogComponent implements OnDestroy {
   }
 
   change() {
+    this.xmlExpression.next({
+      isSet: false,
+      value: undefined,
+    });
+
     if (this.cs.type === ConstraintType.ASSERTION) {
       this.updateAssertionDescription((this.cs as IAssertionConformanceStatement).assertion);
       if (this.predicateMode) {
@@ -316,6 +362,7 @@ export class CsDialogComponent implements OnDestroy {
           ...this.cs,
           ...payload,
           assertion: undefined,
+          level: this.cs && this.cs.level ? this.cs.level : this.resourceType,
           identifier: this.cs ? this.cs.identifier : undefined,
           context: this.cs ? this.cs.context : undefined,
         };
@@ -325,6 +372,7 @@ export class CsDialogComponent implements OnDestroy {
         csTemp = {
           ...this.cs,
           ...payload.cs,
+          level: this.cs && this.cs.level ? this.cs.level : this.resourceType,
           identifier: this.cs ? this.cs.identifier : undefined,
           context: this.cs ? this.cs.context : undefined,
           freeText: undefined,
@@ -336,6 +384,7 @@ export class CsDialogComponent implements OnDestroy {
         csTemp = {
           ...this.cs,
           ...payload.cs,
+          level: this.cs && this.cs.level ? this.cs.level : this.resourceType,
           identifier: this.cs ? this.cs.identifier : undefined,
           context: this.cs ? this.cs.context : undefined,
           freeText: undefined,
@@ -354,6 +403,7 @@ export class CsDialogComponent implements OnDestroy {
         csTemp = {
           ...this.cs,
           ...payload ? payload.cs : undefined,
+          level: this.cs && this.cs.level ? this.cs.level : this.resourceType,
           identifier: this.cs ? this.cs.identifier : undefined,
           context: this.cs ? this.cs.context : undefined,
           freeText: undefined,
@@ -363,6 +413,7 @@ export class CsDialogComponent implements OnDestroy {
     }
     this.cs = csTemp;
     this.activeTab = item;
+    this.change();
   }
 
   openPatternDialog() {
