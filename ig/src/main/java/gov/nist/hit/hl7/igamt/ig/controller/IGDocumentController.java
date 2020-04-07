@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import gov.nist.hit.hl7.igamt.ig.service.*;
+import gov.nist.hit.hl7.igamt.service.impl.XMLSerializeServiceImpl;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -109,10 +111,6 @@ import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
-import gov.nist.hit.hl7.igamt.ig.service.CrudService;
-import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
-import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
@@ -175,6 +173,9 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   SimpleCoConstraintService coConstraintService;
+
+  @Autowired
+  XMLSerializeServiceImpl serializeService;
   
   @Autowired
   private FhirHandlerService fhirHandlerService;
@@ -222,6 +223,20 @@ public class IGDocumentController extends BaseController {
       Authentication authentication) throws IGNotFoundException {
     Ig igdoument = findIgById(id);
     return igService.convertDomainToConformanceStatement(igdoument);
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement/assertion", method = RequestMethod.POST, produces = {
+          "application/text" })
+  public @ResponseBody String getAssertionCS(@PathVariable("id") String id, @RequestBody ConformanceStatement cs, Authentication authentication)
+          throws IGNotFoundException, IGUpdateException {
+    return this.serializeService.generateAssertionScript(cs, id);
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/predicate/assertion", method = RequestMethod.POST, produces = {
+          "application/text" })
+  public @ResponseBody String getAssertionPD(@PathVariable("id") String id, @RequestBody Predicate p, Authentication authentication)
+          throws IGNotFoundException, IGUpdateException {
+    return this.serializeService.generateConditionScript(p, id);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/{viewScope}/datatypeFalvorOptions/{dtId}", method = RequestMethod.GET, produces = {
