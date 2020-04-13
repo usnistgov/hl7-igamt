@@ -45,6 +45,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   nodes: TreeNode[];
   @Input()
   delta: boolean;
+  @Input()
+  viewOnly: boolean;
 
   @Output()
   nodeState = new EventEmitter<IDisplayElement[]>();
