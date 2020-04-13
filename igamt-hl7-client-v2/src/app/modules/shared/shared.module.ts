@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { ExtendedModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatRadioModule } from '@angular/material';
+import { MatFormFieldModule, MatRadioModule, MatSelectModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { NgbAlert, NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -11,6 +11,7 @@ import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
 import { ToastyModule } from 'ng2-toasty';
 import { ContextMenuModule } from 'ngx-contextmenu';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
@@ -61,6 +62,7 @@ import { LoginFormComponent } from './components/login-form/login-form.component
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
+import { NgxDropdownComponent } from './components/ngx-dropdown/ngx-dropdown.component';
 import { PatternDialogComponent } from './components/pattern-dialog/pattern-dialog.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
@@ -80,6 +82,7 @@ import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.comp
 import { UsageDialogComponent } from './components/usage-dialog/usage-dialog.component';
 import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.component';
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
+import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
@@ -155,7 +158,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddCoConstraintGroupComponent,
     ResourceDropdownComponent,
     ImportCsvValuesetComponent,
+    ValuesetDeltaComponent,
     DisplayRefComponent,
+    NgxDropdownComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -200,6 +205,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AutoCompleteModule,
     PrimeNgDragDrop,
     DragDropModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    NgxMatSelectSearchModule,
   ],
   exports: [
     CommonModule,
@@ -243,6 +251,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     FroalaViewModule,
     MetadataFormComponent,
     ChipsModule,
+    NgxDropdownComponent,
     ResourcePickerComponent,
     CopyResourceComponent,
     NamingDuplicationDirective,
@@ -287,6 +296,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DynamicMappingComponent,
     AddCoConstraintGroupComponent,
     ResourceDropdownComponent,
+    ValuesetDeltaComponent,
     DisplayRefComponent,
   ],
   entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent, AddCoConstraintGroupComponent, ImportCsvValuesetComponent, VerifyIgDialogComponent],

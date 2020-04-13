@@ -15,7 +15,10 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -37,6 +40,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
@@ -64,12 +68,18 @@ import gov.nist.hit.hl7.igamt.display.model.XMLVerificationReport.DocumentTarget
 import gov.nist.hit.hl7.igamt.display.model.XMLVerificationReport.ErrorType;
 import gov.nist.hit.hl7.igamt.display.model.XSDVerificationResult;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.CPComplianceResult;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.CPMetadata;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.CPVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.ComplianceReport;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.DTSegMetadata;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.DTSegVerificationResult;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgVerificationResult;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.VSMetadata;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VSVerificationResult;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationResult;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
@@ -336,18 +346,10 @@ public class VerificationServiceImpl implements VerificationService {
     return result;
   }
   
-  /**
-   * @param valueset
-   * @param vr
-   */
   private void checkingStructureForValueset(Valueset valueset, VSVerificationResult result) {
     if(valueset.getCodes() != null) this.checkingCodes(valueset, valueset.getCodes(), result);
   }
 
-  /**
-   * @param datatype
-   * @param vr
-   */
   private void checkingStructureForDatatype(Datatype datatype, DTSegVerificationResult result) {
     // Case #1 : Primitive
     if (datatype instanceof PrimitiveDatatype) {
@@ -361,24 +363,25 @@ public class VerificationServiceImpl implements VerificationService {
     }
   }
   
-  /**
-   * @param conformanceProfile
-   * @param vr
-   */
   private void checkingStructureForConformanceProfile(ConformanceProfile conformanceProfile, CPVerificationResult result) {
     Set<StructureElementBinding> sebs = null;
     if(conformanceProfile.getBinding() != null) sebs = conformanceProfile.getBinding().getChildren();
     this.checkingSegmentRefOrGroups(conformanceProfile, conformanceProfile.getChildren(), result, null, null, sebs);
   }
   
-  /**
-   * @param conformanceProfile
-   * @param children
-   * @param vr
-   * @param sebs 
-   */
+  private void checkingStructureForConformanceProfileForCompliance(ConformanceProfile conformanceProfile, CPComplianceResult result) {
+    Set<StructureElementBinding> sebs = null;
+    if(conformanceProfile.getBinding() != null) sebs = conformanceProfile.getBinding().getChildren();
+    this.checkingSegmentRefOrGroupsForCompliance(conformanceProfile, conformanceProfile.getChildren(), result, null, null, sebs);
+  }
+  
+  private void checkingSegmentRefOrGroupsForCompliance(ConformanceProfile conformanceProfile, Set<SegmentRefOrGroup> segmentRefOrGroups, CPComplianceResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+    if (segmentRefOrGroups != null) {
+      segmentRefOrGroups.forEach(srog -> this.checkingSegmentRefOrGroupForCompliance(conformanceProfile, srog, result, positionPath, path, this.findSEB(sebs, srog.getId())));
+    }
+  }
+  
   private void checkingSegmentRefOrGroups(ConformanceProfile conformanceProfile, Set<SegmentRefOrGroup> segmentRefOrGroups, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
-    
     if (segmentRefOrGroups != null) {
       segmentRefOrGroups.forEach(srog -> this.checkingSegmentRefOrGroup(conformanceProfile, srog, result, positionPath, path, this.findSEB(sebs, srog.getId())));
     }
@@ -398,13 +401,14 @@ public class VerificationServiceImpl implements VerificationService {
     return null;
   }
 
-  /**
-   * @param conformanceProfile
-   * @param srog
-   * @param vr
-   * @param set 
-   * @return
-   */
+  private void checkingSegmentRefOrGroupForCompliance(ConformanceProfile conformanceProfile, SegmentRefOrGroup srog, CPComplianceResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+    if(srog instanceof SegmentRef) {
+      this.chekcingSegmentRefForCompliance(conformanceProfile, (SegmentRef)srog, result, positionPath, path, sebs);
+    } else if(srog instanceof Group) {
+      this.checkingGroupForCompliance(conformanceProfile, (Group)srog, result, positionPath, path, sebs);
+    } 
+  }
+  
   private void checkingSegmentRefOrGroup(ConformanceProfile conformanceProfile, SegmentRefOrGroup srog, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
     if(srog instanceof SegmentRef) {
       this.chekcingSegmentRef(conformanceProfile, (SegmentRef)srog, result, positionPath, path, sebs);
@@ -413,14 +417,45 @@ public class VerificationServiceImpl implements VerificationService {
     } 
   }
 
-  /**
-   * @param conformanceProfile
-   * @param srog
-   * @param vr
-   * @param positionPath
-   * @param path
-   * @param sebs
-   */
+  private void chekcingSegmentRefForCompliance(ConformanceProfile conformanceProfile, SegmentRef sr, CPComplianceResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+    int position = sr.getPosition();
+    Usage usage = sr.getUsage();
+    int min = sr.getMin();
+    String max = sr.getMax();
+    Ref ref = sr.getRef();
+    Segment segment = null;
+    
+    if (positionPath == null) {
+      positionPath = position + "";
+    } else {
+      positionPath = positionPath + "." + position;
+    }
+    
+    // Ref value Check
+    if(ref != null && ref.getId() != null) {
+      segment = this.segmentService.findById(ref.getId());
+      // DATA Acessability check
+      if(segment != null) {
+        if (path == null) {
+          path = segment.getName();
+        } else {
+          path = path + "." + segment.getName();
+        }
+        
+        this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max, null, null));
+        this.checkUsageComplianceError(conformanceProfile, conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), usage, positionPath, path, result);
+        this.checkCardinalityComplianceError(conformanceProfile, conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), min, max, positionPath, path, result);
+        
+        if(segment.getChildren() != null) {
+          
+          for(Field field : segment.getChildren() ){
+            this.checkFieldForConformanceProfileForCompliance(conformanceProfile, segment, field, positionPath, path, result); 
+          }
+        }
+      } 
+    }
+  }
+  
   private void chekcingSegmentRef(ConformanceProfile conformanceProfile, SegmentRef sr, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
     int position = sr.getPosition();
     Usage usage = sr.getUsage();
@@ -437,52 +472,41 @@ public class VerificationServiceImpl implements VerificationService {
     
     
     // Ref value Check
-    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", positionPath + " SegmentRef info is mising", positionPath + "", "FATAL"));
+    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("REF_Missing", conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), "In " + path + ", Ref value is missing", positionPath + "", "FATAL"));
     else {
       segment = this.segmentService.findById(ref.getId());
       // DATA Acessability check
-      if(segment == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "segmentRef.ref", "Segment is missing on DB", positionPath + "", "ERROR"));
+      if(segment == null) result.getErrors().add(new IgamtObjectError("Ref_NotAccessable", conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), "In " + path + ", Ref object is not accesable", positionPath + "", "FATAL"));
       else {
         if (path == null) {
           path = segment.getName();
         } else {
           path = path + "." + segment.getName();
         }
-        
-        this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max));
-        this.checkUsageVerificationError(conformanceProfile, usage, positionPath, path, result);
-        this.checkCardinalityVerificationError(conformanceProfile, usage, min, max, positionPath, path, result);
+
+        this.checkUsageVerificationError(conformanceProfile, conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), usage, positionPath, path, result);
+        this.checkCardinalityVerificationError(conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), usage, min, max, positionPath, path, result);
         
         if(segment.getChildren() != null) {
           
           for(Field field : segment.getChildren() ){
-            this.checkFieldForConformanceProfile(conformanceProfile, field, positionPath, path, result); 
+            this.checkFieldForConformanceProfileForVerification(conformanceProfile, segment, field, positionPath, path, result); 
           }
         }
       } 
     }
   }
 
-
-  /**
-   * @param conformanceProfile
-   * @param field
-   * @param positionPath
-   * @param path
-   * @param result
-   */
-  private void checkFieldForConformanceProfile(ConformanceProfile conformanceProfile, Field field, String positionPath, String path, CPVerificationResult result) {
+  private void checkFieldForConformanceProfileForVerification(ConformanceProfile conformanceProfile, Segment segment, Field field, String positionPath, String path, CPVerificationResult result) {
     int position = field.getPosition();
     Usage usage = field.getUsage();
-    int min = field.getMin();
-    String max = field.getMax();
     Ref ref = field.getRef();
     positionPath = positionPath + "." + position;
     path = path + "." + position;
     
-    this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max));
-    this.checkUsageVerificationError(conformanceProfile, usage, positionPath, path, result);
-    this.checkCardinalityVerificationError(conformanceProfile, usage, min, max, positionPath, path, result);
+    
+    this.checkUsageVerificationErrorForCP(conformanceProfile, segment.getId(), segment.getType(), new DTSegMetadata(segment), usage, positionPath, path, result);
+    
     if (ref != null && ref.getId() != null) {
       Datatype datatype = this.datatypeService.findById(ref.getId());
       
@@ -491,32 +515,163 @@ public class VerificationServiceImpl implements VerificationService {
           ComplexDatatype cDT = (ComplexDatatype)datatype;
           if(cDT.getComponents() != null && cDT.getComponents().size() > 0) {
             for(Component component : cDT.getComponents() ){
-              this.checkComponentForConformanceProfile(conformanceProfile, component, positionPath, path, result); 
+              this.checkComponentForConformanceProfileForVerification(conformanceProfile, cDT, component, positionPath, path, result); 
             }
           }
         }
       }
     }
-    
   }
+  
+  private void checkFieldForConformanceProfileForCompliance(ConformanceProfile conformanceProfile, Segment segment, Field field, String positionPath, String path, CPComplianceResult result) {
+    int position = field.getPosition();
+    Usage usage = field.getUsage();
+    int min = field.getMin();
+    String max = field.getMax();
+    Ref ref = field.getRef();
+    
+    String minLength = field.getMinLength();
+    String maxLength = field.getMaxLength();
 
-  /**
-   * @param conformanceProfile
-   * @param component
-   * @param positionPath
-   * @param path
-   * @param result
-   */
-  private void checkComponentForConformanceProfile(ConformanceProfile conformanceProfile, Component component, String positionPath, String path, CPVerificationResult result) {
-    int position = component.getPosition();
-    Usage usage = component.getUsage();
-    Ref ref = component.getRef();
     positionPath = positionPath + "." + position;
     path = path + "." + position;
     
-    this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, null, null));
-    this.checkUsageVerificationError(conformanceProfile, usage, positionPath, path, result);
+    this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max, minLength, maxLength));
+    this.checkUsageComplianceError(conformanceProfile, segment.getId(), segment.getType(), new DTSegMetadata(segment), usage, positionPath, path, result);
+    this.checkCardinalityComplianceError(conformanceProfile, segment.getId(), segment.getType(), new DTSegMetadata(segment), min, max, positionPath, path, result);
+    this.checkLengthComplianceError(conformanceProfile, segment.getId(), segment.getType(), new DTSegMetadata(segment), minLength, maxLength, positionPath, path, result);
+    
+    if (ref != null && ref.getId() != null) {
+      Datatype datatype = this.datatypeService.findById(ref.getId());
+      
+      if (datatype != null) {
+        if(datatype instanceof ComplexDatatype) {
+          ComplexDatatype cDT = (ComplexDatatype)datatype;
+          if(cDT.getComponents() != null && cDT.getComponents().size() > 0) {
+            for(Component component : cDT.getComponents() ){
+              this.checkComponentForConformanceProfileForCompliance(conformanceProfile, cDT, component, positionPath, path, result); 
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  private void checkLengthComplianceError(ConformanceProfile conformanceProfile, String target, Type targetType, Object targetMeta, String minLength, String maxLength, String positionPath, String path, CPComplianceResult result) {
+    if(maxLength != null && this.isInt(maxLength)) {    
+      ComplianceObject complianceParentObject = this.parentComplianceMap.get(positionPath);
+      if(complianceParentObject != null && complianceParentObject.getMaxLength() != null && this.isInt(complianceParentObject.getMaxLength())) {
+        String parentMaxLength = complianceParentObject.getMaxLength();
+        int childMaxLengthInt = Integer.parseInt(maxLength);
+        int parentMaxLengthInt = Integer.parseInt(parentMaxLength);
+        if(parentMaxLengthInt < childMaxLengthInt) {
+          result.getErrors().add(new IgamtObjectError("MAXLength_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned MaxLength of " + childMaxLengthInt + " is not compliant with MaxLength of " + parentMaxLengthInt, positionPath + "", "WARNING"));
+        }
+      }
+    }
+    
+    if(minLength != null && this.isInt(minLength)) {    
+      ComplianceObject complianceParentObject = this.parentComplianceMap.get(positionPath);
+      if(complianceParentObject != null && complianceParentObject.getMinLength() != null && this.isInt(complianceParentObject.getMinLength())) {
+        String parentMinLength = complianceParentObject.getMinLength();
+        int childMinLengthInt = Integer.parseInt(maxLength);
+        int parentMinLengthInt = Integer.parseInt(parentMinLength);
+        if(parentMinLengthInt > childMinLengthInt) {
+          result.getErrors().add(new IgamtObjectError("MINLength_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned MinLength of " + childMinLengthInt + " is not compliant with MinLength of " + parentMinLengthInt, positionPath + "", "WARNING"));
+        }
+      }
+    }
+  }
+  
+  private void checkLengthVerificationErorr(String target, Type targetType, Object targetMeta, SubStructElement element, String minLength, String maxLength, String confLength, String positionPath, String path, VerificationResult result) {
+    if(this.isLengthAllowedElement(element)) {
+      
+      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) {
+        result.getErrors().add(new IgamtObjectError("Length_Duplicated", target, targetType, targetMeta, "In " + path + ", ConfLength and Length are defined at the same time", positionPath + "", "WARNING"));
+      }
+      if (this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) {
+        result.getErrors().add(new IgamtObjectError("Length_Missing", target, targetType, targetMeta, "In " + path + ", Primitive datatype should have one of Length and ConfLength.", positionPath + "", "WARNING"));
+      } else {
+        if (!this.isNullOrNA(minLength)) {
+          if(!this.isInt(minLength)) {
+            result.getErrors().add(new IgamtObjectError("MinLength_FORMAT", target, targetType, targetMeta, "In " + path + ", Min Length should be number. The current MinLength is " + minLength,  positionPath, "WARNING"));
+          }
+        }
+        
+        if (!this.isNullOrNA(maxLength)) {
+          if(!this.isIntOrStar(maxLength)) {
+            result.getErrors().add(new IgamtObjectError("MaxLength_FORMAT", target, targetType, targetMeta, "In " + path + ", Max Length should be number or '*'. The current MaxLength is " + maxLength,  positionPath, "WARNING"));
+          }
+        }
+        
+        if (!this.isNullOrNA(confLength)) {
+          if(!confLength.contains("#") && !confLength.contains("=")) {
+            result.getErrors().add(new IgamtObjectError("ConfLength_FORMAT", target, targetType, targetMeta, "In " + path + ", Either # or = can used to define truncation. The current ConfLength is " + confLength,  positionPath, "WARNING"));
+          }
+        }
+        
+        if (!this.isNullOrNA(minLength) && !this.isNullOrNA(maxLength)) {
+          if(!maxLength.equals("*")) {
+            if(this.isInt(minLength) && this.isInt(maxLength)) {
+              int minLengthInt = Integer.parseInt(minLength);
+              int maxLengthInt = Integer.parseInt(maxLength);
+              
+              if(minLengthInt > maxLengthInt) {
+                result.getErrors().add(new IgamtObjectError("Length_Range", target, targetType, targetMeta, "In " + path + ", MIN Length value is bigger than MAX Length. The current MinLength is " + minLength + " and current MaxLength is " + maxLength,  positionPath, "WARNING"));
+              }
+            }
+          }
+        }
+      }  
+    } else {
+      if(!this.isNullOrNA(confLength) || (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) {
+        result.getErrors().add(new IgamtObjectError("Length_NotAllowable", target, targetType, targetMeta, path + " does not allow Length or ConfLength, because the datatype is not primitive.", positionPath + "", "WARNING"));
+      }
+    }
+  }
 
+  private void checkComponentForConformanceProfileForVerification(ConformanceProfile conformanceProfile, Datatype datatype, Component component, String positionPath, String path, CPVerificationResult result) {
+    int position = component.getPosition();
+    Usage usage = component.getUsage();
+    Ref ref = component.getRef();
+    
+    positionPath = positionPath + "." + position;
+    path = path + "." + position;
+    
+    this.checkUsageVerificationErrorForCP(conformanceProfile, datatype.getId(), datatype.getType(), new DTSegMetadata(datatype), usage, positionPath, path, result);
+    
+    
+    if (ref != null && ref.getId() != null) {
+      Datatype childDT = this.datatypeService.findById(ref.getId());
+      
+      if (childDT != null) {
+        if(childDT instanceof ComplexDatatype) {
+          ComplexDatatype cDT = (ComplexDatatype)datatype;
+          if(cDT.getComponents() != null && cDT.getComponents().size() > 0) {
+            for(Component childComponent : cDT.getComponents() ){
+              this.checkComponentForConformanceProfileForVerification(conformanceProfile, childDT, childComponent, positionPath, path, result); 
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  private void checkComponentForConformanceProfileForCompliance(ConformanceProfile conformanceProfile, Datatype dt, Component component, String positionPath, String path, CPComplianceResult result) {
+    int position = component.getPosition();
+    Usage usage = component.getUsage();
+    Ref ref = component.getRef();
+    String minLength = component.getMinLength();
+    String maxLength = component.getMaxLength();
+
+    positionPath = positionPath + "." + position;
+    path = path + "." + position;
+    
+    this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, null, null, minLength, maxLength));
+    this.checkUsageComplianceError(conformanceProfile, dt.getId(), dt.getType(), new DTSegMetadata(dt), usage, positionPath, path, result);
+    this.checkLengthComplianceError(conformanceProfile, dt.getId(), dt.getType(), new DTSegMetadata(dt), minLength, maxLength, positionPath, path, result);
+    
+    
     if (ref != null && ref.getId() != null) {
       Datatype datatype = this.datatypeService.findById(ref.getId());
       
@@ -525,202 +680,140 @@ public class VerificationServiceImpl implements VerificationService {
           ComplexDatatype cDT = (ComplexDatatype)datatype;
           if(cDT.getComponents() != null && cDT.getComponents().size() > 0) {
             for(Component childComponent : cDT.getComponents() ){
-              this.checkComponentForConformanceProfile(conformanceProfile, childComponent, positionPath, path, result); 
+              this.checkComponentForConformanceProfileForCompliance(conformanceProfile, cDT, childComponent, positionPath, path, result); 
             }
           }
         }
       }
     }
-    
   }
 
-  /**
-   * @param usage
-   * @param min
-   * @param max
-   * @param positionPath
-   * @param path
-   * @param result
-   */
-  private void checkCardinalityVerificationError(ConformanceProfile conformanceProfile, Usage usage, int min, String max, String positionPath, String path, CPVerificationResult result) {
-    /*
-     * Cardinality_NULL   In {node} of {target}, Cardinality is missing   Conformance
-     * Cardinality_Range   In {node} of {target}, MIN Cardinality value is bigger than MAX Cardinality Conformance
-     * MIN_Cardinality_Format  In {node} of {target}, MIN cardinality value should be number   
-     * MAX_Cardinality_Format  In {node} of {target}, MAX cardinality value should be number or '*'    
-     * MAX_Cardinality_UsageX  In {node} of {target}, MAX cardinality value should be 0, if the USAGE is X.    Conformance
-     * MIN_Cardinality_UsageR  In {node} of {target}, MIN cardinality value should be bigger than 1, if the USAGE is R Conformance
-     * 
-     * MIN_Cardinality_UsageRE  In {node} of {target}, MIN cardinality value should be 0, if the USAGE is RE    Conformance                                                             
-     * MIN_Cardinality_UsageO  In {node} of {target}, MIN cardinality value should be 0, if the USAGE is O Conformance                                                             
-     * MIN_Cardinality_UsageC  In {node} of {target}, MIN cardinality value should be 0, if the USAGE is C Conformance                                                             
-     * MIN_Cardinality_UsageCAB    In {node} of {target}, MIN cardinality value should be 0, if the USAGE is CAB   Conformance                                                             
-     * MIN_Cardinality_UsageB  In {node} of {target}, MIN cardinality value should be 0, if the USAGE is B Conformance                                                             
-     * MIN_Cardinality_UsageW  In {node} of {target}, MIN cardinality value should be 0, if the USAGE is W Conformance                                                             
-     */
-    
+  private void checkCardinalityComplianceError(ConformanceProfile conformanceProfile, String target, Type targetType, Object targetMeta, int min, String max, String positionPath, String path, CPComplianceResult result) {
+    ComplianceObject complianceParentObject = this.parentComplianceMap.get(positionPath);
+    if(max != null) {
+      if(this.isInt(max)) {
+        if(complianceParentObject != null && complianceParentObject.getMax() != null && this.isInt(complianceParentObject.getMax())) {
+          
+          int childMaxInt = Integer.parseInt(max);
+          int parentMaxInt = Integer.parseInt(complianceParentObject.getMax());
+          
+          if(parentMaxInt < childMaxInt) {
+            result.getErrors().add(new IgamtObjectError("MAX_Cardinality_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned Max cardinality of " + childMaxInt + " is not compliant with Max cardinality of " + parentMaxInt, positionPath + "", "WARNING"));
+          }
+        }
+      } 
+    }
+    if(complianceParentObject != null && complianceParentObject.getMin() != null && complianceParentObject.getMin()  > min) {
+      result.getErrors().add(new IgamtObjectError("MIN_Cardinality_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned Min cardinality of " + min + " is not compliant with Min cardinality of " + complianceParentObject.getMin(), positionPath + "", "WARNING"));
+    }
+  }
+  
+  private void checkCardinalityVerificationError(String target, Type targetType, Object targetMeta, Usage usage, int min, String max, String positionPath, String path, VerificationResult result) {
     if(max == null) {
-      result.getErrors().add(new IgamtObjectError("Verification", "Cardinality_NULL", "At " + path + " Usage is missing", positionPath + "", "ERROR"));
+      result.getErrors().add(new IgamtObjectError("Cardinality_MISSING", target, targetType, targetMeta, "In " + path + ", Cardinality is missing", positionPath + "", "ERROR"));
     } else {
       
       if(this.isIntOrStar(max)) {
         if(this.isInt(max)) {
           int maxInt = Integer.parseInt(max);
           if (min > maxInt) {
-            result.getErrors().add(new IgamtObjectError("Verification", "Cardinality_Range", "At " + path + " MIN Cardinality value is bigger than MAX Cardinality ", positionPath + "", "ERROR"));
+            result.getErrors().add(new IgamtObjectError("Cardinality_Range", target, targetType, targetMeta, "In " + path + ", MIN Cardinality value is bigger than MAX Cardinality. Current MinCardinality is " + min + " and Current MaxCardinality is " + max, positionPath + "", "ERROR"));
           } else {
             if(usage != null && usage.equals(Usage.X) && !max.equals("0")) {
-              result.getErrors().add(new IgamtObjectError("Verification", "MAX_Cardinality_UsageX", "At " + path + " MAX cardinality value should be 0, if the USAGE is X.", positionPath + "", "Warning"));
+              result.getErrors().add(new IgamtObjectError("MAX_Cardinality_UsageX", target, targetType, targetMeta, "In " + path + ", MAX cardinality value should be 0, if the USAGE is X. Current MaxCardinality is " + max, positionPath + "", "WARNING"));
             }
             
             if(usage != null && usage.equals(Usage.R) && min < 1) {
-              result.getErrors().add(new IgamtObjectError("Verification", "MIN_Cardinality_UsageR", "At " + path + " MIN cardinality value should be bigger than 0, if the USAGE is R.", positionPath + "", "Warning"));
+              result.getErrors().add(new IgamtObjectError("MIN_Cardinality_UsageR", target, targetType, targetMeta, "In " + path + ", MIN cardinality value should be bigger than 0, if the USAGE is R.", positionPath + "", "WARNING"));
             }
             
-            if(usage != null && usage.equals(Usage.RE) && min != 0) {
-              result.getErrors().add(new IgamtObjectError("Verification", "MIN_Cardinality_UsageRE", "At " + path + " MIN cardinality value should be 0, if the USAGE is RE.", positionPath + "", "Warning"));
-            }
-            
-            if(usage != null && usage.equals(Usage.O) && min != 0) {
-              result.getErrors().add(new IgamtObjectError("Verification", "MIN_Cardinality_UsageO", "At " + path + " MIN cardinality value should be 0, if the USAGE is O.", positionPath + "", "Warning"));
-            }
-            
-            if(usage != null && usage.equals(Usage.C) && min != 0) {
-              result.getErrors().add(new IgamtObjectError("Verification", "MIN_Cardinality_UsageC", "At " + path + " MIN cardinality value should be 0, if the USAGE is C.", positionPath + "", "Warning"));
-            }
-            
-            if(usage != null && usage.equals(Usage.CAB) && min != 0) {
-              result.getErrors().add(new IgamtObjectError("Verification", "MIN_Cardinality_UsageCAB", "At " + path + " MIN cardinality value should be 0, if the USAGE is CAB.", positionPath + "", "Warning"));
-            }
-            
-            if(usage != null && usage.equals(Usage.B) && min != 0) {
-              result.getErrors().add(new IgamtObjectError("Verification", "MIN_Cardinality_UsageB", "At " + path + " MIN cardinality value should be 0, if the USAGE is B.", positionPath + "", "Warning"));
-            }
-            
-            if(usage != null && usage.equals(Usage.W) && min != 0) {
-              result.getErrors().add(new IgamtObjectError("Verification", "MIN_Cardinality_UsageW", "At " + path + " MIN cardinality value should be 0, if the USAGE is W.", positionPath + "", "Warning"));
+            if(usage != null && !usage.equals(Usage.R) && min != 0) {
+              result.getErrors().add(new IgamtObjectError("MIN_Cardinality_UsageNotR", target, targetType, targetMeta, "In " + path + ", MIN cardinality value should be 0, if the USAGE is not R. Current usage is " + usage + " and current MinCardinality is " + min, positionPath + "", "WARNING"));
             }
           }
-          
-          ComplianceObject complianceParentObject = this.parentComplianceMap.get(positionPath);
-          if(complianceParentObject != null && complianceParentObject.getMax() != null && complianceParentObject.getMin() != null) {
-            Integer parentMin = complianceParentObject.getMin();
-            String parentMax = complianceParentObject.getMax();
-            
-            if(parentMin != null) {
-              if(parentMin > min) {
-                result.getErrors().add(new IgamtObjectError("Compliance", "MIN_Cardinality_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned Min cardinality of " + min + " is not compliant with Min cardinality of " + parentMin, positionPath + "", "Warning"));
-              }
-            }
-            
-            if(parentMax != null && max != null && this.isIntOrStar(max) && this.isIntOrStar(parentMax)) {
-              if(!max.equals("*")) {
-                int childMaxInt = Integer.parseInt(max);
-                int parentMaxInt = Integer.parseInt(parentMax);
-                
-                if(parentMaxInt < childMaxInt) {
-                  result.getErrors().add(new IgamtObjectError("Compliance", "MAX_Cardinality_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned Max cardinality of " + childMaxInt + " is not compliant with Max cardinality of " + parentMaxInt, positionPath + "", "Warning"));
-                }
-              }
-            }
-          }
-          
         }
-        
-        
       } else {
-        result.getErrors().add(new IgamtObjectError("Verification", "MAX_Cardinality_Format", "At " + path + " MAX cardinality value should be number or '*'", positionPath + "", "ERROR"));
+        result.getErrors().add(new IgamtObjectError("MAX_Cardinality_Format", target, targetType, targetMeta, "In " + path + ", MAX cardinality value should be number or '*'.  Current MaxCardinality is " + max, positionPath + "", "ERROR"));
       }
-      
     }
   }
 
-  /**
-   * @param usage
-   * @param positionPath
-   * @param result
-   */
-  private void checkUsageVerificationError(ConformanceProfile conformanceProfile, Usage usage, String positionPath, String path, CPVerificationResult result) {
-    /*
-     * Usage_MISSING  in {node} of {target}, Usage is missing
-     * Usage_Value_Base    in {node} of {target}, Usage should be one of R/RE/C/C(a/b)/O/X/B/W
-     * Usage_Value_Constraintable  in {node} of {target}, Usage should be one of R/RE/C/C(a/b)/O/X/B
-     * Usage_Value_Implementable   in {node} of {target}, Usage should be one of R/RE/C(a/b)/X
-     * Usage_Value_Any in {node} of {target}, Usage must be one of R/RE/C/C(a/b)/O/X/B/W
-     */
-    if (usage == null) {
-      result.getErrors().add(new IgamtObjectError("Verification", "Usage_MISSING", "At " + path + " Usage is missing", positionPath + "", "ERROR"));
-    } else {
+  private void checkUsageComplianceError(ConformanceProfile conformanceProfile, String target, Type targetType, Object targetMeta, Usage usage, String positionPath, String path, CPComplianceResult result) {
+    if (usage != null) {
       if (conformanceProfile != null && conformanceProfile.getProfileType() != null) {
-        if (conformanceProfile.getProfileType().equals(ProfileType.HL7)) {
-          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B) || usage.equals(Usage.W))) {
-            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Base", "At " + path + " Usage should be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage, positionPath + "", "Warning"));
-          }
-        } else if (conformanceProfile.getProfileType().equals(ProfileType.Constrainable)) {
-          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B))) {
-            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Constraintable", "At " + path + " Usage should be one of R/RE/C/C(a/b)/O/X/B, " + "Current Usage is " + usage, positionPath + "", "Warning"));
-          }
-        } else if (conformanceProfile.getProfileType().equals(ProfileType.Implementation)) {
-          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.CAB) || usage.equals(Usage.X))) {
-            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Implementable", "At " + path + " Usage should be one of R/RE/C(a/b)/X, " + "Current Usage is " + usage, positionPath + "", "Warning"));
-          }
-        } else {
-          if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B) || usage.equals(Usage.W))) {
-            result.getErrors().add(new IgamtObjectError("Verification", "Usage_Value_Any", "At " + path + " Usage must be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage, positionPath + "", "ERROR"));
-          }
-        }
-        
         ComplianceObject complianceParentObject = this.parentComplianceMap.get(positionPath);
         if(complianceParentObject != null && complianceParentObject.getUsage() != null) {
           Usage parentUsage = complianceParentObject.getUsage();
           
           if (parentUsage.equals(Usage.R)) {
             if (!usage.equals(Usage.R)) {
-              result.getErrors().add(new IgamtObjectError("Compliance", "Usage_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "Warning"));
+              result.getErrors().add(new IgamtObjectError("Usage_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "WARNING"));
             }
           } else if (parentUsage.equals(Usage.X)) {
             if (!usage.equals(Usage.X)) {
-              result.getErrors().add(new IgamtObjectError("Compliance", "Usage_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "Warning"));
+              result.getErrors().add(new IgamtObjectError("Usage_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "WARNING"));
             }
           } else if (parentUsage.equals(Usage.RE)) {
             if (!usage.equals(Usage.R) && !usage.equals(Usage.RE)) {
-              result.getErrors().add(new IgamtObjectError("Compliance", "Usage_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "Warning"));
+              result.getErrors().add(new IgamtObjectError("Usage_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "WARNING"));
             }
           } else if (parentUsage.equals(Usage.W)) {
             if (!usage.equals(Usage.W) && !usage.equals(Usage.X)) {
-              result.getErrors().add(new IgamtObjectError("Compliance", "Usage_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "Warning"));
+              result.getErrors().add(new IgamtObjectError("Usage_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "WARNING"));
             }
           } else if (parentUsage.equals(Usage.C)) {
             if (!usage.equals(Usage.R) && !usage.equals(Usage.RE) && !usage.equals(Usage.C) && !usage.equals(Usage.CAB) && !usage.equals(Usage.X)) {
-              result.getErrors().add(new IgamtObjectError("Compliance", "Usage_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "Warning"));
+              result.getErrors().add(new IgamtObjectError("Usage_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "WARNING"));
             }
           } else if (parentUsage.equals(Usage.CAB)) {
             if (!usage.equals(Usage.R) && !usage.equals(Usage.RE) && !usage.equals(Usage.CAB) && !usage.equals(Usage.X)) {
-              result.getErrors().add(new IgamtObjectError("Compliance", "Usage_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "Warning"));
+              result.getErrors().add(new IgamtObjectError("Usage_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "WARNING"));
             }
           } else if (parentUsage.equals(Usage.O)) {
             if (!usage.equals(Usage.R) && !usage.equals(Usage.RE) && !usage.equals(Usage.C) && !usage.equals(Usage.CAB) && !usage.equals(Usage.O) && !usage.equals(Usage.X)) {
-              result.getErrors().add(new IgamtObjectError("Compliance", "Usage_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "Warning"));
+              result.getErrors().add(new IgamtObjectError("Usage_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "WARNING"));
             }
           } else if (parentUsage.equals(Usage.B)) {
             if (!usage.equals(Usage.R) && !usage.equals(Usage.RE) && !usage.equals(Usage.CAB) && !usage.equals(Usage.O) && !usage.equals(Usage.X) && !usage.equals(Usage.B)) {
-              result.getErrors().add(new IgamtObjectError("Compliance", "Usage_Compliance", "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "Warning"));
+              result.getErrors().add(new IgamtObjectError("Usage_Compliance", target, targetType, targetMeta, "In " + conformanceProfile.getLabel() + ", " + path + " assigned usage of " + usage + " is not compliant with parent usage of " + parentUsage, positionPath + "", "WARNING"));
             }
           }
         }
       }
     }
   }
+  
+  private void checkUsageVerificationError(ConformanceProfile conformanceProfile, String target, Type targetType, Object targetMeta, Usage usage, String positionPath, String path, VerificationResult result) {
+    //String code, String target, String targetType, String description,String location, String severity
+    if (usage == null) {
+      result.getErrors().add(new IgamtObjectError("Usage_MISSING", target, targetType, targetMeta, "In " + path + ", Usage is missing", positionPath + "", "ERROR"));
+    }
+  }
+  
+  private void checkUsageVerificationErrorForCP(ConformanceProfile conformanceProfile, String target, Type targetType, Object targetMeta, Usage usage, String positionPath, String path, VerificationResult result) {
+    if (usage != null && conformanceProfile != null && conformanceProfile.getProfileType() != null) {
+      if (conformanceProfile.getProfileType().equals(ProfileType.HL7)) {
+        if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B) || usage.equals(Usage.W))) {
+          result.getErrors().add(new IgamtObjectError("Usage_Value_Base", target, targetType, targetMeta, "In " + path + ", Usage should be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage, positionPath + "", "WARNING"));
+        }
+      } else if (conformanceProfile.getProfileType().equals(ProfileType.Constrainable)) {
+        if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B))) {
+          result.getErrors().add(new IgamtObjectError("Usage_Value_Constraintable", target, targetType, targetMeta, "In " + path + ", Usage should be one of R/RE/C/C(a/b)/O/X/B, " + "Current Usage is " + usage, positionPath + "", "WARNING"));
+        }
+      } else if (conformanceProfile.getProfileType().equals(ProfileType.Implementation)) {
+        if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.CAB) || usage.equals(Usage.X))) {
+          result.getErrors().add(new IgamtObjectError("Usage_Value_Implementable", target, targetType, targetMeta, "In " + path + ", Usage should be one of R/RE/C(a/b)/X, " + "Current Usage is " + usage, positionPath + "", "WARNING"));
+        }
+      } else {
+        if(!(usage.equals(Usage.R) || usage.equals(Usage.RE) || usage.equals(Usage.C) || usage.equals(Usage.CAB) || usage.equals(Usage.O) || usage.equals(Usage.X) || usage.equals(Usage.B) || usage.equals(Usage.W))) {
+          result.getErrors().add(new IgamtObjectError("Usage_Value_Any", target, targetType, targetMeta, "In " + path + ", Usage must be one of R/RE/C/C(a/b)/O/X/B/W, " + "Current Usage is " + usage, positionPath + "", "ERROR"));
+        }
+      }
+    }
+  }
 
-  /**
-   * @param conformanceProfile
-   * @param srog
-   * @param vr
-   * @param positionPath
-   * @param path
-   * @param sebs 
-   */
-  private void checkingGroup(ConformanceProfile conformanceProfile, Group group, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+
+  private void checkingGroupForCompliance(ConformanceProfile conformanceProfile, Group group, CPComplianceResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
     String name = group.getName();
     int position = group.getPosition();
     Usage usage = group.getUsage();
@@ -735,16 +828,47 @@ public class VerificationServiceImpl implements VerificationService {
       positionPath = positionPath + "." + position;
     }    
     
+    if (this.isNotNullNotEmpty(name)) {
+      if (path == null) path = name;
+      else path = path + "." + name;
+      
+      this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max, null, null));
+      
+      this.checkUsageComplianceError(conformanceProfile, conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), usage, positionPath, path, result);
+      this.checkCardinalityComplianceError(conformanceProfile, conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), min, max, positionPath, path, result);
+      
+      if(group.getChildren() != null) {
+        for (SegmentRefOrGroup child : group.getChildren()) {
+          this.checkingSegmentRefOrGroupForCompliance(conformanceProfile, child, result, positionPath, path, this.findSEB(sebs, child.getId()));
+        } 
+      } 
+    }
+  }
+  
+  private void checkingGroup(ConformanceProfile conformanceProfile, Group group, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+    String name = group.getName();
+    int position = group.getPosition();
+    Usage usage = group.getUsage();
+    
+    int min = group.getMin();
+    String max = group.getMax();
+    
+    
+    if (positionPath == null) {
+      positionPath = position + "";
+    } else {
+      positionPath = positionPath + "." + position;
+    }    
     if (!this.isNotNullNotEmpty(name)) {
-      result.getErrors().add(new IgamtObjectError("STRUCTURE", "group.name", "Name should be required.", positionPath + "", "ERROR"));
+      result.getErrors().add(new IgamtObjectError("Name_Missing", conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), "name is missing", positionPath + "", "ERROR"));
     } else {
       if (path == null) path = name;
       else path = path + "." + name;
       
-      this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max));
+      this.childComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max, null, null));
       
-      this.checkUsageVerificationError(conformanceProfile, usage, positionPath, path, result);
-      this.checkCardinalityVerificationError(conformanceProfile, usage, min, max, positionPath, path, result);
+      this.checkUsageVerificationError(conformanceProfile, conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), usage, positionPath, path, result);
+      this.checkCardinalityVerificationError(conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), usage, min, max, positionPath, path, result);
       
       if(group.getChildren() != null) {
         for (SegmentRefOrGroup child : group.getChildren()) {
@@ -769,7 +893,7 @@ public class VerificationServiceImpl implements VerificationService {
    */
   private void checkingFields(Segment segment, Set<Field> fields, DTSegVerificationResult result) {
     if(fields == null || fields.size() == 0) {
-      result.getErrors().add(new IgamtObjectError("STRUCTURE", "fields", "Segment should have one or more fields.", null, "ERROR"));
+      result.getErrors().add(new IgamtObjectError("Field_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "Field is missing for Segment.", null, "FATAL"));
     } else {
       fields.forEach(f -> this.checkingField(segment, f, result));
     }
@@ -790,43 +914,40 @@ public class VerificationServiceImpl implements VerificationService {
    */
   private void checkingComponents(ComplexDatatype cDt, Set<Component> components, DTSegVerificationResult result) {
     if(components == null || components.size() == 0) {
-      result.getErrors().add(new IgamtObjectError("STRUCTURE", "components", "Complex Datatype should have one or more components.", null, "ERROR"));
+      result.getErrors().add(new IgamtObjectError("Component_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "Component is missing for Complex Datatype", null, "FATAL"));
     } else {
       components.forEach(c -> this.checkingComponent(cDt, c, result));
     }
   }
   
-  /**
-   * @param valueset
-   * @param c
-   * @param vr
-   * @return
-   */
   private void checkingCode(Valueset valueset, Code c, VSVerificationResult result) {
     String value = c.getValue();
     String description = c.getDescription();
     String codeSystem = c.getCodeSystem();
     CodeUsage usage = c.getUsage();
     
-    if(!this.isNotNullNotEmpty(value)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.value", "value should be required.", c.getValue() + "", "ERROR"));
-    if(description == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.description", "Code " + c.getValue() + "'s description is missing.", c.getValue() + "", "ERROR"));
-    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.codeSystem", "codeSystem should be required.", c.getValue() + "", "ERROR"));
-    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.usage", "usage should be required.", c.getValue() + "", "ERROR"));
+    Extensibility extensibility = valueset.getExtensibility();
+    
+    if(!this.isNotNullNotEmpty(value)) result.getErrors().add(new IgamtObjectError("Code_Value_Missing", c.getId(), Type.CODE, c, "The value is missing.", null, "ERROR"));
+    if(description == null) result.getErrors().add(new IgamtObjectError("Code_Desc_Missing", c.getId(), Type.CODE, c, "In code: " + value + " , the description is missing.", null, "ERROR"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("Code_Codesys_Missing", c.getId(), Type.CODE, c, "In code: " + value + ", the codesys is missing.", null, "ERROR"));
+    if(usage == null) {
+      result.getErrors().add(new IgamtObjectError("Code_Usage_Missing", valueset.getId(), Type.VALUESET, new VSMetadata(valueset), "In code:" + value + ", the USAGE is missing", c.getValue(), "ERROR"));
+    } else {
+      if(extensibility != null && extensibility.equals(Extensibility.Closed)) {
+        if(usage == null || usage.equals(CodeUsage.P)) {
+          result.getErrors().add(new IgamtObjectError("Code_Usage_Value_ClosedValueset", valueset.getId(), Type.VALUESET, new VSMetadata(valueset), "In code: " + value + ", the Usage must be one of R/E, but current Usage is " + usage, c.getValue(), "WARNING"));
+        }
+      }
+    }
     
     valueset.getCodes().forEach(otherC -> {
       if(!otherC.getId().equals(c.getId())){
-        if ((otherC.getValue() + "-" + otherC.getCodeSystem()).equals(c.getValue() + "-" + c.getCodeSystem())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "code.value", "The code value and codesys pair is duplicated.", c.getValue() + "", "ERROR"));
+        if ((otherC.getValue() + "-" + otherC.getCodeSystem()).equals(c.getValue() + "-" + c.getCodeSystem())) result.getErrors().add(new IgamtObjectError("Value-Codesys_Duplicated", valueset.getId(), Type.VALUESET, new VSMetadata(valueset), "the combination of value (" + c.getValue() + ") and codesys (" + c.getCodeSystem() + ") are duplicated.", c.getValue(), "ERROR"));
       }
     });
   }
 
-
-  /**
-   * @param datatype
-   * @param c
-   * @param vr
-   * @return
-   */
   private void checkingComponent(ComplexDatatype cDt, Component c, DTSegVerificationResult result) {
     String name = c.getName();
     int position = c.getPosition();
@@ -838,66 +959,54 @@ public class VerificationServiceImpl implements VerificationService {
     String maxLength = c.getMaxLength();
     String minLength = c.getMinLength();
 
-    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.position", "Component position should be greater than 0", position + "", "ERROR"));
-    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.name", "Name should be required.", position + "", "ERROR"));
-    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "Component Ref should be required.", position + "", "ERROR"));
-    if(type == null || !type.equals(Type.COMPONENT)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.type", "Component type should be 'COMPONENT'.", position + "", "ERROR"));
-    if(usage == null) {
-      result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.usage", "Component usage should be required.", position + "", "ERROR"));
+    if(position == 0) {
+      result.getErrors().add(new IgamtObjectError("Position_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "Position is missing", position + "", "FATAL"));
     } else {
-      if(usage.equals(Usage.CAB) && !this.hasPredicate(cDt, c.getId())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "ERROR"));
-    }
-    
-    if(this.isLengthAllowedComponent(c)) {
-      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component" + position + " length should be required.", position + "", "WARNING"));
-      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.length", "Component length should defined using a single way.", position + "", "ERROR"));
-      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.maxLength", "Component maxLength is not defined.", position + "", "ERROR"));
-      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.minLength", "Component minLength is not defined.", position + "", "ERROR"));
-      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.minLength", "Component minLength is not integer.", position + "", "ERROR"));
-      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.maxLength", "Component maxLength should be integer or *", position + "", "ERROR"));   
-    }
-    
-    cDt.getComponents().forEach(otherC -> {
-      if(!otherC.getId().equals(c.getId())){
-        if (otherC.getPosition() == c.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.position", "The component position is duplicated.", position + "", "ERROR"));
-        if (otherC.getName().equals(c.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.name", "The component name is duplicated.", position + "", "ERROR"));
-      }
-    });
-    
-    if(ref != null && ref.getId() != null) {
-      Datatype childDt = this.datatypeService.findById(ref.getId());
-      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "The component child DT is missing.", position + "", "ERROR"));
-            
-      if(this.isPrimitiveDatatype(childDt)) {
-        
-      } else {
-        if(this.isNotNullNotEmpty(c.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "ERROR"));
-      }
+      String path = cDt.getLabel() + "." + position;
+      if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("In " + path + ", Name_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "name is missing", position + "", "FATAL"));
+      if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("REF_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + ", Ref value is missing.", position + "", "FATAL"));
+      if(type == null || !type.equals(Type.COMPONENT)) result.getErrors().add(new IgamtObjectError("Type_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + ", the Type is missing", position + "", "FATAL"));
+
+      this.checkUsageVerificationError(null, cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), usage, position + "", cDt.getLabel() + "." + position, result);
+      this.checkLengthVerificationErorr(cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), c, minLength, maxLength, confLength, "", cDt.getLabel() + "." + position, result);
       
-      if (this.isValueSetOrSingleCodeAllowedComponent(c, childDt)) {
-        StructureElementBinding childBinding = this.findBindingById(c.getId(), cDt.getBinding());
-        if(childBinding != null){
-          Set<ValuesetBinding> valuesetBindings = childBinding.getValuesetBindings();
-          ExternalSingleCode externalSingleCode = childBinding.getExternalSingleCode();
-          InternalSingleCode internalSingleCode = childBinding.getInternalSingleCode();
+      cDt.getComponents().forEach(otherC -> {
+        if(!otherC.getId().equals(c.getId())){
+          if (otherC.getPosition() == position) result.getErrors().add(new IgamtObjectError("Position_Dupilicated", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "The position:" + position + " is duplicated.", position + "", "FATAL"));
+          if (otherC.getName().equals(c.getName())) result.getErrors().add(new IgamtObjectError("Name_Duplicated", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "name is duplicated for " + position + " and " + otherC.getPosition(), position + "", "ERROR"));
+        }
+      });
+      
+      if(ref != null && ref.getId() != null) {
+        Datatype childDt = this.datatypeService.findById(ref.getId());
+        if(childDt == null) result.getErrors().add(new IgamtObjectError("Ref_NotAccessable", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + " Ref object is not accesable.", position + "", "ERROR"));
+              
+        if(this.isPrimitiveDatatype(childDt)) {
           
-          if(valuesetBindings != null) this.checkingValueSetBindings(cDt, valuesetBindings, result, position);
-          if(externalSingleCode != null) this.checkingExternalSingleCode(cDt, externalSingleCode, result, position);
-          if(internalSingleCode != null) this.checkingInternalSingleCode(cDt, internalSingleCode, result, position);
+        } else {
+          if(this.isNotNullNotEmpty(c.getConstantValue())) result.getErrors().add(new IgamtObjectError("Constant_NOTAllowed", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + " , Constant value is not allowed", position + "", "ERROR"));
         }
         
-      }else {
-        
+        if (this.isValueSetOrSingleCodeAllowedComponent(c, childDt)) {
+          StructureElementBinding childBinding = this.findBindingById(c.getId(), cDt.getBinding());
+          if(childBinding != null){
+            Set<ValuesetBinding> valuesetBindings = childBinding.getValuesetBindings();
+            ExternalSingleCode externalSingleCode = childBinding.getExternalSingleCode();
+            InternalSingleCode internalSingleCode = childBinding.getInternalSingleCode();
+            
+            if(valuesetBindings != null) this.checkingValueSetBindings(cDt, valuesetBindings, result, position, path);
+            if(externalSingleCode != null) this.checkingExternalSingleCode(cDt, externalSingleCode, result, position, path);
+            if(internalSingleCode != null) this.checkingInternalSingleCode(cDt, internalSingleCode, result, position, path);
+          }
+          
+        }else {
+          
+        }
       }
     }
+    
   }
   
-  /**
-   * @param segment
-   * @param f
-   * @param vr
-   * @return
-   */
   private void checkingField(Segment segment, Field f, DTSegVerificationResult result) {
     String name = f.getName();
     int position = f.getPosition();
@@ -913,168 +1022,122 @@ public class VerificationServiceImpl implements VerificationService {
     String max = f.getMax();
   
 
-    if(position == 0) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.position", "Field position should be greater than 0", position + "", "ERROR"));
-    if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.name", "Name should be required.", position + "", "ERROR"));
-    if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.ref", "Field Ref should be required.", position + "", "ERROR"));
-    if(type == null || !type.equals(Type.FIELD)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.type", "Field type should be 'FIELD'.", position + "", "ERROR"));
-    if(usage == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.usage", "Field usage should be required.", position + "", "ERROR"));
-    
-    if(this.isLengthAllowedComponent(f)) {
-      if(this.isNullOrNA(confLength) && (this.isNullOrNA(minLength) || this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.length", "Field length should be required.", position + "", "ERROR"));
-      if(!this.isNullOrNA(confLength) && (!this.isNullOrNA(minLength) || !this.isNullOrNA(maxLength))) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.length", "Field length should defined using a single way.", position + "", "ERROR"));
-      if(this.isNullOrNA(maxLength)  && !this.isNullOrNA(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.maxLength", "Field maxLength is not defined.", position + "", "ERROR"));
-      if(this.isNullOrNA(minLength)  && !this.isNullOrNA(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.minLength", "Field minLength is not defined.", position + "", "ERROR"));
-      if(!this.isNullOrNA(minLength) && !this.isInt(minLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.minLength", "Field minLength is not integer.", position + "", "ERROR"));
-      if(!this.isNullOrNA(maxLength) && !this.isIntOrStar(maxLength)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.maxLength", "Field maxLength should be integer or *", position + "", "ERROR"));   
-    }
-   
-    if(max == null || !this.isIntOrStar(max)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.max", "Field max should be integer or *", position + "", "ERROR"));
-    if(usage != null) {
-      if(usage.equals(Usage.R) && min < 1)  result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.min", "Field min should be greater than 0 if Usage is R", position + "", "ERROR"));
-      if(usage.equals(Usage.CAB) && !this.hasPredicate(segment, f.getId())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.predicate", "Usage is C(A/B), but predicate is missing.", position + "", "ERROR"));
-    }
-    
-    segment.getChildren().forEach(otherF -> {
-      if(!otherF.getId().equals(f.getId())){
-        if (otherF.getPosition() == f.getPosition()) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.position", "The field position is duplicated.", position + "", "ERROR"));
-        if (otherF.getName().equals(f.getName())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.name", "The field name is duplicated.", position + "", "ERROR"));
-      }
-    });
-    
-    
-    if(ref != null && ref.getId() != null) {
-      Datatype childDt = this.datatypeService.findById(ref.getId());
-      if(childDt == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.ref", "The field child DT is missing.", position + "", "ERROR"));
-            
-      if(this.isPrimitiveDatatype(childDt)) {
-        
-      } else {
-        if(this.isNotNullNotEmpty(f.getConstantValue())) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.constantValue", "This ConstantValue is not allowed for this component.", position + "", "ERROR"));
-      }
+    if(position == 0) {
+      result.getErrors().add(new IgamtObjectError("Position_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "Position is missing", position + "", "FATAL"));
+    } else {
+      String path = segment.getLabel() + "-" + position;
+      if(!this.isNotNullNotEmpty(name)) result.getErrors().add(new IgamtObjectError("In " + path + ", Name_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "name is missing", position + "", "FATAL"));
+      if(ref == null || ref.getId() == null) result.getErrors().add(new IgamtObjectError("REF_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + ", Ref value is missing.", position + "", "FATAL"));
+      if(type == null || !type.equals(Type.FIELD)) result.getErrors().add(new IgamtObjectError("Type_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + ", the Type is missing", position + "", "FATAL"));
       
-      if (this.isValueSetOrSingleCodeAllowedField(f, childDt)) {
-        StructureElementBinding childBinding = this.findBindingById(f.getId(), segment.getBinding());
-        if(childBinding != null){
-          Set<ValuesetBinding> valuesetBindings = childBinding.getValuesetBindings();
-          ExternalSingleCode externalSingleCode = childBinding.getExternalSingleCode();
-          InternalSingleCode internalSingleCode = childBinding.getInternalSingleCode();
+      this.checkUsageVerificationError(null, segment.getId(), segment.getType(), new DTSegMetadata(segment), usage, position + "", segment.getLabel() + "-" + position, result);
+      this.checkCardinalityVerificationError(segment.getId(), segment.getType(), new DTSegMetadata(segment), usage, min, max, position + "", segment.getLabel() + "-" + position, result);
+      this.checkLengthVerificationErorr(segment.getId(), segment.getType(), new DTSegMetadata(segment), f, minLength, maxLength, confLength, position + "", segment.getLabel() + "-" + position, result);
+      
+      segment.getChildren().forEach(otherF -> {
+        if(!otherF.getId().equals(f.getId())){
+          if (otherF.getPosition() == position) result.getErrors().add(new IgamtObjectError("Position_Dupilicated", segment.getId(), segment.getType(), new DTSegMetadata(segment), "The position:" + position + " is duplicated.", position + "", "FATAL"));
+          if (otherF.getName().equals(f.getName())) result.getErrors().add(new IgamtObjectError("Name_Duplicated", segment.getId(), segment.getType(), new DTSegMetadata(segment), "name is duplicated for " + position + " and " + otherF.getPosition(), position + "", "ERROR"));
+        }
+      });
+      
+      if(ref != null && ref.getId() != null) {
+        Datatype childDt = this.datatypeService.findById(ref.getId());
+        if(childDt == null) result.getErrors().add(new IgamtObjectError("Ref_NotAccessable", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + " Ref object is not accesable.", position + "", "ERROR"));
+
+        if(this.isPrimitiveDatatype(childDt)) {
           
-          if(valuesetBindings != null) this.checkingValueSetBindings(segment, valuesetBindings, result, position);
-          if(externalSingleCode != null) this.checkingExternalSingleCode(segment, externalSingleCode, result, position);
-          if(internalSingleCode != null) this.checkingInternalSingleCode(segment, internalSingleCode, result, position);
+        } else {
+          if(this.isNotNullNotEmpty(f.getConstantValue())) result.getErrors().add(new IgamtObjectError("Constant_NOTAllowed", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + " , Constant value is not allowed", position + "", "ERROR"));
         }
         
-      }else {
-        
+        if (this.isValueSetOrSingleCodeAllowedField(f, childDt)) {
+          StructureElementBinding childBinding = this.findBindingById(f.getId(), segment.getBinding());
+          if(childBinding != null){
+            Set<ValuesetBinding> valuesetBindings = childBinding.getValuesetBindings();
+            ExternalSingleCode externalSingleCode = childBinding.getExternalSingleCode();
+            InternalSingleCode internalSingleCode = childBinding.getInternalSingleCode();
+            
+            if(valuesetBindings != null) this.checkingValueSetBindings(segment, valuesetBindings, result, position, path);
+            if(externalSingleCode != null) this.checkingExternalSingleCode(segment, externalSingleCode, result, position, path);
+            if(internalSingleCode != null) this.checkingInternalSingleCode(segment, internalSingleCode, result, position, path);
+          }
+          
+        }else {
+          
+        }
       }
     }
   }
 
-  /**
-   * @param internalSingleCode
-   * @param vr
-   */
-  private void checkingInternalSingleCode(ComplexDatatype cDt, InternalSingleCode internalSingleCode, DTSegVerificationResult result, int position) {
+  private void checkingInternalSingleCode(ComplexDatatype cDt, InternalSingleCode internalSingleCode, DTSegVerificationResult result, int position, String path) {
     String code = internalSingleCode.getCode();
     String codeSystem = internalSingleCode.getCodeSystem();
     String valueSetId = internalSingleCode.getValueSetId();
     
-    if(!this.isNotNullNotEmpty(code))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode Code is not valid", position + "", "ERROR"));
-    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode CodeSystem is not valid", position + "", "ERROR"));
-    if(!this.isNotNullNotEmpty(valueSetId)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode valueset is missing", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(code))       result.getErrors().add(new IgamtObjectError("SingleCode_Code_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + ", Code is missing for SingleCode.", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("SingleCode_CodeSys_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + ", CodeSystem is missing for SingleCode.", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(valueSetId)) result.getErrors().add(new IgamtObjectError("SingleCode_Valueset_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + ", ValueSet is missing for SingleCode.", position + "", "ERROR"));
     
     if (valueSetId != null) {
-      if(this.valuesetService.findById(valueSetId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.internalSingleCode", "The component's internal SingleCode valueset is missing", position + "", "ERROR"));
+      if(this.valuesetService.findById(valueSetId) == null) result.getErrors().add(new IgamtObjectError("SingleCode_Valueset_NotAccessable", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + ", ValueSet is not accessable for SingleCode.", position + "", "ERROR"));
     }
   }
-  
-  /**
-   * @param segment
-   * @param internalSingleCode
-   * @param vr
-   * @param position
-   */
-  private void checkingInternalSingleCode(Segment segment, InternalSingleCode internalSingleCode, DTSegVerificationResult result, int position) {
+
+  private void checkingInternalSingleCode(Segment segment, InternalSingleCode internalSingleCode, DTSegVerificationResult result, int position, String path) {
     String code = internalSingleCode.getCode();
     String codeSystem = internalSingleCode.getCodeSystem();
     String valueSetId = internalSingleCode.getValueSetId();
     
-    if(!this.isNotNullNotEmpty(code))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode Code is not valid", position + "", "ERROR"));
-    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode CodeSystem is not valid", position + "", "ERROR"));
-    if(!this.isNotNullNotEmpty(valueSetId)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode valueset is missing", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(code))       result.getErrors().add(new IgamtObjectError("SingleCode_Code_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + ", Code is missing for SingleCode.", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("SingleCode_CodeSys_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + ", CodeSystem is missing for SingleCode.", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(valueSetId)) result.getErrors().add(new IgamtObjectError("SingleCode_Valueset_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + ", ValueSet is missing for SingleCode.", position + "", "ERROR"));
     
     if (valueSetId != null) {
-      if(this.valuesetService.findById(valueSetId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.internalSingleCode", "The field's internal SingleCode valueset is missing", position + "", "ERROR"));
+      if(this.valuesetService.findById(valueSetId) == null) result.getErrors().add(new IgamtObjectError("SingleCode_Valueset_NotAccessable", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + ", ValueSet is not accessable for SingleCode.", position + "", "ERROR"));
     }
   }
 
-  /**
-   * @param externalSingleCode
-   * @param vr
-   */
-  private void checkingExternalSingleCode(ComplexDatatype cDt, ExternalSingleCode externalSingleCode, DTSegVerificationResult result, int position) {
+  private void checkingExternalSingleCode(ComplexDatatype cDt, ExternalSingleCode externalSingleCode, DTSegVerificationResult result, int position, String path) {
     String value = externalSingleCode.getValue();
     String codeSystem = externalSingleCode.getCodeSystem();
     
-    if(!this.isNotNullNotEmpty(value))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.externalSingleCode", "The component's external SingleCode Code is not valid", position + "", "ERROR"));
-    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.externalSingleCode", "The component's external SingleCode CodeSystem is not valid", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(value))      result.getErrors().add(new IgamtObjectError("SingleCode_Value_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + ", Value is missing for SingleCode.", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("SingleCode_CodeSys_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + ", CodeSystem is missing for SingleCode.", position + "", "ERROR"));
   }
 
-  /**
-   * @param segment
-   * @param externalSingleCode
-   * @param vr
-   * @param position
-   */
-  private void checkingExternalSingleCode(Segment segment, ExternalSingleCode externalSingleCode, DTSegVerificationResult result, int position) {
+  private void checkingExternalSingleCode(Segment segment, ExternalSingleCode externalSingleCode, DTSegVerificationResult result, int position, String path) {
     String value = externalSingleCode.getValue();
     String codeSystem = externalSingleCode.getCodeSystem();
     
-    if(!this.isNotNullNotEmpty(value))       result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.externalSingleCode", "The component's external SingleCode Code is not valid", position + "", "ERROR"));
-    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.externalSingleCode", "The component's external SingleCode CodeSystem is not valid", position + "", "ERROR"));
-    
+    if(!this.isNotNullNotEmpty(value))      result.getErrors().add(new IgamtObjectError("SingleCode_Value_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + ", Value is missing for SingleCode.", position + "", "ERROR"));
+    if(!this.isNotNullNotEmpty(codeSystem)) result.getErrors().add(new IgamtObjectError("SingleCode_CodeSys_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + ", CodeSystem is missing for SingleCode.", position + "", "ERROR"));
   }
   
-  /**
-   * @param valuesetBindings
-   * @param vr
-   */
-  private void checkingValueSetBindings(ComplexDatatype cDt, Set<ValuesetBinding> valuesetBindings, DTSegVerificationResult result, int position) {
+  private void checkingValueSetBindings(ComplexDatatype cDt, Set<ValuesetBinding> valuesetBindings, DTSegVerificationResult result, int position, String path) {
     for (ValuesetBinding vb : valuesetBindings) {
       for(String vsId : vb.getValueSets()){
         if(vsId == null) {
-          result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.valuesetBindings", "The component's valueset is null", position + "", "ERROR"));   
+          result.getErrors().add(new IgamtObjectError("ValueSetBinding_VSID_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + ", Valueset Id is missing for ValueSet Binding.", position + "", "ERROR"));   
         }else {
-          if(this.valuesetService.findById(vsId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "component.valuesetBindings", "The component's valueset is missing", position + "", "ERROR"));   
+          if(this.valuesetService.findById(vsId) == null) result.getErrors().add(new IgamtObjectError("ValueSetBinding_VS_NotAccessable",cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "In " + path + ", Valueset is not accessable for ValueSet Binding.", position + "", "ERROR"));   
         }
       }
     }
   }
   
-  /**
-   * @param segment
-   * @param valuesetBindings
-   * @param vr
-   * @param position
-   */
-  private void checkingValueSetBindings(Segment segment, Set<ValuesetBinding> valuesetBindings, DTSegVerificationResult result, int position) {
+  private void checkingValueSetBindings(Segment segment, Set<ValuesetBinding> valuesetBindings, DTSegVerificationResult result, int position, String path) {
     for (ValuesetBinding vb : valuesetBindings) {
       for(String vsId : vb.getValueSets()){
         if(vsId == null) {
-          result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.valuesetBindings", "The field's valueset is null", position + "", "ERROR"));   
+          result.getErrors().add(new IgamtObjectError("ValueSetBinding_VSID_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + ", Valueset Id is missing for ValueSet Binding.", position + "", "ERROR"));   
         }else {
-          if(this.valuesetService.findById(vsId) == null) result.getErrors().add(new IgamtObjectError("STRUCTURE", "field.valuesetBindings", "The field's valueset is missing", position + "", "ERROR"));   
+          if(this.valuesetService.findById(vsId) == null) result.getErrors().add(new IgamtObjectError("ValueSetBinding_VS_NotAccessable",segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + path + ", Valueset is not accessable for ValueSet Binding.", position + "", "ERROR"));   
         }
       }
     }
   }
 
-
-  /**
-   * @param id
-   * @param binding
-   * @return
-   */
   private StructureElementBinding findBindingById(String id, ResourceBinding binding) {
     if (binding != null && binding.getChildren() != null) {
       for (StructureElementBinding seb : binding.getChildren()) {
@@ -1084,21 +1147,11 @@ public class VerificationServiceImpl implements VerificationService {
     return null;
   }
 
-  /**
-   * @param c
-   * @param childDt
-   * @return
-   */
   private boolean isValueSetOrSingleCodeAllowedComponent(Component c, Datatype childDt) {
     // TODO Auto-generated method stub
     return true;
   }
   
-  /**
-   * @param c
-   * @param childDt
-   * @return
-   */
   private boolean isValueSetOrSingleCodeAllowedField(Field f, Datatype childDt) {
     // TODO Auto-generated method stub
     return true;
@@ -1110,29 +1163,9 @@ public class VerificationServiceImpl implements VerificationService {
     return false;
   }
 
-  /**
-   * @param c
-   * @return
-   */
-  private boolean isLengthAllowedComponent(Component c) {
-    if (c != null) {
-      Ref ref = c.getRef();
-      if(ref.getId() != null){
-        Datatype childDt = this.datatypeService.findById(ref.getId());    
-        if(childDt != null) return this.isPrimitiveDatatype(childDt);
-      }
-    }
-
-    return false;
-  }
-  
-  /**
-   * @param c
-   * @return
-   */
-  private boolean isLengthAllowedComponent(Field f) {
-    if (f != null) {
-      Ref ref = f.getRef();
+  private boolean isLengthAllowedElement(SubStructElement e) {
+    if (e != null) {
+      Ref ref = e.getRef();
       if(ref.getId() != null){
         Datatype childDt = this.datatypeService.findById(ref.getId());    
         if(childDt != null) return this.isPrimitiveDatatype(childDt);
@@ -1151,11 +1184,6 @@ public class VerificationServiceImpl implements VerificationService {
     return false;
   }
 
-  /**
-   * @param cDt
-   * @param position
-   * @return
-   */
   private boolean hasPredicate(ComplexDatatype cDt, String componentId) {
     ResourceBinding binding = cDt.getBinding();
     if(binding == null || binding.getChildren() == null) return false;
@@ -1207,133 +1235,146 @@ public class VerificationServiceImpl implements VerificationService {
     return false;
   }
  
-  /**
-   * @param valueset
-   * @param vr
-   */
   private void checkingMetadataForValueset(Valueset valueset, VSVerificationResult result) {
     if (valueset == null) {
       
     } else {
       String bId = valueset.getBindingIdentifier();
       String name = valueset.getName();
+      String description = valueset.getDescription();
       Extensibility extensibility = valueset.getExtensibility();
       Stability stability = valueset.getStability();
       ContentDefinition contentDefinition = valueset.getContentDefinition();
-      int numberOfCodes = valueset.getNumberOfCodes(); 
       DomainInfo domainInfo = valueset.getDomainInfo();
       
-      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(bId)) result.getErrors().add(new IgamtObjectError("METADATA", "bindingIdentifier", "bindingIdentifier should be required.", null, "ERROR"));
-      if (name == null) result.getErrors().add(new IgamtObjectError("METADATA", "name", "name should be required.", null, "ERROR"));
-      if (extensibility == null) result.getErrors().add(new IgamtObjectError("METADATA", "extensibility", "extensibility should be required.", null, "ERROR"));
-      if (stability == null) result.getErrors().add(new IgamtObjectError("METADATA", "stability", "stability should be required.", null, "ERROR"));
-      if (contentDefinition == null) result.getErrors().add(new IgamtObjectError("METADATA", "contentDefinition", "contentDefinition should be required.", null, "ERROR"));
+      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(bId)) result.getErrors().add(new IgamtObjectError("BindingId_Missing", valueset.getId(), valueset.getType(), new VSMetadata(valueset), "Valueset binding Identifier is missing", null, "FATAL"));
+      if (name == null) result.getErrors().add(new IgamtObjectError("Name_Missing", valueset.getId(), valueset.getType(), new VSMetadata(valueset), "name is missing", null, "FATAL"));
+//      if (description == null) result.getErrors().add(new IgamtObjectError("Desc_Missing", null, null, "Description is missing", null, "WARNING"));
       
-      if(domainInfo == null) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "ERROR"));
-      } else {
-        if (domainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "ERROR"));
+      if (extensibility == null) result.getErrors().add(new IgamtObjectError("Extensibility_Missing", valueset.getId(), valueset.getType(), new VSMetadata(valueset), "Extensibility is missing", null, "WARNING"));
+      if (stability == null) result.getErrors().add(new IgamtObjectError("Stability_Missing", valueset.getId(), valueset.getType(), new VSMetadata(valueset), "Stability is missing", null, "WARNING"));
+      if (contentDefinition == null) result.getErrors().add(new IgamtObjectError("ContentDefinition_Missing", valueset.getId(), valueset.getType(), new VSMetadata(valueset), "ContentDefinition is missing", null, "WARNING"));
+      
+      if(domainInfo == null || domainInfo.getScope() == null) {
+        result.getErrors().add(new IgamtObjectError("Scope_Missing", valueset.getId(), valueset.getType(), new VSMetadata(valueset), "Scope is missing", null, "ERROR"));
+      }
+      if(domainInfo == null || domainInfo.getVersion() == null) {
+        result.getErrors().add(new IgamtObjectError("Version_Missing", valueset.getId(), valueset.getType(), new VSMetadata(valueset), "Version is missing", null, "WARNING"));
       }
       
-      if(valueset.getCodes() == null || valueset.getCodes().size() == 0) {
-        if(numberOfCodes != 0) result.getErrors().add(new IgamtObjectError("METADATA", "numberOfCodes", "numberOfCodes is wrong", null, "ERROR"));
-      } else {
-        if(numberOfCodes != valueset.getCodes().size()) result.getErrors().add(new IgamtObjectError("METADATA", "numberOfCodes", "numberOfCodes is wrong", null, "ERROR"));
+      if(valueset.getCodes() != null && valueset.getCodes().size() > 500) {
+        result.getErrors().add(new IgamtObjectError("CodeSet_Size_Exceeded", valueset.getId(), valueset.getType(), new VSMetadata(valueset), "IGAMT imposed code set limit (500) exceeded.", null, "WARNING"));
       }
-      
     }
-    
   }
   
-  /**
-   * @param datatype
-   * @param vr
-   * Required: Name, Extension, dtDomainInfo, dtDomainInfo.scope
-   */
   private void checkingMetadataForDatatype(Datatype datatype, DTSegVerificationResult result) {
     if (datatype == null) {
-      
     } else {
-      String dtName = datatype.getName();
-      String dtExt = datatype.getExt();
-      DomainInfo dtDomainInfo = datatype.getDomainInfo();
+      String name = datatype.getName();
+      String ext = datatype.getExt();
+      String description = datatype.getDescription();
+      DomainInfo domainInfo = datatype.getDomainInfo();
       
-      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(dtName)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "ERROR"));
+      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(name)) {
+        result.getErrors().add(new IgamtObjectError("Name_Missing", datatype.getId(), datatype.getType(), new DTSegMetadata(datatype), "name is missing", null, "FATAL"));
+      }
+      if (description == null) result.getErrors().add(new IgamtObjectError("Desc_Missing", datatype.getId(), datatype.getType(), new DTSegMetadata(datatype), "Description is missing", null, "WARNING"));
+      
+      if(domainInfo == null || domainInfo.getScope() == null) {
+        result.getErrors().add(new IgamtObjectError("Scope_Missing", datatype.getId(), datatype.getType(), new DTSegMetadata(datatype), "Scope is missing", null, "ERROR"));
+      }
+      if(domainInfo == null || domainInfo.getVersion() == null) {
+        result.getErrors().add(new IgamtObjectError("Version_Missing", datatype.getId(), datatype.getType(), new DTSegMetadata(datatype), "Version is missing", null, "WARNING"));
       }
       
-      if(dtDomainInfo == null) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "ERROR"));
-      } else {
-        if (dtDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "ERROR"));
-        if (!dtDomainInfo.getScope().equals(Scope.HL7STANDARD) && !this.isNotNullNotEmptyNotWhiteSpaceOnly(dtExt)) {
-          result.getErrors().add(new IgamtObjectError("METADATA", "ext", "Non-STD datatype should have extension name.", null, "ERROR"));
-        }        
+      if (domainInfo != null && domainInfo.getScope() != null && domainInfo.getScope().equals(Scope.USER) && !this.isNotNullNotEmptyNotWhiteSpaceOnly(ext)) {
+        result.getErrors().add(new IgamtObjectError("EXT_Missing", datatype.getId(), datatype.getType(), new DTSegMetadata(datatype), "EXTENSION is missing, but scope is users", null, "FATAL"));
+      } 
+
+      if(ext != null) {
+        String regex = "^[a-zA-Z0-9]+$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(ext);       
+        
+        if(!matcher.matches() || ext.length() > 4) {
+          result.getErrors().add(new IgamtObjectError("EXT_Format", datatype.getId(), datatype.getType(), new DTSegMetadata(datatype), "User extension should start with a letter and be within 4 characters long.", null, "WARNING"));
+        }
       }
     }
   }
   
-  /**
-   * @param segment
-   * @param vr
-   */
   private void checkingMetadataForSegment(Segment segment, DTSegVerificationResult result) {
     if (segment == null) {
       
     } else {
-      String dtName = segment.getName();
-      String dtExt = segment.getExt();
-      DomainInfo dtDomainInfo = segment.getDomainInfo();
+      String name = segment.getName();
+      String ext = segment.getExt();
+      String description = segment.getDescription();
+      DomainInfo domainInfo = segment.getDomainInfo();
       
-      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(dtName)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "ERROR"));
+      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(name)) {
+        result.getErrors().add(new IgamtObjectError("Name_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "name is missing", null, "FATAL"));
+      }
+      if (description == null) result.getErrors().add(new IgamtObjectError("Desc_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "Description is missing", null, "WARNING"));
+      
+      if(domainInfo == null || domainInfo.getScope() == null) {
+        result.getErrors().add(new IgamtObjectError("Scope_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "Scope is missing", null, "ERROR"));
+      }
+      if(domainInfo == null || domainInfo.getVersion() == null) {
+        result.getErrors().add(new IgamtObjectError("Version_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "Version is missing", null, "WARNING"));
       }
       
-      if(dtDomainInfo == null) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "ERROR"));
-      } else {
-        if (dtDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "ERROR"));
-        if (!dtDomainInfo.getScope().equals(Scope.HL7STANDARD) && !this.isNotNullNotEmptyNotWhiteSpaceOnly(dtExt)) {
-          result.getErrors().add(new IgamtObjectError("METADATA", "ext", "Non-STD datatype should have extension name.", null, "ERROR"));
-        }        
+      if (domainInfo != null && domainInfo.getScope() != null && domainInfo.getScope().equals(Scope.USER) && !this.isNotNullNotEmptyNotWhiteSpaceOnly(ext)) {
+        result.getErrors().add(new IgamtObjectError("EXT_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "EXTENSION is missing, but scope is users", null, "FATAL"));
+      } 
+
+      if(ext != null) {
+        String regex = "^[a-zA-Z0-9]+$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(ext);       
+        
+        if(!matcher.matches() || ext.length() > 4) {
+          result.getErrors().add(new IgamtObjectError("EXT_Format", segment.getId(), segment.getType(), new DTSegMetadata(segment), "User extension should start with a letter and be within 4 characters long.", null, "WARNING"));
+        }
       }
     }
   }
-  
-  /**
-   * @param conformanceProfile
-   * @param vr
-   */
+
   private void checkingMetadataForConformanceProfile(ConformanceProfile conformanceProfile, CPVerificationResult result) {
     if (conformanceProfile == null) {
       
     } else {
-      String cpName = conformanceProfile.getName();
-      DomainInfo cpDomainInfo = conformanceProfile.getDomainInfo();
+      String name = conformanceProfile.getName();
+      String description = conformanceProfile.getDescription();
+      DomainInfo domainInfo = conformanceProfile.getDomainInfo();
       String structId = conformanceProfile.getStructID();
       String mType = conformanceProfile.getMessageType();
       String event = conformanceProfile.getEvent();
       
-      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(cpName)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "name", "Name should be required.", null, "ERROR"));
+      if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(name)) {
+        result.getErrors().add(new IgamtObjectError("Name_Missing", conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), "name is missing", null, "FATAL"));
       }
       
+      if (description == null) result.getErrors().add(new IgamtObjectError("Desc_Missing", conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), "Description is missing", null, "WARNING"));
+      
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(structId)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "structId", "structId should be required.", null, "ERROR"));
+        result.getErrors().add(new IgamtObjectError("StructId_Missing", conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), "StructId is missing", null, "FATAL"));
       }
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(mType)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "messageType", "messageType should be required.", null, "ERROR"));
+        result.getErrors().add(new IgamtObjectError("MessageType_Missing", conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), "Message Type is missing.", null, "FATAL"));
       }
       
       if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(event)) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "triggerEvent", "triggerEvent should be required.", null, "ERROR"));
+        result.getErrors().add(new IgamtObjectError("TriggerEvent_Missing", conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), "Trigger Event is missing.", null, "FATAL"));
       }
       
-      if(cpDomainInfo == null) {
-        result.getErrors().add(new IgamtObjectError("METADATA", "domainInfo", "DomainInfo is missing", null, "ERROR"));
-      } else {
-        if (cpDomainInfo.getScope() == null) result.getErrors().add(new IgamtObjectError("METADATA", "scope", "Scope is required", null, "ERROR"));     
+      if(domainInfo == null || domainInfo.getScope() == null) {
+        result.getErrors().add(new IgamtObjectError("Scope_Missing", conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), "Scope is missing", null, "ERROR"));
+      }
+      if(domainInfo == null || domainInfo.getVersion() == null) {
+        result.getErrors().add(new IgamtObjectError("Version_Missing", conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), "Version is missing", null, "WARNING"));
       }
     }
   }
@@ -1393,13 +1434,13 @@ public class VerificationServiceImpl implements VerificationService {
       
       if(dynamicMappingInfo != null && dynamicMappingInfo.getItems() != null) {
         for(DynamicMappingItem item : dynamicMappingInfo.getItems()) {
-          if(this.isNotNullNotEmptyNotWhiteSpaceOnly(item.getValue())) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.value", "The dynamicmpaping value is invalid", item.getValue() + "", "ERROR"));
+          if(this.isNotNullNotEmptyNotWhiteSpaceOnly(item.getValue())) result.getErrors().add(new IgamtObjectError("DM_DTBaseName_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + item.getValue() + ", DTBaseName is missing for segment Dynamic Mapping Item", item.getValue(), "ERROR"));
           String datatypeId = item.getDatatypeId();
           
-          if(datatypeId == null) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.datatypeId", "The dynamicmpaping dt id is null", item.getValue() + "", "ERROR"));
+          if(datatypeId == null) result.getErrors().add(new IgamtObjectError("DM_DT_Missing", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + item.getValue() + ", DT is missing for segment Dynamic Mapping Item", item.getValue(), "ERROR"));
           else {
             Datatype dt = this.datatypeService.findById(datatypeId);
-            if(dt == null) result.getErrors().add(new IgamtObjectError("DYNMICMAPPING", "item.datatypeId", "The dynamicmpaping datattype is missing in the DB", item.getValue() + "", "ERROR"));
+            if(dt == null) result.getErrors().add(new IgamtObjectError("DM_DT_NotAccessable", segment.getId(), segment.getType(), new DTSegMetadata(segment), "In " + item.getValue() + ", DT is not accessable for segment Dynamic Mapping Item", item.getValue(), "ERROR"));
           }
         }
       }
@@ -1415,6 +1456,22 @@ public class VerificationServiceImpl implements VerificationService {
     return segment.getName().equals("OBX");
   }
 
+  private CPComplianceResult verifyConformanceProfileForCompliance(ConformanceProfile conformanceProfile) {
+    CPComplianceResult result = new CPComplianceResult(conformanceProfile);
+
+    //0. Create parentMap for Compliance Checking
+    if(conformanceProfile.getOrigin() != null) {
+      ConformanceProfile parentConformanceProfile = this.conformanceProfileService.findById(conformanceProfile.getOrigin());
+      Set<StructureElementBinding> sebs = null;
+      if (parentConformanceProfile.getBinding() != null) sebs = parentConformanceProfile.getBinding().getChildren();
+      this.travelSegmentRefOrGroups(parentConformanceProfile, parentConformanceProfile.getChildren(), null, null, sebs);
+    }
+    
+    this.checkingStructureForConformanceProfileForCompliance(conformanceProfile, result);
+    
+    return result;
+  }
+  
   @Override
   public CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile) {
     CPVerificationResult result = new CPVerificationResult(conformanceProfile);
@@ -1492,7 +1549,7 @@ public class VerificationServiceImpl implements VerificationService {
       if (path == null) path = name;
       else path = path + "." + name;
       
-      this.parentComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max));
+      this.parentComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max, null, null));
 
       
       if(group.getChildren() != null) {
@@ -1540,7 +1597,7 @@ public class VerificationServiceImpl implements VerificationService {
           path = path + "." + segment.getName();
         }
         
-        this.parentComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max));
+        this.parentComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max, null, null));
 
         if(segment.getChildren() != null) {          
           for(Field field : segment.getChildren() ){
@@ -1564,10 +1621,12 @@ public class VerificationServiceImpl implements VerificationService {
     int min = field.getMin();
     String max = field.getMax();
     Ref ref = field.getRef();
+    String minLength = field.getMinLength();
+    String maxLength = field.getMaxLength();
     positionPath = positionPath + "." + position;
     path = path + "." + position;
     
-    this.parentComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max));
+    this.parentComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, min, max, minLength,maxLength));
     if (ref != null && ref.getId() != null) {
       Datatype datatype = this.datatypeService.findById(ref.getId());
       
@@ -1595,10 +1654,12 @@ public class VerificationServiceImpl implements VerificationService {
     int position = component.getPosition();
     Usage usage = component.getUsage();
     Ref ref = component.getRef();
+    String minLength = component.getMinLength();
+    String maxLength = component.getMaxLength();
     positionPath = positionPath + "." + position;
     path = path + "." + position;
     
-    this.parentComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, null, null));
+    this.parentComplianceMap.put(positionPath, new ComplianceObject(positionPath, path, usage, null, null, minLength, maxLength));
 
     if (ref != null && ref.getId() != null) {
       Datatype datatype = this.datatypeService.findById(ref.getId());
@@ -1617,9 +1678,6 @@ public class VerificationServiceImpl implements VerificationService {
     
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.verification.service.VerificationService#verifyIg(java.lang.String)
-   */
   @Override
   public VerificationReport verifyIg(String documentId) {
     parentComplianceMap = new HashMap<String,ComplianceObject>();
@@ -1628,7 +1686,8 @@ public class VerificationServiceImpl implements VerificationService {
     Ig ig = this.igService.findById(documentId);
     IgVerificationResult result = new IgVerificationResult(ig);
     
-    /*
+    HashSet<String> bIdSet = new HashSet<String> ();
+
     ValueSetRegistry valueSetRegistry = ig.getValueSetRegistry();
     
     if(valueSetRegistry.getChildren() != null) {
@@ -1637,11 +1696,12 @@ public class VerificationServiceImpl implements VerificationService {
         String id = l.getId();
         
         Valueset vs = this.valuesetService.findById(id);
-        if(vs == null) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.id", "The valueset is missing in the DB.", id + "", "ERROR"));
-        else {
-          if(vs.getDomainInfo().getScope() == null || !vs.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.scope", "The valueset scope info is wrong", id + "", "ERROR"));
-          if(vs.getDomainInfo().getVersion() == null || !vs.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("VALUESETREPOSITORY", "link.version", "The valueset version info is wrong", id + "", "ERROR"));
         
+        if(vs == null) result.getErrors().add(new IgamtObjectError("Link_NotAccessable", id, Type.VALUESET, null, "In valueset Repository, valueset : " + id  + " is not accesable", null, "ERROR"));
+        else {
+          if(!bIdSet.add(vs.getBindingIdentifier())) result.getErrors().add(new IgamtObjectError("BindingId_Duplicated", vs.getId(), Type.VALUESET, new VSMetadata(vs), "Binding Identifier of " + vs.getBindingIdentifier() + " is duplicated in the IG", null, "ERROR"));
+          if(vs.getDomainInfo().getScope() == null || !vs.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("Link_Scope_notMatched", vs.getId(), Type.VALUESET, new VSMetadata(vs), "In valueset Repository, " + vs.getLabel() + "'s scope value of the Link is not matched with actual Valueset's scope.", null, "ERROR"));
+          if(vs.getDomainInfo().getVersion() == null || !vs.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", vs.getId(), Type.VALUESET, new VSMetadata(vs), "In valueset Repository, "+  vs.getLabel() + "'s version value of the Link is not matched with actual Valueset's version.", null, "ERROR"));
           report.addValuesetVerificationResult(this.verifyValueset(vs));
         }
         
@@ -1649,26 +1709,26 @@ public class VerificationServiceImpl implements VerificationService {
     }
     
     DatatypeRegistry datatypeRegistry = ig.getDatatypeRegistry();
-    
+    HashSet<String> dtLabelSet = new HashSet<String> ();
     if(datatypeRegistry.getChildren() != null) {
       for(Link l : datatypeRegistry.getChildren()) {
         DomainInfo domainInfo = l.getDomainInfo();
         String id = l.getId();
         
         Datatype dt = this.datatypeService.findById(id);
-        
-        if(dt == null) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.id", "The datatype is missing in the DB.", id + "", "ERROR"));
+        if(dt == null) result.getErrors().add(new IgamtObjectError("Link_NotAccessable", id, Type.DATATYPE, null, "In dataytpe Repository, datatype : " + id  + " is not accesable", null, "ERROR"));
         else {
-          if(dt.getDomainInfo().getScope() == null || !dt.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.scope", "The datatype scope info is wrong", id + "", "ERROR"));
-          if(dt.getDomainInfo().getVersion() == null || !dt.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("DATATYPEREPOSITORY", "link.version", "The datatype version info is wrong", id + "", "ERROR"));
-        
+          if(!dtLabelSet.add(dt.getLabel())) result.getErrors().add(new IgamtObjectError("Label_Duplicated", dt.getId(), Type.DATATYPE, new DTSegMetadata(dt), "Datatype Label of " + dt.getLabel() + " is duplicated in the IG", null, "ERROR"));
+          if(dt.getDomainInfo().getScope() == null || !dt.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("Link_Scope_notMatched", dt.getId(), Type.DATATYPE, new DTSegMetadata(dt), "In datatype Repository, " + dt.getLabel() + "'s scope value of the Link is not matched with actual datatype's scope.", null, "ERROR"));
+          if(dt.getDomainInfo().getVersion() == null || !dt.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", dt.getId(), Type.DATATYPE, new DTSegMetadata(dt), "In datatype Repository, "+  dt.getLabel() + "'s version value of the Link is not matched with actual datatype's version.", null, "ERROR"));
+          
           report.addDatatypeVerificationResult(this.verifyDatatype(dt));
         }
       } 
     }
     
     SegmentRegistry segmentRegistry = ig.getSegmentRegistry();
-  
+    HashSet<String> segLabelSet = new HashSet<String> ();
     if(segmentRegistry.getChildren() != null) {
       for(Link l : segmentRegistry.getChildren()) {
         DomainInfo domainInfo = l.getDomainInfo();
@@ -1676,17 +1736,18 @@ public class VerificationServiceImpl implements VerificationService {
         
         Segment s = this.segmentService.findById(id);
         
-        if(s == null) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.id", "The segment is missing in the DB.", id + "", "ERROR"));
+        if(s == null) result.getErrors().add(new IgamtObjectError("Link_NotAccessable", id, Type.SEGMENT, null, "In segment Repository, segment : " + id  + " is not accesable", null, "ERROR"));
         else {
-          if(s.getDomainInfo().getScope() == null || !s.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.scope", "The segment scope info is wrong", id + "", "ERROR"));
-          if(s.getDomainInfo().getVersion() == null || !s.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("SEGMENTREPOSITORY", "link.version", "The segment version info is wrong", id + "", "ERROR"));
-        
+          if(!segLabelSet.add(s.getLabel())) result.getErrors().add(new IgamtObjectError("Label_Duplicated", s.getId(), Type.SEGMENT, new DTSegMetadata(s),"Segment Label of " + s.getLabel() + " is duplicated in the IG", null, "ERROR"));
+          if(s.getDomainInfo().getScope() == null || !s.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("Link_Scope_notMatched", s.getId(), Type.SEGMENT, new DTSegMetadata(s), "In segment Repository, " + s.getLabel() + "'s scope value of the Link is not matched with actual segment scope.", null, "ERROR"));
+          if(s.getDomainInfo().getVersion() == null || !s.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", s.getId(), Type.SEGMENT, new DTSegMetadata(s), "In segment Repository, "+  s.getLabel() + "'s version value of the Link is not matched with actual segment version.", null, "ERROR"));
+          
           report.addSegmentVerificationResult(this.verifySegment(s));
         }
         
       } 
     }
-    */
+
     
     ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
     if(conformanceProfileRegistry.getChildren() != null) {
@@ -1696,11 +1757,10 @@ public class VerificationServiceImpl implements VerificationService {
         
         ConformanceProfile cp = this.conformanceProfileService.findById(id);
         
-        if(cp == null) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.id", "The conformanceprofile is missing in the DB.", id + "", "ERROR"));
+        if(cp == null) result.getErrors().add(new IgamtObjectError("Link_NotAccessable", id, Type.CONFORMANCEPROFILE, null, "In conformance profile Repository, conformance profile : " + id  + " is not accesable", null, "ERROR"));
         else {
-          if(cp.getDomainInfo().getScope() == null || !cp.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.scope", "The conformanceprofile scope info is wrong", id + "", "ERROR"));
-          if(cp.getDomainInfo().getVersion() == null || !cp.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("CONFORMANCEPROFILEREPOSITORY", "link.version", "The conformanceprofile version info is wrong", id + "", "ERROR"));
-        
+          if(cp.getDomainInfo().getScope() == null || !cp.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("Link_Scope_notMatched", cp.getId(), Type.CONFORMANCEPROFILE, new CPMetadata(cp), "In conformance profile Repository, " + cp.getLabel() + "'s scope value of the Link is not matched with actual conformance profile scope.", null, "ERROR"));
+          if(cp.getDomainInfo().getVersion() == null || !cp.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", cp.getId(), Type.CONFORMANCEPROFILE, new CPMetadata(cp), "In conformance profile Repository, "+  cp.getLabel() + "'s version value of the Link is not matched with actual conformance profile version.", null, "ERROR"));
           report.addConformanceProfileVerificationResult(this.verifyConformanceProfile(cp));
         }
         
@@ -1708,6 +1768,28 @@ public class VerificationServiceImpl implements VerificationService {
     }
     
     report.setIgVerificationResult(result);
+    return report;
+  }
+  
+  @Override
+  public ComplianceReport verifyIgForCompliance(String documentId) {
+    parentComplianceMap = new HashMap<String,ComplianceObject>();
+    childComplianceMap = new HashMap<String,ComplianceObject>();
+    ComplianceReport report = new ComplianceReport();
+    Ig ig = this.igService.findById(documentId);
+    
+    ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
+    
+    if(conformanceProfileRegistry.getChildren() != null) {
+      for(Link l : conformanceProfileRegistry.getChildren()) {
+        String id = l.getId();
+        ConformanceProfile cp = this.conformanceProfileService.findById(id);
+        if(cp != null) {
+          report.addConformanceProfileComplianceResult(this.verifyConformanceProfileForCompliance(cp));
+        }
+        
+      } 
+    }
     return report;
   }
 

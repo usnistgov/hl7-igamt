@@ -5,13 +5,16 @@ import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.*;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.*;
-import gov.nist.hit.hl7.igamt.delta.domain.DeltaNode;
-import gov.nist.hit.hl7.igamt.delta.domain.DeltaValueSetBinding;
-import gov.nist.hit.hl7.igamt.delta.domain.ReferenceDelta;
-import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
+import gov.nist.hit.hl7.igamt.delta.domain.*;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldStructureTreeModel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -29,6 +32,13 @@ public class EntityDeltaServiceImpl {
 
     public List<StructureDelta> segment(SegmentStructureDisplay source, SegmentStructureDisplay target) {
         return this.compareFields(source.getStructure(), target.getStructure());
+    }
+
+    public ValuesetDelta valueset(Valueset source, Valueset target) {
+        ValuesetDelta valuesetDelta = this.compareValuesetMetadata(source, target);
+        List<CodeDelta> codeDeltas = this.compareCodes(source.getCodes(), target.getCodes());
+        valuesetDelta.setCodes(codeDeltas);
+        return valuesetDelta;
     }
 
     public List<StructureDelta> conformanceProfile(ConformanceProfileStructureDisplay source, ConformanceProfileStructureDisplay target) {
@@ -168,6 +178,51 @@ public class EntityDeltaServiceImpl {
         return deltas;
     }
 
+    private ValuesetDelta compareValuesetMetadata(Valueset source, Valueset target) {
+        ValuesetDelta delta = new ValuesetDelta();
+        delta.setAction(DeltaAction.UNCHANGED);
+        DeltaNode<Stability> stability = this.compare(source.getStability(), target.getStability());
+        DeltaNode<Extensibility> extensibility = this.compare(source.getExtensibility(), target.getExtensibility());
+        DeltaNode<ContentDefinition> contentDefinition = this.compare(source.getContentDefinition(), target.getContentDefinition());
+
+        delta.setStability(stability);
+        delta.setExtensibility(extensibility);
+        delta.setContentDefinition(contentDefinition);
+        return delta;
+    }
+
+    private List<CodeDelta> compareCodes(Set<Code> source, Set<Code> target) {
+        List<CodeDelta> deltas = new ArrayList<>();
+        Map<String, List<Code>> sourceChildren = (source != null ? source : new HashSet<Code>()).stream()
+                .collect(Collectors.groupingBy((e) -> e.getValue()));
+        Map<String, List<Code>> targetChildren = (target != null ? target : new HashSet<Code>()).stream()
+                .collect(Collectors.groupingBy((e) -> e.getValue()));
+
+        for(Map.Entry<String, List<Code>> entry: sourceChildren.entrySet()) {
+            CodeDelta codeDelta = new CodeDelta();
+            codeDelta.setAction(DeltaAction.UNCHANGED);
+            if(targetChildren.containsKey(entry.getKey())) {
+                this.compare(codeDelta, entry.getValue().get(0), targetChildren.get(entry.getKey()).get(0));
+                targetChildren.remove(entry.getKey());
+            } else {
+                this.compare(codeDelta, entry.getValue().get(0), entry.getValue().get(0));
+                codeDelta.setAction(DeltaAction.DELETED);
+            }
+
+            deltas.add(codeDelta);
+        }
+
+        for(Map.Entry<String, List<Code>> entry: targetChildren.entrySet()) {
+            CodeDelta codeDelta = new CodeDelta();
+            codeDelta.setAction(DeltaAction.UNCHANGED);
+            this.compare(codeDelta, entry.getValue().get(0), entry.getValue().get(0));
+            codeDelta.setAction(DeltaAction.ADDED);
+            deltas.add(codeDelta);
+        }
+
+        return deltas;
+    }
+
     private void compare(StructureDelta structure, SubComponentStructureTreeModel source, SubComponentStructureTreeModel target) {
         ReferenceDelta ref = new ReferenceDelta();
         structure.setType(source.getData().getType());
@@ -282,6 +337,15 @@ public class EntityDeltaServiceImpl {
         structure.setPosition(source.getPosition());
     }
 
+    private void compare(CodeDelta structure, Code source, Code target) {
+        structure.setUsage(this.compare(source.getUsage(), target.getUsage()));
+        structure.setValue(this.compare(source.getValue(), target.getValue()));
+        structure.setCodeSystem(this.compare(source.getCodeSystem(), target.getCodeSystem()));
+        structure.setCodeSystemOid(this.compare(source.getCodeSystemOid(), target.getCodeSystemOid()));
+        structure.setDescription(this.compare(source.getDescription(), target.getDescription()));
+        structure.setComments(this.compare(source.getComments(), target.getComments()));
+    }
+
 
     private DeltaNode<DomainInfo> compare(DomainInfo source, DomainInfo target) {
         return this.compare(source, target, (s, t) -> {
@@ -300,6 +364,12 @@ public class EntityDeltaServiceImpl {
     }
 
     private DeltaNode<Usage> compare(Usage source, Usage target) {
+        return this.compare(source, target, (s, t) -> {
+            return s.equals(t);
+        });
+    }
+
+    private DeltaNode<CodeUsage> compare(CodeUsage source, CodeUsage target) {
         return this.compare(source, target, (s, t) -> {
             return s.equals(t);
         });
@@ -335,6 +405,24 @@ public class EntityDeltaServiceImpl {
         node.setPrevious(source);
 
         return node;
+    }
+
+    private DeltaNode<Stability> compare(Stability source, Stability target) {
+        return this.compare(source, target, (s, t) -> {
+            return s.equals(t);
+        });
+    }
+
+    private DeltaNode<Extensibility> compare(Extensibility source, Extensibility target) {
+        return this.compare(source, target, (s, t) -> {
+            return s.equals(t);
+        });
+    }
+
+    private DeltaNode<ContentDefinition> compare(ContentDefinition source, ContentDefinition target) {
+        return this.compare(source, target, (s, t) -> {
+            return s.equals(t);
+        });
     }
 
     private Set<DisplayValuesetBinding> getValueSetBinding(Set<BindingDisplay> bindings) {

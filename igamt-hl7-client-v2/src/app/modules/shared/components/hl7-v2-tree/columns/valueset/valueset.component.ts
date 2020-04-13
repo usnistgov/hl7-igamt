@@ -1,5 +1,6 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import * as _ from 'lodash';
 import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, take, takeUntil, takeWhile, tap } from 'rxjs/operators';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
@@ -16,7 +17,6 @@ import {
 } from '../../../binding-selector/binding-selector.component';
 import { IValueSetBindingDisplay } from '../../../binding-selector/binding-selector.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
-
 export interface IValueSetOrSingleCodeBindings {
   valueSetBindings: Array<IBinding<IValuesetBinding[]>>;
   singleCodeBindings: Array<IBinding<InternalSingleCode>>;
@@ -109,7 +109,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
 
   selectedValueSetBinding(vsOrCode: IValueSetOrSingleCodeDisplay): IValueSetBindingDisplay[] {
     if (vsOrCode && vsOrCode.type === IBindingType.VALUESET) {
-      return vsOrCode.value as IValueSetBindingDisplay[];
+      return _.cloneDeep(vsOrCode.value) as IValueSetBindingDisplay[];
     } else {
       return undefined;
     }
@@ -117,7 +117,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
 
   selectedSingleCode(vsOrCode: IValueSetOrSingleCodeDisplay): ISingleCodeDisplay {
     if (vsOrCode && vsOrCode.type === IBindingType.SINGLECODE) {
-      return vsOrCode.value as ISingleCodeDisplay;
+      return _.cloneDeep(vsOrCode.value) as ISingleCodeDisplay;
     } else {
       return undefined;
     }
@@ -125,7 +125,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
 
   editBinding() {
     const dialogRef = this.dialog.open(BindingSelectorComponent, {
-       data: {
+      data: {
         resources: this.valueSets,
         locationInfo: this.bindingInfo,
         path: null,
@@ -300,6 +300,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
           }
         } else {
           this.editable.next({ type: IBindingType.VALUESET, value: undefined });
+          this.freeze$ = of();
         }
       },
     );

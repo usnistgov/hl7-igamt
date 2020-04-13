@@ -26,4 +26,5 @@ export interface IValueSet extends IResource {
   extensibility: Extensibility;
   contentDefinition: ContentDefinition;
   intensionalComment?: string;
+  oid?: string;
 }

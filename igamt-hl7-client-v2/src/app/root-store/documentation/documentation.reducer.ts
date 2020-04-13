@@ -1,12 +1,14 @@
-
 import {createEntityAdapter, Dictionary, EntityState} from '@ngrx/entity';
 import {createFeatureSelector, createSelector} from '@ngrx/store';
 import {
   DocumentationType,
   IDocumentation,
-  IDocumentationWorkspace, IDocumentationWorkspaceActive, IDocumentationWorkspaceCurrent,
+  IDocumentationWorkspace,
+  IDocumentationWorkspaceActive,
+  IDocumentationWorkspaceCurrent,
 } from '../../modules/documentation/models/documentation.interface';
-import {DocumentationActionTypes, DocumentationsActions, UpdateDocumentationListSuccess} from './documentation.actions';
+import {DocumentationActionTypes, DocumentationsActions} from './documentation.actions';
+
 export interface IState {
   documentations: EntityState<IDocumentation>;
   workspace: IDocumentationWorkspace;
@@ -111,6 +113,16 @@ export const selectSubTitle = createSelector(
     }
   },
 );
+export const isUser = createSelector(
+  selectWorkspaceActive,
+  (state: IDocumentationWorkspaceActive) => {
+    if (state.display) {
+      return state.display.type === DocumentationType.USERNOTES;
+    } else {
+      return false;
+    }
+  },
+);
 export const selectWorkspaceCurrentIsValid = createSelector(
   selectWorkspace,
   (state: IDocumentationWorkspace) => {
@@ -137,7 +149,6 @@ export const selectWorkspaceCurrent = createSelector(
     };
   },
 );
-
 export const selectLatestUpdate = createSelector(
   selectWorkspaceCurrent,
   (state: IDocumentationWorkspaceCurrent) => {

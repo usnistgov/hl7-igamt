@@ -3,8 +3,9 @@ import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { LengthType } from '../../constants/length-type.enum';
 import { Type } from '../../constants/type.enum';
+import { Usage } from '../../constants/usage.enum';
 import { IComment } from '../../models/comment.interface';
-import { IValueSetBindingConfigMap } from '../../models/config.class';
+import { Hl7Config, IValueSetBindingConfigMap } from '../../models/config.class';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
@@ -61,6 +62,7 @@ export interface IHL7v2TreeNode extends TreeNode {
     position: number,
     type: Type,
     usage?: IStringValue,
+    oldUsage?: Usage,
     text?: IStringValue,
     cardinality?: ICardinalityRange,
     length?: ILengthRange,
@@ -115,6 +117,8 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   repository: AResourceRepositoryService;
   @Input()
   username: string;
+  @Input()
+  config: Hl7Config;
   resource$: Observable<IResource>;
   treeExpandedNodes: string[];
 

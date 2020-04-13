@@ -4,7 +4,7 @@ import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
-import { selectBindingConfig } from '../../../../root-store/config/config.reducer';
+import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
 import { EditorSave, EditorUpdate, LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
   selectAllDatatypes,
@@ -16,7 +16,7 @@ import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors'
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
-import { IValueSetBindingConfigMap } from '../../../shared/models/config.class';
+import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
 import { IResource } from '../../../shared/models/resource.interface';
@@ -40,6 +40,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   public segments: Observable<IDisplayElement[]>;
   public valueSets: Observable<IDisplayElement[]>;
   public bindingConfig: Observable<IValueSetBindingConfigMap>;
+  public config: Observable<Hl7Config>;
   changes: ReplaySubject<IStructureChanges>;
   username: Observable<string>;
   resource$: Observable<T>;
@@ -58,6 +59,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     public columns: HL7v2TreeColumnType[]) {
     super(editorMetadata, actions$, store);
     this.hasOrigin$ = this.store.select(selectedResourceHasOrigin);
+    this.config = this.store.select(getHl7ConfigState);
     this.datatypes = this.store.select(selectAllDatatypes);
     this.segments = this.store.select(selectAllSegments);
     this.valueSets = this.store.select(selectValueSetsNodes);

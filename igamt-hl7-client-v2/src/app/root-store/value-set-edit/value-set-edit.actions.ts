@@ -12,6 +12,7 @@ export enum ValueSetEditActionTypes {
   OpenValueSetStructureEditor = '[ValueSet Edit] Open Value Set Structure Editor',
   OpenValueSetCrossRefEditor = '[ValueSet Edit]Open Value Set Cross References Editor',
   OpenValueSetMetadataEditor = '[ValueSet Edit] Open Value Set Metadata Editor',
+  OpenValueSetDeltaEditor = '[ValueSet Edit] Open Value Set Delta Editor',
 }
 
 export class LoadValueSet implements Action {
@@ -72,4 +73,12 @@ export class OpenValueSetCrossRefEditor implements Action {
   }) { }
 }
 
-export type ValueSetEditActions = LoadValueSet | LoadValueSetSuccess | LoadValueSetFailure | OpenValueSetPreDefEditor |OpenValueSetMetadataEditor | OpenValueSetStructureEditor | OpenValueSetPostDefEditor | OpenValueSetCrossRefEditor;
+export class OpenValueSetDeltaEditor implements Action {
+  readonly type = ValueSetEditActionTypes.OpenValueSetDeltaEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IEditorMetadata,
+  }) { }
+}
+
+export type ValueSetEditActions = LoadValueSet | LoadValueSetSuccess | LoadValueSetFailure | OpenValueSetPreDefEditor |OpenValueSetMetadataEditor | OpenValueSetStructureEditor | OpenValueSetPostDefEditor | OpenValueSetCrossRefEditor | OpenValueSetDeltaEditor;

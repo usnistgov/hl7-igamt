@@ -4,6 +4,7 @@
     <ng-container *ngSwitchCase="false">
       <p-dropdown
       [style]="{'min-width': '60px'}"
+      [autoDisplayFirst]="false"
       [options]="options"
       (onChange)="modelChange($event)"
       [(ngModel)]="usage.value"

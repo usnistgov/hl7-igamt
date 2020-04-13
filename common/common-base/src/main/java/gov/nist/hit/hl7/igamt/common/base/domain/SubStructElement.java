@@ -16,6 +16,8 @@ public class SubStructElement extends StructureElement {
   private Ref ref;
 
   public static final String NA = "NA";
+  
+  private StandardKey conceptDomain;
 
 
 
@@ -73,6 +75,16 @@ public class SubStructElement extends StructureElement {
 
   public void setLengthType(LengthType lengthType) {
     this.lengthType = lengthType;
+  }
+
+
+  public StandardKey getConceptDomain() {
+    return conceptDomain;
+  }
+
+
+  public void setConceptDomain(StandardKey conceptDomain) {
+    this.conceptDomain = conceptDomain;
   }
 
 }

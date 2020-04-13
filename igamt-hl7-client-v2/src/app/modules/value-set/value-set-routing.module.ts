@@ -2,8 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import {
-  LoadValueSet, OpenValueSetCrossRefEditor, OpenValueSetMetadataEditor, OpenValueSetPostDefEditor,
-  OpenValueSetPreDefEditor, OpenValueSetStructureEditor,
+  LoadValueSet, OpenValueSetCrossRefEditor, OpenValueSetDeltaEditor, OpenValueSetMetadataEditor,
+  OpenValueSetPostDefEditor, OpenValueSetPreDefEditor,
+  OpenValueSetStructureEditor,
   ValueSetEditActionTypes,
 } from '../../root-store/value-set-edit/value-set-edit.actions';
 import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
@@ -11,6 +12,7 @@ import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.'
 import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
+import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
 import {ValueSetCrossRefsComponent} from './components/value-set-cross-refs/value-set-cross-refs.component';
 import {ValueSetMetadataEditorComponent} from './components/value-set-metadata-editor/value-set-metadata-editor.component';
 import {ValueSetPostdefEditorComponent} from './components/value-set-postdef-editor/value-set-postdef-editor.component';
@@ -125,6 +127,25 @@ const routes: Routes = [
           idKey: 'valuesetId',
           resourceType: Type.VALUESET,
           action: OpenValueSetCrossRefEditor,
+        },
+      },
+      {
+        path: 'delta',
+        component: DeltaEditorComponent,
+        canActivate: [IgEditorActivateGuard],
+        canDeactivate: [IgEditSaveDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.VALUESET_DELTA,
+            title: 'Delta',
+            resourceType: Type.VALUESET,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenValueSetDeltaEditor,
+          idKey: 'valuesetId',
         },
       },
     ],

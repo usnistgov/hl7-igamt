@@ -1847,7 +1847,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     return copy;
   }
 
-  private String generateConditionScript(Predicate p, String targetId) {
+  public String generateConditionScript(Predicate p, String targetId) {
     if (p instanceof FreeTextPredicate) {
       FreeTextPredicate cp = (FreeTextPredicate) p;
       return cp.getAssertionScript().replace("\n", "").replace("\r", "");
@@ -1861,7 +1861,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     return null;
   }
 
-  private String generateAssertionScript(ConformanceStatement c, String targetId) {
+  public String generateAssertionScript(ConformanceStatement c, String targetId) {
     if (c instanceof FreeTextConformanceStatement) {
       FreeTextConformanceStatement cs = (FreeTextConformanceStatement) c;
       return cs.getAssertionScript().replace("\n", "").replace("\r", "");
@@ -1887,7 +1887,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       Path context) {
     if (assertion instanceof NotAssertion) {
       return "<NOT>" + this.generateAssertionScript(((NotAssertion) assertion).getChild(), level,
-          targetId, context) + "<NOT>";
+          targetId, context) + "</NOT>";
     } else if (assertion instanceof IfThenAssertion) {
       return "<IMPLY>"
           + this.generateAssertionScript(((IfThenAssertion) assertion).getIfAssertion(), level,
@@ -2040,18 +2040,26 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
         break;
       case regex:
-        result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + complement.getValue()
+        result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + complement.getValue()
             + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
         break;
       case positiveInteger:
-        result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "^[1-9]\\d*$"
+        result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + "^[1-9]\\d*$"
+            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+        break;
+      case LOINC:
+        result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "LOINC"
+            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+        break;
+      case SNOMED:
+        result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "SNOMED"
             + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
         break;
       case sequentially:
         result = "<SetID Path=\"" + sPathStr + "\"/>";
         break;
       case iso:
-        result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "[0-2](\\.(0|[1-9][0-9]*))*"
+        result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + "[0-2](\\.(0|[1-9][0-9]*))*"
             + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
         break;
       case cEarlier:

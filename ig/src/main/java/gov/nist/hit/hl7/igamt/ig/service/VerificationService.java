@@ -6,6 +6,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.display.model.XMLVerificationReport;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.CPVerificationResult;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.ComplianceReport;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.DTSegVerificationResult;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VSVerificationResult;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
@@ -26,5 +27,7 @@ public interface VerificationService {
   CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile);
   
   VerificationReport verifyIg(String documentId);
+  
+  ComplianceReport verifyIgForCompliance(String documentId);
 
 }

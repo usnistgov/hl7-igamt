@@ -1,6 +1,6 @@
 <p-tree [style]="{'width':'100%', 'height': '100%'}" [value]="structure" (onNodeExpand)="onNodeExpand($event)" (onNodeSelect)="nodeSelected($event)" selectionMode="single" [(selection)]="selectedNode">
   <ng-template let-node pTemplate="default">
-    <app-entity-bagde [type]="node.data.type" ></app-entity-bagde> <span *ngIf="node.data.position"> {{node.data.position}}.</span>
-    {{node.data.name}}
+    <app-entity-bagde [type]="node.data.type" ></app-entity-bagde>
+    <span [ngClass]="{'disabled-tree-item': !node.selectable}"><span *ngIf="node.data.position"> {{node.data.position}}.</span> {{node.data.name}}</span>
   </ng-template>
 </p-tree>

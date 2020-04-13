@@ -1,8 +1,12 @@
 <div *ngIf="action !== 'UNCHANGED'" style="width: 100%;">
-  <div *ngIf="action !== 'REMOVED' && currentValue !== 'NA' && currentValue" [class]="'delta-current ' + (styleClassCurrent ? styleClassCurrent : '')" [ngClass]="{'delta-updated': action === 'UPDATED' }">
+  <div
+      pTooltip="Updated Value" tooltipPosition="top"
+      *ngIf="action !== 'REMOVED' && currentValue !== 'NA' && currentValue" [class]="'delta-current ' + (styleClassCurrent ? styleClassCurrent : '')" [ngClass]="{'delta-updated': action === 'UPDATED' }">
     <ng-container *ngTemplateOutlet="current ? current : default; context: { $implicit: currentValue }"></ng-container>
   </div>
-  <div *ngIf="action !== 'ADDED' && previousValue !== 'NA' && previousValue" [class]="'delta-previous ' + (styleClassPrevious ? styleClassPrevious : '')" [ngClass]="{'delta-updated': action === 'UPDATED' }">
+  <div
+    pTooltip="Original Value" tooltipPosition="top"
+    *ngIf="action !== 'ADDED' && previousValue !== 'NA' && previousValue" [class]="'delta-previous ' + (styleClassPrevious ? styleClassPrevious : '')" [ngClass]="{'delta-updated': action === 'UPDATED' }">
     <ng-container *ngTemplateOutlet="previous ? previous : default; context: { $implicit: previousValue }"></ng-container>
   </div>
 </div>

@@ -37,18 +37,22 @@ export class SelectValueSetsComponent implements OnInit {
   ngOnInit() {
   }
   addAsIs(obj: any) {
+
     const element: IAddingInfo = {
       originalId: obj.id,
       id: obj.id,
+      oid: obj.oid,
       type: Type.VALUESET,
       name: obj.bindingIdentifier,
       ext: '',
       description: obj.name,
-      domainInfo: obj.domainInfo,
-      sourceType: obj.sourceType,
+      domainInfo: obj.domainInfo.scope === Scope.PHINVADS ? {...obj.domainInfo , scope: Scope.PHINVADS} : obj.domainInfo,
+      sourceType: obj.domainInfo.scope === Scope.PHINVADS ? SourceType.EXTERNAL : obj.sourceType,
       numberOfChildren: obj.numberOfCodes,
-      includeChildren: obj.numberOfCodes < 500,
+      includeChildren: obj.domainInfo.scope === Scope.PHINVADS ? false : obj.numberOfCodes < 500,
       flavor: false,
+      url: obj.url,
+
     };
     this.selectedData.push(element);
     this.emitData();
@@ -57,6 +61,7 @@ export class SelectValueSetsComponent implements OnInit {
     const element: IAddingInfo = {
       originalId: obj.id,
       id: Guid.create().toString(),
+      oid: obj.oid,
       type: Type.VALUESET,
       name: obj.bindingIdentifier,
       description: obj.name,
@@ -64,7 +69,8 @@ export class SelectValueSetsComponent implements OnInit {
       sourceType: obj.sourceType,
       numberOfChildren: obj.numberOfCodes,
       includeChildren: obj.numberOfCodes < 500,
-      domainInfo: {...obj.domainInfo , scope: Scope.USER},
+      domainInfo: {...obj.domainInfo , scope: obj.domainInfo.scope === Scope.PHINVADS ? Scope.PHINVADS : Scope.USER},
+      url: obj.url,
     };
     this.selectedData.push(element);
     this.emitData();

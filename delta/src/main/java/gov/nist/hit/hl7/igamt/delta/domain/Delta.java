@@ -2,13 +2,13 @@ package gov.nist.hit.hl7.igamt.delta.domain;
 
 import java.util.List;
 
-public class Delta {
+public class Delta<T> {
 
     private DeltaInfo source;
     private DeltaInfo target;
-    private List<StructureDelta> delta;
+    private T delta;
 
-    public Delta(DeltaInfo source, DeltaInfo target, List<StructureDelta> delta) {
+    public Delta(DeltaInfo source, DeltaInfo target, T delta) {
         this.source = source;
         this.target = target;
         this.delta = delta;
@@ -30,11 +30,12 @@ public class Delta {
         this.target = target;
     }
 
-    public List<StructureDelta> getDelta() {
+    public T getDelta() {
         return delta;
     }
 
-    public void setDelta(List<StructureDelta> delta) {
+    public void setDelta(T delta) {
         this.delta = delta;
     }
+
 }
