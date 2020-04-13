@@ -308,6 +308,8 @@ public class ExportConfiguration {
 
     // Setting ValueSetExportConfiguration
     ValueSetExportConfiguration valueSetExportConfiguration = new ValueSetExportConfiguration(defaultConfiguration);
+    valueSetExportConfiguration.setDeltaMode(true);
+    valueSetExportConfiguration.setDeltaConfig(deltaConfiguration);
     defaultConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
     defaultConfiguration.setConformamceProfileExportConfiguration(conformanceProfileExportConfiguration);
     defaultConfiguration.setValueSetExportConfiguration(valueSetExportConfiguration);
