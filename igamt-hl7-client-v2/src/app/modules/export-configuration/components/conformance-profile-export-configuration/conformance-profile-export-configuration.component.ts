@@ -32,6 +32,7 @@ export class ConformanceProfileExportConfigurationComponent implements OnInit {
     this.detectChange.emit(this.config);
   }
   applyChange(event: any) {
+    console.log(event);
     this.config.deltaMode = event.active;
     this.config.deltaConfig = event.config;
     this.triggerChange();

@@ -6,7 +6,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 public class StructureElementRef {
     private String pathId;
     private Type type;
-    private String name;
+    private String name; // This is always null, instead I use segment Name from StructureElementRef segment
     private Path path;
 
     public String getPathId() {
