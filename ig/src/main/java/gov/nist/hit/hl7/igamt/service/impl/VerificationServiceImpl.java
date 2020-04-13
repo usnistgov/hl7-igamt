@@ -54,7 +54,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -114,8 +113,8 @@ public class VerificationServiceImpl implements VerificationService {
   @Autowired
   private ValuesetService valuesetService;
   
-  @Autowired
-  private PredicateRepository predicateRepository;
+//  @Autowired
+//  private PredicateRepository predicateRepository;
   
   private static String profileXSDurl =
       "https://raw.githubusercontent.com/Jungyubw/NIST_healthcare_hl7_v2_profile_schema/master/Schema/NIST%20Validation%20Schema/Profile.xsd";
@@ -1148,12 +1147,12 @@ public class VerificationServiceImpl implements VerificationService {
   }
 
   private boolean isValueSetOrSingleCodeAllowedComponent(Component c, Datatype childDt) {
-    // TODO Auto-generated method stub
+    // TODO
     return true;
   }
   
   private boolean isValueSetOrSingleCodeAllowedField(Field f, Datatype childDt) {
-    // TODO Auto-generated method stub
+    // TODO
     return true;
   }
 
@@ -1184,37 +1183,37 @@ public class VerificationServiceImpl implements VerificationService {
     return false;
   }
 
-  private boolean hasPredicate(ComplexDatatype cDt, String componentId) {
-    ResourceBinding binding = cDt.getBinding();
-    if(binding == null || binding.getChildren() == null) return false;
-    else {
-      for (StructureElementBinding child : binding.getChildren()) {
-        if(child.getElementId().equals(componentId)) {
-          if(child.getPredicateId() != null) {
-            if(this.predicateRepository.findById(child.getPredicateId()).isPresent()) return true;
-          }
-        }
-      }
-    }
-    
-    return false;
-  }
+//  private boolean hasPredicate(ComplexDatatype cDt, String componentId) {
+//    ResourceBinding binding = cDt.getBinding();
+//    if(binding == null || binding.getChildren() == null) return false;
+//    else {
+//      for (StructureElementBinding child : binding.getChildren()) {
+//        if(child.getElementId().equals(componentId)) {
+//          if(child.getPredicateId() != null) {
+//            if(this.predicateRepository.findById(child.getPredicateId()).isPresent()) return true;
+//          }
+//        }
+//      }
+//    }
+//    
+//    return false;
+//  }
   
-  private boolean hasPredicate(Segment segment, String fieldId) {
-    ResourceBinding binding = segment.getBinding();
-    if(binding == null || binding.getChildren() == null) return false;
-    else {
-      for (StructureElementBinding child : binding.getChildren()) {
-        if(child.getElementId().equals(fieldId)) {
-          if(child.getPredicateId() != null) {
-            if(this.predicateRepository.findById(child.getPredicateId()).isPresent()) return true;
-          }
-        }
-      }
-    }
-    
-    return false;
-  }
+//  private boolean hasPredicate(Segment segment, String fieldId) {
+//    ResourceBinding binding = segment.getBinding();
+//    if(binding == null || binding.getChildren() == null) return false;
+//    else {
+//      for (StructureElementBinding child : binding.getChildren()) {
+//        if(child.getElementId().equals(fieldId)) {
+//          if(child.getPredicateId() != null) {
+//            if(this.predicateRepository.findById(child.getPredicateId()).isPresent()) return true;
+//          }
+//        }
+//      }
+//    }
+//    
+//    return false;
+//  }
   
   
   /**
@@ -1222,18 +1221,18 @@ public class VerificationServiceImpl implements VerificationService {
    * @param sebs
    * @return
    */
-  private boolean hasPredicate(String elementId, Set<StructureElementBinding> sebs) {
-    if(sebs != null) {
-      for (StructureElementBinding child : sebs) {
-        if(child.getElementId().equals(elementId)) {
-          if(child.getPredicateId() != null) {
-            if(this.predicateRepository.findById(child.getPredicateId()).isPresent()) return true;
-          }
-        }
-      }
-    }
-    return false;
-  }
+//  private boolean hasPredicate(String elementId, Set<StructureElementBinding> sebs) {
+//    if(sebs != null) {
+//      for (StructureElementBinding child : sebs) {
+//        if(child.getElementId().equals(elementId)) {
+//          if(child.getPredicateId() != null) {
+//            if(this.predicateRepository.findById(child.getPredicateId()).isPresent()) return true;
+//          }
+//        }
+//      }
+//    }
+//    return false;
+//  }
  
   private void checkingMetadataForValueset(Valueset valueset, VSVerificationResult result) {
     if (valueset == null) {
@@ -1241,7 +1240,6 @@ public class VerificationServiceImpl implements VerificationService {
     } else {
       String bId = valueset.getBindingIdentifier();
       String name = valueset.getName();
-      String description = valueset.getDescription();
       Extensibility extensibility = valueset.getExtensibility();
       Stability stability = valueset.getStability();
       ContentDefinition contentDefinition = valueset.getContentDefinition();
