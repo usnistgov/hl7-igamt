@@ -19,6 +19,9 @@ export class DatatypeExportConfigurationComponent implements OnInit {
   @Input()
   viewOnly: boolean;
 
+  @Input()
+  derived: boolean;
+
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
 

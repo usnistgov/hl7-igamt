@@ -458,6 +458,15 @@ public class DeltaServiceImpl implements DeltaService {
     return null;
   }
 
+@Override
+public ValuesetDelta valuesetDelta(Valueset valueset) {
+	Valueset source = this.valuesetService.findById(valueset.getOrigin());
+	ValuesetDelta vsDelta = entityDeltaService.valueset(source, valueset);
+	return vsDelta;
+}
+  
+  
+
 
 }
 
