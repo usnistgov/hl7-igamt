@@ -63,16 +63,20 @@ export class DeltaExportConfigurationComponent implements OnInit {
 
   ];
 
+  instanceId: any;
   @Input()
   active: any;
   @Input()
   config: any;
   @Output()
-  updateDelta: EventEmitter<any> = new EventEmitter<any>();
+  updateDelta: EventEmitter<any>;
 
   colorOpened = false;
   openedFor;
-  constructor() { }
+  constructor() {
+    this.instanceId = new Date().getTime();
+    this.updateDelta = new EventEmitter<any>();
+  }
 
   ngOnInit() {
   }

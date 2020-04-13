@@ -108,12 +108,6 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	  
 	}
 	
-	public Boolean CheckUsageForValueSets(CodeUsageConfiguration usageConfiguration, CodeUsage usage) {
-	return usageConfiguration.isR() && usage.equals(CodeUsage.R) ||
-			usageConfiguration.isP() && usage.equals(CodeUsage.P) ||
-			usageConfiguration.isE() && usage.equals(CodeUsage.E);			
-}
-
 	private String getCodSystemDispaly(Set<String> codeSystems) {
 		if(codeSystems !=null && !codeSystems.isEmpty()) {
 			return String.join(",", codeSystems);
@@ -121,6 +115,14 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 			return "No code system applied";
 		}
 	}
+
+	
+	public Boolean CheckUsageForValueSets(CodeUsageConfiguration usageConfiguration, CodeUsage usage) {
+	return usageConfiguration.isR() && usage.equals(CodeUsage.R) ||
+			usageConfiguration.isP() && usage.equals(CodeUsage.P) ||
+			usageConfiguration.isE() && usage.equals(CodeUsage.E);			
+}
+
 
 }
 
