@@ -102,12 +102,12 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 //			ExportConfiguration exportConfiguration =
 //					exportConfigurationService.getExportConfiguration(username);
 			
-			DeltaConfiguration deltaConfig = new DeltaConfiguration();
-			deltaConfig.setColors(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getColors());
-			deltaConfig.setMode(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getMode());
-			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
-			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
-			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
+//			DeltaConfiguration deltaConfig = new DeltaConfiguration();
+//			deltaConfig.setColors(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getColors());
+//			deltaConfig.setMode(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getMode());
+//			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
+//			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
+//			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
 			
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
@@ -115,7 +115,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			String xmlContent =
 					igDataModelSerializationService.serializeIgDocument(igDataModel, exportConfiguration,decision).toXML();
 					      System.out.println("XML_EXPORT : " + xmlContent);
-			//		      System.out.println("XmlContent in IgExportService is : " + xmlContent);
+					      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
 					igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,

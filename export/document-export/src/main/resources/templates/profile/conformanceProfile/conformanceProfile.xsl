@@ -201,11 +201,22 @@
 			</xsl:element>
 		</xsl:element>
 		<xsl:element name="br" />
-				<xsl:element name="br" />
+			<xsl:element name="br" />
 		<xsl:element name="span">
 				<xsl:text>CoConstraint Condition : </xsl:text>
 				        <xsl:value-of select="./coConstraintCondition"/>
 				        		<xsl:element name="br" />
+		<xsl:element name="span">
+				<xsl:text>CoConstraint Context : </xsl:text>
+				        <xsl:value-of select="./coConstraintContext"/>
+				        		<xsl:element name="br" />
+			</xsl:element>
+		<xsl:element name="span">
+				<xsl:text>CoConstraint Segment Name : </xsl:text>
+				        <xsl:value-of select="./coConstraintSegmentName"/>
+				        		<xsl:element name="br" />
+			</xsl:element>
+		
 			</xsl:element>
 					<xsl:element name="br" />			
 		<xsl:copy-of select="./coConstraintsTable/coconstraints/table" />
