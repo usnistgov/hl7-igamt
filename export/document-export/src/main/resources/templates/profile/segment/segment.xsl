@@ -30,7 +30,7 @@
 		<xsl:call-template name="VersionDisplay" />
 		<xsl:call-template name="UsageNotes"/>
 		<xsl:call-template name="AuthorNotes" />
-				<xsl:call-template name="PreDef" />
+		<xsl:call-template name="PreDef" />
 	
 
 		<xsl:if test="$segmentMetadata.display = 'true'">
@@ -198,8 +198,6 @@
 		</xsl:element>
 		
 						<xsl:call-template name="PostDef" />
-		
-		
 		<xsl:if test="count(Constraintss/ConformanceStatement)  &gt; 0">
 
 			<!-- <xsl:if test="count(./Constraint[@Type='cs']) &gt; 0"> -->

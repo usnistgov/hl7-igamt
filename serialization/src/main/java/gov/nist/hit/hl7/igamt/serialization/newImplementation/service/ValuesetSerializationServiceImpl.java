@@ -159,6 +159,7 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 			Element changesElement = new Element("Changes");
 			changesElement.addAttribute(new Attribute("mode", deltaConfiguration.getMode().name()));
 
+
 //		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
 			changesElement.addAttribute(
 					new Attribute("updatedColor", deltaConfiguration.getColors().get(DeltaAction.UPDATED)));

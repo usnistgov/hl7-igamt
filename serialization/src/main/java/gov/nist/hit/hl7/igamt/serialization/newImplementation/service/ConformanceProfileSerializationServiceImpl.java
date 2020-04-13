@@ -124,7 +124,8 @@ private FroalaSerializationUtil frolaCleaning;
 		        }
 
 	        // Calculate conformanceProfile delta if the conformanceProfile has an origin
-		    if(conformanceProfile.getOrigin() != null) {
+	        
+		    if(conformanceProfile.getOrigin() != null && conformanceProfileExportConfiguration.isDeltaMode()) {
 				List<StructureDelta> structureDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
 			  	if(structureDelta != null){
 					List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
@@ -149,32 +150,41 @@ private FroalaSerializationUtil frolaCleaning;
 
 		    }
 		    
+		    
 		    if (conformanceProfile.getCoConstraintsBindings() != null) {
+				Element coConstraintsElement = new Element("coConstraintsElement");
 		    		for(CoConstraintBinding coConstraintBinding : conformanceProfile.getCoConstraintsBindings()) {
 		    			if(coConstraintBinding != null) {
+		    				if(coConstraintBinding.getContext() != null) {
+    							Element coConstraintContext = new Element("coConstraintContext");
+    							coConstraintContext.appendChild(coConstraintBinding.getContext().getName());
+	    						coConstraintsElement.appendChild(coConstraintContext);
+    							}
 		    				if(coConstraintBinding.getBindings() != null) {
 		    		    			for(CoConstraintBindingSegment coConstraintBindingSegment : coConstraintBinding.getBindings() ) {
 		    		    				if(coConstraintBindingSegment != null) {
+		    	    							Element coConstraintSegmentName = new Element("coConstraintSegmentName");
+		    	    							coConstraintSegmentName.appendChild(coConstraintBindingSegment.getSegment().getName());
+		    		    						coConstraintsElement.appendChild(coConstraintSegmentName);
 		    		    					for(CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {
-		    		    						Element coConstraintsElement = new Element("coConstraintsElement");
 		    		    						CoConstraintTable mergedCoConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableConditionalBinding.getValue());
-
-		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("COMPACT")) {
-		    		    							if(coConstraintTableConditionalBinding.getCondition() != null) {
+		    		    						if(coConstraintTableConditionalBinding.getCondition() != null) {
 		    		    							Element coConstraintCondition = new Element("coConstraintCondition");
 		    		    							coConstraintCondition.appendChild(coConstraintTableConditionalBinding.getCondition().getDescription());
 			    		    						coConstraintsElement.appendChild(coConstraintCondition);
 		    		    							}
+		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("COMPACT")) {
+		    		    							
 			    		    						Element coConstraintsTable = new Element("coConstraintsTable");
 			    		    						coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintCompact(mergedCoConstraintTable));
 			    		    						coConstraintsElement.appendChild(coConstraintsTable);
 		    		    						}
 		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("VERBOSE")) {
-		    		    							if(coConstraintTableConditionalBinding.getCondition() != null) {
-			    		    						 Element coConstraintCondition = new Element("coConstraintCondition");
-			    		    							coConstraintCondition.appendChild(coConstraintTableConditionalBinding.getCondition().getDescription());
-				    		    						coConstraintsElement.appendChild(coConstraintCondition);
-		    		    							}
+//		    		    							if(coConstraintTableConditionalBinding.getCondition() != null) {
+//			    		    						 Element coConstraintCondition = new Element("coConstraintCondition");
+//			    		    							coConstraintCondition.appendChild(coConstraintTableConditionalBinding.getCondition().getDescription());
+//				    		    						coConstraintsElement.appendChild(coConstraintCondition);
+//		    		    							}
 				    		    						Element coConstraintsTable = new Element("coConstraintsTable");
 				    		    						coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintVerbose(mergedCoConstraintTable));
 				    		    						coConstraintsElement.appendChild(coConstraintsTable);
