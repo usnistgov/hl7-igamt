@@ -20,25 +20,16 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject
  */
 @Service
 public interface DatatypeLibraryDisplayConverterService {
-
   public DatatypeLibraryDisplay convertDomainToModel(DatatypeLibrary lib)
       throws DatatypeLibraryConverterException;
-
-
   public List<TreeNode> getDatatypesNodes(Set<Datatype> datatypes);
-
 
   public TreeNode createDatatypeNode(Datatype elm, int position);
 
-
   public TreeNode createNarrativeNode(TextSection s);
-
 
   public Set<TextSection> convertTocToDomain(List<TreeNode> toc);
 
   public AddDatatypeResponseDisplay convertDatatypeResponseToDisplay(
       AddDatatypeResponseObject objects);
-
-
-
 }

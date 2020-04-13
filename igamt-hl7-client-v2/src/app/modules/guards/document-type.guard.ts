@@ -1,16 +1,16 @@
 import {Injectable} from '@angular/core';
-import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree} from '@angular/router';
+import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
+import {Actions, ofType} from '@ngrx/effects';
+import {Action, Store} from '@ngrx/store';
 import {Observable, of, ReplaySubject} from 'rxjs';
-import {Action, Store} from "@ngrx/store";
-import {IState} from "../../root-store/conformance-profile-edit/conformance-profile-edit.reducer";
-import {Actions, ofType} from "@ngrx/effects";
-import {map, take} from "rxjs/operators";
-import {DocumentActionTypes, ToggleType} from "../../root-store/document/document.actions";
-import {Scope} from "../shared/constants/scope.enum";
-import {IDocumentType} from "../document/document.type";
+import {map, take} from 'rxjs/operators';
+import {IState} from '../../root-store/conformance-profile-edit/conformance-profile-edit.reducer';
+import {DocumentActionTypes, ToggleType} from '../../root-store/document/document.actions';
+import {IDocumentType} from '../document/document.type';
+import {Scope} from '../shared/constants/scope.enum';
 import {Type} from '../shared/constants/type.enum';
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DocumentTypeGuard implements CanActivate {
   constructor(
@@ -35,7 +35,7 @@ export class DocumentTypeGuard implements CanActivate {
             subject.next(true);
       }),
     ).subscribe();
-    this.store.dispatch(new ToggleType({type: type, scope: scope}));
+    this.store.dispatch(new ToggleType({type, scope}));
 
     return subject.asObservable().pipe(
       map((result) => {

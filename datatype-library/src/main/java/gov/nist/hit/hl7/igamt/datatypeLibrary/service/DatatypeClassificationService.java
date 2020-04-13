@@ -33,6 +33,4 @@ public interface DatatypeClassificationService {
 
   public DatatypeClassification save(DatatypeClassification elm);
 
-
-
 }

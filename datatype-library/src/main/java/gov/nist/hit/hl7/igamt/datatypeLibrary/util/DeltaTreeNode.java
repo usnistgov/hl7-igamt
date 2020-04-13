@@ -14,6 +14,8 @@ package gov.nist.hit.hl7.igamt.datatypeLibrary.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nist.diff.domain.DeltaAction;
+
 /**
  * @author ena3
  *
@@ -22,6 +24,7 @@ public class DeltaTreeNode {
 
   private DeltaRowData data = new DeltaRowData();
   private int position;
+
   private List<DeltaTreeNode> children = new ArrayList<DeltaTreeNode>();
 
   public DeltaRowData getData() {

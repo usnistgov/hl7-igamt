@@ -53,7 +53,11 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
@@ -107,8 +111,8 @@ public class BootstrapApplication implements CommandLineRunner {
   //  @Autowired
   //  DatatypeLibraryService dataypeLibraryService;
   //
-  //  @Autowired
-  //  DatatypeClassifier datatypeClassifier;
+    @Autowired
+    DatatypeClassifier datatypeClassifier;
 
   //    @Autowired
   //    CoConstraintService ccService;
@@ -126,10 +130,10 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   BindingCollector bindingCollector;
 
-  //  
-  //  @Autowired
-  //  DatatypeClassificationService datatypeClassificationService;
-  //  
+    
+    @Autowired
+    DatatypeClassificationService datatypeClassificationService;
+    
 
 
   @Bean
@@ -502,14 +506,24 @@ public class BootstrapApplication implements CommandLineRunner {
     }
 
 
-    //   @PostConstruct
-    //   void classifyDatatypes() throws DatatypeNotFoundException {
-    //   datatypeClassificationService.deleteAll();
-    //   System.out.println("Classifying dts");
-    //   datatypeClassifier.classify();
-    //   System.out.println("ENd of Classifying dts");
-    //  
-    //   }
+     //@PostConstruct
+     void classifyDatatypes() throws DatatypeNotFoundException {
+       datatypeClassificationService.deleteAll();
+       System.out.println("Classifying dts");
+       List<String> hl7Versions = sharedConstantService.findOne().getHl7Versions();
+       HashMap<EvolutionPropertie, Boolean> criterias1 = new HashMap<EvolutionPropertie, Boolean>();
+//       criterias1.put(EvolutionPropertie.CONFLENGTH, true);
+//       criterias1.put(EvolutionPropertie.MAXLENGTH, true);
+//       criterias1.put(EvolutionPropertie.DPUS, true);
+//       criterias1.put(EvolutionPropertie.MINLENGTH, true);
+       criterias1.put(EvolutionPropertie.CPUSAGE, true);
+       criterias1.put(EvolutionPropertie.CPDATATYPE, true);
+       criterias1.put(EvolutionPropertie.CPNUMBER, true);
+////       criterias1.put(EvolutionPropertie.CPNAME, true);
+       datatypeClassifier.classify(hl7Versions,criterias1);
+       System.out.println("ENd of Classifying dts");
+      
+     }
     //  
     //@PostConstruct
     //void testCache() {
@@ -550,6 +564,7 @@ public class BootstrapApplication implements CommandLineRunner {
     //}
 
 
+   
 
     public void fixMessages(Scope scope) {
       List<ConformanceProfile> resources = messageService.findByDomainInfoScope(scope.getValue()); 

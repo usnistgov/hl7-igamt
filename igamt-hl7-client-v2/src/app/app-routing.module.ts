@@ -8,9 +8,9 @@ import { RegisterComponent } from './modules/core/components/register/register.c
 import { ResetPasswordRequestComponent } from './modules/core/components/reset-password-request/reset-password-request.component';
 import { NewPasswordResolver } from './modules/core/resolvers/new-password.resolver';
 import { NotAuthenticatedGuard } from './modules/core/services/auth-guard.guard';
-import {Type} from "./modules/shared/constants/type.enum";
-import {Scope} from "./modules/shared/constants/scope.enum";
-import {DocumentTypeGuard} from "./modules/guards/document-type.guard";
+import {DocumentTypeGuard} from './modules/guards/document-type.guard';
+import {Scope} from './modules/shared/constants/scope.enum';
+import {Type} from './modules/shared/constants/type.enum';
 
 const routes: Routes = [
   {

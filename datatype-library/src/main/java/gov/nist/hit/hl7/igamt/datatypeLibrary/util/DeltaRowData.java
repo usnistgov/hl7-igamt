@@ -13,6 +13,8 @@ package gov.nist.hit.hl7.igamt.datatypeLibrary.util;
 
 import java.util.HashMap;
 
+import gov.nist.diff.domain.DeltaAction;
+
 /**
  * @author ena3
  *
@@ -21,6 +23,14 @@ public class DeltaRowData {
 
 
   private int position;
+  private DeltaAction action;
+  public DeltaAction getAction() {
+    return action;
+  }
+
+  public void setAction(DeltaAction action) {
+    this.action = action;
+  }
 
   private HashMap<EvolutionPropertie, DeltaCell> data =
       new HashMap<EvolutionPropertie, DeltaCell>();

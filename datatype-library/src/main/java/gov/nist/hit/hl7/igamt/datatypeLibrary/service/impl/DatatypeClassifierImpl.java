@@ -72,8 +72,8 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
 
 
 
-    for (int i = 0; i < hl7Versions.size(); i++) {
-      AddVersion(hl7Versions.get(i), criterias1);
+    for (int i = 0; i < versions.size(); i++) {
+      AddVersion(hl7Versions.get(i), criterias);
     }
     for (String s : datatypeMap.keySet()) {
       DatatypeClassification classification = new DatatypeClassification();
@@ -169,12 +169,16 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
     System.out.println("Called Classifier");
     List<String> hl7Versions = configService.findOne().getHl7Versions();
     HashMap<EvolutionPropertie, Boolean> criterias1 = new HashMap<EvolutionPropertie, Boolean>();
-    criterias1.put(EvolutionPropertie.CONFLENGTH, true);
-    criterias1.put(EvolutionPropertie.MAXLENGTH, true);
-    criterias1.put(EvolutionPropertie.MINLENGTH, true);
-    criterias1.put(EvolutionPropertie.CPDATATYPE, true);
-    criterias1.put(EvolutionPropertie.CPNUMBER, true);
-    criterias1.put(EvolutionPropertie.CPNAME, true);
+//    criterias1.put(EvolutionPropertie.CONFLENGTH, true);
+//    criterias1.put(EvolutionPropertie.MAXLENGTH, true);
+//    criterias1.put(EvolutionPropertie.DPUS, true);
+
+//    criterias1.put(EvolutionPropertie.MINLENGTH, true);
+//    criterias1.put(EvolutionPropertie.CPUSAGE, true);
+//
+//    criterias1.put(EvolutionPropertie.CPDATATYPE, true);
+//    criterias1.put(EvolutionPropertie.CPNUMBER, true);
+////    criterias1.put(EvolutionPropertie.CPNAME, true);
     for (int i = 0; i < hl7Versions.size(); i++) {
       AddVersion(hl7Versions.get(i), criterias1);
     }

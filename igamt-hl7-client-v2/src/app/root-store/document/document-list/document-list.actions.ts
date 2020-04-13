@@ -16,7 +16,6 @@ export type IgListLoad = 'USER' | 'PUBLISHED' | 'ALL';
 
 export class LoadIgList implements Action {
   readonly type = IgListActionTypes.LoadIgList;
-
   constructor(readonly payload: {
     type: IgListLoad,
   }) {

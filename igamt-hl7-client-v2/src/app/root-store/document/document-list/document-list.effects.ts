@@ -1,13 +1,15 @@
+import {HttpErrorResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Store} from '@ngrx/store';
 import {of} from 'rxjs';
-import {catchError, concatMap, flatMap} from 'rxjs/operators';
+import {catchError, concatMap, flatMap, map, mergeMap, withLatestFrom} from 'rxjs/operators';
 import {Message} from 'src/app/modules/core/models/message/message.class';
 import {MessageService} from 'src/app/modules/core/services/message.service';
 import {IgListService} from 'src/app/modules/document/services/ig-list.service';
 import {RxjsStoreHelperService} from 'src/app/modules/shared/services/rxjs-store-helper.service';
 import {TurnOffLoader, TurnOnLoader} from 'src/app/root-store/loader/loader.actions';
+import {selectDocumentType} from '../document.reducer';
 import {
   DeleteIgListItemRequest,
   DeleteIgListItemSuccess,
@@ -22,11 +24,12 @@ export class DocumentListEffects {
   @Effect()
   loadIgList$ = this.actions$.pipe(
     ofType(IgListActionTypes.LoadIgList),
-    concatMap((action: LoadIgList) => {
+    withLatestFrom(this.store.select(selectDocumentType)),
+    mergeMap(([action, type]) => {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
-      return this.igListService.fetchIgList(action.payload.type).pipe(
+      return this.igListService.fetchIgList(action['payload']['type'], type).pipe(
         flatMap((items) => {
           return [
             new TurnOffLoader(),
@@ -42,15 +45,16 @@ export class DocumentListEffects {
   @Effect()
   deleteIg$ = this.actions$.pipe(
     ofType(IgListActionTypes.DeleteIgListItemRequest),
-    concatMap((action: DeleteIgListItemRequest) => {
+    withLatestFrom(this.store.select(selectDocumentType)),
+    concatMap(([action, type]) => {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
-      return this.igListService.deleteIg(action.id).pipe(
+      return this.igListService.deleteIg(action['id'], type).pipe(
         flatMap((message: Message) => {
           return [
             new TurnOffLoader(),
-            new DeleteIgListItemSuccess(action.id),
+            new DeleteIgListItemSuccess(action['id']),
             this.message.messageToAction(message),
           ];
         }),

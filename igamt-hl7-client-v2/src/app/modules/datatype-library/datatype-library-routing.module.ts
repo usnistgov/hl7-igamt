@@ -14,6 +14,8 @@ import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { AuthenticatedGuard } from './../core/services/auth-guard.guard';
 import {CreateDatatypeLibraryComponent} from './create-datatype-library/create-datatype-library.component';
+import {DatatypeEvolutionResolver} from './datatypes-evolution/datatype-evolution-resolver.service';
+import {DatatypesEvolutionComponent} from './datatypes-evolution/datatypes-evolution.component';
 
 const routes: Routes = [
   {
@@ -25,6 +27,12 @@ const routes: Routes = [
     path: 'create',
     component: CreateDocumentComponent,
     canActivate: [AuthenticatedGuard],
+  },
+  {path: 'evolution',
+  component: DatatypesEvolutionComponent,
+    resolve: {
+      matrix: DatatypeEvolutionResolver,
+    },
   },
   {
     path: 'error',

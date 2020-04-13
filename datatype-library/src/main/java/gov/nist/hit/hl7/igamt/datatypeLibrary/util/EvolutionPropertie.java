@@ -20,9 +20,9 @@ public enum EvolutionPropertie {
 
 
   CPNUMBER("Number of components"), CPNAME("Name of components"),
-
+  CPUSAGE("USAGE of components"),
   MINLENGTH("Min Length"), MAXLENGTH("Min Length"),
-
+  PRESENCE("PRESENCE"),
   CONFLENGTH("Conf. Length"), CPDATATYPE("Component Data Type"),
 
   CPDATATYPENAME("CPDTName");

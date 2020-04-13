@@ -8,7 +8,7 @@ describe('CreateDatatypeLibraryComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CreateDatatypeLibraryComponent ]
+      declarations: [ CreateDatatypeLibraryComponent ],
     })
     .compileComponents();
   }));

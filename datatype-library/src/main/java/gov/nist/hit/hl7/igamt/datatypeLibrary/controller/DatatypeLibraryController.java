@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +36,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -137,12 +139,13 @@ public class DatatypeLibraryController {
 
     } else {
       HashMap<EvolutionPropertie, Boolean> criterias1 = new HashMap<EvolutionPropertie, Boolean>();
-      criterias1.put(EvolutionPropertie.CONFLENGTH, true);
-      criterias1.put(EvolutionPropertie.MAXLENGTH, true);
-      criterias1.put(EvolutionPropertie.MINLENGTH, true);
+//      criterias1.put(EvolutionPropertie.CONFLENGTH, true);
+//      criterias1.put(EvolutionPropertie.MAXLENGTH, true);
+//      criterias1.put(EvolutionPropertie.MINLENGTH, true);
       criterias1.put(EvolutionPropertie.CPDATATYPE, true);
-      criterias1.put(EvolutionPropertie.CPNUMBER, true);
-      criterias1.put(EvolutionPropertie.CPNAME, true);
+//      criterias1.put(EvolutionPropertie.CPNUMBER, true);
+//      criterias1.put(EvolutionPropertie.CPNAME, true);
+      criterias1.put(EvolutionPropertie.CPUSAGE, true);
 
       return deltaService.getDatatypesDelta(d1, d2, criterias1).getChildren();
     }
@@ -314,13 +317,53 @@ public class DatatypeLibraryController {
    * @param authentication
    * @return
    */
-  @RequestMapping(value = "/api/datatype-libraries", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/datatype-library", method = RequestMethod.GET,
       produces = {"application/json"})
-  public @ResponseBody List<LibSummary> getUserLibs(Authentication authentication) {
+  public @ResponseBody List<LibSummary> getUserLibs(Authentication authentication,  @RequestParam("type") AccessType type) {
     String username = authentication.getPrincipal().toString();
     List<DatatypeLibrary> libs = dataypeLibraryService.findLatestByUsername(username);
     return dataypeLibraryService.convertListToDisplayList(libs);
   }
+  
+  
+  
+  
+
+//  @RequestMapping(value = "/api/datatype-libraries", method = RequestMethod.GET, produces = { "application/json" })
+//  public @ResponseBody List<IgSummary> getUserIG(Authentication authentication,
+//      @RequestParam("type") AccessType type) {
+//    String username = authentication.getPrincipal().toString();
+//    List<Ig> igdouments = new ArrayList<Ig>();
+//
+//    if (type != null) {
+//      if (type.equals(AccessType.PUBLIC)) {
+//
+//        igdouments = igService.findAllPreloadedIG();
+//
+//      } else if (type.equals(AccessType.PRIVATE)) {
+//
+//        igdouments = igService.findByUsername(username, Scope.USER);
+//
+//      } else if (type.equals(AccessType.ALL)) {
+//
+//        igdouments = igService.findAllUsersIG();
+//
+//      } else if (type.equals(AccessType.SHARED)) {
+//        // TODO
+//      } else {
+//        igdouments = igService.findByUsername(username, Scope.USER);
+//
+//      }
+//      return igService.convertListToDisplayList(igdouments);
+//    } else {
+//      igdouments = igService.findByUsername(username, Scope.USER);
+//      return igService.convertListToDisplayList(igdouments);
+//    }
+//  }
+  
+  
+  
+  
 
   /**
    * 
