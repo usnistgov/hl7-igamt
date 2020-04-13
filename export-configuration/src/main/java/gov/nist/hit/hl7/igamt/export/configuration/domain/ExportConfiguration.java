@@ -280,7 +280,7 @@ public class ExportConfiguration {
     datatypeExportConfiguration.setBinding(true);
     datatypeExportConfiguration.setPurposeAndUse(true);
     datatypeExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    datatypeExportConfiguration.setDeltaMode(true);
+    datatypeExportConfiguration.setDeltaMode(false);
     datatypeExportConfiguration.setDeltaConfig(deltaConfiguration);
 
     // Setting SegmentExportConfiguration
@@ -288,7 +288,7 @@ public class ExportConfiguration {
     segmentExportConfiguration.setDynamicMappingInfo(true);
     segmentExportConfiguration.setBinding(true);
     segmentExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    segmentExportConfiguration.setDeltaMode(true);
+    segmentExportConfiguration.setDeltaMode(false);
     segmentExportConfiguration.setDeltaConfig(deltaConfiguration);
 
     // Setting ConformanceProfileExportConfiguration
@@ -299,7 +299,7 @@ public class ExportConfiguration {
     conformanceProfileExportConfiguration.setStructID(true);
     conformanceProfileExportConfiguration.setBinding(true);
     conformanceProfileExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    conformanceProfileExportConfiguration.setDeltaMode(true);
+    conformanceProfileExportConfiguration.setDeltaMode(false);
     conformanceProfileExportConfiguration.setDeltaConfig(deltaConfiguration);
     conformanceProfileExportConfiguration.setListedColumns(listedColumns);
     //    conformanceProfileExportConfiguration.getMetadataConfig().setType(false);
@@ -308,6 +308,8 @@ public class ExportConfiguration {
 
     // Setting ValueSetExportConfiguration
     ValueSetExportConfiguration valueSetExportConfiguration = new ValueSetExportConfiguration(defaultConfiguration);
+    valueSetExportConfiguration.setDeltaMode(true);
+    valueSetExportConfiguration.setDeltaConfig(deltaConfiguration);
     defaultConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
     defaultConfiguration.setConformamceProfileExportConfiguration(conformanceProfileExportConfiguration);
     defaultConfiguration.setValueSetExportConfiguration(valueSetExportConfiguration);

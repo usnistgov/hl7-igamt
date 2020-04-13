@@ -1847,7 +1847,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     return copy;
   }
 
-  private String generateConditionScript(Predicate p, String targetId) {
+  public String generateConditionScript(Predicate p, String targetId) {
     if (p instanceof FreeTextPredicate) {
       FreeTextPredicate cp = (FreeTextPredicate) p;
       return cp.getAssertionScript().replace("\n", "").replace("\r", "");
@@ -1861,7 +1861,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     return null;
   }
 
-  private String generateAssertionScript(ConformanceStatement c, String targetId) {
+  public String generateAssertionScript(ConformanceStatement c, String targetId) {
     if (c instanceof FreeTextConformanceStatement) {
       FreeTextConformanceStatement cs = (FreeTextConformanceStatement) c;
       return cs.getAssertionScript().replace("\n", "").replace("\r", "");
@@ -1887,7 +1887,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       Path context) {
     if (assertion instanceof NotAssertion) {
       return "<NOT>" + this.generateAssertionScript(((NotAssertion) assertion).getChild(), level,
-          targetId, context) + "<NOT>";
+          targetId, context) + "</NOT>";
     } else if (assertion instanceof IfThenAssertion) {
       return "<IMPLY>"
           + this.generateAssertionScript(((IfThenAssertion) assertion).getIfAssertion(), level,

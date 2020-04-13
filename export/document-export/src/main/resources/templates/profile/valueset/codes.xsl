@@ -79,7 +79,27 @@
 				<xsl:element name="tbody">
 					<xsl:for-each select="Code">
 						<xsl:sort select="@value" data-type="text"></xsl:sort>
-						<xsl:call-template name="Code" />
+						<xsl:variable name="changedValue" select="./@value" />
+						<xsl:choose>
+							<xsl:when test="not(../../Changes/@mode) or ../../Changes/@mode = 'HIGHLIGHT'">
+								<xsl:call-template name="Code">
+									<xsl:with-param name="changeClass" select="../../Changes/Change[@value=$changedValue]"  />
+									<xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
+									<xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
+									<xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:if test="../../Changes/Change[@value=$changedValue]">
+									<xsl:call-template name="Code">
+										<xsl:with-param name="changeClass" select="../../Changes/Change[@value=$changedValue]"  />
+										<xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
+										<xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
+										<xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+									</xsl:call-template>
+								</xsl:if>
+							</xsl:otherwise>
+						</xsl:choose>
 					</xsl:for-each>
 					<xsl:if test="count(Code) = 0">
 						<xsl:element name="tr">
