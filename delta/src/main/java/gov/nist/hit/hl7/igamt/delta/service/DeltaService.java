@@ -11,9 +11,11 @@ import gov.nist.hit.hl7.igamt.delta.domain.Delta;
 import gov.nist.hit.hl7.igamt.delta.domain.DiffableResult;
 import gov.nist.hit.hl7.igamt.delta.domain.EntityDelta;
 import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
+import gov.nist.hit.hl7.igamt.delta.domain.ValuesetDelta;
 import gov.nist.hit.hl7.igamt.delta.exception.IGDeltaException;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 public interface DeltaService {
 
@@ -24,6 +26,7 @@ public interface DeltaService {
   public IGDisplayInfo delta(Ig ig, Ig origin) throws IGDeltaException;
   DeltaAction summarize(List<StructureDelta> deltaStructure);
   public List<StructureDelta> delta(Type type, Resource resource);
+  public ValuesetDelta valuesetDelta(Valueset valueset);
 
 
 }
