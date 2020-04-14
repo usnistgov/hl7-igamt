@@ -157,15 +157,27 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-scondary',
                 icon: 'fa fa-globe',
                 action: (item: IgListItem) => {
-                  this.ig.publish(item.id).subscribe(
-                    (response: Message<string>) => {
-                      this.store.dispatch(this.message.messageToAction(response));
-                      this.router.navigateByUrl('/ig/list?type=PUBLISHED');
-                    },
-                    (error) => {
-                      this.store.dispatch(this.message.actionFromError(error));
-                    },
-                  );
+                    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+                      data: {
+                        question: 'This operation is irreversible, Are you sure you want to publish this Implementation Guide "' + item.title + '" ?',
+                        action: 'Publish Implementation Guide',
+                      },
+                    });
+                    dialogRef.afterClosed().subscribe(
+                      (answer) => {
+                        if (answer) {
+                          this.ig.publish(item.id).subscribe(
+                            (response: Message<string>) => {
+                              this.store.dispatch(this.message.messageToAction(response));
+                              this.router.navigateByUrl('/ig/list?type=PUBLISHED');
+                            },
+                            (error) => {
+                              this.store.dispatch(this.message.actionFromError(error));
+                            },
+                          );
+                        }
+                      },
+                    );
                 },
                 disabled: (item: IgListItem): boolean => {
                     return !admin || item.type === 'PUBLISHED';
