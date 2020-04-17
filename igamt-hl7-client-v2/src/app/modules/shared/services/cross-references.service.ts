@@ -40,7 +40,6 @@ export class CrossReferencesService {
   getUsagesFromRelationShip(relations: IRelationShip[]): Observable<IUsages[]> {
 
         return from(relations).pipe(
-          take(1),
           mergeMap((r: IRelationShip) => {
             return this.resourceRepo.getResourceDisplay(r.parent.type, r.parent.id).pipe(
               take(1),
@@ -61,6 +60,7 @@ export class CrossReferencesService {
     return this.findUsages (documentId, documentType, elementType, elementId).pipe(
       take(1),
       mergeMap( (rel: IRelationShip[]) => {
+        console.log(rel);
         return this.getUsagesFromRelationShip(rel);
         },
       ),

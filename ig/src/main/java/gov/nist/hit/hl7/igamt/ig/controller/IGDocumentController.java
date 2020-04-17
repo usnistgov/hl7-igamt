@@ -1370,18 +1370,6 @@ public class IGDocumentController extends BaseController {
     Ig ig = findIgById(id);
     return displayInfoService.covertIgToDisplay(ig);
   }
-
-  @RequestMapping(value = "/api/igdocuments/{id}/delta", method = RequestMethod.GET, produces = {
-  "application/json" })
-  public @ResponseBody IGDisplayInfo getDeltaDisplay(@PathVariable("id") String id, Authentication authentication)
-      throws IGNotFoundException {
-
-    Ig ig = findIgById(id);
-
-    displayInfoService.covertIgToDisplay(ig);
-    return displayInfoService.covertIgToDisplay(ig);
-  }
-
   @RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}", method = RequestMethod.GET, produces = {
   "application/json" })
   public @ResponseBody Valueset getValueSetInIG(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
