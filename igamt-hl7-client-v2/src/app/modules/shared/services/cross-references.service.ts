@@ -60,7 +60,6 @@ export class CrossReferencesService {
     return this.findUsages (documentId, documentType, elementType, elementId).pipe(
       take(1),
       mergeMap( (rel: IRelationShip[]) => {
-        console.log(rel);
         return this.getUsagesFromRelationShip(rel);
         },
       ),
