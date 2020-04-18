@@ -1324,19 +1324,8 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, @RequestBody CopyInfo info,  Authentication authentication)
       throws IGNotFoundException {
     String username = authentication.getPrincipal().toString();
-
     Ig ig = findIgById(id);
-    Ig clone = this.igService.clone(ig, username);
-    clone.getDomainInfo().setScope(Scope.USER);
-    if(info.getMode().equals(CloneMode.CLONE)) {
-      clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[clone]");
-    }else if(info.getMode().equals(CloneMode.DERIVE)){
-      clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[derived]");
-      clone.setDerived(true); 
-    }
-    clone.setCreationDate(new Date());
-
-    clone = igService.save(clone);
+    Ig clone = this.igService.clone(ig, username, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", clone.getId(), false,
         clone.getUpdateDate(), clone.getId());
   }

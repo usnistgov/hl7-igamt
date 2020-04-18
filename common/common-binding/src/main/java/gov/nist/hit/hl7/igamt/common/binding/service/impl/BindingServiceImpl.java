@@ -151,14 +151,21 @@ public class BindingServiceImpl implements BindingService {
    */
   @Override
   public void substitute(ResourceBinding binding, HashMap<RealKey, String> newKeys) {
-    // TODO Auto-generated method stub
-
-    if(binding.getChildren() !=null ) {
-      for (StructureElementBinding child : binding.getChildren() ) {
-        processAndSubstitute(child, newKeys);
-      }
-    }
-
+	  if (binding.getConformanceStatementIds() != null) {
+		  Set<String> newIds = new HashSet<String>();
+		  
+		  for(String oldId:binding.getConformanceStatementIds()) {
+			  String newId = newKeys.get(new RealKey(oldId,Type.CONFORMANCESTATEMENT));
+			  if(newId != null) newIds.add(newId);
+		  }
+		  
+		  binding.setConformanceStatementIds(newIds);
+	  }
+	  if(binding.getChildren() !=null ) {
+		  for (StructureElementBinding child : binding.getChildren() ) {
+			  processAndSubstitute(child, newKeys);
+		  }
+	  }
   }
 
   /**
@@ -189,6 +196,11 @@ public class BindingServiceImpl implements BindingService {
           elm.getInternalSingleCode().setValueSetId(newKeys.get(realKey));
         }
       }
+    }
+    if(elm.getPredicateId() != null) {
+    	if(newKeys.containsKey(new RealKey(elm.getPredicateId(), Type.PREDICATE))) {
+    		elm.setPredicateId(newKeys.get(new RealKey(elm.getPredicateId(), Type.PREDICATE)));
+    	}
     }
     if(elm.getChildren() !=null) { 
       for (StructureElementBinding child: elm.getChildren()) {

@@ -55,6 +55,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProf
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Level;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
@@ -63,6 +64,8 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItem;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.display.model.CloneMode;
+import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileLabel;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileSelectItem;
@@ -94,7 +97,6 @@ import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationExcepti
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SCOPE;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
@@ -127,10 +129,10 @@ public class IgServiceImpl implements IgService {
 	CompositeProfileStructureService compositeProfileServie;
 
 	@Autowired
-	private ConformanceStatementRepository conformanceStatementRepository;
+	ConformanceStatementRepository conformanceStatementRepository;
 
 	@Autowired
-	private PredicateRepository predicateRepository;
+	PredicateRepository predicateRepository;
 
 	@Autowired
 	ValuesetService valueSetService;
@@ -138,8 +140,10 @@ public class IgServiceImpl implements IgService {
 	@Autowired
 	RelationShipService relationshipService;
 	
-	  @Autowired
-	  XMLSerializeService xmlSerializeService;
+	@Autowired
+	XMLSerializeService xmlSerializeService;
+	  
+	  
 
 	//  @Autowired
 	//  CoConstraintService coConstraintService;
@@ -398,9 +402,10 @@ public class IgServiceImpl implements IgService {
 	}
 
 	@Override
-	public Ig clone(Ig ig, String username) {
+	public Ig clone(Ig ig, String username, CopyInfo info) {
 		Ig newIg = new Ig();
 		newIg.setId(null);
+	    newIg = this.save(newIg);
 		newIg.setFrom(ig.getId());
 		newIg.setOrigin(ig.getId());
 		newIg.setMetadata(ig.getMetadata().clone());
@@ -414,17 +419,90 @@ public class IgServiceImpl implements IgService {
 		addKeys(ig.getValueSetRegistry(), Type.VALUESET, newKeys);
 		addKeys(ig.getDatatypeRegistry(), Type.DATATYPE, newKeys);
 		addKeys(ig.getSegmentRegistry(), Type.SEGMENT, newKeys);
+		addKeysForConstraints(newIg, ig, newKeys);
 
-
-
-		newIg.setValueSetRegistry(
-				copyValueSetRegistry(ig.getValueSetRegistry(), newKeys, username));
-		newIg.setDatatypeRegistry(
-				copyDatatypeRegistry(ig.getDatatypeRegistry(), newKeys, username));
+		newIg.setValueSetRegistry(copyValueSetRegistry(ig.getValueSetRegistry(), newKeys, username));
+		newIg.setDatatypeRegistry(copyDatatypeRegistry(ig.getDatatypeRegistry(), newKeys, username));
 		newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),newKeys, username));
-		newIg.setConformanceProfileRegistry(
-				copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), newKeys, username));
+		newIg.setConformanceProfileRegistry(copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), newKeys, username));
+		
+		
+		newIg.getDomainInfo().setScope(Scope.USER);
+	    if(info.getMode().equals(CloneMode.CLONE)) {
+	    	newIg.getMetadata().setTitle(newIg.getMetadata().getTitle() + "[clone]");
+	    }else if(info.getMode().equals(CloneMode.DERIVE)){
+	    	newIg.getMetadata().setTitle(newIg.getMetadata().getTitle() + "[derived]");
+	    	newIg.setDerived(true); 
+	    }
+	    newIg.setCreationDate(new Date());
+
+	    newIg = this.save(newIg);
 		return newIg;
+	}
+
+	private void addKeysForConstraints(Ig newIg, Ig ig, HashMap<RealKey, String> newKeys) {
+	    Ig[] wrapper = {newIg};
+	    this.conformanceStatementRepository.findByIgDocumentId(ig.getId()).forEach((cs) -> {
+	    	this.addKeyAndUpdateCS(cs, newKeys, wrapper);
+	    });
+	    
+	    this.predicateRepository.findByIgDocumentId(ig.getId()).forEach((cp) -> {
+	    	this.addKeyAndUpdateCP(cp, newKeys, wrapper);
+	    });
+	}
+
+	private void addKeyAndUpdateCP(Predicate cp, HashMap<RealKey, String> newKeys, Ig[] wrapper) {
+    	String oldId = cp.getId();
+    	cp.setId(null);
+    	cp.setIgDocumentId(wrapper[0].getId());
+    	
+    	if(cp.getSourceIds() != null) {
+	    	if(cp.getLevel().equals(Level.DATATYPE)) {
+	    		this.updateSourceIdsForCP(cp, Type.DATATYPE, newKeys);
+	    	} else if(cp.getLevel().equals(Level.SEGMENT)) {
+	    		this.updateSourceIdsForCP(cp, Type.SEGMENT, newKeys);
+	    	} else if(cp.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+	    		this.updateSourceIdsForCP(cp, Type.CONFORMANCEPROFILE, newKeys);
+	    	}	    		
+    	}
+
+    	newKeys.put(new RealKey(oldId, Type.PREDICATE), this.predicateRepository.save(cp).getId());
+	}
+
+	private void updateSourceIdsForCP(Predicate cp, Type type, HashMap<RealKey, String> newKeys) {
+		HashSet<String> newSourceIds = new HashSet<String>();
+		cp.getSourceIds().forEach((sourceId) -> {
+			String newSourceId = newKeys.get(new RealKey(sourceId, type));
+			if(newSourceId != null) newSourceIds.add(newSourceId);
+		});
+		cp.setSourceIds(newSourceIds);
+	}
+
+	private void addKeyAndUpdateCS(ConformanceStatement cs, HashMap<RealKey, String> newKeys, Ig[] wrapper) {
+    	String oldId = cs.getId();
+    	cs.setId(null);
+    	cs.setIgDocumentId(wrapper[0].getId());
+    	
+    	if(cs.getSourceIds() != null) {
+	    	if(cs.getLevel().equals(Level.DATATYPE)) {
+	    		this.updateSourceIdsForCS(cs, Type.DATATYPE, newKeys);
+	    	} else if(cs.getLevel().equals(Level.SEGMENT)) {
+	    		this.updateSourceIdsForCS(cs, Type.SEGMENT, newKeys);
+	    	} else if(cs.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+	    		this.updateSourceIdsForCS(cs, Type.CONFORMANCEPROFILE, newKeys);
+	    	}	    		
+    	}
+
+    	newKeys.put(new RealKey(oldId, Type.CONFORMANCESTATEMENT), this.conformanceStatementRepository.save(cs).getId());
+	}
+
+	private void updateSourceIdsForCS(ConformanceStatement cs, Type type, HashMap<RealKey, String> newKeys) {
+		HashSet<String> newSourceIds = new HashSet<String>();
+		cs.getSourceIds().forEach((sourceId) -> {
+			String newSourceId = newKeys.get(new RealKey(sourceId, type));
+			if(newSourceId != null) newSourceIds.add(newSourceId);
+		});
+		cs.setSourceIds(newSourceIds);
 	}
 
 	/**
