@@ -25,15 +25,17 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.Gson;
+
 // import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -1676,8 +1678,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           DatatypeDataModel childDtModel = igModel.findDatatype(cModel.getDatatype().getId());
           if (childDtModel == null)
             childDtModel = toBeAddedDTs.get(cModel.getDatatype().getId());
-          DatatypeDataModel copyDtModel =
-              (DatatypeDataModel) SerializationUtils.clone(childDtModel);
+          DatatypeDataModel copyDtModel = XMLSerializeServiceImpl.cloneThroughJson(childDtModel);
           int randumNum = new SecureRandom().nextInt(100000);
           copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
           String ext = childDtModel.getModel().getExt();
@@ -1704,8 +1705,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           DatatypeDataModel childDtModel = igModel.findDatatype(fModel.getDatatype().getId());
           if (childDtModel == null)
             childDtModel = toBeAddedDTs.get(fModel.getDatatype().getId());
-          DatatypeDataModel copyDtModel =
-              (DatatypeDataModel) SerializationUtils.clone(childDtModel);
+          DatatypeDataModel copyDtModel = XMLSerializeServiceImpl.cloneThroughJson(childDtModel);
 
           int randumNum = new SecureRandom().nextInt(100000);
           copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
@@ -1756,7 +1756,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       SegmentDataModel sModel = igModel.findSegment(sgModel.getSegment().getId());
       if (sModel == null)
         sModel = toBeAddedSegs.get(sgModel.getSegment().getId());
-      SegmentDataModel copySModel = (SegmentDataModel) SerializationUtils.clone(sModel);
+      System.out.println(sModel.getModel().getId());
+
+      SegmentDataModel copySModel = XMLSerializeServiceImpl.cloneThroughJson(sModel);
+      
       int randumNum = new SecureRandom().nextInt(100000);
       copySModel.getModel().setId(sModel.getModel().getId() + "_A" + randumNum);
       String ext = sModel.getModel().getExt();
@@ -1779,7 +1782,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         DatatypeDataModel childDtModel = igModel.findDatatype(fModel.getDatatype().getId());
         if (childDtModel == null)
           childDtModel = toBeAddedDTs.get(fModel.getDatatype().getId());
-        DatatypeDataModel copyDtModel = (DatatypeDataModel) SerializationUtils.clone(childDtModel);
+        DatatypeDataModel copyDtModel = XMLSerializeServiceImpl.cloneThroughJson(childDtModel);
 
         int randumNum2 = new SecureRandom().nextInt(100000);
         copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum2);
@@ -1799,6 +1802,13 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       toBeAddedSegs.put(copySModel.getModel().getId(), copySModel);
     }
 
+  }
+  
+  @SuppressWarnings("unchecked")
+  private static <T> T cloneThroughJson(T t) {
+     Gson gson = new Gson();
+     String json = gson.toJson(t);
+     return (T) gson.fromJson(json, t.getClass());
   }
 
   private void updateChildDatatype(List<String> pathList, DatatypeDataModel dtModel,
@@ -1820,7 +1830,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       DatatypeDataModel childDtModel = igModel.findDatatype(cModel.getDatatype().getId());
       if (childDtModel == null)
         childDtModel = toBeAddedDTs.get(cModel.getDatatype().getId());
-      DatatypeDataModel copyDtModel = (DatatypeDataModel) SerializationUtils.clone(childDtModel);
+      DatatypeDataModel copyDtModel = XMLSerializeServiceImpl.cloneThroughJson(childDtModel);
 
       int randumNum = new SecureRandom().nextInt(100000);
       copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
@@ -1842,7 +1852,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       throws IOException, ClassNotFoundException {
     Set<ValuesetBindingDataModel> copy = new HashSet<ValuesetBindingDataModel>();
     for (ValuesetBindingDataModel o : valuesetBindingDataModels) {
-      copy.add((ValuesetBindingDataModel) SerializationUtils.clone(o));
+      copy.add(XMLSerializeServiceImpl.cloneThroughJson(o));
     }
     return copy;
   }
