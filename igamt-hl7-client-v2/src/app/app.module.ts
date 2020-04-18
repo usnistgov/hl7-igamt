@@ -32,7 +32,7 @@ import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loa
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     CoreModule,
     BlockUIModule.forRoot(),
-    ToastyModule
+    ToastyModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
