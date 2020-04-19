@@ -46,21 +46,18 @@ export class ImportCsvValuesetComponent implements ControlValueAccessor, OnInit 
 
   checkPreview() {
     if (this.preview && typeof this.preview === 'string') {
-      let csvString = <string>this.preview;
-      var start = csvString.indexOf('\"Mapping Identifier\"') + 22;
-      var end = csvString.indexOf('\"', start);
-      var bId = csvString.substring(start, end);
+      const csvString: string = this.preview;
+      const start = csvString.indexOf('\"Mapping Identifier\"') + 22;
+      const end = csvString.indexOf('\"', start);
+      const bId = csvString.substring(start, end);
 
-      if (bId) {
-        if (this.data.node && this.data.node.children) {
-          this.data.node.children.forEach(item => {
-            if (item.variableName === bId) {
-              this.errorMessage = 'Binding Identifier : ' + bId + ' is duplicated.';
-              console.log(this.errorMessage);
-            }
-          });
-        }
-
+      if (bId && this.data.node && this.data.node.children) {
+        this.data.node.children.forEach((item) => {
+          if (item.variableName === bId) {
+            this.errorMessage = 'Binding Identifier : ' + bId + ' is duplicated.';
+            console.log(this.errorMessage);
+          }
+        });
       }
     }
   }
