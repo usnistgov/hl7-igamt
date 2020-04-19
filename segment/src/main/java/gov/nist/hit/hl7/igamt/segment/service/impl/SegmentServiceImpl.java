@@ -574,11 +574,8 @@ public class SegmentServiceImpl implements SegmentService {
 		newLink.setDomainInfo(elm.getDomainInfo());
 		updateDependencies(elm, newKeys, username);
 		updateDynamicMapping(elm, newKeys);
-		//		updateCoConstraint(elm, obj, valuesetsMap, datatypesMap, username);		
 		this.save(elm);
-
 		return newLink;
-
 	}
 
 	private void updateDynamicMapping(Segment segment, HashMap<RealKey, String> newKeys) {
