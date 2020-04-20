@@ -123,7 +123,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
     }
 
     void datatypeCellIdSubstitution(DatatypeCell cell, Map<String, String> datatypes) {
-
+    	cell.setDatatypeId(datatypes.get(cell.getDatatypeId()));
     }
 
     void valueSetCellIdSubstitution(ValueSetCell cell, Map<String, String> valueSets) {
