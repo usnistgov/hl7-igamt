@@ -128,30 +128,31 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   @Override
   public Document serializeProfileToDoc(IgDataModel igModel) throws ProfileSerializationException {
     try {
+      String defaultHL7Version = this.findDefaultHL7Version(igModel);
       Set<Datatype> missingDts = new HashSet<Datatype>();
 
       Element e = new Element("ConformanceProfile");
-      this.serializeProfileMetaData(e, igModel, "Validation");
+      this.serializeProfileMetaData(e, igModel, "Validation", defaultHL7Version);
 
       Element ms = new Element("Messages");
       for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
-        ms.appendChild(this.serializeConformanceProfile(cpModel, igModel));
+        ms.appendChild(this.serializeConformanceProfile(cpModel, igModel, defaultHL7Version));
       }
       e.appendChild(ms);
 
       Element ss = new Element("Segments");
       for (SegmentDataModel sModel : igModel.getSegments()) {
-        ss.appendChild(this.serializeSegment(sModel, igModel, missingDts));
+        ss.appendChild(this.serializeSegment(sModel, igModel, missingDts, defaultHL7Version));
       }
       e.appendChild(ss);
 
       Element ds = new Element("Datatypes");
       for (DatatypeDataModel dModel : igModel.getDatatypes()) {
-        ds.appendChild(this.serializeDatatype(dModel, igModel));
+        ds.appendChild(this.serializeDatatype(dModel, igModel, defaultHL7Version));
       }
 
       for (Datatype dt : missingDts) {
-        ds.appendChild(this.serializeSimpleDatatype(dt, igModel));
+        ds.appendChild(this.serializeSimpleDatatype(dt, igModel, defaultHL7Version));
       }
 
       e.appendChild(ds);
@@ -165,29 +166,33 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     }
   }
 
-  /**
+  private String findDefaultHL7Version(IgDataModel igModel) {
+	  if(igModel.getModel().getMetadata() != null &&
+  			igModel.getModel().getMetadata().getHl7Versions() != null && 
+  			igModel.getModel().getMetadata().getHl7Versions().size() > 0) {
+  		return igModel.getModel().getMetadata().getHl7Versions().get(0);
+  	}
+	return null;
+}
+
+/**
    * @param dt
    * @param igModel
    * @return
    * @throws DatatypeSerializationException
    */
-  private Element serializeSimpleDatatype(Datatype dt, IgDataModel igModel)
+  private Element serializeSimpleDatatype(Datatype dt, IgDataModel igModel, String defaultHL7Version)
       throws DatatypeSerializationException {
     try {
       Element elmDatatype = new Element("Datatype");
 
-      if (igModel.getModel().getDomainInfo() != null
-          && igModel.getModel().getDomainInfo().getVersion() != null && dt.getDomainInfo() != null
-          && dt.getDomainInfo().getVersion() != null) {
-        if (igModel.getModel().getDomainInfo().getVersion()
-            .equals(dt.getDomainInfo().getVersion())) {
+      if (defaultHL7Version != null && dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
+        if (defaultHL7Version.equals(dt.getDomainInfo().getVersion())) {
           elmDatatype.addAttribute(new Attribute("Label", this.str(dt.getLabel())));
           elmDatatype.addAttribute(new Attribute("ID", this.str(dt.getLabel())));
         } else {
-          elmDatatype.addAttribute(new Attribute("Label", this
-              .str(dt.getLabel() + "_" + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-          elmDatatype.addAttribute(new Attribute("ID", this
-              .str(dt.getLabel() + "_" + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+          elmDatatype.addAttribute(new Attribute("Label", this.str(dt.getLabel() + "_" + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+          elmDatatype.addAttribute(new Attribute("ID", this.str(dt.getLabel() + "_" + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
         }
       } else {
         elmDatatype.addAttribute(new Attribute("Label", this.str(dt.getLabel())));
@@ -221,12 +226,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
               String childDTId = c.getRef().getId();
               Datatype childDT = this.datatypeService.findById(childDTId);
 
-              if (igModel.getModel().getDomainInfo() != null
-                  && igModel.getModel().getDomainInfo().getVersion() != null
-                  && childDT.getDomainInfo() != null
-                  && childDT.getDomainInfo().getVersion() != null) {
-                if (igModel.getModel().getDomainInfo().getVersion()
-                    .equals(childDT.getDomainInfo().getVersion())) {
+              if (defaultHL7Version != null && childDT.getDomainInfo() != null && childDT.getDomainInfo().getVersion() != null) {
+                if (defaultHL7Version.equals(childDT.getDomainInfo().getVersion())) {
                   elmComponent
                       .addAttribute(new Attribute("Datatype", this.str(childDT.getLabel())));
                 } else {
@@ -278,6 +279,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
    */
   @Override
   public Element serializeValueSetXML(IgDataModel igModel) throws TableSerializationException {
+    String defaultHL7Version = this.findDefaultHL7Version(igModel);
     Element elmTableLibrary = new Element("ValueSetLibrary");
 
     Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
@@ -301,8 +303,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           !this.str(igModel.getModel().getMetadata().getOrgName()).equals("")
               ? this.str(igModel.getModel().getMetadata().getOrgName()) : "No Org Info"));
       elmMetaData.addAttribute(new Attribute("Version",
-          !this.str(igModel.getModel().getDomainInfo().getVersion()).equals("")
-              ? this.str(igModel.getModel().getDomainInfo().getVersion()) : "No Version Info"));
+          !this.str(defaultHL7Version).equals("")
+              ? this.str(defaultHL7Version) : "No Version Info"));
       elmMetaData.addAttribute(new Attribute("Date", "No Date Info"));
 
       if (igModel.getModel().getMetadata().getSpecificationName() != null
@@ -343,10 +345,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             // || (codePresenceMap.containsKey(t.getId()) &&
             // !(codePresenceMap.get(t.getId())))) {
             Element elmBindingIdentifier = new Element("BindingIdentifier");
-            if (igModel.getModel().getDomainInfo() != null
-                && igModel.getModel().getDomainInfo().getVersion() != null
-                && t.getDomainInfo() != null && t.getDomainInfo().getVersion() != null) {
-              if (igModel.getModel().getDomainInfo().getVersion()
+            if (defaultHL7Version != null && t.getDomainInfo() != null && t.getDomainInfo().getVersion() != null) {
+              if (defaultHL7Version
                   .equals(t.getDomainInfo().getVersion())) {
                 elmBindingIdentifier.appendChild(this.str(t.getBindingIdentifier()));
               } else {
@@ -361,11 +361,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
           Element elmValueSetDefinition = new Element("ValueSetDefinition");
 
-          if (igModel.getModel().getDomainInfo() != null
-              && igModel.getModel().getDomainInfo().getVersion() != null
-              && t.getDomainInfo() != null && t.getDomainInfo().getVersion() != null) {
-            if (igModel.getModel().getDomainInfo().getVersion()
-                .equals(t.getDomainInfo().getVersion())) {
+          if (defaultHL7Version != null && t.getDomainInfo() != null && t.getDomainInfo().getVersion() != null) {
+            if (defaultHL7Version.equals(t.getDomainInfo().getVersion())) {
               elmValueSetDefinition.addAttribute(
                   new Attribute("BindingIdentifier", this.str(t.getBindingIdentifier())));
             } else {
@@ -430,11 +427,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
               elmValueElement
                   .addAttribute(new Attribute("DisplayName", this.str(c.getDescription() + "")));
               if (c.getCodeSystem() != null && !c.getCodeSystem().equals(""))
-                elmValueElement
-                    .addAttribute(new Attribute("CodeSystem", this.str(c.getCodeSystem())));
+                elmValueElement.addAttribute(new Attribute("CodeSystem", this.str(c.getCodeSystem())));
               if (c.getUsage() != null)
-                elmValueElement
-                    .addAttribute(new Attribute("Usage", this.str(c.getUsage().toString())));
+                elmValueElement.addAttribute(new Attribute("Usage", this.str(c.getUsage().toString())));
               if (c.getComments() != null && !c.getComments().equals(""))
                 elmValueElement.addAttribute(new Attribute("Comments", this.str(c.getComments())));
               elmValueSetDefinition.appendChild(elmValueElement);
@@ -465,14 +460,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     return elmTableLibrary;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService#serializeConstraintsXML
-   * (gov.nist.hit.hl7. igamt.ig.domain.datamodel.IgDataModel)
-   */
   @Override
   public Element serializeConstraintsXML(IgDataModel igModel) {
+	String defaultHL7Version = this.findDefaultHL7Version(igModel);
     Element e = new Element("ConformanceContext");
     Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
         "https://raw.githubusercontent.com/Jungyubw/NIST_healthcare_hl7_v2_profile_schema/master/Schema/NIST%20Validation%20Schema/ConformanceContext.xsd");
@@ -495,8 +485,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           !this.str(igModel.getModel().getMetadata().getOrgName()).equals("")
               ? this.str(igModel.getModel().getMetadata().getOrgName()) : "No Org Info"));
       elmMetaData.addAttribute(new Attribute("Version",
-          !this.str(igModel.getModel().getDomainInfo().getVersion()).equals("")
-              ? this.str(igModel.getModel().getDomainInfo().getVersion()) : "No Version Info"));
+          !this.str(defaultHL7Version).equals("")
+              ? this.str(defaultHL7Version) : "No Version Info"));
       elmMetaData.addAttribute(new Attribute("Date", "No Date Info"));
 
       if (igModel.getModel().getMetadata().getSpecificationName() != null
@@ -510,7 +500,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     }
     e.appendChild(elmMetaData);
 
-    this.serializeMain(e, igModel);
+    this.serializeMain(e, igModel, defaultHL7Version);
 
     return e;
   }
@@ -519,18 +509,17 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
    * @param e
    * @param igModel
    */
-  private void serializeMain(Element e, IgDataModel igModel) {
+  private void serializeMain(Element e, IgDataModel igModel, String defaultHL7Version) {
     Element predicates_Elm = new Element("Predicates");
 
     Element predicates_dataType_Elm = new Element("Datatype");
     for (DatatypeDataModel dtModel : igModel.getDatatypes()) {
 
       Element elm_ByID = new Element("ByID");
-      if (igModel.getModel().getDomainInfo() != null
-          && igModel.getModel().getDomainInfo().getVersion() != null
+      if (defaultHL7Version != null
           && dtModel.getModel().getDomainInfo() != null
           && dtModel.getModel().getDomainInfo().getVersion() != null) {
-        if (igModel.getModel().getDomainInfo().getVersion()
+        if (defaultHL7Version
             .equals(dtModel.getModel().getDomainInfo().getVersion())) {
           elm_ByID.addAttribute(new Attribute("ID", dtModel.getModel().getLabel()));
         } else {
@@ -569,12 +558,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     for (SegmentDataModel segModel : igModel.getSegments()) {
 
       Element elm_ByID = new Element("ByID");
-      if (igModel.getModel().getDomainInfo() != null
-          && igModel.getModel().getDomainInfo().getVersion() != null
+      if (defaultHL7Version != null
           && segModel.getModel().getDomainInfo() != null
           && segModel.getModel().getDomainInfo().getVersion() != null) {
-        if (igModel.getModel().getDomainInfo().getVersion()
-            .equals(segModel.getModel().getDomainInfo().getVersion())) {
+        if (defaultHL7Version.equals(segModel.getModel().getDomainInfo().getVersion())) {
           elm_ByID.addAttribute(new Attribute("ID", segModel.getModel().getLabel()));
         } else {
           elm_ByID.addAttribute(new Attribute("ID", segModel.getModel().getLabel() + "_"
@@ -683,11 +670,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     for (DatatypeDataModel dtModel : igModel.getDatatypes()) {
 
       Element elm_ByID = new Element("ByID");
-      if (igModel.getModel().getDomainInfo() != null
-          && igModel.getModel().getDomainInfo().getVersion() != null
+      if (defaultHL7Version != null
           && dtModel.getModel().getDomainInfo() != null
           && dtModel.getModel().getDomainInfo().getVersion() != null) {
-        if (igModel.getModel().getDomainInfo().getVersion()
+        if (defaultHL7Version
             .equals(dtModel.getModel().getDomainInfo().getVersion())) {
           elm_ByID.addAttribute(new Attribute("ID", dtModel.getModel().getLabel()));
         } else {
@@ -784,11 +770,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     for (SegmentDataModel segModel : igModel.getSegments()) {
 
       Element elm_ByID = new Element("ByID");
-      if (igModel.getModel().getDomainInfo() != null
-          && igModel.getModel().getDomainInfo().getVersion() != null
+      if (defaultHL7Version != null
           && segModel.getModel().getDomainInfo() != null
           && segModel.getModel().getDomainInfo().getVersion() != null) {
-        if (igModel.getModel().getDomainInfo().getVersion()
+        if (defaultHL7Version
             .equals(segModel.getModel().getDomainInfo().getVersion())) {
           elm_ByID.addAttribute(new Attribute("ID", segModel.getModel().getLabel()));
         } else {
@@ -957,16 +942,15 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     return null;
   }
 
-  private Element serializeDatatype(DatatypeDataModel dModel, IgDataModel igModel)
+  private Element serializeDatatype(DatatypeDataModel dModel, IgDataModel igModel, String defaultHL7Version)
       throws DatatypeSerializationException {
     try {
       Element elmDatatype = new Element("Datatype");
 
-      if (igModel.getModel().getDomainInfo() != null
-          && igModel.getModel().getDomainInfo().getVersion() != null
+      if (defaultHL7Version != null
           && dModel.getModel().getDomainInfo() != null
           && dModel.getModel().getDomainInfo().getVersion() != null) {
-        if (igModel.getModel().getDomainInfo().getVersion()
+        if (defaultHL7Version
             .equals(dModel.getModel().getDomainInfo().getVersion())) {
           elmDatatype.addAttribute(new Attribute("Label", this.str(dModel.getModel().getLabel())));
           elmDatatype.addAttribute(new Attribute("ID", this.str(dModel.getModel().getLabel())));
@@ -1008,11 +992,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             elmComponent
                 .addAttribute(new Attribute("Usage", this.str(this.changeCABtoC(c.getModel().getUsage()).toString())));
 
-            if (igModel.getModel().getDomainInfo() != null
-                && igModel.getModel().getDomainInfo().getVersion() != null
+            if (defaultHL7Version != null
                 && c.getDatatype().getDomainInfo() != null
                 && c.getDatatype().getDomainInfo().getVersion() != null) {
-              if (igModel.getModel().getDomainInfo().getVersion()
+              if (defaultHL7Version
                   .equals(c.getDatatype().getDomainInfo().getVersion())) {
                 elmComponent
                     .addAttribute(new Attribute("Datatype", this.str(c.getDatatype().getLabel())));
@@ -1064,11 +1047,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                     bindingLocation = binding.getValuesetBinding().getValuesetLocations();
                   if (binding != null && binding.getBindingIdentifier() != null
                       && !binding.getBindingIdentifier().equals("")) {
-                    if (igModel.getModel().getDomainInfo() != null
-                        && igModel.getModel().getDomainInfo().getVersion() != null
+                    if (defaultHL7Version != null
                         && binding.getDomainInfo() != null
                         && binding.getDomainInfo().getVersion() != null) {
-                      if (igModel.getModel().getDomainInfo().getVersion()
+                      if (defaultHL7Version
                           .equals(binding.getDomainInfo().getVersion())) {
                         bindingString = bindingString + binding.getBindingIdentifier() + ":";
                       } else {
@@ -1116,18 +1098,15 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     }
   }
 
-  private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel,
-      Set<Datatype> missingDts) throws SegmentSerializationException {
+  private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, Set<Datatype> missingDts, String defaultHL7Version) throws SegmentSerializationException {
     try {
       // TODO DynamicMapping Need
       Element elmSegment = new Element("Segment");
 
-      if (igModel.getModel().getDomainInfo() != null
-          && igModel.getModel().getDomainInfo().getVersion() != null
+      if (defaultHL7Version != null
           && sModel.getModel().getDomainInfo() != null
           && sModel.getModel().getDomainInfo().getVersion() != null) {
-        if (igModel.getModel().getDomainInfo().getVersion()
-            .equals(sModel.getModel().getDomainInfo().getVersion())) {
+        if (defaultHL7Version.equals(sModel.getModel().getDomainInfo().getVersion())) {
           elmSegment.addAttribute(new Attribute("Label", this.str(sModel.getModel().getLabel())));
           elmSegment.addAttribute(new Attribute("ID", this.str(sModel.getModel().getLabel())));
         } else {
@@ -1142,10 +1121,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       }
 
       elmSegment.addAttribute(new Attribute("Name", this.str(sModel.getModel().getName())));
-      elmSegment.addAttribute(
-          new Attribute("Version", this.str(sModel.getModel().getDomainInfo().getVersion())));
-      if (sModel.getModel().getDescription() == null
-          || sModel.getModel().getDescription().equals("")) {
+      elmSegment.addAttribute(new Attribute("Version", this.str(sModel.getModel().getDomainInfo().getVersion())));
+      if (sModel.getModel().getDescription() == null || sModel.getModel().getDescription().equals("")) {
         elmSegment.addAttribute(new Attribute("Description", "NoDesc"));
       } else {
         elmSegment.addAttribute(
@@ -1169,14 +1146,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
             DatatypeDataModel itemDTModel = igModel.findDatatype(item.getDatatypeId());
             if (itemDTModel != null) {
-              if (igModel.getModel().getDomainInfo() != null
-                  && igModel.getModel().getDomainInfo().getVersion() != null
+              if (defaultHL7Version != null
                   && itemDTModel.getModel().getDomainInfo() != null
                   && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
-                if (igModel.getModel().getDomainInfo().getVersion()
-                    .equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
-                  elmCase.addAttribute(
-                      new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+                if (defaultHL7Version.equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
+                  elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
                 } else {
                   elmCase.addAttribute(new Attribute("Datatype",
                       this.str(itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel()
@@ -1207,11 +1181,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         // Element elmCase = new Element("Case");
         // elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
         // elmCase.addAttribute(new Attribute("SecondValue", item[0]));
-        // if (igModel.getModel().getDomainInfo() != null
-        // && igModel.getModel().getDomainInfo().getVersion() != null
+        // if (
+        // && defaultHL7Version != null
         // && itemDTModel.getModel().getDomainInfo() != null
         // && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
-        // if (igModel.getModel().getDomainInfo().getVersion()
+        // if (defaultHL7Version
         // .equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
         // elmCase.addAttribute(new Attribute("Datatype",
         // this.str(itemDTModel.getModel().getLabel())));
@@ -1260,14 +1234,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
               if (itemDTModel != null) {
                 Element elmCase = new Element("Case");
                 elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
-                if (igModel.getModel().getDomainInfo() != null
-                    && igModel.getModel().getDomainInfo().getVersion() != null
+                if (defaultHL7Version != null
                     && itemDTModel.getModel().getDomainInfo() != null
                     && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
-                  if (igModel.getModel().getDomainInfo().getVersion()
-                      .equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
-                    elmCase.addAttribute(
-                        new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+                  if (defaultHL7Version.equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
+                    elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
                   } else {
                     elmCase.addAttribute(new Attribute("Datatype",
                         this.str(itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel()
@@ -1284,11 +1255,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                 if (dt != null) {
                   Element elmCase = new Element("Case");
                   elmCase.addAttribute(new Attribute("Value", dt.getName()));
-                  if (igModel.getModel().getDomainInfo() != null
-                      && igModel.getModel().getDomainInfo().getVersion() != null
-                      && dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
-                    if (igModel.getModel().getDomainInfo().getVersion()
-                        .equals(dt.getDomainInfo().getVersion())) {
+                  if (defaultHL7Version != null && dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
+                    if (defaultHL7Version.equals(dt.getDomainInfo().getVersion())) {
                       elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
                     } else {
                       elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel() + "_"
@@ -1338,7 +1306,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             }
           }
         }
-
         elmDynamicMapping.appendChild(elmMapping);
         elmSegment.appendChild(elmDynamicMapping);
       }
@@ -1361,16 +1328,15 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             elmField
                 .addAttribute(new Attribute("Usage", this.str(this.changeCABtoC(f.getModel().getUsage()).toString())));
 
-            if (igModel.getModel().getDomainInfo() != null
-                && igModel.getModel().getDomainInfo().getVersion() != null
+            if (defaultHL7Version != null
                 && dBindingModel.getDomainInfo() != null
                 && dBindingModel.getDomainInfo().getVersion() != null) {
-              if (igModel.getModel().getDomainInfo().getVersion()
+              if (defaultHL7Version
                   .equals(dBindingModel.getDomainInfo().getVersion())) {
                 elmField
                     .addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel())));
               } else {
-                elmSegment.addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel()
+            	  elmField.addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel()
                     + "_" + dBindingModel.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
               }
             } else {
@@ -1417,11 +1383,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                     bindingLocation = binding.getValuesetBinding().getValuesetLocations();
                   if (binding != null && binding.getBindingIdentifier() != null
                       && !binding.getBindingIdentifier().equals("")) {
-                    if (igModel.getModel().getDomainInfo() != null
-                        && igModel.getModel().getDomainInfo().getVersion() != null
+                    if (defaultHL7Version != null
                         && binding.getDomainInfo() != null
                         && binding.getDomainInfo().getVersion() != null) {
-                      if (igModel.getModel().getDomainInfo().getVersion()
+                      if (defaultHL7Version
                           .equals(binding.getDomainInfo().getVersion())) {
                         bindingString = bindingString + binding.getBindingIdentifier() + ":";
                       } else {
@@ -1473,7 +1438,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   }
 
   private Element serializeConformanceProfile(ConformanceProfileDataModel cpModel,
-      IgDataModel igModel) throws MessageSerializationException {
+      IgDataModel igModel, String defaultHL7Version) throws MessageSerializationException {
     try {
       Element elmMessage = new Element("Message");
       elmMessage.addAttribute(new Attribute("ID", cpModel.getModel().getId()));
@@ -1485,13 +1450,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         elmMessage.addAttribute(new Attribute("Name", this.str(cpModel.getModel().getName())));
       elmMessage.addAttribute(new Attribute("Type", this.str(cpModel.getModel().getMessageType())));
       elmMessage.addAttribute(new Attribute("Event", this.str(cpModel.getModel().getEvent())));
-      elmMessage
-          .addAttribute(new Attribute("StructID", this.str(cpModel.getModel().getStructID())));
+      elmMessage.addAttribute(new Attribute("StructID", this.str(cpModel.getModel().getStructID())));
 
-      if (cpModel.getModel().getDescription() != null
-          && !cpModel.getModel().getDescription().equals(""))
-        elmMessage.addAttribute(
-            new Attribute("Description", this.str(cpModel.getModel().getDescription())));
+      if (cpModel.getModel().getDescription() != null && !cpModel.getModel().getDescription().equals(""))
+        elmMessage.addAttribute(new Attribute("Description", this.str(cpModel.getModel().getDescription())));
 
       Map<Integer, SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels =
           new HashMap<Integer, SegmentRefOrGroupDataModel>();
@@ -1505,9 +1467,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       for (int i = 1; i < segmentRefOrGroupDataModels.size() + 1; i++) {
         SegmentRefOrGroupDataModel segmentRefOrGroupDataModel = segmentRefOrGroupDataModels.get(i);
         if (segmentRefOrGroupDataModel.getType().equals(Type.SEGMENTREF)) {
-          elmMessage.appendChild(serializeSegmentRef(segmentRefOrGroupDataModel, igModel));
+          elmMessage.appendChild(serializeSegmentRef(segmentRefOrGroupDataModel, igModel, defaultHL7Version));
         } else if (segmentRefOrGroupDataModel.getType().equals(Type.GROUP)) {
-          elmMessage.appendChild(serializeGroup(segmentRefOrGroupDataModel, igModel));
+          elmMessage.appendChild(serializeGroup(segmentRefOrGroupDataModel, igModel, defaultHL7Version));
         }
       }
 
@@ -1519,7 +1481,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   }
 
   private Element serializeGroup(SegmentRefOrGroupDataModel segmentRefOrGroupDataModel,
-      IgDataModel igModel) throws GroupSerializationException {
+      IgDataModel igModel, String defaultHL7Version) throws GroupSerializationException {
     try {
       Element elmGroup = new Element("Group");
       elmGroup.addAttribute(new Attribute("ID", this.str(igModel.getModel().getId()) + "-"
@@ -1543,9 +1505,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       for (int i = 1; i < segmentRefOrGroupDataModels.size() + 1; i++) {
         SegmentRefOrGroupDataModel childModel = segmentRefOrGroupDataModels.get(i);
         if (childModel.getType().equals(Type.SEGMENTREF)) {
-          elmGroup.appendChild(serializeSegmentRef(childModel, igModel));
+          elmGroup.appendChild(serializeSegmentRef(childModel, igModel, defaultHL7Version));
         } else if (childModel.getType().equals(Type.GROUP)) {
-          elmGroup.appendChild(serializeGroup(childModel, igModel));
+          elmGroup.appendChild(serializeGroup(childModel, igModel, defaultHL7Version));
         }
       }
 
@@ -1558,20 +1520,16 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   }
 
   private Element serializeSegmentRef(SegmentRefOrGroupDataModel segmentRefOrGroupDataModel,
-      IgDataModel igModel) throws SegmentSerializationException {
+      IgDataModel igModel, String defaultHL7Version) throws SegmentSerializationException {
     try {
       SegmentBindingDataModel segModel = segmentRefOrGroupDataModel.getSegment();
       Element elmSegment = new Element("Segment");
 
-      if (igModel.getModel().getDomainInfo() != null
-          && igModel.getModel().getDomainInfo().getVersion() != null
-          && segModel.getDomainInfo() != null && segModel.getDomainInfo().getVersion() != null) {
-        if (igModel.getModel().getDomainInfo().getVersion()
-            .equals(segModel.getDomainInfo().getVersion())) {
+      if (defaultHL7Version != null && segModel.getDomainInfo() != null && segModel.getDomainInfo().getVersion() != null) {
+        if (defaultHL7Version.equals(segModel.getDomainInfo().getVersion())) {
           elmSegment.addAttribute(new Attribute("Ref", this.str(segModel.getLabel())));
         } else {
-          elmSegment.addAttribute(new Attribute("Ref", this.str(segModel.getLabel() + "_"
-              + segModel.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+          elmSegment.addAttribute(new Attribute("Ref", this.str(segModel.getLabel() + "_" + segModel.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
         }
       } else {
         elmSegment.addAttribute(new Attribute("Ref", this.str(segModel.getLabel())));
@@ -1591,7 +1549,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     }
   }
 
-  private void serializeProfileMetaData(Element e, IgDataModel igModel, String type) {
+  private void serializeProfileMetaData(Element e, IgDataModel igModel, String type, String defaultHL7Version) {
     if (type.equals("Validation")) {
       Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
           "https://raw.githubusercontent.com/Jungyubw/NIST_healthcare_hl7_v2_profile_schema/master/Schema/NIST%20Validation%20Schema/Profile.xsd");
@@ -1606,10 +1564,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
     if (igModel != null && igModel.getModel() != null) {
       e.addAttribute(new Attribute("ID", igModel.getModel().getId()));
-      if (igModel.getModel().getDomainInfo() != null
-          && igModel.getModel().getDomainInfo().getVersion() != null)
-        e.addAttribute(
-            new Attribute("HL7Version", this.str(igModel.getModel().getDomainInfo().getVersion())));
+      if (defaultHL7Version != null)
+        e.addAttribute(new Attribute("HL7Version", this.str(defaultHL7Version)));
 
       Element elmMetaData = new Element("MetaData");
 
