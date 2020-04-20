@@ -25,6 +25,8 @@ public class IgamtObjectError {
   private String description;
   private String location;
   
+  private String handleBy;
+  
   private String severity;
   
   public IgamtObjectError(){
@@ -32,7 +34,7 @@ public class IgamtObjectError {
   }
   
   public IgamtObjectError(String code, String target, Type targetType, Object targetMeta, String description,
-      String location, String severity) {
+      String location, String severity, String handleBy) {
     super();
     this.code = code;
     this.target = target;
@@ -41,6 +43,7 @@ public class IgamtObjectError {
     this.description = description;
     this.location = location;
     this.severity = severity;
+    this.handleBy = handleBy;
   }
 
   public String getCode() {
@@ -97,6 +100,14 @@ public class IgamtObjectError {
 
   public void setTargetMeta(Object targetMeta) {
     this.targetMeta = targetMeta;
+  }
+
+  public String getHandleBy() {
+    return handleBy;
+  }
+
+  public void setHandleBy(String handleBy) {
+    this.handleBy = handleBy;
   }
   
   
