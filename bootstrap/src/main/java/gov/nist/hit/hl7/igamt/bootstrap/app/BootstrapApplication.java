@@ -279,7 +279,7 @@ public class BootstrapApplication implements CommandLineRunner {
      */
 
 
-    @PostConstruct
+    //@PostConstruct
     void generateDefaultExportConfig() {
       exportConfigurationRepository.deleteAll();
       List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);

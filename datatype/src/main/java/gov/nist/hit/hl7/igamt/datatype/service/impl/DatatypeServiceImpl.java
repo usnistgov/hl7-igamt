@@ -1268,11 +1268,10 @@ public class DatatypeServiceImpl implements DatatypeService {
 				if (c.getRef() != null && c.getRef().getId() != null) {
 					RelationShip rel = new RelationShip(new ReferenceIndentifier(c.getRef().getId(), Type.DATATYPE),
 							new ReferenceIndentifier(elm.getId(), Type.DATATYPE),
-
 							new ReferenceLocation(Type.COMPONENT, c.getPosition()+ "" , c.getName())
 							);
-					rel.setUsage( c.getUsage());
-					usageMap.put(c.getId(), c.getUsage());
+					rel.setUsage(c.getUsage());
+					usageMap.put(elm.getId()+"-"+c.getId(), c.getUsage());
 					used.add(rel);
 				}
 			}

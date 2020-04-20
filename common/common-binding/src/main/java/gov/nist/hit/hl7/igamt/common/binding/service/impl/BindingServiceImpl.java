@@ -40,7 +40,7 @@ public class BindingServiceImpl implements BindingService {
 
     if (binding.getChildren() != null) {
       for (StructureElementBinding child : binding.getChildren()) {
-        processChildStructureBinding(parent, child, used, null, usageMap.get(child.getElementId()));
+        processChildStructureBinding(parent, child, used, null, usageMap.get(parent.getId()+"-"+child.getElementId()));
       }
     }
   }

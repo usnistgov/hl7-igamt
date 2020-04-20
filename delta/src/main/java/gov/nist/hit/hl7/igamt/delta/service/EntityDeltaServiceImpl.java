@@ -178,7 +178,7 @@ public class EntityDeltaServiceImpl {
         return deltas;
     }
 
-    private ValuesetDelta compareValuesetMetadata(Valueset source, Valueset target) {
+    public ValuesetDelta compareValuesetMetadata(Valueset source, Valueset target) {
         ValuesetDelta delta = new ValuesetDelta();
         delta.setAction(DeltaAction.UNCHANGED);
         DeltaNode<Stability> stability = this.compare(source.getStability(), target.getStability());
@@ -191,7 +191,7 @@ public class EntityDeltaServiceImpl {
         return delta;
     }
 
-    private List<CodeDelta> compareCodes(Set<Code> source, Set<Code> target) {
+    public List<CodeDelta> compareCodes(Set<Code> source, Set<Code> target) {
         List<CodeDelta> deltas = new ArrayList<>();
         Map<String, List<Code>> sourceChildren = (source != null ? source : new HashSet<Code>()).stream()
                 .collect(Collectors.groupingBy((e) -> e.getValue()));
