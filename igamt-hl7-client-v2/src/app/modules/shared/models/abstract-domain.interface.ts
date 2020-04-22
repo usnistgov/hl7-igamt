@@ -2,6 +2,11 @@ import { Type } from '../constants/type.enum';
 import { IDomainInfo } from './domain-info.interface';
 import { IPublicationInfo } from './publication-info.interface';
 
+export interface IDocumentRef {
+  documentId: string;
+  type: Type;
+}
+
 export interface IAbstractDomain {
   id: string;
   creationDate?: string;

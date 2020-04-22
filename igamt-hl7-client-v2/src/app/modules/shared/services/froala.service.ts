@@ -1,11 +1,13 @@
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {Store} from '@ngrx/store';
-import {combineLatest, Observable, pipe} from 'rxjs';
-import {map, take, withLatestFrom} from 'rxjs/operators';
-import {selectBindingConfig, selectFroalaConfig} from '../../../root-store/config/config.reducer';
+import { Store } from '@ngrx/store';
+import { combineLatest, Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import { selectFroalaConfig } from '../../../root-store/config/config.reducer';
 import * as fromDocumentation from '../../../root-store/documentation/documentation.reducer';
-import {selectIgId, selectWorkspaceActive} from '../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectIgId } from '../../../root-store/ig/ig-edit/ig-edit.selectors';
+
+import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +16,8 @@ export class FroalaService {
   config;
   constructor(private http: HttpClient, private store: Store<any>) {
     const staticConfig = {};
-    this.config = {...  staticConfig,
+    this.config = {
+      ...staticConfig,
       placeholderText: '',
       imageAllowedTypes: ['jpeg', 'jpg', 'png', 'gif'],
       fileUploadURL: '/api/storage/upload',
@@ -46,27 +49,28 @@ export class FroalaService {
     };
   }
   getConfig(): Observable<any> {
-    return combineLatest(this.store.select(selectWorkspaceActive), this.store.select(selectIgId), this.store.select(selectFroalaConfig)).pipe(
+    return combineLatest(this.store.select(fromIgamtSelectors.selectWorkspaceActive), this.store.select(selectIgId), this.store.select(selectFroalaConfig)).pipe(
       map(([active, igId, conf]) => {
-          return {
-            ...this.config,
-            key: conf.key,
-            imageUploadURL: '/api/storage/upload/',
-            imageManagerLoadURL: '/api/storage/file',
-            imageUploadParams: {
-              ig: igId,
-              type: active.editor.resourceType,
-              id: active.display.id,
+        return {
+          ...this.config,
+          key: conf.key,
+          imageUploadURL: '/api/storage/upload/',
+          imageManagerLoadURL: '/api/storage/file',
+          imageUploadParams: {
+            ig: igId,
+            type: active.editor.resourceType,
+            id: active.display.id,
+          },
+          events: {
+            ... this.config.events,
+            'froalaEditor.image.removed': ($img, obj1, obj2) => {
+              const index = obj2[0].src.indexOf('=');
+              const name = obj2[0].src.substring(index + 1);
+              this.http.delete('/api/storage/file?name=' + name + '&ig=' + igId + '&type=' + active.editor.resourceType + '&id=' + active.display.id).subscribe();
             },
-            events: {... this.config.events,
-              'froalaEditor.image.removed': ($img, obj1, obj2) => {
-                const index = obj2[0].src.indexOf('=');
-                const name = obj2[0].src.substring(index + 1);
-                this.http.delete('/api/storage/file?name=' + name + '&ig=' + igId + '&type=' + active.editor.resourceType + '&id=' + active.display.id).subscribe();
-              },
-            },
-          };
-        }));
+          },
+        };
+      }));
   }
 
   getDocumentationConfig(): Observable<any> {
@@ -83,7 +87,8 @@ export class FroalaService {
             type: active.editor.resourceType,
             id: active.display.id,
           },
-          events: {... this.config.events,
+          events: {
+            ... this.config.events,
             'froalaEditor.image.removed': ($img, obj1, obj2) => {
               const index = obj2[0].src.indexOf('=');
               const name = obj2[0].src.substring(index + 1);

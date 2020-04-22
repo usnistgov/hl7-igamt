@@ -5,10 +5,12 @@ import { Action, Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { combineLatest, Observable, ReplaySubject, Subject, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
-import { EditorSave, EditorUpdate, LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectAllDatatypes, selectAllSegments, selectIgId, selectMessagesById, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import { LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { CoConstraintBindingDialogComponent, IBindingDialogResult } from '../../../co-constraints/components/co-constraint-binding-dialog/co-constraint-binding-dialog.component';
 import { CoConstraintEntityService } from '../../../co-constraints/services/co-constraint-entity.service';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
@@ -16,10 +18,9 @@ import { MessageService } from '../../../core/services/message.service';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { ICoConstraintBindingContext, ICoConstraintBindingSegment } from '../../../shared/models/co-constraint.interface';
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';
-import { IPath } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { ChangeType, PropertyType } from '../../../shared/models/save-change';
-import { Hl7V2TreeService, IPathInfo } from '../../../shared/services/hl7-v2-tree.service';
+import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { ConformanceProfileService } from '../../services/conformance-profile.service';
 
@@ -66,7 +67,6 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
   public segments: Observable<IDisplayElement[]>;
   public datatypes: Observable<IDisplayElement[]>;
   public valueSets: Observable<IDisplayElement[]>;
-  public igId: Observable<string>;
 
   ccTableBinding: ICoConstraintBindingContext[];
   expansionPanelView: IExpansionPanelView;
@@ -93,10 +93,9 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
     );
 
     this.expansionPanelView = {};
-    this.datatypes = this.store.select(selectAllDatatypes);
-    this.segments = this.store.select(selectAllSegments);
+    this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);
+    this.segments = this.store.select(fromIgamtDisplaySelectors.selectAllSegments);
     this.valueSets = this.store.select(selectValueSetsNodes);
-    this.igId = this.store.select(selectIgId);
 
     this.conformanceProfile = new ReplaySubject<IConformanceProfile>(1);
     this.conformanceProfile$ = this.conformanceProfile.asObservable();
@@ -406,11 +405,11 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
     );
   }
 
-  onEditorSave(action: EditorSave): Observable<Action> {
-    return combineLatest(this.elementId$, this.igId, this.current$, this.initial$).pipe(
+  onEditorSave(action: fromDam.EditorSave): Observable<Action> {
+    return combineLatest(this.elementId$, this.documentRef$, this.current$, this.initial$).pipe(
       take(1),
-      concatMap(([id, igId, current, initial]) => {
-        return this.conformanceProfileService.saveChanges(id, igId, [
+      concatMap(([id, documentRef, current, initial]) => {
+        return this.conformanceProfileService.saveChanges(id, documentRef, [
           {
             location: id,
             propertyType: PropertyType.COCONSTRAINTBINDINGS,
@@ -422,7 +421,7 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
           mergeMap((message) => {
             return this.conformanceProfileService.getById(id).pipe(
               flatMap((resource) => {
-                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new EditorUpdate({ value: { value: resource.coConstraintsBindings, resource }, updateDate: false })];
+                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { value: resource.coConstraintsBindings, resource }, updateDate: false })];
               }),
             );
           }),
@@ -435,7 +434,7 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
       concatMap((id) => {
-        return this.store.select(selectMessagesById, { id });
+        return this.store.select(fromIgamtDisplaySelectors.selectMessagesById, { id });
       }),
     );
   }

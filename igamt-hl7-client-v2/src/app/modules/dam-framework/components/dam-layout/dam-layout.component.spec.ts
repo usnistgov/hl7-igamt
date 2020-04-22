@@ -8,7 +8,7 @@ describe('DamLayoutComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DamLayoutComponent ]
+      declarations: [ DamLayoutComponent ],
     })
     .compileComponents();
   }));

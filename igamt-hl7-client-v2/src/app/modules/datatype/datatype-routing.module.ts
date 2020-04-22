@@ -10,9 +10,9 @@ import {
   OpenDatatypeStructureEditor,
 } from '../../root-store/datatype-edit/datatype-edit.actions';
 import { OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from '../../root-store/datatype-edit/datatype-edit.actions';
+import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
+import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
 import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { DatatypeConformanceStatementEditorComponent } from './components/conformance-statement-editor/datatype-conformance-statement-editor.component';
@@ -43,7 +43,7 @@ const routes: Routes = [
       {
         path: 'metadata',
         component: MetadataEditComponent,
-        canActivate: [IgEditorActivateGuard],
+        canActivate: [EditorActivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.DATATYPE_METADATA,
@@ -57,13 +57,13 @@ const routes: Routes = [
           action: OpenDatatypeMetadataEditorNode,
           idKey: 'datatypeId',
         },
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
       },
       {
         path: 'pre-def',
         component: PredefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.PREDEF,
@@ -81,8 +81,8 @@ const routes: Routes = [
       {
         path: 'post-def',
         component: PostdefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.POSTDEF,
@@ -100,7 +100,7 @@ const routes: Routes = [
       {
         path: 'cross-references',
         component: DatatypeCrossRefsComponent,
-        canActivate: [IgEditorActivateGuard],
+        canActivate: [EditorActivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.CROSSREF,
@@ -115,8 +115,8 @@ const routes: Routes = [
       {
         path: 'conformance-statement',
         component: DatatypeConformanceStatementEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.DATATYPE_CS,
@@ -137,8 +137,8 @@ const routes: Routes = [
           {
             path: '',
             component: DatatypeStructureEditorComponent,
-            canActivate: [IgEditorActivateGuard],
-            canDeactivate: [IgEditSaveDeactivateGuard],
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
             data: {
               editorMetadata: {
                 id: EditorID.DATATYPE_STRUCTURE,
@@ -156,8 +156,8 @@ const routes: Routes = [
           {
             path: 'delta',
             component: DeltaEditorComponent,
-            canActivate: [IgEditorActivateGuard],
-            canDeactivate: [IgEditSaveDeactivateGuard],
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
             data: {
               editorMetadata: {
                 id: EditorID.DATATYPE_DELTA,

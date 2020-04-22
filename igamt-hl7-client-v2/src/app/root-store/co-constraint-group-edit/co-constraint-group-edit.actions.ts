@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.interface';
-import { IEditorMetadata } from '../../modules/shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../modules/shared/models/editor.enum';
 import { OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
 
 export enum CoConstraintGroupEditActionTypes {
@@ -30,7 +30,7 @@ export class OpenCoConstraintGroupEditor extends OpenEditorBase implements Actio
   readonly type = CoConstraintGroupEditActionTypes.OpenCoConstraintGroupEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) {
     super();
   }

@@ -5,9 +5,7 @@ import { Actions, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, of } from 'rxjs';
 import { concatMap, map, take, tap } from 'rxjs/operators';
-import { ToolbarSave } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { IgEditActionTypes } from '../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectWorkspaceCurrentIsChanged, selectWorkspaceCurrentIsValid } from '../../../root-store/ig/ig-edit/ig-edit.selectors';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { AbstractEditorComponent } from '../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
 
@@ -22,8 +20,8 @@ export class IgEditSaveDeactivateGuard implements CanDeactivate<AbstractEditorCo
 
   canDeactivate(component: AbstractEditorComponent, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot) {
     return combineLatest(
-      this.store.select(selectWorkspaceCurrentIsChanged),
-      this.store.select(selectWorkspaceCurrentIsValid),
+      this.store.select(fromDam.selectWorkspaceCurrentIsChanged),
+      this.store.select(fromDam.selectWorkspaceCurrentIsValid),
     ).pipe(
       take(1),
       concatMap(([editorChanged, editorValid]) => {
@@ -41,15 +39,15 @@ export class IgEditSaveDeactivateGuard implements CanDeactivate<AbstractEditorCo
           );
         } else {
           if (editorChanged) {
-            this.store.dispatch(new ToolbarSave());
+            this.store.dispatch(new fromDam.GlobalSave());
             return this.actions$.pipe(
-              ofType(IgEditActionTypes.EditorSaveSuccess, IgEditActionTypes.EditorSaveFailure),
+              ofType(fromDam.DamActionTypes.EditorSaveSuccess, fromDam.DamActionTypes.EditorSaveFailure),
               map((action: Action) => {
                 switch (action.type) {
-                  case IgEditActionTypes.EditorSaveSuccess:
+                  case fromDam.DamActionTypes.EditorSaveSuccess:
                     component.onDeactivate();
                     return true;
-                  case IgEditActionTypes.EditorSaveFailure: return false;
+                  case fromDam.DamActionTypes.EditorSaveFailure: return false;
                 }
               }),
             );

@@ -1,60 +1,31 @@
-<app-dam-layout [controller]="controller">
-  <ng-template #titleBar let-titleBar>
-    <app-ig-edit-titlebar [metadata]="titleBar"></app-ig-edit-titlebar>
+<app-dam-layout>
+
+  <ng-template #alerts>
+    <app-alerts-container></app-alerts-container>
   </ng-template>
+
+  <ng-template #titleBar>
+    <app-ig-edit-titlebar [metadata]="titleBar$ | async"></app-ig-edit-titlebar>
+  </ng-template>
+
+  <ng-template #toolbar>
+    <app-ig-edit-toolbar></app-ig-edit-toolbar>
+  </ng-template>
+
+  <ng-template #activeTitleBar>
+    <app-ig-edit-active-titlebar
+    [active]="activeWorkspace | async"
+    [controls]="activeComponent?.controls"
+    [header]="activeComponent?.header"
+    ></app-ig-edit-active-titlebar>
+  </ng-template>
+
+  <ng-template #editorContent>
+    <app-dam-editor-outlet></app-dam-editor-outlet>
+  </ng-template>
+
+  <ng-template #sideBar>
+    <app-ig-edit-sidebar [deltaMode]="deltaMode$ |async"></app-ig-edit-sidebar>
+  </ng-template>
+
 </app-dam-layout>
-<!-- <div class="page-container-nopad">
-  <div class="wrapper">
-
-    <div class="alerts">
-      <app-alerts-container></app-alerts-container>
-    </div>
-
-    <div class="titlebar">
-      <app-ig-edit-titlebar [metadata]="titleBar | async"></app-ig-edit-titlebar>
-    </div>
-
-    <div class="utils">
-      <ul class="nav nav-pills">
-        <li class="nav-item">
-          <a class="nav-link active" href="#">Document View</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Custom Structure Editor</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Verification Report <i class="fa fa-times" style="margin-left: 5px; color: red;"></i></a>
-        </li>
-      </ul>
-    </div>
-
-    <div [ngStyle]="{'grid-template-columns': '[sidebar] minmax(min-content, '+ (!collapsed ? positionX : '45px') +') [resize-bar] 4px [container] minmax(600px, 8fr)'}"
-         class="page-container">
-      <div class="container-section">
-        <app-ig-edit-toolbar class="toolbar-controls"></app-ig-edit-toolbar>
-        <app-ig-edit-active-titlebar [active]="activeWorkspace | async" [controls]="activeComponent?.controls"
-                                     [header]="activeComponent?.header"
-                                     class="titlebar-content"></app-ig-edit-active-titlebar>
-
-        <div class="container-content">
-
-          <router-outlet (activate)="activateComponent($event)" (deactivate)="deactivateComponent($event)"
-                         style="display: none;"></router-outlet>
-        </div>
-      </div>
-      <div #resize [ngStyle]="{'background-color': dragging ? 'blue' : ''}" class="resize-bar"></div>
-      <ng-container *ngIf="!collapsed">
-        <app-ig-edit-sidebar class="sidebar" [deltaMode]="deltaMode$ |async"></app-ig-edit-sidebar>
-      </ng-container>
-      <ng-container *ngIf="collapsed">
-        <div style="background-color: white;">
-          <div style="height: 40px; display: flex; align-items: center; justify-content: flex-start;">
-            <button (click)= "expandToc()" class="btn btn-sm btn-default"
-                    style="border: 1px solid grey; border-radius: 50%; width: 35px; height: 35px; margin-left: 5px;"><i
-              class="fa fa-chevron-right"></i></button>
-          </div>
-        </div>
-      </ng-container>
-    </div>
-  </div>
-</div> -->

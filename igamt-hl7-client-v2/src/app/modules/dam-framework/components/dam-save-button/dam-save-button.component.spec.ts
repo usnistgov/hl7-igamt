@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { DamWidgetComponent } from './dam-widget.component';
+import { DamSaveButtonComponent } from './dam-save-button.component';
 
-describe('DamWidgetComponent', () => {
-  let component: DamWidgetComponent;
-  let fixture: ComponentFixture<DamWidgetComponent>;
+describe('DamSaveButtonComponent', () => {
+  let component: DamSaveButtonComponent;
+  let fixture: ComponentFixture<DamSaveButtonComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DamWidgetComponent ],
+      declarations: [ DamSaveButtonComponent ],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(DamWidgetComponent);
+    fixture = TestBed.createComponent(DamSaveButtonComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

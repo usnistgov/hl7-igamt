@@ -3,15 +3,16 @@ import { Actions, ofType } from '@ngrx/effects';
 import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import { concatMap, flatMap, switchMap, take } from 'rxjs/operators';
-import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess, OpenEditor, OpenEditorBase, OpenEditorFailure } from '../../../root-store/ig/ig-edit/ig-edit.actions';
+import { OpenEditor, OpenEditorBase, OpenEditorFailure } from 'src/app/modules/dam-framework/store/index';
+import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectIgId } from '../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Type } from '../../shared/constants/type.enum';
+import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
 import { IUsages } from '../../shared/models/cross-reference';
 import { IDelta } from '../../shared/models/delta';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IResource } from '../../shared/models/resource.interface';
-import { IDynamicMappingInfo } from '../../shared/models/segment.interface';
 import { RxjsStoreHelperService } from '../../shared/services/rxjs-store-helper.service';
 import { IResourceMetadata } from '../components/resource-metadata-editor/resource-metadata-editor.component';
 import { MessageType, UserMessage } from '../models/message/message.class';
@@ -72,7 +73,7 @@ export class OpenEditorService {
       (action: A, resource: T, display: IDisplayElement) => {
         const openEditor = new OpenEditor({
           id: action.payload.id,
-          element: display,
+          display,
           editor: action.payload.editor,
           initial: {
             changes: {},
@@ -111,7 +112,7 @@ export class OpenEditorService {
       (action: A, resource: T, display: IDisplayElement) => {
         const openEditor = new OpenEditor({
           id: action.payload.id,
-          element: display,
+          display,
           editor: action.payload.editor,
           initial: {
             value: resource.coConstraintsBindings,
@@ -172,7 +173,7 @@ export class OpenEditorService {
       (action: A, resource: T, display: IDisplayElement) => {
         const openEditor = new OpenEditor({
           id: action.payload.id,
-          element: display,
+          display,
           editor: action.payload.editor,
           initial: {
             changes: [],
@@ -215,7 +216,7 @@ export class OpenEditorService {
     return (action: A, resource: T, display: IDisplayElement) => {
       return of(new OpenEditor({
         id: action.payload.id,
-        element: display,
+        display,
         editor: action.payload.editor,
         initial: {
           value: resource,
@@ -238,7 +239,7 @@ export class OpenEditorService {
       (action: A, resource: IResourceMetadata, display: IDisplayElement) => {
         return of(new OpenEditor({
           id: action.payload.id,
-          element: display,
+          display,
           editor: action.payload.editor,
           initial: {
             ...resource,
@@ -262,7 +263,7 @@ export class OpenEditorService {
       (action: A, dynMapping: any, display: IDisplayElement) => {
         return of(new OpenEditor({
           id: action.payload.id,
-          element: display,
+          display,
           editor: action.payload.editor,
           initial: {
             ...dynMapping,
@@ -277,17 +278,17 @@ export class OpenEditorService {
     displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
     documentType: Type,
     elementType: Type,
-    id: MemoizedSelector<object, string>,
-    service: (documentId: string, documentType: Type, elementType: Type, elementId: string) => Observable<T>,
+    documentInfo: MemoizedSelector<object, IDocumentRef>,
+    service: (documentId: IDocumentRef, documentType: Type, elementType: Type, elementId: string) => Observable<T>,
     notFoundMessage: string,
   ): Observable<Action> {
     return this.openEditor<T, A>(
       _action,
       displayElement$,
       (action: A) => {
-        return this.store.select(id).pipe(
-          concatMap((igId: string) => {
-            return service(igId, documentType, elementType, action.payload.id);
+        return this.store.select(documentInfo).pipe(
+          concatMap((info: IDocumentRef) => {
+            return service(info, documentType, elementType, action.payload.id);
           }),
         );
       },
@@ -295,7 +296,7 @@ export class OpenEditorService {
       (action: A, resource: IUsages[], display: IDisplayElement) => {
         return of(new OpenEditor({
           id: action.payload.id,
-          element: display,
+          display,
           editor: action.payload.editor,
           initial: resource,
         }));

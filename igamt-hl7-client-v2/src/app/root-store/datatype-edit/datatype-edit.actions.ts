@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
-import { IEditorMetadata } from '../../modules/shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../modules/shared/models/editor.enum';
 
 export enum DatatypeEditActionTypes {
   LoadDatatype = '[Datatype Edit] Load Datatype',
@@ -35,7 +35,7 @@ export class OpenDatatypePreDefEditor implements Action {
   readonly type = DatatypeEditActionTypes.OpenDatatypePreDefEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 
 }
@@ -44,7 +44,7 @@ export class OpenDatatypePostDefEditor implements Action {
   readonly type = DatatypeEditActionTypes.OpenDatatypePostDefEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 
@@ -52,7 +52,7 @@ export class OpenDatatypeDeltaEditor implements Action {
   readonly type = DatatypeEditActionTypes.OpenDatatypeDeltaEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 
@@ -60,7 +60,7 @@ export class OpenDatatypeStructureEditor implements Action {
   readonly type = DatatypeEditActionTypes.OpenDatatypeStructureEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 
@@ -68,7 +68,7 @@ export class OpenDatatypeConformanceStatementEditor implements Action {
   readonly type = DatatypeEditActionTypes.OpenDatatypeConformanceStatementEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 
@@ -76,7 +76,7 @@ export class OpenDatatypeMetadataEditorNode implements Action {
   readonly type = DatatypeEditActionTypes.OpenDatatypeMetadataEditorNode;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 
@@ -84,7 +84,7 @@ export class OpenDatatypeCrossRefEditor implements Action {
   readonly type = DatatypeEditActionTypes.OpenDatatypeCrossRefEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 

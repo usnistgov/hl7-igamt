@@ -1,16 +1,18 @@
 import { OnInit } from '@angular/core';
-import {FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import { FormGroup, Validators } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import {catchError, concatMap, flatMap, map, mergeMap, take, withLatestFrom} from 'rxjs/operators';
-import { EditorSave, EditorSaveFailure, IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import {selectIgId, selectSelectedResource} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { catchError, concatMap, flatMap, map, take, withLatestFrom } from 'rxjs/operators';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
-import {validateConvention} from '../../../shared/functions/convention-factory';
-import {validateUnity} from '../../../shared/functions/unicity-factory';
+import { validateConvention } from '../../../shared/functions/convention-factory';
+import { validateUnity } from '../../../shared/functions/unicity-factory';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IEditorMetadata } from '../../../shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
+import { IResource } from '../../../shared/models/resource.interface';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
 import { FroalaService } from '../../../shared/services/froala.service';
 import { Message } from '../../models/message/message.class';
@@ -21,8 +23,10 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
 
   metadataFormInput$: Observable<IMetadataFormInput<IResourceMetadata>>;
   froalaConfig$: Observable<any>;
+  selectedResource$: Observable<IResource>;
+
   constructor(
-    readonly editor: IEditorMetadata,
+    readonly editor: IHL7EditorMetadata,
     protected actions$: Actions,
     private messageService: MessageService,
     protected store: Store<any>, protected froalaService: FroalaService) {
@@ -30,17 +34,17 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
     this.froalaConfig$ = froalaService.getConfig();
     const authorNotes = 'Author Notes';
     const usageNotes = 'Usage Notes';
-    const selectedResource$ = this.store.select(selectSelectedResource);
-    const name$ = this.store.select(selectSelectedResource).pipe(
+    this.selectedResource$ = this.store.select(fromIgamtSelectedSelectors.selectSelectedResource);
+    const name$ = this.selectedResource$.pipe(
       map((resource) => {
         return resource.name;
       }),
     );
 
-    this.metadataFormInput$ = combineLatest(selectedResource$, name$, this.getOthers()).pipe(
+    this.metadataFormInput$ = combineLatest(this.selectedResource$, name$, this.getOthers()).pipe(
       take(1),
-      map(([ selectedResource, name, existing]) => {
-       return {
+      map(([selectedResource, name, existing]) => {
+        return {
           viewOnly: this.viewOnly$,
           data: this.currentSynchronized$,
           model: {
@@ -90,7 +94,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
             },
           },
         };
-    }),
+      }),
     );
   }
 
@@ -98,9 +102,9 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
   getOthers(): Observable<IDisplayElement[]> {
     return this.getExistingList().pipe(
       take(1),
-      withLatestFrom(this.store.select(selectSelectedResource)),
-      map(([exiting, selected ]) => {
-        return exiting.filter((x) => x.id !== selected.id) ;
+      withLatestFrom(this.selectedResource$),
+      map(([exiting, selected]) => {
+        return exiting.filter((x) => x.id !== selected.id);
       }),
     );
   }
@@ -171,13 +175,14 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
 
   abstract reloadResource(resourceId: string): Action;
 
-  onEditorSave(action: EditorSave): Observable<Action> {
-    return combineLatest(this.elementId$, this.initial$, this.current$, this.store.select(selectIgId)).pipe(
+  onEditorSave(action: fromDAM.EditorSave): Observable<Action> {
+    return combineLatest(this.elementId$, this.initial$, this.current$, this.documentRef$).pipe(
       take(1),
-      concatMap(([id, old, current, igId]) => {
+      concatMap(([id, old, current, documentRef]) => {
         return this.save(this.getChanges(id, current.data, old)).pipe(
-          flatMap((message) => [this.messageService.messageToAction(message), this.reloadResource(id), new IgEditResolverLoad(igId)]),
-          catchError((error) => of(this.messageService.actionFromError(error), new EditorSaveFailure())),
+          /// TODO Treat Library Case
+          flatMap((message) => [this.messageService.messageToAction(message), this.reloadResource(id), new IgEditResolverLoad(documentRef.documentId)]),
+          catchError((error) => of(this.messageService.actionFromError(error), new fromDAM.EditorSaveFailure())),
         );
       }),
     );

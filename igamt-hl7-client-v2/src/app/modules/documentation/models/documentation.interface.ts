@@ -1,4 +1,4 @@
-import {IEditorMetadata} from '../../shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../shared/models/editor.enum';
 
 export enum DocumentationScope {
   GLOBAL = 'GLOBAL', USER = 'USER',
@@ -16,11 +16,10 @@ export interface IDocumentation {
 export enum DocumentationType {
   USERNOTES = 'USERNOTES',
   IMPLEMENTATIONDECISION = 'IMPLEMENTATIONDECISION',
-  FAQ= 'FAQ',
+  FAQ = 'FAQ',
   USERGUIDE = 'USERGUIDE',
   GLOSSARY = 'GLOSSARY',
   RELEASENOTE = 'RELEASENOTE',
-
 }
 
 export class IDocumentationWrapper {
@@ -45,7 +44,7 @@ export interface IDocumentationWorkspace {
 
 export interface IDocumentationWorkspaceActive {
   display: IDocumentation;
-  editor: IEditorMetadata;
+  editor: IHL7EditorMetadata;
 }
 export interface IDocumentationWorkspaceCurrent {
   data: IDocumentation;

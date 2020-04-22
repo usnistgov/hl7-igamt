@@ -1,9 +1,10 @@
+import { IEditorMetadata } from '../../dam-framework/models/state/workspace';
 import { Type } from '../constants/type.enum';
 
-export interface IEditorMetadata {
-  id: EditorID;
+export interface IHL7EditorMetadata extends IEditorMetadata {
   title?: string;
   resourceType?: Type;
+  id: EditorID;
 }
 
 export enum EditorID {

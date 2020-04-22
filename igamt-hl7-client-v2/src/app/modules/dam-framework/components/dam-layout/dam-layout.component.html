@@ -3,16 +3,17 @@
 
     <div class="alerts">
       <!-- ALERTS -->
+      <ng-container *ngTemplateOutlet="alertsTemplate; context: { }" ></ng-container>
     </div>
 
     <div class="titlebar">
       <!-- TITLEBAR -->
-      <ng-container *ngTemplateOutlet="titleBarTemplate; context: { $implicit: titleBar | async }" ></ng-container>
+      <ng-container *ngTemplateOutlet="titleBarTemplate; context: { }" ></ng-container>
     </div>
 
-    <div class="utils">
+    <!-- <div class="utils"> -->
       <!-- TABS -->
-    </div>
+    <!-- </div> -->
 
     <div class="page-container"
         [ngStyle]="{
@@ -24,14 +25,18 @@
 
         <div class="toolbar-controls" >
           <!-- TOOLBAR -->
+          <ng-container *ngTemplateOutlet="toolbarTemplate; context: { }" ></ng-container>
         </div>
         <div class="titlebar-content">
           <!-- ACTIVE TITLEBAR -->
+          <ng-container *ngTemplateOutlet="activeTitlebarTemplate; context: { }" ></ng-container>
         </div>
 
         <div class="container-content">
           <!-- EDITOR CONTENT -->
+          <ng-container *ngTemplateOutlet="editorContentTemplate; context: { }" ></ng-container>
         </div>
+
       </div>
 
       <!-- RESIZE BAR -->
@@ -40,15 +45,14 @@
       <!-- SIDE NOT COLLAPSED -->
       <ng-container *ngIf="!collapsed">
         <!-- SIDEBAR -->
+        <ng-container *ngTemplateOutlet="sideBarTemplate; context: { }" ></ng-container>
       </ng-container>
 
       <!-- SIDEBAR COLLAPSED -->
       <ng-container *ngIf="collapsed">
         <div style="background-color: white;">
           <div class="collapsed-side-bar-btn-container">
-            <button (click)= "expandToc()" class="btn btn-sm btn-default collapsed-side-bar-btn">
-              <i class="fa fa-chevron-right"></i>
-            </button>
+            <app-dam-side-bar-toggle></app-dam-side-bar-toggle>
           </div>
         </div>
       </ng-container>

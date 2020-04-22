@@ -2,12 +2,12 @@ import { OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import { concatMap, flatMap, take, tap } from 'rxjs/operators';
-import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { combineLatest, Observable, Subscription } from 'rxjs';
+import { concatMap, flatMap, take } from 'rxjs/operators';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IEditorMetadata } from '../../../shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { PropertyType } from '../../../shared/models/save-change';
 import { FroalaService } from '../../../shared/services/froala.service';
 import { MessageService } from '../../services/message.service';
@@ -21,7 +21,7 @@ export abstract class DefinitionEditorComponent extends AbstractEditorComponent 
   protected froalaConfig$: Observable<any>;
 
   constructor(
-    editorMetadata: IEditorMetadata,
+    editorMetadata: IHL7EditorMetadata,
     private propertyType: PropertyType,
     actions$: Actions,
     store: Store<any>,
@@ -43,17 +43,17 @@ export abstract class DefinitionEditorComponent extends AbstractEditorComponent 
 
   }
 
-  abstract saveChange(elementId: string, igId: string, value: any, old: any, property: PropertyType): Observable<Action>;
+  abstract saveChange(elementId: string, documentRef: IDocumentRef, value: any, old: any, property: PropertyType): Observable<Action>;
 
   dataChange(formGroup: FormGroup) {
     this.editorChange(formGroup.getRawValue(), formGroup.valid);
   }
 
-  onEditorSave(action: EditorSave): Observable<Action> {
-    return combineLatest(this.elementId$, this.store.select(fromIgEdit.selectIgId), this.current$, this.initial$).pipe(
+  onEditorSave(action: fromDam.EditorSave): Observable<Action> {
+    return combineLatest(this.elementId$, this.documentRef$, this.current$, this.initial$).pipe(
       take(1),
-      flatMap(([id, igId, definition, initial]) => {
-        return this.saveChange(id, igId, definition.data.value, initial.value, this.propertyType);
+      flatMap(([id, documentRef, definition, initial]) => {
+        return this.saveChange(id, documentRef, definition.data.value, initial.value, this.propertyType);
       }),
     );
   }

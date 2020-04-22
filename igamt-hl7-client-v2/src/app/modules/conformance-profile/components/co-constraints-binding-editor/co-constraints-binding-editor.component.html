@@ -32,7 +32,7 @@
             [segments]="segments | async"
             [datatypes]="datatypes | async"
             [valueSets]="valueSets | async"
-            [igId]="igId | async"
+            [documentRef]="documentRef | async"
             [conformanceProfile]="conformanceProfile$"
             [context]="binding.context"
             (valueChange)="segmentBindingChange(binding.context.pathId, $event)"

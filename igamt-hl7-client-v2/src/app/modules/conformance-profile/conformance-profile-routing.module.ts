@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoadConformanceProfile, OpenConformanceProfileDeltaEditor, OpenConformanceProfilePreDefEditor } from 'src/app/root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import { ConformanceProfileEditActionTypes, OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfilePostDefEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from '../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
+import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
+import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
 import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { CoConstraintsBindingEditorComponent } from './components/co-constraints-binding-editor/co-constraints-binding-editor.component';
@@ -35,8 +35,8 @@ const routes: Routes = [
       {
         path: 'conformance-statement',
         component: CPConformanceStatementEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.CP_CS,
@@ -54,8 +54,8 @@ const routes: Routes = [
       {
         path: 'co-constraint',
         component: CoConstraintsBindingEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.CP_CC_BINDING,
@@ -73,8 +73,8 @@ const routes: Routes = [
       {
         path: 'pre-def',
         component: PredefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.PREDEF,
@@ -95,8 +95,8 @@ const routes: Routes = [
           {
             path: '',
             component: ConformanceProfileStructureEditorComponent,
-            canActivate: [IgEditorActivateGuard],
-            canDeactivate: [IgEditSaveDeactivateGuard],
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
             data: {
               editorMetadata: {
                 id: EditorID.CONFP_STRUCTURE,
@@ -114,8 +114,8 @@ const routes: Routes = [
           {
             path: 'delta',
             component: DeltaEditorComponent,
-            canActivate: [IgEditorActivateGuard],
-            canDeactivate: [IgEditSaveDeactivateGuard],
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
             data: {
               editorMetadata: {
                 id: EditorID.CONFP_DELTA,
@@ -135,8 +135,8 @@ const routes: Routes = [
       {
         path: 'post-def',
         component: PostdefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.POSTDEF,
@@ -154,8 +154,8 @@ const routes: Routes = [
       {
         path: 'metadata',
         component: MetadataEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.MESSAGE_METADATA,

@@ -2,13 +2,14 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadConformanceProfile } from '../../../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
-import { selectMessagesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../core/models/message/message.class';
 import { MessageService } from '../../../core/services/message.service';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
@@ -87,8 +88,8 @@ export class ConformanceProfileStructureEditorComponent extends StructureEditorC
     return of(false);
   }
 
-  saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message<any>> {
-    return this.conformanceProfileService.saveChanges(id, igId, changes);
+  saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {
+    return this.conformanceProfileService.saveChanges(id, documentRef, changes);
   }
 
   getById(id: string): Observable<IConformanceProfile> {
@@ -96,7 +97,7 @@ export class ConformanceProfileStructureEditorComponent extends StructureEditorC
   }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
-    return selectMessagesById;
+    return fromIgamtDisplaySelectors.selectMessagesById;
   }
 
 }

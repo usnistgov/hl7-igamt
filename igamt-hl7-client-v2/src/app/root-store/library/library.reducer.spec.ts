@@ -1,6 +1,6 @@
-import {initialState, reducer} from './ig-edit.reducer';
+import { initialState, reducer } from './library.reducer';
 
-describe('IgEdit Reducer', () => {
+describe('Library Reducer', () => {
   describe('an unknown action', () => {
     it('should return the previous state', () => {
       const action = {} as any;

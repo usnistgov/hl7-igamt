@@ -4,11 +4,11 @@
 }
 
 .doc-link{
-  font-size: 20px;
+  font-size: 18px;
   word-break: break-all;
   cursor:pointer;
+  list-style-type: none;
 }
-
 
 .cdk-drag-preview {
   box-sizing: border-box;

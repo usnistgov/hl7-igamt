@@ -3,7 +3,7 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
 import { concatMap, take } from 'rxjs/operators';
-import {selectAllSegments, selectIgId, selectSegmentsById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadSegment } from '../../../../root-store/segment-edit/segment-edit.actions';
 import { ResourceMetadataEditorComponent } from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
 import { Message } from '../../../core/models/message/message.class';
@@ -34,10 +34,10 @@ export class MetadataEditorComponent extends ResourceMetadataEditorComponent imp
   }
 
   save(changes: IChange[]): Observable<Message<any>> {
-    return combineLatest(this.elementId$, this.store.select(selectIgId)).pipe(
+    return combineLatest(this.elementId$, this.documentRef$).pipe(
       take(1),
-      concatMap(([id, documentId]) => {
-        return this.segmentService.saveChanges(id, documentId, changes);
+      concatMap(([id, documentRef]) => {
+        return this.segmentService.saveChanges(id, documentRef, changes);
       }),
     );
   }
@@ -47,13 +47,13 @@ export class MetadataEditorComponent extends ResourceMetadataEditorComponent imp
   }
 
   getExistingList(): Observable<IDisplayElement[]> {
-    return  this.store.select(selectAllSegments);
+    return this.store.select(fromIgamtDisplaySelectors.selectAllSegments);
   }
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
       take(1),
       concatMap((id) => {
-        return this.store.select(selectSegmentsById, { id });
+        return this.store.select(fromIgamtDisplaySelectors.selectSegmentsById, { id });
       }),
     );
   }

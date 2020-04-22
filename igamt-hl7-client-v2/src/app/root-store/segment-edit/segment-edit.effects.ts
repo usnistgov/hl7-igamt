@@ -4,19 +4,20 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import { OpenEditorBase } from 'src/app/modules/dam-framework/store/index';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
-import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { selectedSegment } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
+import { SetValue } from '../../modules/dam-framework/store/dam.actions';
 import { SegmentService } from '../../modules/segment/services/segment.service';
 import { IUsages } from '../../modules/shared/models/cross-reference';
 import { IConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { ISegment } from '../../modules/shared/models/segment.interface';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { LoadSelectedResource, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
-import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef, selectIgId } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import {
   LoadSegment,
@@ -63,8 +64,12 @@ export class SegmentEditEffects {
   @Effect()
   LoadSegmentSuccess$ = this.actions$.pipe(
     ofType(SegmentEditActionTypes.LoadSegmentSuccess),
-    map((action: LoadSegmentSuccess) => {
-      return new LoadSelectedResource(action.segment);
+    flatMap((action: LoadSegmentSuccess) => {
+      return [
+        new SetValue({
+          selected: action.segment,
+        }),
+      ];
     }),
   );
 
@@ -81,18 +86,18 @@ export class SegmentEditEffects {
   @Effect()
   openSegmentPreDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenSegmentPreDefEditor>(
     SegmentEditActionTypes.OpenSegmentPreDefEditor,
-    fromIgEdit.selectSegmentsById,
-    this.store.select(selectedResourcePreDef),
+    fromIgamtDisplaySelectors.selectSegmentsById,
+    this.store.select(fromIgamtSelectedSelectors.selectedResourcePreDef),
     this.SegmentNotFound,
   );
 
   @Effect()
   openSegmentCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenSegmentCrossRefEditor>(
     SegmentEditActionTypes.OpenSegmentCrossRefEditor,
-    fromIgEdit.selectSegmentsById,
+    fromIgamtDisplaySelectors.selectSegmentsById,
     Type.IGDOCUMENT,
     Type.SEGMENT,
-    fromIgEdit.selectIgId,
+    fromIgamtSelectors.selectLoadedDocumentInfo,
     this.crossReferenceService.findUsagesDisplay,
     this.SegmentNotFound,
   );
@@ -100,16 +105,16 @@ export class SegmentEditEffects {
   @Effect()
   openSegmentMetadataEditor$ = this.editorHelper.openMetadataEditor<OpenSegmentMetadataEditor>(
     SegmentEditActionTypes.OpenSegmentMetadataEditor,
-    fromIgEdit.selectSegmentsById,
-    this.store.select(selectedResourceMetadata),
+    fromIgamtDisplaySelectors.selectSegmentsById,
+    this.store.select(fromIgamtSelectedSelectors.selectedResourceMetadata),
     this.SegmentNotFound,
   );
 
   @Effect()
   openSegmentPostDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenSegmentPostDefEditor>(
     SegmentEditActionTypes.OpenSegmentPostDefEditor,
-    fromIgEdit.selectSegmentsById,
-    this.store.select(selectedResourcePostDef),
+    fromIgamtDisplaySelectors.selectSegmentsById,
+    this.store.select(fromIgamtSelectedSelectors.selectedResourcePostDef),
     this.SegmentNotFound,
   );
 
@@ -117,8 +122,8 @@ export class SegmentEditEffects {
   openSegmentStructureEditor$ = this.editorHelper.openStructureEditor<ISegment, OpenSegmentStructureEditor>(
     SegmentEditActionTypes.OpenSegmentStructureEditor,
     Type.SEGMENT,
-    fromIgEdit.selectSegmentsById,
-    this.store.select(fromIgEdit.selectedSegment),
+    fromIgamtDisplaySelectors.selectSegmentsById,
+    this.store.select(fromIgamtSelectedSelectors.selectedSegment),
     this.SegmentNotFound,
   );
 
@@ -126,12 +131,12 @@ export class SegmentEditEffects {
   openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IConformanceStatementList, OpenSegmentConformanceStatementEditor>(
     SegmentEditActionTypes.OpenSegmentConformanceStatementEditor,
     Type.SEGMENT,
-    fromIgEdit.selectSegmentsById,
+    fromIgamtDisplaySelectors.selectSegmentsById,
     (action: OpenEditorBase) => {
-      return this.store.select(selectIgId).pipe(
+      return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
         take(1),
-        mergeMap((igId) => {
-          return this.segmentService.getConformanceStatements(action.payload.id, igId);
+        mergeMap((documentInfo) => {
+          return this.segmentService.getConformanceStatements(action.payload.id, documentInfo);
         }),
       );
     },
@@ -141,9 +146,9 @@ export class SegmentEditEffects {
   @Effect()
   OpenSegmentDynamicMappingEditor$ = this.editorHelper.openDynMappingEditor<OpenSegmentDynamicMappingEditor>(
     SegmentEditActionTypes.OpenSegmentDynamicMappingEditor,
-    fromIgEdit.selectSegmentsById,
+    fromIgamtDisplaySelectors.selectSegmentsById,
     (action: OpenSegmentDynamicMappingEditor) => {
-      return this.store.select(selectedSegment).pipe(
+      return this.store.select(fromIgamtSelectedSelectors.selectedSegment).pipe(
         take(1),
       );
     },
@@ -154,7 +159,7 @@ export class SegmentEditEffects {
   openDeltaEditor$ = this.editorHelper.openDeltaEditor<OpenSegmentDeltaEditor>(
     SegmentEditActionTypes.OpenSegmentDeltaEditor,
     Type.SEGMENT,
-    fromIgEdit.selectSegmentsById,
+    fromIgamtDisplaySelectors.selectSegmentsById,
     this.deltaService.getDeltaFromOrigin,
     this.SegmentNotFound,
   );

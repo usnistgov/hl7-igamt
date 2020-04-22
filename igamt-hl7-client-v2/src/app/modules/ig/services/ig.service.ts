@@ -1,7 +1,10 @@
 import { LocationStrategy } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { LoadResourcesInRepostory } from '../../dam-framework/store/dam.actions';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Type } from '../../shared/constants/type.enum';
@@ -9,6 +12,7 @@ import { IConnectingInfo } from '../../shared/models/config.class';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
+import { IRegistry } from '../../shared/models/registry.interface';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
 import { IDocumentCreationWrapper } from '../models/ig/document-creation.interface';
 import { IGDisplayInfo } from '../models/ig/ig-document.class';
@@ -17,6 +21,7 @@ import { MessageEventTreeNode } from '../models/message-event/message-event.clas
 import { IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse, ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
+import { IgTOCNodeHelper } from './ig-toc-node-helper.service';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +33,101 @@ export class IgService {
   readonly CONFIGURATION = '/configuration/';
 
   constructor(private http: HttpClient, private location: LocationStrategy) {
+  }
+
+  getRegistryAndCollectionByType(type: Type): { registry: string, collection: string } {
+    let registry: string;
+    let collection: string;
+
+    if (type === Type.VALUESET) {
+      registry = 'valueSetRegistry';
+      collection = 'valueSets';
+    } else if (type === Type.CONFORMANCEPROFILE) {
+      registry = 'conformanceProfileRegistry';
+      collection = 'messages';
+    } else if (type === Type.DATATYPE) {
+      registry = 'datatypeRegistry';
+      collection = 'datatypes';
+    } else if (type === Type.SEGMENT) {
+      registry = 'segmentRegistry';
+      collection = 'segments';
+    } else if (type === Type.COCONSTRAINTGROUP) {
+      registry = 'coConstraintGroupRegistry';
+      collection = 'coConstraintGroups';
+    }
+
+    return { registry, collection };
+  }
+
+  loadRepositoryFromIgDisplayInfo(igInfo: IGDisplayInfo, values?: string[]): LoadResourcesInRepostory {
+    const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'sections'];
+    const collections = (values ? values : _default).map((key) => {
+      return {
+        key,
+        values: key === 'sections' ? IgTOCNodeHelper.getIDisplayFromSections(igInfo.ig.content, '') : igInfo[key],
+      };
+    });
+    return new fromDam.LoadResourcesInRepostory({
+      collections,
+    });
+  }
+
+  insertRepositoryCopyResource(registryList: IRegistry, display: IDisplayElement, ig: IgDocument): Action[] {
+    const { registry, collection } = this.getRegistryAndCollectionByType(display.type);
+    return [
+      ...(registry ? [new fromDam.LoadPayloadData({
+        ...ig,
+        [registry]: registryList,
+      })] : []),
+      ...(collection ? [new fromDam.InsertResourcesInRepostory({
+        collections: [{
+          key: collection,
+          values: [display],
+        }],
+      })] : []),
+    ];
+  }
+
+  deleteOneFromRepository(display: IDisplayElement, ig: IgDocument): Action[] {
+    const { registry, collection } = this.getRegistryAndCollectionByType(display.type);
+    return [
+      ...(registry ? [new fromDam.LoadPayloadData({
+        ...ig,
+        [registry]: this.removeById(ig[registry], display.id),
+      })] : []),
+      ...(collection ? [new fromDam.DeleteResourcesFromRepostory({
+        collections: [{
+          key: collection,
+          values: [display.id],
+        }],
+      })] : []),
+    ];
+  }
+
+  updateSections(sections: IDisplayElement[], ig: IgDocument): Action[] {
+    const content: IContent[] = IgTOCNodeHelper.updateSections(sections);
+    const sectionList: IDisplayElement[] = IgTOCNodeHelper.getIDisplayFromSections(content, '');
+    return [
+      new fromDam.LoadPayloadData({
+        ...ig,
+        content,
+      }),
+      new fromDam.InsertResourcesInRepostory({
+        collections: [{
+          key: 'sections',
+          values: sectionList,
+        }],
+      }),
+      new fromDam.SetValue({
+        tableOfContentEdit: {
+          changed: true,
+        },
+      }),
+    ];
+  }
+
+  removeById(reg: IRegistry, id: string): IRegistry {
+    return { ...reg, children: reg.children.filter((elm) => elm.id !== id) };
   }
 
   igToIDisplayElement(ig: IgDocument): IDisplayElement {

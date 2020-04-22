@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
-import { IWorkspaceActive } from '../../../shared/models/editor.class';
+import { IWorkspaceActive } from '../../../dam-framework/models/state/workspace';
 
 @Component({
   selector: 'app-ig-edit-active-titlebar',

@@ -737,6 +737,7 @@ export class Hl7V2TreeService {
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
+    console.log(confProfile);
     const segmentRefs = this.getAllSegmentRef(confProfile.children);
     return combineLatest(
       repository.getRefData(segmentRefs, Type.SEGMENT).pipe(
@@ -780,10 +781,6 @@ export class Hl7V2TreeService {
       const name = child.type === Type.GROUP ? child.name : segments[(child as ISegmentRef).ref.id].name;
       const level = parent ? parent.data.level + 1 : 0;
       const bds = this.mergeBindings(parent ? parent.data.bindings.children[child.id] || [] : [], child.id, { resource: Type.COMPOSITEPROFILE }, bindings, level);
-      let predicate;
-      if (bds.values.predicateId && bds.values.predicateId.length > 0) {
-        predicate = this.predicate.getPredicate('', bds.values.predicateId[0].value);
-      }
       const childNode: IHL7v2TreeNode = {
         data: {
           id: child.id,
@@ -812,7 +809,6 @@ export class Hl7V2TreeService {
         leaf,
         parent,
         $hl7V2TreeHelpers: {
-          predicate$: predicate,
           ref$: child.type === Type.SEGMENTREF ? reference.asObservable() : undefined,
           treeChildrenSubscription: undefined,
         },

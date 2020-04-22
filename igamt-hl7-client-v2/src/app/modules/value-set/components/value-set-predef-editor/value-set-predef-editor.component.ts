@@ -1,20 +1,21 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormGroup} from '@angular/forms';
-import {Actions} from '@ngrx/effects';
-import {Action, MemoizedSelectorWithProps, Store} from '@ngrx/store';
-import {Observable, of, Subscription} from 'rxjs';
-import {catchError, flatMap} from 'rxjs/operators';
-import {EditorSaveFailure} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import {selectValueSetById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import {LoadValueSet} from '../../../../root-store/value-set-edit/value-set-edit.actions';
-import {DefinitionEditorComponent} from '../../../core/components/definition-editor/definition-editor.component';
-import {MessageService} from '../../../core/services/message.service';
-import {Type} from '../../../shared/constants/type.enum';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {EditorID} from '../../../shared/models/editor.enum';
-import {ChangeType, PropertyType} from '../../../shared/models/save-change';
-import {FroalaService} from '../../../shared/services/froala.service';
-import {ValueSetService} from '../../service/value-set.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { Actions } from '@ngrx/effects';
+import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import { Observable, of, Subscription } from 'rxjs';
+import { catchError, flatMap } from 'rxjs/operators';
+import * as fromDamActions from 'src/app/modules/dam-framework/store/dam.actions';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import { LoadValueSet } from '../../../../root-store/value-set-edit/value-set-edit.actions';
+import { DefinitionEditorComponent } from '../../../core/components/definition-editor/definition-editor.component';
+import { MessageService } from '../../../core/services/message.service';
+import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { EditorID } from '../../../shared/models/editor.enum';
+import { ChangeType, PropertyType } from '../../../shared/models/save-change';
+import { FroalaService } from '../../../shared/services/froala.service';
+import { ValueSetService } from '../../service/value-set.service';
 
 @Component({
   selector: 'app-value-set-predef-editor',
@@ -32,16 +33,16 @@ export class ValueSetPredefEditorComponent extends DefinitionEditorComponent imp
     messageService: MessageService,
     private valueSetService: ValueSetService, froalaService: FroalaService) {
     super({
-        id: EditorID.PREDEF,
-        resourceType: Type.VALUESET,
-        title: 'Pre-definition',
-      },
+      id: EditorID.PREDEF,
+      resourceType: Type.VALUESET,
+      title: 'Pre-definition',
+    },
       PropertyType.PREDEF,
       actions$, store, messageService, froalaService);
   }
 
-  saveChange(elementId: string, igId: string, value: any, old: any, property: PropertyType): Observable<Action> {
-    return this.valueSetService.saveChanges(elementId, igId, [{
+  saveChange(elementId: string, documentRef: IDocumentRef, value: any, old: any, property: PropertyType): Observable<Action> {
+    return this.valueSetService.saveChanges(elementId, documentRef, [{
       propertyType: PropertyType.PREDEF,
       propertyValue: value,
       position: -1,
@@ -58,12 +59,12 @@ export class ValueSetPredefEditorComponent extends DefinitionEditorComponent imp
       catchError((error) => {
         return of(
           this.messageService.actionFromError(error),
-          new EditorSaveFailure(),
+          new fromDamActions.EditorSaveFailure(),
         );
       }),
     );
   }
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
-    return selectValueSetById;
+    return fromIgamtDisplaySelectors.selectValueSetById;
   }
 }

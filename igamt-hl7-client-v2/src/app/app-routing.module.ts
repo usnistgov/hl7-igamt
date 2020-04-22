@@ -42,6 +42,10 @@ const routes: Routes = [
     loadChildren: './modules/ig/ig.module#IgModule',
   },
   {
+    path: 'library',
+    loadChildren: './modules/datatype-library/datatype-library.module#DatatypeLibraryModule',
+  },
+  {
     path: 'documentation',
     loadChildren: './modules/documentation/documentation.module#DocumentationModule',
   },

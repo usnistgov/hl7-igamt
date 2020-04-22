@@ -4,16 +4,17 @@ import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError, flatMap } from 'rxjs/operators';
-import { EditorSaveFailure } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectSegmentsById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import * as fromDamActions from 'src/app/modules/dam-framework/store/dam.actions';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadSegment } from '../../../../root-store/segment-edit/segment-edit.actions';
 import { DefinitionEditorComponent } from '../../../core/components/definition-editor/definition-editor.component';
 import { MessageService } from '../../../core/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { ChangeType, PropertyType } from '../../../shared/models/save-change';
-import {FroalaService} from '../../../shared/services/froala.service';
+import { FroalaService } from '../../../shared/services/froala.service';
 import { SegmentService } from '../../services/segment.service';
 
 @Component({
@@ -40,8 +41,8 @@ export class PostdefEditorComponent extends DefinitionEditorComponent implements
       actions$, store, messageService, froalaService);
   }
 
-  saveChange(elementId: string, igId: string, value: any, old: any, property: PropertyType): Observable<Action> {
-    return this.segmentService.saveChanges(elementId, igId, [{
+  saveChange(elementId: string, documentRef: IDocumentRef, value: any, old: any, property: PropertyType): Observable<Action> {
+    return this.segmentService.saveChanges(elementId, documentRef, [{
       propertyType: PropertyType.POSTDEF,
       propertyValue: value,
       position: -1,
@@ -58,12 +59,12 @@ export class PostdefEditorComponent extends DefinitionEditorComponent implements
       catchError((error) => {
         return of(
           this.messageService.actionFromError(error),
-          new EditorSaveFailure(),
+          new fromDamActions.EditorSaveFailure(),
         );
       }),
     );
   }
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
-    return selectSegmentsById;
+    return fromIgamtDisplaySelectors.selectSegmentsById;
   }
 }

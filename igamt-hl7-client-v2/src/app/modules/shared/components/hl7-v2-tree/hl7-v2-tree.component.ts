@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { LengthType } from '../../constants/length-type.enum';
 import { Type } from '../../constants/type.enum';
 import { Usage } from '../../constants/usage.enum';
+import { IDocumentRef } from '../../models/abstract-domain.interface';
 import { IComment } from '../../models/comment.interface';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../models/config.class';
 import { IDisplayElement } from '../../models/display-element.interface';
@@ -102,7 +103,7 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   columnTypes = HL7v2TreeColumnType;
   types = Type;
   @Input()
-  igId: string;
+  documentRef: IDocumentRef;
   @Input()
   viewOnly: boolean;
   @Input()

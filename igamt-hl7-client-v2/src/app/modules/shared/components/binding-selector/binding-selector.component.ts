@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
+import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../../../../root-store/loader/loader.actions';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
@@ -106,7 +107,7 @@ export class BindingSelectorComponent<T> implements OnInit {
   }
 
   getById(id: string): Observable<IValueSet> {
-    return this.store.select(selectIgId).pipe(
+    return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
       take(1),
       mergeMap((x) => {
         return this.valueSetService.getById(x, id);

@@ -11,6 +11,7 @@ import { SegmentService } from '../../../segment/services/segment.service';
 import { BindingSelectorComponent, IBindingLocationInfo } from '../../../shared/components/binding-selector/binding-selector.component';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import {
   CoConstraintColumnType,
   CoConstraintGroupBindingType,
@@ -67,12 +68,12 @@ export class CoConstraintTableComponent implements OnInit {
 
   @Input()
   set segment(seg: ISegment) {
-    this.processTree(seg, this._igId);
+    this.processTree(seg, this._documentRef);
   }
 
   @Input()
-  set igId(id: string) {
-    this.processTree(this._segment, id);
+  set documentRef(documentRef: IDocumentRef) {
+    this.processTree(this._segment, documentRef);
   }
 
   @Input()
@@ -163,7 +164,7 @@ export class CoConstraintTableComponent implements OnInit {
     },
   ];
 
-  _igId: string;
+  _documentRef: IDocumentRef;
   @Input()
   valueSets: IDisplayElement[];
   @Input()
@@ -335,16 +336,16 @@ export class CoConstraintTableComponent implements OnInit {
     }
   }
 
-  processTree(segment: ISegment, id: string) {
+  processTree(segment: ISegment, documentRef: IDocumentRef) {
     if (segment) {
       this._segment = segment;
     }
 
-    if (id) {
-      this._igId = id;
+    if (documentRef) {
+      this._documentRef = documentRef;
     }
 
-    if (segment && id) {
+    if (segment && documentRef) {
       this.treeService.getTree(segment, this.repository, true, true, (value) => {
         this.structure = [
           {
@@ -377,7 +378,7 @@ export class CoConstraintTableComponent implements OnInit {
   }
 
   initOptions() {
-    this.segmentService.getObx2Values(this._segment, this._igId).pipe(
+    this.segmentService.getObx2Values(this._segment, this._documentRef).pipe(
       take(1),
       tap((values) => {
         this.datatypeOptions = values.map((value) => {

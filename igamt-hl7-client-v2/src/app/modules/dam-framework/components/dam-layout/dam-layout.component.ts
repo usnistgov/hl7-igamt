@@ -1,34 +1,60 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, ViewChild, ContentChild, TemplateRef } from '@angular/core';
-import { fromEvent, Observable, Subscription } from 'rxjs';
+import { AfterViewInit, Component, ContentChild, ElementRef, Host, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { fromEvent, Subscription } from 'rxjs';
 import { filter, repeat, skipUntil, takeUntil, tap } from 'rxjs/operators';
-import { DamController } from '../../services/dam-widget.controller';
+import { DamWidgetComponent } from '../dam-widget/dam-widget.component';
 
 @Component({
   selector: 'app-dam-layout',
   templateUrl: './dam-layout.component.html',
   styleUrls: ['./dam-layout.component.scss'],
 })
-export class DamLayoutComponent implements OnInit, AfterViewInit {
+export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
 
-  @Input()
-  set controller(c: DamController) {
-    this.titleBar = c.getTitleBarInfo({});
-    this._controller = c;
-  }
+  // --- Templates
+  @ContentChild('alerts')
+  alertsTemplate: TemplateRef<any>;
 
   @ContentChild('titleBar')
   titleBarTemplate: TemplateRef<any>;
-  titleBar: Observable<any>;
-  _controller: DamController;
 
-  collapsed: boolean;
+  @ContentChild('toolbar')
+  toolbarTemplate: TemplateRef<any>;
+
+  @ContentChild('activeTitleBar')
+  activeTitlebarTemplate: TemplateRef<any>;
+
+  @ContentChild('editorContent')
+  editorContentTemplate: TemplateRef<any>;
+
+  @ContentChild('sideBar')
+  sideBarTemplate: TemplateRef<any>;
+
+  // --- Resize Attributes
   @ViewChild('resize', { read: ElementRef })
   resize: ElementRef;
   dragging: boolean;
   positionX: string;
   resizeTocSubscription: Subscription;
 
-  constructor() { }
+  // --- Collapse Attributes
+  collapsed: boolean;
+  tocCollapseSubscription: Subscription;
+
+  constructor(public widget: DamWidgetComponent) {
+    if (widget == null) {
+      throw new Error('DamLayout should be used inside a DamWidget');
+    }
+
+    this.tocCollapseSubscription = widget.sideBarCollapseStatus$().subscribe(
+      (collapsed) => {
+        this.collapsed = collapsed;
+      },
+    );
+  }
+
+  expandSideBar() {
+    return this.widget.showSideBar();
+  }
 
   ngAfterViewInit(): void {
     const move$ = fromEvent(document, 'mousemove');
@@ -51,6 +77,10 @@ export class DamLayoutComponent implements OnInit, AfterViewInit {
         this.dragging = false;
       }),
     ).subscribe();
+  }
+
+  ngOnDestroy() {
+    this.resizeTocSubscription.unsubscribe();
   }
 
   ngOnInit() {

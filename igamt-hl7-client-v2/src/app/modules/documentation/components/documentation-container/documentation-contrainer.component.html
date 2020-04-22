@@ -1,49 +1,57 @@
-<div class="page-container-nopad">
-  <div class="wrapper">
-    <div class="alerts">
-      <app-alerts-container></app-alerts-container>
+<app-dam-layout>
+
+  <ng-template #alerts>
+    <app-alerts-container></app-alerts-container>
+  </ng-template>
+
+  <ng-template #titleBar>
+    <div style="padding-left: 10px; display: flex; align-items: center;">
+      <h5 class="title-text"> <i class="fa fa-book" style="color: blue;"></i> IGAMT Documentation </h5>
     </div>
-    <div class="titlebar">
-     <h5> IGAMT Documentation </h5>
+  </ng-template>
+
+  <ng-template #toolbar>
+    <div>
+      <app-dam-fullscreen-button></app-dam-fullscreen-button>
     </div>
-    <div [ngStyle]="{'grid-template-columns': '[sidebar] minmax(min-content, '+ (!collapsed ? positionX : '45px') +') [resize-bar] 4px [container] minmax(600px, 8fr)'}"
-         class="page-container">
-      <div class="container-section" *ngIf="title$ |async">
-        <div class="toolbar-controls">
-      <div>
-        <strong> {{ title$ | async}} > {{subTitle$ | async}}</strong>
-      </div>
-                    <div *ngIf="(editMode$ | async) && (admin$ |async)">
-                      <button class="btn btn-sm btn-success toolbar-button" [disabled]="!(valid |async) || !(changed| async)" (click)="save()">
-                        <i class="fa fa-save"></i>  Save
-                      </button>
-                      <button class="btn btn-sm btn-danger toolbar-button" [disabled]="!(changed| async)" (click)="reset()">
-                        <i class="fa fa-trash"></i> Reset
-                      </button>
-                    </div>
-                    <div *ngIf="!(editMode$ | async) &&( (admin$ |async) || (isUser$ | async) )">
-                      <button class="btn btn-sm btn-secondary toolbar-button" (click)="edit()">
-                        <i class="fa fa-pencil"></i>
-                      </button>
-                    </div>
-        </div>
-        <div class="titlebar-content">
-
-          <app-documentation-subtitle [updateInfo]="updateInfo$| async" ></app-documentation-subtitle>
-
-        </div>
-        <div class="container-content" *ngIf="(active$|async)">
-          <router-outlet style="display: none;">
-          </router-outlet>
-        </div>
-      </div>
-      <div #resize [ngStyle]="{'background-color': dragging ? 'blue' : ''}" class="resize-bar"></div>
-      <div class="sidebar-content" id="sidebar-content">
-        <app-documentation-side-bar [userguides]="userGuides$ |async" [decisions]="decisions$ |async" [faqs]="faqs$ |async"
-                  [glossary]="glossary$| async" [releaseNotes]="releaseNotes$ |async" [userNotes]="userNotes$ |async" [admin]="admin$ |async"></app-documentation-side-bar>
-
-      </div>
+    <div *ngIf="(editMode$ | async)">
+      <button *ngIf="!(containsUnsavedChanges$() | async)" class="btn btn-sm btn-secondary toolbar-button" (click)="edit(false)">
+        <i class="fa fa-pencil"></i> Cancel
+      </button>
+      <app-dam-reset-button></app-dam-reset-button>
+      <app-dam-save-button></app-dam-save-button>
     </div>
-  </div>
-</div>
+    <button *ngIf="!(editMode$ | async) && (hasActive$ | async) && ( (admin$ |async) || (isUser$ | async) )" class="btn btn-sm btn-secondary toolbar-button" (click)="edit(true)">
+      <i class="fa fa-pencil"></i>
+    </button>
+  </ng-template>
 
+  <ng-template #activeTitleBar *ngIf="hasActive$ | async" >
+    <div *ngIf="activeTitleBar$ | async as activeTitleBar" style="display: flex; align-items: center; margin-left: 10px;">
+      <h5 class="title-text">
+        {{ activeTitleBar.title }}
+      </h5>
+      <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>
+      <h5 class="title-text" style="margin-right: 10px !important;">
+        {{ activeTitleBar.subtitle }}
+      </h5>
+      <app-documentation-subtitle [updateInfo]="updateInfo$| async" ></app-documentation-subtitle>
+    </div>
+  </ng-template>
+
+  <ng-template #editorContent>
+    <app-dam-editor-outlet></app-dam-editor-outlet>
+  </ng-template>
+
+  <ng-template #sideBar>
+    <app-documentation-side-bar
+      [userguides]="userGuides$ |async"
+      [decisions]="decisions$ |async"
+      [faqs]="faqs$ |async"
+      [glossary]="glossary$| async"
+      [releaseNotes]="releaseNotes$ |async"
+      [userNotes]="userNotes$ |async"
+      [admin]="admin$ |async"></app-documentation-side-bar>
+  </ng-template>
+
+</app-dam-layout>

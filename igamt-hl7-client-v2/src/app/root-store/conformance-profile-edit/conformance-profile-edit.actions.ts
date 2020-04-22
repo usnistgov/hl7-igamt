@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
-import { IEditorMetadata } from '../../modules/shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../modules/shared/models/editor.enum';
 import { OpenEditorBase } from '../ig/ig-edit/ig-edit.index';
 import { IConformanceProfile } from './../../modules/shared/models/conformance-profile.interface';
 
@@ -36,7 +36,7 @@ export class OpenConformanceProfilePreDefEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfilePreDefEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) {
     super();
   }
@@ -46,7 +46,7 @@ export class OpenConformanceProfileDeltaEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfileDeltaEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) {
     super();
   }
@@ -56,7 +56,7 @@ export class OpenConformanceProfileStructureEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfileStructureEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) {
     super();
   }
@@ -66,7 +66,7 @@ export class OpenConformanceProfileCoConstraintBindingsEditor extends OpenEditor
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfileCoConstraintBindingsEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) {
     super();
   }
@@ -76,7 +76,7 @@ export class OpenConformanceProfileMetadataEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfileMetadataEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) {
     super();
   }
@@ -86,7 +86,7 @@ export class OpenConformanceProfilePostDefEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfilePostDefEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) {
     super();
   }
@@ -96,7 +96,7 @@ export class OpenCPConformanceStatementEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenCPConformanceStatementEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) {
     super();
   }

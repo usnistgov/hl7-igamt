@@ -1,9 +1,9 @@
+import { IWorkspaceActive } from '../../dam-framework/models/state/workspace';
 import { IDisplayElement } from './display-element.interface';
-import { IWorkspace } from './editor.class';
-import { IEditorMetadata } from './editor.enum';
+import { IHL7EditorMetadata } from './editor.enum';
 
 export interface IWorkspace {
-  active: IWorkspaceActive;
+  active: IHL7WorkspaceActive;
   flags: {
     changed: boolean;
     valid: boolean;
@@ -13,13 +13,7 @@ export interface IWorkspace {
   initial: any;
 }
 
-export interface IWorkspaceActive {
+export interface IHL7WorkspaceActive extends IWorkspaceActive {
   display: IDisplayElement;
-  editor: IEditorMetadata;
-}
-
-export interface IWorkspaceCurrent {
-  data: any;
-  valid: boolean;
-  time: Date;
+  editor: IHL7EditorMetadata;
 }

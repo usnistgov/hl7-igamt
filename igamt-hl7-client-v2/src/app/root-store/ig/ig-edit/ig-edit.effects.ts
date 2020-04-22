@@ -5,15 +5,18 @@ import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/core/services/message.service';
+import * as fromDamActions from 'src/app/modules/dam-framework/store/dam.actions';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { Message, MessageType, UserMessage } from '../../../modules/core/models/message/message.class';
+import { LoadPayloadData } from '../../../modules/dam-framework/store/dam.actions';
 import { IGDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
-import { IAddResourceFromFile, ICopyResourceResponse, ICreateCoConstraintGroupResponse } from '../../../modules/ig/models/toc/toc-operation.class';
 import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
 import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
 import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
-import { CreateCoConstraintGroup, CreateCoConstraintGroupFailure, CreateCoConstraintGroupSuccess } from './ig-edit.actions';
+import { CreateCoConstraintGroup, CreateCoConstraintGroupFailure, CreateCoConstraintGroupSuccess, UpdateSections } from './ig-edit.actions';
 import {
   AddResourceFailure,
   AddResourceSuccess,
@@ -23,7 +26,6 @@ import {
   DeleteResource,
   DeleteResourceFailure,
   DeleteResourceSuccess,
-  EditorSave,
   IgEditActions,
   IgEditActionTypes,
   IgEditResolverLoad, IgEditResolverLoadFailure,
@@ -35,8 +37,6 @@ import {
   LoadResourceReferences,
   LoadResourceReferencesFailure,
   LoadResourceReferencesSuccess,
-  OpenEditor,
-  OpenEditorFailure,
   OpenIgMetadataEditorNode,
   OpenNarrativeEditorNode,
   TableOfContentSave,
@@ -45,17 +45,40 @@ import {
   ToggleDelta,
   ToggleDeltaFailure,
   ToggleDeltaSuccess,
-  ToolbarSave,
 } from './ig-edit.actions';
 import {
   selectIgDocument, selectIgId,
-  selectSectionDisplayById,
   selectSectionFromIgById,
   selectTableOfContentChanged,
 } from './ig-edit.selectors';
 
 @Injectable()
 export class IgEditEffects {
+
+  // @Effect()
+  // loadSelectedResource$ = this.actions$.pipe(
+  //   ofType(IgEditActionTypes.LoadSelectedResource),
+  //   concatMap((action: LoadSelectedResource) => {
+  //     return [
+  //       new SetValue({
+  //         selected: action.resource,
+  //       }),
+  //     ];
+  //   }),
+  // );
+
+  @Effect()
+  UpdateSections$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.UpdateSections),
+    concatMap((action: UpdateSections) => {
+      return this.store.select(selectIgDocument).pipe(
+        take(1),
+        flatMap((ig) => {
+          return this.igService.updateSections(action.payload, ig);
+        }),
+      );
+    }),
+  );
 
   @Effect()
   loadReferences$ = this.actions$.pipe(
@@ -72,6 +95,12 @@ export class IgEditEffects {
             flatMap((resources: IResource[]) => {
               return [
                 new TurnOffLoader(),
+                new fromDam.InsertResourcesInRepostory({
+                  collections: [{
+                    key: 'resources',
+                    values: resources,
+                  }],
+                }),
                 new LoadResourceReferencesSuccess(resources),
               ];
             }),
@@ -106,6 +135,8 @@ export class IgEditEffects {
         flatMap((igInfo: IGDisplayInfo) => {
           return [
             new TurnOffLoader(),
+            new fromDam.LoadPayloadData(igInfo.ig),
+            this.igService.loadRepositoryFromIgDisplayInfo(igInfo),
             new IgEditResolverLoadSuccess(igInfo),
           ];
         }),
@@ -130,8 +161,8 @@ export class IgEditEffects {
 
   @Effect()
   igEditToolbarSave$ = this.actions$.pipe(
-    ofType(IgEditActionTypes.ToolbarSave),
-    concatMap((action: ToolbarSave) => {
+    ofType(fromDamActions.DamActionTypes.GlobalSave),
+    concatMap((action: fromDamActions.GlobalSave) => {
       return combineLatest(
         this.store.select(selectTableOfContentChanged),
         this.store.select(selectIgDocument),
@@ -147,7 +178,7 @@ export class IgEditEffects {
             return RxjsStoreHelperService.listenAndReact(this.actions$, {
               [IgEditActionTypes.TableOfContentSaveSuccess]: {
                 do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
-                  return of(new EditorSave({
+                  return of(new fromDamActions.EditorSave({
                     tocSaveStatus: true,
                   }));
                 },
@@ -157,7 +188,7 @@ export class IgEditEffects {
               },
               [IgEditActionTypes.TableOfContentSaveFailure]: {
                 do: (tocSaveFailure: TableOfContentSaveFailure) => {
-                  return of(new EditorSave({
+                  return of(new fromDamActions.EditorSave({
                     tocSaveStatus: false,
                   }));
                 },
@@ -168,7 +199,7 @@ export class IgEditEffects {
             });
 
           } else {
-            return of(new EditorSave({
+            return of(new fromDamActions.EditorSave({
               tocSaveStatus: true,
             }));
           }
@@ -187,6 +218,11 @@ export class IgEditEffects {
             flatMap((message) => {
               return [
                 this.message.messageToAction(message),
+                new fromDam.SetValue({
+                  tableOfContentEdit: {
+                    changed: false,
+                  },
+                }),
                 new TableOfContentSaveSuccess(ig.id),
               ];
             }),
@@ -204,7 +240,7 @@ export class IgEditEffects {
     ofType(IgEditActionTypes.OpenNarrativeEditorNode),
     switchMap((action: OpenNarrativeEditorNode) => {
       return combineLatest(
-        this.store.select(selectSectionDisplayById, { id: action.payload.id }),
+        this.store.select(fromIgamtDisplaySelectors.selectSectionDisplayById, { id: action.payload.id }),
         this.store.select(selectSectionFromIgById, { id: action.payload.id }))
         .pipe(
           take(1),
@@ -212,13 +248,13 @@ export class IgEditEffects {
             if (!elm || !section || !elm.id || !section.id) {
               return [
                 this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, 'Could not find section with ID ' + action.payload.id)),
-                new OpenEditorFailure({ id: action.payload.id }),
+                new fromDamActions.OpenEditorFailure({ id: action.payload.id }),
               ];
             } else {
               return [
-                new OpenEditor({
+                new fromDamActions.OpenEditor({
                   id: action.payload.id,
-                  element: elm,
+                  display: elm,
                   editor: action.payload.editor,
                   initial: {
                     id: section.id,
@@ -241,9 +277,9 @@ export class IgEditEffects {
         .pipe(
           take(1),
           map((ig) => {
-            return new OpenEditor({
+            return new fromDamActions.OpenEditor({
               id: action.payload.id,
-              element: this.igService.igToIDisplayElement(ig),
+              display: this.igService.igToIDisplayElement(ig),
               editor: action.payload.editor,
               initial: {
                 coverPicture: ig.metadata.coverPicture,
@@ -325,20 +361,33 @@ export class IgEditEffects {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
-      const doAdd: Observable<Action> = this.igService.addResource(action.payload).pipe(
-        flatMap((response: Message<IGDisplayInfo>) => {
-          return [
-            new TurnOffLoader(),
-            new AddResourceSuccess(response.data),
-          ];
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return of(
-            new TurnOffLoader(),
-            new AddResourceFailure(error),
+      const doAdd: Observable<Action> =
+        combineLatest(
+          this.igService.addResource(action.payload),
+          this.store.select(selectIgDocument).pipe(take(1))).pipe(
+            flatMap(([response, ig]) => {
+              return [
+                new TurnOffLoader(),
+                new LoadPayloadData({
+                  ...ig,
+                  conformanceProfileRegistry: response.data.ig.conformanceProfileRegistry,
+                  datatypeRegistry: response.data.ig.datatypeRegistry,
+                  segmentRegistry: response.data.ig.segmentRegistry,
+                  valueSetRegistry: response.data.ig.valueSetRegistry,
+                  coConstraintGroupRegistry: response.data.ig.coConstraintGroupRegistry,
+                  content: ig.content,
+                }),
+                this.igService.loadRepositoryFromIgDisplayInfo(response.data, ['datatypes', 'segments', 'valueSets', 'messages', 'coConstraintGroups']),
+                new AddResourceSuccess(response.data),
+              ];
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return of(
+                new TurnOffLoader(),
+                new AddResourceFailure(error),
+              );
+            }),
           );
-        }),
-      );
       return this.finalizeAdd(doAdd);
     }),
   );
@@ -350,20 +399,25 @@ export class IgEditEffects {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
-      const doAdd: Observable<Action> = this.igService.importFromFile(action.documentId, action.resourceType, action.targetType, action.file).pipe(
-        flatMap((response: Message<IAddResourceFromFile>) => {
-          return [
-            new TurnOffLoader(),
-            new ImportResourceFromFileSuccess(response.data),
-          ];
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return of(
-            new TurnOffLoader(),
-            new ImportResourceFromFileFailure(error),
+      const doAdd: Observable<Action> =
+        combineLatest(
+          this.igService.importFromFile(action.documentId, action.resourceType, action.targetType, action.file),
+          this.store.select(selectIgDocument).pipe(take(1)))
+          .pipe(
+            flatMap(([response, ig]) => {
+              return [
+                new TurnOffLoader(),
+                ...this.igService.insertRepositoryCopyResource(response.data.reg, response.data.display, ig),
+                new ImportResourceFromFileSuccess(response.data),
+              ];
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return of(
+                new TurnOffLoader(),
+                new ImportResourceFromFileFailure(error),
+              );
+            }),
           );
-        }),
-      );
       return this.finalizeAdd(doAdd);
     }),
   );
@@ -375,20 +429,24 @@ export class IgEditEffects {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
-      const doAdd: Observable<Action> = this.igService.copyResource(action.payload).pipe(
-        flatMap((response: Message<ICopyResourceResponse>) => {
-          return [
-            new TurnOffLoader(),
-            new CopyResourceSuccess(response.data),
-          ];
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return of(
-            new TurnOffLoader(),
-            new CopyResourceFailure(error),
+      const doAdd: Observable<Action> =
+        combineLatest(
+          this.igService.copyResource(action.payload),
+          this.store.select(selectIgDocument).pipe(take(1))).pipe(
+            flatMap(([response, ig]) => {
+              return [
+                new TurnOffLoader(),
+                ...this.igService.insertRepositoryCopyResource(response.data.reg, response.data.display, ig),
+                new CopyResourceSuccess(response.data),
+              ];
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return of(
+                new TurnOffLoader(),
+                new CopyResourceFailure(error),
+              );
+            }),
           );
-        }),
-      );
       return this.finalizeAdd(doAdd);
     }),
   );
@@ -400,21 +458,24 @@ export class IgEditEffects {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
-      return this.igService.deleteResource(action.payload.documentId, action.payload.element).pipe(
-        take(1),
-        flatMap((response: Message<any>) => {
-          return [
-            new TurnOffLoader(),
-            new DeleteResourceSuccess(action.payload.element),
-          ];
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return of(
-            new TurnOffLoader(),
-            new DeleteResourceFailure(error),
-          );
-        }),
-      );
+      return combineLatest(
+        this.igService.deleteResource(action.payload.documentId, action.payload.element),
+        this.store.select(selectIgDocument).pipe(take(1))).pipe(
+          take(1),
+          flatMap(([response, ig]) => {
+            return [
+              new TurnOffLoader(),
+              ...this.igService.deleteOneFromRepository(action.payload.element, ig),
+              new DeleteResourceSuccess(action.payload.element),
+            ];
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return of(
+              new TurnOffLoader(),
+              new DeleteResourceFailure(error),
+            );
+          }),
+        );
     }),
   );
 
@@ -425,21 +486,24 @@ export class IgEditEffects {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
-      return this.igService.createCoConstraintGroup(action.payload).pipe(
-        take(1),
-        flatMap((response: Message<ICreateCoConstraintGroupResponse>) => {
-          return [
-            new TurnOffLoader(),
-            new CreateCoConstraintGroupSuccess(response.data),
-          ];
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return of(
-            new TurnOffLoader(),
-            new CreateCoConstraintGroupFailure(error),
-          );
-        }),
-      );
+      return combineLatest(
+        this.igService.createCoConstraintGroup(action.payload),
+        this.store.select(selectIgDocument).pipe(take(1))).pipe(
+          take(1),
+          flatMap(([response, ig]) => {
+            return [
+              new TurnOffLoader(),
+              this.igService.insertRepositoryCopyResource(response.data.registry, response.data.display, ig),
+              new CreateCoConstraintGroupSuccess(response.data),
+            ];
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return of(
+              new TurnOffLoader(),
+              new CreateCoConstraintGroupFailure(error),
+            );
+          }),
+        );
     }),
   );
 
@@ -469,9 +533,12 @@ export class IgEditEffects {
       return this.igService.getDisplay(action.igId, action.delta).pipe(
         flatMap((igInfo: IGDisplayInfo) => {
           return [
+            this.igService.loadRepositoryFromIgDisplayInfo(igInfo),
+            new fromDam.SetValue({
+              delta: action.delta,
+            }),
             new ToggleDeltaSuccess(igInfo, action.delta),
             new TurnOffLoader(),
-
           ];
         }),
         catchError((error: HttpErrorResponse) => {

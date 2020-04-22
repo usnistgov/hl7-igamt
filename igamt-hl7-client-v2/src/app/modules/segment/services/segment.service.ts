@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Message } from '../../core/models/message/message.class';
+import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IStructureElementBinding } from '../../shared/models/binding.interface';
 import { IConformanceStatementList } from '../../shared/models/cs-list.interface';
 import { IChange } from '../../shared/models/save-change';
@@ -20,19 +21,19 @@ export class SegmentService {
     return this.http.get<ISegment>(this.URL + id);
   }
 
-  getConformanceStatements(id: string, documentId: string): Observable<IConformanceStatementList> {
-    return this.http.get<IConformanceStatementList>(this.URL + id + '/conformancestatement/' + documentId);
+  getConformanceStatements(id: string, documentRef: IDocumentRef): Observable<IConformanceStatementList> {
+    return this.http.get<IConformanceStatementList>(this.URL + id + '/conformancestatement/' + documentRef.documentId);
   }
 
-  saveChanges(id: string, documentId: string, changes: IChange[]): Observable<Message<string>> {
+  saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<string>> {
     return this.http.post<Message<string>>(this.URL + id, changes, {
       params: {
-        dId: documentId,
+        dId: documentRef.documentId,
       },
     });
   }
 
-  getObx2Values(obx: ISegment, igId: string): Observable<string[]> {
+  getObx2Values(obx: ISegment, documentRef: IDocumentRef): Observable<string[]> {
     if (obx.binding != null && obx.binding.children && obx.binding.children.length) {
       const obx2Binding = obx.binding.children.find((x: IStructureElementBinding) => x.locationInfo && x.locationInfo.position === 2);
       if (obx2Binding && obx2Binding.valuesetBindings.length > 0) {
@@ -41,7 +42,7 @@ export class SegmentService {
         }).reduce((a, b) => {
           return a.concat(b);
         });
-        return forkJoin(vsList.map((vs) => this.valueSetService.getById(igId, vs))).pipe(
+        return forkJoin(vsList.map((vs) => this.valueSetService.getById(documentRef, vs))).pipe(
           map((valueSets) => {
             let values = [];
             valueSets.forEach((vs) => {

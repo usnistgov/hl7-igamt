@@ -3,17 +3,19 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import {catchError, concatMap, flatMap, map, mergeMap, switchMap, take} from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import * as fromDamActions from 'src/app/modules/dam-framework/store/dam.actions';
 import { IConformanceProfile } from 'src/app/modules/shared/models/conformance-profile.interface';
-import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { ConformanceProfileService } from '../../modules/conformance-profile/services/conformance-profile.service';
 import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
+import { SetValue } from '../../modules/dam-framework/store/dam.actions';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { ICPConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { LoadSelectedResource, OpenEditor, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
-import { selectedConformanceProfile, selectedResourcePostDef, selectedResourcePreDef, selectIgId, selectMessagesById } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import {
   ConformanceProfileEditActions,
@@ -57,8 +59,12 @@ export class ConformanceProfileEditEffects {
   @Effect()
   loadConformanceProfileSuccess$ = this.actions$.pipe(
     ofType(ConformanceProfileEditActionTypes.LoadConformanceProfileSuccess),
-    map((action: LoadConformanceProfileSuccess) => {
-      return new LoadSelectedResource(action.payload);
+    flatMap((action: LoadConformanceProfileSuccess) => {
+      return [
+        new SetValue({
+          selected: action.payload,
+        }),
+      ];
     }),
   );
 
@@ -74,16 +80,16 @@ export class ConformanceProfileEditEffects {
   openCpMetadataNode$ = this.actions$.pipe(
     ofType(ConformanceProfileEditActionTypes.OpenConformanceProfileMetadataEditor),
     switchMap((action: OpenConformanceProfileMetadataEditor) => {
-      return this.store.select(selectedConformanceProfile)
+      return this.store.select(fromIgamtSelectedSelectors.selectedConformanceProfile)
         .pipe(
           take(1),
           flatMap((conformanceProfile) => {
-            return this.store.select(selectMessagesById, { id: conformanceProfile.id }).pipe(
+            return this.store.select(fromIgamtDisplaySelectors.selectMessagesById, { id: conformanceProfile.id }).pipe(
               take(1),
               map((messageDisplay) => {
-                return new OpenEditor({
+                return new fromDamActions.OpenEditor({
                   id: action.payload.id,
-                  element: messageDisplay,
+                  display: messageDisplay,
                   editor: action.payload.editor,
                   initial: this.conformanceProfileService.conformanceProfileToMetadata(conformanceProfile),
                 });
@@ -100,8 +106,8 @@ export class ConformanceProfileEditEffects {
   openMessageCoConstraintBindingsEditor$ = this.editorHelper.openCoConstraintsBindingEditor<IConformanceProfile, OpenConformanceProfileCoConstraintBindingsEditor>(
     ConformanceProfileEditActionTypes.OpenConformanceProfileCoConstraintBindingsEditor,
     Type.CONFORMANCEPROFILE,
-    fromIgEdit.selectMessagesById,
-    this.store.select(fromIgEdit.selectedConformanceProfile),
+    fromIgamtDisplaySelectors.selectMessagesById,
+    this.store.select(fromIgamtSelectedSelectors.selectedConformanceProfile),
     this.ConfPNotFound,
   );
 
@@ -109,24 +115,24 @@ export class ConformanceProfileEditEffects {
   openMessageStructureEditor$ = this.editorHelper.openStructureEditor<IConformanceProfile, OpenConformanceProfileStructureEditor>(
     ConformanceProfileEditActionTypes.OpenConformanceProfileStructureEditor,
     Type.CONFORMANCEPROFILE,
-    fromIgEdit.selectMessagesById,
-    this.store.select(fromIgEdit.selectedConformanceProfile),
+    fromIgamtDisplaySelectors.selectMessagesById,
+    this.store.select(fromIgamtSelectedSelectors.selectedConformanceProfile),
     this.ConfPNotFound,
   );
 
   @Effect()
   openConformanceProfilePreDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenConformanceProfilePreDefEditor>(
     ConformanceProfileEditActionTypes.OpenConformanceProfilePreDefEditor,
-    fromIgEdit.selectMessagesById,
-    this.store.select(selectedResourcePreDef),
+    fromIgamtDisplaySelectors.selectMessagesById,
+    this.store.select(fromIgamtSelectedSelectors.selectedResourcePreDef),
     this.ConfPNotFound,
   );
 
   @Effect()
   openConformanceProfilePostDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenConformanceProfilePostDefEditor>(
     ConformanceProfileEditActionTypes.OpenConformanceProfilePostDefEditor,
-    fromIgEdit.selectMessagesById,
-    this.store.select(selectedResourcePostDef),
+    fromIgamtDisplaySelectors.selectMessagesById,
+    this.store.select(fromIgamtSelectedSelectors.selectedResourcePostDef),
     this.ConfPNotFound,
   );
 
@@ -134,12 +140,12 @@ export class ConformanceProfileEditEffects {
   openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<ICPConformanceStatementList, OpenCPConformanceStatementEditor>(
     ConformanceProfileEditActionTypes.OpenCPConformanceStatementEditor,
     Type.CONFORMANCEPROFILE,
-    fromIgEdit.selectMessagesById,
-    (action: OpenEditorBase) => {
-      return this.store.select(selectIgId).pipe(
+    fromIgamtDisplaySelectors.selectMessagesById,
+    (action: fromDamActions.OpenEditorBase) => {
+      return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
         take(1),
-        mergeMap((igId) => {
-          return this.conformanceProfileService.getConformanceStatements(action.payload.id, igId);
+        mergeMap((documentInfo) => {
+          return this.conformanceProfileService.getConformanceStatements(action.payload.id, documentInfo);
         }),
       );
     },
@@ -150,7 +156,7 @@ export class ConformanceProfileEditEffects {
   openDeltaEditor$ = this.editorHelper.openDeltaEditor<OpenConformanceProfileDeltaEditor>(
     ConformanceProfileEditActionTypes.OpenConformanceProfileDeltaEditor,
     Type.CONFORMANCEPROFILE,
-    fromIgEdit.selectMessagesById,
+    fromIgamtDisplaySelectors.selectMessagesById,
     this.deltaService.getDeltaFromOrigin,
     this.ConfPNotFound,
   );

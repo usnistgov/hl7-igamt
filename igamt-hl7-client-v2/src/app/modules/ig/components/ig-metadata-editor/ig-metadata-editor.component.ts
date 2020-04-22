@@ -4,10 +4,10 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { BehaviorSubject, combineLatest, Observable, of, throwError } from 'rxjs';
 import { catchError, flatMap, map, pluck, take, tap } from 'rxjs/operators';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
-import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { EditorSave, EditorSaveSuccess, IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectIgVersions } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { MessageService } from '../../../core/services/message.service';
@@ -15,6 +15,7 @@ import { FieldType, IMetadataFormInput } from '../../../shared/components/metada
 import { Status } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { FroalaService } from '../../../shared/services/froala.service';
+import { IgDocument } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
 
 export interface IIgEditMetadata {
@@ -40,7 +41,7 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
   froalaConfig$: Observable<any>;
 
   constructor(
-    store: Store<fromIgEdit.IState>,
+    store: Store<any>,
     actions$: Actions,
     private igService: IgService,
     private messageService: MessageService, private froalaService: FroalaService) {
@@ -157,7 +158,7 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
     ).subscribe();
   }
 
-  onEditorSave(action: EditorSave): Observable<Action> {
+  onEditorSave(action: fromDam.EditorSave): Observable<Action> {
     return combineLatest(this.elementId$, this.current$, this.coverPictureFile$.pipe(
       map((elm) => elm instanceof File ? elm : null),
     )).pipe(
@@ -177,7 +178,7 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
               flatMap((response) => {
                 return [
                   new IgEditResolverLoad(id),
-                  new EditorSaveSuccess({
+                  new fromDam.EditorSaveSuccess({
                     ...current.data,
                     coverPicture: pictureName ? pictureName : current.data.coverPicture,
                   }),
@@ -198,9 +199,9 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {
-    return this.ig$.pipe(
-      map((ig) => {
-        return this.igService.igToIDisplayElement(ig);
+    return this.document$.pipe(
+      map((document) => {
+        return this.igService.igToIDisplayElement(document as IgDocument);
       }),
     );
   }

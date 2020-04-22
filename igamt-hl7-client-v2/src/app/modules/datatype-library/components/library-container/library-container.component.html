@@ -1,0 +1,31 @@
+<app-dam-layout>
+
+  <ng-template #alerts>
+    <app-alerts-container></app-alerts-container>
+  </ng-template>
+
+  <ng-template #titleBar>
+    <!-- <app-ig-edit-titlebar [metadata]="titleBar$ | async"></app-ig-edit-titlebar> -->
+  </ng-template>
+
+  <ng-template #toolbar>
+    <!-- <app-ig-edit-toolbar></app-ig-edit-toolbar> -->
+  </ng-template>
+
+  <ng-template #activeTitleBar>
+    <!-- <app-ig-edit-active-titlebar
+    [active]="activeWorkspace | async"
+    [controls]="activeComponent?.controls"
+    [header]="activeComponent?.header"
+    ></app-ig-edit-active-titlebar> -->
+  </ng-template>
+
+  <ng-template #editorContent>
+    <app-dam-editor-outlet></app-dam-editor-outlet>
+  </ng-template>
+
+  <ng-template #sideBar>
+    <!-- <app-ig-edit-sidebar [deltaMode]="deltaMode$ |async"></app-ig-edit-sidebar> -->
+  </ng-template>
+
+</app-dam-layout>

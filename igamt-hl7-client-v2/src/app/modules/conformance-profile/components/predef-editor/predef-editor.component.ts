@@ -5,16 +5,16 @@ import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable, of, Subscription } from 'rxjs';
 import { catchError, flatMap } from 'rxjs/operators';
 import { DefinitionEditorComponent } from 'src/app/modules/core/components/definition-editor/definition-editor.component';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadConformanceProfile } from '../../../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
-import { EditorSaveFailure } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectMessagesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { Message } from '../../../core/models/message/message.class';
 import { MessageService } from '../../../core/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { ChangeType, PropertyType } from '../../../shared/models/save-change';
-import {FroalaService} from '../../../shared/services/froala.service';
+import { FroalaService } from '../../../shared/services/froala.service';
 import { ConformanceProfileService } from '../../services/conformance-profile.service';
 
 @Component({
@@ -41,8 +41,8 @@ export class PredefEditorComponent extends DefinitionEditorComponent implements 
       actions$, store, messageService, froalaService);
   }
 
-  saveChange(elementId: string, igId: string, value: any, old: any, property: PropertyType): Observable<Action> {
-    return this.conformanceProfileService.saveChanges(elementId, igId, [{
+  saveChange(elementId: string, documentRef: IDocumentRef, value: any, old: any, property: PropertyType): Observable<Action> {
+    return this.conformanceProfileService.saveChanges(elementId, documentRef, [{
       propertyType: PropertyType.PREDEF,
       propertyValue: value,
       position: -1,
@@ -59,12 +59,12 @@ export class PredefEditorComponent extends DefinitionEditorComponent implements 
       catchError((error) => {
         return of(
           this.messageService.actionFromError(error),
-          new EditorSaveFailure(),
+          new fromDam.EditorSaveFailure(),
         );
       }),
     );
   }
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
-    return selectMessagesById;
+    return fromIgamtDisplaySelectors.selectMessagesById;
   }
 }

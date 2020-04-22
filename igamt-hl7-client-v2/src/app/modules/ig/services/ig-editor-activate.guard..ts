@@ -5,10 +5,11 @@ import { Action } from '@ngrx/store';
 import { Store } from '@ngrx/store';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
-import { IgEditActionTypes, OpenEditor, OpenEditorFailure } from '../../../root-store/ig/ig-edit/ig-edit.actions';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { IgEditActionTypes } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectRouteParams } from '../../../root-store/index';
 import { TurnOffLoader, TurnOnLoader } from '../../../root-store/loader/loader.actions';
-import { IEditorMetadata } from '../../shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../shared/models/editor.enum';
 
 @Injectable()
 export class IgEditorActivateGuard implements CanActivate {
@@ -24,7 +25,7 @@ export class IgEditorActivateGuard implements CanActivate {
     }));
 
     // Get Necessary parameters from Route DATA
-    const editorMetadata: IEditorMetadata = route.data['editorMetadata'];
+    const editorMetadata: IHL7EditorMetadata = route.data['editorMetadata'];
     const elementId: string = route.data['idKey'];
     const EditorAction: CoreType<Action> = route.data['action'];
 
@@ -46,15 +47,15 @@ export class IgEditorActivateGuard implements CanActivate {
         switchMap((id) => {
           const subject: ReplaySubject<boolean> = new ReplaySubject<boolean>();
           this.actions$.pipe(
-            ofType(IgEditActionTypes.OpenEditor, IgEditActionTypes.OpenEditorFailure),
-            filter((action: OpenEditor | OpenEditorFailure) => action.payload.id === id),
+            ofType(fromDam.DamActionTypes.OpenEditor, fromDam.DamActionTypes.OpenEditorFailure),
+            filter((action: fromDam.OpenEditor | fromDam.OpenEditorFailure) => action.payload.id === id),
             take(1),
             map((action) => {
               switch (action.type) {
-                case IgEditActionTypes.OpenEditor:
+                case fromDam.DamActionTypes.OpenEditor:
                   subject.next(true);
                   break;
-                case IgEditActionTypes.OpenEditorFailure:
+                case fromDam.DamActionTypes.OpenEditorFailure:
                   subject.next(false);
                   break;
               }

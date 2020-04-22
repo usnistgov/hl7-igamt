@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Observable } from 'rxjs';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { CoConstraintGroupService } from '../../services/co-constraint-group.service';
 
 @Component({
@@ -14,7 +15,7 @@ export class CoConstraintGroupSelectorComponent implements OnInit {
   groups$: Observable<IDisplayElement[]>;
   segment: IDisplayElement;
   selected: IDisplayElement[];
-  igId: string;
+  documentRef: IDocumentRef;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -22,8 +23,9 @@ export class CoConstraintGroupSelectorComponent implements OnInit {
     public dialogRef: MatDialogRef<CoConstraintGroupSelectorComponent>) {
     this.segment = data.segment;
     this.selected = [];
-    this.igId = data.igId;
-    this.groups$ = this.ccGroupService.getByBaseSegment(this.segment.id, this.igId);
+    this.documentRef = data.documentRef;
+    /// TODO Handle library case
+    this.groups$ = this.ccGroupService.getByBaseSegment(this.segment.id, this.documentRef.documentId);
   }
 
   ngOnInit() {

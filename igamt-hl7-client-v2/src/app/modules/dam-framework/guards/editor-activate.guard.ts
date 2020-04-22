@@ -1,20 +1,17 @@
-import {Injectable, Type as CoreType} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
-import {Actions, ofType} from '@ngrx/effects';
-import {Action, Store} from '@ngrx/store';
-import {Observable, of, ReplaySubject} from 'rxjs';
-import {filter, map, pluck, switchMap, take, tap} from 'rxjs/operators';
-import {selectRouteParams} from '../../../root-store';
-import {
-  DocumentationActionTypes, OpenDocumentationEditor, OpenDocumentationSectionFailure,
-} from '../../../root-store/documentation/documentation.actions';
-import {TurnOffLoader, TurnOnLoader} from '../../../root-store/loader/loader.actions';
-import {IEditorMetadata} from '../../shared/models/editor.enum';
+import { Injectable, Type as CoreType } from '@angular/core';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { Actions, ofType } from '@ngrx/effects';
+import { Action } from '@ngrx/store';
+import { Store } from '@ngrx/store';
+import { Observable, of, ReplaySubject } from 'rxjs';
+import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
+import { selectRouteParams } from '../../../root-store/index';
+import { TurnOffLoader, TurnOnLoader } from '../../../root-store/loader/loader.actions';
+import { IEditorMetadata } from '../models/state/workspace';
+import { DamActionTypes, OpenEditor, OpenEditorFailure } from '../store/dam.actions';
 
-@Injectable({
-  providedIn: 'root',
-})
-export class CanActivateDocumentationGuard implements CanActivate {
+@Injectable()
+export class EditorActivateGuard implements CanActivate {
   constructor(
     private router: Router,
     private store: Store<any>,
@@ -44,26 +41,20 @@ export class CanActivateDocumentationGuard implements CanActivate {
     } else {
 
       return this.store.select(selectRouteParams).pipe(
-         take(1),
+        take(1),
         pluck(elementId),
         switchMap((id) => {
           const subject: ReplaySubject<boolean> = new ReplaySubject<boolean>();
           this.actions$.pipe(
-            tap((x) => {
-              console.log(id);
-            }),
-            ofType(DocumentationActionTypes.OpenDocumentationEditor, DocumentationActionTypes.OpenDocumentationSectionFailure),
-            filter((action: OpenDocumentationEditor | OpenDocumentationSectionFailure) => action.payload.id === id),
-            tap((x) => {
-              console.log(x);
-            }),
+            ofType(DamActionTypes.OpenEditor, DamActionTypes.OpenEditorFailure),
+            filter((action: OpenEditor | OpenEditorFailure) => action.payload.id === id),
             take(1),
             map((action) => {
               switch (action.type) {
-                case DocumentationActionTypes.OpenDocumentationEditor:
+                case DamActionTypes.OpenEditor:
                   subject.next(true);
                   break;
-                case DocumentationActionTypes.OpenDocumentationSectionFailure:
+                case DamActionTypes.OpenEditorFailure:
                   subject.next(false);
                   break;
               }
@@ -83,7 +74,7 @@ export class CanActivateDocumentationGuard implements CanActivate {
               if (result) {
                 return true;
               } else {
-                return this.router.createUrlTree(['documentation', 'error']);
+                return this.router.createUrlTree(['ig', 'error']);
               }
             }),
           );
