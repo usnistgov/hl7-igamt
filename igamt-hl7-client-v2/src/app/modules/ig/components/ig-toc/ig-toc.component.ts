@@ -45,6 +45,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   nodes: TreeNode[];
   @Input()
   delta: boolean;
+  @Input()
+  viewOnly: boolean;
 
   @Output()
   nodeState = new EventEmitter<IDisplayElement[]>();
@@ -63,9 +65,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   constructor(private nodeHelperService: NodeHelperService, private valueSetService: ValueSetService, private cd: ChangeDetectorRef, private router: Router, private activatedRoute: ActivatedRoute) {
     this.options = {
-      allowDrag: (node: TreeNode) => node.data.type === Type.TEXT ||
+      allowDrag: (node: TreeNode) => { return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
         node.data.type === Type.CONFORMANCEPROFILE ||
-        node.data.type === Type.PROFILE,
+        node.data.type === Type.PROFILE);
+      },
       actionMapping: {
         mouse: {
           drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
