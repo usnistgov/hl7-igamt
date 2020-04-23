@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {SelectItem} from "primeng/api";
+import {SelectItem} from 'primeng/api';
 
 @Component({
   selector: 'app-verify-ig-dialog',
@@ -37,7 +37,7 @@ export class VerifyIgDialogComponent implements OnInit {
       { label: 'FATAL', value: 'FATAL' },
       { label: 'ERROR', value: 'ERROR' },
       { label: 'WARNING', value: 'WARNING' },
-      { label: 'INFO', value: 'INFO' }
+      { label: 'INFO', value: 'INFO' },
     ];
 
     if (this.data && this.data.igId) {
