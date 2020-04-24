@@ -7,6 +7,7 @@
 	<xsl:import href="/templates/profile/resource/versionDisplay.xsl" />
 	<xsl:import href="/templates/profile/resource/postDef.xsl" />
 	<xsl:import href="/templates/profile/resource/organization.xsl" />
+			<xsl:import href="/templates/profile/singleCode/internalSingleCode.xsl" />
 	<xsl:import href="/templates/profile/resource/author.xsl" />
 	<xsl:import href="/templates/profile/resource/role.xsl" />
 	<xsl:import href="/templates/profile/resource/type.xsl" />
@@ -17,6 +18,7 @@
 	<xsl:include href="/templates/profile/valueset/valueSetBindingList.xsl" />
 	<xsl:include href="/templates/profile/commentList.xsl" />
 	<xsl:include href="/templates/profile/metadata.xsl" />
+	
 
 	<xsl:template match="ConformanceProfile">
 	
@@ -131,6 +133,10 @@
 			</xsl:with-param>
 		</xsl:call-template>
 		<xsl:apply-templates select="./Binding/ValueSetBindingList" />
+				<xsl:call-template name="ValueSetBindingList"/>	
+		
+						<xsl:call-template name="InternalSingleCode"/>		
+		
 		<xsl:if test="$columnDisplay.message.comment = 'true'">
 			<xsl:apply-templates select="./Binding/CommentList" />
 		</xsl:if>
