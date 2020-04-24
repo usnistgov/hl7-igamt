@@ -318,7 +318,6 @@ public class DeltaServiceImpl implements DeltaService {
           result.add(createDeltaDisplay(registryType, l, DeltaAction.DELETED));
         }
       }
-
     }
     return result;
 
@@ -371,7 +370,19 @@ public class DeltaServiceImpl implements DeltaService {
       }
       case VALUESETREGISTRY: {
         
-        DisplayElement elm=createDeltaDisplay(Type.VALUESETREGISTRY, l, DeltaAction.UNCHANGED);
+        Valueset target = this.valuesetService.findById(l.getId());
+        Valueset source = this.valuesetService.findById(target.getOrigin());
+        
+        DisplayElement elm= this.displayInfoService.convertValueSet(target);
+        
+        
+        ValuesetDelta valuesetDelta = entityDeltaService.compareValuesetMetadata(source, target);
+        
+        if(valuesetDelta.getAction() !=null && !valuesetDelta.getAction().equals(DeltaAction.UPDATED)) {
+          List<CodeDelta> codeDeltas = entityDeltaService.compareCodes(source.getCodes(), target.getCodes());
+          valuesetDelta.setCodes(codeDeltas);
+        }
+        elm.setDelta(valuesetDelta.getAction());
         return elm;
       }
       default:  return null;
@@ -457,6 +468,15 @@ public class DeltaServiceImpl implements DeltaService {
     }
     return null;
   }
+
+@Override
+public ValuesetDelta valuesetDelta(Valueset valueset) {
+	Valueset source = this.valuesetService.findById(valueset.getOrigin());
+	ValuesetDelta vsDelta = entityDeltaService.valueset(source, valueset);
+	return vsDelta;
+}
+  
+  
 
 
 }

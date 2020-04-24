@@ -2,6 +2,9 @@
 </h5>
 
 <mat-dialog-content>
+  <div *ngIf="this.errorMessage" class="alert alert-danger" style="margin-top: 5px;">
+    <span>{{this.errorMessage}}</span>
+  </div>
   <div *ngIf="!viewOnly" class="upload-section">
   <span *ngIf="file" class="upload-span filename">
     <i (click)="clear()" class="fa fa-times clear"></i>
@@ -15,6 +18,6 @@
   <p-checkbox [(ngModel)]="redirect" binary="true" label="redirect to the created value sets"></p-checkbox>
   <div style="justify-content: flex-end;margin-left:5px;">
     <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
-    <button (click)="submit()" [disabled]="!this.preview" class="btn btn-sm btn-success">Submit</button>
+    <button (click)="submit()" [disabled]="!this.preview || this.errorMessage" class="btn btn-sm btn-success">Submit</button>
   </div>
 </mat-dialog-actions>

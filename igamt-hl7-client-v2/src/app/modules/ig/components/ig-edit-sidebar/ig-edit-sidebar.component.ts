@@ -9,7 +9,7 @@ import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rx
 import {
   IgEditActionTypes,
   ImportResourceFromFile,
-  ImportResourceFromFileSuccess,
+  ImportResourceFromFileSuccess, selectViewOnly,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   CopyResource, CopyResourceSuccess,
@@ -57,6 +57,7 @@ export class IgEditSidebarComponent implements OnInit {
   igId$: Observable<string>;
   version$: Observable<string>;
   delta: boolean;
+  viewOnly$: Observable<boolean>;
   @Input()
   deltaMode = false;
   @ViewChild(IgTocComponent) toc: IgTocComponent;
@@ -80,6 +81,7 @@ export class IgEditSidebarComponent implements OnInit {
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
+    this.viewOnly$ = this.store.select(selectViewOnly);
   }
 
   getNodes() {

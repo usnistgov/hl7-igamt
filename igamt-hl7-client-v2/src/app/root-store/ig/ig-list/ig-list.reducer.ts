@@ -31,9 +31,10 @@ export function reducer(state = initialState, action: IgListActions): IState {
         },
       };
     case IgListActionTypes.UpdateIgList:
-      return igListItemAdapter.upsertMany(action.payload, state);
-
-    case IgListActionTypes.DeleteIgListItemSuccess:
+    {
+      return igListItemAdapter.addAll(action.payload, state);
+    }
+      case IgListActionTypes.DeleteIgListItemSuccess:
       return igListItemAdapter.removeOne(action.id, state);
 
     case IgListActionTypes.SelectIgListViewType:
