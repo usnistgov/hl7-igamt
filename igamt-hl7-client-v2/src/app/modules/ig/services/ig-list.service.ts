@@ -14,7 +14,7 @@ export class IgListService {
   constructor(private http: HttpClient) {
   }
 
-  loadTypeToAPI(type: IgListLoad): 'PRIVATE' | 'SHARED' | 'PUBLIC' | 'ALL' {
+  loadTypeToAPI(type: IgListLoad) {
     switch (type) {
       case 'USER':
         return 'PRIVATE';

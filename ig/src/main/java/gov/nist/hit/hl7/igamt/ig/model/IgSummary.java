@@ -20,6 +20,8 @@ public class IgSummary {
   private Status status;
   private List<String> conformanceProfiles;
   private SharePermission sharePermission;
+  private List<String> sharedUsers;
+  private String currentAuthor;
 
   public String getTitle() {
     return title;
@@ -119,6 +121,22 @@ public SharePermission getSharePermission() {
 
 public void setSharePermission(SharePermission sharePermission) {
 	this.sharePermission = sharePermission;
+}
+
+public List<String> getSharedUsers() {
+	return sharedUsers;
+}
+
+public void setSharedUsers(List<String> sharedUsers) {
+	this.sharedUsers = sharedUsers;
+}
+
+public String getCurrentAuthor() {
+	return currentAuthor;
+}
+
+public void setCurrentAuthor(String currentAuthor) {
+	this.currentAuthor = currentAuthor;
 }
 
 

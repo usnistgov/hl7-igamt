@@ -11,6 +11,8 @@ export class IgListItem {
   conformanceProfiles: string[];
   status: any;
   sharePermission?: string;
+  sharedUsers?: string[];
+  currentAuthor?: string;
 }
 
 export type IgListItemType = 'USER' | 'PUBLISHED' | 'SHARED';

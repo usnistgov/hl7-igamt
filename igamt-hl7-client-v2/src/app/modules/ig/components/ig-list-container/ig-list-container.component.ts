@@ -106,7 +106,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                       class: 'btn-primary',
                       icon: 'fa-share',
                       action: (item: IgListItem) => {
-
+                        this.shareDialog(item,username);
                       },
                       disabled: (item: IgListItem): boolean => {
                         return username !== item.username || item.type === 'PUBLISHED';
@@ -252,6 +252,31 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
         );
   }
 
+  shareDialog(item: IgListItem, username: string) {
+
+    console.log(username, item);
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        question: 'This operation is irreversible, Are you sure you want to publish this Implementation Guide "' + item.title + '" ?',
+        action: 'Publish Implementation Guide',
+      },
+    });
+    dialogRef.afterClosed().subscribe(
+        (answer) => {
+          // if (answer) {
+          //   this.ig.publish(item.id).subscribe(
+          //       (response: Message<string>) => {
+          //         this.store.dispatch(this.message.messageToAction(response));
+          //         this.router.navigateByUrl('/ig/list?type=PUBLISHED');
+          //       },
+          //       (error) => {
+          //         this.store.dispatch(this.message.actionFromError(error));
+          //       },
+          //   );
+          // }
+        },
+    );
+  }
   publishDialog(item: IgListItem) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       data: {

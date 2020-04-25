@@ -199,6 +199,8 @@ public class IgServiceImpl implements IgService {
 			element.setUsername(ig.getUsername());
 			element.setStatus(ig.getStatus());
 			element.setSharePermission(ig.getSharePermission());
+			element.setSharedUsers(ig.getSharedUsers());
+			element.setCurrentAuthor(ig.getCurrentAuthor());
 			List<String> conformanceProfileNames = new ArrayList<String>();
 			ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
 			if (conformanceProfileRegistry != null) {
@@ -283,6 +285,8 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("conformanceProfileRegistry");
 		qry.fields().include("creationDate");
 		qry.fields().include("updateDate");
+		qry.fields().include("sharedUsers");
+		qry.fields().include("currentAuthor");
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
@@ -300,6 +304,8 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("conformanceProfileRegistry");
 		qry.fields().include("creationDate");
 		qry.fields().include("updateDate");
+		qry.fields().include("sharedUsers");
+		qry.fields().include("currentAuthor");
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
 	}
@@ -316,7 +322,8 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("conformanceProfileRegistry");
 		qry.fields().include("creationDate");
 		qry.fields().include("updateDate");
-
+		qry.fields().include("sharedUsers");
+		qry.fields().include("currentAuthor");
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
 	}
