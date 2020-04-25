@@ -51,6 +51,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -369,7 +370,9 @@ public class IGDocumentController extends BaseController {
         igdouments = igService.findAllUsersIG();
 
       } else if (type.equals(AccessType.SHARED)) {
-        // TODO
+    	  
+        igdouments = igService.findAllSharedIG(username, Scope.USER);
+      
       } else {
         igdouments = igService.findByUsername(username, Scope.USER);
 
@@ -422,8 +425,7 @@ public class IGDocumentController extends BaseController {
 
   public @ResponseBody Ig getIg(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException {
-
-    return findIgById(id);
+      return findIgById(id);
   }
 
   /**
@@ -1357,6 +1359,11 @@ public class IGDocumentController extends BaseController {
       throws IGNotFoundException {
 
     Ig ig = findIgById(id);
+    String cUser = authentication.getPrincipal().toString();
+    if(ig.getUsername() != null && !ig.getUsername().equals(cUser)) {
+    	if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(cUser)) ig.setSharePermission(SharePermission.WRITE);
+    	else ig.setSharePermission(SharePermission.READ);    	
+    }
     return displayInfoService.covertIgToDisplay(ig);
   }
   @RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}", method = RequestMethod.GET, produces = {

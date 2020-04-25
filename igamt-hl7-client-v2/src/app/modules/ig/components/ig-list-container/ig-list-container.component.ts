@@ -55,24 +55,29 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     private router: Router,
     private message: MessageService,
     private ig: IgService) {
+    this.storeSelectors();
+    this.initializeProperties();
+    this.igListItemControls();
+  }
 
-    // Store Selectors
+  storeSelectors() {
     this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter });
     this.viewType = this.store.select(fromIgList.selectViewType);
     this.isAdmin = this.store.select(fromAuth.selectIsAdmin);
     this.username = this.store.select(fromAuth.selectUsername);
     this.store.select(fromIgList.selectSortOptions).subscribe(
-      (next) => {
-        this.sortOrder = {
-          ascending: next.ascending,
-        };
-        this.sortProperty = {
-          property: next.property,
-        };
-      },
+        (next) => {
+          this.sortOrder = {
+            ascending: next.ascending,
+          };
+          this.sortProperty = {
+            property: next.property,
+          };
+        },
     );
+  }
 
-    // Initialize Properties
+  initializeProperties() {
     this.sortOptions = [
       {
         label: 'Date Updated',
@@ -87,143 +92,203 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
         },
       },
     ];
+  }
 
-    // -- Ig List Item Controls (BUTTONS)
+  igListItemControls() {
     this.controls = combineLatest(this.isAdmin, this.username)
-      .pipe(
-        map(
-          ([admin, username]) => {
-            return [
-              {
-                label: 'Share',
-                class: 'btn-primary',
-                icon: 'fa-share',
-                action: (item: IgListItem) => {
+        .pipe(
+            map(
+                ([admin, username]) => {
 
-                },
-                disabled: (item: IgListItem): boolean => {
-                  return username !== item.username || item.type === 'PUBLISHED';
-                },
-              },
-              {
-                label: 'Delete',
-                class: 'btn-danger',
-                icon: 'fa-trash',
-                action: (item: IgListItem) => {
-                  const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-                    data: {
-                      question: 'Are you sure you want to delete Implementation Guide "' + item.title + '" ?',
-                      action: 'Delete Implementation Guide',
-                    },
-                  });
+                  return [
+                    {
+                      label: 'Share',
+                      class: 'btn-primary',
+                      icon: 'fa-share',
+                      action: (item: IgListItem) => {
 
-                  dialogRef.afterClosed().subscribe(
-                    (answer) => {
-                      if (answer) {
-                        this.store.dispatch(new DeleteIgListItemRequest(item.id));
-                      }
-                    },
-                  );
-                },
-                disabled: (item: IgListItem): boolean => {
-                  if (item.type === 'PUBLISHED') {
-                    return true;
-                  } else {
-                    return false;
-                  }
-                },
-              },
-              {
-                label: 'Clone',
-                class: 'btn-success',
-                icon: 'fa-plus',
-                action: (item: IgListItem) => {
-                  this.ig.cloneIg(item.id, CloneModeEnum.CLONE, null).subscribe(
-                    (response: Message<string>) => {
-                      this.store.dispatch(this.message.messageToAction(response));
-                      this.router.navigate(['ig', response.data]);
-                    },
-                    (error) => {
-                      this.store.dispatch(this.message.actionFromError(error));
-                    },
-                  );
-                },
-                disabled: (item: IgListItem): boolean => {
-                  return false;
-                },
-              },
-              {
-                label: 'Publish',
-                class: 'btn-scondary',
-                icon: 'fa fa-globe',
-                action: (item: IgListItem) => {
-                    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-                      data: {
-                        question: 'This operation is irreversible, Are you sure you want to publish this Implementation Guide "' + item.title + '" ?',
-                        action: 'Publish Implementation Guide',
                       },
-                    });
-                    dialogRef.afterClosed().subscribe(
-                      (answer) => {
-                        if (answer) {
-                          this.ig.publish(item.id).subscribe(
+                      disabled: (item: IgListItem): boolean => {
+                        return username !== item.username || item.type === 'PUBLISHED';
+                      },
+                      hide: (item: IgListItem): boolean => {
+                        return item.type === 'PUBLISHED' || item.type === 'SHARED';
+                      },
+                    },
+                    {
+                      label: 'Delete',
+                      class: 'btn-danger',
+                      icon: 'fa-trash',
+                      action: (item: IgListItem) => {
+                        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+                          data: {
+                            question: 'Are you sure you want to delete Implementation Guide "' + item.title + '" ?',
+                            action: 'Delete Implementation Guide',
+                          },
+                        });
+
+                        dialogRef.afterClosed().subscribe(
+                            (answer) => {
+                              if (answer) {
+                                this.store.dispatch(new DeleteIgListItemRequest(item.id));
+                              }
+                            },
+                        );
+                      },
+                      disabled: (item: IgListItem): boolean => {
+                        if (item.type === 'PUBLISHED' || item.type === 'SHARED') {
+                          return true;
+                        } else {
+                          return false;
+                        }
+                      },
+                      hide: (item: IgListItem): boolean => {
+                        return item.type === 'PUBLISHED' || item.type === 'SHARED';
+                      },
+                    },
+                    {
+                      label: 'Clone',
+                      class: 'btn-success',
+                      icon: 'fa-plus',
+                      action: (item: IgListItem) => {
+                        this.ig.cloneIg(item.id, CloneModeEnum.CLONE, null).subscribe(
                             (response: Message<string>) => {
                               this.store.dispatch(this.message.messageToAction(response));
-                              this.router.navigateByUrl('/ig/list?type=PUBLISHED');
+                              this.router.navigate(['ig', response.data]);
                             },
                             (error) => {
                               this.store.dispatch(this.message.actionFromError(error));
                             },
-                          );
-                        }
+                        );
                       },
-                    );
-                },
-                disabled: (item: IgListItem): boolean => {
-                    return !admin || item.type === 'PUBLISHED';
-                  },
-                hide: (item: IgListItem): boolean => {
-                  return item.type === 'PUBLISHED';
-                },
-              },
-              {
-                label: 'Derive from',
-                class: 'btn-scondary',
-                icon: 'fa fa-map-marker',
-                action: (item: IgListItem) => {
-                  this.ig.cloneIg(item.id, CloneModeEnum.DERIVE, null).subscribe(
-                    (response: Message<string>) => {
-                      this.store.dispatch(this.message.messageToAction(response));
-                      this.router.navigate(['ig', response.data]);
+                      disabled: (item: IgListItem): boolean => {
+                        return false;
+                      },
                     },
-                    (error) => {
-                      this.store.dispatch(this.message.actionFromError(error));
+                    {
+                      label: 'Publish',
+                      class: 'btn-secondary',
+                      icon: 'fa fa-globe',
+                      action: (item: IgListItem) => {
+                        this.publishDialog(item);
+                      },
+                      disabled: (item: IgListItem): boolean => {
+                        return !admin || item.type === 'PUBLISHED';
+                      },
+                      hide: (item: IgListItem): boolean => {
+                        return item.type === 'PUBLISHED' || item.type === 'SHARED';
+                      },
                     },
-                  );
+                    {
+                      label: 'Derive from',
+                      class: 'btn-secondary',
+                      icon: 'fa fa-map-marker',
+                      action: (item: IgListItem) => {
+                        this.ig.cloneIg(item.id, CloneModeEnum.DERIVE, null).subscribe(
+                            (response: Message<string>) => {
+                              this.store.dispatch(this.message.messageToAction(response));
+                              this.router.navigate(['ig', response.data]);
+                            },
+                            (error) => {
+                              this.store.dispatch(this.message.actionFromError(error));
+                            },
+                        );
+                      },
+                      disabled: (item: IgListItem): boolean => {
+                        return false;
+                      },
+                      hide: (item: IgListItem): boolean => {
+                        return item.type !== 'PUBLISHED';
+                      },
+                    },
+                    {
+                      label: 'Open',
+                      class: 'btn-primary',
+                      icon: 'fa-arrow-right',
+                      default: true,
+                      action: (item: IgListItem) => {
+                        this.router.navigate(['ig', item.id]);
+                      },
+                      disabled: (item: IgListItem): boolean => {
+                        return false;
+                      },
+                      hide: (item: IgListItem): boolean => {
+                        return item.type === 'SHARED';
+                      },
+                    },
+                    {
+                      label: 'View',
+                      class: 'btn-info',
+                      icon: 'fa-eye',
+                      default: true,
+                      action: (item: IgListItem) => {
+                        this.router.navigate(['ig', item.id]);
+                      },
+                      disabled: (item: IgListItem): boolean => {
+                        return false;
+                      },
+                      hide: (item: IgListItem): boolean => {
+                        return this.hideForShared('View', item.type, item.sharePermission);
+                      },
+                    },
+                    {
+                      label: 'Edit',
+                      class: 'btn-info',
+                      icon: 'fa-pencil',
+                      default: true,
+                      action: (item: IgListItem) => {
+                        this.router.navigate(['ig', item.id]);
+                      },
+                      disabled: (item: IgListItem): boolean => {
+                        return false;
+                      },
+                      hide: (item: IgListItem): boolean => {
+                        return this.hideForShared('Edit', item.type, item.sharePermission);
+                      },
+                    },
+                  ];
                 },
-                disabled: (item: IgListItem): boolean => {
-                  return false;
+            ),
+        );
+  }
+
+  publishDialog(item: IgListItem) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        question: 'This operation is irreversible, Are you sure you want to publish this Implementation Guide "' + item.title + '" ?',
+        action: 'Publish Implementation Guide',
+      },
+    });
+    dialogRef.afterClosed().subscribe(
+        (answer) => {
+          if (answer) {
+            this.ig.publish(item.id).subscribe(
+                (response: Message<string>) => {
+                  this.store.dispatch(this.message.messageToAction(response));
+                  this.router.navigateByUrl('/ig/list?type=PUBLISHED');
                 },
-                hide: (item: IgListItem): boolean => {
-                  return item.type !== 'PUBLISHED';
+                (error) => {
+                  this.store.dispatch(this.message.actionFromError(error));
                 },
-              },
-              {
-                label: 'Open',
-                class: 'btn-primary',
-                icon: 'fa-arrow-right',
-                default: true,
-                action: (item: IgListItem) => {
-                  this.router.navigate(['ig', item.id]);
-                },
-                disabled: (item: IgListItem): boolean => {
-                  return false;
-                },
-              },
-            ];
-          },
-        ),
-      );
+            );
+          }
+        },
+    );
+  }
+
+  hideForShared(label: string, type: string, permission: string) {
+    if (label === 'Edit') {
+      if (type === 'SHARED' && permission === 'WRITE') {
+        return false;
+      }
+      return true;
+    }
+    if (label === 'View') {
+      if (type === 'SHARED' && permission === 'READ') {
+        return false;
+      }
+      return true;
+    }
   }
 
   // On View Type Changed

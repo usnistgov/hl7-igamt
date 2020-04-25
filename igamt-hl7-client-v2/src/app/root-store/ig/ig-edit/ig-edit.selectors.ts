@@ -9,7 +9,7 @@ import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
 import { Scope } from '../../../modules/shared/constants/scope.enum';
 import { Type } from '../../../modules/shared/constants/type.enum';
-import { Status } from '../../../modules/shared/models/abstract-domain.interface';
+import { SharePermission, Status } from '../../../modules/shared/models/abstract-domain.interface';
 import { ICoConstraintGroup } from '../../../modules/shared/models/co-constraint.interface';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
@@ -20,6 +20,8 @@ import { selectIgEdit } from '../ig.reducer';
 import { ITitleBarMetadata } from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
 import { IDatatype } from './../../../modules/shared/models/datatype.interface';
 import { igElementAdapter, IResourcesState, IState, loadedResourceAdapter } from './ig-edit.reducer';
+
+import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 
 export const {
   selectAll,
@@ -310,7 +312,7 @@ export const selectTitleBar = createSelector(
 export const selectViewOnly = createSelector(
   selectIgDocument,
   (document: IgDocument): boolean => {
-    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED;
+    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED || (document.sharePermission && document.sharePermission === SharePermission.READ);
   },
 );
 

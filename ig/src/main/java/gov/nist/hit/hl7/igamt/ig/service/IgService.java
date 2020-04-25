@@ -65,6 +65,8 @@ public interface IgService {
   public List<Ig> findAllUsersIG();
 
   public List<Ig> findAllPreloadedIG();
+  
+  public List<Ig> findAllSharedIG(String username, Scope scope);
 
   public void delete(Ig ig);
 

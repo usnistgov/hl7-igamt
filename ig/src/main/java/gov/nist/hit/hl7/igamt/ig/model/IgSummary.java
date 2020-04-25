@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.ig.model;
 import java.util.Date;
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 
 public class IgSummary {
@@ -18,6 +19,7 @@ public class IgSummary {
   private List<String> participants;
   private Status status;
   private List<String> conformanceProfiles;
+  private SharePermission sharePermission;
 
   public String getTitle() {
     return title;
@@ -110,6 +112,14 @@ public class IgSummary {
   public void setDerived(boolean derived) {
     this.derived = derived;
   }
+
+public SharePermission getSharePermission() {
+	return sharePermission;
+}
+
+public void setSharePermission(SharePermission sharePermission) {
+	this.sharePermission = sharePermission;
+}
 
 
 

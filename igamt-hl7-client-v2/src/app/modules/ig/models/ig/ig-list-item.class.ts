@@ -10,6 +10,7 @@ export class IgListItem {
   participants?: any;
   conformanceProfiles: string[];
   status: any;
+  sharePermission?: string;
 }
 
-export type IgListItemType = 'USER' | 'PUBLISHED';
+export type IgListItemType = 'USER' | 'PUBLISHED' | 'SHARED';
