@@ -3,7 +3,7 @@
   <p-listbox [options]="sharedUsers" [(ngModel)]="selectedUser" (onClick)="tableListBoxSelectEvent($event)" [style]="{'width':'100%','max-height':'500px'}" [listStyle]="{'max-height':'250px'}">
     <p-header>
       <p-autoComplete [(ngModel)]="newSharedUser" [suggestions]="filteredUsersSingle" (completeMethod)="filterUsersSingle($event)" field="username" [size]="30"
-                      placeholder="Add Username" [minLength]="1" checkbox="true" [appendTo]="body"></p-autoComplete>
+                      placeholder="Add Username" [minLength]="1" checkbox="true"></p-autoComplete>
       <p-button icon="pi pi-plus" (click)="addUser()" [disabled]="checkUser()" label="Add"></p-button>
     </p-header>
     <ng-template let-user pTemplate="item">
