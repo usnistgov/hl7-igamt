@@ -1,0 +1,23 @@
+<h5 mat-dialog-title> {{title}} </h5>
+<mat-dialog-content>
+  <p-listbox [options]="sharedUsers" [(ngModel)]="selectedUser" (onClick)="tableListBoxSelectEvent($event)" [style]="{'width':'100%','max-height':'500px'}" [listStyle]="{'max-height':'250px'}">
+    <p-header>
+      <p-autoComplete [(ngModel)]="newSharedUser" [suggestions]="filteredUsersSingle" (completeMethod)="filterUsersSingle($event)" field="username" [size]="30"
+                      placeholder="Add Username" [minLength]="1" checkbox="true" [appendTo]="body"></p-autoComplete>
+      <p-button icon="pi pi-plus" (click)="addUser()" [disabled]="checkUser()" label="Add"></p-button>
+    </p-header>
+    <ng-template let-user pTemplate="item">
+      <div class="ui-helper-clearfix">
+        <span>{{user.label}}</span>
+        <span *ngIf="user.value === currentAuthor"> #CurrentAuthor</span>
+        <span style="float:right;margin:0 0 0 0"><i *ngIf="user.label.indexOf('#Owner') < 0" (click)="removeUser(user)" class="fa fa-times"></i></span>
+      </div>
+    </ng-template>
+  </p-listbox>
+
+
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

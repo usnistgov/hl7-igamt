@@ -46,6 +46,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 //import gov.nist.hit.hl7.igamt.common.config.domain.Config;
@@ -1229,5 +1230,19 @@ public class IgServiceImpl implements IgService {
     if(! updateResult.wasAcknowledged()) {
       throw new IGUpdateException("Could not publish Ig:" +ig.getId());
     }
+  }
+
+  @Override
+  public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo) {
+	if(id != null && sharedUsersInfo != null) {
+		Ig ig = this.findById(id);
+		if(ig != null) {
+			ig.setCurrentAuthor(sharedUsersInfo.getCurrentAuthor());
+			ig.setSharedUsers(sharedUsersInfo.getSharedUsers());
+		}
+		
+		this.save(ig);
+	}
+	
   }
 }

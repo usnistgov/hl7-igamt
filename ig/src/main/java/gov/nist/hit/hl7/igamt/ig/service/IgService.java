@@ -17,6 +17,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -95,5 +96,7 @@ public interface IgService {
    * @return
    */
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass);
+
+  public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
 
 }

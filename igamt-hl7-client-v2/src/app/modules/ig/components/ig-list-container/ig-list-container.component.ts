@@ -24,6 +24,7 @@ import {IgService} from '../../services/ig.service';
 import {Message} from './../../../core/models/message/message.class';
 import {MessageService} from './../../../core/services/message.service';
 import {ConfirmDialogComponent} from './../../../shared/components/confirm-dialog/confirm-dialog.component';
+import {SharingDialogComponent} from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 import {IgListItemControl} from './../ig-list-item-card/ig-list-item-card.component';
 
 @Component({
@@ -106,7 +107,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                       class: 'btn-primary',
                       icon: 'fa-share',
                       action: (item: IgListItem) => {
-                        this.shareDialog(item,username);
+                        this.shareDialog(item, username);
                       },
                       disabled: (item: IgListItem): boolean => {
                         return username !== item.username || item.type === 'PUBLISHED';
@@ -253,29 +254,25 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   }
 
   shareDialog(item: IgListItem, username: string) {
-
-    console.log(username, item);
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        question: 'This operation is irreversible, Are you sure you want to publish this Implementation Guide "' + item.title + '" ?',
-        action: 'Publish Implementation Guide',
-      },
+    const dialogRef = this.dialog.open(SharingDialogComponent, {
+      data: { item, username },
     });
-    dialogRef.afterClosed().subscribe(
-        (answer) => {
-          // if (answer) {
-          //   this.ig.publish(item.id).subscribe(
-          //       (response: Message<string>) => {
-          //         this.store.dispatch(this.message.messageToAction(response));
-          //         this.router.navigateByUrl('/ig/list?type=PUBLISHED');
-          //       },
-          //       (error) => {
-          //         this.store.dispatch(this.message.actionFromError(error));
-          //       },
-          //   );
-          // }
-        },
-    );
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.ig.updateSharedUsers(result, item.id).subscribe(
+            (response: Message<string>) => {
+              item.sharedUsers = result.sharedUsers;
+              item.currentAuthor = result.currentAuthor;
+              this.store.dispatch(this.message.messageToAction(response));
+              this.router.navigateByUrl('/ig/list?type=USER');
+            },
+            (error) => {
+              this.store.dispatch(this.message.actionFromError(error));
+            },
+        );
+      }
+    });
   }
   publishDialog(item: IgListItem) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
