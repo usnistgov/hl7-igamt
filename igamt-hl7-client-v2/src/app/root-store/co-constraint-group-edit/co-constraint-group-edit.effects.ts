@@ -25,7 +25,7 @@ import {
   LoadCoConstraintGroupFailure,
   LoadCoConstraintGroupSuccess,
   OpenCoConstraintGroupCrossRefEditor,
-  OpenCoConstraintGroupEditor
+  OpenCoConstraintGroupEditor,
 } from './co-constraint-group-edit.actions';
 
 @Injectable()

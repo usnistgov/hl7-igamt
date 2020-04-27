@@ -31,7 +31,7 @@ public interface CoConstraintService {
     public List<CoConstraintGroup> findByIdIn(Set<String> ids);
     public Collection<? extends RelationShip> collectDependencies(CoConstraintGroup ccGroup) ;
     public Link clone(String string, HashMap<RealKey, String> newKeys, Link l, String username,
-        Scope user);
+        Scope user, String documentTarget);
     void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys,
         String username);
     void updateDepenedencies(CoConstraintTable value, HashMap<RealKey, String> newKeys);

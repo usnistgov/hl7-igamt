@@ -382,11 +382,12 @@ public class SimpleCoConstraintService implements CoConstraintService {
    */
   @Override
   public Link clone(String id, HashMap<RealKey, String> newKeys, Link l, String username,
-      Scope scope) {
+      Scope scope, String targetId) {
     // TODO Auto-generated method stub
     CoConstraintGroup obj = this.coConstraintGroupRepository.findById(l.getId()).get();
     if(obj  !=null ) {
     CoConstraintGroup elm = obj.clone();
+    elm.setDocumentId(targetId);
     elm.getDomainInfo().setScope(scope);
     elm.setOrigin(l.getId());
     Link newLink = l.clone(id);

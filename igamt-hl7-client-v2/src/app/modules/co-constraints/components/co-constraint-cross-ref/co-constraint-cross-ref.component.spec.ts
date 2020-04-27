@@ -8,7 +8,7 @@ describe('CoConstraintCrossRefComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CoConstraintCrossRefComponent ]
+      declarations: [ CoConstraintCrossRefComponent ],
     })
     .compileComponents();
   }));

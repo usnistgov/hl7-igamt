@@ -41,7 +41,7 @@ public class Ig extends AbstractDomain {
   private CoConstraintGroupRegistry coConstraintGroupRegistry = new CoConstraintGroupRegistry();
   private DocumentExportConfiguration lastUserConfiguration;
   private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
-
+  
   public DocumentExportConfiguration getLastUserConfiguration() {
     return lastUserConfiguration;
   }

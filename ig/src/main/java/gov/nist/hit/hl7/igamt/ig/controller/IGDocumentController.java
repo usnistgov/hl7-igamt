@@ -51,6 +51,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -62,6 +63,7 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
@@ -369,7 +371,9 @@ public class IGDocumentController extends BaseController {
         igdouments = igService.findAllUsersIG();
 
       } else if (type.equals(AccessType.SHARED)) {
-        // TODO
+    	  
+        igdouments = igService.findAllSharedIG(username, Scope.USER);
+      
       } else {
         igdouments = igService.findByUsername(username, Scope.USER);
 
@@ -422,8 +426,7 @@ public class IGDocumentController extends BaseController {
 
   public @ResponseBody Ig getIg(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException {
-
-    return findIgById(id);
+      return findIgById(id);
   }
 
   /**
@@ -1322,19 +1325,8 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, @RequestBody CopyInfo info,  Authentication authentication)
       throws IGNotFoundException {
     String username = authentication.getPrincipal().toString();
-
     Ig ig = findIgById(id);
-    Ig clone = this.igService.clone(ig, username);
-    clone.getDomainInfo().setScope(Scope.USER);
-    if(info.getMode().equals(CloneMode.CLONE)) {
-      clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[clone]");
-    }else if(info.getMode().equals(CloneMode.DERIVE)){
-      clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[derived]");
-      clone.setDerived(true); 
-    }
-    clone.setCreationDate(new Date());
-
-    clone = igService.save(clone);
+    Ig clone = this.igService.clone(ig, username, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", clone.getId(), false,
         clone.getUpdateDate(), clone.getId());
   }
@@ -1347,6 +1339,17 @@ public class IGDocumentController extends BaseController {
 
     this.igService.publishIG(id);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig published Successfully", id, false,
+        new Date(), id);
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/updateSharedUser", method = RequestMethod.POST, produces = {
+  "application/json" })
+  public @ResponseBody ResponseMessage<String> updateSharedUser(@PathVariable("id") String id, @RequestBody SharedUsersInfo sharedUsersInfo, Authentication authentication)
+      throws IGNotFoundException, IGUpdateException {
+    String username = authentication.getPrincipal().toString();
+
+    this.igService.updateSharedUser(id, sharedUsersInfo);
+    return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Shared Users Successfully Updated", id, false,
         new Date(), id);
   }
 
@@ -1366,6 +1369,14 @@ public class IGDocumentController extends BaseController {
       throws IGNotFoundException {
 
     Ig ig = findIgById(id);
+    String cUser = authentication.getPrincipal().toString();
+    if(ig.getUsername() != null && !ig.getUsername().equals(cUser)) {
+    	if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(cUser)) ig.setSharePermission(SharePermission.WRITE);
+    	else ig.setSharePermission(SharePermission.READ);    	
+    }
+    if(ig.getUsername() != null && ig.getUsername().equals(cUser) && ig.getCurrentAuthor() != null) {
+    	ig.setSharePermission(SharePermission.READ);  
+    }
     return displayInfoService.covertIgToDisplay(ig);
   }
   @RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}", method = RequestMethod.GET, produces = {
