@@ -217,15 +217,15 @@ public class ValuesetServiceImpl implements ValuesetService {
     public Link cloneValueSet(String newkey, Link l, String username, Scope scope) {
         Valueset old = this.findById(l.getId());
         Valueset elm = old.clone();
+        elm.setId(newkey);
         elm.getDomainInfo().setScope(scope);
         elm.setOrigin(l.getId());
         elm.setFrom(l.getId());
         Link newLink = new Link();
-        newLink.setOrigin(elm.getId());
+        newLink.setOrigin(old.getId());
         newLink = l.clone(newkey);
         newLink.setOrigin(l.getId());
         newLink.setDomainInfo(elm.getDomainInfo());
-        elm.setId(newkey);
         elm.setUsername(username);
         this.save(elm);
         return newLink;

@@ -31,6 +31,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupRegistry;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 //import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -138,11 +141,12 @@ public class IgServiceImpl implements IgService {
 	@Autowired
 	RelationShipService relationshipService;
 	
+	@Autowired   
+	CoConstraintService coconstraintService;
+	
 	  @Autowired
-	  XMLSerializeService xmlSerializeService;
+	 XMLSerializeService xmlSerializeService;
 
-	//  @Autowired
-	//  CoConstraintService coConstraintService;
 
 	@Override
 	public Ig findById(String id) {
@@ -414,8 +418,7 @@ public class IgServiceImpl implements IgService {
 		addKeys(ig.getValueSetRegistry(), Type.VALUESET, newKeys);
 		addKeys(ig.getDatatypeRegistry(), Type.DATATYPE, newKeys);
 		addKeys(ig.getSegmentRegistry(), Type.SEGMENT, newKeys);
-
-
+	    addKeys(ig.getCoConstraintGroupRegistry(), Type.COCONSTRAINTGROUP, newKeys);
 
 		newIg.setValueSetRegistry(
 				copyValueSetRegistry(ig.getValueSetRegistry(), newKeys, username));
@@ -424,10 +427,36 @@ public class IgServiceImpl implements IgService {
 		newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),newKeys, username));
 		newIg.setConformanceProfileRegistry(
 				copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), newKeys, username));
+		newIg.setCoConstraintGroupRegistry(
+             copyCoConstraintGRoupRegistry(ig.getCoConstraintGroupRegistry(), newKeys, username));
 		return newIg;
 	}
 
 	/**
+   * @param coConstraintGroupRegistry
+   * @param newKeys
+   * @param username
+   * @return
+   */
+  private CoConstraintGroupRegistry copyCoConstraintGRoupRegistry(
+      CoConstraintGroupRegistry coConstraintGroupRegistry, HashMap<RealKey, String> newKeys,
+      String username) {
+    CoConstraintGroupRegistry newReg = new CoConstraintGroupRegistry();
+    HashSet<Link> children = new HashSet<Link>();
+    for (Link l : coConstraintGroupRegistry.getChildren()) {
+      RealKey key  = new RealKey(l.getId(), Type.COCONSTRAINTGROUP);
+        if (!l.isUser()) {
+            children.add(l);
+        } else {
+            children.add(coconstraintService.clone(
+                newKeys.get(key),newKeys,l, username, Scope.USER));
+        }
+    }
+    newReg.setChildren(children);
+    return newReg;
+  }
+
+  /**
 	 * @param conformanceProfileRegistry
 	 * @param valuesetsMap
 	 * @param datatypesMap
@@ -520,15 +549,15 @@ public class IgServiceImpl implements IgService {
 		newReg.setExportConfig(reg.getExportConfig());
 		newReg.setCodesPresence(reg.getCodesPresence());
 		HashSet<Link> children = new HashSet<Link>();
-		for (Link l : reg.getChildren()) {
-		   RealKey key = new RealKey(l.getId(), Type.VALUESET);
-			if (!l.isUser()) {
-				children.add(l);
-			} else {
-				Link newLink = this.valueSetService.cloneValueSet(newKeys.get(key), l, username, Scope.USER);    	  	
-				children.add(newLink);
-			}
-		}
+	      for (Link l : reg.getChildren()) {
+	          RealKey key = new RealKey(l.getId(), Type.VALUESET);
+
+	            if (!l.isUser()) {
+	                children.add(l);
+	            } else {
+	                children.add(this.valueSetService.cloneValueSet(newKeys.get(key), l, username, l.getDomainInfo().getScope()));
+	            }
+	        }
 		newReg.setChildren(children);
 		return newReg;
 	}
@@ -536,7 +565,7 @@ public class IgServiceImpl implements IgService {
 	private void addKeys(Registry reg, Type type, HashMap<RealKey, String> map) {
 		if (reg != null && reg.getChildren() != null) {
 			for (Link l : reg.getChildren()) {
-				if (!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD) && !l.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+				if (!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
 				  map.put(new RealKey(l.getId(), type), new ObjectId().toString());
 				} else {
 				  map.put(new RealKey(l.getId(), type), l.getId());
@@ -999,32 +1028,53 @@ public class IgServiceImpl implements IgService {
 
 			addSegmentsRelations(ig, ret);
 			addDatatypesRelations(ig, ret);
+			addConformanceProfilesRelations(ig, ret);
+	        addCoConstraintsGroupRelations(ig, ret);
+
 			return ret;
 
 		case SEGMENT:
 
 			addConformanceProfilesRelations(ig, ret);
+	        addCoConstraintsGroupRelations(ig, ret);
+
 			return ret;
 
 		case VALUESET:
 			addConformanceProfilesRelations(ig, ret);
 			addSegmentsRelations(ig, ret);
 			addDatatypesRelations(ig, ret);
+			addCoConstraintsGroupRelations(ig, ret);
 			return ret;
-
+	     case COCONSTRAINTGROUP:
+           addConformanceProfilesRelations(ig, ret);
 		default:
 			return ret;
 
 		}
 	}
 	
-	@Override
+	/**
+   * @param ig
+   * @param ret
+   */
+  private void addCoConstraintsGroupRelations(Ig ig, Set<RelationShip> ret) {
+    // TODO Auto-generated method stub
+    List<CoConstraintGroup> groups = coconstraintService
+        .findByIdIn(ig.getCoConstraintGroupRegistry().getLinksAsIds());
+      for (CoConstraintGroup group : groups) {
+        ret.addAll(coconstraintService.collectDependencies(group));
+        }
+  }
+
+  @Override
 	public Set<RelationShip> builAllRelations(Ig ig) {
 		// TODO Auto-generated method stub
 		Set<RelationShip> ret = new HashSet<RelationShip>();
 		addConformanceProfilesRelations(ig, ret);
 		addSegmentsRelations(ig, ret);
 		addDatatypesRelations(ig, ret);
+		addCoConstraintsGroupRelations(ig, ret);
 		return ret;
 	}
 	
