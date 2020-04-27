@@ -14,12 +14,14 @@ export class IgListService {
   constructor(private http: HttpClient) {
   }
 
-  loadTypeToAPI(type: IgListLoad): 'PRIVATE' | 'PUBLIC' | 'ALL' {
+  loadTypeToAPI(type: IgListLoad) {
     switch (type) {
       case 'USER':
         return 'PRIVATE';
       case 'PUBLISHED':
         return 'PUBLIC';
+      case 'SHARED':
+        return 'SHARED';
       case 'ALL':
         return 'ALL';
     }

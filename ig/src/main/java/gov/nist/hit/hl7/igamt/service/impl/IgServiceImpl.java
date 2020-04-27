@@ -39,12 +39,14 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 //import gov.nist.hit.hl7.igamt.common.config.domain.Config;
@@ -197,6 +199,9 @@ public class IgServiceImpl implements IgService {
 			element.setDerived(ig.isDerived());
 			element.setUsername(ig.getUsername());
 			element.setStatus(ig.getStatus());
+			element.setSharePermission(ig.getSharePermission());
+			element.setSharedUsers(ig.getSharedUsers());
+			element.setCurrentAuthor(ig.getCurrentAuthor());
 			List<String> conformanceProfileNames = new ArrayList<String>();
 			ConformanceProfileRegistry conformanceProfileRegistry = ig.getConformanceProfileRegistry();
 			if (conformanceProfileRegistry != null) {
@@ -281,6 +286,8 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("conformanceProfileRegistry");
 		qry.fields().include("creationDate");
 		qry.fields().include("updateDate");
+		qry.fields().include("sharedUsers");
+		qry.fields().include("currentAuthor");
 
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
@@ -298,6 +305,8 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("conformanceProfileRegistry");
 		qry.fields().include("creationDate");
 		qry.fields().include("updateDate");
+		qry.fields().include("sharedUsers");
+		qry.fields().include("currentAuthor");
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
 	}
@@ -314,10 +323,36 @@ public class IgServiceImpl implements IgService {
 		qry.fields().include("conformanceProfileRegistry");
 		qry.fields().include("creationDate");
 		qry.fields().include("updateDate");
-
+		qry.fields().include("sharedUsers");
+		qry.fields().include("currentAuthor");
 		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
 		return igs;
 	}
+	
+
+	@Override
+	public List<Ig> findAllSharedIG(String username, Scope scope) {
+		Criteria where = Criteria.where("sharedUsers").in(username).andOperator(Criteria.where("domainInfo.scope").is(scope.toString()), Criteria.where("status").ne(Status.PUBLISHED));
+		Query qry = Query.query(where);
+		qry.fields().include("domainInfo");
+		qry.fields().include("id");
+		qry.fields().include("metadata");
+		qry.fields().include("username");
+		qry.fields().include("conformanceProfileRegistry");
+		qry.fields().include("creationDate");
+		qry.fields().include("updateDate");
+		qry.fields().include("sharedUsers");
+		qry.fields().include("currentAuthor");
+
+		List<Ig> igs = mongoTemplate.find(qry, Ig.class);
+		igs.forEach(ig -> {
+	    	if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(username)) ig.setSharePermission(SharePermission.WRITE);
+	    	else ig.setSharePermission(SharePermission.READ);    			
+		});
+				
+		return igs;
+	}
+	  
 
 	@Override
 	public UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass) {
@@ -1196,5 +1231,18 @@ public class IgServiceImpl implements IgService {
       throw new IGUpdateException("Could not publish Ig:" +ig.getId());
     }
   }
-	  
+
+  @Override
+  public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo) {
+	if(id != null && sharedUsersInfo != null) {
+		Ig ig = this.findById(id);
+		if(ig != null) {
+			ig.setCurrentAuthor(sharedUsersInfo.getCurrentAuthor());
+			ig.setSharedUsers(sharedUsersInfo.getSharedUsers());
+		}
+		
+		this.save(ig);
+	}
+	
+  }
 }

@@ -23,6 +23,7 @@ export interface IAbstractDomain {
   from?: string;
   version?: number;
   dateTimeConstraints?: any;
+  sharePermission?: string;
 }
 
 export enum Status {
@@ -30,4 +31,9 @@ export enum Status {
   PUBLISHED = 'PUBLISHED',
   SUPERSEDED = 'SUPERSEDED',
   WITHDRAWN = 'WITHDRAWN',
+}
+
+export enum SharePermission {
+  READ = 'READ',
+  WRITE = 'WRITE',
 }

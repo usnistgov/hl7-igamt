@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Transient;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -29,10 +31,16 @@ public abstract class AbstractDomain implements Serializable{
 	private String authorNotes;
 	private String usageNotes;
 	private String organization;
-	private List<String> authors;
+	private List<String> authors; //Q
 	private Status status;
 	private String from;
-	private boolean derived; 
+	private boolean derived;
+	
+	private List<String> sharedUsers;
+	private String currentAuthor;
+	
+	@Transient
+	private SharePermission sharePermission;
 
 	@Version
 	private Long version;
@@ -40,6 +48,14 @@ public abstract class AbstractDomain implements Serializable{
 	public AbstractDomain() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+	
+	public SharePermission getSharePermission() {
+		return sharePermission;
+	}
+
+	public void setSharePermission(SharePermission sharePermission) {
+		this.sharePermission = sharePermission;
 	}
 
 	public AbstractDomain(String id, String version, String name, PublicationInfo publicationInfo,
@@ -255,5 +271,21 @@ public abstract class AbstractDomain implements Serializable{
   public void setDerived(boolean derived) {
     this.derived = derived;
   }
+
+public List<String> getSharedUsers() {
+	return sharedUsers;
+}
+
+public void setSharedUsers(List<String> sharedUsers) {
+	this.sharedUsers = sharedUsers;
+}
+
+public String getCurrentAuthor() {
+	return currentAuthor;
+}
+
+public void setCurrentAuthor(String currentAuthor) {
+	this.currentAuthor = currentAuthor;
+}
 
 }

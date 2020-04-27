@@ -12,7 +12,7 @@ export enum IgListActionTypes {
   ClearIgList = '[IgList] Clear Ig List',
 }
 
-export type IgListLoad = 'USER' | 'PUBLISHED' | 'ALL';
+export type IgListLoad = 'USER' | 'PUBLISHED' | 'SHARED' |'ALL';
 
 export class LoadIgList implements Action {
   readonly type = IgListActionTypes.LoadIgList;
