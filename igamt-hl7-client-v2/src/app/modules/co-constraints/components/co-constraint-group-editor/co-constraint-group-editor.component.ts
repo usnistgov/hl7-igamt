@@ -13,7 +13,7 @@ import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.r
 import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectIgId, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import { MessageService } from '../../../core/services/message.service';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { CoConstraintGroupService } from '../../services/co-constraint-group.service';

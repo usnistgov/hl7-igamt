@@ -4,18 +4,18 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
-import { MessageService } from 'src/app/modules/core/services/message.service';
-import * as fromDamActions from 'src/app/modules/dam-framework/store/dam.actions';
-import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
-import { Message, MessageType, UserMessage } from '../../../modules/core/models/message/message.class';
-import { LoadPayloadData } from '../../../modules/dam-framework/store/dam.actions';
+import { Message, MessageType, UserMessage } from '../../../modules/dam-framework/models/messages/message.class';
+import { DamWidgetEffect } from '../../../modules/dam-framework/store/dam-widget-effect.class';
+import { LoadPayloadData } from '../../../modules/dam-framework/store/data/dam.actions';
+import { IG_EDIT_WIDGET_ID } from '../../../modules/ig/components/ig-edit-container/ig-edit-container.component';
 import { IGDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
 import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
-import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
 import { CreateCoConstraintGroup, CreateCoConstraintGroupFailure, CreateCoConstraintGroupSuccess, UpdateSections } from './ig-edit.actions';
 import {
   AddResourceFailure,
@@ -53,19 +53,7 @@ import {
 } from './ig-edit.selectors';
 
 @Injectable()
-export class IgEditEffects {
-
-  // @Effect()
-  // loadSelectedResource$ = this.actions$.pipe(
-  //   ofType(IgEditActionTypes.LoadSelectedResource),
-  //   concatMap((action: LoadSelectedResource) => {
-  //     return [
-  //       new SetValue({
-  //         selected: action.resource,
-  //       }),
-  //     ];
-  //   }),
-  // );
+export class IgEditEffects extends DamWidgetEffect {
 
   @Effect()
   UpdateSections$ = this.actions$.pipe(
@@ -84,7 +72,7 @@ export class IgEditEffects {
   loadReferences$ = this.actions$.pipe(
     ofType(IgEditActionTypes.LoadResourceReferences),
     concatMap((action: LoadResourceReferences) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return this.store.select(selectIgId).pipe(
@@ -94,8 +82,8 @@ export class IgEditEffects {
             take(1),
             flatMap((resources: IResource[]) => {
               return [
-                new TurnOffLoader(),
-                new fromDam.InsertResourcesInRepostory({
+                new fromDAM.TurnOffLoader(),
+                new fromDAM.InsertResourcesInRepostory({
                   collections: [{
                     key: 'resources',
                     values: resources,
@@ -106,7 +94,7 @@ export class IgEditEffects {
             }),
             catchError((error: HttpErrorResponse) => {
               return of(
-                new TurnOffLoader(),
+                new fromDAM.TurnOffLoader(),
                 new LoadResourceReferencesFailure(error),
               );
             }),
@@ -126,7 +114,7 @@ export class IgEditEffects {
   igEditResolverLoad$ = this.actions$.pipe(
     ofType(IgEditActionTypes.IgEditResolverLoad),
     switchMap((action: IgEditResolverLoad) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
 
@@ -134,8 +122,8 @@ export class IgEditEffects {
         take(1),
         flatMap((igInfo: IGDisplayInfo) => {
           return [
-            new TurnOffLoader(),
-            new fromDam.LoadPayloadData(igInfo.ig),
+            new fromDAM.TurnOffLoader(),
+            new fromDAM.LoadPayloadData(igInfo.ig),
             this.igService.loadRepositoryFromIgDisplayInfo(igInfo),
             new IgEditResolverLoadSuccess(igInfo),
           ];
@@ -143,7 +131,7 @@ export class IgEditEffects {
         catchError((error: HttpErrorResponse) => {
           console.log(error);
           return of(
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new IgEditResolverLoadFailure(error),
           );
         }),
@@ -161,8 +149,8 @@ export class IgEditEffects {
 
   @Effect()
   igEditToolbarSave$ = this.actions$.pipe(
-    ofType(fromDamActions.DamActionTypes.GlobalSave),
-    concatMap((action: fromDamActions.GlobalSave) => {
+    ofType(fromDAM.DamActionTypes.GlobalSave),
+    concatMap((action: fromDAM.GlobalSave) => {
       return combineLatest(
         this.store.select(selectTableOfContentChanged),
         this.store.select(selectIgDocument),
@@ -178,7 +166,7 @@ export class IgEditEffects {
             return RxjsStoreHelperService.listenAndReact(this.actions$, {
               [IgEditActionTypes.TableOfContentSaveSuccess]: {
                 do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
-                  return of(new fromDamActions.EditorSave({
+                  return of(new fromDAM.EditorSave({
                     tocSaveStatus: true,
                   }));
                 },
@@ -188,7 +176,7 @@ export class IgEditEffects {
               },
               [IgEditActionTypes.TableOfContentSaveFailure]: {
                 do: (tocSaveFailure: TableOfContentSaveFailure) => {
-                  return of(new fromDamActions.EditorSave({
+                  return of(new fromDAM.EditorSave({
                     tocSaveStatus: false,
                   }));
                 },
@@ -199,7 +187,7 @@ export class IgEditEffects {
             });
 
           } else {
-            return of(new fromDamActions.EditorSave({
+            return of(new fromDAM.EditorSave({
               tocSaveStatus: true,
             }));
           }
@@ -218,7 +206,7 @@ export class IgEditEffects {
             flatMap((message) => {
               return [
                 this.message.messageToAction(message),
-                new fromDam.SetValue({
+                new fromDAM.SetValue({
                   tableOfContentEdit: {
                     changed: false,
                   },
@@ -248,11 +236,11 @@ export class IgEditEffects {
             if (!elm || !section || !elm.id || !section.id) {
               return [
                 this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, 'Could not find section with ID ' + action.payload.id)),
-                new fromDamActions.OpenEditorFailure({ id: action.payload.id }),
+                new fromDAM.OpenEditorFailure({ id: action.payload.id }),
               ];
             } else {
               return [
-                new fromDamActions.OpenEditor({
+                new fromDAM.OpenEditor({
                   id: action.payload.id,
                   display: elm,
                   editor: action.payload.editor,
@@ -277,7 +265,7 @@ export class IgEditEffects {
         .pipe(
           take(1),
           map((ig) => {
-            return new fromDamActions.OpenEditor({
+            return new fromDAM.OpenEditor({
               id: action.payload.id,
               display: this.igService.igToIDisplayElement(ig),
               editor: action.payload.editor,
@@ -358,7 +346,7 @@ export class IgEditEffects {
   IgEditTocAddResource$ = this.actions$.pipe(
     ofType(IgEditActionTypes.IgEditTocAddResource),
     switchMap((action: IgEditTocAddResource) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       const doAdd: Observable<Action> =
@@ -367,7 +355,7 @@ export class IgEditEffects {
           this.store.select(selectIgDocument).pipe(take(1))).pipe(
             flatMap(([response, ig]) => {
               return [
-                new TurnOffLoader(),
+                new fromDAM.TurnOffLoader(),
                 new LoadPayloadData({
                   ...ig,
                   conformanceProfileRegistry: response.data.ig.conformanceProfileRegistry,
@@ -383,7 +371,7 @@ export class IgEditEffects {
             }),
             catchError((error: HttpErrorResponse) => {
               return of(
-                new TurnOffLoader(),
+                new fromDAM.TurnOffLoader(),
                 new AddResourceFailure(error),
               );
             }),
@@ -396,7 +384,7 @@ export class IgEditEffects {
   CopyResourceSuccess = this.actions$.pipe(
     ofType(IgEditActionTypes.ImportResourceFromFile),
     switchMap((action: ImportResourceFromFile) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       const doAdd: Observable<Action> =
@@ -406,14 +394,14 @@ export class IgEditEffects {
           .pipe(
             flatMap(([response, ig]) => {
               return [
-                new TurnOffLoader(),
+                new fromDAM.TurnOffLoader(),
                 ...this.igService.insertRepositoryCopyResource(response.data.reg, response.data.display, ig),
                 new ImportResourceFromFileSuccess(response.data),
               ];
             }),
             catchError((error: HttpErrorResponse) => {
               return of(
-                new TurnOffLoader(),
+                new fromDAM.TurnOffLoader(),
                 new ImportResourceFromFileFailure(error),
               );
             }),
@@ -426,7 +414,7 @@ export class IgEditEffects {
   IgCopyResource$ = this.actions$.pipe(
     ofType(IgEditActionTypes.CopyResource),
     switchMap((action: CopyResource) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       const doAdd: Observable<Action> =
@@ -435,14 +423,14 @@ export class IgEditEffects {
           this.store.select(selectIgDocument).pipe(take(1))).pipe(
             flatMap(([response, ig]) => {
               return [
-                new TurnOffLoader(),
+                new fromDAM.TurnOffLoader(),
                 ...this.igService.insertRepositoryCopyResource(response.data.reg, response.data.display, ig),
                 new CopyResourceSuccess(response.data),
               ];
             }),
             catchError((error: HttpErrorResponse) => {
               return of(
-                new TurnOffLoader(),
+                new fromDAM.TurnOffLoader(),
                 new CopyResourceFailure(error),
               );
             }),
@@ -455,7 +443,7 @@ export class IgEditEffects {
   igDeleteResource = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteResource),
     switchMap((action: DeleteResource) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return combineLatest(
@@ -464,14 +452,14 @@ export class IgEditEffects {
           take(1),
           flatMap(([response, ig]) => {
             return [
-              new TurnOffLoader(),
+              new fromDAM.TurnOffLoader(),
               ...this.igService.deleteOneFromRepository(action.payload.element, ig),
               new DeleteResourceSuccess(action.payload.element),
             ];
           }),
           catchError((error: HttpErrorResponse) => {
             return of(
-              new TurnOffLoader(),
+              new fromDAM.TurnOffLoader(),
               new DeleteResourceFailure(error),
             );
           }),
@@ -483,7 +471,7 @@ export class IgEditEffects {
   igCreateCoConstraintGroup = this.actions$.pipe(
     ofType(IgEditActionTypes.CreateCoConstraintGroup),
     switchMap((action: CreateCoConstraintGroup) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return combineLatest(
@@ -492,14 +480,14 @@ export class IgEditEffects {
           take(1),
           flatMap(([response, ig]) => {
             return [
-              new TurnOffLoader(),
+              new fromDAM.TurnOffLoader(),
               this.igService.insertRepositoryCopyResource(response.data.registry, response.data.display, ig),
               new CreateCoConstraintGroupSuccess(response.data),
             ];
           }),
           catchError((error: HttpErrorResponse) => {
             return of(
-              new TurnOffLoader(),
+              new fromDAM.TurnOffLoader(),
               new CreateCoConstraintGroupFailure(error),
             );
           }),
@@ -527,23 +515,23 @@ export class IgEditEffects {
   displayDelta$ = this.actions$.pipe(
     ofType(IgEditActionTypes.ToggleDelta),
     switchMap((action: ToggleDelta) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return this.igService.getDisplay(action.igId, action.delta).pipe(
         flatMap((igInfo: IGDisplayInfo) => {
           return [
             this.igService.loadRepositoryFromIgDisplayInfo(igInfo),
-            new fromDam.SetValue({
+            new fromDAM.SetValue({
               delta: action.delta,
             }),
             new ToggleDeltaSuccess(igInfo, action.delta),
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
           ];
         }),
         catchError((error: HttpErrorResponse) => {
           return of(
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new ToggleDeltaFailure(error),
           );
         }),
@@ -575,7 +563,7 @@ export class IgEditEffects {
               [IgEditActionTypes.TableOfContentSaveFailure]: {
                 do: (tocSaveFailure: TableOfContentSaveFailure) => {
                   return of(
-                    new TurnOffLoader(),
+                    new fromDAM.TurnOffLoader(),
                     this.message.userMessageToAction(new UserMessage(MessageType.FAILED, 'Could not add resources due to failure to save table of content')),
                   );
                 },
@@ -592,12 +580,13 @@ export class IgEditEffects {
   }
 
   constructor(
-    private actions$: Actions<IgEditActions>,
+    actions$: Actions<IgEditActions>,
     private igService: IgService,
     private store: Store<any>,
     private message: MessageService,
     private resourceService: ResourceService,
   ) {
+    super(IG_EDIT_WIDGET_ID, actions$);
   }
 
 }

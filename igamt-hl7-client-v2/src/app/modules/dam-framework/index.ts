@@ -1,6 +1,6 @@
-export * from './models/state/state';
-export * from './models/state/repository';
-export * from './models/state/workspace';
+export * from './models/data/state';
+export * from './models/data/repository';
+export * from './models/data/workspace';
 
 export * from './components/dam-editor-outlet/dam-editor-outlet.component';
 export * from './components/dam-layout/dam-layout.component';

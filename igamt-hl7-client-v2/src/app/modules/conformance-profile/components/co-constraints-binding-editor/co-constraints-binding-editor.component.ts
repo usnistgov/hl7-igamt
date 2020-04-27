@@ -14,7 +14,7 @@ import { selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.
 import { CoConstraintBindingDialogComponent, IBindingDialogResult } from '../../../co-constraints/components/co-constraint-binding-dialog/co-constraint-binding-dialog.component';
 import { CoConstraintEntityService } from '../../../co-constraints/services/co-constraint-entity.service';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import { MessageService } from '../../../core/services/message.service';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { ICoConstraintBindingContext, ICoConstraintBindingSegment } from '../../../shared/models/co-constraint.interface';
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';

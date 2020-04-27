@@ -1,7 +1,7 @@
-import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {Message} from '../../core/models/message/message.class';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { Message } from '../../dam-framework/models/messages/message.class';
 import {
   DocumentationScope,
   DocumentationType,
@@ -14,23 +14,23 @@ import {
 })
 export class DocumentationService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getDocumentation(): Observable<IDocumentationWrapper > {
+  getDocumentation(): Observable<IDocumentationWrapper> {
     const wrapper: IDocumentationWrapper = {};
-    wrapper.userguides = [{type: DocumentationType.USERGUIDE, description: 'eee', label: 'label', id: '1', scope: DocumentationScope.GLOBAL},
-      {type: DocumentationType.USERGUIDE, description: 'eee', label: 'label2', id: '2', scope: DocumentationScope.GLOBAL}];
+    wrapper.userguides = [{ type: DocumentationType.USERGUIDE, description: 'eee', label: 'label', id: '1', scope: DocumentationScope.GLOBAL },
+    { type: DocumentationType.USERGUIDE, description: 'eee', label: 'label2', id: '2', scope: DocumentationScope.GLOBAL }];
     return of(wrapper);
   }
 
   findSectionByTypeAndName(id: string, type: string, docs: IDocumentationWrapper): IDocumentation {
 
     if (type === DocumentationType.USERGUIDE.toString()) {
-      return docs.userguides.find((x: IDocumentation ) => id === x.id);
+      return docs.userguides.find((x: IDocumentation) => id === x.id);
     } else if (type === DocumentationType.IMPLEMENTATIONDECISION.toString()) {
-      return docs.implementationDecesions.find((x: IDocumentation ) => id === x.id);
+      return docs.implementationDecesions.find((x: IDocumentation) => id === x.id);
     } else if (type === DocumentationType.RELEASENOTE.toString()) {
-      return docs.releaseNotes.find((x: IDocumentation ) => id === x.label);
+      return docs.releaseNotes.find((x: IDocumentation) => id === x.label);
     }
   }
 
@@ -43,12 +43,12 @@ export class DocumentationService {
   }
 
   save(documentation: IDocumentation): Observable<IDocumentation> {
-    return this.http.post<IDocumentation>( 'api/documentations/save', documentation);
+    return this.http.post<IDocumentation>('api/documentations/save', documentation);
   }
   delete(id: string, list: IDocumentation[]): Observable<IDocumentation[]> {
-    return this.http.post<IDocumentation[]>( '/api/documentations/delete/' + id, list);
+    return this.http.post<IDocumentation[]>('/api/documentations/delete/' + id, list);
   }
   add(documentationType: DocumentationType, index: number): Observable<IDocumentation> {
-    return this.http.post<IDocumentation>( 'api/documentations/add/', {documentationType, index});
+    return this.http.post<IDocumentation>('api/documentations/add/', { documentationType, index });
   }
 }

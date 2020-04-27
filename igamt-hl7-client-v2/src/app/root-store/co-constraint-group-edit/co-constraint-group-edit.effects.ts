@@ -4,19 +4,20 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, concatMap, filter, flatMap, map, take } from 'rxjs/operators';
-import * as fromDamActions from 'src/app/modules/dam-framework/store/dam.actions';
+import * as fromDamActions from 'src/app/modules/dam-framework/store/data/dam.actions';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { CoConstraintGroupService } from '../../modules/co-constraints/services/co-constraint-group.service';
-import { MessageService } from '../../modules/core/services/message.service';
-import { SetValue } from '../../modules/dam-framework/store/dam.actions';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { SegmentService } from '../../modules/segment/services/segment.service';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.interface';
 import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
 import { IgEditActionTypes, LoadResourceReferences } from '../ig/ig-edit/ig-edit.actions';
-import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import { CoConstraintGroupEditActions, CoConstraintGroupEditActionTypes, LoadCoConstraintGroup, LoadCoConstraintGroupFailure, LoadCoConstraintGroupSuccess, OpenCoConstraintGroupEditor } from './co-constraint-group-edit.actions';
+
 @Injectable()
 export class CoConstraintGroupEditEffects {
 
@@ -24,19 +25,19 @@ export class CoConstraintGroupEditEffects {
   loadCoConstraintGroup$ = this.actions$.pipe(
     ofType(CoConstraintGroupEditActionTypes.LoadCoConstraintGroup),
     concatMap((action: LoadCoConstraintGroup) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return this.ccService.getById(action.id).pipe(
         flatMap((ccGroup: ICoConstraintGroup) => {
           return [
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new LoadCoConstraintGroupSuccess(ccGroup),
           ];
         }),
         catchError((error: HttpErrorResponse) => {
           return of(
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new LoadCoConstraintGroupFailure(error),
           );
         }),

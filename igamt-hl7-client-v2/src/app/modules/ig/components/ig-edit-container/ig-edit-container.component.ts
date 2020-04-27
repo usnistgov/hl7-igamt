@@ -1,14 +1,15 @@
-import { Component, forwardRef, OnDestroy, OnInit } from '@angular/core';
+import { Component, forwardRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { ClearIgEdit } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { DamWidgetComponent } from '../../../dam-framework/components/dam-widget/dam-widget.component';
-import { IWorkspaceActive } from '../../../dam-framework/models/state/workspace';
+import { IWorkspaceActive } from '../../../dam-framework/models/data/workspace';
 import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.component';
+
+export const IG_EDIT_WIDGET_ID = 'IG-EDIT-WIDGET';
 
 @Component({
   selector: 'app-ig-edit-container',
@@ -18,13 +19,13 @@ import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.componen
     { provide: DamWidgetComponent, useExisting: forwardRef(() => IgEditContainerComponent) },
   ],
 })
-export class IgEditContainerComponent extends DamWidgetComponent implements OnInit, OnDestroy {
+export class IgEditContainerComponent extends DamWidgetComponent {
 
   titleBar$: Observable<ITitleBarMetadata>;
   activeWorkspace: Observable<IWorkspaceActive>;
 
   constructor(protected store: Store<any>, dialog: MatDialog) {
-    super(store, dialog);
+    super(IG_EDIT_WIDGET_ID, store, dialog);
     this.titleBar$ = this.store.select(fromIgEdit.selectTitleBar);
     this.activeWorkspace = store.select(fromIgamtSelectors.selectWorkspaceActive);
   }
@@ -32,12 +33,4 @@ export class IgEditContainerComponent extends DamWidgetComponent implements OnIn
   containsUnsavedChanges$(): Observable<boolean> {
     return this.store.select(fromIgDocumentEdit.selectWorkspaceOrTableOfContentChanged);
   }
-
-  ngOnDestroy() {
-    this.store.dispatch(new ClearIgEdit());
-  }
-
-  ngOnInit() {
-  }
-
 }

@@ -7,6 +7,8 @@ import { catchError, concatMap, flatMap, map, take, withLatestFrom } from 'rxjs/
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
 import { validateConvention } from '../../../shared/functions/convention-factory';
 import { validateUnity } from '../../../shared/functions/unicity-factory';
@@ -15,8 +17,6 @@ import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { IResource } from '../../../shared/models/resource.interface';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
 import { FroalaService } from '../../../shared/services/froala.service';
-import { Message } from '../../models/message/message.class';
-import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
 export abstract class ResourceMetadataEditorComponent extends AbstractEditorComponent implements OnInit {

@@ -57,26 +57,28 @@ export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    const move$ = fromEvent(document, 'mousemove');
-    const down$ = fromEvent(this.resize.nativeElement, 'mousedown');
-    const up$ = fromEvent(document, 'mouseup');
-    if (!this.resizeTocSubscription || this.resizeTocSubscription.closed) {
-      this.resizeTocSubscription = move$.pipe(
-        skipUntil(down$),
-        filter(() => !this.collapsed),
-        tap((event: MouseEvent) => {
-          this.dragging = true;
-          this.positionX = event.clientX + 'px';
+    if (this.resize) {
+      const move$ = fromEvent(document, 'mousemove');
+      const down$ = fromEvent(this.resize.nativeElement, 'mousedown');
+      const up$ = fromEvent(document, 'mouseup');
+      if (!this.resizeTocSubscription || this.resizeTocSubscription.closed) {
+        this.resizeTocSubscription = move$.pipe(
+          skipUntil(down$),
+          filter(() => !this.collapsed),
+          tap((event: MouseEvent) => {
+            this.dragging = true;
+            this.positionX = event.clientX + 'px';
+          }),
+          takeUntil(up$),
+          repeat(),
+        ).subscribe();
+      }
+      up$.pipe(
+        tap(() => {
+          this.dragging = false;
         }),
-        takeUntil(up$),
-        repeat(),
       ).subscribe();
     }
-    up$.pipe(
-      tap(() => {
-        this.dragging = false;
-      }),
-    ).subscribe();
   }
 
   ngOnDestroy() {

@@ -6,9 +6,9 @@ import { Store } from '@ngrx/store';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import { selectRouteParams } from '../../../root-store/index';
-import { TurnOffLoader, TurnOnLoader } from '../../../root-store/loader/loader.actions';
-import { IEditorMetadata } from '../models/state/workspace';
-import { DamActionTypes, OpenEditor, OpenEditorFailure } from '../store/dam.actions';
+import { IEditorMetadata } from '../models/data/workspace';
+import { DamActionTypes, OpenEditor, OpenEditorFailure } from '../store/data/dam.actions';
+import { TurnOffLoader, TurnOnLoader } from '../store/loader/loader.actions';
 
 @Injectable()
 export class EditorActivateGuard implements CanActivate {
@@ -28,13 +28,14 @@ export class EditorActivateGuard implements CanActivate {
     const elementId: string = route.data['idKey'];
     const EditorAction: CoreType<Action> = route.data['action'];
 
+    console.log('EDITOR CAN ACTIVATE ' + editorMetadata.id);
+
     if (!editorMetadata || !elementId) {
       console.error('Editor route must have data attributes editorMetadata and idKey declared');
       return of(false);
     }
 
     // Get Action to dispatch for EditorID
-
     if (!EditorAction) {
       console.error('Editor route does not have a mapped action');
       return of(false);

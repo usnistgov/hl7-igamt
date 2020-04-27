@@ -1,9 +1,9 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Store} from '@ngrx/store';
-import {combineLatest, Observable} from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { combineLatest, Observable } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import {
   DeleteIgListItemRequest,
@@ -14,17 +14,15 @@ import {
 } from 'src/app/root-store/ig/ig-list/ig-list.actions';
 import * as fromIgList from 'src/app/root-store/ig/ig-list/ig-list.index';
 import * as fromRoot from 'src/app/root-store/index';
-import {ClearIgList} from '../../../../root-store/ig/ig-list/ig-list.actions';
-import {ClearAll} from '../../../../root-store/page-messages/page-messages.actions';
-import {DeriveDialogComponent} from '../../../shared/components/derive-dialog/derive-dialog.component';
-import {CloneModeEnum} from '../../../shared/constants/clone-mode.enum';
-import {Type} from '../../../shared/constants/type.enum';
-import {IgListItem} from '../../models/ig/ig-list-item.class';
-import {IgService} from '../../services/ig.service';
-import {Message} from './../../../core/models/message/message.class';
-import {MessageService} from './../../../core/services/message.service';
-import {ConfirmDialogComponent} from './../../../shared/components/confirm-dialog/confirm-dialog.component';
-import {IgListItemControl} from './../ig-list-item-card/ig-list-item-card.component';
+import { ClearIgList } from '../../../../root-store/ig/ig-list/ig-list.actions';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
+import { ClearAll } from '../../../dam-framework/store/messages/messages.actions';
+import { CloneModeEnum } from '../../../shared/constants/clone-mode.enum';
+import { IgListItem } from '../../models/ig/ig-list-item.class';
+import { IgService } from '../../services/ig.service';
+import { ConfirmDialogComponent } from './../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { IgListItemControl } from './../ig-list-item-card/ig-list-item-card.component';
 
 @Component({
   selector: 'app-ig-list-container',
@@ -168,8 +166,8 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   );
                 },
                 disabled: (item: IgListItem): boolean => {
-                    return !admin || item.type === 'PUBLISHED';
-                  },
+                  return !admin || item.type === 'PUBLISHED';
+                },
                 hide: (item: IgListItem): boolean => {
                   return item.type === 'PUBLISHED';
                 },

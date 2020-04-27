@@ -1,4 +1,4 @@
-import { IEditorMetadata } from '../../dam-framework/models/state/workspace';
+import { IEditorMetadata } from '../../dam-framework/models/data/workspace';
 import { Type } from '../constants/type.enum';
 
 export interface IHL7EditorMetadata extends IEditorMetadata {

@@ -1,4 +1,4 @@
-import { IWorkspaceActive } from '../../dam-framework/models/state/workspace';
+import { IWorkspaceActive } from '../../dam-framework/models/data/workspace';
 import { IDisplayElement } from './display-element.interface';
 import { IHL7EditorMetadata } from './editor.enum';
 

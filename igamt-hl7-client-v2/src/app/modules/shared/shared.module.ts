@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, MatRadioModule, MatSelectModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
-import { NgbAlert, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
 import { ToastyModule } from 'ng2-toasty';
@@ -22,11 +22,9 @@ import {
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
-import { AlertsContainerComponent } from '../core/components/alerts-container/alerts-container.component';
-import { MessageService } from '../core/services/message.service';
+import { DamLoaderModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { AddCoConstraintGroupComponent } from './components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
-import { AlertsComponent } from './components/alerts/alerts.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
 import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
@@ -89,7 +87,6 @@ import { NamingDuplicationDirective } from './directives/naming-duplication.dire
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
 import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
-import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
 
@@ -97,7 +94,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
   declarations: [
     LoginFormComponent,
     RegisterFormComponent,
-    AlertsComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
     ScopeBadgeComponent,
@@ -152,7 +148,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DeltaColumnComponent,
     BindingSelectorComponent,
     ExportToolComponent,
-    AlertsContainerComponent,
     DynamicMappingComponent,
     DeriveDialogComponent,
     AddCoConstraintGroupComponent,
@@ -190,6 +185,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ContextMenuModule.forRoot({
       useBootstrap4: true,
     }),
+    DamMessagesModule,
+    DamLoaderModule,
     RadioButtonModule,
     AccordionModule,
     InputSwitchModule,
@@ -220,16 +217,15 @@ import { MinNumberDirective } from './validators/min-number.directive';
     TooltipModule,
     NgbModule,
     InputSwitchModule,
-    NgbAlert,
     CardModule,
     AccordionModule,
     CheckboxModule,
+    DamMessagesModule,
     PrimeNgDragDrop,
     ReactiveFormsModule,
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
     FileSelectInputComponent,
-    AlertsComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
     ScopeBadgeComponent,
@@ -292,7 +288,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DeltaColumnComponent,
     BindingSelectorComponent,
     ExportToolComponent,
-    AlertsContainerComponent,
     DynamicMappingComponent,
     AddCoConstraintGroupComponent,
     ResourceDropdownComponent,
@@ -306,14 +301,7 @@ export class SharedModule {
     return {
       ngModule: SharedModule,
       providers: [
-        MessageService, ConfigService,
-        {
-          provide: DEFAULT_MESSAGE_OPTION,
-          useValue: {
-            closable: true,
-            timeout: 2000,
-          },
-        },
+        ConfigService,
       ],
     };
   }

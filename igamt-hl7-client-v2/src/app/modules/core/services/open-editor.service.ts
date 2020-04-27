@@ -6,6 +6,8 @@ import { concatMap, flatMap, switchMap, take } from 'rxjs/operators';
 import { OpenEditor, OpenEditorBase, OpenEditorFailure } from 'src/app/modules/dam-framework/store/index';
 import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectIgId } from '../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { MessageType, UserMessage } from '../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../dam-framework/services/message.service';
 import { Type } from '../../shared/constants/type.enum';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
@@ -15,8 +17,6 @@ import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IResource } from '../../shared/models/resource.interface';
 import { RxjsStoreHelperService } from '../../shared/services/rxjs-store-helper.service';
 import { IResourceMetadata } from '../components/resource-metadata-editor/resource-metadata-editor.component';
-import { MessageType, UserMessage } from '../models/message/message.class';
-import { MessageService } from './message.service';
 
 @Injectable({
   providedIn: 'root',

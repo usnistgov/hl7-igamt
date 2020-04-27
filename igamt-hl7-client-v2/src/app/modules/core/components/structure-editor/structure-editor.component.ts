@@ -12,6 +12,8 @@ import { LoadResourceReferences, LoadSelectedResource } from '../../../../root-s
 import {
   selectValueSetsNodes,
 } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
@@ -23,8 +25,6 @@ import { IResource } from '../../../shared/models/resource.interface';
 import { IChange } from '../../../shared/models/save-change';
 import { IBindingContext } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
-import { Message } from '../../models/message/message.class';
-import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
 export type BindingLegend = Array<{

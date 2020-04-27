@@ -7,8 +7,8 @@ import { combineLatest, of } from 'rxjs';
 import { concatMap, map, take, tap } from 'rxjs/operators';
 import { AbstractEditorComponent } from '../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
-import { DamActionTypes, GlobalSave } from '../store/dam.actions';
-import { selectWorkspaceCurrentIsChanged, selectWorkspaceCurrentIsValid } from '../store/dam.selectors';
+import { DamActionTypes, GlobalSave } from '../store/data/dam.actions';
+import { selectWorkspaceCurrentIsChanged, selectWorkspaceCurrentIsValid } from '../store/data/dam.selectors';
 
 @Injectable()
 export class EditorDeactivateGuard implements CanDeactivate<AbstractEditorComponent> {
@@ -48,7 +48,8 @@ export class EditorDeactivateGuard implements CanDeactivate<AbstractEditorCompon
                   case DamActionTypes.EditorSaveSuccess:
                     component.onDeactivate();
                     return true;
-                  case DamActionTypes.EditorSaveFailure: return false;
+                  case DamActionTypes.EditorSaveFailure:
+                    return false;
                 }
               }),
             );

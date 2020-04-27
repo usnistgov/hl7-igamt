@@ -4,10 +4,10 @@ import { Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { UserMessage } from 'src/app/modules/core/models/message/message.class';
-import { TurnOffLoader, TurnOnLoader } from '../../../../root-store/loader/loader.actions';
-import { MessageType } from '../../../core/models/message/message.class';
-import { MessageService } from '../../../core/services/message.service';
+import { UserMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { MessageType } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { IExportConfiguration } from '../../models/default-export-configuration.interface';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
@@ -59,10 +59,10 @@ export class DefaultConfigurationComponent implements OnInit {
 
   useAsDefaultConfiguration(configuration: IExportConfigurationItemList) {
     this.exportConfigurationService.saveAsDefaultExportConfiguration(configuration).subscribe(
-      (x) =>  this.loadExportConfigurationList(),
+      (x) => this.loadExportConfigurationList(),
     );
 
-    }
+  }
 
   delete(configuration: IExportConfiguration) {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
@@ -75,7 +75,7 @@ export class DefaultConfigurationComponent implements OnInit {
     dialogRef.afterClosed().subscribe(
       (answer) => {
         if (answer) {
-          this.store.dispatch(new TurnOnLoader({ blockUI: true }));
+          this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: true }));
           this.exportConfigurationService.deleteExportConfiguration(configuration).subscribe(
             (response) => {
               this.loadExportConfigurationList();
@@ -87,10 +87,10 @@ export class DefaultConfigurationComponent implements OnInit {
             },
             (error) => {
               this.store.dispatch(this.messageService.actionFromError(error));
-              this.store.dispatch(new TurnOffLoader());
+              this.store.dispatch(new fromDAM.TurnOffLoader());
             },
             () => {
-              this.store.dispatch(new TurnOffLoader());
+              this.store.dispatch(new fromDAM.TurnOffLoader());
             },
           );
         }
@@ -100,7 +100,7 @@ export class DefaultConfigurationComponent implements OnInit {
 
   save(): Observable<boolean> {
     const success: Subject<boolean> = new Subject<boolean>();
-    this.store.dispatch(new TurnOnLoader({ blockUI: true }));
+    this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: true }));
     this.exportConfigurationService.saveExportConfiguration(this.currentConfiguration).subscribe(
       (response) => {
         this.loadExportConfigurationList();
@@ -111,12 +111,12 @@ export class DefaultConfigurationComponent implements OnInit {
       },
       (error) => {
         this.store.dispatch(this.messageService.actionFromError(error));
-        this.store.dispatch(new TurnOffLoader());
+        this.store.dispatch(new fromDAM.TurnOffLoader());
         success.next(false);
         success.complete();
       },
       () => {
-        this.store.dispatch(new TurnOffLoader());
+        this.store.dispatch(new fromDAM.TurnOffLoader());
         success.complete();
       },
     );
@@ -126,7 +126,7 @@ export class DefaultConfigurationComponent implements OnInit {
 
   open(id: string) {
     const fetchAndOpen = () => {
-      this.store.dispatch(new TurnOnLoader({ blockUI: true }));
+      this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: true }));
       this.exportConfigurationService.getExportConfigurationById(id).subscribe(
         (x) => {
           this.currentConfiguration = x;
@@ -135,10 +135,10 @@ export class DefaultConfigurationComponent implements OnInit {
         },
         (error) => {
           this.store.dispatch(this.messageService.actionFromError(error));
-          this.store.dispatch(new TurnOffLoader());
+          this.store.dispatch(new fromDAM.TurnOffLoader());
         },
         () => {
-          this.store.dispatch(new TurnOffLoader());
+          this.store.dispatch(new fromDAM.TurnOffLoader());
         },
       );
     };
@@ -157,7 +157,7 @@ export class DefaultConfigurationComponent implements OnInit {
   }
 
   create() {
-    this.store.dispatch(new TurnOnLoader({ blockUI: true }));
+    this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: true }));
     this.exportConfigurationService.createExportConfiguration().subscribe(
       (x) => {
         this.currentConfiguration = x;
@@ -167,10 +167,10 @@ export class DefaultConfigurationComponent implements OnInit {
       },
       (error) => {
         this.store.dispatch(this.messageService.actionFromError(error));
-        this.store.dispatch(new TurnOffLoader());
+        this.store.dispatch(new fromDAM.TurnOffLoader());
       },
       () => {
-        this.store.dispatch(new TurnOffLoader());
+        this.store.dispatch(new fromDAM.TurnOffLoader());
       },
     );
   }
@@ -181,7 +181,7 @@ export class DefaultConfigurationComponent implements OnInit {
 
   isDefault(item: IExportConfigurationItemList) {
     if (item.original) {
-      return this.configList.findIndex((x) => x.defaultConfig)  < 0;
+      return this.configList.findIndex((x) => x.defaultConfig) < 0;
     } else {
       return item.defaultConfig;
     }

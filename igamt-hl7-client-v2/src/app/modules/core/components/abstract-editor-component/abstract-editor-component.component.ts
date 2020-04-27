@@ -2,7 +2,7 @@ import { TemplateRef, ViewChild } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
-import { map, take, pluck } from 'rxjs/operators';
+import { map, pluck, take } from 'rxjs/operators';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { DamAbstractEditorComponent } from '../../../dam-framework/services/dam-editor.component';
 import { Scope } from '../../../shared/constants/scope.enum';

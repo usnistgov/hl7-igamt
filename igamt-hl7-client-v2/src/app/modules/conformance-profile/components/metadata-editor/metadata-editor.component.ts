@@ -10,8 +10,8 @@ import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.r
 import { IgEditResolverLoad } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { LoadConformanceProfile } from '../../../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import { Message } from '../../../core/models/message/message.class';
-import { MessageService } from '../../../core/services/message.service';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';

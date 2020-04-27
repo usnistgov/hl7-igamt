@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { from, Observable, throwError } from 'rxjs';
 import { map, mergeMap, take, toArray } from 'rxjs/operators';
-import { MessageType, UserMessage } from '../../core/models/message/message.class';
+import { MessageType, UserMessage } from '../../dam-framework/models/messages/message.class';
 import { Type } from '../constants/type.enum';
 import { IDocumentRef } from '../models/abstract-domain.interface';
 import { IRelationShip, IUsages } from '../models/cross-reference';

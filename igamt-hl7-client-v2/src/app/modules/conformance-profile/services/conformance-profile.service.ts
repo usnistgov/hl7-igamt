@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Message } from '../../core/models/message/message.class';
+import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
 import { ICPConformanceStatementList } from '../../shared/models/cs-list.interface';

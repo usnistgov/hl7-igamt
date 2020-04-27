@@ -8,8 +8,8 @@ import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadSegment } from '../../../../root-store/segment-edit/segment-edit.actions';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
-import { Message } from '../../../core/models/message/message.class';
-import { MessageService } from '../../../core/services/message.service';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { EditorID } from '../../../shared/models/editor.enum';

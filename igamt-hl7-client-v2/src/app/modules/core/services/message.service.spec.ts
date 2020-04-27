@@ -1,6 +1,6 @@
-import {TestBed} from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 
-import {MessageService} from './message.service';
+import { MessageService } from '../../dam-framework/services/message.service';
 
 describe('MessageService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

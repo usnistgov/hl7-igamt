@@ -1,6 +1,6 @@
 import { createSelector } from '@ngrx/store';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
-import { IWorkspace } from '../../modules/dam-framework/models/state/workspace';
+import { IWorkspace } from '../../modules/dam-framework/models/data/workspace';
 import { Scope } from '../../modules/shared/constants/scope.enum';
 import { IAbstractDomain, IDocumentRef, Status } from '../../modules/shared/models/abstract-domain.interface';
 import { IHL7WorkspaceActive } from '../../modules/shared/models/editor.class';

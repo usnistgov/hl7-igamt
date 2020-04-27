@@ -4,19 +4,19 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { DeltaService } from 'src/app/modules/shared/services/delta.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
-import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
-import { SetValue } from '../../modules/dam-framework/store/dam.actions';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { IUsages } from '../../modules/shared/models/cross-reference';
 import { IValueSet } from '../../modules/shared/models/value-set.interface';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
 import { ValueSetService } from '../../modules/value-set/service/value-set.service';
-import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import { OpenValueSetDeltaEditor } from './value-set-edit.actions';
 import {
   LoadValueSet,
@@ -37,7 +37,7 @@ export class ValueSetEditEffects {
   loadValueSetEdits$ = this.actions$.pipe(
     ofType(ValueSetEditActionTypes.LoadValueSet),
     concatMap((action: LoadValueSet) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
@@ -47,13 +47,13 @@ export class ValueSetEditEffects {
             take(1),
             flatMap((valueSet: IValueSet) => {
               return [
-                new TurnOffLoader(),
+                new fromDAM.TurnOffLoader(),
                 new LoadValueSetSuccess(valueSet),
               ];
             }),
             catchError((error: HttpErrorResponse) => {
               return of(
-                new TurnOffLoader(),
+                new fromDAM.TurnOffLoader(),
                 new LoadValueSetFailure(error),
               );
             }),

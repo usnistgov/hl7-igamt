@@ -5,12 +5,12 @@ import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { concatMap, flatMap, take } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { PropertyType } from '../../../shared/models/save-change';
 import { FroalaService } from '../../../shared/services/froala.service';
-import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
 export abstract class DefinitionEditorComponent extends AbstractEditorComponent implements OnInit, OnDestroy {

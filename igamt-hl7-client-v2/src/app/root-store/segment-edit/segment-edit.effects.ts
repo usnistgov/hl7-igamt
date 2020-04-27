@@ -5,20 +5,20 @@ import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import { OpenEditorBase } from 'src/app/modules/dam-framework/store/index';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
-import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
-import { SetValue } from '../../modules/dam-framework/store/dam.actions';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { SegmentService } from '../../modules/segment/services/segment.service';
 import { IUsages } from '../../modules/shared/models/cross-reference';
 import { IConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { ISegment } from '../../modules/shared/models/segment.interface';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import {
   LoadSegment,
   LoadSegmentFailure,
@@ -41,19 +41,19 @@ export class SegmentEditEffects {
   loadSegment$ = this.actions$.pipe(
     ofType(SegmentEditActionTypes.LoadSegment),
     concatMap((action: LoadSegment) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return this.segmentService.getById(action.id).pipe(
         flatMap((segment: ISegment) => {
           return [
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new LoadSegmentSuccess(segment),
           ];
         }),
         catchError((error: HttpErrorResponse) => {
           return of(
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new LoadSegmentFailure(error),
           );
         }),

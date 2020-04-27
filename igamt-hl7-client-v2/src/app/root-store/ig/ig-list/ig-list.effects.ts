@@ -1,13 +1,13 @@
-import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {of} from 'rxjs';
-import {catchError, concatMap, flatMap} from 'rxjs/operators';
-import {Message} from 'src/app/modules/core/models/message/message.class';
-import {MessageService} from 'src/app/modules/core/services/message.service';
-import {IgListService} from 'src/app/modules/ig/services/ig-list.service';
-import {RxjsStoreHelperService} from 'src/app/modules/shared/services/rxjs-store-helper.service';
-import {TurnOffLoader, TurnOnLoader} from 'src/app/root-store/loader/loader.actions';
+import { Injectable } from '@angular/core';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import { catchError, concatMap, flatMap } from 'rxjs/operators';
+import { Message } from 'src/app/modules/dam-framework/models/messages/message.class';
+import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { IgListService } from 'src/app/modules/ig/services/ig-list.service';
+import { RxjsStoreHelperService } from 'src/app/modules/shared/services/rxjs-store-helper.service';
 import {
   DeleteIgListItemRequest,
   DeleteIgListItemSuccess,
@@ -23,13 +23,13 @@ export class IgListEffects {
   loadIgList$ = this.actions$.pipe(
     ofType(IgListActionTypes.LoadIgList),
     concatMap((action: LoadIgList) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return this.igListService.fetchIgList(action.payload.type).pipe(
         flatMap((items) => {
           return [
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new UpdateIgList(items),
           ];
         }),
@@ -43,13 +43,13 @@ export class IgListEffects {
   deleteIg$ = this.actions$.pipe(
     ofType(IgListActionTypes.DeleteIgListItemRequest),
     concatMap((action: DeleteIgListItemRequest) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return this.igListService.deleteIg(action.id).pipe(
         flatMap((message: Message) => {
           return [
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new DeleteIgListItemSuccess(action.id),
             this.message.messageToAction(message),
           ];
@@ -72,7 +72,7 @@ export class IgListEffects {
 
   catchErrorOf(error: any) {
     return of(
-      new TurnOffLoader(),
+      new fromDAM.TurnOffLoader(),
       this.message.actionFromError(error),
     );
   }

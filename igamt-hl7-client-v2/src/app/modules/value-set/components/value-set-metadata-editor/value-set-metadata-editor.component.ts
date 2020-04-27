@@ -7,8 +7,8 @@ import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.r
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { LoadValueSet } from '../../../../root-store/value-set-edit/value-set-edit.actions';
 import { ResourceMetadataEditorComponent } from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
-import { Message } from '../../../core/models/message/message.class';
-import { MessageService } from '../../../core/services/message.service';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { FieldType } from '../../../shared/components/metadata-form/metadata-form.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { validateUnity } from '../../../shared/functions/unicity-factory';

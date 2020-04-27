@@ -4,7 +4,8 @@ import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
-import { LoadResourcesInRepostory } from '../../dam-framework/store/dam.actions';
+import { Message } from '../../dam-framework/models/messages/message.class';
+import { LoadResourcesInRepostory } from '../../dam-framework/store/data/dam.actions';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Type } from '../../shared/constants/type.enum';
@@ -19,7 +20,6 @@ import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
 import { IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse, ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../models/toc/toc-operation.class';
-import { Message } from './../../core/models/message/message.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 import { IgTOCNodeHelper } from './ig-toc-node-helper.service';
 

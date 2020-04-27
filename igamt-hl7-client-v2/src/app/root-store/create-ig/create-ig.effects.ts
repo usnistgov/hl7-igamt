@@ -1,16 +1,16 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Router} from '@angular/router';
-import {Actions, Effect, ofType} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {of} from 'rxjs';
-import {catchError, map, mergeMap} from 'rxjs/operators';
-import {Message} from '../../modules/core/models/message/message.class';
-import {MessageService} from '../../modules/core/services/message.service';
-import {MessageEventTreeNode} from '../../modules/ig/models/message-event/message-event.class';
-import {IgService} from '../../modules/ig/services/ig.service';
-import {RxjsStoreHelperService} from '../../modules/shared/services/rxjs-store-helper.service';
-import {TurnOnLoader} from '../loader/loader.actions';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import { catchError, map, mergeMap } from 'rxjs/operators';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { Message } from '../../modules/dam-framework/models/messages/message.class';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { MessageEventTreeNode } from '../../modules/ig/models/message-event/message-event.class';
+import { IgService } from '../../modules/ig/services/ig.service';
+import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
 import {
   CreateIg,
   CreateIgActions,
@@ -29,7 +29,7 @@ export class CreateIgEffects {
   loadMessagesEvents$ = this.actions$.pipe(
     ofType(CreateIgActionTypes.LoadMessageEvents),
     mergeMap((action: LoadMessageEvents) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: false,
       }));
       return this.igService.getMessagesByVersion(action.payload).pipe(
@@ -49,7 +49,7 @@ export class CreateIgEffects {
   createIg$ = this.actions$.pipe(
     ofType(CreateIgActionTypes.CreateIg),
     mergeMap((action: CreateIg) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: false,
       }));
       return this.igService.createIntegrationProfile(action.payload).pipe(
@@ -93,7 +93,7 @@ export class CreateIgEffects {
   createIgSucess$ = this.actions$.pipe(
     ofType(CreateIgActionTypes.CreateIgSuccess),
     map((action: CreateIgSuccess) => {
-      this.router.navigate(['/ig/' + action.payload.data ]);
+      this.router.navigate(['/ig/' + action.payload.data]);
       return action;
     }),
     this.helper.finalize<CreateIgSuccess, Message<string>>({
@@ -113,7 +113,12 @@ export class CreateIgEffects {
     }),
   );
 
-  constructor(private actions$: Actions<CreateIgActions>, private igService: IgService,
-              private store: Store<any>, private message: MessageService, private helper: RxjsStoreHelperService, private router: Router) {
+  constructor(
+    private actions$: Actions<CreateIgActions>,
+    private igService: IgService,
+    private store: Store<any>,
+    private message: MessageService,
+    private helper: RxjsStoreHelperService,
+    private router: Router) {
   }
 }

@@ -5,11 +5,11 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap } from 'rxjs/operators';
-import { Message, UserMessage } from 'src/app/modules/core/models/message/message.class';
+import { Message, UserMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { RxjsStoreHelperService } from 'src/app/modules/shared/services/rxjs-store-helper.service';
-import { MessageType } from '../../modules/core/models/message/message.class';
-import { MessageService } from '../../modules/core/services/message.service';
-import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
+import { MessageType } from '../../modules/dam-framework/models/messages/message.class';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
 import { User } from './../../modules/core/models/user/user.class';
 import { AuthenticationService } from './../../modules/core/services/authentication.service';
 import {
@@ -37,7 +37,7 @@ export class AuthenticationEffects {
   login$ = this.actions$.pipe(
     ofType(AuthenticationActionTypes.LoginPageRequest),
     concatMap((action: LoginPageRequest) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: false,
       }));
       return this.authService.login(action.payload.username, action.payload.password).pipe(
@@ -88,7 +88,7 @@ export class AuthenticationEffects {
     flatMap(() => {
       this.router.navigate(['/home']);
       return [
-        new TurnOffLoader(),
+        new fromDAM.TurnOffLoader(),
         this.message.userMessageToAction(new UserMessage(MessageType.WARNING, 'Session timed out')),
         new UpdateAuthStatus({
           userInfo: null,
@@ -114,7 +114,7 @@ export class AuthenticationEffects {
   resetPasswordRequest$ = this.actions$.pipe(
     ofType(AuthenticationActionTypes.ResetPasswordRequest),
     concatMap((action: ResetPasswordRequest) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return this.authService.requestChangePassword(action.payload).pipe(
@@ -132,7 +132,7 @@ export class AuthenticationEffects {
   updatePasswordRequest$ = this.actions$.pipe(
     ofType(AuthenticationActionTypes.UpdatePasswordRequest),
     concatMap((action: UpdatePasswordRequest) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return this.authService.updatePassword(action.payload.token, action.payload.password).pipe(

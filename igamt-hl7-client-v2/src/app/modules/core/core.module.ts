@@ -6,11 +6,10 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { CardModule } from 'primeng/card';
 import { ProgressBarModule } from 'primeng/progressbar';
-import { NotificationEffects } from 'src/app/root-store/notification/notification.effects';
 import { RegistrationEffects } from '../../root-store/registration/registration.effects';
+import { DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { SharedModule } from '../shared/shared.module';
 import { AuthenticationEffects } from './../../root-store/authentication/authentication.effects';
-import { AlertsContainerComponent } from './components/alerts-container/alerts-container.component';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -45,8 +44,9 @@ import { AuthInterceptor } from './services/logout-interceptor.service';
     ProgressBarModule,
     StoreModule,
     MatProgressBarModule,
-    EffectsModule.forFeature([AuthenticationEffects, RegistrationEffects, NotificationEffects]),
+    EffectsModule.forFeature([AuthenticationEffects, RegistrationEffects]),
     SharedModule.forRoot(),
+    DamMessagesModule.forRoot(),
   ],
   providers: [
     NewPasswordResolver,
@@ -62,7 +62,6 @@ import { AuthInterceptor } from './services/logout-interceptor.service';
     SharedModule,
     ProgressBarModule,
     HomeComponent,
-    AlertsContainerComponent,
     ErrorPageComponent,
   ],
   entryComponents: [TimeoutLoginDialogComponent],

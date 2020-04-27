@@ -4,19 +4,19 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
-import * as fromDamActions from 'src/app/modules/dam-framework/store/dam.actions';
+import * as fromDamActions from 'src/app/modules/dam-framework/store/data/dam.actions';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IConformanceProfile } from 'src/app/modules/shared/models/conformance-profile.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { ConformanceProfileService } from '../../modules/conformance-profile/services/conformance-profile.service';
-import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
-import { SetValue } from '../../modules/dam-framework/store/dam.actions';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { ICPConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import {
   ConformanceProfileEditActions,
   ConformanceProfileEditActionTypes,
@@ -36,19 +36,19 @@ export class ConformanceProfileEditEffects {
   loadConformanceProfile$ = this.actions$.pipe(
     ofType(ConformanceProfileEditActionTypes.LoadConformanceProfile),
     concatMap((action: LoadConformanceProfile) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return this.conformanceProfileService.getById(action.id).pipe(
         flatMap((conformanceProfile: IConformanceProfile) => {
           return [
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new LoadConformanceProfileSuccess(conformanceProfile),
           ];
         }),
         catchError((error: HttpErrorResponse) => {
           return of(
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new LoadConformanceProfileFailure(error),
           );
         }),

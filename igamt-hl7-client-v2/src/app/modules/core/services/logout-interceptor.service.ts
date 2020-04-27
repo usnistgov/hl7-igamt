@@ -6,9 +6,9 @@ import { Observable, throwError } from 'rxjs';
 import { catchError, flatMap, take } from 'rxjs/operators';
 import { LoginFailure, LoginSuccess } from '../../../root-store/authentication/authentication.actions';
 import { selectIsLoggedIn } from '../../../root-store/authentication/authentication.reducer';
-import { AddMessage, ClearAll } from '../../../root-store/page-messages/page-messages.actions';
+import { MessageType, UserMessage } from '../../dam-framework/models/messages/message.class';
+import { AddMessage, ClearAll } from '../../dam-framework/store/messages/messages.actions';
 import { TimeoutLoginDialogComponent } from '../components/timeout-login-dialog/timeout-login-dialog.component';
-import { MessageType, UserMessage } from '../models/message/message.class';
 import { AuthenticationService } from './authentication.service';
 
 @Injectable()

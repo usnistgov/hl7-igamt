@@ -1,4 +1,4 @@
-import { Component, forwardRef, OnInit } from '@angular/core';
+import { Component, forwardRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -15,6 +15,8 @@ import { isUser, selectActiveTitleBar, selectLatestUpdate } from '../../../../ro
 import { DamWidgetComponent } from '../../../dam-framework/components/dam-widget/dam-widget.component';
 import { DocumentationType, IDocumentation } from '../../models/documentation.interface';
 
+export const DOC_WIDGET_ID = 'DOC-WIDGET-ID';
+
 @Component({
   selector: 'app-documentation-contrainer',
   templateUrl: './documentation-contrainer.component.html',
@@ -23,10 +25,9 @@ import { DocumentationType, IDocumentation } from '../../models/documentation.in
     { provide: DamWidgetComponent, useExisting: forwardRef(() => DocumentationContainerComponent) },
   ],
 })
-export class DocumentationContainerComponent extends DamWidgetComponent implements OnInit {
+export class DocumentationContainerComponent extends DamWidgetComponent {
 
   viewOnly$: Observable<boolean>;
-
   admin$: Observable<boolean>;
   editMode$: Observable<boolean>;
   activeTitleBar$: Observable<{ title: string, subtitle: string }>;
@@ -41,7 +42,7 @@ export class DocumentationContainerComponent extends DamWidgetComponent implemen
   hasActive$: Observable<boolean>;
 
   constructor(store: Store<any>, dialog: MatDialog) {
-    super(store, dialog);
+    super(DOC_WIDGET_ID, store, dialog);
     this.admin$ = this.store.select(selectIsAdmin);
     this.isUser$ = this.store.select(isUser);
     this.activeTitleBar$ = this.store.select(selectActiveTitleBar);
@@ -54,9 +55,6 @@ export class DocumentationContainerComponent extends DamWidgetComponent implemen
     this.releaseNotes$ = this.store.select(selectDocumentationByType, { type: DocumentationType.RELEASENOTE });
     this.userNotes$ = this.store.select(selectDocumentationByType, { type: DocumentationType.USERNOTES });
     this.glossary$ = this.store.select(selectDocumentationByType, { type: DocumentationType.GLOSSARY });
-  }
-
-  ngOnInit() {
   }
 
   edit(toggle: boolean) {

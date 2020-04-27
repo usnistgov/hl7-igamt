@@ -8,7 +8,7 @@ import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
 import { DefinitionEditorComponent } from '../../../core/components/definition-editor/definition-editor.component';
-import { MessageService } from '../../../core/services/message.service';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';

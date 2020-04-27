@@ -3,13 +3,14 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest } from 'rxjs';
 import { flatMap, map, switchMap, take } from 'rxjs/operators';
-import * as fromDamActions from 'src/app/modules/dam-framework/store/dam.actions';
+import * as fromDamActions from 'src/app/modules/dam-framework/store/data/dam.actions';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
-import { MessageType, UserMessage } from '../../modules/core/models/message/message.class';
-import { MessageService } from '../../modules/core/services/message.service';
+import { MessageType, UserMessage } from '../../modules/dam-framework/models/messages/message.class';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { DamWidgetEffect } from '../../modules/dam-framework/store/dam-widget-effect.class';
+import { DOC_WIDGET_ID } from '../../modules/documentation/components/documentation-container/documentation-contrainer.component';
 import { IDocumentation } from '../../modules/documentation/models/documentation.interface';
 import { DocumentationService } from '../../modules/documentation/service/documentation.service';
-import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import {
   AddDocument, AddDocumentationState, AddDocumentSuccess,
   DeleteDocument, DeleteDocumentationState,
@@ -31,7 +32,7 @@ function getUpdates(list: IDocumentation[]) {
 }
 
 @Injectable()
-export class DocumentationEffects {
+export class DocumentationEffects extends DamWidgetEffect {
 
   @Effect()
   toggleEdit$ = this.actions$.pipe(
@@ -49,7 +50,7 @@ export class DocumentationEffects {
         take(1),
         flatMap((doc: IDocumentation[]) => {
           return [
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new fromDAM.LoadPayloadData(documentationEntityAdapter.addAll(doc, documentationEntityAdapter.getInitialState())),
             new LoadDocumentationsSuccess(doc),
           ];
@@ -100,6 +101,7 @@ export class DocumentationEffects {
   toolbarSave$ = this.actions$.pipe(
     ofType(fromDamActions.DamActionTypes.GlobalSave),
     map((action: fromDamActions.GlobalSave) => {
+      console.log('DOCUMENTATION SAVE');
       return new fromDamActions.EditorSave();
     }),
   );
@@ -108,7 +110,7 @@ export class DocumentationEffects {
   updateDocumentations$ = this.actions$.pipe(
     ofType(DocumentationActionTypes.UpdateDocumentationList),
     switchMap((action: UpdateDocumentationList) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return combineLatest(
@@ -117,7 +119,7 @@ export class DocumentationEffects {
           take(1),
           flatMap(([doc, state]) => {
             return [
-              new TurnOffLoader(),
+              new fromDAM.TurnOffLoader(),
               new fromDAM.LoadPayloadData(documentationEntityAdapter.updateMany(getUpdates(action.list), state)),
               new ToggleEditMode(false),
               new UpdateDocumentationListSuccess(doc),
@@ -132,7 +134,7 @@ export class DocumentationEffects {
   delete = this.actions$.pipe(
     ofType(DocumentationActionTypes.DeleteDocument),
     switchMap((action: DeleteDocument) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return combineLatest(
@@ -142,7 +144,7 @@ export class DocumentationEffects {
           flatMap(([doc, state]) => {
             const documentation = documentationEntityAdapter.removeOne(action.id, documentationEntityAdapter.updateMany(getUpdates(action.list), state));
             return [
-              new TurnOffLoader(),
+              new fromDAM.TurnOffLoader(),
               new fromDAM.LoadPayloadData(documentation),
               new UpdateDocumentationListSuccess(doc),
               new DeleteDocumentationState(action.id),
@@ -158,7 +160,7 @@ export class DocumentationEffects {
   add = this.actions$.pipe(
     ofType(DocumentationActionTypes.AddDocument),
     switchMap((action: AddDocument) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return combineLatest(
@@ -167,7 +169,7 @@ export class DocumentationEffects {
           take(1),
           flatMap(([doc, state]) => {
             return [
-              new TurnOffLoader(),
+              new fromDAM.TurnOffLoader(),
               new fromDAM.LoadPayloadData(documentationEntityAdapter.upsertOne(doc, state)),
               new AddDocumentSuccess(doc),
             ];
@@ -182,7 +184,7 @@ export class DocumentationEffects {
     flatMap(
       (action: AddDocumentSuccess) => {
         return [
-          new TurnOffLoader(),
+          new fromDAM.TurnOffLoader(),
 
           new AddDocumentationState(action.documentation),
           new ToggleEditMode(true),
@@ -190,10 +192,11 @@ export class DocumentationEffects {
       }),
   );
   constructor(
-    private actions$: Actions<DocumentationsActions>,
+    actions$: Actions<DocumentationsActions>,
     private documentationService: DocumentationService,
     private store: Store<any>,
     private message: MessageService) {
+    super(DOC_WIDGET_ID, actions$);
   }
 
 }

@@ -5,25 +5,25 @@ import {
   LoadDocumentations,
   OpenDocumentationSection,
 } from '../../root-store/documentation/documentation.actions';
-import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
+import { DamWidgetRoute } from '../dam-framework/services/router-helpers.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
-import { DocumentationContainerComponent } from './components/documentation-container/documentation-contrainer.component';
+import { DOC_WIDGET_ID, DocumentationContainerComponent } from './components/documentation-container/documentation-contrainer.component';
 import { DocumentationContentComponent } from './components/documentation-content/documentation-content.component';
 
 const routes: Routes = [
   {
-    path: '', component: DocumentationContainerComponent,
-    data: {
-      routeParam: 'none',
+    ...DamWidgetRoute({
+      widgetId: DOC_WIDGET_ID,
       loadAction: LoadDocumentations,
       successAction: DocumentationActionTypes.LoadDocumentationsSuccess,
       failureAction: DocumentationActionTypes.LoadDocumentationsFailure,
       redirectTo: ['documentation', 'error'],
-    },
-    canActivate: [DataLoaderGuard],
+      component: DocumentationContainerComponent,
+    }),
+    path: '',
     children: [
       {
         path: 'users-guides/:id', component: DocumentationContentComponent,

@@ -4,15 +4,15 @@ import { IgEditActionTypes, IgEditResolverLoad, OpenIgMetadataEditorNode, OpenNa
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
+import { DamWidgetRoute } from '../dam-framework/services/router-helpers.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { AuthenticatedGuard } from './../core/services/auth-guard.guard';
 import { CreateIGComponent } from './components/create-ig/create-ig.component';
-import { IgEditContainerComponent } from './components/ig-edit-container/ig-edit-container.component';
+import { IG_EDIT_WIDGET_ID, IgEditContainerComponent } from './components/ig-edit-container/ig-edit-container.component';
 import { IgListContainerComponent } from './components/ig-list-container/ig-list-container.component';
 import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
-import { DataLoaderResolverService } from './services/data-loader-resolver.service';
 
 const routes: Routes = [
   {
@@ -30,16 +30,16 @@ const routes: Routes = [
     component: ErrorPageComponent,
   },
   {
-    path: ':igId',
-    component: IgEditContainerComponent,
-    data: {
+    ...DamWidgetRoute({
+      widgetId: IG_EDIT_WIDGET_ID,
       routeParam: 'igId',
       loadAction: IgEditResolverLoad,
       successAction: IgEditActionTypes.IgEditResolverLoadSuccess,
       failureAction: IgEditActionTypes.IgEditResolverLoadFailure,
       redirectTo: ['ig', 'error'],
-    },
-    canActivate: [DataLoaderResolverService],
+      component: IgEditContainerComponent,
+    }),
+    path: ':igId',
     children: [
       {
         path: '',

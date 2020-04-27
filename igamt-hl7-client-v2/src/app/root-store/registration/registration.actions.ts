@@ -1,8 +1,8 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Action} from '@ngrx/store';
-import {Message} from '../../modules/core/models/message/message.class';
-import {IRegistration} from '../../modules/core/models/user/registration.class';
-import {User} from '../../modules/core/models/user/user.class';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Action } from '@ngrx/store';
+import { IRegistration } from '../../modules/core/models/user/registration.class';
+import { User } from '../../modules/core/models/user/user.class';
+import { Message } from '../../modules/dam-framework/models/messages/message.class';
 
 export enum RegistrationActionTypes {
   RegistrationRequest = '[Registration Page] Registration Request',

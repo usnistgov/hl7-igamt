@@ -7,6 +7,8 @@ import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subscription
 import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
@@ -17,8 +19,6 @@ import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
 import { ConformanceStatementService } from '../../../shared/services/conformance-statement.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
-import { Message } from '../../models/message/message.class';
-import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
 export type ConformanceStatementPluck = (cs: IConformanceStatementList | ICPConformanceStatementList) => IConformanceStatementView;

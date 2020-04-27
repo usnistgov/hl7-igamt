@@ -10,7 +10,7 @@ import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.r
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import { MessageService } from '../../../core/services/message.service';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IgService } from '../../services/ig.service';

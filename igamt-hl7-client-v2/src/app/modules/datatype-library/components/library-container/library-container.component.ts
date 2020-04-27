@@ -1,4 +1,4 @@
-import { Component, forwardRef, OnInit } from '@angular/core';
+import { Component, forwardRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { DamWidgetComponent } from '../../../dam-framework/components/dam-widget/dam-widget.component';
@@ -11,13 +11,10 @@ import { DamWidgetComponent } from '../../../dam-framework/components/dam-widget
     { provide: DamWidgetComponent, useExisting: forwardRef(() => LibraryContainerComponent) },
   ],
 })
-export class LibraryContainerComponent extends DamWidgetComponent implements OnInit {
+export class LibraryContainerComponent extends DamWidgetComponent {
 
   constructor(store: Store<any>, dialog: MatDialog) {
-    super(store, dialog);
-  }
-
-  ngOnInit() {
+    super('LIB-ID', store, dialog);
   }
 
 }

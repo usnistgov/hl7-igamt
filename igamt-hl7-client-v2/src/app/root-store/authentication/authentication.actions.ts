@@ -1,8 +1,8 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Action} from '@ngrx/store';
-import {Message} from '../../modules/core/models/message/message.class';
-import {User} from './../../modules/core/models/user/user.class';
-import {IState} from './authentication.reducer';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Action } from '@ngrx/store';
+import { Message } from '../../modules/dam-framework/models/messages/message.class';
+import { User } from './../../modules/core/models/user/user.class';
+import { IState } from './authentication.reducer';
 
 export enum AuthenticationActionTypes {
   BootstrapCheckAuthStatus = '[Bootstrap Authentication] Check Authentication Status',

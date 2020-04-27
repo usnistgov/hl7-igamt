@@ -1,7 +1,7 @@
 import { createEntityAdapter, Dictionary, EntityState } from '@ngrx/entity';
 import { createSelector } from '@ngrx/store';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
-import { IWorkspace, IWorkspaceActive } from '../../modules/dam-framework/models/state/workspace';
+import { IWorkspace, IWorkspaceActive } from '../../modules/dam-framework/models/data/workspace';
 import {
   DocumentationType,
   IDocumentation,
@@ -17,6 +17,7 @@ export const initialState: IState = {
   placeholder: undefined,
 };
 
+export const featureName = 'documentation';
 export const documentationEntityAdapter = createEntityAdapter<IDocumentation>();
 export const {
   selectAll,

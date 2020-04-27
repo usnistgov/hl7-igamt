@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Store} from '@ngrx/store';
-import {LoginPageRequest} from 'src/app/root-store/authentication/authentication.actions';
-import {ClearAll} from 'src/app/root-store/page-messages/page-messages.actions';
-import {LoginRequest} from './../../../../root-store/authentication/authentication.actions';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { ClearAll } from 'src/app/modules/dam-framework/store/messages/messages.actions';
+import { LoginPageRequest } from 'src/app/root-store/authentication/authentication.actions';
+import { LoginRequest } from './../../../../root-store/authentication/authentication.actions';
 import * as fromAuth from './../../../../root-store/authentication/authentication.reducer';
 
 @Component({

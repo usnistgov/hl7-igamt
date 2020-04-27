@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Message } from '../../core/models/message/message.class';
+import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IStructureElementBinding } from '../../shared/models/binding.interface';
 import { IConformanceStatementList } from '../../shared/models/cs-list.interface';

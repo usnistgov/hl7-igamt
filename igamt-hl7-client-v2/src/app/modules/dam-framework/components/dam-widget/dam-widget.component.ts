@@ -1,26 +1,33 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { IDamDataModel } from '../../models/state/state';
+import { IDamDataModel } from '../../models/data/state';
 import { DamAbstractEditorComponent } from '../../services/dam-editor.component';
-import { CollapseSideBar, ExpandSideBar, ToggleFullScreen } from '../../store/dam.actions';
-import * as fromDAMF from '../../store/dam.actions';
-import * as fromDAMFSelector from '../../store/dam.selectors';
-import { selecIsSideBarCollaped, selectIsFullScreen } from '../../store/dam.selectors';
+import { CollapseSideBar, ExpandSideBar, ToggleFullScreen } from '../../store/data/dam.actions';
+import * as fromDAMF from '../../store/data/dam.actions';
+import * as fromDAMFSelector from '../../store/data/dam.selectors';
+import { selecIsSideBarCollaped, selectIsFullScreen, selectWidgetId } from '../../store/data/dam.selectors';
 
-export abstract class DamWidgetComponent implements OnInit, OnDestroy {
+export abstract class DamWidgetComponent {
 
   activeComponent: DamAbstractEditorComponent;
   valid$: Observable<boolean>;
   private hasChanges$: Observable<boolean>;
 
   constructor(
+    readonly widgetId: string,
     protected store: Store<IDamDataModel>,
     protected dialog: MatDialog) {
     this.valid$ = this.store.select(fromDAMFSelector.selectWorkspaceCurrentIsValid);
     this.hasChanges$ = this.store.select(fromDAMFSelector.selectWorkspaceCurrentIsChanged);
+  }
+
+  isActiveWidget$(): Observable<boolean> {
+    return this.store.select(selectWidgetId).pipe(
+      map((widgetId) => this.widgetId === widgetId),
+    );
   }
 
   isValid$(): Observable<boolean> {
@@ -72,7 +79,7 @@ export abstract class DamWidgetComponent implements OnInit, OnDestroy {
     this.store.dispatch(new fromDAMF.GlobalSave());
   }
 
-  activateComponent($event: Component) {
+  activateComponent($event) {
     if ($event instanceof DamAbstractEditorComponent) {
       this.activeComponent = $event;
       $event.registerSaveListener();
@@ -80,7 +87,7 @@ export abstract class DamWidgetComponent implements OnInit, OnDestroy {
     }
   }
 
-  deactivateComponent($event: Component) {
+  deactivateComponent($event) {
     if ($event instanceof DamAbstractEditorComponent) {
       this.activeComponent = undefined;
       $event.unregisterSaveListener();
@@ -92,12 +99,12 @@ export abstract class DamWidgetComponent implements OnInit, OnDestroy {
     return this.activeComponent ? this.activeComponent.controls : undefined;
   }
 
-  ngOnDestroy() {
-    // CLEAR DATA
+  // Execute When Widget Gets Closed
+  closeWidget() {
   }
 
-  ngOnInit() {
-    // CLEAR DATA
+  // Execute When Widget Gets Bootstrapped
+  bootstrapWidget() {
   }
 
 }

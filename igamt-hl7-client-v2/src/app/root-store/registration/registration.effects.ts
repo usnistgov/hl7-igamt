@@ -6,10 +6,10 @@ import { Action, Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import { User } from 'src/app/modules/core/models/user/user.class';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { RxjsStoreHelperService } from 'src/app/modules/shared/services/rxjs-store-helper.service';
-import { Message } from '../../modules/core/models/message/message.class';
 import { RegistrationService } from '../../modules/core/services/registration.service';
-import { TurnOnLoader } from '../loader/loader.actions';
+import { Message } from '../../modules/dam-framework/models/messages/message.class';
 import {
   RegistrationActionTypes,
   RegistrationFailure,
@@ -24,7 +24,7 @@ export class RegistrationEffects {
   registration$ = this.actions$.pipe(
     ofType(RegistrationActionTypes.RegistrationRequest),
     concatMap((action: RegistrationRequest) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: false,
       }));
       return this.registrationService.register(action.payload).pipe(

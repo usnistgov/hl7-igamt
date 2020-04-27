@@ -6,9 +6,8 @@ import { Store } from '@ngrx/store';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
-import { IgEditActionTypes } from '../../../root-store/ig/ig-edit/ig-edit.actions';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { selectRouteParams } from '../../../root-store/index';
-import { TurnOffLoader, TurnOnLoader } from '../../../root-store/loader/loader.actions';
 import { IHL7EditorMetadata } from '../../shared/models/editor.enum';
 
 @Injectable()
@@ -20,7 +19,7 @@ export class IgEditorActivateGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
     // Start Loading
-    this.store.dispatch(new TurnOnLoader({
+    this.store.dispatch(new fromDAM.TurnOnLoader({
       blockUI: true,
     }));
 
@@ -61,7 +60,7 @@ export class IgEditorActivateGuard implements CanActivate {
               }
             }),
             tap(() => {
-              this.store.dispatch(new TurnOffLoader());
+              this.store.dispatch(new fromDAM.TurnOffLoader());
             }),
           ).subscribe();
 

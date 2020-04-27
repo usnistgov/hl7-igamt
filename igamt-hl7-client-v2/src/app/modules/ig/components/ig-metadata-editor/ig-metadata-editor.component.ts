@@ -10,7 +10,7 @@ import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectIgVersions } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import { MessageService } from '../../../core/services/message.service';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
 import { Status } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';

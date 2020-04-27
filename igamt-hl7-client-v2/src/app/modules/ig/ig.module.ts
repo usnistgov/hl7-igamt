@@ -47,7 +47,7 @@ import { IgService } from './services/ig.service';
     ExportGvtComponent,
   ],
   imports: [
-    DamFrameworkModule,
+    DamFrameworkModule.forRoot(),
     IgRoutingModule,
     EffectsModule.forFeature([IgListEffects, CreateIgEffects, IgEditEffects]),
     StoreModule.forFeature(fromIg.featureName, fromIg.reducers),
