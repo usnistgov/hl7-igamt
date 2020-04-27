@@ -2,13 +2,13 @@
 
 <!--     <xsl:template match="ValueSetBindingList">
  -->   
-     <xsl:template name="ValueSetBindingList">
+     <xsl:template name="InternalSingleCode">
  
-         <xsl:if test="count(Binding/StructureElementBindings/StructureElementBinding/ValuesetBinding) &gt; 0">
+         <xsl:if test="count(Binding/StructureElementBindings/StructureElementBinding/InternalSingleCode) &gt; 0">
             <xsl:element name="br"/>
             <xsl:element name="span">
                 <xsl:element name="b">
-                    <xsl:text>Value Set Bindings</xsl:text>
+                    <xsl:text>Single Code Valueset Bindings</xsl:text>
                 </xsl:element>
             </xsl:element>
             <xsl:element name="table">
@@ -20,11 +20,6 @@
                         <xsl:text>16%</xsl:text>
                     </xsl:attribute>
                     
-                </xsl:element>
-                <xsl:element name="col">
-                    <xsl:attribute name="width">
-                        <xsl:text>16%</xsl:text>
-                    </xsl:attribute>
                 </xsl:element>
                 <xsl:element name="col">
                     <xsl:attribute name="width">
@@ -59,17 +54,17 @@
                         <xsl:element name="th">
                             <xsl:text>Location</xsl:text>
                         </xsl:element>
-                        <xsl:element name="th">
+<!--                         <xsl:element name="th">
                             <xsl:text>Value Set ID</xsl:text>
-                        </xsl:element>
+                        </xsl:element> -->
        <!--                  <xsl:element name="th">
                             <xsl:text>Value Set Name</xsl:text>
                         </xsl:element> -->
                         <xsl:element name="th">
-                            <xsl:text>Binding Strength</xsl:text>
+                            <xsl:text>Code Value</xsl:text>
                         </xsl:element>
                         <xsl:element name="th">
-                            <xsl:text>Binding Location</xsl:text>
+                            <xsl:text>Code System</xsl:text>
                         </xsl:element>
   <!--                       <xsl:element name="th">
                             <xsl:text>Single Code Value</xsl:text>
@@ -81,29 +76,29 @@
                 </xsl:element>
                 <xsl:element name="tbody">
                     <!-- <xsl:for-each select="Binding/StructureElementBindings/StructureElementBinding/ValuesetBinding"> -->
-                                        <xsl:for-each select=".//ValuesetBinding">
+                                        <xsl:for-each select=".//InternalSingleCode">
                     
-                         <xsl:sort lang="langage-code" data-type="number" select="../@Position1"  order="ascending" />
+                          <xsl:sort lang="langage-code" data-type="number" select="../@elementId"  order="ascending" /> 
                     
                         <xsl:element name="tr">
                             <xsl:attribute name="class">
                                 <xsl:text>contentTr</xsl:text>
                             </xsl:attribute>
                             <xsl:element name="td">
-                                <xsl:value-of select="@Position2"/>
+                                <xsl:value-of select="@internalSingleCodeLocation"/>
                             </xsl:element>
                             <xsl:element name="td">
-                                <xsl:value-of select="@name"/>
+                                <xsl:value-of select="@internalSingleCodeId"/>
                             </xsl:element>
                             <xsl:element name="td">
-                                <xsl:value-of select="@strength"/>
+                                <xsl:value-of select="@internalSingleCodeSystem"/>
                             </xsl:element>
 <!--                             <xsl:choose>
  --><!--                                 <xsl:when test="@Type='VS'">
  --> <!--                                    <xsl:element name="td">
                                         <xsl:value-of select="@bindingStrength"/>
                                     </xsl:element> -->
-                                    <xsl:element name="td">
+                          <!--           <xsl:element name="td">
                                         <xsl:choose>
                                             <xsl:when test="normalize-space(@locations) = ''">
                                                 <xsl:attribute name="class"><xsl:text>greyCell</xsl:text></xsl:attribute>
@@ -112,7 +107,7 @@
                                                 <xsl:value-of select="@locations"/>
                                             </xsl:otherwise>
                                         </xsl:choose>
-                                    </xsl:element>
+                                    </xsl:element> -->
                        <!--              <xsl:element name="td">
                                         <xsl:attribute name="class"><xsl:text>greyCell</xsl:text></xsl:attribute>
                                     </xsl:element>

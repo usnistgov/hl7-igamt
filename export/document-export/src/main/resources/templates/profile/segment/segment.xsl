@@ -8,6 +8,7 @@
 	<xsl:import href="/templates/profile/constraint.xsl" />
 	<xsl:import href="/templates/profile/segment/segmentField.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
+		<xsl:import href="/templates/profile/singleCode/internalSingleCode.xsl" />
 	<xsl:import href="/templates/profile/commentList.xsl" />
 	<xsl:import href="/templates/profile/dynamicMapping.xsl" />
 	<xsl:import href="/templates/profile/metadata.xsl" />
@@ -236,7 +237,9 @@
 		</xsl:if>
 		<!-- </xsl:if> -->
 		<xsl:apply-templates select="./coconstraints" />		
-		<xsl:call-template name="ValueSetBindingList"/>		
+		<xsl:call-template name="ValueSetBindingList"/>	
+				<xsl:call-template name="InternalSingleCode"/>		
+			
 		<xsl:apply-templates select="./DynamicMapping" />
 		<xsl:if test="$columnDisplay.segment.comment = 'true'">
 			<xsl:apply-templates select="./Binding/CommentList" />
