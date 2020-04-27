@@ -57,7 +57,7 @@
 
         <ng-container *ngSwitchCase="'COCONSTRAINTGROUPREGISTRY'">
           <div #ccgLib>
-            <span [contextMenu]="coConstraintGroupContextMenu"> {{node.data.path}} {{node.data.variableName}} {{delta}}</span>
+            <span [contextMenu]="coConstraintGroupContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #coConstraintGroupContextMenu>
               <ng-template (execute)="createNew(node.data, 'COCONSTRAINTGROUP')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Create Co-Constraints Group
