@@ -10,6 +10,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.diff.domain.DeltaMode;
+import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBindingContained;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBindingRef;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.DatatypeCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.ValueSetCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.VariesCell;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
@@ -80,8 +95,12 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 	@Autowired
 	ExportConfigurationFilterService exportConfigurationFilterService;
+	
+	@Autowired
+	CoConstraintService coConstraintService;
 
 	private static final String IG_XSLT_PATH = "/IGDocumentExport.xsl";
+	
 
 	@Override
 	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId)
@@ -136,7 +155,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	@Override
-	public ExportFilterDecision getExportFilterDecision(Ig ig, ExportConfiguration config) {
+	public ExportFilterDecision getExportFilterDecision(Ig ig, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
 		ExportFilterDecision decision = new ExportFilterDecision();
 
 		for (Link l : ig.getConformanceProfileRegistry().getChildren()) {
@@ -155,7 +174,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		return decision;
 	}
 
-	private void processConformanceProfiles(Ig ig, ExportFilterDecision decision, ExportConfiguration config) {
+	private void processConformanceProfiles(Ig ig, ExportFilterDecision decision, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
 		Set<String> segmentIds = new HashSet<String>();
 		Set<String> datatypesIds = new HashSet<String>();
 		List<ConformanceProfile> profiles = conformanceProfileService
@@ -222,7 +241,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	private Set<String> processConformanceProfile(ConformanceProfile cp, ExportFilterDecision decision,
-			ExportConfiguration config) {
+			ExportConfiguration config) throws CoConstraintGroupNotFoundException {
 		// TODO Auto-generated method stub
 		Set<String> segmentsIds = new HashSet<String>();
 		HashMap<String, Boolean> bindedPaths = new HashMap<String, Boolean>();
@@ -242,6 +261,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			}
 		}
 		this.processBinding(cp.getBinding(), bindedPaths, decision);
+		if(cp.getCoConstraintsBindings() !=null) {
+		  this.processCoConstraintsBinding(decision, config, cp.getCoConstraintsBindings());
+		}
 		return segmentsIds;
 	}
 
@@ -319,5 +341,100 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		return null;
 	}
 
-	
+	// Co Constraints
+
+
+	  public void processCoConstraintsBinding(ExportFilterDecision decision, ExportConfiguration config,
+	      List<CoConstraintBinding> coConstraintsBindings) throws CoConstraintGroupNotFoundException {
+	    // TODO Auto-generated method stub
+	    for(CoConstraintBinding binding:coConstraintsBindings) {
+	      if(binding.getBindings()!=null) {
+	        for(CoConstraintBindingSegment segBinding: binding.getBindings()) {
+	          decision.getSegmentFilterMap().put(segBinding.getFlavorId(), true);
+	          for( CoConstraintTableConditionalBinding CoConstraintTableConditionalBinding : segBinding.getTables()) {
+	            if(CoConstraintTableConditionalBinding.getValue() !=null) {
+	              this.processCoConstraintTable(CoConstraintTableConditionalBinding.getValue(), decision, config);
+	            }
+	          }
+	        }
+	      }
+	    }     
+	  }
+
+	  /**
+	   * @param parent
+	   * @param value
+	   * @return
+	   * @throws CoConstraintGroupNotFoundException 
+	   */
+	  private void processCoConstraintTable(CoConstraintTable value, ExportFilterDecision decision, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
+	    // TODO Auto-generated method stub
+	    if(value.getGroups() !=null) {
+	      for(CoConstraintGroupBinding groupBinding : value.getGroups()) {
+
+	        if(groupBinding instanceof CoConstraintGroupBindingContained) {
+	          CoConstraintGroupBindingContained  coConstraintGroupBindingContained = (CoConstraintGroupBindingContained)(groupBinding);
+	          if( coConstraintGroupBindingContained.getCoConstraints() !=null) {
+	            for(CoConstraint cc: coConstraintGroupBindingContained.getCoConstraints() ) {
+	              processCoConstraint(cc, decision,  config);
+	            }
+	          }
+	          }else if(groupBinding instanceof CoConstraintGroupBindingRef) {
+	            CoConstraintGroupBindingRef ref = (CoConstraintGroupBindingRef)groupBinding;
+	            CoConstraintGroup group = coConstraintService.findById(ref.getRefId());
+	            if(group.getCoConstraints() !=null) {
+	              for(CoConstraint cc: group.getCoConstraints() ) {
+	                processCoConstraint(cc, decision,  config);  
+	              }
+	            }
+	          }
+	        }
+	      }
+	    if(value.getCoConstraints() !=null) {
+	      for(CoConstraint cc: value.getCoConstraints() ) {
+	        processCoConstraint(cc, decision,  config);  
+	      } 
+	    }
+	  }
+	  
+	  
+	  /**
+	   * @param cc
+	   * @param decision
+	   * @param config
+	   */
+	  private void processCoConstraint(CoConstraint cc, ExportFilterDecision decision,
+	      ExportConfiguration config) {
+	    // TODO Auto-generated method stub
+	    if(cc.getCells() !=null && cc.getCells().values() !=null) {
+	      for(CoConstraintCell cell: cc.getCells().values()) {
+	        processCoConstraintCell(cell, decision, config);
+	      }
+	    }    
+	  }
+
+	  private void processCoConstraintCell( CoConstraintCell cell, ExportFilterDecision decision, ExportConfiguration config) {
+	    // TODO Auto-generated method stub
+	    if(cell instanceof ValueSetCell) {
+	      ValueSetCell vsCell= (ValueSetCell)cell;
+	      if(vsCell.getBindings() !=null) {
+	        for(ValuesetBinding vsb : vsCell.getBindings()) {
+	          if(vsb.getValueSets() !=null ) {
+	            for(String vs : vsb.getValueSets()) {
+	              decision.getValueSetFilterMap().put(vs, true);
+	            }
+	          }
+	        }
+	      }
+	    }else if(cell instanceof DatatypeCell ) {
+	      DatatypeCell dtCell= (DatatypeCell)cell; 
+	      decision.getDatatypesFilterMap().put(dtCell.getDatatypeId(), true);
+	    }else if(cell instanceof VariesCell) {
+	      VariesCell vrCell= (VariesCell)cell;
+	      if(vrCell.getCellValue() !=null) {
+	        processCoConstraintCell(vrCell.getCellValue(), decision, config);
+	      }
+	    }
+	  }
+
 }

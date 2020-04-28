@@ -4,6 +4,7 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
 import { LoadResourceReferences } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
+  selectCoConstraintGroupsById,
   selectDatatypesById,
   selectLoadedResourceById,
   selectMessagesById,
@@ -112,6 +113,8 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
         return this.store.select(selectValueSetById, { id });
       case Type.CONFORMANCEPROFILE:
         return this.store.select(selectMessagesById, { id });
+      case Type.COCONSTRAINTGROUP:
+        return this.store.select(selectCoConstraintGroupsById, { id });
       default:
         return of(undefined);
     }

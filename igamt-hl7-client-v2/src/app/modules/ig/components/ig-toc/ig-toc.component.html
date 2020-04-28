@@ -57,7 +57,7 @@
 
         <ng-container *ngSwitchCase="'COCONSTRAINTGROUPREGISTRY'">
           <div #ccgLib>
-            <span [contextMenu]="coConstraintGroupContextMenu"> {{node.data.path}} {{node.data.variableName}} {{delta}}</span>
+            <span [contextMenu]="coConstraintGroupContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #coConstraintGroupContextMenu>
               <ng-template (execute)="createNew(node.data, 'COCONSTRAINTGROUP')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Create Co-Constraints Group
@@ -162,12 +162,12 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COCONSTRAINTGROUP'">
-          <app-display-section  #rla="routerLinkActive" [element]="node.data" [routerLink]="getElementUrl(node.data)" routerLinkActive></app-display-section>
-          <!-- <context-menu #coConstraintGroupContextMenu>
+          <app-display-section  #rla="routerLinkActive" [contextMenu]='coConstraintGroupContextMenu' [element]="node.data" [routerLink]="getElementUrl(node.data)" routerLinkActive></app-display-section>
+          <context-menu #coConstraintGroupContextMenu>
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-remove"></i> Delete
             </ng-template>
-          </context-menu> -->
+          </context-menu>
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
         </ng-container>
 
