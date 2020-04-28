@@ -626,8 +626,6 @@ public class IGDocumentController extends BaseController {
       Ig empty = igService.createEmptyIg();
       Set<String> savedIds = new HashSet<String>();
       for (AddingInfo ev : wrapper.getMsgEvts()) {
-
-
         MessageStructure profile = messageStructureRepository.findOneById(ev.getOriginalId());
         if (profile != null) {
           ConformanceProfile clone = new ConformanceProfile(profile, ev.getName());

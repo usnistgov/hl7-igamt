@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
@@ -254,7 +255,7 @@ public class ExportController {
 
 	@RequestMapping(value = "/api/export/igdocuments/{id}/configuration/{configId}/getFilteredDocument", method = RequestMethod.GET)
 	public @ResponseBody ExportConfigurationGlobal getFilteredDocument(@PathVariable("id") String id, @PathVariable("configId") String configId,
-			HttpServletResponse response) throws ExportException, IGNotFoundException {
+			HttpServletResponse response) throws ExportException, IGNotFoundException, CoConstraintGroupNotFoundException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
 			ExportConfiguration config = exportConfigurationService.getExportConfiguration(configId);

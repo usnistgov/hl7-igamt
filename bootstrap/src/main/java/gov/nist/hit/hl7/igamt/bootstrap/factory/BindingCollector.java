@@ -71,7 +71,7 @@ public class BindingCollector {
       Map<String, String> datatypesNames = datatypes.stream().collect(
           Collectors.toMap(Datatype::getId, Datatype::getName));
       processSegment(s, valueSetsNames, datatypesNames);
-     // processDatatypes(s,valueSetsNames, datatypesNames);
+      processDatatypes(s,valueSetsNames, datatypesNames);
     }
   }
 
@@ -205,7 +205,7 @@ public class BindingCollector {
       for(ValuesetBinding vsb: binding.getValuesetBindings()) {
         if(vsb.getValueSets() !=null ) {
           for (String vsId: vsb.getValueSets() ) {
-            ret = ret + ",HL7" + valueSetsNames.get(vsId);
+            ret = ret + "," + valueSetsNames.get(vsId);
           }
         } 
       }

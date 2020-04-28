@@ -621,7 +621,7 @@ public class BootstrapApplication implements CommandLineRunner {
       //		}	
     }
 
-    //@PostConstruct
+//    @PostConstruct
     public void generateBindings() throws FileNotFoundException{
       this.bindingCollector.collect();
     };

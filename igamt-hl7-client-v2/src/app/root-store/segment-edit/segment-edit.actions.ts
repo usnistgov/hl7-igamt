@@ -73,7 +73,6 @@ export class OpenSegmentPostDefEditor implements Action {
     editor: IEditorMetadata,
   }) { }
 }
-
 export class OpenSegmentCrossRefEditor implements Action {
   readonly type = SegmentEditActionTypes.OpenSegmentCrossRefEditor;
   constructor(readonly payload: {
@@ -81,7 +80,6 @@ export class OpenSegmentCrossRefEditor implements Action {
     editor: IEditorMetadata,
   }) { }
 }
-
 export class OpenSegmentDynamicMappingEditor implements Action {
   readonly type = SegmentEditActionTypes.OpenSegmentDynamicMappingEditor;
   constructor(readonly payload: {

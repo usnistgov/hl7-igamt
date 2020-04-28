@@ -44,12 +44,13 @@
       <app-display-ref [element]="rowData.element" [documentId]="igId"  [documentType]="'IGDOCUMENT'"></app-display-ref>
       </td>
       <td>
-        <app-entity-bagde [type]="rowData.location.type"></app-entity-bagde>
-        {{rowData.location.path}}
-        <span *ngIf="rowData.location.label">
+        <span *ngIf="rowData.element.type!=='COCONSTRAINTGROUP'">
+                 <app-entity-bagde [type]="rowData.location.type"></app-entity-bagde>
+          {{rowData.location.path}}
+          <span *ngIf="rowData.location.label">
         .{{rowData.location.label}}
         </span>
-
+        </span>
       </td>
       <td>
         {{rowData.usage}}
