@@ -1265,7 +1265,13 @@ public class IgServiceImpl implements IgService {
     }
   }
 
-  @Override
+	@Override
+	public Set<ConformanceStatement> conformanceStatementsSummary(Ig igdoument) {
+		return this.conformanceStatementRepository.findByIgDocumentId(igdoument.getId());
+	}
+
+
+	@Override
   public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo) {
     if(id != null && sharedUsersInfo != null) {
       Ig ig = this.findById(id);

@@ -227,10 +227,14 @@ public class IGDocumentController extends BaseController {
     return igService.convertDomainToConformanceStatement(igdoument);
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement/assertion", method = RequestMethod.POST, produces = {
-          "application/text" })
-  public @ResponseBody String getAssertionCS(@PathVariable("id") String id, @RequestBody ConformanceStatement cs, Authentication authentication)
-          throws IGNotFoundException, IGUpdateException {
+  @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement/summary", method = RequestMethod.GET, produces = {"application/json" })
+  public Set<ConformanceStatement> getIgDocumentConformanceStatementSummary(@PathVariable("id") String id, Authentication authentication) throws IGNotFoundException {
+    Ig igdoument = findIgById(id);
+    return igService.conformanceStatementsSummary(igdoument);
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement/assertion", method = RequestMethod.POST, produces = {"application/text" })
+  public @ResponseBody String getAssertionCS(@PathVariable("id") String id, @RequestBody ConformanceStatement cs, Authentication authentication) throws IGNotFoundException, IGUpdateException {
     return this.serializeService.generateAssertionScript(cs, id);
   }
 
