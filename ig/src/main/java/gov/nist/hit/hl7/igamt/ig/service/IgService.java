@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -70,6 +71,8 @@ public interface IgService {
   public List<Ig> findAllSharedIG(String username, Scope scope);
 
   public void delete(Ig ig);
+
+  Set<ConformanceStatement> conformanceStatementsSummary(Ig igdoument);
 
   public IgDocumentConformanceStatement convertDomainToConformanceStatement(Ig igdoument);
 

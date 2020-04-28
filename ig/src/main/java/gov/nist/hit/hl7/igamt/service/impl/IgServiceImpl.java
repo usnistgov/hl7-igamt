@@ -781,6 +781,12 @@ public class IgServiceImpl implements IgService {
 		}
 	}
 
+	@Override
+	public Set<ConformanceStatement> conformanceStatementsSummary(Ig igdoument) {
+		return this.conformanceStatementRepository.findByIgDocumentId(igdoument.getId());
+	}
+
+
 	/*
 	 * (non-Javadoc)
 	 * 

@@ -27,6 +27,10 @@
           <span> {{node.data.path}} {{node.data.variableName}}</span>
         </ng-container>
 
+        <ng-container *ngSwitchCase="'CONFORMANCESTATEMENTSUMMARY'">
+          <span routerLink="./conformance-statements" routerLinkActive="active-node"> {{node.data.path}} {{node.data.variableName}}</span>
+        </ng-container>
+
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
           <div #cpLib>
             <span [contextMenu]="conformanceProfilesContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>

@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { IgEditActionTypes, IgEditResolverLoad, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
+import { IgEditActionTypes, IgEditResolverLoad, OpenConformanceStatementSummaryEditorNode, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { AuthenticatedGuard } from './../core/services/auth-guard.guard';
+import { ConformanceStatementsSummaryEditorComponent } from './components/conformance-statements-summary-editor/conformance-statements-summary-editor.component';
 import { CreateIGComponent } from './components/create-ig/create-ig.component';
 import { IgEditContainerComponent } from './components/ig-edit-container/ig-edit-container.component';
 import { IgListContainerComponent } from './components/ig-list-container/ig-list-container.component';
@@ -45,6 +46,25 @@ const routes: Routes = [
         path: '',
         redirectTo: 'metadata',
         pathMatch: 'full',
+      },
+      {
+        path: 'conformance-statements',
+        component: ConformanceStatementsSummaryEditorComponent,
+        canActivate: [IgEditorActivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.CS_SUMMARY,
+            title: 'Conformance Statements Summary',
+            resourceType: Type.CONFORMANCESTATEMENTSUMMARY,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenConformanceStatementSummaryEditorNode,
+          idKey: 'igId',
+        },
+        canDeactivate: [IgEditSaveDeactivateGuard],
       },
       {
         path: 'metadata',

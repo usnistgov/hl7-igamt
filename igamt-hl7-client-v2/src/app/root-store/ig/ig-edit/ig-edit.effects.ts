@@ -13,7 +13,7 @@ import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
 import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
 import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
-import { CreateCoConstraintGroup, CreateCoConstraintGroupFailure, CreateCoConstraintGroupSuccess } from './ig-edit.actions';
+import { CreateCoConstraintGroup, CreateCoConstraintGroupFailure, CreateCoConstraintGroupSuccess, OpenConformanceStatementSummaryEditorNode } from './ig-edit.actions';
 import {
   AddResourceFailure,
   AddResourceSuccess,
@@ -228,6 +228,30 @@ export class IgEditEffects {
                 }),
               ];
             }
+          }),
+        );
+    }),
+  );
+
+  @Effect()
+  openConformanceStatementSummaryEditorNode$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.OpenConformanceStatementSummaryEditorNode),
+    switchMap((action: OpenIgMetadataEditorNode) => {
+      return combineLatest(
+        this.store.select(selectIgDocument),
+        this.igService.getConformanceStatementSummary(action.payload.id))
+        .pipe(
+          take(1),
+          map(([ig, cs]) => {
+            return new OpenEditor({
+              id: action.payload.id,
+              element: this.igService.igToIDisplayElement(ig),
+              editor: action.payload.editor,
+              initial: {
+                summary: cs,
+                changes: {},
+              },
+            });
           }),
         );
     }),

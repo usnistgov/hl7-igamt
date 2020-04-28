@@ -41,6 +41,7 @@ export enum IgEditActionTypes {
   OpenSegmentEditorNode = '[Ig Edit TOC Segment] Open Segment Editor Node',
   OpenDatatypeEditorNode = '[Ig Edit TOC Datatype] Open Datatype Editor Node',
   OpenValueSetEditorNode = '[Ig Edit TOC Value Set] Open Value Set Editor Node',
+  OpenConformanceStatementSummaryEditorNode = '[Ig Edit TOC] Open Conformance Statement Summary Editor Node',
 
   ToolbarSave = '[Toolbar Save] Toolbar Save Button',
 
@@ -65,7 +66,7 @@ export enum IgEditActionTypes {
   ToggleFullScreen = '[Ig Edit] Toggle Fullscreen',
   ImportResourceFromFile = '[Ig Edit] Import resource from file',
   ImportResourceFromFileSuccess = '[Ig Edit] Import resource from file Success',
-  ImportResourceFromFileFailure= '[Ig Edit] Import resource from file Failure',
+  ImportResourceFromFileFailure = '[Ig Edit] Import resource from file Failure',
   ToggleDelta = '[Ig Edit] Toggle DELTA Delta',
   ToggleDeltaSuccess = '[Ig Edit] Toggle DELTA Success',
   ToggleDeltaFailure = '[Ig Edit] Toggle DELTA Failure',
@@ -152,13 +153,13 @@ export class IgEditTocAddResource implements Action {
 
 export class ImportResourceFromFile implements Action {
   readonly type = IgEditActionTypes.ImportResourceFromFile;
-  constructor(readonly documentId, readonly resourceType: Type , readonly targetType: Type, readonly file: any ) {
+  constructor(readonly documentId, readonly resourceType: Type, readonly targetType: Type, readonly file: any) {
   }
 }
 
 export class ImportResourceFromFileSuccess implements Action {
   readonly type = IgEditActionTypes.ImportResourceFromFileSuccess;
-  constructor(readonly payload: IAddResourceFromFile ) {
+  constructor(readonly payload: IAddResourceFromFile) {
   }
 }
 
@@ -259,6 +260,17 @@ export abstract class OpenEditorBase implements Action {
 
 export class OpenNarrativeEditorNode extends OpenEditorBase {
   readonly type = IgEditActionTypes.OpenNarrativeEditorNode;
+
+  constructor(readonly payload: {
+    id: string,
+    editor: IEditorMetadata,
+  }) {
+    super();
+  }
+}
+
+export class OpenConformanceStatementSummaryEditorNode extends OpenEditorBase {
+  readonly type = IgEditActionTypes.OpenConformanceStatementSummaryEditorNode;
 
   constructor(readonly payload: {
     id: string,

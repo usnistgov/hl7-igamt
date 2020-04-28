@@ -16,8 +16,8 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
-import { AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TabViewModule, TooltipModule, TreeTableModule } from 'primeng/primeng';
 import { ListboxModule } from 'primeng/primeng';
+import { AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TabViewModule, TooltipModule, TreeTableModule } from 'primeng/primeng';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
@@ -31,6 +31,7 @@ import { BindingSelectorComponent } from './components/binding-selector/binding-
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
+import { CsListComponent } from './components/cs-list/cs-list.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
@@ -162,6 +163,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ValuesetDeltaComponent,
     DisplayRefComponent,
     NgxDropdownComponent,
+    CsListComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -294,6 +296,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MaxNumberDirective,
     DeltaTreeComponent,
     DeltaColumnComponent,
+    CsListComponent,
     BindingSelectorComponent,
     ExportToolComponent,
     AlertsContainerComponent,
