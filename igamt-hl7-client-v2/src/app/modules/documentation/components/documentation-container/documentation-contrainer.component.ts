@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
-import { selectIsAdmin } from '../../../../root-store/authentication/authentication.reducer';
+import { selectIsAdmin, selectIsLoggedIn } from '../../../../root-store/authentication/authentication.reducer';
 import {
   ToggleEditMode,
 } from '../../../../root-store/documentation/documentation.actions';
@@ -40,10 +40,12 @@ export class DocumentationContainerComponent extends DamWidgetComponent {
   isUser$: Observable<boolean>;
   updateInfo$: Observable<any>;
   hasActive$: Observable<boolean>;
+  isAuthenticated$: Observable<boolean>;
 
   constructor(store: Store<any>, dialog: MatDialog) {
     super(DOC_WIDGET_ID, store, dialog);
     this.admin$ = this.store.select(selectIsAdmin);
+    this.isAuthenticated$ = this.store.select(selectIsLoggedIn);
     this.isUser$ = this.store.select(isUser);
     this.activeTitleBar$ = this.store.select(selectActiveTitleBar);
     this.updateInfo$ = this.store.select(selectLatestUpdate);

@@ -170,6 +170,22 @@
         </ng-container>
       </mat-dialog-content>
     </div>
+    <div *ngIf="statementsValid()" class="form-group">
+      <div *ngIf="xmlExpression | async as xml" style="padding: 10px; background-color: #f7f7f7; border: 1px solid #e7e7e7; border-radius: 3px; display: flex; flex-direction: column; align-items: center;">
+        <div style="display: flex; width: 100%;">
+          <button style="margin-right: 5px;" class="btn btn-sm btn-success" *ngIf="!xmlVisible && xml.isSet" (click)="xmlVisible = true;">
+            <i class="fa fa-eye"></i>
+          </button>
+          <button style="margin-right: 5px;" class="btn btn-sm btn-danger" *ngIf="xmlVisible && xml.isSet" (click)="xmlVisible = false;">
+            <i class="fa fa-eye-slash"></i>
+          </button>
+          <button style="flex: 1;" class="btn btn-sm btn-primary" (click)="generateXMLExpression()">
+            <i class="fa fa-refresh"></i> Generate XML Assertion
+          </button>
+        </div>
+        <pre style="margin-top: 5px; margin-bottom: 0;" *ngIf="xml.isSet && xmlVisible" lang="xml">{{xml.value}}</pre>
+      </div>
+    </div>
   </ng-container>
 
 

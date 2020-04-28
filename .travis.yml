@@ -11,10 +11,10 @@ matrix:
           - staging
       before_script:
         - cd igamt-hl7-client-v2
-        - npm install
-        - npm install -g @angular/cli
+        - travis_wait npm install
+        - travis_wait npm install -g @angular/cli
       script:
-        - ng lint
-        - ng build --prod --base-href https://github.com/usnistgov/hl7-igamt/
+        - travis_wait ng lint
+        - travis_wait ng build --prod --base-href https://github.com/usnistgov/hl7-igamt/
 notifications:
   slack: igamt:AguUmFpxIC0okakY5LtQ3c22

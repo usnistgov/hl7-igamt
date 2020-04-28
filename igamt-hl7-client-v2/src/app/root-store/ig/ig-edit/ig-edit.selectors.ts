@@ -5,7 +5,7 @@ import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.r
 import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
 import { Scope } from '../../../modules/shared/constants/scope.enum';
-import { Status } from '../../../modules/shared/models/abstract-domain.interface';
+import { SharePermission, Status } from '../../../modules/shared/models/abstract-domain.interface';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { IRegistry } from '../../../modules/shared/models/registry.interface';
@@ -64,7 +64,7 @@ export const selectTitleBar = createSelector(
 export const selectViewOnly = createSelector(
   selectIgDocument,
   (document: IgDocument): boolean => {
-    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED;
+    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED || (document.sharePermission && document.sharePermission === SharePermission.READ);
   },
 );
 

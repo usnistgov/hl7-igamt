@@ -11,6 +11,7 @@ import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Type } from '../../shared/constants/type.enum';
 import { IConnectingInfo } from '../../shared/models/config.class';
 import { IContent } from '../../shared/models/content.interface';
+import { IConformanceStatement } from '../../shared/models/cs.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
@@ -150,6 +151,10 @@ export class IgService {
 
   publish(id: string): Observable<Message<string>> {
     return this.http.post<Message<string>>(this.IG_END_POINT + id + '/publish', {}).pipe();
+  }
+
+  updateSharedUsers(sharedUsers: any, id: string): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/updateSharedUser', sharedUsers).pipe();
   }
 
   getMessagesByVersion(hl7Version: string): Observable<Message<MessageEventTreeNode[]>> {
@@ -346,5 +351,9 @@ export class IgService {
     } else {
       return this.getIgInfo(id);
     }
+  }
+
+  getConformanceStatementSummary(id: string): Observable<IConformanceStatement[]> {
+    return this.http.get<IConformanceStatement[]>('api/igdocuments/' + id + '/conformancestatement/summary');
   }
 }

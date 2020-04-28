@@ -11,7 +11,7 @@ import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selector
 import {
   IgEditActionTypes,
   ImportResourceFromFile,
-  ImportResourceFromFileSuccess,
+  ImportResourceFromFileSuccess, selectViewOnly,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   CopyResource, CopyResourceSuccess,
@@ -59,6 +59,7 @@ export class IgEditSidebarComponent implements OnInit {
   documentRef$: Observable<IDocumentRef>;
   version$: Observable<string>;
   delta: boolean;
+  viewOnly$: Observable<boolean>;
   @Input()
   deltaMode = false;
   @ViewChild(IgTocComponent) toc: IgTocComponent;
@@ -82,6 +83,7 @@ export class IgEditSidebarComponent implements OnInit {
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
+    this.viewOnly$ = this.store.select(selectViewOnly);
   }
 
   getNodes() {
@@ -304,7 +306,7 @@ export class IgEditSidebarComponent implements OnInit {
   addCoConstraintGroup($event: IAddNewWrapper) {
     combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllSegments)).pipe(
       take(1),
-      tap(([igId, segments]) => {
+      tap(([{ documentId, type }, segments]) => {
         const dialogRef = this.dialog.open(AddCoConstraintGroupComponent, {
           data: {
             segments: segments.filter((f) => {
@@ -326,7 +328,7 @@ export class IgEditSidebarComponent implements OnInit {
                   },
                 },
               }).subscribe();
-              this.store.dispatch(new CreateCoConstraintGroup({ documentId: igId, ...result }));
+              this.store.dispatch(new CreateCoConstraintGroup({ documentId, ...result }));
             }
           }),
         ).subscribe();

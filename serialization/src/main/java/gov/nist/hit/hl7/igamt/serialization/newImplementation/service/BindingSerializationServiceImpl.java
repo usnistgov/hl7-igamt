@@ -45,7 +45,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 				// valuesetMap.values().stream().flatMap((set) -> {
 				// return set.stream();
 				// }).collect(Collectors.toList());
-				Element structureElementBindingsElement = this.serializeStructureElementBindings(binding.getChildren(),
+				Element structureElementBindingsElement = this.serializeStructureElementBindings(null,binding.getChildren(),
 						name, valuesetMap);
 				if (structureElementBindingsElement != null) {
 					bindingElement.appendChild(structureElementBindingsElement);
@@ -89,14 +89,14 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 		return null;
 	}
 
-	private Element serializeStructureElementBindings(Set<StructureElementBinding> structureElementBindings,
+	private Element serializeStructureElementBindings(String elementIdParent, Set<StructureElementBinding> structureElementBindings,
 			String name, Map<String, Set<ValuesetBindingDataModel>> valuesetMap) {
 		if (structureElementBindings != null) {
 			Element structureElementBindingsElement = new Element("StructureElementBindings");
 			for (StructureElementBinding structureElementBinding : structureElementBindings) {
 				if (structureElementBinding != null) {
 					Element structureElementBindingElement = this
-							.serializeStructureElementBinding(structureElementBinding, name, valuesetMap);
+							.serializeStructureElementBinding(elementIdParent, structureElementBinding, name, valuesetMap);
 					if (structureElementBindingElement != null) {
 						structureElementBindingsElement.appendChild(structureElementBindingElement);
 					}
@@ -108,7 +108,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 
 	}
 
-	private Element serializeStructureElementBinding(StructureElementBinding structureElementBinding, String name,
+	private Element serializeStructureElementBinding(String elementIdParent, StructureElementBinding structureElementBinding, String name,
 			Map<String, Set<ValuesetBindingDataModel>> valuesetMap) {
 		if (structureElementBinding != null) {
 			Element structureElementBindingElement = new Element("StructureElementBinding");
@@ -135,38 +135,56 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 																structureElementBinding.getLocationInfo().getPosition())
 												: ""));
 			}
+			if(elementIdParent != null) {
+				 elementIdParent = elementIdParent +"."+structureElementBinding.getElementId();
+				}
+				else {
+				 elementIdParent = structureElementBinding.getElementId();
+				}
 			if (structureElementBinding.getChildren() != null && structureElementBinding.getChildren().size() > 0) {
 				Element structureElementBindingsElement = this
-						.serializeStructureElementBindings(structureElementBinding.getChildren(), name, valuesetMap);
+						.serializeStructureElementBindings(elementIdParent, structureElementBinding.getChildren(), name, valuesetMap);
 				if (structureElementBindingsElement != null) {
 					structureElementBindingElement.appendChild(structureElementBindingsElement);
 				}
 			}
 			if (structureElementBinding.getValuesetBindings() != null) {
 				for (ValuesetBinding valuesetBinding : structureElementBinding.getValuesetBindings()) {
-					Element valuesetBindingElement = this.serializeValuesetBinding(valuesetBinding, valuesetMap, name);
+					Element valuesetBindingElement = this.serializeValuesetBinding(elementIdParent, valuesetBinding, valuesetMap, name);
 					if (valuesetBindingElement != null) {
 						structureElementBindingElement.appendChild(valuesetBindingElement);
 					}
 				}
 			}
 			if (structureElementBinding.getInternalSingleCode() != null) {
-				structureElementBindingElement.addAttribute(
-						new Attribute("singleCodeId", structureElementBinding.getInternalSingleCode().getCode()));
+				Element internalSingleCode = new Element("InternalSingleCode");
+				internalSingleCode.addAttribute(
+						new Attribute("internalSingleCodeId", structureElementBinding.getInternalSingleCode().getCode()));
+				 internalSingleCode.addAttribute(
+							new Attribute("internalSingleCodeSystem", structureElementBinding.getInternalSingleCode().getCodeSystem()));
+					 internalSingleCode.addAttribute(
+								new Attribute("internalSingleCodeVsId", structureElementBinding.getInternalSingleCode().getValueSetId()));
+					 internalSingleCode.addAttribute(
+								new Attribute("internalSingleCodeLocation", name + "."+elementIdParent));
+						 structureElementBindingElement.appendChild(internalSingleCode);
 			}
-			// if (structureElementBinding.getExternalSingleCode() != null) {
-			// Element externalSingleCodeElement =
-			// this.serializeExternalSingleCode(structureElementBinding.getExternalSingleCode());
-			// if (externalSingleCodeElement != null) {
-			// structureElementBindingElement.appendChild(externalSingleCodeElement);
-			// }
-			// }
+			 if (structureElementBinding.getExternalSingleCode() != null) {
+			 Element externalSingleCodeElement = new Element("externalSingleCode");
+//			 this.serializeExternalSingleCode(structureElementBinding.getExternalSingleCode());
+			 externalSingleCodeElement.addAttribute(
+						new Attribute("externalSingleCodeValue", structureElementBinding.getExternalSingleCode().getValue()));
+			 externalSingleCodeElement.addAttribute(
+						new Attribute("externalSingleCodeSystem", structureElementBinding.getExternalSingleCode().getCodeSystem()));
+			 if (externalSingleCodeElement != null) {
+			 structureElementBindingElement.appendChild(externalSingleCodeElement);
+			 }
+			 }
 			return structureElementBindingElement;
 		}
 		return null;
 	}
 
-	private Element serializeValuesetBinding(ValuesetBinding valuesetBinding,
+	private Element serializeValuesetBinding(String elementIdParent, ValuesetBinding valuesetBinding,
 			Map<String, Set<ValuesetBindingDataModel>> valuesetMap, String name) {
 		if (valuesetBinding != null && valuesetBinding.getValueSets() != null
 				&& !valuesetBinding.getValueSets().isEmpty()) {
@@ -188,12 +206,12 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 					valuesetBinding.getValueSets() != null
 							? location : ""));
 			valuesetBindingElement.addAttribute(new Attribute("Position2",
-					valuesetBinding.getValuesetLocations() != null
-							? location : ""));
+					elementIdParent != null ? name+"."+elementIdParent : ""));		
 			valuesetBindingElement.addAttribute(new Attribute("locations",
 					valuesetBinding.getValuesetLocations() != null
 							? convertValuesetLocationsToString(location, valuesetBinding.getValuesetLocations())
 							: ""));
+			System.out.println("Location is : " + location + " ValueSet bindings : " + valuesetBinding.getValuesetLocations().toString());
 			return valuesetBindingElement;
 		}
 		return null;

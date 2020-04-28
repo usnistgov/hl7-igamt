@@ -167,7 +167,7 @@ public class SerializeCoconstraintTableToExcel {
 			
 			Cell userCell = headerRow.createCell(headers.getSelectors().size()+headers.getConstraints().size()+3);
 			headerCellNumber=headerCellNumber+headers.getSelectors().size();
-			userCell.setCellValue("USER");
+			userCell.setCellValue("NARRATIVES");
 			userCell.setCellStyle(userHeaderStyle);
 			
 			headerCellNumber=3;
@@ -224,7 +224,7 @@ public class SerializeCoconstraintTableToExcel {
 			if(userCell.getColumnIndex() - thenCell.getColumnIndex() != 1){
 						sheet.addMergedRegion(new CellRangeAddress(0,0,thenCell.getColumnIndex(),userCell.getColumnIndex()-1));
 			}
-						if(headers.getNarratives().size() != 1) {
+						if(headers.getNarratives().size() >= 1 ) {
 						sheet.addMergedRegion(new CellRangeAddress(0,0,userCell.getColumnIndex(),userCell.getColumnIndex()+headers.getNarratives().size()-1));
 						}
 						System.out.println("Here6 :" + userCell.getColumnIndex());

@@ -49,7 +49,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.filter = this.initialConfig.exportFilterDecision;
-    console.log(this.filter);
     this.defaultConfig = _.cloneDeep(data.decision.exportConfiguration);
   }
   select(node) {
@@ -63,11 +62,11 @@ export class ExportConfigurationDialogComponent implements OnInit {
         } else {
           this.current = _.cloneDeep(this.defaultConfig.segmentExportConfiguration);
         }
+
         this.loading = false;
         break;
       }
       case Type.DATATYPE: {
-        console.log('datatype');
         if (this.filter.overiddedDatatypesMap[node.id]) {
           this.current = this.filter.overiddedDatatypesMap[node.id];
         } else {

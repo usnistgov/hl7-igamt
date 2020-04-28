@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import {
   DeleteIgListItemRequest,
@@ -22,6 +22,7 @@ import { CloneModeEnum } from '../../../shared/constants/clone-mode.enum';
 import { IgListItem } from '../../models/ig/ig-list-item.class';
 import { IgService } from '../../services/ig.service';
 import { ConfirmDialogComponent } from './../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 import { IgListItemControl } from './../ig-list-item-card/ig-list-item-card.component';
 
 @Component({
@@ -30,6 +31,18 @@ import { IgListItemControl } from './../ig-list-item-card/ig-list-item-card.comp
   styleUrls: ['./ig-list-container.component.scss'],
 })
 export class IgListContainerComponent implements OnInit, OnDestroy {
+
+  constructor(
+    private store: Store<fromRoot.IRouteState>,
+    private route: ActivatedRoute,
+    private dialog: MatDialog,
+    private router: Router,
+    private message: MessageService,
+    private ig: IgService) {
+    this.storeSelectors();
+    this.initializeProperties();
+    this.igListItemControls();
+  }
 
   listItems: Observable<IgListItem[]>;
   viewType: Observable<IgListLoad>;
@@ -46,15 +59,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     ascending: boolean,
   };
 
-  constructor(
-    private store: Store<fromRoot.IRouteState>,
-    private route: ActivatedRoute,
-    private dialog: MatDialog,
-    private router: Router,
-    private message: MessageService,
-    private ig: IgService) {
-
-    // Store Selectors
+  storeSelectors() {
     this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter });
     this.viewType = this.store.select(fromIgList.selectViewType);
     this.isAdmin = this.store.select(fromAuth.selectIsAdmin);
@@ -69,8 +74,9 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
         };
       },
     );
+  }
 
-    // Initialize Properties
+  initializeProperties() {
     this.sortOptions = [
       {
         label: 'Date Updated',
@@ -85,22 +91,27 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
         },
       },
     ];
+  }
 
-    // -- Ig List Item Controls (BUTTONS)
+  igListItemControls() {
     this.controls = combineLatest(this.isAdmin, this.username)
       .pipe(
         map(
           ([admin, username]) => {
+
             return [
               {
                 label: 'Share',
                 class: 'btn-primary',
                 icon: 'fa-share',
                 action: (item: IgListItem) => {
-
+                  this.shareDialog(item, username);
                 },
                 disabled: (item: IgListItem): boolean => {
                   return username !== item.username || item.type === 'PUBLISHED';
+                },
+                hide: (item: IgListItem): boolean => {
+                  return item.type === 'PUBLISHED' || item.type === 'SHARED';
                 },
               },
               {
@@ -124,11 +135,14 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                   );
                 },
                 disabled: (item: IgListItem): boolean => {
-                  if (item.type === 'PUBLISHED') {
+                  if (item.type === 'PUBLISHED' || item.type === 'SHARED') {
                     return true;
                   } else {
                     return false;
                   }
+                },
+                hide: (item: IgListItem): boolean => {
+                  return item.type === 'PUBLISHED' || item.type === 'SHARED';
                 },
               },
               {
@@ -152,29 +166,21 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
               },
               {
                 label: 'Publish',
-                class: 'btn-scondary',
+                class: 'btn-secondary',
                 icon: 'fa fa-globe',
                 action: (item: IgListItem) => {
-                  this.ig.publish(item.id).subscribe(
-                    (response: Message<string>) => {
-                      this.store.dispatch(this.message.messageToAction(response));
-                      this.router.navigateByUrl('/ig/list?type=PUBLISHED');
-                    },
-                    (error) => {
-                      this.store.dispatch(this.message.actionFromError(error));
-                    },
-                  );
+                  this.publishDialog(item);
                 },
                 disabled: (item: IgListItem): boolean => {
                   return !admin || item.type === 'PUBLISHED';
                 },
                 hide: (item: IgListItem): boolean => {
-                  return item.type === 'PUBLISHED';
+                  return item.type === 'PUBLISHED' || item.type === 'SHARED';
                 },
               },
               {
                 label: 'Derive from',
-                class: 'btn-scondary',
+                class: 'btn-secondary',
                 icon: 'fa fa-map-marker',
                 action: (item: IgListItem) => {
                   this.ig.cloneIg(item.id, CloneModeEnum.DERIVE, null).subscribe(
@@ -205,11 +211,105 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 disabled: (item: IgListItem): boolean => {
                   return false;
                 },
+                hide: (item: IgListItem): boolean => {
+                  return item.type === 'SHARED';
+                },
+              },
+              {
+                label: 'View',
+                class: 'btn-info',
+                icon: 'fa-eye',
+                default: true,
+                action: (item: IgListItem) => {
+                  this.router.navigate(['ig', item.id]);
+                },
+                disabled: (item: IgListItem): boolean => {
+                  return false;
+                },
+                hide: (item: IgListItem): boolean => {
+                  return this.hideForShared('View', item.type, item.sharePermission);
+                },
+              },
+              {
+                label: 'Edit',
+                class: 'btn-info',
+                icon: 'fa-pencil',
+                default: true,
+                action: (item: IgListItem) => {
+                  this.router.navigate(['ig', item.id]);
+                },
+                disabled: (item: IgListItem): boolean => {
+                  return false;
+                },
+                hide: (item: IgListItem): boolean => {
+                  return this.hideForShared('Edit', item.type, item.sharePermission);
+                },
               },
             ];
           },
         ),
       );
+  }
+
+  shareDialog(item: IgListItem, username: string) {
+    const dialogRef = this.dialog.open(SharingDialogComponent, {
+      data: { item, username },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.ig.updateSharedUsers(result, item.id).subscribe(
+          (response: Message<string>) => {
+            item.sharedUsers = result.sharedUsers;
+            item.currentAuthor = result.currentAuthor;
+            this.store.dispatch(this.message.messageToAction(response));
+            this.router.navigateByUrl('/ig/list?type=USER');
+          },
+          (error) => {
+            this.store.dispatch(this.message.actionFromError(error));
+          },
+        );
+      }
+    });
+  }
+
+  publishDialog(item: IgListItem) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        question: 'This operation is irreversible, Are you sure you want to publish this Implementation Guide "' + item.title + '" ?',
+        action: 'Publish Implementation Guide',
+      },
+    });
+    dialogRef.afterClosed().subscribe(
+      (answer) => {
+        if (answer) {
+          this.ig.publish(item.id).subscribe(
+            (response: Message<string>) => {
+              this.store.dispatch(this.message.messageToAction(response));
+              this.router.navigateByUrl('/ig/list?type=PUBLISHED');
+            },
+            (error) => {
+              this.store.dispatch(this.message.actionFromError(error));
+            },
+          );
+        }
+      },
+    );
+  }
+
+  hideForShared(label: string, type: string, permission: string) {
+    if (label === 'Edit') {
+      if (type === 'SHARED' && permission === 'WRITE') {
+        return false;
+      }
+      return true;
+    }
+    if (label === 'View') {
+      if (type === 'SHARED' && permission === 'READ') {
+        return false;
+      }
+      return true;
+    }
   }
 
   // On View Type Changed

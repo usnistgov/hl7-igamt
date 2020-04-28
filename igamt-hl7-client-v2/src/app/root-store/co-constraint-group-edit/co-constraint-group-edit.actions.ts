@@ -9,6 +9,7 @@ export enum CoConstraintGroupEditActionTypes {
   LoadCoConstraintGroupSuccess = '[CoConstraintGroupEdit] Load CoConstraints Group Success',
   LoadCoConstraintGroupFailure = '[CoConstraintGroupEdit] Load CoConstraints Group Failure',
   OpenCoConstraintGroupEditor = '[CoConstraintGroupEdit] Open CoConstraints Group Editor',
+  OpenCoConstraintGroupCrossRefEditor = '[OpenCoConstraintGroupCrossRefEditor] OpenCoConstraint Group CrossRef Editor',
 }
 
 export class LoadCoConstraintGroup implements Action {
@@ -25,7 +26,15 @@ export class LoadCoConstraintGroupFailure implements Action {
   readonly type = CoConstraintGroupEditActionTypes.LoadCoConstraintGroupFailure;
   constructor(readonly error: HttpErrorResponse) { }
 }
-
+export class OpenCoConstraintGroupCrossRefEditor extends OpenEditorBase implements Action {
+  readonly type = CoConstraintGroupEditActionTypes.OpenCoConstraintGroupCrossRefEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) {
+    super();
+  }
+}
 export class OpenCoConstraintGroupEditor extends OpenEditorBase implements Action {
   readonly type = CoConstraintGroupEditActionTypes.OpenCoConstraintGroupEditor;
   constructor(readonly payload: {
@@ -40,4 +49,5 @@ export type CoConstraintGroupEditActions =
   LoadCoConstraintGroup
   | LoadCoConstraintGroupSuccess
   | LoadCoConstraintGroupFailure
-  | OpenCoConstraintGroupEditor;
+  | OpenCoConstraintGroupEditor
+  | OpenCoConstraintGroupCrossRefEditor;

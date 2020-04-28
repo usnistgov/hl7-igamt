@@ -6,7 +6,6 @@ import { of } from 'rxjs';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { Message } from '../../modules/dam-framework/models/messages/message.class';
-import { MessageService } from '../../modules/dam-framework/services/message.service';
 import { Hl7Config } from '../../modules/shared/models/config.class';
 import { ConfigService } from '../../modules/shared/services/config.service';
 import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
@@ -53,8 +52,12 @@ export class ConfigEffects {
     }),
   );
 
-  constructor(private actions$: Actions<ConfigActions>, private store: Store<any>, private configService: ConfigService,
-              private message: MessageService, private helper: RxjsStoreHelperService) {
+  constructor(
+    private actions$: Actions<ConfigActions>,
+    private store: Store<any>,
+    private configService: ConfigService,
+    private helper: RxjsStoreHelperService,
+  ) {
   }
 
 }

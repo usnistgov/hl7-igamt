@@ -50,6 +50,7 @@
     "primeng": "^7.1.0",
     "rxjs": "~6.3.3",
     "rxjs-compat": "^6.4.0",
+    "vkbeautify": "^0.99.3",
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
@@ -60,6 +61,7 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/lodash": "^4.14.123",
     "@types/node": "~8.9.4",
+    "@types/vkbeautify": "^0.99.2",
     "codelyzer": "~4.5.0",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",

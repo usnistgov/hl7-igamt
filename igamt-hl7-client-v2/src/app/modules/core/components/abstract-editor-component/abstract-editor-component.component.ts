@@ -2,7 +2,7 @@ import { TemplateRef, ViewChild } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
-import { map, pluck, take } from 'rxjs/operators';
+import { map, pluck } from 'rxjs/operators';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { DamAbstractEditorComponent } from '../../../dam-framework/services/dam-editor.component';
 import { Scope } from '../../../shared/constants/scope.enum';
@@ -14,12 +14,15 @@ import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 export abstract class AbstractEditorComponent extends DamAbstractEditorComponent {
 
   readonly active$: Observable<IHL7WorkspaceActive>;
-  readonly viewOnly$: Observable<boolean>;
+  protected _viewOnly$: Observable<boolean>;
   readonly document$: Observable<IAbstractDomain>;
   public documentRef$: Observable<IDocumentRef>;
   public documentId$: Observable<string>;
   readonly editor: IHL7EditorMetadata;
 
+  get viewOnly$() {
+    return this._viewOnly$;
+  }
   @ViewChild('headerControls')
   readonly controls: TemplateRef<any>;
   @ViewChild('headerTitle')
@@ -32,7 +35,7 @@ export abstract class AbstractEditorComponent extends DamAbstractEditorComponent
     super(editor, actions$, store);
     this.changeTime = new Date();
     this.active$ = this.store.select(fromIgamtSelectors.selectWorkspaceActive);
-    this.viewOnly$ = combineLatest(
+    this._viewOnly$ = combineLatest(
       this.store.select(fromIgamtSelectors.selectViewOnly),
       this.store.select(fromIgamtSelectors.selectDelta),
       this.active$.pipe(

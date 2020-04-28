@@ -48,6 +48,7 @@ import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
+import gov.nist.hit.hl7.auth.util.requests.UserListResponse;
 import gov.nist.hit.hl7.auth.util.requests.UserResponse;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 import gov.nist.hit.hl7.igamt.auth.service.AuthenticationService;
@@ -336,5 +337,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
   }
 
-
+@Override
+public UserListResponse getAllUsers() {	
+	RestTemplate restTemplate = new RestTemplate();
+	UserListResponse obj = restTemplate.getForObject(env.getProperty(AUTH_URL) + "/api/users", UserListResponse.class);
+	return obj;
+}
 }

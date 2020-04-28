@@ -5,9 +5,9 @@
       <div class="off-label">
         Off
       </div>
-      <input type="checkbox" class="custom-control-input" id="customSwitches" [(ngModel)]="active"
+      <input type="checkbox" class="custom-control-input" [id]="instanceId" [(ngModel)]="active"
         (ngModelChange)="triggerChange()">
-      <label class="custom-control-label" for="customSwitches">On</label>
+      <label class="custom-control-label" [for]="instanceId">On</label>
     </div>
   </div>
 

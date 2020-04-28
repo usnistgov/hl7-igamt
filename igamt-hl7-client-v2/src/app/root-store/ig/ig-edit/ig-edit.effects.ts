@@ -16,7 +16,13 @@ import { IGDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-docu
 import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
 import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
-import { CreateCoConstraintGroup, CreateCoConstraintGroupFailure, CreateCoConstraintGroupSuccess, UpdateSections } from './ig-edit.actions';
+import {
+  CreateCoConstraintGroup,
+  CreateCoConstraintGroupFailure,
+  CreateCoConstraintGroupSuccess,
+  OpenConformanceStatementSummaryEditorNode,
+  UpdateSections,
+} from './ig-edit.actions';
 import {
   AddResourceFailure,
   AddResourceSuccess,
@@ -258,6 +264,30 @@ export class IgEditEffects extends DamWidgetEffect {
   );
 
   @Effect()
+  openConformanceStatementSummaryEditorNode$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.OpenConformanceStatementSummaryEditorNode),
+    switchMap((action: OpenConformanceStatementSummaryEditorNode) => {
+      return combineLatest(
+        this.store.select(selectIgDocument),
+        this.igService.getConformanceStatementSummary(action.payload.id))
+        .pipe(
+          take(1),
+          map(([ig, cs]) => {
+            return new fromDAM.OpenEditor({
+              id: action.payload.id,
+              display: this.igService.igToIDisplayElement(ig),
+              editor: action.payload.editor,
+              initial: {
+                summary: cs,
+                changes: {},
+              },
+            });
+          }),
+        );
+    }),
+  );
+
+  @Effect()
   igEditOpenIgMetadataNode$ = this.actions$.pipe(
     ofType(IgEditActionTypes.OpenIgMetadataEditorNode),
     switchMap((action: OpenIgMetadataEditorNode) => {
@@ -479,9 +509,10 @@ export class IgEditEffects extends DamWidgetEffect {
         this.store.select(selectIgDocument).pipe(take(1))).pipe(
           take(1),
           flatMap(([response, ig]) => {
+            console.log('HE HE HERE');
             return [
               new fromDAM.TurnOffLoader(),
-              this.igService.insertRepositoryCopyResource(response.data.registry, response.data.display, ig),
+              ...this.igService.insertRepositoryCopyResource(response.data.registry, response.data.display, ig),
               new CreateCoConstraintGroupSuccess(response.data),
             ];
           }),

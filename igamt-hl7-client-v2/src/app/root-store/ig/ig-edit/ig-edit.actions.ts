@@ -39,6 +39,7 @@ export enum IgEditActionTypes {
   OpenSegmentEditorNode = '[Ig Edit TOC Segment] Open Segment Editor Node',
   OpenDatatypeEditorNode = '[Ig Edit TOC Datatype] Open Datatype Editor Node',
   OpenValueSetEditorNode = '[Ig Edit TOC Value Set] Open Value Set Editor Node',
+  OpenConformanceStatementSummaryEditorNode = '[Ig Edit TOC] Open Conformance Statement Summary Editor Node',
 
   TableOfContentSave = '[Ig Edit TOC Save] Save Table Of Content',
   TableOfContentSaveSuccess = '[Ig Edit TOC Save] Save Table Of Content Success',
@@ -218,6 +219,17 @@ export abstract class OpenEditorBase implements Action {
 
 export class OpenNarrativeEditorNode extends OpenEditorBase {
   readonly type = IgEditActionTypes.OpenNarrativeEditorNode;
+
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) {
+    super();
+  }
+}
+
+export class OpenConformanceStatementSummaryEditorNode extends OpenEditorBase {
+  readonly type = IgEditActionTypes.OpenConformanceStatementSummaryEditorNode;
 
   constructor(readonly payload: {
     id: string,

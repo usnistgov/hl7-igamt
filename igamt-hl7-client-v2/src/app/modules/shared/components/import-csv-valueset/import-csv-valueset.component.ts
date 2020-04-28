@@ -24,6 +24,7 @@ export class ImportCsvValuesetComponent implements ControlValueAccessor, OnInit 
   preview: string | ArrayBuffer;
   viewOnly = false;
   redirect = true;
+  errorMessage: string = null;
 
   constructor(public dialogRef: MatDialogRef<ImportCsvValuesetComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any, private host: ElementRef<HTMLInputElement>) {
@@ -36,9 +37,29 @@ export class ImportCsvValuesetComponent implements ControlValueAccessor, OnInit 
 
     reader.onloadend = (e) => {
       this.preview = reader.result;
+      this.errorMessage = null;
+      this.checkPreview();
     };
 
     reader.readAsText(file);
+  }
+
+  checkPreview() {
+    if (this.preview && typeof this.preview === 'string') {
+      const csvString: string = this.preview;
+      const start = csvString.indexOf('\"Mapping Identifier\"') + 22;
+      const end = csvString.indexOf('\"', start);
+      const bId = csvString.substring(start, end);
+
+      if (bId && this.data.node && this.data.node.children) {
+        this.data.node.children.forEach((item) => {
+          if (item.variableName === bId) {
+            this.errorMessage = 'Binding Identifier : ' + bId + ' is duplicated.';
+            console.log(this.errorMessage);
+          }
+        });
+      }
+    }
   }
 
   clear() {

@@ -33,6 +33,11 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
  *
  */
 public class SegmentDataModel implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8924767585140914700L;
+
 	private Segment model;
 
 	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();

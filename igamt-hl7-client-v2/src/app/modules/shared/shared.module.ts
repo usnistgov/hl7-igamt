@@ -16,9 +16,8 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
-import {
-  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
-} from 'primeng/primeng';
+import { ListboxModule } from 'primeng/primeng';
+import { AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TabViewModule, TooltipModule, TreeTableModule } from 'primeng/primeng';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
@@ -30,6 +29,7 @@ import { BindingSelectorComponent } from './components/binding-selector/binding-
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
+import { CsListComponent } from './components/cs-list/cs-list.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
@@ -74,6 +74,7 @@ import { SelectResourceIdsComponent } from './components/select-resource-ids/sel
 import { SelectSegmentsComponent } from './components/select-segments/select-segments.component';
 import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
+import { SharingDialogComponent } from './components/sharing-dialog/sharing-dialog.component';
 import { StructureTreeComponent } from './components/structure-tree/structure-tree.component';
 import { TextEditorDialogComponent } from './components/text-editor-dialog/text-editor-dialog.component';
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
@@ -131,6 +132,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     BindingBadgeComponent,
     CommentsComponent,
     UsageDialogComponent,
+    SharingDialogComponent,
     UsageViewerComponent,
     ConstantValueComponent,
     PredicateComponent,
@@ -156,6 +158,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ValuesetDeltaComponent,
     DisplayRefComponent,
     NgxDropdownComponent,
+    CsListComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -189,6 +192,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DamLoaderModule,
     RadioButtonModule,
     AccordionModule,
+    ListboxModule,
     InputSwitchModule,
     TableModule,
     SelectButtonModule,
@@ -205,6 +209,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MatSelectModule,
     MatFormFieldModule,
     NgxMatSelectSearchModule,
+    TabViewModule,
   ],
   exports: [
     CommonModule,
@@ -219,6 +224,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     InputSwitchModule,
     CardModule,
     AccordionModule,
+    ListboxModule,
     CheckboxModule,
     DamMessagesModule,
     PrimeNgDragDrop,
@@ -286,6 +292,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MaxNumberDirective,
     DeltaTreeComponent,
     DeltaColumnComponent,
+    CsListComponent,
     BindingSelectorComponent,
     ExportToolComponent,
     DynamicMappingComponent,
@@ -294,7 +301,24 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ValuesetDeltaComponent,
     DisplayRefComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent, AddCoConstraintGroupComponent, ImportCsvValuesetComponent, VerifyIgDialogComponent],
+  entryComponents: [
+    ConfirmDialogComponent,
+    ResourcePickerComponent,
+    CopyResourceComponent,
+    TextEditorDialogComponent,
+    UsageDialogComponent,
+    SharingDialogComponent,
+    CsDialogComponent,
+    PatternDialogComponent,
+    AddResourceComponent,
+    ExportXmlDialogComponent,
+    ExportToolComponent,
+    BindingSelectorComponent,
+    DeriveDialogComponent,
+    AddCoConstraintGroupComponent,
+    ImportCsvValuesetComponent,
+    VerifyIgDialogComponent,
+  ],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

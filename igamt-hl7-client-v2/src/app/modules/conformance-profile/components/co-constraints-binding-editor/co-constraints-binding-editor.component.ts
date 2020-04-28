@@ -93,9 +93,9 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
     );
 
     this.expansionPanelView = {};
-    this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);
-    this.segments = this.store.select(fromIgamtDisplaySelectors.selectAllSegments);
-    this.valueSets = this.store.select(selectValueSetsNodes);
+    this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes).pipe(tap(() => console.log('D')));
+    this.segments = this.store.select(fromIgamtDisplaySelectors.selectAllSegments).pipe(tap(() => console.log('S')));
+    this.valueSets = this.store.select(selectValueSetsNodes).pipe(tap(() => console.log('V')));
 
     this.conformanceProfile = new ReplaySubject<IConformanceProfile>(1);
     this.conformanceProfile$ = this.conformanceProfile.asObservable();

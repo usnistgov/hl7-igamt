@@ -45,13 +45,15 @@
 
   <ng-template #sideBar>
     <app-documentation-side-bar
-      [userguides]="userGuides$ |async"
+      [userguides]="userGuides$ | async"
       [decisions]="decisions$ |async"
       [faqs]="faqs$ |async"
       [glossary]="glossary$| async"
-      [releaseNotes]="releaseNotes$ |async"
-      [userNotes]="userNotes$ |async"
-      [admin]="admin$ |async"></app-documentation-side-bar>
+      [releaseNotes]="releaseNotes$ | async"
+      [userNotes]="userNotes$ | async"
+      [authenticated]="isAuthenticated$ | async"
+      [admin]="admin$ |async">
+    </app-documentation-side-bar>
   </ng-template>
 
 </app-dam-layout>

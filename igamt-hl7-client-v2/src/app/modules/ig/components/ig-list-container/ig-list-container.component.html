@@ -19,7 +19,7 @@
         Public
       </label>
       <label class="btn-light no-focus" ngbButtonLabel>
-        <input ngbButton type="radio" value="SHARED">
+        <input [queryParams]="{ type : 'SHARED' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="SHARED">
         Shared With Me
       </label>
       <label *ngIf="isAdmin | async" class="btn-light no-focus" ngbButtonLabel>

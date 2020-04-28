@@ -15,12 +15,13 @@ import { StoreResourceRepositoryService } from './resource-repository.service';
 })
 export class CrossReferencesService {
 
-  constructor(private http: HttpClient, private store: Store<any>, private resourceRepo: StoreResourceRepositoryService) {
-
-  }
+  constructor(
+    private http: HttpClient,
+    private store: Store<any>,
+    private resourceRepo: StoreResourceRepositoryService,
+  ) { }
 
   findUsages(documentRef: IDocumentRef, documentType: Type, elementType: Type, elementId: string): Observable<IRelationShip[]> {
-
     const url = this.getUsageUrl(documentRef.documentId, documentType, elementType, elementId);
     if (url == null) {
       return throwError(new UserMessage(MessageType.FAILED, 'Unsupperted URL'));
@@ -38,9 +39,7 @@ export class CrossReferencesService {
   }
 
   getUsagesFromRelationShip(relations: IRelationShip[]): Observable<IUsages[]> {
-
     return from(relations).pipe(
-      take(1),
       mergeMap((r: IRelationShip) => {
         return this.resourceRepo.getResourceDisplay(r.parent.type, r.parent.id).pipe(
           take(1),

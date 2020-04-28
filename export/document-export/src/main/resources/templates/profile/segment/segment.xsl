@@ -8,6 +8,7 @@
 	<xsl:import href="/templates/profile/constraint.xsl" />
 	<xsl:import href="/templates/profile/segment/segmentField.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
+		<xsl:import href="/templates/profile/singleCode/internalSingleCode.xsl" />
 	<xsl:import href="/templates/profile/commentList.xsl" />
 	<xsl:import href="/templates/profile/dynamicMapping.xsl" />
 	<xsl:import href="/templates/profile/metadata.xsl" />
@@ -30,7 +31,7 @@
 		<xsl:call-template name="VersionDisplay" />
 		<xsl:call-template name="UsageNotes"/>
 		<xsl:call-template name="AuthorNotes" />
-				<xsl:call-template name="PreDef" />
+		<xsl:call-template name="PreDef" />
 	
 
 		<xsl:if test="$segmentMetadata.display = 'true'">
@@ -198,8 +199,6 @@
 		</xsl:element>
 		
 						<xsl:call-template name="PostDef" />
-		
-		
 		<xsl:if test="count(Constraintss/ConformanceStatement)  &gt; 0">
 
 			<!-- <xsl:if test="count(./Constraint[@Type='cs']) &gt; 0"> -->
@@ -238,7 +237,9 @@
 		</xsl:if>
 		<!-- </xsl:if> -->
 		<xsl:apply-templates select="./coconstraints" />		
-		<xsl:call-template name="ValueSetBindingList"/>		
+		<xsl:call-template name="ValueSetBindingList"/>	
+				<xsl:call-template name="InternalSingleCode"/>		
+			
 		<xsl:apply-templates select="./DynamicMapping" />
 		<xsl:if test="$columnDisplay.segment.comment = 'true'">
 			<xsl:apply-templates select="./Binding/CommentList" />

@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {SelectItem} from 'primeng/api';
 
 @Component({
   selector: 'app-verify-ig-dialog',
@@ -9,7 +10,20 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 })
 export class VerifyIgDialogComponent implements OnInit {
   reports: any;
-  errorCounts: number[];
+  errorCounts: number[][];
+  igVerificationResultTable: any[] = [];
+  cpVerificationResultTable: any[] = [];
+  segVerificationResultTable: any[] = [];
+  dtVerificationResultTable: any[] = [];
+  vsVerificationResultTable: any[] = [];
+  igVerificationResultTableForUser: any[] = [];
+  cpVerificationResultTableForUser: any[] = [];
+  segVerificationResultTableForUser: any[] = [];
+  dtVerificationResultTableForUser: any[] = [];
+  vsVerificationResultTableForUser: any[] = [];
+
+  severities: SelectItem[];
+
   constructor(private http: HttpClient, public dialogRef: MatDialogRef<VerifyIgDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IVerifyIgDialogData) {
     this.reports = null;
@@ -17,7 +31,14 @@ export class VerifyIgDialogComponent implements OnInit {
   ngOnInit() {
     this.reports = null;
     this.errorCounts = [];
-    console.log(this.data);
+
+    this.severities = [
+      { label: 'All Severities', value: null },
+      { label: 'FATAL', value: 'FATAL' },
+      { label: 'ERROR', value: 'ERROR' },
+      { label: 'WARNING', value: 'WARNING' },
+      { label: 'INFO', value: 'INFO' },
+    ];
 
     if (this.data && this.data.igId) {
       if (this.data.type === 'Verification') {
@@ -28,7 +49,6 @@ export class VerifyIgDialogComponent implements OnInit {
       } else if (this.data.type === 'Compliance') {
         this.http.get<any[]>('/api/igdocuments/' + this.data.igId + '/compliance').subscribe((x) => {
           this.reports = x;
-          this.errorCounts = this.countErrors(this.reports);
         });
       }
     }
@@ -42,50 +62,70 @@ export class VerifyIgDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  addErrorNumbers(errorTable, errorTableForUser, numOfError, errors) {
+    errors.forEach((e) => {
+      if (e && e.targetMeta && e.targetMeta.domainInfo && e.targetMeta.domainInfo.scope === 'USER' && e.handleBy === 'User') {
+        errorTableForUser.push(e);
+      } else {
+        errorTable.push(e);
+      }
+
+      if (e.severity === 'FATAL') {
+        numOfError[0] = numOfError[0] + 1;
+      } else if (e.severity === 'ERROR') {
+        numOfError[1] = numOfError[1] + 1;
+      } else if (e.severity === 'WARNING') {
+        numOfError[2] = numOfError[2] + 1;
+      } else if (e.severity === 'INFO') {
+        numOfError[3] = numOfError[3] + 1;
+      }
+    });
+
+    return numOfError;
+  }
+
   countErrors(reports) {
-    let totalNumOfError = 0;
-    let numOfVSError = 0;
-    let numOfDTError = 0;
-    let numOfSEGError = 0;
-    let numOfCPError = 0;
-    let numOfIGError = 0;
+    let numOfVSError = [0, 0, 0, 0];
+    let numOfDTError = [0, 0, 0, 0];
+    let numOfSEGError = [0, 0, 0, 0];
+    let numOfCPError = [0, 0, 0, 0];
+    let numOfIGError = [0, 0, 0, 0];
+
+    this.igVerificationResultTable = [];
+    this.cpVerificationResultTable = [];
+    this.segVerificationResultTable = [];
+    this.dtVerificationResultTable = [];
+    this.vsVerificationResultTable = [];
 
     if (reports) {
       if (reports.valuesetVerificationResults) {
         reports.valuesetVerificationResults.forEach((item) => {
-          numOfVSError = numOfVSError + item.errors.length;
-          totalNumOfError = totalNumOfError + item.errors.length;
+          numOfVSError = this.addErrorNumbers(this.vsVerificationResultTable, this.vsVerificationResultTableForUser, numOfVSError, item.errors);
         });
       }
 
       if (reports.datatypeVerificationResults) {
         reports.datatypeVerificationResults.forEach((item) => {
-          numOfDTError = numOfDTError + item.errors.length;
-          totalNumOfError = totalNumOfError + item.errors.length;
+          numOfDTError = this.addErrorNumbers(this.dtVerificationResultTable, this.dtVerificationResultTableForUser, numOfDTError, item.errors);
         });
       }
 
       if (reports.segmentVerificationResults) {
         reports.segmentVerificationResults.forEach((item) => {
-          numOfSEGError = numOfSEGError + item.errors.length;
-          totalNumOfError = totalNumOfError + item.errors.length;
+          numOfSEGError = this.addErrorNumbers(this.segVerificationResultTable, this.segVerificationResultTableForUser, numOfSEGError, item.errors);
         });
       }
 
       if (reports.conformanceProfileVerificationResults) {
         reports.conformanceProfileVerificationResults.forEach((item) => {
-          numOfCPError = numOfCPError + item.errors.length;
-          totalNumOfError = totalNumOfError + item.errors.length;
+          numOfCPError = this.addErrorNumbers(this.cpVerificationResultTable, this.cpVerificationResultTableForUser, numOfCPError, item.errors);
         });
       }
 
-      numOfIGError = numOfIGError + reports.igVerificationResult.errors.length;
-      totalNumOfError = totalNumOfError + reports.igVerificationResult.errors.length;
-
-      return [totalNumOfError, numOfVSError, numOfDTError, numOfSEGError, numOfCPError, numOfIGError];
+      numOfIGError = this.addErrorNumbers(this.igVerificationResultTable, this.igVerificationResultTableForUser, numOfIGError, reports.igVerificationResult.errors);
     }
 
-    return [0, 0, 0, 0, 0, 0];
+    return [numOfVSError, numOfDTError, numOfSEGError, numOfCPError, numOfIGError];
 
   }
 }

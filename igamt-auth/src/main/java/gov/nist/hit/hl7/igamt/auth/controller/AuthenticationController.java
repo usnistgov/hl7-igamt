@@ -22,6 +22,7 @@ import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage.Status;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
+import gov.nist.hit.hl7.auth.util.requests.UserListResponse;
 import gov.nist.hit.hl7.auth.util.requests.UserResponse;
 import gov.nist.hit.hl7.auth.util.service.AuthenticationConverterService;
 import gov.nist.hit.hl7.igamt.auth.emails.service.AccountManagmenEmailService;
@@ -90,6 +91,14 @@ public class AuthenticationController {
       throws IOException {
 
     return auth.getAuthentication(authentication);
+  }
+  
+  @RequestMapping(value = "api/users", method = RequestMethod.GET)
+  @ResponseBody
+  public UserListResponse getAllUserList(HttpServletResponse res, Authentication authentication)
+      throws IOException {
+
+    return authService.getAllUsers();
   }
 
   @RequestMapping(value = "api/password/reset", method = RequestMethod.POST)

@@ -1,8 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Assertion, BinaryOperator, LEFT, NaryOperator, Operator, Pattern, RIGHT, Statement, UnaryOperator } from '../components/pattern-dialog/cs-pattern.domain';
 import { Usage } from '../constants/usage.enum';
-import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, ISimpleAssertion, Operator as CsOperator } from '../models/cs.interface';
-import { IAssertionPredicate, IFreeTextPredicate } from '../models/predicate.interface';
+import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, ISimpleAssertion, Operator as CsOperator } from '../models/cs.interface';
+import { IAssertionPredicate, IFreeTextPredicate, IPredicate } from '../models/predicate.interface';
 
 export interface IAssertionBag<T> {
   assertion: T;
@@ -14,7 +16,15 @@ export interface IAssertionBag<T> {
 })
 export class ConformanceStatementService {
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
+
+  generateXMLfromPredicate(predicate: IPredicate, id: string): Observable<string> {
+    return this.http.post('api/igdocuments/' + id + '/predicate/assertion', predicate, { responseType: 'text' });
+  }
+
+  generateXMLfromCs(cs: IConformanceStatement, id: string): Observable<string> {
+    return this.http.post('api/igdocuments/' + id + '/conformancestatement/assertion', cs, { responseType: 'text' });
+  }
 
   getFreeConformanceStatement(): IFreeTextConformanceStatement {
     return {

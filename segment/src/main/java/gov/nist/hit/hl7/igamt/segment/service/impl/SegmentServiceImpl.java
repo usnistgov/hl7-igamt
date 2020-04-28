@@ -573,10 +573,23 @@ public class SegmentServiceImpl implements SegmentService {
 		elm.setId(newLink.getId());
 		newLink.setDomainInfo(elm.getDomainInfo());
 		updateDependencies(elm, newKeys, username);
+		updateDynamicMapping(elm, newKeys);
 		this.save(elm);
-		//		updateCoConstraint(elm, obj, valuesetsMap, datatypesMap, username);
 		return newLink;
+	}
 
+	private void updateDynamicMapping(Segment segment, HashMap<RealKey, String> newKeys) {
+		if(segment.getDynamicMappingInfo() != null) {
+			if(segment.getDynamicMappingInfo().getItems() != null) {
+				segment.getDynamicMappingInfo().getItems().forEach(item -> {
+					RealKey key = new RealKey(item.getDatatypeId(), Type.DATATYPE);
+					if (newKeys.containsKey(key)) {
+						item.setDatatypeId(newKeys.get(key));
+					}
+				});
+			}
+		}
+		
 	}
 
 	/**

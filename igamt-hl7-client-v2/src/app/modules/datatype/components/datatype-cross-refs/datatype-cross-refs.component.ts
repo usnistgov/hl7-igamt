@@ -30,6 +30,7 @@ export class DatatypeCrossRefsComponent extends AbstractEditorComponent implemen
     }, actions$, store);
     this.usages = this.currentSynchronized$.pipe(
       map((value) => {
+        console.log(value);
         const list = [];
         Object.keys(value).forEach((key) => list.push(value[key]));
         return list;

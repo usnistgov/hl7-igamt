@@ -16,15 +16,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletResponse;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
-import gov.nist.hit.hl7.igamt.coconstraints.service.impl.SimpleCoConstraintService;
-import gov.nist.hit.hl7.igamt.display.model.*;
-
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.*;
-import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
+import gov.nist.hit.hl7.igamt.ig.service.*;
+import gov.nist.hit.hl7.igamt.service.impl.XMLSerializeServiceImpl;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -45,6 +41,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
 import com.opencsv.CSVReader;
 
+import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
+import gov.nist.hit.hl7.igamt.coconstraints.service.impl.SimpleCoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
@@ -52,6 +51,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -63,10 +63,10 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
@@ -79,14 +79,15 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.display.model.CloneMode;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
+import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGMetaDataDisplay;
-import gov.nist.hit.hl7.igamt.display.model.XMLVerificationReport;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddResourceResponse;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CoConstraintGroupCreateResponse;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CoConstraintGroupCreateWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
@@ -94,6 +95,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.ComplianceReport;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
@@ -111,12 +113,9 @@ import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
-import gov.nist.hit.hl7.igamt.ig.service.CrudService;
-import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
-import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
+import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
@@ -124,6 +123,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
+import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
@@ -176,6 +176,13 @@ public class IGDocumentController extends BaseController {
   @Autowired
   SimpleCoConstraintService coConstraintService;
 
+  @Autowired
+  XMLSerializeServiceImpl serializeService;
+  
+  @Autowired
+  private FhirHandlerService fhirHandlerService;
+
+
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
   private static final String VALUESET_DELETE = "VALUESET_DELETE";
@@ -218,6 +225,24 @@ public class IGDocumentController extends BaseController {
       Authentication authentication) throws IGNotFoundException {
     Ig igdoument = findIgById(id);
     return igService.convertDomainToConformanceStatement(igdoument);
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement/summary", method = RequestMethod.GET, produces = {"application/json" })
+  public Set<ConformanceStatement> getIgDocumentConformanceStatementSummary(@PathVariable("id") String id, Authentication authentication) throws IGNotFoundException {
+    Ig igdoument = findIgById(id);
+    return igService.conformanceStatementsSummary(igdoument);
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement/assertion", method = RequestMethod.POST, produces = {"application/text" })
+  public @ResponseBody String getAssertionCS(@PathVariable("id") String id, @RequestBody ConformanceStatement cs, Authentication authentication) throws IGNotFoundException, IGUpdateException {
+    return this.serializeService.generateAssertionScript(cs, id);
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/predicate/assertion", method = RequestMethod.POST, produces = {
+          "application/text" })
+  public @ResponseBody String getAssertionPD(@PathVariable("id") String id, @RequestBody Predicate p, Authentication authentication)
+          throws IGNotFoundException, IGUpdateException {
+    return this.serializeService.generateConditionScript(p, id);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/{viewScope}/datatypeFalvorOptions/{dtId}", method = RequestMethod.GET, produces = {
@@ -350,7 +375,9 @@ public class IGDocumentController extends BaseController {
         igdouments = igService.findAllUsersIG();
 
       } else if (type.equals(AccessType.SHARED)) {
-        // TODO
+    	  
+        igdouments = igService.findAllSharedIG(username, Scope.USER);
+      
       } else {
         igdouments = igService.findByUsername(username, Scope.USER);
 
@@ -403,8 +430,7 @@ public class IGDocumentController extends BaseController {
 
   public @ResponseBody Ig getIg(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException {
-
-    return findIgById(id);
+      return findIgById(id);
   }
 
   /**
@@ -600,8 +626,6 @@ public class IGDocumentController extends BaseController {
       Ig empty = igService.createEmptyIg();
       Set<String> savedIds = new HashSet<String>();
       for (AddingInfo ev : wrapper.getMsgEvts()) {
-
-
         MessageStructure profile = messageStructureRepository.findOneById(ev.getOriginalId());
         if (profile != null) {
           ConformanceProfile clone = new ConformanceProfile(profile, ev.getName());
@@ -1180,87 +1204,133 @@ public class IGDocumentController extends BaseController {
         ig.getUpdateDate(), info);
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST, produces = {
-  "application/json" })
-  public ResponseMessage<IGDisplayInfo> addValueSets(@PathVariable("id") String id,
-      @RequestBody AddingWrapper wrapper, Authentication authentication)
-          throws IGNotFoundException, AddingException {
-    String username = authentication.getPrincipal().toString();
-    Ig ig = findIgById(id);
-    Set<String> savedIds = new HashSet<String>();
-    for (AddingInfo elm : wrapper.getSelected()) {
+	@RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST, produces = {
+	"application/json" })
+	public ResponseMessage<IGDisplayInfo> addValueSets(@PathVariable("id") String id,
+		@RequestBody AddingWrapper wrapper, Authentication authentication)
+		throws IGNotFoundException, AddingException {
+	String username = authentication.getPrincipal().toString();
+	Ig ig = findIgById(id);
+	Set<String> savedIds = new HashSet<String>();
+	for (AddingInfo elm : wrapper.getSelected()) {
 
-      if (elm.isFlavor()) {
-        if(elm.getOriginalId() !=null) {
-          Valueset valueset = valuesetService.findById(elm.getOriginalId());
-          if (valueset != null) {
-            Valueset clone = valueset.clone();
-            clone.getDomainInfo().setScope(Scope.USER);
-            if(!elm.isIncludeChildren()) {
-              clone.setSourceType(SourceType.EXTERNAL);
-              clone.setCodes(new HashSet<Code>());	
-            }
-            clone.setUsername(username);
-            clone.setBindingIdentifier(elm.getName());
-            clone.setSourceType(elm.getSourceType());
-            clone = valuesetService.save(clone);
-            ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
-            savedIds.add(clone.getId());
-          }
-        } else {
-          Valueset valueset= new Valueset();
-          DomainInfo info = new DomainInfo();
-          info.setScope(Scope.USER);
-          info.setVersion(null);
-          valueset.setDomainInfo(info);
-          if(!elm.isIncludeChildren()) {
-            valueset.setSourceType(SourceType.EXTERNAL);
-            valueset.setCodes(new HashSet<Code>());	
-          } else {
-            valueset.setSourceType(SourceType.INTERNAL);
-          }
-          valueset.setUsername(username);
-          valueset.setBindingIdentifier(elm.getName());
-          valueset.setUrl(elm.getUrl());
-          Valueset saved = valuesetService.save(valueset);
-          ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
-          savedIds.add(saved.getId());
+		if (elm.isFlavor()) {
+			if (elm.getOriginalId() != null) {
+				Valueset valueset = valuesetService.findById(elm.getOriginalId());
+				if (valueset != null) {
+					Valueset clone = valueset.clone();
+					clone.getDomainInfo().setScope(Scope.USER);
+					if (!elm.isIncludeChildren()) {
+						clone.setSourceType(SourceType.EXTERNAL);
+						clone.setCodes(new HashSet<Code>());
+					}
+					clone.setUsername(username);
+					clone.setBindingIdentifier(elm.getName());
+					clone.setSourceType(elm.getSourceType());
+					clone = valuesetService.save(clone);
+					ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
+					savedIds.add(clone.getId());
+				}
+			} else {
+				if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+					// Import phinvads as flavor
+					Valueset valueset = new Valueset();
+					DomainInfo info = new DomainInfo();
+					info.setScope(Scope.PHINVADS);
+					info.setVersion(elm.getDomainInfo().getVersion());
+					valueset.setDomainInfo(info);
+					if (!elm.isIncludeChildren()) {
+						valueset.setSourceType(SourceType.EXTERNAL);
+						valueset.setCodes(new HashSet<Code>());
+						valueset.setExtensibility(Extensibility.Closed);
+						valueset.setStability(Stability.Dynamic);
+						valueset.setContentDefinition(ContentDefinition.Extensional);
+					} else {
+						valueset.setSourceType(SourceType.INTERNAL);
+						valueset.setExtensibility(Extensibility.Open);
+						valueset.setStability(Stability.Static);
+						valueset.setContentDefinition(ContentDefinition.Extensional);
+						// Get codes from vocab service
+						if (elm.getOid() != null) {
+							Set<Code> vsCodes = fhirHandlerService.getValusetCodes(elm.getOid());
+							valueset.setCodes(vsCodes);
+							valueset.setCodeSystems(valuesetService.extractCodeSystemsFromCodes(vsCodes));
+						}
+					}
+					valueset.setUsername(username);
+					valueset.setBindingIdentifier(elm.getName());
+					valueset.setUrl(elm.getUrl());
+					valueset.setOid(elm.getOid());
+					valueset.setFlavor(true);
+					
+					Valueset saved = valuesetService.save(valueset);
+					ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+					savedIds.add(saved.getId());
+				} else {
+					// Create new valueset
+					Valueset valueset = new Valueset();
+					DomainInfo info = new DomainInfo();
+					info.setScope(Scope.USER);
+					info.setVersion(null);
+					valueset.setDomainInfo(info);
+					if (!elm.isIncludeChildren()) {
+						valueset.setSourceType(SourceType.EXTERNAL);
+						valueset.setCodes(new HashSet<Code>());
+					} else {
+						valueset.setSourceType(SourceType.INTERNAL);
+					}
+					valueset.setUsername(username);
+					valueset.setBindingIdentifier(elm.getName());
+					valueset.setUrl(elm.getUrl());
+					Valueset saved = valuesetService.save(valueset);
+					ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+					savedIds.add(saved.getId());
+				}
+			}
+		} else {
+			if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+	
+				Valueset valueset = new Valueset();
+				DomainInfo info = new DomainInfo();
+				info.setScope(Scope.PHINVADS);
+				info.setVersion(elm.getDomainInfo().getVersion());
+				valueset.setDomainInfo(info);
+				valueset.setSourceType(SourceType.EXTERNAL);
+				valueset.setUsername(username);
+				valueset.setBindingIdentifier(elm.getName());
+				valueset.setUrl(elm.getUrl());
+				valueset.setOid(elm.getOid());
+				valueset.setFlavor(false);
+				valueset.setExtensibility(Extensibility.Closed);
+				valueset.setStability(Stability.Dynamic);
+				valueset.setContentDefinition(ContentDefinition.Extensional);
+				Valueset saved = valuesetService.save(valueset);
+				ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+				savedIds.add(saved.getId());
+			} else {
+				ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
+				savedIds.add(elm.getId());
+			}
 
-        }
-
-      } else {
-        ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
-        savedIds.add(elm.getId());
-      }
-    }
-    AddValueSetResponseObject objects = crudService.addValueSets(savedIds, ig);
-    igService.save(ig);
-    IGDisplayInfo info = new IGDisplayInfo();
-    info.setIg(ig);
-    info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
-
-    return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "", "Value Sets Added Succesfully", ig.getId(), false,
-        ig.getUpdateDate(), info);
-  }
+		}
+	}
+	AddValueSetResponseObject objects = crudService.addValueSets(savedIds, ig);
+	igService.save(ig);
+	IGDisplayInfo info = new IGDisplayInfo();
+	info.setIg(ig);
+	info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
+	
+	return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "", "Value Sets Added Succesfully", ig.getId(), false,
+			ig.getUpdateDate(), info);
+}
 
   @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
   public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, @RequestBody CopyInfo info,  Authentication authentication)
       throws IGNotFoundException {
     String username = authentication.getPrincipal().toString();
-
     Ig ig = findIgById(id);
-    Ig clone = this.igService.clone(ig, username);
-    clone.getDomainInfo().setScope(Scope.USER);
-    if(info.getMode().equals(CloneMode.CLONE)) {
-      clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[clone]");
-    }else if(info.getMode().equals(CloneMode.DERIVE)){
-      clone.getMetadata().setTitle(clone.getMetadata().getTitle() + "[derived]");
-      clone.setDerived(true); 
-    }
-    clone.setCreationDate(new Date());
-
-    clone = igService.save(clone);
+    Ig clone = this.igService.clone(ig, username, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", clone.getId(), false,
         clone.getUpdateDate(), clone.getId());
   }
@@ -1273,6 +1343,17 @@ public class IGDocumentController extends BaseController {
 
     this.igService.publishIG(id);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig published Successfully", id, false,
+        new Date(), id);
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/updateSharedUser", method = RequestMethod.POST, produces = {
+  "application/json" })
+  public @ResponseBody ResponseMessage<String> updateSharedUser(@PathVariable("id") String id, @RequestBody SharedUsersInfo sharedUsersInfo, Authentication authentication)
+      throws IGNotFoundException, IGUpdateException {
+    String username = authentication.getPrincipal().toString();
+
+    this.igService.updateSharedUser(id, sharedUsersInfo);
+    return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Shared Users Successfully Updated", id, false,
         new Date(), id);
   }
 
@@ -1292,20 +1373,16 @@ public class IGDocumentController extends BaseController {
       throws IGNotFoundException {
 
     Ig ig = findIgById(id);
+    String cUser = authentication.getPrincipal().toString();
+    if(ig.getUsername() != null && !ig.getUsername().equals(cUser)) {
+    	if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(cUser)) ig.setSharePermission(SharePermission.WRITE);
+    	else ig.setSharePermission(SharePermission.READ);    	
+    }
+    if(ig.getUsername() != null && ig.getUsername().equals(cUser) && ig.getCurrentAuthor() != null) {
+    	ig.setSharePermission(SharePermission.READ);  
+    }
     return displayInfoService.covertIgToDisplay(ig);
   }
-
-  @RequestMapping(value = "/api/igdocuments/{id}/delta", method = RequestMethod.GET, produces = {
-  "application/json" })
-  public @ResponseBody IGDisplayInfo getDeltaDisplay(@PathVariable("id") String id, Authentication authentication)
-      throws IGNotFoundException {
-
-    Ig ig = findIgById(id);
-
-    displayInfoService.covertIgToDisplay(ig);
-    return displayInfoService.covertIgToDisplay(ig);
-  }
-
   @RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}", method = RequestMethod.GET, produces = {
   "application/json" })
   public @ResponseBody Valueset getValueSetInIG(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
@@ -1607,7 +1684,7 @@ public class IGDocumentController extends BaseController {
   }
   
   @RequestMapping(value = "/api/igdocuments/{igid}/compliance", method = RequestMethod.GET, produces = {"application/json"})
-  public @ResponseBody VerificationReport complianceIGById(@PathVariable("igid") String igid, Authentication authentication) {
+  public @ResponseBody ComplianceReport complianceIGById(@PathVariable("igid") String igid, Authentication authentication) {
     Ig ig = this.igService.findById(igid);
     if (ig != null) return this.verificationService.verifyIgForCompliance(igid);
     return null;
