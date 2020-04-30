@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
-import { filter, map, take, tap } from 'rxjs/operators';
-import { CleanWorkspace, InitWidgetId } from '../store/data/dam.actions';
+import { Observable } from 'rxjs';
+import { filter, map, take } from 'rxjs/operators';
+import { InitWidgetId } from '../store/data/dam.actions';
 import { selectWidgetId } from '../store/data/dam.selectors';
 
 @Injectable()

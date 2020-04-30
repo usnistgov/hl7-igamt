@@ -5,9 +5,9 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, concatMap, map } from 'rxjs/operators';
-import { User } from 'src/app/modules/core/models/user/user.class';
+import { User } from 'src/app/modules/dam-framework/models/authentication/user.class';
+import { RxjsStoreHelperService } from 'src/app/modules/dam-framework/services/rxjs-store-helper.service';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
-import { RxjsStoreHelperService } from 'src/app/modules/shared/services/rxjs-store-helper.service';
 import { RegistrationService } from '../../modules/core/services/registration.service';
 import { Message } from '../../modules/dam-framework/models/messages/message.class';
 import {

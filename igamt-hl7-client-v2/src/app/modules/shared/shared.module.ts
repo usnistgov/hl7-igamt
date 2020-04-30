@@ -21,12 +21,11 @@ import { AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileU
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
-import { DamLoaderModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
+import { DamComponentsModule, DamLoaderModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { AddCoConstraintGroupComponent } from './components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
 import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
-import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsListComponent } from './components/cs-list/cs-list.component';
@@ -56,7 +55,6 @@ import { UsageComponent } from './components/hl7-v2-tree/columns/usage/usage.com
 import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/valueset.component';
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
-import { LoginFormComponent } from './components/login-form/login-form.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
@@ -93,12 +91,10 @@ import { MinNumberDirective } from './validators/min-number.directive';
 
 @NgModule({
   declarations: [
-    LoginFormComponent,
     RegisterFormComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
     ScopeBadgeComponent,
-    ConfirmDialogComponent,
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
     FormInputComponent,
@@ -190,6 +186,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     }),
     DamMessagesModule,
     DamLoaderModule,
+    DamComponentsModule,
     RadioButtonModule,
     AccordionModule,
     ListboxModule,
@@ -214,7 +211,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
   exports: [
     CommonModule,
     RouterModule,
-    LoginFormComponent,
     FormsModule,
     FileUploadModule,
     ReactiveFormsModule,
@@ -227,6 +223,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ListboxModule,
     CheckboxModule,
     DamMessagesModule,
+    DamComponentsModule,
     PrimeNgDragDrop,
     ReactiveFormsModule,
     ResetPasswordRequestFormComponent,
@@ -243,7 +240,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MatDialogModule,
     MatRadioModule,
     DropdownModule,
-    ConfirmDialogComponent,
     FormInputComponent,
     SelectVersionsComponent,
     SelectMessagesComponent,
@@ -302,7 +298,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DisplayRefComponent,
   ],
   entryComponents: [
-    ConfirmDialogComponent,
     ResourcePickerComponent,
     CopyResourceComponent,
     TextEditorDialogComponent,

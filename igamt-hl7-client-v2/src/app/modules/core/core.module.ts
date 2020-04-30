@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EffectsModule } from '@ngrx/effects';
@@ -7,35 +7,25 @@ import { StoreModule } from '@ngrx/store';
 import { CardModule } from 'primeng/card';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { RegistrationEffects } from '../../root-store/registration/registration.effects';
-import { DamMessagesModule } from '../dam-framework/dam-framework.module';
+import { DamAuthenticationModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { SharedModule } from '../shared/shared.module';
-import { AuthenticationEffects } from './../../root-store/authentication/authentication.effects';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { HomeComponent } from './components/home/home.component';
-import { LoginComponent } from './components/login/login.component';
 import { NewPasswordComponent } from './components/new-password/new-password.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordRequestComponent } from './components/reset-password-request/reset-password-request.component';
-import { TimeoutLoginDialogComponent } from './components/timeout-login-dialog/timeout-login-dialog.component';
-import { UserManagementHeaderComponent } from './components/user-management-header/user-management-header.component';
-import { NewPasswordResolver } from './resolvers/new-password.resolver';
-import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard.guard';
-import { AuthInterceptor } from './services/logout-interceptor.service';
 
 @NgModule({
   declarations: [
     HeaderComponent,
     FooterComponent,
-    LoginComponent,
     RegisterComponent,
-    UserManagementHeaderComponent,
     ResetPasswordRequestComponent,
     NewPasswordComponent,
     HomeComponent,
     ErrorPageComponent,
-    TimeoutLoginDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -44,27 +34,32 @@ import { AuthInterceptor } from './services/logout-interceptor.service';
     ProgressBarModule,
     StoreModule,
     MatProgressBarModule,
-    EffectsModule.forFeature([AuthenticationEffects, RegistrationEffects]),
+    EffectsModule.forFeature([RegistrationEffects]),
     SharedModule.forRoot(),
     DamMessagesModule.forRoot(),
-  ],
-  providers: [
-    NewPasswordResolver,
-    AuthenticatedGuard,
-    NotAuthenticatedGuard,
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+    DamAuthenticationModule.forRoot({
+      api: {
+        login: 'api/login',
+        resetPassword: 'api/password/reset',
+        validateToken: 'api/password/validatetoken',
+        updatePassword: 'api/password/reset/confirm',
+        checkAuthStatus: 'api/authentication',
+        logout: 'api/logout',
+      },
+      loginPageRedirectUrl: '/login',
+      unprotectedRedirectUrl: '/home',
+      loginSuccessRedirectUrl: '/home',
+    }),
   ],
   exports: [
     HeaderComponent,
     FooterComponent,
-    LoginComponent,
     RegisterComponent,
     SharedModule,
     ProgressBarModule,
     HomeComponent,
     ErrorPageComponent,
   ],
-  entryComponents: [TimeoutLoginDialogComponent],
 })
 export class CoreModule {
 }

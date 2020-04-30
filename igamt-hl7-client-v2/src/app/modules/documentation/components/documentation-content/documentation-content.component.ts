@@ -9,8 +9,8 @@ import {
   take,
 } from 'rxjs/operators';
 import { concatMap, mergeMap } from 'rxjs/operators';
+import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
-import { selectIsAdmin } from '../../../../root-store/authentication/authentication.reducer';
 import { ToggleEditMode } from '../../../../root-store/documentation/documentation.actions';
 import { documentationEntityAdapter, selectDocumentationById, selectEditMode } from '../../../../root-store/documentation/documentation.reducer';
 import { DamAbstractEditorComponent } from '../../../dam-framework/services/dam-editor.component';
@@ -39,7 +39,7 @@ export class DocumentationContentComponent extends DamAbstractEditorComponent {
     private documentationService: DocumentationService,
     store: Store<any>) {
     super({ id: EditorID.SECTION_NARRATIVE }, actions$, store);
-    this.viewOnly$ = combineLatest(this.store.select(selectIsAdmin), this.store.select(selectEditMode)).
+    this.viewOnly$ = combineLatest(this.store.select(fromAuth.selectIsAdmin), this.store.select(selectEditMode)).
       pipe(
         map(([admin, editMode]) => {
           return !admin || !editMode;

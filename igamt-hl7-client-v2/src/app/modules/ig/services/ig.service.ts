@@ -5,7 +5,6 @@ import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Message } from '../../dam-framework/models/messages/message.class';
-import { LoadResourcesInRepostory } from '../../dam-framework/store/data/dam.actions';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Type } from '../../shared/constants/type.enum';
@@ -60,7 +59,7 @@ export class IgService {
     return { registry, collection };
   }
 
-  loadRepositoryFromIgDisplayInfo(igInfo: IGDisplayInfo, values?: string[]): LoadResourcesInRepostory {
+  loadOrInsertRepositoryFromIgDisplayInfo(igInfo: IGDisplayInfo, load: boolean, values?: string[]): fromDam.InsertResourcesInRepostory | fromDam.LoadResourcesInRepostory {
     const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'sections'];
     const collections = (values ? values : _default).map((key) => {
       return {
@@ -68,9 +67,20 @@ export class IgService {
         values: key === 'sections' ? IgTOCNodeHelper.getIDisplayFromSections(igInfo.ig.content, '') : igInfo[key],
       };
     });
-    return new fromDam.LoadResourcesInRepostory({
+
+    return !load ? new fromDam.InsertResourcesInRepostory({
+      collections,
+    }) : new fromDam.LoadResourcesInRepostory({
       collections,
     });
+  }
+
+  loadRepositoryFromIgDisplayInfo(igInfo: IGDisplayInfo, values?: string[]): Action {
+    return this.loadOrInsertRepositoryFromIgDisplayInfo(igInfo, true, values);
+  }
+
+  insertRepositoryFromIgDisplayInfo(igInfo: IGDisplayInfo, values?: string[]): Action {
+    return this.loadOrInsertRepositoryFromIgDisplayInfo(igInfo, false, values);
   }
 
   insertRepositoryCopyResource(registryList: IRegistry, display: IDisplayElement, ig: IgDocument): Action[] {

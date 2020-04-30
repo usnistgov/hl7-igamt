@@ -7,7 +7,6 @@ import { Message } from 'src/app/modules/dam-framework/models/messages/message.c
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IgListService } from 'src/app/modules/ig/services/ig-list.service';
-import { RxjsStoreHelperService } from 'src/app/modules/shared/services/rxjs-store-helper.service';
 import {
   DeleteIgListItemRequest,
   DeleteIgListItemSuccess,
@@ -65,7 +64,6 @@ export class IgListEffects {
     private actions$: Actions,
     private igListService: IgListService,
     private store: Store<any>,
-    private helper: RxjsStoreHelperService,
     private message: MessageService,
   ) {
   }

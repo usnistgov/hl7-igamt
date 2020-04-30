@@ -9,13 +9,13 @@ import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { Message, MessageType, UserMessage } from '../../../modules/dam-framework/models/messages/message.class';
+import { RxjsStoreHelperService } from '../../../modules/dam-framework/services/rxjs-store-helper.service';
 import { DamWidgetEffect } from '../../../modules/dam-framework/store/dam-widget-effect.class';
 import { LoadPayloadData } from '../../../modules/dam-framework/store/data/dam.actions';
 import { IG_EDIT_WIDGET_ID } from '../../../modules/ig/components/ig-edit-container/ig-edit-container.component';
 import { IGDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
-import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
 import {
   CreateCoConstraintGroup,
   CreateCoConstraintGroupFailure,
@@ -395,7 +395,7 @@ export class IgEditEffects extends DamWidgetEffect {
                   coConstraintGroupRegistry: response.data.ig.coConstraintGroupRegistry,
                   content: ig.content,
                 }),
-                this.igService.loadRepositoryFromIgDisplayInfo(response.data, ['datatypes', 'segments', 'valueSets', 'messages', 'coConstraintGroups']),
+                this.igService.insertRepositoryFromIgDisplayInfo(response.data, ['datatypes', 'segments', 'valueSets', 'messages', 'coConstraintGroups']),
                 new AddResourceSuccess(response.data),
               ];
             }),

@@ -6,9 +6,9 @@ import { of } from 'rxjs';
 import { catchError, concatMap, map } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { Message } from '../../modules/dam-framework/models/messages/message.class';
+import { RxjsStoreHelperService } from '../../modules/dam-framework/services/rxjs-store-helper.service';
 import { Hl7Config } from '../../modules/shared/models/config.class';
 import { ConfigService } from '../../modules/shared/services/config.service';
-import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
 import { ConfigActions, ConfigActionTypes, LoadConfig, LoadConfigFailure, LoadConfigSuccess } from './config.actions';
 
 @Injectable()

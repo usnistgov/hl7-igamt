@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
+import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import {
   DeleteIgListItemRequest,
   IgListLoad,
@@ -15,13 +15,13 @@ import {
 import * as fromIgList from 'src/app/root-store/ig/ig-list/ig-list.index';
 import * as fromRoot from 'src/app/root-store/index';
 import { ClearIgList } from '../../../../root-store/ig/ig-list/ig-list.actions';
+import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { ClearAll } from '../../../dam-framework/store/messages/messages.actions';
 import { CloneModeEnum } from '../../../shared/constants/clone-mode.enum';
 import { IgListItem } from '../../models/ig/ig-list-item.class';
 import { IgService } from '../../services/ig.service';
-import { ConfirmDialogComponent } from './../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 import { IgListItemControl } from './../ig-list-item-card/ig-list-item-card.component';
 

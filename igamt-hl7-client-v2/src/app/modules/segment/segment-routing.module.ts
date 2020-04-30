@@ -11,9 +11,9 @@ import {
   SegmentEditActionTypes,
 } from '../../root-store/segment-edit/segment-edit.actions';
 import { OpenSegmentDeltaEditor } from '../../root-store/segment-edit/segment-edit.actions';
+import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';
@@ -34,7 +34,7 @@ const routes: Routes = [
       failureAction: SegmentEditActionTypes.LoadSegmentFailure,
       redirectTo: ['ig', 'error'],
     },
-    canActivate: [DataLoaderResolverService],
+    canActivate: [DataLoaderGuard],
     children: [
       {
         path: '',

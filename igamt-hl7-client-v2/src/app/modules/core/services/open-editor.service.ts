@@ -8,6 +8,7 @@ import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailur
 import { selectIgId } from '../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { MessageType, UserMessage } from '../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../dam-framework/services/message.service';
+import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
 import { Type } from '../../shared/constants/type.enum';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
@@ -15,7 +16,6 @@ import { IUsages } from '../../shared/models/cross-reference';
 import { IDelta } from '../../shared/models/delta';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IResource } from '../../shared/models/resource.interface';
-import { RxjsStoreHelperService } from '../../shared/services/rxjs-store-helper.service';
 import { IResourceMetadata } from '../components/resource-metadata-editor/resource-metadata-editor.component';
 
 @Injectable({
@@ -26,7 +26,6 @@ export class OpenEditorService {
   constructor(
     private actions$: Actions,
     private message: MessageService,
-    private rxjsHelper: RxjsStoreHelperService,
     private store: Store<any>) { }
 
   openEditor<T extends any, A extends OpenEditorBase>(

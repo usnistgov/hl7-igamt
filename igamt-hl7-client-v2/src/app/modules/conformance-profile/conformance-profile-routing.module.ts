@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoadConformanceProfile, OpenConformanceProfileDeltaEditor, OpenConformanceProfilePreDefEditor } from 'src/app/root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import { ConformanceProfileEditActionTypes, OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfilePostDefEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from '../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
+import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { CoConstraintsBindingEditorComponent } from './components/co-constraints-binding-editor/co-constraints-binding-editor.component';
@@ -25,7 +25,7 @@ const routes: Routes = [
       failureAction: ConformanceProfileEditActionTypes.LoadConformanceProfileFailure,
       redirectTo: ['ig', 'error'],
     },
-    canActivate: [DataLoaderResolverService],
+    canActivate: [DataLoaderGuard],
     children: [
       {
         path: '',

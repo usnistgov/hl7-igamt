@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { DamWidgetComponent } from '../../../dam-framework/components/dam-widget/dam-widget.component';
+import { DamWidgetComponent } from '../../../dam-framework/components/data-widget/dam-widget/dam-widget.component';
 import { IWorkspaceActive } from '../../../dam-framework/models/data/workspace';
 import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.component';
 

@@ -1,6 +1,6 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, ValidatorFn, Validators} from '@angular/forms';
-import {IRegistration} from 'src/app/modules/core/models/user/registration.class';
+import {IRegistration} from 'src/app/modules/dam-framework/models/authentication/registration.class';
 import {passwordValidator} from '../../validators/password-validator';
 
 @Component({

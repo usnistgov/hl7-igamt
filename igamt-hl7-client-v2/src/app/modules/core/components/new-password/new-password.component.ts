@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {Store} from '@ngrx/store';
-import {UpdatePasswordRequest} from '../../../../root-store/authentication/authentication.actions';
+import {UpdatePasswordRequest} from '../../../dam-framework/store/authentication/authentication.actions';
 
 @Component({
   selector: 'app-new-password',

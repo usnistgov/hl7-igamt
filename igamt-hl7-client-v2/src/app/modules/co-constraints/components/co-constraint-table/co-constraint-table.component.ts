@@ -7,6 +7,7 @@ import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
+import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
 import { SegmentService } from '../../../segment/services/segment.service';
 import { BindingSelectorComponent, IBindingLocationInfo } from '../../../shared/components/binding-selector/binding-selector.component';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -32,7 +33,6 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { BindingService } from '../../../shared/services/binding.service';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
-import { RxjsStoreHelperService } from '../../../shared/services/rxjs-store-helper.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
 import { NarrativeHeaderDialogComponent } from '../narrative-header-dialog/narrative-header-dialog.component';
@@ -221,7 +221,6 @@ export class CoConstraintTableComponent implements OnInit {
       this.bindingsService.getBingdingInfo(header.elementInfo.version, header.elementInfo.parent, header.elementInfo.datatype, header.elementInfo.location, header.elementInfo.type).pipe(
         take(1),
         map((bindingsInfo) => {
-          console.log(bindingsInfo);
           header.elementInfo.bindingInfo = bindingsInfo;
         }),
       ).subscribe();

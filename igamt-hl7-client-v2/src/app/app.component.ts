@@ -4,9 +4,9 @@ import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { BootstrapCheckAuthStatus } from './modules/dam-framework/store/authentication/authentication.actions';
+import { selectIsLoggedIn } from './modules/dam-framework/store/authentication/authentication.selectors';
 import { selectIsFullScreen } from './modules/dam-framework/store/data/dam.selectors';
-import { BootstrapCheckAuthStatus } from './root-store/authentication/authentication.actions';
-import { selectIsLoggedIn } from './root-store/authentication/authentication.reducer';
 import { LoadConfig } from './root-store/config/config.actions';
 
 @Component({

@@ -6,7 +6,7 @@ import { Action, Store } from '@ngrx/store';
 import { combineLatest, of } from 'rxjs';
 import { concatMap, map, take, tap } from 'rxjs/operators';
 import { AbstractEditorComponent } from '../../core/components/abstract-editor-component/abstract-editor-component.component';
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent } from '../components/fragments/confirm-dialog/confirm-dialog.component';
 import { DamActionTypes, GlobalSave } from '../store/data/dam.actions';
 import { selectWorkspaceCurrentIsChanged, selectWorkspaceCurrentIsValid } from '../store/data/dam.selectors';
 

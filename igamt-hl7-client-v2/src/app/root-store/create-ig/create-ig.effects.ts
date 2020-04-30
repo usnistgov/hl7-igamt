@@ -7,10 +7,9 @@ import { of } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { Message } from '../../modules/dam-framework/models/messages/message.class';
-import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { RxjsStoreHelperService } from '../../modules/dam-framework/services/rxjs-store-helper.service';
 import { MessageEventTreeNode } from '../../modules/ig/models/message-event/message-event.class';
 import { IgService } from '../../modules/ig/services/ig.service';
-import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
 import {
   CreateIg,
   CreateIgActions,
@@ -117,7 +116,6 @@ export class CreateIgEffects {
     private actions$: Actions<CreateIgActions>,
     private igService: IgService,
     private store: Store<any>,
-    private message: MessageService,
     private helper: RxjsStoreHelperService,
     private router: Router) {
   }
