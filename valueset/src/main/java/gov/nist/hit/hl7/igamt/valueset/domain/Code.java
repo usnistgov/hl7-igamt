@@ -31,7 +31,11 @@ public class Code implements Serializable{
   private String codeSystemOid;
   private String comments;
   private CodeUsage usage;
-  private String id;
+  private boolean hasPattern = false;
+  private String pattern;
+
+
+private String id;
 
   public Code() {
     this.setId(new ObjectId().toString());
@@ -101,6 +105,26 @@ public String getCodeSystemOid() {
 
 public void setCodeSystemOid(String codeSystemOid) {
 	this.codeSystemOid = codeSystemOid;
+}
+
+public boolean isHasPattern() {
+	return hasPattern;
+}
+
+public void setHasPattern(boolean hasPattern) {
+	this.hasPattern = hasPattern;
+}
+
+public String getPattern() {
+	return pattern;
+}
+
+public void setPattern(String pattern) {
+	this.pattern = pattern;
+}
+
+public static long getSerialversionuid() {
+	return serialVersionUID;
 }
 
 

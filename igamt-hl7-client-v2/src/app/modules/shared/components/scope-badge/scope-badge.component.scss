@@ -7,6 +7,9 @@
 .scope-badge-hl7 {
   background-color: $hl7_scope_color;
 }
+.scope-badge-dynamic {
+  background-color: $hl7_version_dynamic;
+}
 
 .scope-badge-preloaded {
   background-color: $preloaded_scope_color;

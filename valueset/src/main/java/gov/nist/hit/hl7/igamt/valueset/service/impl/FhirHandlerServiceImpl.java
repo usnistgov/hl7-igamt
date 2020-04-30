@@ -122,8 +122,36 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 			code.setValue(contain.getCode());
 			code.setCodeSystem(contain.getSystem());
 			code.setDescription(contain.getDisplay());
-	
+			String regex= contain.getExtensionString("regexRule");
+			code.setPattern(regex);
+			if(regex !=null) {
+				code.setHasPattern(true);
+			}else {
+				code.setHasPattern(false);
+
+			}
 			codes.add(code);
+		}
+		return codes;
+	}
+	
+	@Override
+	public Set<Code> getValusetCodeForDynamicTable() {
+		Set<Code> codes = new HashSet<Code>();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		HttpEntity<String> entity = new HttpEntity<String>(headers);
+		System.out.println(restTemplate);
+		ResponseEntity<String> response = restTemplate.exchange(
+				"https://hit-dev.nist.gov:8095/vocabulary-service/hl7/ValueSet/HL70396/$expand", HttpMethod.GET, entity,
+				String.class);
+
+		if (response != null) {
+			IParser parser = fhirR4Context.newJsonParser();
+			org.hl7.fhir.r4.model.ValueSet vs = (org.hl7.fhir.r4.model.ValueSet) parser.parseResource(response.getBody());
+			if (vs != null) {
+				codes = convertExpansionToCodes(vs.getExpansion());
+			}
 		}
 		return codes;
 	}

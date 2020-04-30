@@ -182,6 +182,8 @@ public class BindingServiceImpl implements BindingService {
             RealKey realKey= new RealKey(s, Type.VALUESET);
             if( newKeys.containsKey(realKey)) {
               newVs.add(newKeys.get(realKey));
+            }else {
+              newVs.add(s);
             }
           }
           vs.setValueSets(newVs);

@@ -143,6 +143,20 @@
                               placeholder="select code usage" [style]="{'minWidth':'90%'}"></p-dropdown>
 
                 </div>
+
+                <div #anchor *ngSwitchCase="'pattern'" style="display: flex; flex-direction: row; justify-content: space-between">
+
+                  <div style="margin: 10px;">
+                    <p-checkbox [(ngModel)]="rowData.hasPattern" [name]="'hasPattern'+rowData.id" [name]="'hasPattern'+rowData.id" [binary]="true"></p-checkbox>
+                  </div>
+                  <div>
+                    <input  (ngModelChange)="changeCodes()" *ngIf="!viewOnly&&rowData.hasPattern" [(ngModel)]="rowData.pattern"
+                            [id]="'pattern'+rowData.id"
+                            [name]="'pattern'+rowData.id" class="form-control"
+                            placeholder="regex"
+                            type="text">
+                  </div>
+                </div>
                 <div #anchor *ngSwitchCase="'codeSystem'">
                   <div *ngIf="!editMap[rowData.id]" class="input-group" class="code-system-column">
                     <div class="dropdown-column">

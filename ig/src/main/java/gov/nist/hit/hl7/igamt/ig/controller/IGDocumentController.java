@@ -1051,6 +1051,12 @@ public class IGDocumentController extends BaseController {
     clone.setUsername(username);
     clone.setBindingIdentifier(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
+    if(valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
+      clone.setSourceType(SourceType.INTERNAL);
+      clone.setOrigin(valueset.getId());
+      Set<Code> vsCodes = fhirHandlerService.getValusetCodeForDynamicTable();
+      clone.setCodes(vsCodes);
+    }
     clone = valuesetService.save(clone);
     ig.getValueSetRegistry().getChildren()
     .add(new Link(clone.getId(), clone.getDomainInfo(), ig.getValueSetRegistry().getChildren().size() + 1));
@@ -1092,10 +1098,8 @@ public class IGDocumentController extends BaseController {
     info.setSegments(displayInfoService.convertSegments(objects.getSegments()));
     info.setDatatypes(displayInfoService.convertDatatypes(objects.getDatatypes()));
     info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
-
     return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "", "Conformance profile Added Succesfully",
         ig.getId(), false, ig.getUpdateDate(), info);
-
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/segments/add", method = RequestMethod.POST, produces = {
@@ -1213,7 +1217,6 @@ public class IGDocumentController extends BaseController {
 	Ig ig = findIgById(id);
 	Set<String> savedIds = new HashSet<String>();
 	for (AddingInfo elm : wrapper.getSelected()) {
-
 		if (elm.isFlavor()) {
 			if (elm.getOriginalId() != null) {
 				Valueset valueset = valuesetService.findById(elm.getOriginalId());
@@ -1223,6 +1226,12 @@ public class IGDocumentController extends BaseController {
 					if (!elm.isIncludeChildren()) {
 						clone.setSourceType(SourceType.EXTERNAL);
 						clone.setCodes(new HashSet<Code>());
+					}
+					if(valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
+					  clone.setSourceType(SourceType.INTERNAL);
+					  clone.setOrigin(valueset.getId());
+                      Set<Code> vsCodes = fhirHandlerService.getValusetCodeForDynamicTable();
+                      clone.setCodes(vsCodes);
 					}
 					clone.setUsername(username);
 					clone.setBindingIdentifier(elm.getName());
