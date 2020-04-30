@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {
   LoadSegment,
   OpenSegmentConformanceStatementEditor,
-  OpenSegmentCrossRefEditor, OpenSegmentDynamicMappingEditor,
+  OpenSegmentCrossRefEditor,
   OpenSegmentMetadataEditor,
   OpenSegmentPostDefEditor,
   OpenSegmentPreDefEditor,
@@ -11,15 +11,14 @@ import {
   SegmentEditActionTypes,
 } from '../../root-store/segment-edit/segment-edit.actions';
 import { OpenSegmentDeltaEditor } from '../../root-store/segment-edit/segment-edit.actions';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
+import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
+import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
+import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';
 import { SegmentCrossRefsComponent } from './components/cross-refs/segment-cross-refs.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
-import {DynamicMappingEditorComponent} from './components/dynamic-mapping-editor/dynamic-mapping-editor.component';
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -35,7 +34,7 @@ const routes: Routes = [
       failureAction: SegmentEditActionTypes.LoadSegmentFailure,
       redirectTo: ['ig', 'error'],
     },
-    canActivate: [DataLoaderResolverService],
+    canActivate: [DataLoaderGuard],
     children: [
       {
         path: '',
@@ -45,8 +44,8 @@ const routes: Routes = [
       {
         path: 'pre-def',
         component: PredefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.PREDEF,
@@ -64,8 +63,8 @@ const routes: Routes = [
       {
         path: 'post-def',
         component: PostdefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.POSTDEF,
@@ -86,8 +85,8 @@ const routes: Routes = [
           {
             path: '',
             component: SegmentStructureEditorComponent,
-            canActivate: [IgEditorActivateGuard],
-            canDeactivate: [IgEditSaveDeactivateGuard],
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
             data: {
               editorMetadata: {
                 id: EditorID.SEGMENT_STRUCTURE,
@@ -105,8 +104,8 @@ const routes: Routes = [
           {
             path: 'delta',
             component: DeltaEditorComponent,
-            canActivate: [IgEditorActivateGuard],
-            canDeactivate: [IgEditSaveDeactivateGuard],
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
             data: {
               editorMetadata: {
                 id: EditorID.SEGMENT_DELTA,
@@ -126,8 +125,8 @@ const routes: Routes = [
       {
         path: 'metadata',
         component: MetadataEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.SEGMENT_METADATA,
@@ -145,8 +144,8 @@ const routes: Routes = [
       {
         path: 'conformance-statement',
         component: SegmentConformanceStatementEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.SEGMENT_CS,
@@ -165,8 +164,8 @@ const routes: Routes = [
       // {
       //   path: 'dynamic-mapping',
       //   component: DynamicMappingEditorComponent,
-      //   canActivate: [IgEditorActivateGuard],
-      //   canDeactivate: [IgEditSaveDeactivateGuard],
+      //   canActivate: [EditorActivateGuard],
+      //   canDeactivate: [EditorDeactivateGuard],
       //   data: {
       //     editorMetadata: {
       //       id: EditorID.DYNAMIC_MAPPING,
@@ -184,7 +183,7 @@ const routes: Routes = [
       {
         path: 'cross-references',
         component: SegmentCrossRefsComponent,
-        canActivate: [IgEditorActivateGuard],
+        canActivate: [EditorActivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.CROSSREF,

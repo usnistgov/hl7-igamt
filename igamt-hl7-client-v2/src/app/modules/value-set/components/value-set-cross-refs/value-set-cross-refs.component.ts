@@ -3,8 +3,8 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
-import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.index';
+import * as fromDamActions from 'src/app/modules/dam-framework/store/data/dam.actions';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IUsages } from '../../../shared/models/cross-reference';
@@ -39,7 +39,7 @@ export class ValueSetCrossRefsComponent extends AbstractEditorComponent implemen
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
       switchMap((elementId) => {
-        return this.store.select(fromIgEdit.selectDatatypesById, { id: elementId });
+        return this.store.select(fromIgamtDisplaySelectors.selectDatatypesById, { id: elementId });
       }),
     );
   }
@@ -47,7 +47,7 @@ export class ValueSetCrossRefsComponent extends AbstractEditorComponent implemen
   ngOnDestroy(): void {
   }
 
-  onEditorSave(action: EditorSave): Observable<Action> {
+  onEditorSave(action: fromDamActions.EditorSave): Observable<Action> {
     return undefined;
   }
 

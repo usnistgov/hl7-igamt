@@ -1,9 +1,10 @@
+import { IEditorMetadata } from '../../dam-framework/models/data/workspace';
 import { Type } from '../constants/type.enum';
 
-export interface IEditorMetadata {
-  id: EditorID;
+export interface IHL7EditorMetadata extends IEditorMetadata {
   title?: string;
   resourceType?: Type;
+  id: EditorID;
 }
 
 export enum EditorID {
@@ -30,4 +31,5 @@ export enum EditorID {
   DYNAMIC_MAPPING = 'DYNAMIC_MAPPING',
   CC_GROUP = 'CC_GROUP',
   VALUESET_DELTA = 'VALUESET_DELTA',
+  CS_SUMMARY = 'CS_SUMMARY',
 }

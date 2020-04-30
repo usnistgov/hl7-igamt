@@ -1,4 +1,4 @@
-<span class="badge badge" style="font-weight: 300; color: #afafaf;"><i class="fa fa-calendar"></i> Updated On {{updateDate | date:'medium'  }}
+<span class="badge badge" style="font-weight: 300; color: #afafaf;" *ngIf="updateDate"><i class="fa fa-calendar"></i> Updated On {{updateDate | date:'medium'  }}
 </span>
-<span class="badge badge" style="font-weight: 300; color: #afafaf;"><i class="fa fa-calendar"></i> Created On {{creationDate | date:'medium' }}
+<span class="badge badge" style="font-weight: 300; color: #afafaf;" *ngIf="creationDate"><i class="fa fa-calendar"></i> Created On {{creationDate | date:'medium' }}
 </span>

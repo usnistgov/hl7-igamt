@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -17,6 +18,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -65,8 +67,12 @@ public interface IgService {
   public List<Ig> findAllUsersIG();
 
   public List<Ig> findAllPreloadedIG();
+  
+  public List<Ig> findAllSharedIG(String username, Scope scope);
 
   public void delete(Ig ig);
+
+  Set<ConformanceStatement> conformanceStatementsSummary(Ig igdoument);
 
   public IgDocumentConformanceStatement convertDomainToConformanceStatement(Ig igdoument);
 
@@ -93,5 +99,7 @@ public interface IgService {
    * @return
    */
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass);
+
+  public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
 
 }

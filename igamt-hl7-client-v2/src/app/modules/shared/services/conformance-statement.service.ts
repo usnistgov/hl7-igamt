@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Assertion, BinaryOperator, LEFT, NaryOperator, Operator, Pattern, RIGHT, Statement, UnaryOperator } from '../components/pattern-dialog/cs-pattern.domain';
+import { Assertion, BinaryOperator, LEFT, NaryOperator, Operator, Pattern, RIGHT, Statement, StatementType, UnaryOperator } from '../components/pattern-dialog/cs-pattern.domain';
 import { Usage } from '../constants/usage.enum';
 import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, ISimpleAssertion, Operator as CsOperator } from '../models/cs.interface';
 import { IAssertionPredicate, IFreeTextPredicate, IPredicate } from '../models/predicate.interface';
@@ -47,7 +47,7 @@ export class ConformanceStatementService {
   }
 
   getAssertionConformanceStatement(assertion: Assertion): { cs: IAssertionConformanceStatement, statements: ISimpleAssertion[] } {
-    const bag = this.getCsDataAssertion(assertion);
+    const bag = assertion ? this.getCsDataAssertion(assertion) : { assertion: undefined, leafs: [] };
     return {
       cs: {
         identifier: '',
@@ -59,7 +59,7 @@ export class ConformanceStatementService {
   }
 
   getAssertionPredicate(assertion: Assertion): { cs: IAssertionPredicate, statements: ISimpleAssertion[] } {
-    const bag = this.getCsDataAssertion(assertion);
+    const bag = assertion ? this.getCsDataAssertion(assertion) : { assertion: undefined, leafs: [] };
     return {
       cs: {
         identifier: '',
@@ -72,8 +72,14 @@ export class ConformanceStatementService {
     };
   }
 
-  getCsPattern(assertion: IAssertion): Pattern {
-    return new Pattern(this.getCsViewAssertion(assertion, { counter: 0 }));
+  getCsPattern(assertion: IAssertion, predicate: boolean): Pattern {
+    const pattern = new Pattern(this.getCsViewAssertion(assertion, { counter: 0 }));
+    if (predicate) {
+      pattern.leafs.forEach((leaf) => {
+        leaf.data.branch = 'P';
+      });
+    }
+    return pattern;
   }
 
   createSimpleAssertion(): ISimpleAssertion {

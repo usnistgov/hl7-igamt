@@ -1,7 +1,7 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Action} from '@ngrx/store';
-import {Message} from '../../modules/core/models/message/message.class';
-import {Hl7Config} from '../../modules/shared/models/config.class';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Action } from '@ngrx/store';
+import { Message } from '../../modules/dam-framework/models/messages/message.class';
+import { Hl7Config } from '../../modules/shared/models/config.class';
 
 export enum ConfigActionTypes {
   LoadConfig = '[Main Page] Load Config',

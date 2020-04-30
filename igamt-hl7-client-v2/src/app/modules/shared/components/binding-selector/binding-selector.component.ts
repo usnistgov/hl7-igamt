@@ -3,8 +3,8 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { mergeMap, take } from 'rxjs/operators';
-import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { TurnOffLoader, TurnOnLoader } from '../../../../root-store/loader/loader.actions';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IBindingType, IValuesetStrength } from '../../models/binding.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
@@ -93,20 +93,20 @@ export class BindingSelectorComponent<T> implements OnInit {
 
   loadCodes($event) {
     this.selectedSingleCode = null;
-    this.store.dispatch(new TurnOnLoader({ blockUI: true }));
+    this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: true }));
     this.getById($event.id).subscribe(
       (x) => {
-        this.store.dispatch(new TurnOffLoader());
+        this.store.dispatch(new fromDAM.TurnOffLoader());
         this.currentValueSet = x;
       },
       () => {
-        this.store.dispatch(new TurnOffLoader());
+        this.store.dispatch(new fromDAM.TurnOffLoader());
       },
     );
   }
 
   getById(id: string): Observable<IValueSet> {
-    return this.store.select(selectIgId).pipe(
+    return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
       take(1),
       mergeMap((x) => {
         return this.valueSetService.getById(x, id);

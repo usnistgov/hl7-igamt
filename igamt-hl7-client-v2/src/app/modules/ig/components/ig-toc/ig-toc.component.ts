@@ -112,7 +112,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     const id = this.nodeHelperService.cloneNode(node);
     this.update();
     this.router.navigate(['./text', id], { relativeTo: this.activatedRoute });
-
   }
 
   deleteSection(section) {

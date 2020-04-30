@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
-import { UserMessage } from 'src/app/modules/core/models/message/message.class';
-import { Message, MessageType } from '../../core/models/message/message.class';
+import { UserMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
+import { Message, MessageType } from '../../dam-framework/models/messages/message.class';
 import { Scope } from '../constants/scope.enum';
 import { Type } from '../constants/type.enum';
 import { IResourceInfo } from '../models/resource-info.interface';

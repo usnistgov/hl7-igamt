@@ -1,0 +1,4 @@
+<button class="btn btn-success btn-sm toolbar-button" type="button" (click)="widget.save()" [disabled]="!(widget.isValid$() | async) || !(widget.containsUnsavedChanges$() | async)">
+  <i class="fa fa-save"></i>
+  Save
+</button>

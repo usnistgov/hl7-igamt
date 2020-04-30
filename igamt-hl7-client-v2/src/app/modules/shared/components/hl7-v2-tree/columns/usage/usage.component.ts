@@ -6,6 +6,7 @@ import { map, take, tap } from 'rxjs/operators';
 import { IUsageConfiguration } from '../../../../../export-configuration/models/default-export-configuration.interface';
 import { Type } from '../../../../constants/type.enum';
 import { Usage } from '../../../../constants/usage.enum';
+import { IDocumentRef } from '../../../../models/abstract-domain.interface';
 import { Hl7Config } from '../../../../models/config.class';
 import { IPredicate } from '../../../../models/predicate.interface';
 import { IResource } from '../../../../models/resource.interface';
@@ -73,7 +74,7 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   }
 
   @Input()
-  set predicate({ igId, predicates }: { igId: string, predicates: Array<IBinding<string>> }) {
+  set predicate({ documentRef, predicates }: { documentRef: IDocumentRef, predicates: Array<IBinding<string>> }) {
     if (predicates && predicates.length > 0) {
       predicates.sort((a, b) => {
         return a.level - b.level;
@@ -83,7 +84,7 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
       let display: IBinding<string> = predicates.length > 1 ? predicates[1] : undefined;
 
       if (top.level === 1) {
-        this.predicateService.getPredicate(igId, top.value).pipe(
+        this.predicateService.getPredicate(documentRef, top.value).pipe(
           tap((p: IPredicate) => {
             this.initial = p;
             this.editablePredicate.next({ value: p });
@@ -94,7 +95,7 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
       }
 
       if (display) {
-        this.freezePredicate$ = this.predicateService.getPredicate(igId, display.value).pipe(
+        this.freezePredicate$ = this.predicateService.getPredicate(documentRef, display.value).pipe(
           map((p: IPredicate) => {
             return {
               level: display.level,

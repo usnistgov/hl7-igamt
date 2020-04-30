@@ -1,7 +1,7 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
-import {Message} from '../../modules/core/models/message/message.class';
-import {IResourceInfo} from '../../modules/shared/models/resource-info.interface';
+import { Message } from '../../modules/dam-framework/models/messages/message.class';
+import { IResourceInfo } from '../../modules/shared/models/resource-info.interface';
 
 export enum ResourceLoaderActionTypes {
   LoadResource = '[ResourceLoader] Load Resource',
@@ -12,12 +12,12 @@ export enum ResourceLoaderActionTypes {
 
 export class LoadResource implements Action {
   readonly type = ResourceLoaderActionTypes.LoadResource;
-  constructor( readonly payload: IResourceInfo) {
+  constructor(readonly payload: IResourceInfo) {
   }
 }
 export class LoadResourceSuccess implements Action {
   readonly type = ResourceLoaderActionTypes.LoadResourceSuccess;
-  constructor(readonly payload: {response:  Message<any[]>,  resourceInfo: IResourceInfo}) {
+  constructor(readonly payload: { response: Message<any[]>, resourceInfo: IResourceInfo }) {
   }
 }
 export class LoadResourceFailure implements Action {
@@ -31,4 +31,4 @@ export class ClearResource implements Action {
   }
 }
 
-export type ResourceLoaderActions = LoadResource| LoadResourceSuccess| LoadResourceFailure | ClearResource;
+export type ResourceLoaderActions = LoadResource | LoadResourceSuccess | LoadResourceFailure | ClearResource;

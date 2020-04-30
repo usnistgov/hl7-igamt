@@ -124,6 +124,7 @@ public class ConformanceProfile extends Resource {
       elm.structID = structID;
       elm.children = children;
       elm.binding = binding;
+      elm.coConstraintsBindings= coConstraintsBindings;
   }
 
   public ConformanceProfile(MessageStructure elm, String event) {

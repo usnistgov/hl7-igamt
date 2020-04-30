@@ -2,6 +2,11 @@ import { Type } from '../constants/type.enum';
 import { IDomainInfo } from './domain-info.interface';
 import { IPublicationInfo } from './publication-info.interface';
 
+export interface IDocumentRef {
+  documentId: string;
+  type: Type;
+}
+
 export interface IAbstractDomain {
   id: string;
   creationDate?: string;
@@ -23,6 +28,7 @@ export interface IAbstractDomain {
   from?: string;
   version?: number;
   dateTimeConstraints?: any;
+  sharePermission?: string;
 }
 
 export enum Status {
@@ -30,4 +36,9 @@ export enum Status {
   PUBLISHED = 'PUBLISHED',
   SUPERSEDED = 'SUPERSEDED',
   WITHDRAWN = 'WITHDRAWN',
+}
+
+export enum SharePermission {
+  READ = 'READ',
+  WRITE = 'WRITE',
 }

@@ -5,12 +5,13 @@ import { Observable, of, ReplaySubject, Subscription } from 'rxjs';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
-import { selectSegmentsById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadSegment } from '../../../../root-store/segment-edit/segment-edit.actions';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
-import { Message } from '../../../core/models/message/message.class';
-import { MessageService } from '../../../core/services/message.service';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
 import { SegmentService } from '../../services/segment.service';
@@ -89,14 +90,14 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent<IS
     return of(false);
   }
 
-  saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message<any>> {
-    return this.segmentService.saveChanges(id, igId, changes);
+  saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {
+    return this.segmentService.saveChanges(id, documentRef, changes);
   }
   getById(id: string): Observable<ISegment> {
     return this.segmentService.getById(id);
   }
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
-    return selectSegmentsById;
+    return fromIgamtDisplaySelectors.selectSegmentsById;
   }
 
 }

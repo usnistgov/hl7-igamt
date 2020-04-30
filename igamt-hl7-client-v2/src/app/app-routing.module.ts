@@ -2,12 +2,12 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ErrorPageComponent } from './modules/core/components/error-page/error-page.component';
 import { HomeComponent } from './modules/core/components/home/home.component';
-import { LoginComponent } from './modules/core/components/login/login.component';
 import { NewPasswordComponent } from './modules/core/components/new-password/new-password.component';
 import { RegisterComponent } from './modules/core/components/register/register.component';
 import { ResetPasswordRequestComponent } from './modules/core/components/reset-password-request/reset-password-request.component';
-import { NewPasswordResolver } from './modules/core/resolvers/new-password.resolver';
-import { NotAuthenticatedGuard } from './modules/core/services/auth-guard.guard';
+import { LoginComponent } from './modules/dam-framework/components/authentication/login/login.component';
+import { NotAuthenticatedGuard } from './modules/dam-framework/guards/auth-guard.guard';
+import { NewPasswordResolver } from './modules/dam-framework/guards/new-password.resolver';
 
 const routes: Routes = [
   {
@@ -40,6 +40,10 @@ const routes: Routes = [
   {
     path: 'ig',
     loadChildren: './modules/ig/ig.module#IgModule',
+  },
+  {
+    path: 'library',
+    loadChildren: './modules/datatype-library/datatype-library.module#DatatypeLibraryModule',
   },
   {
     path: 'documentation',

@@ -1,8 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, forkJoin, Observable, of } from 'rxjs';
-import { filter, map, take, takeUntil, takeWhile, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { filter, map, take, takeWhile, tap } from 'rxjs/operators';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { Type } from '../../../../constants/type.enum';
 import { IBindingType, InternalSingleCode, IValuesetBinding } from '../../../../models/binding.interface';
@@ -40,7 +40,6 @@ export interface IValueSetOrSingleCodeDisplay {
 export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingleCodeBindings> implements OnInit, OnDestroy {
 
   bindings: Array<IBinding<IValueSetOrSingleCode>>;
-
   freeze$: Observable<{
     context: IBindingContext,
     binding: IValueSetOrSingleCodeDisplay,
@@ -201,6 +200,10 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
     this.alive = false;
   }
 
+  emitIValueSetDisplay() {
+
+  }
+
   // tslint:disable-next-line: cognitive-complexity
   ngOnInit() {
     this.alive = true;
@@ -225,21 +228,20 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
 
               case IBindingType.VALUESET:
                 this.bindingService.getValueSetBindingDisplay(topBindings.value.value as IValuesetBinding[], this.repository).pipe(
-                  takeWhile(() => this.alive),
+                  take(1),
                   tap((bindings) => {
                     this.editable.next({
                       type: IBindingType.VALUESET,
                       value: bindings,
                     });
-                  },
-                    takeUntil(this.editable$)),
+                  }),
                 ).subscribe();
                 break;
 
               case IBindingType.SINGLECODE:
                 const internalSg = (topBindings.value.value as InternalSingleCode);
                 this.getValueSetById(internalSg.valueSetId).pipe(
-                  takeWhile(() => this.alive),
+                  take(1),
                   tap((vs) => {
                     this.editable.next({
                       type: IBindingType.SINGLECODE,
@@ -249,12 +251,12 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
                         codeSystem: internalSg.codeSystem,
                       },
                     });
-                  },
-                    takeUntil(this.editable$)),
+                  }),
                 ).subscribe();
                 break;
             }
           } else {
+            this.editable.next({ type: IBindingType.VALUESET, value: undefined });
             display = topBindings;
           }
 
@@ -297,6 +299,8 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
                 );
                 break;
             }
+          } else {
+            this.freeze$ = of();
           }
         } else {
           this.editable.next({ type: IBindingType.VALUESET, value: undefined });

@@ -1,17 +1,15 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, ActivatedRouteSnapshot } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import {Observable, of} from 'rxjs';
-import {concatMap, map, take} from 'rxjs/operators';
-import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import {selectIgId, selectSegmentsById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { Observable, of } from 'rxjs';
+import { concatMap, map, take } from 'rxjs/operators';
+import * as fromDamActions from 'src/app/modules/dam-framework/store/data/dam.actions';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IUsages } from '../../../shared/models/cross-reference';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
-import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 
 @Component({
   selector: 'app-cross-refs',
@@ -42,7 +40,7 @@ export class SegmentCrossRefsComponent extends AbstractEditorComponent implement
     return this.elementId$.pipe(
       take(1),
       concatMap((id) => {
-        return this.store.select(selectSegmentsById, { id });
+        return this.store.select(fromIgamtDisplaySelectors.selectSegmentsById, { id });
       }),
     );
   }
@@ -50,7 +48,7 @@ export class SegmentCrossRefsComponent extends AbstractEditorComponent implement
   ngOnDestroy(): void {
   }
 
-  onEditorSave(action: EditorSave): Observable<Action> {
+  onEditorSave(action: fromDamActions.EditorSave): Observable<Action> {
     return of();
   }
 

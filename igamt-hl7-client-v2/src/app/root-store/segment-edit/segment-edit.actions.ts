@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
-import { IEditorMetadata } from '../../modules/shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../modules/shared/models/editor.enum';
 import { ISegment } from '../../modules/shared/models/segment.interface';
 
 export enum SegmentEditActionTypes {
@@ -36,25 +36,23 @@ export class OpenSegmentMetadataEditor implements Action {
   readonly type = SegmentEditActionTypes.OpenSegmentMetadataEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
-
 }
 
 export class OpenSegmentDeltaEditor implements Action {
   readonly type = SegmentEditActionTypes.OpenSegmentDeltaEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
-
 }
 
 export class OpenSegmentStructureEditor implements Action {
   readonly type = SegmentEditActionTypes.OpenSegmentStructureEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 
@@ -62,7 +60,7 @@ export class OpenSegmentPreDefEditor implements Action {
   readonly type = SegmentEditActionTypes.OpenSegmentPreDefEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 
@@ -70,30 +68,28 @@ export class OpenSegmentPostDefEditor implements Action {
   readonly type = SegmentEditActionTypes.OpenSegmentPostDefEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
-
 export class OpenSegmentCrossRefEditor implements Action {
   readonly type = SegmentEditActionTypes.OpenSegmentCrossRefEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
-
 export class OpenSegmentDynamicMappingEditor implements Action {
   readonly type = SegmentEditActionTypes.OpenSegmentDynamicMappingEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 export class OpenSegmentConformanceStatementEditor implements Action {
   readonly type = SegmentEditActionTypes.OpenSegmentConformanceStatementEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 

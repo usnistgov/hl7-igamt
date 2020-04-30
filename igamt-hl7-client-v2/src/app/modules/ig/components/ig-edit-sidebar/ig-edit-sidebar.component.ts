@@ -6,6 +6,8 @@ import { Store } from '@ngrx/store';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of } from 'rxjs';
 import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import {
   IgEditActionTypes,
   ImportResourceFromFile,
@@ -21,26 +23,26 @@ import { selectIgId } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { ToggleDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
-import { CollapseTOC, CreateCoConstraintGroup, CreateCoConstraintGroupSuccess } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { CreateCoConstraintGroup, CreateCoConstraintGroupSuccess } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
-import { selectAllSegments } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
+import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
 import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
 import { ImportCsvValuesetComponent } from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
 import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
 import { UsageDialogComponent } from '../../../shared/components/usage-dialog/usage-dialog.component';
 import { Scope } from '../../../shared/constants/scope.enum';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
 import { IUsages } from '../../../shared/models/cross-reference';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
 import { CrossReferencesService } from '../../../shared/services/cross-references.service';
-import { RxjsStoreHelperService } from '../../../shared/services/rxjs-store-helper.service';
 import { IAddNewWrapper, IAddWrapper } from '../../models/ig/add-wrapper.class';
 import { IGDisplayInfo } from '../../models/ig/ig-document.class';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
@@ -54,7 +56,7 @@ export class IgEditSidebarComponent implements OnInit {
 
   nodes$: Observable<any[]>;
   hl7Version$: Observable<string[]>;
-  igId$: Observable<string>;
+  documentRef$: Observable<IDocumentRef>;
   version$: Observable<string>;
   delta: boolean;
   viewOnly$: Observable<boolean>;
@@ -79,7 +81,7 @@ export class IgEditSidebarComponent implements OnInit {
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.nodes$ = this.getNodes();
     this.hl7Version$ = store.select(config.getHl7Versions);
-    this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
+    this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
     this.viewOnly$ = this.store.select(selectViewOnly);
   }
@@ -94,9 +96,6 @@ export class IgEditSidebarComponent implements OnInit {
         }
       }),
     );
-  }
-  collapseToc() {
-    this.store.dispatch(new CollapseTOC());
   }
 
   ngOnInit() {
@@ -154,10 +153,10 @@ export class IgEditSidebarComponent implements OnInit {
             return result;
           }),
           filter((x) => x !== undefined),
-          withLatestFrom(this.igId$),
+          withLatestFrom(this.documentRef$),
           take(1),
-          map(([result, igId]) => {
-            this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: result, type: event.type }));
+          map(([result, documentRef]) => {
+            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
           }),
         ).subscribe();
       }),
@@ -173,11 +172,9 @@ export class IgEditSidebarComponent implements OnInit {
 
     dialogRef.afterClosed().pipe(
       filter((x) => x !== undefined),
-      withLatestFrom(this.igId$),
+      withLatestFrom(this.documentRef$),
       take(1),
-      map(([result, igId]) => {
-        console.log([result]);
-        console.log([igId]);
+      map(([result, documentRef]) => {
         if (result && result.redirect) {
           RxjsStoreHelperService.listenAndReact(this.actions, {
             [IgEditActionTypes.ImportResourceFromFileSuccess]: {
@@ -189,7 +186,7 @@ export class IgEditSidebarComponent implements OnInit {
           }).subscribe();
         }
 
-        this.store.dispatch(new ImportResourceFromFile(igId, Type.VALUESET, Type.IGDOCUMENT, result.file));
+        this.store.dispatch(new ImportResourceFromFile(documentRef.documentId, Type.VALUESET, Type.IGDOCUMENT, result.file));
       }),
     ).subscribe();
   }
@@ -199,27 +196,27 @@ export class IgEditSidebarComponent implements OnInit {
     });
     dialogRef.afterClosed().pipe(
       filter((x) => x !== undefined),
-      withLatestFrom(this.igId$),
-      map(([result, igId]) => {
-       if (result && result.redirect) {
-        RxjsStoreHelperService.listenAndReact(this.actions, {
-          [IgEditActionTypes.CopyResourceSuccess]: {
-            do: (action: CopyResourceSuccess) => {
-              this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
-              return of();
+      withLatestFrom(this.documentRef$),
+      map(([result, documentRef]) => {
+        if (result && result.redirect) {
+          RxjsStoreHelperService.listenAndReact(this.actions, {
+            [IgEditActionTypes.CopyResourceSuccess]: {
+              do: (action: CopyResourceSuccess) => {
+                this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
+                return of();
+              },
             },
-          },
-        }).subscribe();
-       }
-       this.store.dispatch(new CopyResource({ documentId: igId, selected: result.flavor }));
+          }).subscribe();
+        }
+        this.store.dispatch(new CopyResource({ documentId: documentRef.documentId, selected: result.flavor }));
       }),
     ).subscribe();
   }
   delete($event: IDisplayElement) {
-    this.igId$.pipe(
+    this.documentRef$.pipe(
       take(1),
-      concatMap((id: string) => {
-        return this.crossReferencesService.findUsagesDisplay(id, Type.IGDOCUMENT, $event.type, $event.id).pipe(
+      concatMap((documentRef: IDocumentRef) => {
+        return this.crossReferencesService.findUsagesDisplay(documentRef, Type.IGDOCUMENT, $event.type, $event.id).pipe(
           take(1),
           map((usages: IUsages[]) => {
             if (usages.length === 0) {
@@ -232,7 +229,7 @@ export class IgEditSidebarComponent implements OnInit {
               dialogRef.afterClosed().subscribe(
                 (answer) => {
                   if (answer) {
-                    this.store.dispatch(new DeleteResource({ documentId: id, element: $event }));
+                    this.store.dispatch(new DeleteResource({ documentId: documentRef.documentId, element: $event }));
                   }
                 },
               );
@@ -241,7 +238,7 @@ export class IgEditSidebarComponent implements OnInit {
                 data: {
                   title: 'Cross References found',
                   usages,
-                  documentId: id,
+                  documentId: documentRef.documentId,
                 },
               });
               this.router.events
@@ -307,9 +304,9 @@ export class IgEditSidebarComponent implements OnInit {
   }
 
   addCoConstraintGroup($event: IAddNewWrapper) {
-    combineLatest(this.igId$, this.store.select(selectAllSegments)).pipe(
+    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllSegments)).pipe(
       take(1),
-      tap(([igId, segments]) => {
+      tap(([{ documentId, type }, segments]) => {
         const dialogRef = this.dialog.open(AddCoConstraintGroupComponent, {
           data: {
             segments: segments.filter((f) => {
@@ -331,7 +328,7 @@ export class IgEditSidebarComponent implements OnInit {
                   },
                 },
               }).subscribe();
-              this.store.dispatch(new CreateCoConstraintGroup({ documentId: igId, ...result }));
+              this.store.dispatch(new CreateCoConstraintGroup({ documentId, ...result }));
             }
           }),
         ).subscribe();
@@ -345,10 +342,10 @@ export class IgEditSidebarComponent implements OnInit {
     });
     dialogRef.afterClosed().pipe(
       filter((x) => x !== undefined),
-      withLatestFrom(this.igId$),
+      withLatestFrom(this.documentRef$),
       take(1),
-      map(([result, igId]) => {
-        this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: [result], type: $event.type }));
+      map(([result, documentRef]) => {
+        this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: [result], type: $event.type }));
       }),
     ).subscribe();
   }

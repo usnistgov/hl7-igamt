@@ -1,9 +1,6 @@
-<span style="font-style: italic" *ngIf="updateInfo">
-  <span *ngIf="updateInfo.time">
-
-    <i class="fa fa-calendar"></i> Update on {{updateInfo.time |date}}
-  </span>
+<app-metadata-date [updateDate]="updateInfo.time"></app-metadata-date>
+<span class="badge badge" style="font-weight: 300; color: #afafaf;" *ngIf="updateInfo">
   <span *ngIf="updateInfo.author">
-      by <i class="fa fa-user"></i>{{updateInfo.author}}
+      by <i class="fa fa-user"></i> {{updateInfo.author}}
   </span>
 </span>

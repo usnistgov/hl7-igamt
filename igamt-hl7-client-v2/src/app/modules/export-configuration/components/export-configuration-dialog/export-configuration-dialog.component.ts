@@ -1,17 +1,17 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { TreeNode } from 'angular-tree-component';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
 import { map, take, withLatestFrom } from 'rxjs/operators';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { ToggleDelta } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
-  selectAllDatatypes, selectAllMessages, selectAllSegments, selectAllValueSets,
   selectDelta,
   selectDerived,
-  selectIgId, selectValueSets, selectValueSetsNodes,
+  selectIgId,
 } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -147,7 +147,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
     ).subscribe();
   }
   filterByDelta($event: string[]) {
-    let subscription = this.store.select(selectAllDatatypes).pipe(
+    let subscription = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes).pipe(
       map((value: IDisplayElement[], number: any) => {
         for (const display of value) {
           this.filter.datatypesFilterMap[display.id] = $event.indexOf(display.delta) > -1;
@@ -155,14 +155,14 @@ export class ExportConfigurationDialogComponent implements OnInit {
       })).subscribe();
 
     subscription.unsubscribe();
-    subscription = this.store.select(selectAllSegments).pipe(
+    subscription = this.store.select(fromIgamtDisplaySelectors.selectAllSegments).pipe(
       map((value: IDisplayElement[], number: any) => {
         for (const display of value) {
           this.filter.segmentFilterMap[display.id] = $event.indexOf(display.delta) > -1;
         }
       })).subscribe();
     subscription.unsubscribe();
-    subscription = this.store.select(selectAllValueSets).pipe(
+    subscription = this.store.select(fromIgamtDisplaySelectors.selectAllValueSets).pipe(
       map((value: IDisplayElement[], number: any) => {
         for (const display of value) {
           this.filter.valueSetFilterMap[display.id] = $event.indexOf(display.delta) > -1;
@@ -170,7 +170,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
       })).subscribe();
     subscription.unsubscribe();
 
-    subscription = this.store.select(selectAllMessages).pipe(
+    subscription = this.store.select(fromIgamtDisplaySelectors.selectAllMessages).pipe(
       map((value: IDisplayElement[], number: any) => {
         for (const display of value) {
           this.filter.conformanceProfileFilterMap[display.id] = $event.indexOf(display.delta) > -1;

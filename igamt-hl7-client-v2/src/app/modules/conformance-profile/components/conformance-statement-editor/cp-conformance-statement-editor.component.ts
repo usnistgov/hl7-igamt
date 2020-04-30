@@ -4,10 +4,12 @@ import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ConformanceStatementEditorComponent } from 'src/app/modules/core/components/conformance-statement-editor/conformance-statement-editor.component';
-import { selectedConformanceProfile, selectMessagesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { Message } from '../../../core/models/message/message.class';
-import { MessageService } from '../../../core/services/message.service';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { IConformanceStatementList, ICPConformanceStatementList } from '../../../shared/models/cs-list.interface';
 import { IConformanceStatement } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -68,19 +70,19 @@ export class CPConformanceStatementEditorComponent extends ConformanceStatementE
           availableConformanceStatements: cpList.availableConformanceStatements,
         };
       },
-      selectedConformanceProfile);
+      fromIgamtSelectedSelectors.selectedConformanceProfile);
   }
 
-  saveChanges(id: string, igId: string, changes: Array<IChange<IConformanceStatement>>): Observable<Message<any>> {
-    return this.cpService.saveChanges(id, igId, changes);
+  saveChanges(id: string, documentRef: IDocumentRef, changes: Array<IChange<IConformanceStatement>>): Observable<Message<any>> {
+    return this.cpService.saveChanges(id, documentRef, changes);
   }
 
-  getById(id: string, igId: string): Observable<IConformanceStatementList> {
-    return this.cpService.getConformanceStatements(id, igId);
+  getById(id: string, documentRef: IDocumentRef): Observable<IConformanceStatementList> {
+    return this.cpService.getConformanceStatements(id, documentRef);
   }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
-    return selectMessagesById;
+    return fromIgamtDisplaySelectors.selectMessagesById;
   }
 
   ngOnInit() {

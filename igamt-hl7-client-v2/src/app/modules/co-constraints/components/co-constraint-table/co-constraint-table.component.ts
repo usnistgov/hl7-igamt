@@ -7,10 +7,12 @@ import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
+import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
 import { SegmentService } from '../../../segment/services/segment.service';
 import { BindingSelectorComponent, IBindingLocationInfo } from '../../../shared/components/binding-selector/binding-selector.component';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import {
   CoConstraintColumnType,
   CoConstraintGroupBindingType,
@@ -31,7 +33,6 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { BindingService } from '../../../shared/services/binding.service';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
-import { RxjsStoreHelperService } from '../../../shared/services/rxjs-store-helper.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
 import { NarrativeHeaderDialogComponent } from '../narrative-header-dialog/narrative-header-dialog.component';
@@ -67,12 +68,12 @@ export class CoConstraintTableComponent implements OnInit {
 
   @Input()
   set segment(seg: ISegment) {
-    this.processTree(seg, this._igId);
+    this.processTree(seg, this._documentRef);
   }
 
   @Input()
-  set igId(id: string) {
-    this.processTree(this._segment, id);
+  set documentRef(documentRef: IDocumentRef) {
+    this.processTree(this._segment, documentRef);
   }
 
   @Input()
@@ -163,7 +164,7 @@ export class CoConstraintTableComponent implements OnInit {
     },
   ];
 
-  _igId: string;
+  _documentRef: IDocumentRef;
   @Input()
   valueSets: IDisplayElement[];
   @Input()
@@ -220,7 +221,6 @@ export class CoConstraintTableComponent implements OnInit {
       this.bindingsService.getBingdingInfo(header.elementInfo.version, header.elementInfo.parent, header.elementInfo.datatype, header.elementInfo.location, header.elementInfo.type).pipe(
         take(1),
         map((bindingsInfo) => {
-          console.log(bindingsInfo);
           header.elementInfo.bindingInfo = bindingsInfo;
         }),
       ).subscribe();
@@ -335,16 +335,16 @@ export class CoConstraintTableComponent implements OnInit {
     }
   }
 
-  processTree(segment: ISegment, id: string) {
+  processTree(segment: ISegment, documentRef: IDocumentRef) {
     if (segment) {
       this._segment = segment;
     }
 
-    if (id) {
-      this._igId = id;
+    if (documentRef) {
+      this._documentRef = documentRef;
     }
 
-    if (segment && id) {
+    if (segment && documentRef) {
       this.treeService.getTree(segment, this.repository, true, true, (value) => {
         this.structure = [
           {
@@ -377,7 +377,7 @@ export class CoConstraintTableComponent implements OnInit {
   }
 
   initOptions() {
-    this.segmentService.getObx2Values(this._segment, this._igId).pipe(
+    this.segmentService.getObx2Values(this._segment, this._documentRef).pipe(
       take(1),
       tap((values) => {
         this.datatypeOptions = values.map((value) => {

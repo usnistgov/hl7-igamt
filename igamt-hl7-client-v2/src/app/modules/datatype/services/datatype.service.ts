@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Message } from '../../core/models/message/message.class';
+import { Message } from '../../dam-framework/models/messages/message.class';
+import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IConformanceStatementList } from '../../shared/models/cs-list.interface';
 import { IDatatype } from '../../shared/models/datatype.interface';
 import { IChange } from '../../shared/models/save-change';
@@ -17,16 +18,16 @@ export class DatatypeService {
     return this.http.get<IDatatype>(this.URL + id);
   }
 
-  saveChanges(id: string, documentId: string, changes: IChange[]): Observable<Message<string>> {
+  saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<string>> {
     return this.http.post<Message<string>>(this.URL + id, changes, {
       params: {
-        dId: documentId,
+        dId: documentRef.documentId,
       },
     });
   }
 
-  getConformanceStatements(id: string, documentId: string): Observable<IConformanceStatementList> {
-    return this.http.get<IConformanceStatementList>(this.URL + id + '/conformancestatement/' + documentId);
+  getConformanceStatements(id: string, documentInfo: IDocumentRef): Observable<IConformanceStatementList> {
+    return this.http.get<IConformanceStatementList>(this.URL + id + '/conformancestatement/' + documentInfo.documentId);
   }
 
 }
