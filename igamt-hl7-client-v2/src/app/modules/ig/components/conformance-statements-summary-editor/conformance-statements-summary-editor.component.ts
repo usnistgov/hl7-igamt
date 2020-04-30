@@ -3,13 +3,14 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IConformanceStatement } from 'src/app/modules/shared/models/cs.interface';
-import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
+import { IgDocument } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
 
 @Component({
@@ -42,14 +43,14 @@ export class ConformanceStatementsSummaryEditorComponent extends AbstractEditorC
     );
   }
 
-  onEditorSave(action: EditorSave): Observable<Action> {
+  onEditorSave(action: fromDAM.EditorSave): Observable<Action> {
     throw new Error('Method not implemented.');
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {
-    return this.ig$.pipe(
-      map((ig) => {
-        return this.igService.igToIDisplayElement(ig);
+    return this.document$.pipe(
+      map((document) => {
+        return this.igService.igToIDisplayElement(document as IgDocument);
       }),
     );
   }

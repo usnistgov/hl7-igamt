@@ -5,28 +5,30 @@ import {
   LoadDocumentations,
   OpenDocumentationSection,
 } from '../../root-store/documentation/documentation.actions';
-import {Type} from '../shared/constants/type.enum';
-import {EditorID} from '../shared/models/editor.enum';
-import {DocumentationContainerComponent} from './components/documentation-container/documentation-contrainer.component';
-import {DocumentationContentComponent} from './components/documentation-content/documentation-content.component';
-import {CanActivateDocumentationGuard} from './guards/can-activate-documentation.guard';
-import {CanDeactivateDocumentationGuard} from './guards/can-deactivate-documentation.guard';
-import {DocumentationLoaderGuard} from './guards/documentation-loader.guard';
+import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
+import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
+import { DamWidgetRoute } from '../dam-framework/services/router-helpers.service';
+import { Type } from '../shared/constants/type.enum';
+import { EditorID } from '../shared/models/editor.enum';
+import { DOC_WIDGET_ID, DocumentationContainerComponent } from './components/documentation-container/documentation-contrainer.component';
+import { DocumentationContentComponent } from './components/documentation-content/documentation-content.component';
 
 const routes: Routes = [
   {
-    path: '', component: DocumentationContainerComponent,
-    data: {
+    ...DamWidgetRoute({
+      widgetId: DOC_WIDGET_ID,
       loadAction: LoadDocumentations,
       successAction: DocumentationActionTypes.LoadDocumentationsSuccess,
       failureAction: DocumentationActionTypes.LoadDocumentationsFailure,
       redirectTo: ['documentation', 'error'],
-    },
-    canActivate: [DocumentationLoaderGuard],
+      component: DocumentationContainerComponent,
+    }),
+    path: '',
     children: [
-      { path: 'users-guides/:id', component: DocumentationContentComponent,
-        canDeactivate: [CanDeactivateDocumentationGuard],
-        canActivate: [CanActivateDocumentationGuard],
+      {
+        path: 'users-guides/:id', component: DocumentationContentComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.SECTION_NARRATIVE,
@@ -42,9 +44,10 @@ const routes: Routes = [
         },
       },
 
-      { path: 'faqs/:id', component: DocumentationContentComponent,
-        canDeactivate: [CanDeactivateDocumentationGuard],
-        canActivate: [CanActivateDocumentationGuard],
+      {
+        path: 'faqs/:id', component: DocumentationContentComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.SECTION_NARRATIVE,
@@ -61,9 +64,10 @@ const routes: Routes = [
         },
       },
 
-      { path: 'implementation-decisions/:id', component: DocumentationContentComponent,
-        canDeactivate: [CanDeactivateDocumentationGuard],
-        canActivate: [CanActivateDocumentationGuard],
+      {
+        path: 'implementation-decisions/:id', component: DocumentationContentComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.SECTION_NARRATIVE,
@@ -79,9 +83,10 @@ const routes: Routes = [
         },
       },
 
-      { path: 'releases-notes/:id', component: DocumentationContentComponent,
-        canDeactivate: [CanDeactivateDocumentationGuard],
-        canActivate: [CanActivateDocumentationGuard],
+      {
+        path: 'releases-notes/:id', component: DocumentationContentComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.SECTION_NARRATIVE,
@@ -97,9 +102,10 @@ const routes: Routes = [
         },
       },
 
-      { path: 'users-notes/:id', component: DocumentationContentComponent,
-        canDeactivate: [CanDeactivateDocumentationGuard],
-        canActivate: [CanActivateDocumentationGuard],
+      {
+        path: 'users-notes/:id', component: DocumentationContentComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.SECTION_NARRATIVE,
@@ -116,9 +122,10 @@ const routes: Routes = [
         },
       },
 
-      { path: 'glossary/:id', component: DocumentationContentComponent,
-        canDeactivate: [CanDeactivateDocumentationGuard],
-        canActivate: [CanActivateDocumentationGuard],
+      {
+        path: 'glossary/:id', component: DocumentationContentComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.SECTION_NARRATIVE,

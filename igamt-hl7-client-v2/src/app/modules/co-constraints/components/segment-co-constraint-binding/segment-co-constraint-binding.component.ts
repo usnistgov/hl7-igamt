@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import {
   CoConstraintGroupBindingType,
   ICoConstraintBindingSegment,
@@ -49,7 +50,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   @Input()
   context: IStructureElementRef;
   @Input()
-  igId: string;
+  documentRef: IDocumentRef;
   @Output()
   valueChange: EventEmitter<ICoConstraintBindingSegment>;
   @Output()
@@ -112,7 +113,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
       const dialogRef = this.dialog.open(CoConstraintGroupSelectorComponent, {
         data: {
           segment: display,
-          igId: this.igId,
+          documentRef: this.documentRef,
         },
       });
 

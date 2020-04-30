@@ -1,15 +1,15 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Actions} from '@ngrx/effects';
-import {Action, Store} from '@ngrx/store';
-import {Observable, of} from 'rxjs';
-import {concatMap, map, take} from 'rxjs/operators';
-import {EditorSave} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import {selectCoConstraintGroupsById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import {Type} from '../../../shared/constants/type.enum';
-import {IUsages} from '../../../shared/models/cross-reference';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {EditorID} from '../../../shared/models/editor.enum';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Actions } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { Observable, of } from 'rxjs';
+import { concatMap, map, take } from 'rxjs/operators';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import { Type } from '../../../shared/constants/type.enum';
+import { IUsages } from '../../../shared/models/cross-reference';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { EditorID } from '../../../shared/models/editor.enum';
 
 @Component({
   selector: 'app-co-constraint-cross-ref',
@@ -40,17 +40,17 @@ export class CoConstraintCrossRefComponent extends AbstractEditorComponent imple
     return this.elementId$.pipe(
       take(1),
       concatMap((id) => {
-        return this.store.select(selectCoConstraintGroupsById, { id });
+        return this.store.select(fromIgamtDisplaySelectors.selectCoConstraintGroupsById, { id });
       }),
     );
-}
+  }
 
   ngOnDestroy(): void {
   }
 
-  onEditorSave(action: EditorSave): Observable<Action> {
+  onEditorSave(action: fromDAM.EditorSave): Observable<Action> {
     return of();
-}
+  }
 
   ngOnInit(): void {
   }

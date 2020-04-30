@@ -1,21 +1,17 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-
-import {HttpErrorResponse} from '@angular/common/http';
-import {Store} from '@ngrx/store';
-import {of} from 'rxjs';
-import {catchError, concatMap, map, mergeMap} from 'rxjs/operators';
-import {Message} from '../../modules/core/models/message/message.class';
-import {MessageService} from '../../modules/core/services/message.service';
-
-import {ResourceService} from '../../modules/shared/services/resource.service';
-import {RxjsStoreHelperService} from '../../modules/shared/services/rxjs-store-helper.service';
+import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import { catchError, map, mergeMap } from 'rxjs/operators';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { Message } from '../../modules/dam-framework/models/messages/message.class';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { RxjsStoreHelperService } from '../../modules/dam-framework/services/rxjs-store-helper.service';
+import { ResourceService } from '../../modules/shared/services/resource.service';
 import {
-  CreateIgActions,
   LoadMessageEventsFailure,
-  LoadMessageEventsSuccess,
 } from '../create-ig/create-ig.actions';
-import {TurnOnLoader} from '../loader/loader.actions';
 import {
   LoadResource, LoadResourceFailure,
   LoadResourceSuccess, ResourceLoaderActions,
@@ -29,12 +25,12 @@ export class ResourceLoaderEffects {
   loadResource$ = this.actions$.pipe(
     ofType(ResourceLoaderActionTypes.LoadResource),
     mergeMap((action: LoadResource) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: false,
       }));
       return this.resourceService.importResource(action.payload).pipe(
-        map((resp: Message<any[]> ) => {
-          return new LoadResourceSuccess({response: resp, resourceInfo: action.payload});
+        map((resp: Message<any[]>) => {
+          return new LoadResourceSuccess({ response: resp, resourceInfo: action.payload });
         })
         , catchError(
           (err: HttpErrorResponse) => {
@@ -65,8 +61,12 @@ export class ResourceLoaderEffects {
     }),
   );
 
-  constructor(private actions$: Actions<ResourceLoaderActions>, private resourceService: ResourceService,
-              private store: Store<any>, private message: MessageService, private helper: RxjsStoreHelperService) {
+  constructor(
+    private actions$: Actions<ResourceLoaderActions>,
+    private resourceService: ResourceService,
+    private store: Store<any>,
+    private message: MessageService,
+    private helper: RxjsStoreHelperService) {
   }
 
 }

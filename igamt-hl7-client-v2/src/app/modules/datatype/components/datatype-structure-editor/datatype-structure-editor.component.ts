@@ -1,16 +1,16 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
-import { selectDatatypesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
-import { Message } from '../../../core/models/message/message.class';
-import { MessageService } from '../../../core/services/message.service';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { IDatatype } from '../../../shared/models/datatype.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
@@ -78,14 +78,14 @@ export class DatatypeStructureEditorComponent extends StructureEditorComponent<I
     );
   }
 
-  saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message<any>> {
-    return this.datatypeService.saveChanges(id, igId, changes);
+  saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {
+    return this.datatypeService.saveChanges(id, documentRef, changes);
   }
   getById(id: string): Observable<IDatatype> {
     return this.datatypeService.getById(id);
   }
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
-    return selectDatatypesById;
+    return fromIgamtDisplaySelectors.selectDatatypesById;
   }
 
 }

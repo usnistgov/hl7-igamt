@@ -9,6 +9,7 @@ import { TabViewModule } from 'primeng/tabview';
 import { IgListEffects } from 'src/app/root-store/ig/ig-list/ig-list.effects';
 import { CreateIgEffects } from '../../root-store/create-ig/create-ig.effects';
 import * as fromIg from '../../root-store/ig/ig.reducer';
+import { DamFrameworkModule } from '../dam-framework/dam-framework.module';
 import { ExportConfigurationModule } from '../export-configuration/export-configuration.module';
 import { IgEditEffects } from './../../root-store/ig/ig-edit/ig-edit.effects';
 import { CoreModule } from './../core/core.module';
@@ -28,8 +29,6 @@ import { IgSectionEditorComponent } from './components/ig-section-editor/ig-sect
 import { IgTocComponent } from './components/ig-toc/ig-toc.component';
 import { NarrativeSectionFormComponent } from './components/narrative-section-form/narrative-section-form.component';
 import { IgRoutingModule } from './ig-routing.module';
-import { IgEditorActivateGuard } from './services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from './services/ig-editor-deactivate.service';
 import { IgListService } from './services/ig-list.service';
 import { IgService } from './services/ig.service';
 
@@ -51,6 +50,7 @@ import { IgService } from './services/ig.service';
     ConformanceStatementsSummaryEditorComponent,
   ],
   imports: [
+    DamFrameworkModule.forRoot(),
     IgRoutingModule,
     EffectsModule.forFeature([IgListEffects, CreateIgEffects, IgEditEffects]),
     StoreModule.forFeature(fromIg.featureName, fromIg.reducers),
@@ -67,8 +67,6 @@ import { IgService } from './services/ig.service';
   providers: [
     IgListService,
     IgService,
-    IgEditSaveDeactivateGuard,
-    IgEditorActivateGuard,
   ],
   exports: [
     IgListContainerComponent,

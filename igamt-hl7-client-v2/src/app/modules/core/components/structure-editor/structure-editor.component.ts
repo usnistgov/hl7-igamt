@@ -3,28 +3,28 @@ import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
-import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
+import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
-import { EditorSave, EditorUpdate, LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
-  selectAllDatatypes,
-  selectAllSegments,
-  selectedResourceHasOrigin,
   selectValueSetsNodes,
 } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IEditorMetadata } from '../../../shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { IResource } from '../../../shared/models/resource.interface';
 import { IChange } from '../../../shared/models/save-change';
 import { IBindingContext } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
-import { Message } from '../../models/message/message.class';
-import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
 export type BindingLegend = Array<{
@@ -46,27 +46,24 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   resource$: Observable<T>;
   workspace_s: Subscription;
   hasOrigin$: Observable<boolean>;
-  public igId: Observable<string>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
     private messageService: MessageService,
     actions$: Actions,
     store: Store<any>,
-    editorMetadata: IEditorMetadata,
+    editorMetadata: IHL7EditorMetadata,
     public LoadAction: CoreType<Action>,
     public legend: BindingLegend,
     public columns: HL7v2TreeColumnType[]) {
     super(editorMetadata, actions$, store);
-    this.hasOrigin$ = this.store.select(selectedResourceHasOrigin);
+    this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
     this.config = this.store.select(getHl7ConfigState);
-    this.datatypes = this.store.select(selectAllDatatypes);
-    this.segments = this.store.select(selectAllSegments);
+    this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);
+    this.segments = this.store.select(fromIgamtDisplaySelectors.selectAllSegments);
     this.valueSets = this.store.select(selectValueSetsNodes);
     this.username = this.store.select(fromAuth.selectUsername);
     this.bindingConfig = this.store.select(selectBindingConfig);
-    this.igId = this.store.select(selectIgId);
-
     this.bindingConfig.subscribe();
     this.resourceSubject = new ReplaySubject<T>(1);
     this.changes = new ReplaySubject<IStructureChanges>(1);
@@ -106,15 +103,15 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     return of(false);
   }
 
-  onEditorSave(action: EditorSave): Observable<Action> {
-    return combineLatest(this.elementId$, this.ig$.pipe(take(1), map((ig) => ig.id)), this.changes.asObservable()).pipe(
+  onEditorSave(action: fromDam.EditorSave): Observable<Action> {
+    return combineLatest(this.elementId$, this.documentRef$, this.changes.asObservable()).pipe(
       take(1),
-      concatMap(([id, igId, changes]) => {
-        return this.saveChanges(id, igId, this.convert(changes)).pipe(
+      concatMap(([id, documentRef, changes]) => {
+        return this.saveChanges(id, documentRef, this.convert(changes)).pipe(
           mergeMap((message) => {
             return this.getById(id).pipe(
               flatMap((resource) => {
-                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new EditorUpdate({ value: { changes: {}, resource }, updateDate: false })];
+                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false })];
               }),
             );
           }),
@@ -124,7 +121,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     );
   }
 
-  abstract saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message>;
+  abstract saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message>;
   abstract getById(id: string): Observable<IResource>;
 
   convert(changes: IStructureChanges): IChange[] {

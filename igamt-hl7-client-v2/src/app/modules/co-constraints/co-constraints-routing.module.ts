@@ -6,12 +6,12 @@ import {
   OpenCoConstraintGroupCrossRefEditor,
   OpenCoConstraintGroupEditor,
 } from '../../root-store/co-constraint-group-edit/co-constraint-group-edit.actions';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
+import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
+import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
+import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
-import {CoConstraintCrossRefComponent} from './components/co-constraint-cross-ref/co-constraint-cross-ref.component';
+import { CoConstraintCrossRefComponent } from './components/co-constraint-cross-ref/co-constraint-cross-ref.component';
 import { CoConstraintGroupEditorComponent } from './components/co-constraint-group-editor/co-constraint-group-editor.component';
 
 const routes: Routes = [
@@ -24,7 +24,7 @@ const routes: Routes = [
       failureAction: CoConstraintGroupEditActionTypes.LoadCoConstraintGroupFailure,
       redirectTo: ['ig', 'error'],
     },
-    canActivate: [DataLoaderResolverService],
+    canActivate: [DataLoaderGuard],
     children: [
       {
         path: '',
@@ -34,8 +34,8 @@ const routes: Routes = [
       {
         path: 'structure',
         component: CoConstraintGroupEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.CC_GROUP,
@@ -53,7 +53,7 @@ const routes: Routes = [
       {
         path: 'cross-references',
         component: CoConstraintCrossRefComponent,
-        canActivate: [IgEditorActivateGuard],
+        canActivate: [EditorActivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.CROSSREF,

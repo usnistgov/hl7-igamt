@@ -3,13 +3,11 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
 import { concatMap, switchMap, take } from 'rxjs/operators';
-import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {selectAllDatatypes} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
-import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ResourceMetadataEditorComponent } from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
-import { Message } from '../../../core/models/message/message.class';
-import { MessageService } from '../../../core/services/message.service';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
@@ -24,7 +22,7 @@ import { DatatypeService } from '../../services/datatype.service';
 })
 export class MetadataEditComponent extends ResourceMetadataEditorComponent implements OnInit {
   constructor(
-    store: Store<fromIgEdit.IState>,
+    store: Store<any>,
     actions$: Actions,
     private datatypeService: DatatypeService,
     messageService: MessageService, froalaService: FroalaService) {
@@ -42,10 +40,10 @@ export class MetadataEditComponent extends ResourceMetadataEditorComponent imple
   }
 
   save(changes: IChange[]): Observable<Message<any>> {
-    return combineLatest(this.elementId$, this.store.select(selectIgId)).pipe(
+    return combineLatest(this.elementId$, this.documentRef$).pipe(
       take(1),
-      concatMap(([id, documentId]) => {
-        return this.datatypeService.saveChanges(id, documentId, changes);
+      concatMap(([id, documentRef]) => {
+        return this.datatypeService.saveChanges(id, documentRef, changes);
       }),
     );
   }
@@ -57,13 +55,13 @@ export class MetadataEditComponent extends ResourceMetadataEditorComponent imple
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
       switchMap((elementId) => {
-        return this.store.select(fromIgEdit.selectDatatypesById, { id: elementId });
+        return this.store.select(fromIgamtDisplaySelectors.selectDatatypesById, { id: elementId });
       }),
     );
   }
 
   getExistingList(): Observable<IDisplayElement[]> {
-    return this.store.select(selectAllDatatypes);
+    return this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);
   }
 
   ngOnInit() {

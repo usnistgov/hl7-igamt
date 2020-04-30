@@ -4,13 +4,13 @@ import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { TreeNode } from 'primeng/primeng';
 import { Observable, of } from 'rxjs';
 import { concatMap, map, pluck } from 'rxjs/operators';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { IDelta } from 'src/app/modules/shared/models/delta';
 import { ICodeDelta, IValuesetDelta } from 'src/app/modules/shared/models/valueset-delta';
-import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IEditorMetadata } from '../../../shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
 export abstract class ValuesetDeltaEditorComponent extends AbstractEditorComponent implements OnInit {
@@ -19,7 +19,7 @@ export abstract class ValuesetDeltaEditorComponent extends AbstractEditorCompone
   columns: any[] = [];
 
   constructor(
-    readonly editor: IEditorMetadata,
+    readonly editor: IHL7EditorMetadata,
     protected actions$: Actions,
     protected store: Store<any>) {
     super(editor, actions$, store);
@@ -63,7 +63,7 @@ export abstract class ValuesetDeltaEditorComponent extends AbstractEditorCompone
     return this.type.toLowerCase();
   }
 
-  onEditorSave(action: EditorSave): Observable<Action> {
+  onEditorSave(action: fromDam.EditorSave): Observable<Action> {
     return of();
   }
 

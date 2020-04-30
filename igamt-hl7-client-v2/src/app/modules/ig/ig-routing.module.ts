@@ -2,18 +2,18 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { IgEditActionTypes, IgEditResolverLoad, OpenConformanceStatementSummaryEditorNode, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
+import { AuthenticatedGuard } from '../dam-framework/guards/auth-guard.guard';
+import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
+import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
+import { DamWidgetRoute } from '../dam-framework/services/router-helpers.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
-import { AuthenticatedGuard } from './../core/services/auth-guard.guard';
 import { ConformanceStatementsSummaryEditorComponent } from './components/conformance-statements-summary-editor/conformance-statements-summary-editor.component';
 import { CreateIGComponent } from './components/create-ig/create-ig.component';
-import { IgEditContainerComponent } from './components/ig-edit-container/ig-edit-container.component';
+import { IG_EDIT_WIDGET_ID, IgEditContainerComponent } from './components/ig-edit-container/ig-edit-container.component';
 import { IgListContainerComponent } from './components/ig-list-container/ig-list-container.component';
 import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
-import { DataLoaderResolverService } from './services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from './services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from './services/ig-editor-deactivate.service';
 
 const routes: Routes = [
   {
@@ -31,16 +31,16 @@ const routes: Routes = [
     component: ErrorPageComponent,
   },
   {
-    path: ':igId',
-    component: IgEditContainerComponent,
-    data: {
+    ...DamWidgetRoute({
+      widgetId: IG_EDIT_WIDGET_ID,
       routeParam: 'igId',
       loadAction: IgEditResolverLoad,
       successAction: IgEditActionTypes.IgEditResolverLoadSuccess,
       failureAction: IgEditActionTypes.IgEditResolverLoadFailure,
       redirectTo: ['ig', 'error'],
-    },
-    canActivate: [DataLoaderResolverService],
+      component: IgEditContainerComponent,
+    }),
+    path: ':igId',
     children: [
       {
         path: '',
@@ -50,7 +50,7 @@ const routes: Routes = [
       {
         path: 'conformance-statements',
         component: ConformanceStatementsSummaryEditorComponent,
-        canActivate: [IgEditorActivateGuard],
+        canActivate: [EditorActivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.CS_SUMMARY,
@@ -64,12 +64,12 @@ const routes: Routes = [
           action: OpenConformanceStatementSummaryEditorNode,
           idKey: 'igId',
         },
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
       },
       {
         path: 'metadata',
         component: IgMetadataEditorComponent,
-        canActivate: [IgEditorActivateGuard],
+        canActivate: [EditorActivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.IG_METADATA,
@@ -83,12 +83,12 @@ const routes: Routes = [
           action: OpenIgMetadataEditorNode,
           idKey: 'igId',
         },
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
       },
       {
         path: 'text/:sectionId',
         component: IgSectionEditorComponent,
-        canActivate: [IgEditorActivateGuard],
+        canActivate: [EditorActivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.SECTION_NARRATIVE,
@@ -101,7 +101,7 @@ const routes: Routes = [
           action: OpenNarrativeEditorNode,
           idKey: 'sectionId',
         },
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
       },
       {
         path: 'conformanceprofile',

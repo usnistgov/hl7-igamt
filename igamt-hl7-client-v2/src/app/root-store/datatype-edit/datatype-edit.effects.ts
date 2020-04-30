@@ -3,20 +3,21 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { CrossReferencesService } from 'src/app/modules/shared/services/cross-references.service';
-import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { MessageService } from '../../modules/core/services/message.service';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { OpenEditorBase, SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { DatatypeService } from '../../modules/datatype/services/datatype.service';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { IUsages } from '../../modules/shared/models/cross-reference';
 import { IConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { LoadSelectedResource, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
-import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef, selectIgId } from '../ig/ig-edit/ig-edit.selectors';
-import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import { OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from './datatype-edit.actions';
 import {
   DatatypeEditActionTypes,
@@ -37,19 +38,19 @@ export class DatatypeEditEffects {
   loadDatatype$ = this.actions$.pipe(
     ofType(DatatypeEditActionTypes.LoadDatatype),
     concatMap((action: LoadDatatype) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
       return this.datatypeService.getById(action.id).pipe(
         flatMap((Datatype: IDatatype) => {
           return [
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new LoadDatatypeSuccess(Datatype),
           ];
         }),
         catchError((error: HttpErrorResponse) => {
           return of(
-            new TurnOffLoader(),
+            new fromDAM.TurnOffLoader(),
             new LoadDatatypeFailure(error),
           );
         }),
@@ -60,8 +61,12 @@ export class DatatypeEditEffects {
   @Effect()
   LoadDatatypeSuccess$ = this.actions$.pipe(
     ofType(DatatypeEditActionTypes.LoadDatatypeSuccess),
-    map((action: LoadDatatypeSuccess) => {
-      return new LoadSelectedResource(action.Datatype);
+    flatMap((action: LoadDatatypeSuccess) => {
+      return [
+        new SetValue({
+          selected: action.Datatype,
+        }),
+      ];
     }),
   );
 
@@ -78,24 +83,24 @@ export class DatatypeEditEffects {
   @Effect()
   openDatatypePreDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenDatatypePreDefEditor>(
     DatatypeEditActionTypes.OpenDatatypePreDefEditor,
-    fromIgEdit.selectDatatypesById,
-    this.store.select(selectedResourcePreDef),
+    fromIgamtDisplaySelectors.selectDatatypesById,
+    this.store.select(fromIgamtSelectedSelectors.selectedResourcePreDef),
     this.DatatypeNotFound,
   );
 
   @Effect()
   openDatatypePostDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenDatatypePostDefEditor>(
     DatatypeEditActionTypes.OpenDatatypePostDefEditor,
-    fromIgEdit.selectDatatypesById,
-    this.store.select(selectedResourcePostDef),
+    fromIgamtDisplaySelectors.selectDatatypesById,
+    this.store.select(fromIgamtSelectedSelectors.selectedResourcePostDef),
     this.DatatypeNotFound,
   );
 
   @Effect()
   openDatatypeMetadataEditor$ = this.editorHelper.openMetadataEditor<OpenDatatypeMetadataEditorNode>(
     DatatypeEditActionTypes.OpenDatatypeMetadataEditorNode,
-    fromIgEdit.selectDatatypesById,
-    this.store.select(selectedResourceMetadata),
+    fromIgamtDisplaySelectors.selectDatatypesById,
+    this.store.select(fromIgamtSelectedSelectors.selectedResourceMetadata),
     this.DatatypeNotFound,
   );
 
@@ -103,18 +108,18 @@ export class DatatypeEditEffects {
   openDatatypeStructureEditor$ = this.editorHelper.openStructureEditor<IDatatype, OpenDatatypeStructureEditor>(
     DatatypeEditActionTypes.OpenDatatypeStructureEditor,
     Type.DATATYPE,
-    fromIgEdit.selectDatatypesById,
-    this.store.select(fromIgEdit.selectedDatatype),
+    fromIgamtDisplaySelectors.selectDatatypesById,
+    this.store.select(fromIgamtSelectedSelectors.selectedDatatype),
     this.DatatypeNotFound,
   );
 
   @Effect()
   openDatatypeCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenDatatypeCrossRefEditor>(
     DatatypeEditActionTypes.OpenDatatypeCrossRefEditor,
-    fromIgEdit.selectDatatypesById,
+    fromIgamtDisplaySelectors.selectDatatypesById,
     Type.IGDOCUMENT,
     Type.DATATYPE,
-    fromIgEdit.selectIgId,
+    fromIgamtSelectors.selectLoadedDocumentInfo,
     this.crossReferenceService.findUsagesDisplay,
     this.DatatypeNotFound,
   );
@@ -123,12 +128,12 @@ export class DatatypeEditEffects {
   openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IConformanceStatementList, OpenDatatypeConformanceStatementEditor>(
     DatatypeEditActionTypes.OpenDatatypeConformanceStatementEditor,
     Type.DATATYPE,
-    fromIgEdit.selectDatatypesById,
+    fromIgamtDisplaySelectors.selectDatatypesById,
     (action: OpenEditorBase) => {
-      return this.store.select(selectIgId).pipe(
+      return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
         take(1),
-        mergeMap((igId) => {
-          return this.datatypeService.getConformanceStatements(action.payload.id, igId);
+        mergeMap((documentInfo) => {
+          return this.datatypeService.getConformanceStatements(action.payload.id, documentInfo);
         }),
       );
     },
@@ -139,7 +144,7 @@ export class DatatypeEditEffects {
   openDeltaEditor$ = this.editorHelper.openDeltaEditor<OpenDatatypeDeltaEditor>(
     DatatypeEditActionTypes.OpenDatatypeDeltaEditor,
     Type.DATATYPE,
-    fromIgEdit.selectDatatypesById,
+    fromIgamtDisplaySelectors.selectDatatypesById,
     this.deltaService.getDeltaFromOrigin,
     this.DatatypeNotFound,
   );

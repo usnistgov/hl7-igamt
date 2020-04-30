@@ -1,9 +1,9 @@
-import {HttpClient} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs';
-import {Message} from '../models/message/message.class';
-import {IRegistration} from '../models/user/registration.class';
-import {User} from '../models/user/user.class';
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { IRegistration } from '../../dam-framework/models/authentication/registration.class';
+import { User } from '../../dam-framework/models/authentication/user.class';
+import { Message } from '../../dam-framework/models/messages/message.class';
 
 @Injectable({
   providedIn: 'root',

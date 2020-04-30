@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { Message } from '../../core/models/message/message.class';
+import { Message } from '../../dam-framework/models/messages/message.class';
 import { Hl7Config, IValueSetBindingConfigMap } from '../models/config.class';
 
 @Injectable({

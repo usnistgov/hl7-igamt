@@ -462,7 +462,8 @@ public class IgServiceImpl implements IgService {
     newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),newKeys, username));
     newIg.setConformanceProfileRegistry(copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), newKeys, username));
     newIg.setCoConstraintGroupRegistry(
-        copyCoConstraintGRoupRegistry(ig.getCoConstraintGroupRegistry(), newKeys, username, newIg.getId()));
+        copyCoConstraintGRoupRegistry(ig.getCoConstraintGroupRegistry(), newKeys, username, newIg.getId())
+    );
     
     
     newIg.getDomainInfo().setScope(Scope.USER);

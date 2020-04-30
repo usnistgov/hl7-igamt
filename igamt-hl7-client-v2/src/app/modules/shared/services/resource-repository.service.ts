@@ -2,20 +2,19 @@ import { Injectable } from '@angular/core';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
-import { LoadResourceReferences } from '../../../root-store/ig/ig-edit/ig-edit.actions';
+import * as fromIgamtResourcesSelectors from 'src/app/root-store/dam-igamt/igamt.loaded-resources.selectors';
 import {
   selectCoConstraintGroupsById,
   selectDatatypesById,
-  selectLoadedResourceById,
   selectMessagesById,
-  selectReferencesAreLeaf,
   selectSegmentsById,
   selectValueSetById,
-} from '../../../root-store/ig/ig-edit/ig-edit.selectors';
+} from '../../../root-store/dam-igamt/igamt.resource-display.selectors';
+import { LoadResourceReferences } from '../../../root-store/ig/ig-edit/ig-edit.actions';
+import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
 import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';
-import { RxjsStoreHelperService } from './rxjs-store-helper.service';
 
 export interface IRefData {
   [id: string]: {
@@ -43,7 +42,7 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
   }
 
   getResource<T extends IResource>(type: Type, id: string): Observable<T> {
-    return this.store.select(selectLoadedResourceById, { id }).pipe(
+    return this.store.select(fromIgamtResourcesSelectors.selectLoadedResourceById, { id }).pipe(
       filter((resource) => resource && resource.type === type),
       map((resource) => resource as T),
     );
@@ -54,7 +53,7 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
   }
 
   fetchResource<T extends IResource>(type: Type, id: string): Observable<T> {
-    return this.store.select(selectLoadedResourceById, { id }).pipe(
+    return this.store.select(fromIgamtResourcesSelectors.selectLoadedResourceById, { id }).pipe(
       take(1),
       mergeMap((resource) => {
         if (!resource || !resource.type || resource.type !== type) {
@@ -121,7 +120,7 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
   }
 
   areLeafs(ids: string[]): Observable<{ [id: string]: boolean; }> {
-    return this.store.select(selectReferencesAreLeaf, { ids });
+    return this.store.select(fromIgamtResourcesSelectors.selectReferencesAreLeaf, { ids });
   }
 
 }

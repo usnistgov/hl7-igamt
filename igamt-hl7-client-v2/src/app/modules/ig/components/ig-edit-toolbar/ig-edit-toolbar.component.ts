@@ -2,16 +2,11 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import { filter, map, take, tap, withLatestFrom } from 'rxjs/operators';
-import { ToggleFullScreen } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { filter, map, take, withLatestFrom } from 'rxjs/operators';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { selectIsLoggedIn } from '../../../../root-store/authentication/authentication.reducer';
 import { selectExternalTools } from '../../../../root-store/config/config.reducer';
-import { selectFullScreen } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { ExportConfigurationDialogComponent } from '../../../export-configuration/components/export-configuration-dialog/export-configuration-dialog.component';
 import { ExportDialogComponent } from '../../../export-configuration/components/export-dialog/export-dialog.component';
 import { ExportConfigurationService } from '../../../export-configuration/services/export-configuration.service';
-import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
 import { VerifyIgDialogComponent } from '../../../shared/components/verify-ig-dialog/verify-ig-dialog.component';
@@ -28,9 +23,6 @@ import { IgService } from '../../services/ig.service';
 export class IgEditToolbarComponent implements OnInit, OnDestroy {
 
   viewOnly: boolean;
-  valid: Observable<boolean>;
-  changed: Observable<boolean>;
-  fullscreen: boolean;
   subscription: Subscription;
   toolConfig: Observable<IConnectingInfo[]>;
 
@@ -42,39 +34,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     this.subscription = this.store.select(fromIgDocumentEdit.selectViewOnly).subscribe(
       (value) => this.viewOnly = value,
     );
-    this.valid = this.store.select(fromIgDocumentEdit.selectWorkspaceCurrentIsValid);
-    this.changed = this.store.select(fromIgDocumentEdit.selectWorkspaceOrTableOfContentChanged);
     this.toolConfig = this.store.select(selectExternalTools);
-    combineLatest(store.select(selectIsLoggedIn), store.select(selectFullScreen)).pipe(
-      tap(([logged, full]) => {
-        this.fullscreen = logged && full;
-      }),
-    ).subscribe();
-  }
-
-  toggleFullscreen() {
-    this.store.dispatch(new ToggleFullScreen());
-  }
-
-  reset() {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        question: 'Are you sure you want to reset ?',
-        action: 'Reset',
-      },
-    });
-
-    dialogRef.afterClosed().subscribe(
-      (answer) => {
-        if (answer) {
-          this.store.dispatch(new fromIgDocumentEdit.EditorReset());
-        }
-      },
-    );
-  }
-
-  save() {
-    this.store.dispatch(new fromIgDocumentEdit.ToolbarSave());
   }
 
   exportWord() {
@@ -139,7 +99,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     if (type || type === 'Verification' || type === 'Compliance') {
       this.getIgId().subscribe((igId) => {
         const dialogRef = this.dialog.open(VerifyIgDialogComponent, {
-          data: {igId, type},
+          data: { igId, type },
         });
 
         dialogRef.afterClosed().pipe().subscribe();
@@ -154,17 +114,17 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       map(([messages, cps]) => {
         this.getIgId().subscribe((igId) => {
           const dialogRef = this.dialog.open(ExportXmlDialogComponent, {
-            data: { conformanceProfiles: messages, compositeProfiles: cps, igId},
+            data: { conformanceProfiles: messages, compositeProfiles: cps, igId },
           });
 
           dialogRef.afterClosed().pipe(
-              filter((x) => x !== undefined),
-              withLatestFrom(this.getIgId()),
-              take(1),
-              map(([result, igId2]) => {
+            filter((x) => x !== undefined),
+            withLatestFrom(this.getIgId()),
+            take(1),
+            map(([result, igId2]) => {
 
-                this.igService.exportXML(igId2, result, null);
-              }),
+              this.igService.exportXML(igId2, result, null);
+            }),
           ).subscribe();
         });
 

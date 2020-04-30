@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
-import {Store} from '@ngrx/store';
-import {ClearAll} from 'src/app/root-store/page-messages/page-messages.actions';
-import {RegistrationRequest} from '../../../../root-store/registration/registration.actions';
-import {IRegistration} from '../../models/user/registration.class';
+import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { ClearAll } from 'src/app/modules/dam-framework/store/messages/messages.actions';
+import { RegistrationRequest } from '../../../../root-store/registration/registration.actions';
+import { IRegistration } from '../../../dam-framework/models/authentication/registration.class';
 
 @Component({
   selector: 'app-register',

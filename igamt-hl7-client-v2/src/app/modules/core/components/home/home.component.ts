@@ -1,7 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {Store} from '@ngrx/store';
-import {ClearAll} from 'src/app/root-store/page-messages/page-messages.actions';
-import * as fromPageMessages from '../../../../root-store/page-messages/page-messages.reducer';
+import { Component, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import * as fromPageMessages from '../../../dam-framework/store/messages/index';
 
 @Component({
   selector: 'app-home',
@@ -10,11 +9,11 @@ import * as fromPageMessages from '../../../../root-store/page-messages/page-mes
 })
 export class HomeComponent implements OnInit {
 
-  constructor(private store: Store<fromPageMessages.IState>) {
+  constructor(private store: Store<any>) {
   }
 
   ngOnInit() {
-    this.store.dispatch(new ClearAll());
+    this.store.dispatch(new fromPageMessages.ClearAll());
   }
 
 }

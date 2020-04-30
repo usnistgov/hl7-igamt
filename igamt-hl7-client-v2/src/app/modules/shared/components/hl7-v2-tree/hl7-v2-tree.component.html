@@ -103,7 +103,7 @@
                     [anchor]="anchor"
                     [context]="type"
                     [predicate]="{
-                      igId: igId,
+                      documentRef: documentRef,
                       predicates: rowData.bindings?.values?.predicateId
                     }"
                     (valueChange)="registerChange($event)"
@@ -172,7 +172,7 @@
                       [location]="rowData.pathId"
                       [position]="rowData.position"
                       [value]="reference"
-                      [documentId]="igId"
+                      [documentRef]="documentRef"
                       [documentType]=""
                       [level]="rowData.level"
                       [options]="datatypes"
@@ -192,7 +192,7 @@
                         [location]="rowData.pathId"
                         [position]="rowData.position"
                         [value]="reference"
-                        [documentId]="igId"
+                        [documentRef]="documentRef"
                         [level]="rowData.level"
                         [anchor]="anchor"
                         [options]="segments"
@@ -225,7 +225,7 @@
                     [position]="rowData.position"
                     [repository]="repository"
                     [valueSets]= "valueSets"
-                    [documentId]="igId"
+                    [documentRef]="documentRef"
                     [level]="rowData.level"
                     [bindingInfo]= "rowData.valueSetBindingsInfo | async"
                     [value]="{

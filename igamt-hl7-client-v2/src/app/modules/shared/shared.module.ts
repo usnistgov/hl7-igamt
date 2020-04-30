@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, MatRadioModule, MatSelectModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
-import { NgbAlert, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
 import { ToastyModule } from 'ng2-toasty';
@@ -21,14 +21,11 @@ import { AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileU
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
-import { AlertsContainerComponent } from '../core/components/alerts-container/alerts-container.component';
-import { MessageService } from '../core/services/message.service';
+import { DamComponentsModule, DamLoaderModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { AddCoConstraintGroupComponent } from './components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
-import { AlertsComponent } from './components/alerts/alerts.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
 import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
-import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsListComponent } from './components/cs-list/cs-list.component';
@@ -58,7 +55,6 @@ import { UsageComponent } from './components/hl7-v2-tree/columns/usage/usage.com
 import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/valueset.component';
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
-import { LoginFormComponent } from './components/login-form/login-form.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
@@ -90,19 +86,15 @@ import { NamingDuplicationDirective } from './directives/naming-duplication.dire
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
 import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
-import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
 
 @NgModule({
   declarations: [
-    LoginFormComponent,
     RegisterFormComponent,
-    AlertsComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
     ScopeBadgeComponent,
-    ConfirmDialogComponent,
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
     FormInputComponent,
@@ -154,7 +146,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DeltaColumnComponent,
     BindingSelectorComponent,
     ExportToolComponent,
-    AlertsContainerComponent,
     DynamicMappingComponent,
     DeriveDialogComponent,
     AddCoConstraintGroupComponent,
@@ -193,6 +184,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ContextMenuModule.forRoot({
       useBootstrap4: true,
     }),
+    DamMessagesModule,
+    DamLoaderModule,
+    DamComponentsModule,
     RadioButtonModule,
     AccordionModule,
     ListboxModule,
@@ -217,7 +211,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
   exports: [
     CommonModule,
     RouterModule,
-    LoginFormComponent,
     FormsModule,
     FileUploadModule,
     ReactiveFormsModule,
@@ -225,17 +218,17 @@ import { MinNumberDirective } from './validators/min-number.directive';
     TooltipModule,
     NgbModule,
     InputSwitchModule,
-    NgbAlert,
     CardModule,
     AccordionModule,
     ListboxModule,
     CheckboxModule,
+    DamMessagesModule,
+    DamComponentsModule,
     PrimeNgDragDrop,
     ReactiveFormsModule,
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
     FileSelectInputComponent,
-    AlertsComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
     ScopeBadgeComponent,
@@ -247,7 +240,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MatDialogModule,
     MatRadioModule,
     DropdownModule,
-    ConfirmDialogComponent,
     FormInputComponent,
     SelectVersionsComponent,
     SelectMessagesComponent,
@@ -299,7 +291,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     CsListComponent,
     BindingSelectorComponent,
     ExportToolComponent,
-    AlertsContainerComponent,
     DynamicMappingComponent,
     AddCoConstraintGroupComponent,
     ResourceDropdownComponent,
@@ -307,7 +298,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DisplayRefComponent,
   ],
   entryComponents: [
-    ConfirmDialogComponent,
     ResourcePickerComponent,
     CopyResourceComponent,
     TextEditorDialogComponent,
@@ -330,14 +320,7 @@ export class SharedModule {
     return {
       ngModule: SharedModule,
       providers: [
-        MessageService, ConfigService,
-        {
-          provide: DEFAULT_MESSAGE_OPTION,
-          useValue: {
-            closable: true,
-            timeout: 2000,
-          },
-        },
+        ConfigService,
       ],
     };
   }
