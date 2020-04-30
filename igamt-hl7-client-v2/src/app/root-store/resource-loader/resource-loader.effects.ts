@@ -7,8 +7,8 @@ import { catchError, map, mergeMap } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { Message } from '../../modules/dam-framework/models/messages/message.class';
 import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { RxjsStoreHelperService } from '../../modules/dam-framework/services/rxjs-store-helper.service';
 import { ResourceService } from '../../modules/shared/services/resource.service';
-import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
 import {
   LoadMessageEventsFailure,
 } from '../create-ig/create-ig.actions';

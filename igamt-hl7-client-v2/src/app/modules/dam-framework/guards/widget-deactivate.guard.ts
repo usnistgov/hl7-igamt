@@ -1,10 +1,8 @@
 import { Injectable } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRouteSnapshot, CanDeactivate, RouterStateSnapshot } from '@angular/router';
-import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { map } from 'rxjs/operators';
-import { DamWidgetContainerComponent } from '../components/dam-widget-container/dam-widget-container.component';
+import { DamWidgetContainerComponent } from '../components/data-widget/dam-widget-container/dam-widget-container.component';
 import { selectWidgetId } from '../store/data/dam.selectors';
 
 @Injectable()

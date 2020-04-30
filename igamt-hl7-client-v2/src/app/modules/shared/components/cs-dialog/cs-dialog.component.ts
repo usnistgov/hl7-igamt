@@ -264,7 +264,7 @@ export class CsDialogComponent implements OnDestroy {
   set conformanceStatement(cs: AssertionContainer) {
     if (cs) {
       if (cs.type === ConstraintType.ASSERTION) {
-        this.pattern = this.csService.getCsPattern((cs as IAssertionConformanceStatement).assertion);
+        this.pattern = this.csService.getCsPattern((cs as IAssertionConformanceStatement).assertion, this.predicateMode);
         this.activeTab = this.getTabForPattern(this.pattern);
       } else {
         this.activeTab = CsTab.FREE;
@@ -287,7 +287,7 @@ export class CsDialogComponent implements OnDestroy {
     };
 
     if (assertion) {
-      this.pattern = this.csService.getCsPattern(assertion);
+      this.pattern = this.csService.getCsPattern(assertion, this.predicateMode);
       this.activeTab = this.getTabForPattern(this.pattern);
       this.cs.assertion = assertion;
       this.cs.type = ConstraintType.ASSERTION;
@@ -358,62 +358,59 @@ export class CsDialogComponent implements OnDestroy {
     switch (item) {
       case CsTab.FREE:
         payload = this.predicateMode ? this.csService.getFreePredicate() : this.csService.getFreeConformanceStatement();
-        csTemp = {
-          ...this.cs,
-          ...payload,
-          assertion: undefined,
-          level: this.cs && this.cs.level ? this.cs.level : this.resourceType,
-          identifier: this.cs ? this.cs.identifier : undefined,
-          context: this.cs ? this.cs.context : undefined,
-        };
+        csTemp = this.mergeAssertionIntoCs(this.cs, payload, this.predicateMode, this.resourceType);
+        csTemp.assertion = undefined;
         break;
+
       case CsTab.SIMPLE:
-        payload = this.predicateMode ? this.csService.getAssertionPredicate(new Statement('D', 0, null, 0)) : this.csService.getAssertionConformanceStatement(new Statement('D', 0, null, 0));
-        csTemp = {
-          ...this.cs,
-          ...payload.cs,
-          level: this.cs && this.cs.level ? this.cs.level : this.resourceType,
-          identifier: this.cs ? this.cs.identifier : undefined,
-          context: this.cs ? this.cs.context : undefined,
-          freeText: undefined,
-          assertionScript: undefined,
-        };
+        payload = this.predicateMode ? this.csService.getAssertionPredicate(new Statement('P', 0, null, 0)) : this.csService.getAssertionConformanceStatement(new Statement('D', 0, null, 0));
+        csTemp = this.mergeAssertionIntoCs(this.cs, payload.cs, this.predicateMode, this.resourceType);
+
         break;
       case CsTab.CONDITIONAL:
         payload = this.predicateMode ? this.csService.getAssertionPredicate(this.ifThenPattern) : this.csService.getAssertionConformanceStatement(this.ifThenPattern);
-        csTemp = {
-          ...this.cs,
-          ...payload.cs,
-          level: this.cs && this.cs.level ? this.cs.level : this.resourceType,
-          identifier: this.cs ? this.cs.identifier : undefined,
-          context: this.cs ? this.cs.context : undefined,
-          freeText: undefined,
-          assertionScript: undefined,
-        };
+        csTemp = this.mergeAssertionIntoCs(this.cs, payload.cs, this.predicateMode, this.resourceType);
         break;
+
       case CsTab.COMPLEX:
         if (this.cs && this.cs.type === ConstraintType.ASSERTION) {
           (this.cs as IAssertionConformanceStatement).assertion.description = '';
         }
 
-        if (this.pattern && this.pattern.assertion) {
-          payload = this.predicateMode ? this.csService.getAssertionPredicate(this.pattern.assertion) : this.csService.getAssertionConformanceStatement(this.pattern.assertion);
+        if (!this.pattern || !this.pattern.assertion) {
+          this.pattern = new Pattern(new Statement(this.predicateMode ? 'P' : 'D', 0, null, 0));
         }
 
-        csTemp = {
-          ...this.cs,
-          ...payload ? payload.cs : undefined,
-          level: this.cs && this.cs.level ? this.cs.level : this.resourceType,
-          identifier: this.cs ? this.cs.identifier : undefined,
-          context: this.cs ? this.cs.context : undefined,
-          freeText: undefined,
-          assertionScript: undefined,
-        };
+        payload = this.predicateMode ? this.csService.getAssertionPredicate(this.pattern.assertion) : this.csService.getAssertionConformanceStatement(this.pattern.assertion);
+        csTemp = this.mergeAssertionIntoCs(this.cs, payload.cs, this.predicateMode, this.resourceType);
         break;
     }
     this.cs = csTemp;
     this.activeTab = item;
     this.change();
+  }
+
+  mergeAssertionIntoCs(cs: AssertionContainer, payload: AssertionContainer, predicateMode: boolean, resourceType: Type): AssertionContainer {
+    const usages = {
+      trueUsage: undefined,
+      falseUsage: undefined,
+    };
+
+    if (predicateMode) {
+      usages.trueUsage = cs && (cs as IPredicate).trueUsage ? (cs as IPredicate).trueUsage : (payload as IPredicate).trueUsage;
+      usages.falseUsage = cs && (cs as IPredicate).falseUsage ? (cs as IPredicate).falseUsage : (payload as IPredicate).falseUsage;
+    }
+
+    return {
+      ...cs,
+      ...payload,
+      level: cs && cs.level ? cs.level : resourceType,
+      ...usages,
+      identifier: cs ? cs.identifier : undefined,
+      context: cs ? cs.context : undefined,
+      freeText: undefined,
+      assertionScript: undefined,
+    };
   }
 
   openPatternDialog() {

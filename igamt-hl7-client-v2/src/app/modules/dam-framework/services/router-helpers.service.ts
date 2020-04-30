@@ -1,8 +1,8 @@
 import { Type } from '@angular/core';
 import { Data, LoadChildren, ResolveData, Route, Routes, RunGuardsAndResolvers, UrlMatcher } from '@angular/router';
 import { Action } from '@ngrx/store';
-import { DamWidgetContainerComponent } from '../components/dam-widget-container/dam-widget-container.component';
-import { DamWidgetComponent } from '../components/dam-widget/dam-widget.component';
+import { DamWidgetContainerComponent } from '../components/data-widget/dam-widget-container/dam-widget-container.component';
+import { DamWidgetComponent } from '../components/data-widget/dam-widget/dam-widget.component';
 import { DataLoaderGuard } from '../guards/data-loader.guard';
 import { WidgetDeactivateGuard } from '../guards/widget-deactivate.guard';
 import { WidgetSetupGuard } from '../guards/widget-setup.guard';

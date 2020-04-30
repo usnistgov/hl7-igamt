@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Store} from '@ngrx/store';
-import {ResetPasswordRequest} from '../../../../root-store/authentication/authentication.actions';
+import {ResetPasswordRequest} from '../../../dam-framework/store/authentication/authentication.actions';
 
 @Component({
   selector: 'app-reset-password-request',

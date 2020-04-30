@@ -12,13 +12,13 @@ import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selector
 import { CoConstraintGroupService } from '../../modules/co-constraints/services/co-constraint-group.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { RxjsStoreHelperService } from '../../modules/dam-framework/services/rxjs-store-helper.service';
 import { SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { SegmentService } from '../../modules/segment/services/segment.service';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.interface';
 import { IUsages } from '../../modules/shared/models/cross-reference';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
-import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
 import { IgEditActionTypes, LoadResourceReferences } from '../ig/ig-edit/ig-edit.actions';
 import {
   CoConstraintGroupEditActions,

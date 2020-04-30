@@ -4,8 +4,7 @@ import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@a
 import { Actions, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { Observable, of, ReplaySubject } from 'rxjs';
-import { delay, filter, map, take, tap } from 'rxjs/operators';
-import { selectWidgetId } from '../store/data/dam.selectors';
+import { map, take } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',

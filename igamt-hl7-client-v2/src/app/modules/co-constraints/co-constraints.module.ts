@@ -3,7 +3,6 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { CoConstraintGroupEditEffects } from '../../root-store/co-constraint-group-edit/co-constraint-group-edit.effects';
-import * as fromCoConstraintGroup from '../../root-store/co-constraint-group-edit/co-constraint-group-edit.reducer';
 import { SegmentService } from '../segment/services/segment.service';
 import { SharedModule } from '../shared/shared.module';
 import { CoConstraintGroupRoutingModule } from './co-constraints-routing.module';
@@ -25,7 +24,7 @@ import { CoConstraintGroupService } from './services/co-constraint-group.service
     SharedModule,
     CoConstraintGroupRoutingModule,
     EffectsModule.forFeature([CoConstraintGroupEditEffects]),
-    StoreModule.forFeature(fromCoConstraintGroup.featureName, fromCoConstraintGroup.reducer),
+    StoreModule,
   ],
   providers: [
     SegmentService,

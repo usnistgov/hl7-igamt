@@ -1,7 +1,7 @@
 import { Component, forwardRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
-import { DamWidgetComponent } from '../../../dam-framework/components/dam-widget/dam-widget.component';
+import { DamWidgetComponent } from '../../../dam-framework/components/data-widget/dam-widget/dam-widget.component';
 
 @Component({
   selector: 'app-library-container',

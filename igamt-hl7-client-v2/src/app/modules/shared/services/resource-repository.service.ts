@@ -11,10 +11,10 @@ import {
   selectValueSetById,
 } from '../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadResourceReferences } from '../../../root-store/ig/ig-edit/ig-edit.actions';
+import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
 import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';
-import { RxjsStoreHelperService } from './rxjs-store-helper.service';
 
 export interface IRefData {
   [id: string]: {

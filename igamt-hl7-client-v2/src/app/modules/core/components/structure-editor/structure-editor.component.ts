@@ -3,8 +3,8 @@ import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
+import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
-import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
@@ -70,7 +70,6 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
 
     this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
-        console.log(current);
         this.resourceSubject.next({ ...current.resource });
         this.changes.next({ ...current.changes });
       }),

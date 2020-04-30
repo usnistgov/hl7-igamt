@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import * as fromDatatypeEdit from 'src/app/root-store/datatype-edit/datatype-edit.reducer';
 import { DatatypeEditEffects } from '../../root-store/datatype-edit/datatype-edit.effects';
 import { SharedModule } from '../shared/shared.module';
 import { DatatypeConformanceStatementEditorComponent } from './components/conformance-statement-editor/datatype-conformance-statement-editor.component';
@@ -22,7 +21,7 @@ import { DatatypeService } from './services/datatype.service';
     DatatypeRoutingModule,
     SharedModule,
     EffectsModule.forFeature([DatatypeEditEffects]),
-    StoreModule.forFeature('datatypeEdit', fromDatatypeEdit.reducer),
+    StoreModule,
   ],
   providers: [
     DatatypeService,

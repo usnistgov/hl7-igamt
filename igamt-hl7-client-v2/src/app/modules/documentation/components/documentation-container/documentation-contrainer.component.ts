@@ -2,8 +2,8 @@ import { Component, forwardRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
-import { selectIsAdmin, selectIsLoggedIn } from '../../../../root-store/authentication/authentication.reducer';
 import {
   ToggleEditMode,
 } from '../../../../root-store/documentation/documentation.actions';
@@ -12,7 +12,7 @@ import {
   selectEditMode,
 } from '../../../../root-store/documentation/documentation.reducer';
 import { isUser, selectActiveTitleBar, selectLatestUpdate } from '../../../../root-store/documentation/documentation.reducer';
-import { DamWidgetComponent } from '../../../dam-framework/components/dam-widget/dam-widget.component';
+import { DamWidgetComponent } from '../../../dam-framework/components/data-widget/dam-widget/dam-widget.component';
 import { DocumentationType, IDocumentation } from '../../models/documentation.interface';
 
 export const DOC_WIDGET_ID = 'DOC-WIDGET-ID';
@@ -44,8 +44,8 @@ export class DocumentationContainerComponent extends DamWidgetComponent {
 
   constructor(store: Store<any>, dialog: MatDialog) {
     super(DOC_WIDGET_ID, store, dialog);
-    this.admin$ = this.store.select(selectIsAdmin);
-    this.isAuthenticated$ = this.store.select(selectIsLoggedIn);
+    this.admin$ = this.store.select(fromAuth.selectIsAdmin);
+    this.isAuthenticated$ = this.store.select(fromAuth.selectIsLoggedIn);
     this.isUser$ = this.store.select(isUser);
     this.activeTitleBar$ = this.store.select(selectActiveTitleBar);
     this.updateInfo$ = this.store.select(selectLatestUpdate);

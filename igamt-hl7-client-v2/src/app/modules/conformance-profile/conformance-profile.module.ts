@@ -34,7 +34,7 @@ import { ConformanceProfileService } from './services/conformance-profile.servic
     CoConstraintsModule,
     SharedModule,
     EffectsModule.forFeature([ConformanceProfileEditEffects]),
-    StoreModule.forFeature(fromConformanceProfile.featureName, fromConformanceProfile.reducer),
+    StoreModule,
   ],
   providers: [
     ConformanceProfileService,

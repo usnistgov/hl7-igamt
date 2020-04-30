@@ -10,6 +10,7 @@ import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './modules/core/core.module';
+import { DamRoutingModule } from './modules/dam-framework/dam-framework.module';
 import { reducers } from './root-store';
 import { ConfigEffects } from './root-store/config/config.effects';
 import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loader.effects';
@@ -27,7 +28,7 @@ import { ResourceLoaderEffects } from './root-store/resource-loader/resource-loa
       maxAge: 25, // Retains last 25 states
       logOnly: environment.production, // Restrict extension to log-only mode
     }),
-    StoreRouterConnectingModule.forRoot(),
+    DamRoutingModule,
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     CoreModule,
     BlockUIModule.forRoot(),

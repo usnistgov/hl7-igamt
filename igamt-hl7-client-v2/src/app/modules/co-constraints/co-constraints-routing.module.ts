@@ -6,9 +6,9 @@ import {
   OpenCoConstraintGroupCrossRefEditor,
   OpenCoConstraintGroupEditor,
 } from '../../root-store/co-constraint-group-edit/co-constraint-group-edit.actions';
+import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { CoConstraintCrossRefComponent } from './components/co-constraint-cross-ref/co-constraint-cross-ref.component';
@@ -24,7 +24,7 @@ const routes: Routes = [
       failureAction: CoConstraintGroupEditActionTypes.LoadCoConstraintGroupFailure,
       redirectTo: ['ig', 'error'],
     },
-    canActivate: [DataLoaderResolverService],
+    canActivate: [DataLoaderGuard],
     children: [
       {
         path: '',

@@ -5,10 +5,10 @@ import { Action } from '@ngrx/store';
 import { Store } from '@ngrx/store';
 import { Observable, of, ReplaySubject } from 'rxjs';
 import { filter, map, pluck, switchMap, take, tap } from 'rxjs/operators';
-import { selectRouteParams } from '../../../root-store/index';
 import { IEditorMetadata } from '../models/data/workspace';
 import { DamActionTypes, OpenEditor, OpenEditorFailure } from '../store/data/dam.actions';
 import { TurnOffLoader, TurnOnLoader } from '../store/loader/loader.actions';
+import * as fromRouterSelector from '../store/router/router.selectors';
 
 @Injectable()
 export class EditorActivateGuard implements CanActivate {
@@ -41,7 +41,7 @@ export class EditorActivateGuard implements CanActivate {
       return of(false);
     } else {
 
-      return this.store.select(selectRouteParams).pipe(
+      return this.store.select(fromRouterSelector.selectRouteParams).pipe(
         take(1),
         pluck(elementId),
         switchMap((id) => {
