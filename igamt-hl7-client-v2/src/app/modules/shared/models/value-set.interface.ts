@@ -13,6 +13,7 @@ export interface ICodes {
   hasPattern?: boolean;
   usage?: CodeUsage;
   pattern: string;
+  codeSystemOid?: string;
   comments: string;
 }
 

@@ -76,13 +76,12 @@ public class TablesFixes {
 
 
   public void fix0396() throws ValidationException {
-//    createTable0396();
+   createTable0396();
    HashMap<String, String>  ids =collectIds();
    replaceAllSegmentbinding(ids);
    replaceAllDataTypebinding(ids);
    replaceInIg(ids);
-    
-
+   
   }
 
   public void replaceAllSegmentbinding(HashMap<String, String> newKeys) throws ValidationException{
