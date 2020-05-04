@@ -41,6 +41,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -102,7 +103,9 @@ import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationExcepti
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SCOPE;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
 
@@ -150,6 +153,9 @@ public class IgServiceImpl implements IgService {
 
   @Autowired
   CoConstraintService coConstraintService;
+  
+  @Autowired
+  FhirHandlerService fhirHandlerService;
 
   @Override
   public Ig findById(String id) {
@@ -1004,12 +1010,16 @@ public class IgServiceImpl implements IgService {
       throw new IGNotFoundException(id);
     }
     Valueset vs= valueSetService.findById(vsId);
+
     if(vs == null) {
       throw new ValuesetNotFoundException(vsId);
     }
+    if(vs.getBindingIdentifier().equals("HL70396") && vs.getSourceType().equals(SourceType.EXTERNAL)) {
+      vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
+    }
     if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
       if(vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-        Config conf=	this.configService.findOne();
+        Config conf = this.configService.findOne();
         if(conf !=null) {
           vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
         }
@@ -1028,7 +1038,6 @@ public class IgServiceImpl implements IgService {
       }
     }
     return vs;
-
   }
 
   /*

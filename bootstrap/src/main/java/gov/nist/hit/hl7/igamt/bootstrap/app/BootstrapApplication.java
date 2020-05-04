@@ -31,6 +31,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
+import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
@@ -132,6 +133,10 @@ public class BootstrapApplication implements CommandLineRunner {
   //  @Autowired
   //  DatatypeClassificationService datatypeClassificationService;
   //  
+
+  @Autowired
+  TablesFixes tableFixes;
+  
 
 
   @Bean
@@ -632,7 +637,10 @@ public class BootstrapApplication implements CommandLineRunner {
       this.dataFixer.readCsv();
     }
 
-
+   // @PostConstruct
+    public void fix0396() throws ValidationException{
+      tableFixes.fix0396();
+    }
 
     //   @PostConstruct
     //   void classifyDatatypes() throws DatatypeNotFoundException {

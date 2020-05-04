@@ -76,6 +76,7 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
     this.resource$.subscribe((resource: IValueSet) => {
       this.cols = [];
       this.cols.push({ field: 'value', header: 'Value' });
+      this.cols.push({ field: 'pattern', header: 'Pattern' });
       this.cols.push({ field: 'description', header: 'Description' });
       this.cols.push({ field: 'codeSystem', header: 'Code System' });
       if (resource.sourceType !== SourceType.EXTERNAL) {

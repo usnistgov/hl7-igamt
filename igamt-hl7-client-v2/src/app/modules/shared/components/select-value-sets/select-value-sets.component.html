@@ -2,7 +2,7 @@
   <p-table #dt1 [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="table" [globalFilterFields]="['bindingIdentifier','name']" scrollHeight="100%" sortField="bindingIdentifier"
            scrollable="true">
     <ng-template pTemplate="caption">
-      <app-select-versions *ngIf="scope!=='PHINVADS'" (selected)="select($event)" [hl7Versions]="hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
+      <app-select-versions *ngIf="scope!=='PHINVADS'" (selected)="select($event)" [hl7Versions]="_hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
       <div style="text-align: left">
         <div class="input-group" style="margin-left: 10px;">
           <div class="input-group-prepend" style="height: 35px;">
