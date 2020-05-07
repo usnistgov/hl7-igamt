@@ -13,7 +13,7 @@ import { RxjsStoreHelperService } from '../../../modules/dam-framework/services/
 import { DamWidgetEffect } from '../../../modules/dam-framework/store/dam-widget-effect.class';
 import { LoadPayloadData } from '../../../modules/dam-framework/store/data/dam.actions';
 import { IG_EDIT_WIDGET_ID } from '../../../modules/ig/components/ig-edit-container/ig-edit-container.component';
-import { IGDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { IDocumentDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
 import {
@@ -126,7 +126,7 @@ export class IgEditEffects extends DamWidgetEffect {
 
       return this.igService.getIgInfo(action.id).pipe(
         take(1),
-        flatMap((igInfo: IGDisplayInfo) => {
+        flatMap((igInfo: IDocumentDisplayInfo<IgDocument>) => {
           return [
             new fromDAM.TurnOffLoader(),
             new fromDAM.LoadPayloadData(igInfo.ig),
@@ -550,7 +550,7 @@ export class IgEditEffects extends DamWidgetEffect {
         blockUI: true,
       }));
       return this.igService.getDisplay(action.igId, action.delta).pipe(
-        flatMap((igInfo: IGDisplayInfo) => {
+        flatMap((igInfo: IDocumentDisplayInfo<IgDocument>) => {
           return [
             this.igService.loadRepositoryFromIgDisplayInfo(igInfo),
             new fromDAM.SetValue({

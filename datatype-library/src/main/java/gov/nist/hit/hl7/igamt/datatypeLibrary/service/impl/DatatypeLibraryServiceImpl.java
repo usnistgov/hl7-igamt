@@ -46,8 +46,10 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -55,7 +57,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.model.LibSummary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeLibraryRepository;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.SectionTemplate;
@@ -270,25 +271,25 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   }
 
   @Override
-  public List<DatatypeLibrary> findLatestByUsername(String username) {
-    Criteria where = Criteria.where("username").is(username);
-
+  public List<DatatypeLibrary> findByUsername(String username, Scope scope) {
+    Criteria where = Criteria.where("username").is(username)
+        .andOperator(Criteria.where("domainInfo.scope").is(scope.toString()), Criteria.where("status").ne(Status.PUBLISHED));
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
     qry.fields().include("metadata");
-    qry.fields().include("publicationInfo");
     qry.fields().include("username");
-    qry.fields().include("conformanceProfileRegistry");
+    qry.fields().include("datatypeRegistry");
     qry.fields().include("creationDate");
     qry.fields().include("updateDate");
+    qry.fields().include("sharedUsers");
+    qry.fields().include("currentAuthor");
 
-    List<DatatypeLibrary> libs = mongoTemplate.find(qry, DatatypeLibrary.class);
-
-
-
-    return libs;
+    List<DatatypeLibrary> igs = mongoTemplate.find(qry, DatatypeLibrary.class);
+    return igs;
   }
+  
+  
 
   /*
    * (non-Javadoc)
@@ -298,14 +299,12 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * java.util.List)
    */
   @Override
-  public List<LibSummary> convertListToDisplayList(List<DatatypeLibrary> libs) {
+  public List<DocumentSummary> convertListToDisplayList(List<DatatypeLibrary> libs) {
     // TODO Auto-generated method stub
 
-    // TODO Auto-generated method stub
-
-    List<LibSummary> res = new ArrayList<LibSummary>();
+    List<DocumentSummary> list = new ArrayList<DocumentSummary>();
     for (DatatypeLibrary lib : libs) {
-      LibSummary element = new LibSummary();
+      DocumentSummary element = new DocumentSummary();
 
       element.setCoverpage(lib.getMetadata().getCoverPicture());
       element.setDateUpdated(lib.getUpdateDate());
@@ -314,10 +313,30 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       // element.setConfrmanceProfiles(confrmanceProfiles);
       element.setCoverpage(lib.getMetadata().getCoverPicture());
       element.setId(lib.getId());
+      element.setDerived(lib.isDerived());
       element.setUsername(lib.getUsername());
-      res.add(element);
+      element.setStatus(lib.getStatus());
+      element.setSharePermission(lib.getSharePermission());
+      element.setSharedUsers(lib.getSharedUsers());
+      element.setCurrentAuthor(lib.getCurrentAuthor());
+      List<String> datatypesNames = new ArrayList<String>();
+      DatatypeRegistry datatypeRegistry = lib.getDatatypeRegistry();
+      if (datatypeRegistry != null) {
+        if (datatypeRegistry.getChildren() != null) {
+          for (Link i : datatypeRegistry.getChildren()) {
+            Datatype datatype =
+                datatypeService.findById(i.getId());
+            if (datatype != null) {
+              datatypesNames
+              .add(datatype.getLabel());
+            }
+          }
+        }
+      }
+      element.setElements(datatypesNames);
+      list.add(element);
     }
-    return res;
+    return list;
   }
 
   /*
@@ -336,17 +355,13 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("publicationInfo");
-
     qry.fields().include("id");
     qry.fields().include("metadata");
     qry.fields().include("username");
-    qry.fields().include("conformanceProfileRegistry");
+    qry.fields().include("datatypeRegistry");
     qry.fields().include("creationDate");
     qry.fields().include("updateDate");
-
     List<DatatypeLibrary> libs = mongoTemplate.find(qry, DatatypeLibrary.class);
-
-
 
     return libs;
   }

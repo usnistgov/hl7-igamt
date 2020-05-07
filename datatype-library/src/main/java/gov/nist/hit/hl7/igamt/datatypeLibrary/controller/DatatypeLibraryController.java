@@ -23,11 +23,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,13 +37,19 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
@@ -59,19 +67,18 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.XReferenceFoundExceptio
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddDatatypeResponseDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DatatypeLibraryDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DatatypeVersionGroupDisplay;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DocumentDisplayInfo;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.LibSummary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.TreeNode;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryDisplayConverterService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.LibraryDisplayInfoService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.EvolutionComparatorService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.DeltaTreeNode;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddingInfo;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddingWrapper;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.CopyWrapper;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.CreatingWrapper;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SCOPE;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 //import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsNode;
 //import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
@@ -97,6 +104,8 @@ public class DatatypeLibraryController {
 
   @Autowired
   DatatypeLibraryService dataypeLibraryService;
+  @Autowired
+  LibraryDisplayInfoService display;
 
   @Autowired
   DatatypeLibraryDisplayConverterService displayConverterService;
@@ -167,18 +176,25 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/create", method = RequestMethod.POST,
       produces = {"application/json"})
 
-  public @ResponseBody ResponseMessage<DatatypeLibrary> create(@RequestBody CreatingWrapper wrapper,
+  public @ResponseBody ResponseMessage<DatatypeLibrary> create(@RequestBody CreationWrapper wrapper,
       Authentication authentication) throws JsonParseException, JsonMappingException,
       FileNotFoundException, IOException, AddingException, DatatypeNotFoundException {
 
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary empty = dataypeLibraryService.createEmptyDatatypeLibrary();
-    if (wrapper.getToAdd() != null || !wrapper.getToAdd().isEmpty()) {
+    empty.setUsername(username);
+    DomainInfo info = new DomainInfo();
+    info.setScope(Scope.USER);
+    empty.setDomainInfo(info);
+    empty.setMetadata(wrapper.getMetadata());
+    empty.setCreationDate(new Date());
+    
+    if (wrapper.getSelected() != null || !wrapper.getSelected().isEmpty()) {
 
       Set<String> savedIds = new HashSet<String>();
-      for (AddingInfo elm : wrapper.getToAdd()) {
+      for (AddingInfo elm : wrapper.getSelected()) {
         List<Datatype> datatypes = datatypeService.findByNameAndVersionAndScope(elm.getName(),
-            elm.getDomainInfo().getVersion(), elm.getSourceScope().toString());
+            elm.getDomainInfo().getVersion(), SCOPE.HL7STANDARD.toString());
 
         if (datatypes != null && !datatypes.isEmpty()) {
           Datatype clone = datatypes.get(0).clone();
@@ -191,7 +207,7 @@ public class DatatypeLibraryController {
           savedIds.add(clone.getId());
         } else {
           throw new DatatypeNotFoundException(elm.getName(), elm.getDomainInfo().getVersion(),
-              elm.getSourceScope().toString());
+              SCOPE.HL7STANDARD.toString().toString());
         }
       }
 
@@ -216,10 +232,10 @@ public class DatatypeLibraryController {
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary lib = dataypeLibraryService.findById(id);
     Set<String> savedIds = new HashSet<String>();
-    for (AddingInfo elm : wrapper.getToAdd()) {
+    for (AddingInfo elm : wrapper.getSelected()) {
       if (elm.isFlavor()) {
         Datatype datatype = datatypeService.findOneByNameAndVersionAndScope(elm.getName(),
-            elm.getDomainInfo().getVersion(), elm.getSourceScope().toString());
+            elm.getDomainInfo().getVersion(), SCOPE.HL7STANDARD.toString().toString());
         if (datatype != null) {
           Datatype clone = datatype.clone();
           clone.setDomainInfo(elm.getDomainInfo());
@@ -310,31 +326,31 @@ public class DatatypeLibraryController {
     return ig;
   }
 
-
-  /**
-   * 
-   * @param authentication
-   * @return
-   */
-  @RequestMapping(value = "/api/datatype-libraries", method = RequestMethod.GET,
-      produces = {"application/json"})
-  public @ResponseBody List<LibSummary> getUserLibs(Authentication authentication) {
+  @RequestMapping(value = "/api/datatype-library", method = RequestMethod.GET, produces = { "application/json" })
+  public @ResponseBody List<DocumentSummary> getUserIG(Authentication authentication,
+      @RequestParam("type") AccessType type) {
     String username = authentication.getPrincipal().toString();
-    List<DatatypeLibrary> libs = dataypeLibraryService.findLatestByUsername(username);
-    return dataypeLibraryService.convertListToDisplayList(libs);
-  }
+    List<DatatypeLibrary> libraries = new ArrayList<DatatypeLibrary>();
 
-  /**
-   * 
-   * @param authentication
-   * @return
-   */
-  @RequestMapping(value = "/api/datatype-libraries/published", method = RequestMethod.GET,
-      produces = {"application/json"})
-  public @ResponseBody List<LibSummary> getPublished(Authentication authentication) {
-    String username = authentication.getPrincipal().toString();
-    List<DatatypeLibrary> libs = dataypeLibraryService.findPublished();
-    return dataypeLibraryService.convertListToDisplayList(libs);
+    if (type != null) {
+      if (type.equals(AccessType.PUBLIC)) {
+
+        libraries = dataypeLibraryService.findPublished();
+
+      } else if (type.equals(AccessType.PRIVATE)) {
+
+        libraries = dataypeLibraryService.findByUsername(username, Scope.USER);
+            
+      } else if (type.equals(AccessType.ALL)) {
+
+      }  else {
+        libraries = dataypeLibraryService.findByUsername(username, Scope.USER);
+      }
+      return dataypeLibraryService.convertListToDisplayList(libraries);
+    } else {
+      libraries = dataypeLibraryService.findByUsername(username, Scope.USER);
+      return dataypeLibraryService.convertListToDisplayList(libraries);
+    }
   }
 
   /**
@@ -366,35 +382,35 @@ public class DatatypeLibraryController {
 
 
 
-  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/clone",
-      method = RequestMethod.POST, produces = {"application/json"})
-  public ResponseMessage<TreeNode> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
-      @PathVariable("datatypeId") String datatypeId, Authentication authentication)
-      throws IGNotFoundException, CloneException, DatatypeLibraryNotFoundException {
-    DatatypeLibrary library = findLibraryById(id);
-    String username = authentication.getPrincipal().toString();
-    Datatype datatype = datatypeService.findById(wrapper.getId());
-    if (datatype == null) {
-      throw new CloneException("Cannot find datatype with id=" + wrapper.getId());
-    }
-    Datatype clone = datatype.clone();
-    clone.setUsername(username);
-    DomainInfo info = new DomainInfo();
-    info.setScope(library.getDomainInfo().getScope());
-    info.setCompatibilityVersion(datatype.getDomainInfo().getCompatibilityVersion());
-    info.setVersion(datatype.getDomainInfo().getVersion());
-    clone.setDomainInfo(info);
-    clone.setId(null);
-    clone.setName(datatype.getName());
-    clone.setExt(wrapper.getExt());
-    clone = datatypeService.save(clone);
-    library.getDatatypeRegistry().getChildren().add(new Link(clone.getId()));
-    dataypeLibraryService.save(library);
-    
-    return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Datatype Cloned Successfully", id, false, clone.getUpdateDate(), displayConverterService.createDatatypeNode(clone, 0));
-
-
-  }
+//  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/clone",
+//      method = RequestMethod.POST, produces = {"application/json"})
+//  public ResponseMessage<TreeNode> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
+//      @PathVariable("datatypeId") String datatypeId, Authentication authentication)
+//      throws IGNotFoundException, CloneException, DatatypeLibraryNotFoundException {
+//    DatatypeLibrary library = findLibraryById(id);
+//    String username = authentication.getPrincipal().toString();
+//    Datatype datatype = datatypeService.findById(wrapper.getId());
+//    if (datatype == null) {
+//      throw new CloneException("Cannot find datatype with id=" + wrapper.getId());
+//    }
+//    Datatype clone = datatype.clone();
+//    clone.setUsername(username);
+//    DomainInfo info = new DomainInfo();
+//    info.setScope(library.getDomainInfo().getScope());
+//    info.setCompatibilityVersion(datatype.getDomainInfo().getCompatibilityVersion());
+//    info.setVersion(datatype.getDomainInfo().getVersion());
+//    clone.setDomainInfo(info);
+//    clone.setId(null);
+//    clone.setName(datatype.getName());
+//    clone.setExt(wrapper.getExt());
+//    clone = datatypeService.save(clone);
+//    library.getDatatypeRegistry().getChildren().add(new Link(clone.getId()));
+//    dataypeLibraryService.save(library);
+//    
+//    return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Datatype Cloned Successfully", id, false, clone.getUpdateDate(), displayConverterService.createDatatypeNode(clone, 0));
+//
+//
+//  }
 
   @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/delete",
       method = RequestMethod.DELETE, produces = {"application/json"})
@@ -479,6 +495,14 @@ public class DatatypeLibraryController {
 
   }
 
+  @RequestMapping(value = "/api/datatype-library/{id}/state", method = RequestMethod.GET, produces = {
+  "application/json" })
+  public @ResponseBody DocumentDisplayInfo getState(@PathVariable("id") String id, Authentication authentication)
+      throws IGNotFoundException {
 
+    DatatypeLibrary library = dataypeLibraryService.findById(id);
+
+    return display.covertToDisplay(library);
+  }
 
 }

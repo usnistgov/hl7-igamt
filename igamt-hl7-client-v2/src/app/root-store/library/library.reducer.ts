@@ -1,22 +1,24 @@
+import { ActionReducerMap, createFeatureSelector, createSelector } from '@ngrx/store';
+import * as fromLibraryList from './library-list/library-list.reducer';
 
-import { LibraryActions, LibraryActionTypes } from './library.actions';
+// Feature
+export const featureName = 'library';
 
+// State
 export interface IState {
-  placeholder: any;
+  list: fromLibraryList.IState;
 }
 
-export const initialState: IState = {
-  placeholder: undefined,
+// Reducers
+export const reducers: ActionReducerMap<IState> = {
+  list: fromLibraryList.reducer,
 };
 
-export function reducer(state = initialState, action: LibraryActions): IState {
-  // tslint:disable-next-line: no-commented-code
-  // switch (action.type) {
-
-  //   // case LibraryActionTypes.LoadLibrarys:
-  //   //   return state;
-
-  //   default:
-  return state;
-  // }
-}
+// Selectors
+export const selectLibraryFeature = createFeatureSelector(featureName);
+export const selectIgList = createSelector(
+  selectLibraryFeature,
+  (state: IState) => {
+    return state.list;
+  },
+);

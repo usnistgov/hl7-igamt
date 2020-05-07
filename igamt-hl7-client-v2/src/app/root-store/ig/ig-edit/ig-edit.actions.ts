@@ -1,14 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
-import { IGDisplayInfo } from '../../../modules/ig/models/ig/ig-document.class';
+import {IDocumentDisplayInfo, IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
 import {
   IAddNodes, IAddResourceFromFile,
   ICopyNode,
   ICopyResourceResponse,
   IDeleteNode,
-} from '../../../modules/ig/models/toc/toc-operation.class';
-import { ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../../../modules/ig/models/toc/toc-operation.class';
+} from '../../../modules/document/models/toc/toc-operation.class';
+import { ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../../../modules/document/models/toc/toc-operation.class';
 import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
@@ -96,7 +96,7 @@ export class IgEditResolverLoad implements Action {
 
 export class IgEditResolverLoadSuccess implements Action {
   readonly type = IgEditActionTypes.IgEditResolverLoadSuccess;
-  constructor(readonly igInfo: IGDisplayInfo) {
+  constructor(readonly igInfo: IDocumentDisplayInfo<IgDocument>) {
   }
 }
 
@@ -138,7 +138,7 @@ export class ImportResourceFromFileFailure implements Action {
 
 export class AddResourceSuccess implements Action {
   readonly type = IgEditActionTypes.AddResourceSuccess;
-  constructor(readonly payload: IGDisplayInfo) {
+  constructor(readonly payload: IDocumentDisplayInfo<IgDocument>) {
   }
 }
 
@@ -277,7 +277,7 @@ export class ToggleDelta implements Action {
 
 export class ToggleDeltaSuccess implements Action {
   readonly type = IgEditActionTypes.ToggleDeltaSuccess;
-  constructor(readonly igInfo: IGDisplayInfo, readonly deltaMode: boolean) { }
+  constructor(readonly igInfo: IDocumentDisplayInfo<IgDocument>, readonly deltaMode: boolean) { }
 }
 
 export class ToggleDeltaFailure implements Action {

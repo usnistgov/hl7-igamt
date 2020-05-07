@@ -1,7 +1,6 @@
 import { Action } from '@ngrx/store';
 import { ISortOptions } from 'src/app/modules/shared/models/sort.class';
-import { IgListItem } from '../../../modules/ig/models/ig/ig-list-item.class';
-
+import {IgListItem} from '../../../modules/document/models/document/ig-list-item.class';
 export enum IgListActionTypes {
   LoadIgList = '[IgList] Load Ig List Items',
   UpdateIgList = '[IgList] Update Ig List Items',

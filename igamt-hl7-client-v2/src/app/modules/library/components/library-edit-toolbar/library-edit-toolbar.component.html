@@ -1,0 +1,35 @@
+<div>
+    <app-dam-fullscreen-button></app-dam-fullscreen-button>
+</div>
+<div>
+
+  <button class="btn btn-info btn-sm toolbar-button" type="button" (click)="exportTool()">
+    <i class="fa fa-plug"></i>
+    Connect
+  </button>
+  <div ngbDropdown class="d-inline-block">
+    <button class="btn btn-secondary btn-sm toolbar-button" id="exportDropDown" ngbDropdownToggle>Export</button>
+    <div ngbDropdownMenu aria-labelledby="exportDropDown">
+      <button ngbDropdownItem (click)="exportWord()">Word</button>
+      <button ngbDropdownItem (click)="exportQuickWORD()">WORD (Quick)</button>
+      <button ngbDropdownItem (click)="exportHTML()">HTML</button>
+      <button ngbDropdownItem (click)="exportQuickHTML()">HTML (Quick)</button>
+      <button ngbDropdownItem (click)="exportXML()">XML</button>
+    </div>
+  </div>
+  <div ngbDropdown class="d-inline-block">
+    <button class="btn btn-info btn-sm toolbar-button" id="verifyDown" ngbDropdownToggle>Verify</button>
+    <div ngbDropdownMenu aria-labelledby="exportDropDown">
+      <button ngbDropdownItem (click)="verifyIG('Verification')">Verification</button>
+      <button ngbDropdownItem (click)="verifyIG('Compliance')">Compliance</button>
+    </div>
+  </div>
+  <button *ngIf="!viewOnly" class="btn btn-primary btn-sm toolbar-button" type="button">
+    <i class="fa fa-share"></i>
+    Share
+  </button>
+  <app-dam-reset-button *ngIf="!viewOnly"></app-dam-reset-button>
+  <app-dam-save-button *ngIf="!viewOnly"></app-dam-save-button>
+</div>
+
+

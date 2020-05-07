@@ -29,6 +29,7 @@ import { ClearResource, LoadResource } from '../../../../root-store/resource-loa
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
+import {IAddNewWrapper, IAddWrapper} from '../../../document/models/document/add-wrapper.class';
 import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
 import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
@@ -43,8 +44,7 @@ import { IUsages } from '../../../shared/models/cross-reference';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
 import { CrossReferencesService } from '../../../shared/services/cross-references.service';
-import { IAddNewWrapper, IAddWrapper } from '../../models/ig/add-wrapper.class';
-import { IGDisplayInfo } from '../../models/ig/ig-document.class';
+import {IDocumentDisplayInfo, IgDocument} from '../../models/ig/ig-document.class';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
 
 @Component({
@@ -70,7 +70,7 @@ export class IgEditSidebarComponent implements OnInit {
 
   derived: boolean;
   constructor(
-    private store: Store<IGDisplayInfo>,
+    private store: Store<IDocumentDisplayInfo<IgDocument>>,
     private dialog: MatDialog,
     private crossReferencesService: CrossReferencesService,
     private router: Router,
