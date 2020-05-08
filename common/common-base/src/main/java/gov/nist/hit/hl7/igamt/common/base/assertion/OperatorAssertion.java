@@ -9,47 +9,53 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.constraints.domain;
+package gov.nist.hit.hl7.igamt.common.base.assertion;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author jungyubw
  *
  */
-public class DisplayPredicate {
+public class OperatorAssertion extends Assertion {
 
-  private Predicate predicate;
-  private String location;
-  
-  public Predicate getPredicate() {
-    return predicate;
+  public enum Operator {
+    AND, OR, XOR
+  }
+
+  private Operator operator;
+  private Set<Assertion> assertions = new HashSet<Assertion>();
+
+  public OperatorAssertion() {
+    super();
+    this.setMode(AssertionMode.ANDOR);
+  }
+
+  public Set<Assertion> getAssertions() {
+    return assertions;
+  }
+
+  public void setAssertions(Set<Assertion> assertions) {
+    this.assertions = assertions;
+  }
+
+  public Operator getOperator() {
+    return operator;
+  }
+
+  public void setOperator(Operator operator) {
+    this.operator = operator;
   }
   
-  public void setPredicate(Predicate predicate) {
-    this.predicate = predicate;
+  public void addAssertion(Assertion assertion){
+    this.assertions.add(assertion);
   }
-  
-  public void setLocation(String location) {
-    this.location = location;
+
+  @Override
+  public String toString() {
+    return "OperatorAssertion [operator=" + operator + ", assertions=" + assertions + "]";
   }
-  
-  public String getLocation() {
-    return location;
-  }
-  
-  public Usage getTrueUsage(){
-    if(predicate != null) return this.predicate.getTrueUsage();
-    return null;
-  }
-  
-  public Usage getFalseUsage(){
-    if(predicate != null) return this.predicate.getFalseUsage();
-    return null;
-  }
-  
-  public String getDescription(){
-    if(predicate != null) return this.predicate.generateDescription();
-    return null;
-  }
+
+
 }

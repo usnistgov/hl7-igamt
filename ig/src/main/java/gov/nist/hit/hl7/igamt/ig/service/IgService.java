@@ -6,13 +6,13 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;

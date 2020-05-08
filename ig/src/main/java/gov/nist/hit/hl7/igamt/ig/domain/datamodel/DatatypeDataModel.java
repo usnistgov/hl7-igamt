@@ -17,11 +17,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Predicate;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -83,9 +83,9 @@ public class DatatypeDataModel implements Serializable {
 		this.model = d;
 
 		if (d.getBinding() != null){
-			if(d.getBinding().getConformanceStatementIds() != null){
-				for(String csId: d.getBinding().getConformanceStatementIds()){
-					conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatements.add(cs));
+			if(d.getBinding().getConformanceStatements() != null){
+				for(ConformanceStatement cs: d.getBinding().getConformanceStatements()){
+					this.conformanceStatements.add(cs);
 				}
 			}
 		}

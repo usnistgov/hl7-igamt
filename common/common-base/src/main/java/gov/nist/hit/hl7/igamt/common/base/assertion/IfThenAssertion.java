@@ -9,41 +9,47 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.constraints.domain;
-
-import java.io.Serializable;
+package gov.nist.hit.hl7.igamt.common.base.assertion;
 
 /**
  * @author jungyubw
  *
+ *
  */
-public class FreeTextPredicate extends Predicate  implements Serializable{
-
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 8137080477013985379L;
-  private String freeText;
-  private String assertionScript;
-
-  public FreeTextPredicate() {
+public class IfThenAssertion extends Assertion {
+  public IfThenAssertion() {
     super();
-    this.setType(ConstraintType.FREE);
+    this.setMode(AssertionMode.IFTHEN);
   }
 
-  public String getFreeText() {
-    return freeText;
+  /*
+   * This is if_assertion statement.
+   */
+  private Assertion ifAssertion;
+
+  /*
+   * This is then_assertion statement.
+   */
+  private Assertion thenAssertion;
+
+  public Assertion getIfAssertion() {
+    return ifAssertion;
   }
 
-  public void setFreeText(String freeText) {
-    this.freeText = freeText;
+  public void setIfAssertion(Assertion ifAssertion) {
+    this.ifAssertion = ifAssertion;
   }
 
-  public String getAssertionScript() {
-    return assertionScript;
+  public Assertion getThenAssertion() {
+    return thenAssertion;
   }
 
-  public void setAssertionScript(String assertionScript) {
-    this.assertionScript = assertionScript;
+  public void setThenAssertion(Assertion thenAssertion) {
+    this.thenAssertion = thenAssertion;
+  }
+
+  @Override
+  public String toString() {
+    return "IfThenAssertion [ifAssertion=" + ifAssertion + ", thenAssertion=" + thenAssertion + "]";
   }
 }

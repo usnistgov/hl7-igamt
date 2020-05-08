@@ -9,33 +9,41 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
+package gov.nist.hit.hl7.igamt.common.base.domain;
+
+import java.io.Serializable;
 
 /**
  * @author jungyubw
  *
  */
-public class InstancePath extends Path {
+public class FreeTextPredicate extends Predicate  implements Serializable{
 
-  /*
-   * instanceParameter is instance number ex) ORDER[2]-OBSERVATION[1]-OBX[*]-3[1].1[1] elementId :
-   * ORDER groupd id instanceParameter : 2 elementId of child : OBSERVATION group id
-   * instanceParameter of child : 1 ...
+  /**
+   * 
    */
+  private static final long serialVersionUID = 8137080477013985379L;
+  private String freeText;
+  private String assertionScript;
 
-  private String instanceParameter;
-
-  public String getInstanceParameter() {
-    return instanceParameter;
+  public FreeTextPredicate() {
+    super();
+    this.setType(ConstraintType.FREE);
   }
 
-  public void setInstanceParameter(String instanceParameter) {
-    this.instanceParameter = instanceParameter;
+  public String getFreeText() {
+    return freeText;
   }
 
-  @Override
-  public String toString() {
-    return "InstancePath [instanceParameter=" + instanceParameter + ", toString()="
-        + super.toString() + "]";
+  public void setFreeText(String freeText) {
+    this.freeText = freeText;
+  }
+
+  public String getAssertionScript() {
+    return assertionScript;
+  }
+
+  public void setAssertionScript(String assertionScript) {
+    this.assertionScript = assertionScript;
   }
 }

@@ -37,6 +37,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
@@ -49,11 +51,6 @@ import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.Level;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -115,9 +112,6 @@ public class SegmentServiceImpl implements SegmentService {
 
 	@Autowired
 	ValuesetService valueSetService;
-
-	@Autowired
-	private ConformanceStatementRepository conformanceStatementRepository;
 
 	@Autowired
 	private PredicateRepository predicateRepository;
@@ -823,21 +817,20 @@ public class SegmentServiceImpl implements SegmentService {
 					cs.setStructureId(s.getName());
 					cs.setLevel(Level.SEGMENT);
 					cs.setIgDocumentId(documentId);
-					cs = this.conformanceStatementRepository.save(cs);
-					s.getBinding().addConformanceStatement(cs.getId());
+					s.getBinding().addConformanceStatement(cs);
 				} else if (item.getChangeType().equals(ChangeType.DELETE)) {
 					item.setOldPropertyValue(item.getLocation());
 					this.deleteConformanceStatementById(s, item.getLocation());
 				} else if (item.getChangeType().equals(ChangeType.UPDATE)) {
 					ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-					if (cs.getId() != null) {
-						item.setOldPropertyValue(this.conformanceStatementRepository.findById(cs.getId()));
+					if (cs.getIdentifier() != null) {
+						this.deleteConformanceStatementById(s, cs.getIdentifier());
 					}
 					cs.addSourceId(s.getId());
 					cs.setStructureId(s.getName());
 					cs.setLevel(Level.SEGMENT);
 					cs.setIgDocumentId(documentId);
-					cs = this.conformanceStatementRepository.save(cs);
+					s.getBinding().addConformanceStatement(cs);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
 				ObjectMapper mapper = new ObjectMapper();
@@ -886,21 +879,16 @@ public class SegmentServiceImpl implements SegmentService {
 	 * @param location
 	 * @return
 	 */
-	private String deleteConformanceStatementById(Segment s, String location) {
-		String toBeDeleted = null;
-		for (String id : s.getBinding().getConformanceStatementIds()) {
-			ConformanceStatement cs = this.conformanceStatementRepository.findById(id).get();
+	private void deleteConformanceStatementById(Segment s, String location) {
+		ConformanceStatement toBeDeleted = null;
+		for (ConformanceStatement cs : s.getBinding().getConformanceStatements()) {
 			if (cs.getIdentifier().equals(location)) {
-				toBeDeleted = id;
-				if (cs.getSourceIds() != null)
-					cs.getSourceIds().remove(s.getId());
-				this.conformanceStatementRepository.save(cs);
+				toBeDeleted = cs;
 			}
 		}
 
 		if (toBeDeleted != null)
-			s.getBinding().getConformanceStatementIds().remove(toBeDeleted);
-		return toBeDeleted;
+			s.getBinding().getConformanceStatements().remove(toBeDeleted);
 	}
 
 	/**
@@ -1394,12 +1382,12 @@ public class SegmentServiceImpl implements SegmentService {
 			for (Field f : segment.getChildren()) {
 				Datatype dt = this.datatypeService.findById(f.getRef().getId());
 				if (dt.getDomainInfo().getScope().equals(Scope.USER)) {
-					if (dt.getBinding() != null && dt.getBinding().getConformanceStatementIds() != null
-							&& dt.getBinding().getConformanceStatementIds().size() > 0) {
+					if (dt.getBinding() != null && dt.getBinding().getConformanceStatements() != null
+							&& dt.getBinding().getConformanceStatements().size() > 0) {
 						if (!associatedConformanceStatementMap.containsKey(dt.getLabel()))
 							associatedConformanceStatementMap.put(dt.getLabel(),
 									new ConformanceStatementsContainer(
-											this.collectCS(dt.getBinding().getConformanceStatementIds()), Type.DATATYPE,
+											dt.getBinding().getConformanceStatements(), Type.DATATYPE,
 											dt.getId(), dt.getLabel()));
 						this.datatypeService.collectAssoicatedConformanceStatements(dt,
 								associatedConformanceStatementMap);
@@ -1407,19 +1395,6 @@ public class SegmentServiceImpl implements SegmentService {
 				}
 			}
 		}
-	}
-
-	private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
-		Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-		if (conformanceStatementIds != null) {
-			for (String id : conformanceStatementIds) {
-				Optional<ConformanceStatement> cs = this.conformanceStatementRepository.findById(id);
-				if (cs.isPresent())
-					result.add(cs.get());
-			}
-		}
-
-		return result;
 	}
 
 	/*
@@ -1481,14 +1456,14 @@ public class SegmentServiceImpl implements SegmentService {
 	@Override
 	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String segmentId,
 			String segmentName) {
-		Set<ConformanceStatement> found = this.conformanceStatementRepository
-				.findByIgDocumentIdAndStructureId(documentId, segmentName);
-		Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-		for (ConformanceStatement cs : found) {
-			if (!cs.getSourceIds().contains(segmentId))
-				result.add(cs);
-		}
-		return result;
+//		Set<ConformanceStatement> found = this.conformanceStatementRepository
+//				.findByIgDocumentIdAndStructureId(documentId, segmentName);
+//		Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
+//		for (ConformanceStatement cs : found) {
+//			if (!cs.getSourceIds().contains(segmentId))
+//				result.add(cs);
+//		}
+		return null;
 	}
 
 	/*

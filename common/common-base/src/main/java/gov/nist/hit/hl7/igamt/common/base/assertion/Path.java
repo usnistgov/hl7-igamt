@@ -9,53 +9,50 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
-
-import java.util.HashSet;
-import java.util.Set;
+package gov.nist.hit.hl7.igamt.common.base.assertion;
 
 /**
  * @author jungyubw
  *
  */
-public class OperatorAssertion extends Assertion {
+public class Path {
 
-  public enum Operator {
-    AND, OR, XOR
+  /*
+   * elementId contains element mongo id for
+   * ConformanceProfileId/SegmentId/DatatypeId/FieldId/ComponentId ex) MSH-3.1 elementId of this :
+   * MSH id elementId of child : 3rd field Id elementId of child of child : 1st component id of 3rd
+   * field Datatype
+   */
+  private String elementId;
+  private InstancePath child;
+
+
+  public Path() {
+	super();
+	// TODO Auto-generated constructor stub
+}
+
+public String getElementId() {
+    return elementId;
   }
 
-  private Operator operator;
-  private Set<Assertion> assertions = new HashSet<Assertion>();
-
-  public OperatorAssertion() {
-    super();
-    this.setMode(AssertionMode.ANDOR);
+  public void setElementId(String elementId) {
+    this.elementId = elementId;
   }
 
-  public Set<Assertion> getAssertions() {
-    return assertions;
+  public InstancePath getChild() {
+    return child;
   }
 
-  public void setAssertions(Set<Assertion> assertions) {
-    this.assertions = assertions;
-  }
-
-  public Operator getOperator() {
-    return operator;
-  }
-
-  public void setOperator(Operator operator) {
-    this.operator = operator;
-  }
-  
-  public void addAssertion(Assertion assertion){
-    this.assertions.add(assertion);
+  public void setChild(InstancePath child) {
+    this.child = child;
   }
 
   @Override
   public String toString() {
-    return "OperatorAssertion [operator=" + operator + ", assertions=" + assertions + "]";
+    return "Path [elementId=" + elementId + ", child=" + child + "]";
   }
 
+  
 
 }

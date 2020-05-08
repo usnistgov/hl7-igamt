@@ -22,9 +22,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
+import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.ConformanceStatementDisplay;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
@@ -38,9 +41,6 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDisplay;
-import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.DisplayMetadataSegment;
@@ -106,11 +106,9 @@ public class SegmentController extends BaseController {
 
 		ConformanceStatementDisplay conformanceStatementDisplay = new ConformanceStatementDisplay();
 		Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
-		if (segment.getBinding() != null && segment.getBinding().getConformanceStatementIds() != null) {
-			for (String csId : segment.getBinding().getConformanceStatementIds()) {
-				Optional<ConformanceStatement> cs = conformanceStatementRepository.findById(csId);
-				if (cs.isPresent())
-					cfs.add(cs.get());
+		if (segment.getBinding() != null && segment.getBinding().getConformanceStatements() != null) {
+			for (ConformanceStatement cs : segment.getBinding().getConformanceStatements()) {
+				cfs.add(cs);
 			}
 		}
 

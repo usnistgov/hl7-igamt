@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
@@ -56,11 +57,6 @@ import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.Level;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -108,9 +104,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 	@Autowired
 	ValuesetService valueSetService;
-
-	@Autowired
-	private ConformanceStatementRepository conformanceStatementRepository;
 
 	@Autowired
 	private PredicateRepository predicateRepository;
@@ -327,27 +320,10 @@ public class DatatypeServiceImpl implements DatatypeService {
 			}
 			result.setName(datatype.getName());
 			if (datatype.getBinding() != null)
-				result.setConformanceStatements(this.collectCS(datatype.getBinding().getConformanceStatementIds()));
+				result.setConformanceStatements(datatype.getBinding().getConformanceStatements());
 			return result;
 		}
 		return null;
-	}
-
-	/**
-	 * @param conformanceStatementIds
-	 * @return
-	 */
-	private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
-		Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-		if (conformanceStatementIds != null) {
-			for (String id : conformanceStatementIds) {
-				Optional<ConformanceStatement> cs = this.conformanceStatementRepository.findById(id);
-				if (cs.isPresent())
-					result.add(cs.get());
-			}
-		}
-
-		return result;
 	}
 
 	private void validateComponent(Component f) throws ValidationException {
@@ -1042,21 +1018,20 @@ public class DatatypeServiceImpl implements DatatypeService {
 					cs.setStructureId(d.getName());
 					cs.setLevel(Level.DATATYPE);
 					cs.setIgDocumentId(documentId);
-					cs = this.conformanceStatementRepository.save(cs);
-					d.getBinding().addConformanceStatement(cs.getId());
+					d.getBinding().addConformanceStatement(cs);
 				} else if (item.getChangeType().equals(ChangeType.DELETE)) {
 					item.setOldPropertyValue(item.getLocation());
 					this.deleteConformanceStatementById(d, item.getLocation());
 				} else if (item.getChangeType().equals(ChangeType.UPDATE)) {
 					ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-					if (cs.getId() != null) {
-						item.setOldPropertyValue(this.conformanceStatementRepository.findById(cs.getId()));
+					if (cs.getIdentifier() != null) {
+						this.deleteConformanceStatementById(d, cs.getIdentifier());
 					}
 					cs.addSourceId(d.getId());
 					cs.setStructureId(d.getName());
 					cs.setLevel(Level.DATATYPE);
 					cs.setIgDocumentId(documentId);
-					cs = this.conformanceStatementRepository.save(cs);
+					d.getBinding().addConformanceStatement(cs);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
 				ObjectMapper mapper = new ObjectMapper();
@@ -1100,20 +1075,15 @@ public class DatatypeServiceImpl implements DatatypeService {
 		this.save(d);
 	}
 
-	private String deleteConformanceStatementById(Datatype d, String location) {
-		String toBeDeleted = null;
-		for (String id : d.getBinding().getConformanceStatementIds()) {
-			ConformanceStatement cs = this.conformanceStatementRepository.findById(id).get();
+	private void deleteConformanceStatementById(Datatype d, String location) {
+		ConformanceStatement toBeDeleted = null;
+		for (ConformanceStatement cs : d.getBinding().getConformanceStatements()) {
 			if (cs.getIdentifier().equals(location))
-				toBeDeleted = id;
-			if (cs.getSourceIds() != null)
-				cs.getSourceIds().remove(d.getId());
-			this.conformanceStatementRepository.save(cs);
+				toBeDeleted = cs;
 		}
 
 		if (toBeDeleted != null)
-			d.getBinding().getConformanceStatementIds().remove(toBeDeleted);
-		return toBeDeleted;
+			d.getBinding().getConformanceStatements().remove(toBeDeleted);
 	}
 
 	/**
@@ -1295,12 +1265,11 @@ public class DatatypeServiceImpl implements DatatypeService {
 					Datatype dt = this.findById(c.getRef().getId());
 					if (dt != null) {
 						if (dt.getDomainInfo().getScope().equals(Scope.USER)) {
-							if (dt.getBinding() != null && dt.getBinding().getConformanceStatementIds() != null
-									&& dt.getBinding().getConformanceStatementIds().size() > 0) {
+							if (dt.getBinding() != null && dt.getBinding().getConformanceStatements() != null
+									&& dt.getBinding().getConformanceStatements().size() > 0) {
 								if (!associatedConformanceStatementMap.containsKey(dt.getLabel()))
 									associatedConformanceStatementMap.put(dt.getLabel(),
-											new ConformanceStatementsContainer(
-													this.collectCS(dt.getBinding().getConformanceStatementIds()),
+											new ConformanceStatementsContainer(dt.getBinding().getConformanceStatements(),
 													Type.DATATYPE, dt.getId(), dt.getLabel()));
 								this.collectAssoicatedConformanceStatements(dt, associatedConformanceStatementMap);
 							}
@@ -1388,14 +1357,14 @@ public class DatatypeServiceImpl implements DatatypeService {
 	@Override
 	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String datatypeId,
 			String datatypeName) {
-		Set<ConformanceStatement> found = this.conformanceStatementRepository
-				.findByIgDocumentIdAndStructureId(documentId, datatypeName);
-		Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-		for (ConformanceStatement cs : found) {
-			if (!cs.getSourceIds().contains(datatypeId))
-				result.add(cs);
-		}
-		return result;
+//		Set<ConformanceStatement> found = this.conformanceStatementRepository
+//				.findByIgDocumentIdAndStructureId(documentId, datatypeName);
+//		Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
+//		for (ConformanceStatement cs : found) {
+//			if (!cs.getSourceIds().contains(datatypeId))
+//				result.add(cs);
+//		}
+		return null;
 	}
 
 	/*

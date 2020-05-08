@@ -5,13 +5,13 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.AssertionConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.base.domain.AssertionPredicate;
+import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.base.domain.FreeTextConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.base.domain.FreeTextPredicate;
+import gov.nist.hit.hl7.igamt.common.base.domain.Predicate;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
-import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.AssertionPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConstraintExportConfiguration;
 import nu.xom.Attribute;
 import nu.xom.Element;

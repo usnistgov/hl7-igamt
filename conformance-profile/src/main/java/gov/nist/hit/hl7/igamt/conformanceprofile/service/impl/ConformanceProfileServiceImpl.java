@@ -24,21 +24,27 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
-import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
-import gov.nist.hit.hl7.igamt.common.binding.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
+import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.base.domain.DisplayPredicate;
+import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Predicate;
 import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
@@ -48,6 +54,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
@@ -55,7 +62,12 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
@@ -80,12 +92,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.SegmentRefStruct
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.Level;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
-import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -127,9 +133,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Autowired
   ValuesetService valuesetService;
-
-  @Autowired
-  private ConformanceStatementRepository conformanceStatementRepository;
 
   @Autowired
   private PredicateRepository predicateRepository;
@@ -322,7 +325,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           .getChildren());
       Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
       if (conformanceProfile.getBinding() != null) {
-        cfs = this.collectCS(conformanceProfile.getBinding().getConformanceStatementIds());
+        cfs = conformanceProfile.getBinding().getConformanceStatements();
       }
       result.setConformanceStatements(cfs);
       result.setAvailableConformanceStatements(this.collectAvaliableConformanceStatements(documentId,
@@ -332,29 +335,17 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     return null;
   }
 
-  public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String messageId,
-      String structureId) {
-    Set<ConformanceStatement> found = this.conformanceStatementRepository
-        .findByIgDocumentIdAndStructureId(documentId, structureId);
-    Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-    for (ConformanceStatement cs : found) {
-      if (!cs.getSourceIds().contains(messageId))
-        result.add(cs);
-    }
-    return result;
-  }
-
-  private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
-    Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-    if (conformanceStatementIds != null) {
-      for (String id : conformanceStatementIds) {
-        Optional<ConformanceStatement> cs = this.conformanceStatementRepository.findById(id);
-        if (cs.isPresent())
-          result.add(cs.get());
-      }
-    }
-
-    return result;
+  public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String messageId, String structureId) {
+//    Set<ConformanceStatement> found = this.conformanceStatementRepository
+//        .findByIgDocumentIdAndStructureId(documentId, structureId);
+//    Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
+//    for (ConformanceStatement cs : found) {
+//      if (!cs.getSourceIds().contains(messageId))
+//        result.add(cs);
+//    }
+//    return result;
+	  
+	  return null;
   }
 
   private void validateMsgStructElement(MsgStructElement f) throws ValidationException {
@@ -1203,21 +1194,20 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           cs.setStructureId(cp.getStructID());
           cs.setLevel(Level.CONFORMANCEPROFILE);
           cs.setIgDocumentId(documentId);
-          cs = this.conformanceStatementRepository.save(cs);
-          cp.getBinding().addConformanceStatement(cs.getId());
+          cp.getBinding().addConformanceStatement(cs);
         } else if (item.getChangeType().equals(ChangeType.DELETE)) {
           item.setOldPropertyValue(item.getLocation());
           this.deleteConformanceStatementById(cp, item.getLocation());
         } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
           ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-          if (cs.getId() != null) {
-            item.setOldPropertyValue(this.conformanceStatementRepository.findById(cs.getId()));
+          if (cs.getIdentifier() != null) {
+        	  this.deleteConformanceStatementById(cp, cs.getIdentifier());
           }
           cs.addSourceId(cp.getId());
           cs.setStructureId(cp.getStructID());
           cs.setLevel(Level.CONFORMANCEPROFILE);
           cs.setIgDocumentId(documentId);
-          cs = this.conformanceStatementRepository.save(cs);
+          cp.getBinding().addConformanceStatement(cs);
         }
       } else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
@@ -1284,20 +1274,15 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     return null;
   }
 
-  private String deleteConformanceStatementById(ConformanceProfile cp, String location) {
-    String toBeDeleted = null;
-    for (String id : cp.getBinding().getConformanceStatementIds()) {
-      ConformanceStatement cs = this.conformanceStatementRepository.findById(id).get();
+  private void deleteConformanceStatementById(ConformanceProfile cp, String location) {
+	  ConformanceStatement toBeDeleted = null;
+    for (ConformanceStatement cs : cp.getBinding().getConformanceStatements()) {
       if (cs.getIdentifier().equals(location))
-        toBeDeleted = id;
-      if (cs.getSourceIds() != null)
-        cs.getSourceIds().remove(cp.getId());
-      this.conformanceStatementRepository.save(cs);
+        toBeDeleted = cs;
     }
 
     if (toBeDeleted != null)
-      cp.getBinding().getConformanceStatementIds().remove(toBeDeleted);
-    return toBeDeleted;
+      cp.getBinding().getConformanceStatements().remove(toBeDeleted);
   }
 
   private Set<ValuesetBinding> convertDisplayValuesetBinding(
@@ -1429,12 +1414,11 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           Segment s = this.segmentService.findById(((SegmentRef) sog).getRef().getId());
 
           if (s.getDomainInfo().getScope().equals(Scope.USER)) {
-            if (s.getBinding() != null && s.getBinding().getConformanceStatementIds() != null
-                && s.getBinding().getConformanceStatementIds().size() > 0) {
+            if (s.getBinding() != null && s.getBinding().getConformanceStatements() != null
+                && s.getBinding().getConformanceStatements().size() > 0) {
               if (!segMap.containsKey(s.getLabel()))
                 segMap.put(s.getLabel(),
-                    new ConformanceStatementsContainer(
-                        this.collectCS(s.getBinding().getConformanceStatementIds()),
+                    new ConformanceStatementsContainer(s.getBinding().getConformanceStatements(),
                         Type.SEGMENT, s.getId(), s.getLabel()));
             }
 
@@ -1484,12 +1468,11 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         Segment s = this.segmentService.findById(((SegmentRef) child).getRef().getId());
 
         if (s.getDomainInfo().getScope().equals(Scope.USER)) {
-          if (s.getBinding() != null && s.getBinding().getConformanceStatementIds() != null
-              && s.getBinding().getConformanceStatementIds().size() > 0) {
+          if (s.getBinding() != null && s.getBinding().getConformanceStatements() != null
+              && s.getBinding().getConformanceStatements().size() > 0) {
             if (!segMap.containsKey(s.getLabel()))
               segMap.put(s.getLabel(),
-                  new ConformanceStatementsContainer(
-                      this.collectCS(s.getBinding().getConformanceStatementIds()), Type.SEGMENT,
+                  new ConformanceStatementsContainer(s.getBinding().getConformanceStatements(), Type.SEGMENT,
                       s.getId(), s.getLabel()));
           }
 

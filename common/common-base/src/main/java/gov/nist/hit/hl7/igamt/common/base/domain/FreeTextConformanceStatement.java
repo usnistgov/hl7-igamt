@@ -9,50 +9,39 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
+package gov.nist.hit.hl7.igamt.common.base.domain;
 
 /**
  * @author jungyubw
  *
  */
-public class Path {
+public class FreeTextConformanceStatement extends ConformanceStatement {
 
-  /*
-   * elementId contains element mongo id for
-   * ConformanceProfileId/SegmentId/DatatypeId/FieldId/ComponentId ex) MSH-3.1 elementId of this :
-   * MSH id elementId of child : 3rd field Id elementId of child of child : 1st component id of 3rd
-   * field Datatype
+  /**
+   * 
    */
-  private String elementId;
-  private InstancePath child;
+  private static final long serialVersionUID = -7899147064970467492L;
+  private String freeText;
+  private String assertionScript;
 
-
-  public Path() {
-	super();
-	// TODO Auto-generated constructor stub
-}
-
-public String getElementId() {
-    return elementId;
+  public FreeTextConformanceStatement() {
+    super();
+    this.setType(ConstraintType.FREE);
   }
 
-  public void setElementId(String elementId) {
-    this.elementId = elementId;
+  public String getFreeText() {
+    return freeText;
   }
 
-  public InstancePath getChild() {
-    return child;
+  public void setFreeText(String freeText) {
+    this.freeText = freeText;
   }
 
-  public void setChild(InstancePath child) {
-    this.child = child;
+  public String getAssertionScript() {
+    return assertionScript;
   }
 
-  @Override
-  public String toString() {
-    return "Path [elementId=" + elementId + ", child=" + child + "]";
+  public void setAssertionScript(String assertionScript) {
+    this.assertionScript = assertionScript;
   }
-
-  
-
 }

@@ -1,12 +1,12 @@
-package gov.nist.hit.hl7.igamt.constraints.domain.display;
+package gov.nist.hit.hl7.igamt.common.base.domain.display;
 
 import java.util.HashMap;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 
 public class ConformanceStatementDisplay extends SectionInfo {
   private Set<ConformanceStatement> conformanceStatements;

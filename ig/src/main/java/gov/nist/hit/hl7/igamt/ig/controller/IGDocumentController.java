@@ -46,8 +46,10 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.impl.SimpleCoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
+import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Predicate;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
@@ -70,8 +72,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEve
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -157,9 +157,6 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   ValuesetService valuesetService;
-
-  @Autowired
-  ConformanceStatementRepository conformanceStatementRepository;
 
   @Autowired
   PredicateRepository predicateRepository;
@@ -915,8 +912,7 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage(Status.SUCCESS, CONFORMANCE_PROFILE_DELETE, conformanceProfileId, new Date());
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {
-  "application/json" })
+  @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
   public ResponseMessage<AddResourceResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("conformanceProfileId") String conformanceProfileId,
       Authentication authentication) throws CloneException, IGNotFoundException {
@@ -932,15 +928,6 @@ public class IGDocumentController extends BaseController {
     clone.getDomainInfo().setScope(Scope.USER);
     clone = conformanceProfileService.save(clone);
 
-    if (clone.getBinding() != null && clone.getBinding().getConformanceStatementIds() != null) {
-      for (String csId : clone.getBinding().getConformanceStatementIds()) {
-        Optional<ConformanceStatement> container = this.conformanceStatementRepository.findById(csId);
-        if (container.isPresent()) {
-          container.get().addSourceId(clone.getId());
-          this.conformanceStatementRepository.save(container.get());
-        }
-      }
-    }
     ig.getConformanceProfileRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(),
         ig.getConformanceProfileRegistry().getChildren().size() + 1));
     ig = igService.save(ig);
@@ -973,15 +960,6 @@ public class IGDocumentController extends BaseController {
 
     clone = segmentService.save(clone);
 
-    if (clone.getBinding() != null && clone.getBinding().getConformanceStatementIds() != null) {
-      for (String csId : clone.getBinding().getConformanceStatementIds()) {
-        Optional<ConformanceStatement> container = this.conformanceStatementRepository.findById(csId);
-        if (container.isPresent()) {
-          container.get().addSourceId(clone.getId());
-          this.conformanceStatementRepository.save(container.get());
-        }
-      }
-    }
     ig.getSegmentRegistry().getChildren()
     .add(new Link(clone.getId(), clone.getDomainInfo(), ig.getSegmentRegistry().getChildren().size() + 1));
     ig = igService.save(ig);
@@ -1013,15 +991,6 @@ public class IGDocumentController extends BaseController {
 
     clone = datatypeService.save(clone);
 
-    if (clone.getBinding() != null && clone.getBinding().getConformanceStatementIds() != null) {
-      for (String csId : clone.getBinding().getConformanceStatementIds()) {
-        Optional<ConformanceStatement> container = this.conformanceStatementRepository.findById(csId);
-        if (container.isPresent()) {
-          container.get().addSourceId(clone.getId());
-          this.conformanceStatementRepository.save(container.get());
-        }
-      }
-    }
     ig.getDatatypeRegistry().getChildren()
     .add(new Link(clone.getId(), clone.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size() + 1));
     ig = igService.save(ig);

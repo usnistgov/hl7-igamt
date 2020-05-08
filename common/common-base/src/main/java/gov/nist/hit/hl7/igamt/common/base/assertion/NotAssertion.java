@@ -9,47 +9,31 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
+package gov.nist.hit.hl7.igamt.common.base.assertion;
 
 /**
  * @author jungyubw
  *
- *
  */
-public class IfThenAssertion extends Assertion {
-  public IfThenAssertion() {
+public class NotAssertion extends Assertion {
+  private Assertion child;
+
+  
+  public NotAssertion() {
     super();
-    this.setMode(AssertionMode.IFTHEN);
+    this.setMode(AssertionMode.NOT);
   }
 
-  /*
-   * This is if_assertion statement.
-   */
-  private Assertion ifAssertion;
-
-  /*
-   * This is then_assertion statement.
-   */
-  private Assertion thenAssertion;
-
-  public Assertion getIfAssertion() {
-    return ifAssertion;
+  public Assertion getChild() {
+    return child;
   }
 
-  public void setIfAssertion(Assertion ifAssertion) {
-    this.ifAssertion = ifAssertion;
-  }
-
-  public Assertion getThenAssertion() {
-    return thenAssertion;
-  }
-
-  public void setThenAssertion(Assertion thenAssertion) {
-    this.thenAssertion = thenAssertion;
+  public void setChild(Assertion child) {
+    this.child = child;
   }
 
   @Override
   public String toString() {
-    return "IfThenAssertion [ifAssertion=" + ifAssertion + ", thenAssertion=" + thenAssertion + "]";
+    return "NotAssertion [child=" + child + "]";
   }
 }

@@ -9,35 +9,45 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
+package gov.nist.hit.hl7.igamt.common.base.domain;
 
 /**
  * @author jungyubw
  *
  */
-public class Verb {
+public class DisplayPredicate {
 
-  private String key;
-  private String value;
-
-  public Verb(String key, String value) {
-    super();
-    this.key = key;
-    this.value = value;
+  private Predicate predicate;
+  private String location;
+  
+  public Predicate getPredicate() {
+    return predicate;
   }
   
-  public String getKey() {
-    return key;
+  public void setPredicate(Predicate predicate) {
+    this.predicate = predicate;
   }
-  public void setKey(String key) {
-    this.key = key;
+  
+  public void setLocation(String location) {
+    this.location = location;
   }
-  public String getValue() {
-    return value;
+  
+  public String getLocation() {
+    return location;
   }
-  public void setValue(String value) {
-    this.value = value;
+  
+  public Usage getTrueUsage(){
+    if(predicate != null) return this.predicate.getTrueUsage();
+    return null;
+  }
+  
+  public Usage getFalseUsage(){
+    if(predicate != null) return this.predicate.getFalseUsage();
+    return null;
+  }
+  
+  public String getDescription(){
+    if(predicate != null) return this.predicate.generateDescription();
+    return null;
   }
 }
-
-//[QUESTION][WOO] Which class/collection contains this?
