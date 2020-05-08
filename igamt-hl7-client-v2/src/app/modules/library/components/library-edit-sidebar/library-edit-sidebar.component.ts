@@ -12,7 +12,7 @@ import {
   LibraryEditActionTypes, selectViewOnly,
 } from 'src/app/root-store/library/library-edit/library-edit.index';
 import { selectLibraryId } from 'src/app/root-store/library/library-edit/library-edit.index';
-import * as fromIgDocumentEdit from 'src/app/root-store/library/library-edit/library-edit.index';
+import * as fromLibraryEdit from 'src/app/root-store/library/library-edit/library-edit.index';
 import { ToggleDelta } from 'src/app/root-store/library/library-edit/library-edit.index';
 import {
   CopyResource, CopyResourceSuccess,
@@ -71,25 +71,16 @@ export class LibraryEditSidebarComponent implements OnInit {
     private router: Router,
     private activeRoute: ActivatedRoute,
     private actions: Actions) {
-    this.deltaMode$ = this.store.select(fromLibrayEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
     this.nodes$ = this.getNodes();
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
-    this.version$ = store.select(fromIgDocumentEdit.selectVersion);
+    this.version$ = store.select(fromLibraryEdit.selectVersion);
     this.viewOnly$ = this.store.select(selectViewOnly);
   }
 
   getNodes() {
-    return this.deltaMode$.pipe(
-      switchMap((x) => {
-        if (!x) {
-          return this.store.select(fromIgDocumentEdit.selectToc);
-        } else {
-          return this.store.select(fromIgDocumentEdit.selectToc);
-        }
-      }),
-    );
+    return this.store.select(fromLibraryEdit.selectToc);
   }
 
   ngOnInit() {

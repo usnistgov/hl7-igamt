@@ -1,18 +1,25 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Action } from '@ngrx/store';
-import { IResource } from 'src/app/modules/shared/models/resource.interface';
-import {IDocumentDisplayInfo, IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Action} from '@ngrx/store';
+import {IResource} from 'src/app/modules/shared/models/resource.interface';
 import {
-  IAddNodes, IAddResourceFromFile,
+  IAddNodes,
+  IAddResourceFromFile,
   ICopyNode,
   ICopyResourceResponse,
+  ICreateCoConstraintGroup,
+  ICreateCoConstraintGroupResponse,
   IDeleteNode,
 } from '../../../modules/document/models/toc/toc-operation.class';
-import { ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../../../modules/document/models/toc/toc-operation.class';
-import { Type } from '../../../modules/shared/constants/type.enum';
-import { IContent } from '../../../modules/shared/models/content.interface';
-import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
-import { IHL7EditorMetadata } from '../../../modules/shared/models/editor.enum';
+import {IDocumentDisplayInfo, IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
+import {Type} from '../../../modules/shared/constants/type.enum';
+import {IContent} from '../../../modules/shared/models/content.interface';
+import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
+import {IHL7EditorMetadata} from '../../../modules/shared/models/editor.enum';
+import {
+  LoadResourceReferences,
+  LoadResourceReferencesFailure,
+  LoadResourceReferencesSuccess
+} from '../../dam-igamt/igamt.loaded-resources.actions';
 
 export enum IgEditActionTypes {
   IgEditResolverLoad = '[Ig Edit Resolver] Load Ig',
@@ -46,9 +53,7 @@ export enum IgEditActionTypes {
   TableOfContentSaveFailure = '[Ig Edit TOC Save] Save Table Of Content Failure',
 
   LoadSelectedResource = '[Router Resolver] Load Selected Resource',
-  LoadResourceReferences = '[Ig Resource References] Load Resource References',
-  LoadResourceReferencesSuccess = '[Ig Resource References] Load Resource References Success',
-  LoadResourceReferencesFailure = '[Ig Resource References] Load Resource References Failure',
+
   ClearIgEdit = '[Editor Leave] Clear Ig Edit State',
 
   ImportResourceFromFile = '[Ig Edit] Import resource from file',
@@ -68,24 +73,6 @@ export class ClearIgEdit implements Action {
 export class LoadSelectedResource implements Action {
   readonly type = IgEditActionTypes.LoadSelectedResource;
   constructor(readonly resource: IResource) { }
-}
-
-export class LoadResourceReferences implements Action {
-  readonly type = IgEditActionTypes.LoadResourceReferences;
-  constructor(readonly payload: {
-    resourceType: Type,
-    id: string,
-  }) { }
-}
-
-export class LoadResourceReferencesSuccess implements Action {
-  readonly type = IgEditActionTypes.LoadResourceReferencesSuccess;
-  constructor(readonly payload: IResource[]) { }
-}
-
-export class LoadResourceReferencesFailure implements Action {
-  readonly type = IgEditActionTypes.LoadResourceReferencesFailure;
-  constructor(readonly error: HttpErrorResponse) { }
 }
 
 export class IgEditResolverLoad implements Action {
@@ -301,9 +288,6 @@ export type IgEditActions =
   | CopyResource
   | CopyResourceSuccess
   | LoadSelectedResource
-  | LoadResourceReferences
-  | LoadResourceReferencesSuccess
-  | LoadResourceReferencesFailure
   | CopyResourceFailure
   | DeleteResource
   | DeleteResourceSuccess

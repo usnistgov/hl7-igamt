@@ -37,8 +37,8 @@ export class ResourceService {
     }
   }
 
-  getResources(id: string, type: Type, documentId: string): Observable<IResource[]> {
-    const url = this.getResourcesUrl(type, id, documentId);
+  getResources(id: string, type: Type, documentId: string, documentType: Type): Observable<IResource[]> {
+    const url = this.getResourcesUrl(type, id, documentId); // TODO update urls to include document type
     if (url) {
       return this.http.get<IResource[]>(url);
     } else {

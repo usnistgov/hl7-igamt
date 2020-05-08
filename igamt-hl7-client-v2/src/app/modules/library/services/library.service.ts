@@ -56,7 +56,7 @@ export class LibraryService {
   }
 
   loadOrInsertRepositoryFromDisplayInfo(documentInfo: IDocumentDisplayInfo<ILibrary>, load: boolean, values?: string[]): fromDam.InsertResourcesInRepostory | fromDam.LoadResourcesInRepostory {
-    const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'sections'];
+    const _default = ['datatypes', 'valueSets', 'sections'];
     const collections = (values ? values : _default).map((key) => {
       return {
         key,

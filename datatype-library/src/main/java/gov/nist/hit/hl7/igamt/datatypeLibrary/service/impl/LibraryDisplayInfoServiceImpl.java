@@ -131,9 +131,8 @@ public class LibraryDisplayInfoServiceImpl implements LibraryDisplayInfoService 
     // TODO Auto-generated method stub
     DocumentDisplayInfo ret = new DocumentDisplayInfo();
     ret.setIg(lib);
-   
     ret.setDatatypes(convertDatatypeRegistry(lib.getDatatypeRegistry()));
-    //ret.setValueSets(convertValueSetRegistry(lib.getValueSetRegistry()));
+    ret.setValueSets(convertValueSetRegistry(lib.getValueSetRegistry()));
     return ret;
   }
 

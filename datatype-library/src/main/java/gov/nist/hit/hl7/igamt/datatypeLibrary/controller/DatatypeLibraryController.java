@@ -110,9 +110,9 @@ public class DatatypeLibraryController {
   @Autowired
   DatatypeLibraryDisplayConverterService displayConverterService;
 
-//
-//  @Autowired
-//  private XRefService xRefService;
+  //
+  //  @Autowired
+  //  private XRefService xRefService;
 
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
@@ -178,7 +178,7 @@ public class DatatypeLibraryController {
 
   public @ResponseBody ResponseMessage<DatatypeLibrary> create(@RequestBody CreationWrapper wrapper,
       Authentication authentication) throws JsonParseException, JsonMappingException,
-      FileNotFoundException, IOException, AddingException, DatatypeNotFoundException {
+  FileNotFoundException, IOException, AddingException, DatatypeNotFoundException {
 
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary empty = dataypeLibraryService.createEmptyDatatypeLibrary();
@@ -188,10 +188,9 @@ public class DatatypeLibraryController {
     empty.setDomainInfo(info);
     empty.setMetadata(wrapper.getMetadata());
     empty.setCreationDate(new Date());
-    
-    if (wrapper.getSelected() != null || !wrapper.getSelected().isEmpty()) {
+    Set<String> savedIds = new HashSet<String>();
 
-      Set<String> savedIds = new HashSet<String>();
+    if (wrapper.getSelected() != null || !wrapper.getSelected().isEmpty()) {
       for (AddingInfo elm : wrapper.getSelected()) {
         List<Datatype> datatypes = datatypeService.findByNameAndVersionAndScope(elm.getName(),
             elm.getDomainInfo().getVersion(), SCOPE.HL7STANDARD.toString());
@@ -210,16 +209,11 @@ public class DatatypeLibraryController {
               SCOPE.HL7STANDARD.toString().toString());
         }
       }
-
-      dataypeLibraryService.addDatatypes(savedIds, empty, wrapper.getScope());
-
-
     }
+    dataypeLibraryService.addDatatypes(savedIds, empty);
 
-    empty.setUsername(username);
-    
     empty.setMetadata(wrapper.getMetadata());
-        DatatypeLibrary lib = dataypeLibraryService.save(empty);
+    DatatypeLibrary lib = dataypeLibraryService.save(empty);
     return new ResponseMessage<DatatypeLibrary>(Status.SUCCESS, "", "Datatype Library Created", lib.getId(), false, lib.getCreationDate(), lib);
 
   }
@@ -228,7 +222,7 @@ public class DatatypeLibraryController {
       produces = {"application/json"})
   public ResponseMessage<AddDatatypeResponseDisplay> addDatatypes(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
-      throws IGNotFoundException, AddingException {
+          throws IGNotFoundException, AddingException {
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary lib = dataypeLibraryService.findById(id);
     Set<String> savedIds = new HashSet<String>();
@@ -256,7 +250,7 @@ public class DatatypeLibraryController {
 
     return new ResponseMessage<AddDatatypeResponseDisplay>(Status.SUCCESS, "", "Datatype Library Created", id, false, lib.getUpdateDate(), displayConverterService.convertDatatypeResponseToDisplay(objects));
 
-    
+
 
   }
 
@@ -266,7 +260,7 @@ public class DatatypeLibraryController {
 
   public @ResponseBody DatatypeLibraryDisplay getIgDisplay(@PathVariable("id") String id,
       Authentication authentication)
-      throws DatatypeLibraryNotFoundException, DatatypeLibraryConverterException {
+          throws DatatypeLibraryNotFoundException, DatatypeLibraryConverterException {
 
 
     DatatypeLibrary library = findLibraryById(id);
@@ -289,7 +283,7 @@ public class DatatypeLibraryController {
   public @ResponseBody ResponseMessage get(@PathVariable("id") String id,
       @RequestBody List<gov.nist.hit.hl7.igamt.datatypeLibrary.model.TreeNode> toc,
       Authentication authentication)
-      throws DatatypeLibraryNotFoundException, DatatypeLibraryUpdateException {
+          throws DatatypeLibraryNotFoundException, DatatypeLibraryUpdateException {
 
 
     Set<TextSection> content = displayConverterService.convertTocToDomain(toc);
@@ -310,7 +304,7 @@ public class DatatypeLibraryController {
 
   public @ResponseBody ResponseMessage get(@PathVariable("id") String id,
       @RequestBody DocumentMetadata metadata, Authentication authentication)
-      throws IGNotFoundException, DatatypeLibraryUpdateException {
+          throws IGNotFoundException, DatatypeLibraryUpdateException {
     UpdateResult updateResult = dataypeLibraryService.updateAttribute(id, "metadata", metadata);
     if (!updateResult.wasAcknowledged()) {
       throw new DatatypeLibraryUpdateException("Could not update IG Metadata ");
@@ -340,7 +334,7 @@ public class DatatypeLibraryController {
       } else if (type.equals(AccessType.PRIVATE)) {
 
         libraries = dataypeLibraryService.findByUsername(username, Scope.USER);
-            
+
       } else if (type.equals(AccessType.ALL)) {
 
       }  else {
@@ -382,46 +376,46 @@ public class DatatypeLibraryController {
 
 
 
-//  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/clone",
-//      method = RequestMethod.POST, produces = {"application/json"})
-//  public ResponseMessage<TreeNode> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
-//      @PathVariable("datatypeId") String datatypeId, Authentication authentication)
-//      throws IGNotFoundException, CloneException, DatatypeLibraryNotFoundException {
-//    DatatypeLibrary library = findLibraryById(id);
-//    String username = authentication.getPrincipal().toString();
-//    Datatype datatype = datatypeService.findById(wrapper.getId());
-//    if (datatype == null) {
-//      throw new CloneException("Cannot find datatype with id=" + wrapper.getId());
-//    }
-//    Datatype clone = datatype.clone();
-//    clone.setUsername(username);
-//    DomainInfo info = new DomainInfo();
-//    info.setScope(library.getDomainInfo().getScope());
-//    info.setCompatibilityVersion(datatype.getDomainInfo().getCompatibilityVersion());
-//    info.setVersion(datatype.getDomainInfo().getVersion());
-//    clone.setDomainInfo(info);
-//    clone.setId(null);
-//    clone.setName(datatype.getName());
-//    clone.setExt(wrapper.getExt());
-//    clone = datatypeService.save(clone);
-//    library.getDatatypeRegistry().getChildren().add(new Link(clone.getId()));
-//    dataypeLibraryService.save(library);
-//    
-//    return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Datatype Cloned Successfully", id, false, clone.getUpdateDate(), displayConverterService.createDatatypeNode(clone, 0));
-//
-//
-//  }
+  //  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/clone",
+  //      method = RequestMethod.POST, produces = {"application/json"})
+  //  public ResponseMessage<TreeNode> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
+  //      @PathVariable("datatypeId") String datatypeId, Authentication authentication)
+  //      throws IGNotFoundException, CloneException, DatatypeLibraryNotFoundException {
+  //    DatatypeLibrary library = findLibraryById(id);
+  //    String username = authentication.getPrincipal().toString();
+  //    Datatype datatype = datatypeService.findById(wrapper.getId());
+  //    if (datatype == null) {
+  //      throw new CloneException("Cannot find datatype with id=" + wrapper.getId());
+  //    }
+  //    Datatype clone = datatype.clone();
+  //    clone.setUsername(username);
+  //    DomainInfo info = new DomainInfo();
+  //    info.setScope(library.getDomainInfo().getScope());
+  //    info.setCompatibilityVersion(datatype.getDomainInfo().getCompatibilityVersion());
+  //    info.setVersion(datatype.getDomainInfo().getVersion());
+  //    clone.setDomainInfo(info);
+  //    clone.setId(null);
+  //    clone.setName(datatype.getName());
+  //    clone.setExt(wrapper.getExt());
+  //    clone = datatypeService.save(clone);
+  //    library.getDatatypeRegistry().getChildren().add(new Link(clone.getId()));
+  //    dataypeLibraryService.save(library);
+  //    
+  //    return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Datatype Cloned Successfully", id, false, clone.getUpdateDate(), displayConverterService.createDatatypeNode(clone, 0));
+  //
+  //
+  //  }
 
   @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/delete",
       method = RequestMethod.DELETE, produces = {"application/json"})
   public ResponseMessage deleteDatatype(@PathVariable("id") String id,
       @PathVariable("datatypeId") String datatypeId, Authentication authentication)
-      throws IGNotFoundException, XReferenceFoundException, XReferenceException,
-      DatatypeLibraryNotFoundException {
-//    Map<String, List<CrossRefsNode>> xreferences = findDatatypeCrossRef(id, datatypeId, authentication);
-//    if (xreferences != null && !xreferences.isEmpty()) {
-//      throw new XReferenceFoundException(datatypeId, xreferences);
-//    }
+          throws IGNotFoundException, XReferenceFoundException, XReferenceException,
+          DatatypeLibraryNotFoundException {
+    //    Map<String, List<CrossRefsNode>> xreferences = findDatatypeCrossRef(id, datatypeId, authentication);
+    //    if (xreferences != null && !xreferences.isEmpty()) {
+    //      throw new XReferenceFoundException(datatypeId, xreferences);
+    //    }
     DatatypeLibrary library = findLibraryById(id);
     Link found = findLinkById(datatypeId, library.getDatatypeRegistry().getChildren());
     if (found != null) {
@@ -441,7 +435,7 @@ public class DatatypeLibraryController {
       produces = {"application/json"})
   public ResponseMessage deleteDatatypeLibrary(@PathVariable("id") String id,
       Authentication authentication)
-      throws DatatypeLibraryNotFoundException, OperationNotAllowedException {
+          throws DatatypeLibraryNotFoundException, OperationNotAllowedException {
 
     DatatypeLibrary library = findLibraryById(id);
     if (library.getUsername().equals(authentication.getPrincipal().toString())) {
@@ -453,28 +447,27 @@ public class DatatypeLibraryController {
     }
 
   }
-//
-//  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/crossref",
-//      method = RequestMethod.GET, produces = {"application/json"})
-//  public @ResponseBody Map<String, List<CrossRefsNode>> findDatatypeCrossRef(
-//      @PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
-//      Authentication authentication)
-//      throws IGNotFoundException, XReferenceException, DatatypeLibraryNotFoundException {
-//    DatatypeLibrary library = findLibraryById(id);
-//    if (library != null) {
-//      Set<String> filterDatatypeIds = gatherIds(library);
-//      Map<String, List<CrossRefsNode>> results =
-//          xRefService.getDatatypeReferences(datatypeId, filterDatatypeIds);
-//      return results;
-//    } else {
-//      throw new DatatypeLibraryNotFoundException("Cannot found Id Library");
-//    }
-//  }
+  //
+  //  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/crossref",
+  //      method = RequestMethod.GET, produces = {"application/json"})
+  //  public @ResponseBody Map<String, List<CrossRefsNode>> findDatatypeCrossRef(
+  //      @PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
+  //      Authentication authentication)
+  //      throws IGNotFoundException, XReferenceException, DatatypeLibraryNotFoundException {
+  //    DatatypeLibrary library = findLibraryById(id);
+  //    if (library != null) {
+  //      Set<String> filterDatatypeIds = gatherIds(library);
+  //      Map<String, List<CrossRefsNode>> results =
+  //          xRefService.getDatatypeReferences(datatypeId, filterDatatypeIds);
+  //      return results;
+  //    } else {
+  //      throw new DatatypeLibraryNotFoundException("Cannot found Id Library");
+  //    }
+  //  }
 
   private Set<String> gatherIds(DatatypeLibrary library) {
     Set<String> results = new HashSet<String>();
     library.getDatatypeRegistry().getChildren().forEach(link -> results.add(link.getId()));
-    library.getDerivedRegistry().getChildren().forEach(link -> results.add(link.getId()));
     return results;
   }
 

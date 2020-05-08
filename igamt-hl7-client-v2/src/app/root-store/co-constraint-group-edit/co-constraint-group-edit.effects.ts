@@ -19,7 +19,7 @@ import { Type } from '../../modules/shared/constants/type.enum';
 import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.interface';
 import { IUsages } from '../../modules/shared/models/cross-reference';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
-import { IgEditActionTypes, LoadResourceReferences } from '../ig/ig-edit/ig-edit.actions';
+import {IgamtLoadedResourcesActionTypes, LoadResourceReferences} from '../dam-igamt/igamt.loaded-resources.actions';
 import {
   CoConstraintGroupEditActions,
   CoConstraintGroupEditActionTypes,
@@ -95,7 +95,7 @@ export class CoConstraintGroupEditEffects {
                   this.store.dispatch(new LoadResourceReferences({ resourceType: Type.SEGMENT, id: ccGroup.baseSegment }));
 
                   return RxjsStoreHelperService.listenAndReact(this.actions$, {
-                    [IgEditActionTypes.LoadResourceReferencesSuccess]: {
+                    [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
                       do: (resourceRefSuccess: Action) => {
                         return of(new fromDamActions.OpenEditor({
                           id: action.payload.id,

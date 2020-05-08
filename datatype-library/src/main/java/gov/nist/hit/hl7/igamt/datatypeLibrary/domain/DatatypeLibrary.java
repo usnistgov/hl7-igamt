@@ -21,6 +21,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 
 
 /**
@@ -33,8 +34,7 @@ public class DatatypeLibrary extends AbstractDomain {
   private Set<TextSection> content = new HashSet<TextSection>();
 
   private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
-  private DatatypeRegistry derivedRegistry = new DatatypeRegistry(Type.DERIVEDDATATYPEREGISTRY);
-
+  private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
 
   public DocumentMetadata getMetadata() {
     return this.metadata;
@@ -71,11 +71,11 @@ public class DatatypeLibrary extends AbstractDomain {
     return null;
   }
 
-  public DatatypeRegistry getDerivedRegistry() {
-    return derivedRegistry;
+  public ValueSetRegistry getValueSetRegistry() {
+    return valueSetRegistry;
   }
 
-  public void setDerivedRegistry(DatatypeRegistry derivedRegistry) {
-    this.derivedRegistry = derivedRegistry;
+  public void setValueSetRegistry(ValueSetRegistry valueSetRegistry) {
+    this.valueSetRegistry = valueSetRegistry;
   }
 }

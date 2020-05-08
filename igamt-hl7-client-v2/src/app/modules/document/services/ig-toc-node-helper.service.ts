@@ -84,6 +84,43 @@ export class IgTOCNodeHelper {
     return this.sort(ret);
   }
 
+  static buildLibraryTree(structure: IContent[], datatypesNodes: IDisplayElement[], derivedNodes: IDisplayElement[]) {
+    const ret: IDisplayElement[] = [];
+    for (const section of structure) {
+      switch (section.type) {
+        case Type.TEXT:
+          ret.push(this.createNarativeSection(section, section.position + ''));
+          break;
+        case Type.PROFILE:
+          ret.push(this.createLibProfileSection(section, datatypesNodes, derivedNodes, section.position + ''));
+          break;
+        default:
+          break;
+      }
+    }
+    return this.sort(ret);
+  }
+
+  static createLibProfileSection(section: IContent, datatypesNodes: IDisplayElement[], derivedNodes: IDisplayElement[], path: string) {
+    const ret = this.initializeIDisplayElement(section, path);
+    if (section.children && section.children.length > 0) {
+      for (const child of section.children) {
+        const retChild = this.initializeIDisplayElement(child, ret.path + '.' + child.position);
+        switch (child.type) {
+          case Type.DATATYPEREGISTRY:
+            retChild.children = datatypesNodes;
+            break;
+          case Type.DERIVEDDATATYPEREGISTRY:
+            retChild.children = derivedNodes;
+            break;
+        }
+        ret.children.push(retChild);
+      }
+    }
+    ret.children = this.sort(ret.children);
+    return ret;
+  }
+
   static buildProfileTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[]) {
     const ret: IDisplayElement[] = [];
     for (const section of structure) {

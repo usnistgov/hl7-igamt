@@ -1,7 +1,7 @@
 import { Dictionary } from '@ngrx/entity';
 import { createSelector } from '@ngrx/store';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
-import * as fromILibraryamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import * as fromILibraryDamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import {IgTOCNodeHelper} from '../../../modules/document/services/ig-toc-node-helper.service';
 import {ITitleBarMetadata} from '../../../modules/library/components/library-edit-titlebar/library-edit-titlebar.component';
 import {ILibrary} from '../../../modules/library/models/library.class';
@@ -77,7 +77,7 @@ export const selectValueSetRegistry = createSelector(
 
 export const selectSectionFromLibraryById = createSelector(
    selectLibrary,
-  (ig: ILibrary, props: { id: string }) => {
+  (lib: ILibrary, props: { id: string }) => {
     const loop = (content: IContent[]) => {
       for (const section of content) {
         if (section.id === props.id) {
@@ -91,14 +91,14 @@ export const selectSectionFromLibraryById = createSelector(
       }
       return undefined;
     };
-    return loop(ig.content);
+    return loop(lib.content);
   },
 );
 
 export const selectDelta = fromDam.selectValue<boolean>('delta');
 
 export const selectValueSetsNodes = createSelector(
-  fromILibraryamtDisplaySelectors.selectValueSetsEntities,
+  fromILibraryDamtDisplaySelectors.selectValueSetsEntities,
   selectValueSetRegistry,
   (nodes: Dictionary<IDisplayElement>, registry: IRegistry) => {
     return IgTOCNodeHelper.sortRegistryByName(nodes, registry);
@@ -106,7 +106,7 @@ export const selectValueSetsNodes = createSelector(
 );
 
 export const selectDatatypesNodes = createSelector(
-  fromILibraryamtDisplaySelectors.selectDatatypesEntites,
+  fromILibraryDamtDisplaySelectors.selectDatatypesEntites,
   selectDatatypeRegistry,
   (nodes: Dictionary<IDisplayElement>, registry: IRegistry) => {
     return IgTOCNodeHelper.sortRegistryByName(nodes, registry);
@@ -125,8 +125,10 @@ export const selectToc = createSelector(
   selectDatatypesNodes, (
     structure: IContent[],
     datatypesNodes: IDisplayElement[],
+    derivedNodes: IDisplayElement[],
 ) => {
-  return IgTOCNodeHelper.buildTree(structure, [], [], datatypesNodes, [], []);
+
+  return IgTOCNodeHelper.buildLibraryTree(structure, datatypesNodes,derivedNodes);
 },
 );
 
@@ -141,17 +143,17 @@ export const selectProfileTree = createSelector(
 );
 
 export const selectVersion = createSelector(
-  fromILibraryamtDisplaySelectors.selectMessagesEntites,
-  (messages: Dictionary<IDisplayElement>) => {
-    const sorted = Object.keys(messages).map((key) => messages[key].domainInfo.version).sort();
+  fromILibraryDamtDisplaySelectors.selectMessagesEntites,
+  (dts: Dictionary<IDisplayElement>) => {
+    const sorted = Object.keys(dts).map((key) => dts[key].domainInfo.version).sort();
     return sorted[sorted.length - 1];
   });
 
 export const  selectLibraryVersions = createSelector(
-  fromILibraryamtDisplaySelectors.selectMessagesEntites,
-  (messages: Dictionary<IDisplayElement>): string[] => {
+  fromILibraryDamtDisplaySelectors.selectDatatypesEntites,
+  (datatypes: Dictionary<IDisplayElement>): string[] => {
     const distinct = (value, index, self) => {
       return self.indexOf(value) === index;
     };
-    return Object.keys(messages).map((key) => messages[key].domainInfo.version).filter(distinct);
+    return Object.keys(datatypes).map((key) => datatypes[key].domainInfo.version).filter(distinct);
   });

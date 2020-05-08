@@ -1,6 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LibraryEditActionTypes, LibraryEditResolverLoad, OpenLibraryMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/library/library-edit/library-edit.actions';
+import {
+  LibOpenNarrativeEditorNode,
+  LibraryEditActionTypes,
+  LibraryEditResolverLoad,
+  OpenLibraryMetadataEditorNode,
+} from '../../root-store/library/library-edit/library-edit.actions';
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
 import { AuthenticatedGuard } from '../dam-framework/guards/auth-guard.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
@@ -78,7 +83,7 @@ const routes: Routes = [
             saveEditor: true,
             saveTableOfContent: true,
           },
-          action: OpenNarrativeEditorNode,
+          action: LibOpenNarrativeEditorNode,
           idKey: 'sectionId',
         },
         canDeactivate: [EditorDeactivateGuard],

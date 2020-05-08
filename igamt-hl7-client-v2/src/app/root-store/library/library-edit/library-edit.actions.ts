@@ -30,7 +30,7 @@ export enum LibraryEditActionTypes {
   DeleteResource = '[Library Edit TOC] Delete Resource',
   DeleteResourceSuccess = '[Library Edit TOC] Delete Resource Success',
   DeleteResourceFailure = '[Library Edit TOC] Delete Resource Failure',
-  OpenNarrativeEditorNode = '[Library Edit TOC Narrative] Open Narrative Editor Node',
+  LibOpenNarrativeEditorNode = '[Library Edit TOC Narrative] Open Narrative Editor Node',
   OpenLibraryMetadataEditorNode = '[Library Edit TOC Library Metadata] Open Library Metadata Editor Node',
   TableOfContentSave = '[Library Edit TOC Save] Save Table Of Content',
   TableOfContentSaveSuccess = '[Library Edit TOC Save] Save Table Of Content Success',
@@ -181,13 +181,12 @@ export abstract class OpenEditorBase implements Action {
     id: string,
     editor: IHL7EditorMetadata,
   };
-
   constructor() {
   }
 }
 
-export class OpenNarrativeEditorNode extends OpenEditorBase {
-  readonly type = LibraryEditActionTypes.OpenNarrativeEditorNode;
+export class LibOpenNarrativeEditorNode extends OpenEditorBase {
+  readonly type = LibraryEditActionTypes.LibOpenNarrativeEditorNode;
 
   constructor(readonly payload: {
     id: string,
@@ -253,7 +252,7 @@ export type LibraryEditActions =
   | TableOfContentSaveSuccess
   | OpenLibraryMetadataEditorNode
   | ClearLibraryEdit
-  | OpenNarrativeEditorNode
+  | LibOpenNarrativeEditorNode
   | LibraryEditTocAddResource
   | AddResourceSuccess
   | CopyResource

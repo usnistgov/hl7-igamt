@@ -36,43 +36,6 @@ public class DatatypeLibraryDisplayConverterServiceImpl
   @Autowired
   DatatypeService datatypeService;
 
-  private TreeNode createTextSectionNode(TextSection s, DatatypeLibrary lib)
-      throws DatatypeLibraryConverterException {
-    TreeNode t = new TreeNode();
-    TextSectionData sectionTree = new TextSectionData();
-    sectionTree.setLabel(s.getLabel());
-    sectionTree.setPosition(s.getPosition());
-    sectionTree.setType(s.getType());
-    t.setId(s.getId());
-
-    sectionTree.setDescription(s.getDescription());
-    t.setData(sectionTree);
-    if (s.getType() == null) {
-      throw new DatatypeLibraryConverterException("Section type is missing");
-    }
-    if (s.getType().equals(Type.TEXT) || s.getType().equals(Type.PROFILE)) {
-
-      if (s.getChildren() != null && !s.getChildren().isEmpty()) {
-
-        List<TreeNode> children = new ArrayList<TreeNode>();
-
-        for (TextSection section : s.getChildren()) {
-          if (s instanceof TextSection) {
-            TextSection sect = section;
-            children.add(createTextSectionNode(sect, lib));
-          }
-
-        }
-        children.sort((h1, h2) -> h1.compareTo(h2));
-
-        t.setChildren(children);
-      }
-    } else {
-      t.setChildren(generateChildrenByType(s, s.getType(), lib));
-    }
-
-    return t;
-  }
 
   @Override
   public TreeNode createNarrativeNode(TextSection s) {
@@ -112,25 +75,7 @@ public class DatatypeLibraryDisplayConverterServiceImpl
 
 
 
-  /**
-   * @param s
-   * @param type
-   * @return
-   */
-  private List<TreeNode> generateChildrenByType(TextSection s, Type type, DatatypeLibrary dtLib) {
-    // TODO Auto-generated method stub
-    List<TreeNode> sectionChildren = new ArrayList<TreeNode>();
-    if (type.equals(Type.DATATYPEREGISTRY)) {
-      sectionChildren = createDatatypesNodes(dtLib.getDatatypeRegistry().getChildren());
-    } else if (type.equals(Type.DERIVEDDATATYPEREGISTRY)) {
-      sectionChildren = createDatatypesNodes(dtLib.getDerivedRegistry().getChildren());
-    }
-
-    sectionChildren.sort((h1, h2) -> h1.compareTo(h2));
-
-    return sectionChildren;
-
-  }
+ 
 
 
 
@@ -152,22 +97,6 @@ public class DatatypeLibraryDisplayConverterServiceImpl
 
 
 
-  @Override
-  public DatatypeLibraryDisplay convertDomainToModel(DatatypeLibrary lib)
-      throws DatatypeLibraryConverterException {
-    // TODO Auto-generated method stub
-    DatatypeLibraryDisplay datatypeLibraryDisplay = new DatatypeLibraryDisplay();
-    datatypeLibraryDisplay.setMetadata(lib.getMetadata());
-    datatypeLibraryDisplay.setAuthor(lib.getUsername());
-    datatypeLibraryDisplay.setDateUpdated(lib.getUpdateDate());
-    List<TreeNode> firstLevel = new ArrayList<TreeNode>();
-    for (TextSection s : lib.getContent()) {
-      firstLevel.add(createTextSectionNode(s, lib));
-    }
-    firstLevel.sort((h1, h2) -> h1.compareTo(h2));
-    datatypeLibraryDisplay.setToc(firstLevel);
-    return datatypeLibraryDisplay;
-  }
 
   @Override
   public List<TreeNode> getDatatypesNodes(Set<Datatype> datatypes) {
@@ -282,6 +211,22 @@ public class DatatypeLibraryDisplayConverterServiceImpl
     addedNodes.setDatatypes(datatypes);
 
     return addedNodes;
+  }
+
+
+
+
+
+
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryDisplayConverterService#convertDomainToModel(gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary)
+   */
+  @Override
+  public DatatypeLibraryDisplay convertDomainToModel(DatatypeLibrary lib)
+      throws DatatypeLibraryConverterException {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

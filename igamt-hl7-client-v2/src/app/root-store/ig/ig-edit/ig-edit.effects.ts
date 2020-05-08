@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import {catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap} from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
@@ -16,6 +16,11 @@ import { IG_EDIT_WIDGET_ID } from '../../../modules/ig/components/ig-edit-contai
 import { IDocumentDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
+import {
+  LoadResourceReferences,
+  LoadResourceReferencesFailure,
+  LoadResourceReferencesSuccess
+} from '../../dam-igamt/igamt.loaded-resources.actions';
 import {
   CreateCoConstraintGroup,
   CreateCoConstraintGroupFailure,
@@ -40,9 +45,6 @@ import {
   ImportResourceFromFile,
   ImportResourceFromFileFailure,
   ImportResourceFromFileSuccess,
-  LoadResourceReferences,
-  LoadResourceReferencesFailure,
-  LoadResourceReferencesSuccess,
   OpenIgMetadataEditorNode,
   OpenNarrativeEditorNode,
   TableOfContentSave,
@@ -71,49 +73,6 @@ export class IgEditEffects extends DamWidgetEffect {
           return this.igService.updateSections(action.payload, ig);
         }),
       );
-    }),
-  );
-
-  @Effect()
-  loadReferences$ = this.actions$.pipe(
-    ofType(IgEditActionTypes.LoadResourceReferences),
-    concatMap((action: LoadResourceReferences) => {
-      this.store.dispatch(new fromDAM.TurnOnLoader({
-        blockUI: true,
-      }));
-      return this.store.select(selectIgId).pipe(
-        take(1),
-        mergeMap((igId) => {
-          return this.resourceService.getResources(action.payload.id, action.payload.resourceType, igId).pipe(
-            take(1),
-            flatMap((resources: IResource[]) => {
-              return [
-                new fromDAM.TurnOffLoader(),
-                new fromDAM.InsertResourcesInRepostory({
-                  collections: [{
-                    key: 'resources',
-                    values: resources,
-                  }],
-                }),
-                new LoadResourceReferencesSuccess(resources),
-              ];
-            }),
-            catchError((error: HttpErrorResponse) => {
-              return of(
-                new fromDAM.TurnOffLoader(),
-                new LoadResourceReferencesFailure(error),
-              );
-            }),
-          );
-        }),
-      );
-    }));
-
-  @Effect()
-  loadReferencesFailure$ = this.actions$.pipe(
-    ofType(IgEditActionTypes.LoadResourceReferencesFailure),
-    map((action: LoadResourceReferencesFailure) => {
-      return this.message.actionFromError(action.error);
     }),
   );
   @Effect()
@@ -615,7 +574,6 @@ export class IgEditEffects extends DamWidgetEffect {
     private igService: IgService,
     private store: Store<any>,
     private message: MessageService,
-    private resourceService: ResourceService,
   ) {
     super(IG_EDIT_WIDGET_ID, actions$);
   }

@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import * as fromLibrayEdit from 'src/app/root-store/library/library-edit/library-edit.index';
-import * as fromLibraryEdit from 'src/app/root-store/library/library-edit/library-edit.index';
 import { DamWidgetComponent } from '../../../dam-framework/components/data-widget/dam-widget/dam-widget.component';
 import { IWorkspaceActive } from '../../../dam-framework/models/data/workspace';
 import { ITitleBarMetadata } from '../library-edit-titlebar/library-edit-titlebar.component';

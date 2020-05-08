@@ -1,8 +1,8 @@
 import {createSelector} from '@ngrx/store';
 import {ISortOptions} from 'src/app/modules/shared/models/sort.class';
-import {IgListLoad} from 'src/app/root-store/ig/ig-list/ig-list.actions';
 import {IgListItem} from '../../../modules/document/models/document/ig-list-item.class';
-import {selectIgList} from './../library.reducer';
+import {selectLibraryList} from '../library.reducer';
+import {LibraryListLoad} from './library-list.actions';
 import {igListItemAdapter, IState} from './library-list.reducer';
 
 export const {
@@ -13,28 +13,28 @@ export const {
 } = igListItemAdapter.getSelectors();
 
 export const selectViewType = createSelector(
-  selectIgList,
+  selectLibraryList,
   (state: IState) => {
     return state.viewType;
   },
 );
 
 export const selectSortOptions = createSelector(
-  selectIgList,
+  selectLibraryList,
   (state: IState) => {
     return state.sortOptions;
   },
 );
 
 export const selectLoadedIgs = createSelector(
-  selectIgList,
+  selectLibraryList,
   selectAll,
 );
 
 export const selectIgListView = createSelector(
   selectLoadedIgs,
   selectViewType,
-  (igList: IgListItem[], viewType: IgListLoad) => {
+  (igList: IgListItem[], viewType: LibraryListLoad) => {
     return igList.filter((item) => {
       return item.type === viewType || (viewType === 'ALL' && item.type === 'USER');
     });

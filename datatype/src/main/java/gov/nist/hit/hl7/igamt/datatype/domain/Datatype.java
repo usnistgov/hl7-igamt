@@ -32,7 +32,15 @@ public class Datatype extends Resource {
   private String ext;
   private String purposeAndUse;
   private ResourceBinding binding;
+  private String libId;
 
+  public String getLibId() {
+    return libId;
+  }
+
+  public void setLibId(String libId) {
+    this.libId = libId;
+  }
 
   public ResourceBinding getBinding() {
     return binding;

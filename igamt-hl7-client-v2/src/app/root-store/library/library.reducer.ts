@@ -16,7 +16,7 @@ export const reducers: ActionReducerMap<IState> = {
 
 // Selectors
 export const selectLibraryFeature = createFeatureSelector(featureName);
-export const selectIgList = createSelector(
+export const selectLibraryList = createSelector(
   selectLibraryFeature,
   (state: IState) => {
     return state.list;
