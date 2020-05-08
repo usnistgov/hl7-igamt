@@ -122,9 +122,7 @@ public interface DatatypeService {
 
 	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String datatypeId,
 			String datatypeName);
-
-	public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
-
+	
 	public void collectResources(Datatype d, HashMap<String, Resource> used);
 
 	public Set<Resource> getDependencies(Datatype datatype);

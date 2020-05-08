@@ -122,9 +122,6 @@ public class SegmentServiceImpl implements SegmentService {
 	@Autowired
 	ValuesetService valueSetService;
 
-	@Autowired
-	private PredicateRepository predicateRepository;
-
 	@Override
 	public Segment findById(String key) {
 		Segment segment = this.domainExtention.findById(key, Segment.class);
@@ -235,13 +232,13 @@ public class SegmentServiceImpl implements SegmentService {
 					if (fSeb != null) {
 						fModel.addBinding(
 								this.createBindingDisplay(fSeb, segment.getId(), ViewScope.SEGMENT, 1, valueSetsMap));
-						if (fSeb.getPredicateId() != null) {
-							Optional<Predicate> op = this.predicateRepository.findById(fSeb.getPredicateId());
-							if (op.isPresent() && op.get().getTrueUsage() != null && op.get().getFalseUsage() != null) {
-								fModel.setTrueUsage(op.get().getTrueUsage());
-								fModel.setFalseUsage(op.get().getFalseUsage());
-								fModel.setPredicate(op.get());
-								if (op.get().getIdentifier() != null)
+						if (fSeb.getPredicate() != null) {
+							Predicate p = fSeb.getPredicate();
+							if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+								fModel.setTrueUsage(p.getTrueUsage());
+								fModel.setFalseUsage(p.getFalseUsage());
+								fModel.setPredicate(p);
+								if (p.getIdentifier() != null)
 									fModel.getPredicate().setIdentifier(fModel.getIdPath());
 							}
 						}
@@ -266,15 +263,13 @@ public class SegmentServiceImpl implements SegmentService {
 									if (childSeb != null) {
 										cModel.addBinding(this.createBindingDisplay(childSeb, segment.getId(),
 												ViewScope.SEGMENT, 1, valueSetsMap));
-										if (childSeb.getPredicateId() != null) {
-											Optional<Predicate> op = this.predicateRepository
-													.findById(childSeb.getPredicateId());
-											if (op.isPresent() && op.get().getTrueUsage() != null
-													&& op.get().getFalseUsage() != null) {
-												cModel.setTrueUsage(op.get().getTrueUsage());
-												cModel.setFalseUsage(op.get().getFalseUsage());
-												cModel.setPredicate(op.get());
-												if (op.get().getIdentifier() != null)
+										if (childSeb.getPredicate() != null) {
+											Predicate p = childSeb.getPredicate();
+											if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+												cModel.setTrueUsage(p.getTrueUsage());
+												cModel.setFalseUsage(p.getFalseUsage());
+												cModel.setPredicate(p);
+												if (p.getIdentifier() != null)
 													cModel.getPredicate().setIdentifier(cModel.getIdPath());
 											}
 										}
@@ -284,15 +279,14 @@ public class SegmentServiceImpl implements SegmentService {
 									if (cSeb != null) {
 										cModel.addBinding(this.createBindingDisplay(cSeb, childDt.getId(),
 												ViewScope.DATATYPE, 2, valueSetsMap));
-										if (cSeb.getPredicateId() != null) {
-											Optional<Predicate> op = this.predicateRepository
-													.findById(cSeb.getPredicateId());
-											if (op.isPresent() && op.get().getTrueUsage() != null
-													&& op.get().getFalseUsage() != null) {
-												cModel.setTrueUsage(op.get().getTrueUsage());
-												cModel.setFalseUsage(op.get().getFalseUsage());
-												cModel.setPredicate(op.get());
-												if (op.get().getIdentifier() != null)
+										if (cSeb.getPredicate() != null) {
+											Predicate p = cSeb.getPredicate();
+											if ( p.getTrueUsage() != null
+													&& p.getFalseUsage() != null) {
+												cModel.setTrueUsage(p.getTrueUsage());
+												cModel.setFalseUsage(p.getFalseUsage());
+												cModel.setPredicate(p);
+												if (p.getIdentifier() != null)
 													cModel.getPredicate().setIdentifier(c.getId());
 											}
 										}
@@ -322,15 +316,14 @@ public class SegmentServiceImpl implements SegmentService {
 													if (childChildSeb != null) {
 														scModel.addBinding(this.createBindingDisplay(childChildSeb,
 																segment.getId(), ViewScope.SEGMENT, 1, valueSetsMap));
-														if (childChildSeb.getPredicateId() != null) {
-															Optional<Predicate> op = this.predicateRepository
-																	.findById(childChildSeb.getPredicateId());
-															if (op.isPresent() && op.get().getTrueUsage() != null
-																	&& op.get().getFalseUsage() != null) {
-																scModel.setTrueUsage(op.get().getTrueUsage());
-																scModel.setFalseUsage(op.get().getFalseUsage());
-																scModel.setPredicate(op.get());
-																if (op.get().getIdentifier() != null)
+														if (childChildSeb.getPredicate() != null) {
+															Predicate p = childChildSeb.getPredicate();
+															if ( p.getTrueUsage() != null
+																	&& p.getFalseUsage() != null) {
+																scModel.setTrueUsage(p.getTrueUsage());
+																scModel.setFalseUsage(p.getFalseUsage());
+																scModel.setPredicate(p);
+																if (p.getIdentifier() != null)
 																	scModel.getPredicate()
 																	.setIdentifier(scModel.getIdPath());
 															}
@@ -343,15 +336,14 @@ public class SegmentServiceImpl implements SegmentService {
 													if (childCSeb != null) {
 														scModel.addBinding(this.createBindingDisplay(childCSeb,
 																childDt.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
-														if (childCSeb.getPredicateId() != null) {
-															Optional<Predicate> op = this.predicateRepository
-																	.findById(childCSeb.getPredicateId());
-															if (op.isPresent() && op.get().getTrueUsage() != null
-																	&& op.get().getFalseUsage() != null) {
-																scModel.setTrueUsage(op.get().getTrueUsage());
-																scModel.setFalseUsage(op.get().getFalseUsage());
-																scModel.setPredicate(op.get());
-																if (op.get().getIdentifier() != null)
+														if (childCSeb.getPredicate() != null) {
+															Predicate p = childCSeb.getPredicate();
+															if ( p.getTrueUsage() != null
+																	&& p.getFalseUsage() != null) {
+																scModel.setTrueUsage(p.getTrueUsage());
+																scModel.setFalseUsage(p.getFalseUsage());
+																scModel.setPredicate(p);
+																if (p.getIdentifier() != null)
 																	scModel.getPredicate().setIdentifier(
 																			c.getId() + "-" + sc.getId());
 															}
@@ -365,15 +357,14 @@ public class SegmentServiceImpl implements SegmentService {
 														scModel.addBinding(
 																this.createBindingDisplay(scSeb, childChildDt.getId(),
 																		ViewScope.DATATYPE, 3, valueSetsMap));
-														if (scSeb.getPredicateId() != null) {
-															Optional<Predicate> op = this.predicateRepository
-																	.findById(scSeb.getPredicateId());
-															if (op.isPresent() && op.get().getTrueUsage() != null
-																	&& op.get().getFalseUsage() != null) {
-																scModel.setTrueUsage(op.get().getTrueUsage());
-																scModel.setFalseUsage(op.get().getFalseUsage());
-																scModel.setPredicate(op.get());
-																if (op.get().getIdentifier() != null)
+														if (scSeb.getPredicate() != null) {
+															Predicate p = scSeb.getPredicate();
+															if ( p.getTrueUsage() != null
+																	&& p.getFalseUsage() != null) {
+																scModel.setTrueUsage(p.getTrueUsage());
+																scModel.setFalseUsage(p.getFalseUsage());
+																scModel.setPredicate(p);
+																if (p.getIdentifier() != null)
 																	scModel.getPredicate().setIdentifier(sc.getId());
 															}
 														}
@@ -851,31 +842,22 @@ public class SegmentServiceImpl implements SegmentService {
 					cp.setStructureId(s.getName());
 					cp.setLevel(Level.SEGMENT);
 					cp.setIgDocumentId(documentId);
-					cp = this.predicateRepository.save(cp);
-					seb.setPredicateId(cp.getId());
+					seb.setPredicate(cp);
 				} else if (item.getChangeType().equals(ChangeType.DELETE)) {
 					item.setOldPropertyValue(item.getLocation());
-					if (seb.getPredicateId() != null) {
-						Optional<Predicate> op = this.predicateRepository.findById(seb.getPredicateId());
-						if (op.isPresent()) {
-							Predicate cp = op.get();
-							cp.removeSourceId(s.getId());
-							this.predicateRepository.save(cp);
-						}
-						item.setOldPropertyValue(seb.getPredicateId());
-						seb.setPredicateId(null);
+					if (seb.getPredicate() != null) {
+						item.setOldPropertyValue(seb.getPredicate());
+						seb.setPredicate(null);
 					}
 
 				} else if (item.getChangeType().equals(ChangeType.UPDATE)) {
 					Predicate cp = mapper.readValue(jsonInString, Predicate.class);
-					if (cp.getId() != null) {
-						item.setOldPropertyValue(this.predicateRepository.findById(cp.getId()));
-					}
+					item.setOldPropertyValue(seb.getPredicate());
 					cp.addSourceId(s.getId());
 					cp.setStructureId(s.getName());
 					cp.setLevel(Level.SEGMENT);
 					cp.setIgDocumentId(documentId);
-					cp = this.predicateRepository.save(cp);
+					seb.setPredicate(cp);
 				}
 			}
 		}
@@ -1088,13 +1070,13 @@ public class SegmentServiceImpl implements SegmentService {
 					if (fSeb != null) {
 						fModel.addBinding(
 								this.createBindingDisplay(fSeb, segment.getId(), ViewScope.SEGMENT, 2, valueSetsMap));
-						if (fSeb.getPredicateId() != null) {
-							Optional<Predicate> op = this.predicateRepository.findById(fSeb.getPredicateId());
-							if (op.isPresent() && op.get().getTrueUsage() != null && op.get().getFalseUsage() != null) {
-								fModel.setTrueUsage(op.get().getTrueUsage());
-								fModel.setFalseUsage(op.get().getFalseUsage());
-								fModel.setPredicate(op.get());
-								if (op.get().getIdentifier() != null)
+						if (fSeb.getPredicate() != null) {
+							Predicate p = fSeb.getPredicate();
+							if ( p.getTrueUsage() != null && p.getFalseUsage() != null) {
+								fModel.setTrueUsage(p.getTrueUsage());
+								fModel.setFalseUsage(p.getFalseUsage());
+								fModel.setPredicate(p);
+								if (p.getIdentifier() != null)
 									fModel.getPredicate().setIdentifier(f.getId());
 							}
 						}
@@ -1118,15 +1100,13 @@ public class SegmentServiceImpl implements SegmentService {
 									if (childSeb != null) {
 										cModel.addBinding(this.createBindingDisplay(childSeb, segment.getId(),
 												ViewScope.SEGMENT, 2, valueSetsMap));
-										if (childSeb.getPredicateId() != null) {
-											Optional<Predicate> op = this.predicateRepository
-													.findById(childSeb.getPredicateId());
-											if (op.isPresent() && op.get().getTrueUsage() != null
-													&& op.get().getFalseUsage() != null) {
-												cModel.setTrueUsage(op.get().getTrueUsage());
-												cModel.setFalseUsage(op.get().getFalseUsage());
-												cModel.setPredicate(op.get());
-												if (op.get().getIdentifier() != null)
+										if (childSeb.getPredicate() != null) {
+											Predicate p = childSeb.getPredicate();
+											if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+												cModel.setTrueUsage(p.getTrueUsage());
+												cModel.setFalseUsage(p.getFalseUsage());
+												cModel.setPredicate(p);
+												if (p.getIdentifier() != null)
 													cModel.getPredicate().setIdentifier(f.getId() + "-" + c.getId());
 											}
 										}
@@ -1136,15 +1116,13 @@ public class SegmentServiceImpl implements SegmentService {
 									if (cSeb != null) {
 										cModel.addBinding(this.createBindingDisplay(cSeb, childDt.getId(),
 												ViewScope.DATATYPE, 3, valueSetsMap));
-										if (cSeb.getPredicateId() != null) {
-											Optional<Predicate> op = this.predicateRepository
-													.findById(cSeb.getPredicateId());
-											if (op.isPresent() && op.get().getTrueUsage() != null
-													&& op.get().getFalseUsage() != null) {
-												cModel.setTrueUsage(op.get().getTrueUsage());
-												cModel.setFalseUsage(op.get().getFalseUsage());
-												cModel.setPredicate(op.get());
-												if (op.get().getIdentifier() != null)
+										if (cSeb.getPredicate() != null) {
+											Predicate p = cSeb.getPredicate();
+											if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+												cModel.setTrueUsage(p.getTrueUsage());
+												cModel.setFalseUsage(p.getFalseUsage());
+												cModel.setPredicate(p);
+												if (p.getIdentifier() != null)
 													cModel.getPredicate().setIdentifier(c.getId());
 											}
 										}
@@ -1174,15 +1152,13 @@ public class SegmentServiceImpl implements SegmentService {
 													if (childChildSeb != null) {
 														scModel.addBinding(this.createBindingDisplay(childChildSeb,
 																segment.getId(), ViewScope.SEGMENT, 2, valueSetsMap));
-														if (childChildSeb.getPredicateId() != null) {
-															Optional<Predicate> op = this.predicateRepository
-																	.findById(childChildSeb.getPredicateId());
-															if (op.isPresent() && op.get().getTrueUsage() != null
-																	&& op.get().getFalseUsage() != null) {
-																scModel.setTrueUsage(op.get().getTrueUsage());
-																scModel.setFalseUsage(op.get().getFalseUsage());
-																scModel.setPredicate(op.get());
-																if (op.get().getIdentifier() != null)
+														if (childChildSeb.getPredicate() != null) {
+															Predicate p = childChildSeb.getPredicate();
+															if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+																scModel.setTrueUsage(p.getTrueUsage());
+																scModel.setFalseUsage(p.getFalseUsage());
+																scModel.setPredicate(p);
+																if (p.getIdentifier() != null)
 																	scModel.getPredicate().setIdentifier(f.getId() + "-"
 																			+ c.getId() + "-" + sc.getId());
 															}
@@ -1194,15 +1170,13 @@ public class SegmentServiceImpl implements SegmentService {
 													if (childCSeb != null) {
 														scModel.addBinding(this.createBindingDisplay(childCSeb,
 																childDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
-														if (childCSeb.getPredicateId() != null) {
-															Optional<Predicate> op = this.predicateRepository
-																	.findById(childCSeb.getPredicateId());
-															if (op.isPresent() && op.get().getTrueUsage() != null
-																	&& op.get().getFalseUsage() != null) {
-																scModel.setTrueUsage(op.get().getTrueUsage());
-																scModel.setFalseUsage(op.get().getFalseUsage());
-																scModel.setPredicate(op.get());
-																if (op.get().getIdentifier() != null)
+														if (childCSeb.getPredicate() != null) {
+															Predicate p = childCSeb.getPredicate();
+															if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+																scModel.setTrueUsage(p.getTrueUsage());
+																scModel.setFalseUsage(p.getFalseUsage());
+																scModel.setPredicate(p);
+																if (p.getIdentifier() != null)
 																	scModel.getPredicate().setIdentifier(
 																			c.getId() + "-" + sc.getId());
 															}
@@ -1215,15 +1189,13 @@ public class SegmentServiceImpl implements SegmentService {
 														scModel.addBinding(
 																this.createBindingDisplay(scSeb, childChildDt.getId(),
 																		ViewScope.DATATYPE, 4, valueSetsMap));
-														if (scSeb.getPredicateId() != null) {
-															Optional<Predicate> op = this.predicateRepository
-																	.findById(scSeb.getPredicateId());
-															if (op.isPresent() && op.get().getTrueUsage() != null
-																	&& op.get().getFalseUsage() != null) {
-																scModel.setTrueUsage(op.get().getTrueUsage());
-																scModel.setFalseUsage(op.get().getFalseUsage());
-																scModel.setPredicate(op.get());
-																if (op.get().getIdentifier() != null)
+														if (scSeb.getPredicate() != null) {
+															Predicate p = scSeb.getPredicate();
+															if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+																scModel.setTrueUsage(p.getTrueUsage());
+																scModel.setFalseUsage(p.getFalseUsage());
+																scModel.setPredicate(p);
+																if (p.getIdentifier() != null)
 																	scModel.getPredicate().setIdentifier(sc.getId());
 															}
 														}
@@ -1473,61 +1445,6 @@ public class SegmentServiceImpl implements SegmentService {
 //				result.add(cs);
 //		}
 		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * gov.nist.hit.hl7.igamt.segment.service.SegmentService#findDisplayPredicates(
-	 * java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId) {
-		Set<Predicate> predicates = this.predicateRepository.findByIgDocumentIdAndLevel(documentId, Level.SEGMENT);
-		Set<DisplayPredicate> result = new HashSet<DisplayPredicate>();
-		if (predicates != null) {
-			for (Predicate p : predicates) {
-				if (p.getSourceIds() != null && p.getSourceIds().contains(sourceId)) {
-					Optional<Segment> o = this.segmentRepository.findById(sourceId);
-					if (o.isPresent()) {
-						DisplayPredicate dp = new DisplayPredicate();
-						dp.setPredicate(p);
-						Segment s = o.get();
-						if (s.getBinding() != null && s.getBinding().getChildren() != null) {
-							this.markLocation(dp, s.getBinding().getChildren(), s.getName(), p.getId());
-						}
-						result.add(dp);
-					}
-				}
-			}
-		}
-		return result;
-	}
-
-	private void markLocation(DisplayPredicate dp, Set<StructureElementBinding> children, String location, String pid) {
-		for (StructureElementBinding seb : children) {
-			if (seb.getPredicateId() != null && seb.getPredicateId().equals(pid)) {
-				if (seb.getLocationInfo().getType().equals(LocationType.FIELD)) {
-					dp.setLocation(location + "-" + seb.getLocationInfo().getPosition() + "("
-							+ seb.getLocationInfo().getName() + ")");
-				} else {
-					dp.setLocation(location + "." + seb.getLocationInfo().getPosition() + "("
-							+ seb.getLocationInfo().getName() + ")");
-				}
-
-			} else {
-				if (seb.getChildren() != null) {
-					if (seb.getLocationInfo().getType().equals(LocationType.FIELD)) {
-						this.markLocation(dp, seb.getChildren(), location + "-" + seb.getLocationInfo().getPosition(),
-								pid);
-					} else {
-						this.markLocation(dp, seb.getChildren(), location + "." + seb.getLocationInfo().getPosition(),
-								pid);
-					}
-				}
-			}
-		}
 	}
 
 	@Override

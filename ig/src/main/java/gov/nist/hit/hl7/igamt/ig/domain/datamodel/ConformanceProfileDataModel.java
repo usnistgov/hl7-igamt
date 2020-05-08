@@ -120,11 +120,10 @@ public class ConformanceProfileDataModel implements Serializable{
 				key = path + "." + seb.getLocationInfo().getPosition();
 			}
 
-			if (seb.getPredicateId() != null) {
-				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> {
-				  cp.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
-				  this.predicateMap.put(key, cp); 
-				});
+			if (seb.getPredicate() != null) {
+				Predicate p = seb.getPredicate();
+				p.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
+				this.predicateMap.put(key, p); 
 			}
 
 			if (seb.getExternalSingleCode() != null) {

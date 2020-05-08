@@ -141,8 +141,6 @@ public interface SegmentService extends ResourceService {
 	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String segmentId,
 			String segmentName);
 
-	public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
-
 	public void collectResources(Segment seg, HashMap<String, Resource> used);
 
 	public Set<Resource> getDependencies(Segment segment);

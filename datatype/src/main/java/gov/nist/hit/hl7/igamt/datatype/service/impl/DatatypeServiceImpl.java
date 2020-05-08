@@ -65,9 +65,11 @@ import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.*;
-import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
-import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.DisplayPredicate;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ViewScope;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -114,8 +116,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 	@Autowired
 	ValuesetService valueSetService;
 
-	@Autowired
-	private PredicateRepository predicateRepository;
 	@Autowired
 	BindingService bindingService;
 
@@ -413,14 +413,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 							if (cSeb != null) {
 								cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE,
 										2, valueSetsMap));
-								if (cSeb.getPredicateId() != null) {
-									Optional<Predicate> op = this.predicateRepository.findById(cSeb.getPredicateId());
-									if (op.isPresent() && op.get().getTrueUsage() != null
-											&& op.get().getFalseUsage() != null) {
-										cModel.setTrueUsage(op.get().getTrueUsage());
-										cModel.setFalseUsage(op.get().getFalseUsage());
-										cModel.setPredicate(op.get());
-										if (op.get().getIdentifier() != null)
+								if (cSeb.getPredicate() != null) {
+									Predicate p = cSeb.getPredicate();
+									if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+										cModel.setTrueUsage(p.getTrueUsage());
+										cModel.setFalseUsage(p.getFalseUsage());
+										cModel.setPredicate(p);
+										if (p.getIdentifier() != null)
 											cModel.getPredicate().setIdentifier(c.getId());
 									}
 								}
@@ -447,15 +446,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 											if (childCSeb != null) {
 												scModel.addBinding(this.createBindingDisplay(childCSeb,
 														datatype.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
-												if (childCSeb.getPredicateId() != null) {
-													Optional<Predicate> op = this.predicateRepository
-															.findById(childCSeb.getPredicateId());
-													if (op.isPresent() && op.get().getTrueUsage() != null
-															&& op.get().getFalseUsage() != null) {
-														scModel.setTrueUsage(op.get().getTrueUsage());
-														scModel.setFalseUsage(op.get().getFalseUsage());
-														scModel.setPredicate(op.get());
-														if (op.get().getIdentifier() != null)
+												if (childCSeb.getPredicate() != null) {
+													Predicate p = childCSeb.getPredicate();
+													if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+														scModel.setTrueUsage(p.getTrueUsage());
+														scModel.setFalseUsage(p.getFalseUsage());
+														scModel.setPredicate(p);
+														if (p.getIdentifier() != null)
 															scModel.getPredicate()
 															.setIdentifier(c.getId() + "-" + sc.getId());
 													}
@@ -467,15 +464,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 											if (scSeb != null) {
 												scModel.addBinding(this.createBindingDisplay(scSeb,
 														childChildDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
-												if (scSeb.getPredicateId() != null) {
-													Optional<Predicate> op = this.predicateRepository
-															.findById(scSeb.getPredicateId());
-													if (op.isPresent() && op.get().getTrueUsage() != null
-															&& op.get().getFalseUsage() != null) {
-														scModel.setTrueUsage(op.get().getTrueUsage());
-														scModel.setFalseUsage(op.get().getFalseUsage());
-														scModel.setPredicate(op.get());
-														if (op.get().getIdentifier() != null)
+												if (scSeb.getPredicate() != null) {
+													Predicate p = scSeb.getPredicate();
+													if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+														scModel.setTrueUsage(p.getTrueUsage());
+														scModel.setFalseUsage(p.getFalseUsage());
+														scModel.setPredicate(p);
+														if (p.getIdentifier() != null)
 															scModel.getPredicate().setIdentifier(sc.getId());
 													}
 												}
@@ -515,14 +510,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 							if (scSeb != null) {
 								scModel.addBinding(this.createBindingDisplay(scSeb, datatype.getId(),
 										ViewScope.DATATYPE, 2, valueSetsMap));
-								if (scSeb.getPredicateId() != null) {
-									Optional<Predicate> op = this.predicateRepository.findById(scSeb.getPredicateId());
-									if (op.isPresent() && op.get().getTrueUsage() != null
-											&& op.get().getFalseUsage() != null) {
-										scModel.setTrueUsage(op.get().getTrueUsage());
-										scModel.setFalseUsage(op.get().getFalseUsage());
-										scModel.setPredicate(op.get());
-										if (op.get().getIdentifier() != null)
+								if (scSeb.getPredicate() != null) {
+									Predicate p = scSeb.getPredicate();
+									if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+										scModel.setTrueUsage(p.getTrueUsage());
+										scModel.setFalseUsage(p.getFalseUsage());
+										scModel.setPredicate(p);
+										if (p.getIdentifier() != null)
 											scModel.getPredicate().setIdentifier(sc.getId());
 									}
 								}
@@ -574,14 +568,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 						if (cSeb != null) {
 							cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE, 1,
 									valueSetsMap));
-							if (cSeb.getPredicateId() != null) {
-								Optional<Predicate> op = this.predicateRepository.findById(cSeb.getPredicateId());
-								if (op.isPresent() && op.get().getTrueUsage() != null
-										&& op.get().getFalseUsage() != null) {
-									cModel.setTrueUsage(op.get().getTrueUsage());
-									cModel.setFalseUsage(op.get().getFalseUsage());
-									cModel.setPredicate(op.get());
-									if (op.get().getIdentifier() != null)
+							if (cSeb.getPredicate() != null) {
+								Predicate p = cSeb.getPredicate();
+								if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+									cModel.setTrueUsage(p.getTrueUsage());
+									cModel.setFalseUsage(p.getFalseUsage());
+									cModel.setPredicate(p);
+									if (p.getIdentifier() != null)
 										cModel.getPredicate().setIdentifier(cModel.getIdPath());
 								}
 							}
@@ -607,15 +600,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 										if (childSeb != null) {
 											scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId(),
 													ViewScope.DATATYPE, 1, valueSetsMap));
-											if (childSeb.getPredicateId() != null) {
-												Optional<Predicate> op = this.predicateRepository
-														.findById(childSeb.getPredicateId());
-												if (op.isPresent() && op.get().getTrueUsage() != null
-														&& op.get().getFalseUsage() != null) {
-													scModel.setTrueUsage(op.get().getTrueUsage());
-													scModel.setFalseUsage(op.get().getFalseUsage());
-													scModel.setPredicate(op.get());
-													if (op.get().getIdentifier() != null)
+											if (childSeb.getPredicate() != null) {
+												Predicate p = childSeb.getPredicate();
+												if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+													scModel.setTrueUsage(p.getTrueUsage());
+													scModel.setFalseUsage(p.getFalseUsage());
+													scModel.setPredicate(p);
+													if (p.getIdentifier() != null)
 														scModel.getPredicate().setIdentifier(scModel.getIdPath());
 												}
 											}
@@ -627,15 +618,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 										if (scSeb != null) {
 											scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId(),
 													ViewScope.DATATYPE, 2, valueSetsMap));
-											if (scSeb.getPredicateId() != null) {
-												Optional<Predicate> op = this.predicateRepository
-														.findById(scSeb.getPredicateId());
-												if (op.isPresent() && op.get().getTrueUsage() != null
-														&& op.get().getFalseUsage() != null) {
-													scModel.setTrueUsage(op.get().getTrueUsage());
-													scModel.setFalseUsage(op.get().getFalseUsage());
-													scModel.setPredicate(op.get());
-													if (op.get().getIdentifier() != null)
+											if (scSeb.getPredicate() != null) {
+												Predicate p = scSeb.getPredicate();
+												if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+													scModel.setTrueUsage(p.getTrueUsage());
+													scModel.setFalseUsage(p.getFalseUsage());
+													scModel.setPredicate(p);
+													if (p.getIdentifier() != null)
 														scModel.getPredicate().setIdentifier(sc.getId());
 												}
 											}
@@ -668,10 +657,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 		bindingDisplay.setPriority(priority);
 		bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
 
-		if (seb.getPredicateId() != null) {
-			Optional<Predicate> op = this.predicateRepository.findById(seb.getPredicateId());
-			if (op.isPresent())
-				bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
+		if (seb.getPredicate() != null) {
+			bindingDisplay.setPredicate(seb.getPredicate());
 		}
 
 		bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
@@ -1052,31 +1039,21 @@ public class DatatypeServiceImpl implements DatatypeService {
 					cp.setStructureId(d.getName());
 					cp.setLevel(Level.DATATYPE);
 					cp.setIgDocumentId(documentId);
-					cp = this.predicateRepository.save(cp);
-					seb.setPredicateId(cp.getId());
+					seb.setPredicate(cp);
 				} else if (item.getChangeType().equals(ChangeType.DELETE)) {
 					item.setOldPropertyValue(item.getLocation());
-					if (seb.getPredicateId() != null) {
-						Optional<Predicate> op = this.predicateRepository.findById(seb.getPredicateId());
-						if (op.isPresent()) {
-							Predicate cp = op.get();
-							cp.removeSourceId(d.getId());
-							this.predicateRepository.save(cp);
-						}
-						item.setOldPropertyValue(seb.getPredicateId());
-						seb.setPredicateId(null);
+					if (seb.getPredicate() != null) {
+						item.setOldPropertyValue(seb.getPredicate());
+						seb.setPredicate(null);
 					}
-
 				} else if (item.getChangeType().equals(ChangeType.UPDATE)) {
 					Predicate cp = mapper.readValue(jsonInString, Predicate.class);
-					if (cp.getId() != null) {
-						item.setOldPropertyValue(this.predicateRepository.findById(cp.getId()));
-					}
+					item.setOldPropertyValue(seb.getPredicate());
 					cp.addSourceId(d.getId());
 					cp.setStructureId(d.getName());
 					cp.setLevel(Level.DATATYPE);
 					cp.setIgDocumentId(documentId);
-					cp = this.predicateRepository.save(cp);
+					seb.setPredicate(cp);
 				}
 			}
 		}
@@ -1376,48 +1353,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#findDisplayPredicates
-	 * (java.lang.String, java.lang.String)
-	 */
-	@Override
-	public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId) {
-		Set<Predicate> predicates = this.predicateRepository.findByIgDocumentIdAndLevel(documentId, Level.DATATYPE);
-		Set<DisplayPredicate> result = new HashSet<DisplayPredicate>();
-		if (predicates != null) {
-			for (Predicate p : predicates) {
-				if (p.getSourceIds() != null && p.getSourceIds().contains(sourceId)) {
-					Optional<Datatype> o = this.datatypeRepository.findById(sourceId);
-					if (o.isPresent()) {
-						DisplayPredicate dp = new DisplayPredicate();
-						dp.setPredicate(p);
-						Datatype dt = o.get();
-						if (dt.getBinding() != null && dt.getBinding().getChildren() != null) {
-							this.markLocation(dp, dt.getBinding().getChildren(), dt.getName(), p.getId());
-						}
-						result.add(dp);
-					}
-				}
-			}
-		}
-		return result;
-	}
-
-	private void markLocation(DisplayPredicate dp, Set<StructureElementBinding> children, String location, String pid) {
-		for (StructureElementBinding seb : children) {
-			if (seb.getPredicateId() != null && seb.getPredicateId().equals(pid)) {
-				dp.setLocation(location + "." + seb.getLocationInfo().getPosition() + "("
-						+ seb.getLocationInfo().getName() + ")");
-			} else {
-				if (seb.getChildren() != null) {
-					this.markLocation(dp, seb.getChildren(), location + "." + seb.getLocationInfo().getPosition(), pid);
-				}
-			}
-		}
-	}
 
 	@Override
 	public void collectResources(Datatype datatype, HashMap<String, Resource> used) {
