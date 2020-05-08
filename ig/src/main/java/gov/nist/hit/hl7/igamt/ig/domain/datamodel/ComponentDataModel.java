@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.base.domain.Predicate;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 
 /**

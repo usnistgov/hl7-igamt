@@ -12,7 +12,7 @@
 * Jul 27, 2019    jungy           first generated
 *****************************************************************/
 
-package gov.nist.hit.hl7.igamt.common.base.assertion.complement;
+package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement;
 
 public enum ComplementKey {
 	 valued, 

@@ -3,9 +3,9 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 import java.util.HashMap;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.base.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 
 
 

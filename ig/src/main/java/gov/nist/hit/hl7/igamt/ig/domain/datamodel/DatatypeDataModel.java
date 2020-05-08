@@ -17,11 +17,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.base.domain.Predicate;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;

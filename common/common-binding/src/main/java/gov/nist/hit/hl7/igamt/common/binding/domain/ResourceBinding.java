@@ -14,7 +14,7 @@ package gov.nist.hit.hl7.igamt.common.binding.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 
 
 /**

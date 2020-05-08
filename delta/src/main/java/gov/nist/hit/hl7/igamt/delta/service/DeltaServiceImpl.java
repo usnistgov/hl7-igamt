@@ -1,6 +1,5 @@
 package gov.nist.hit.hl7.igamt.delta.service;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
@@ -17,7 +16,14 @@ import gov.nist.diff.domain.DeltaAction;
 import gov.nist.diff.domain.DeltaMode;
 import gov.nist.diff.domain.DeltaObject;
 import gov.nist.diff.service.DeltaProcessor;
+import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.*;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;

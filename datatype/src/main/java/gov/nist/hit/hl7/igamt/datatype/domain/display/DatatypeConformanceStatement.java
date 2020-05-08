@@ -13,8 +13,8 @@ package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 
 /**
  * @author ena3

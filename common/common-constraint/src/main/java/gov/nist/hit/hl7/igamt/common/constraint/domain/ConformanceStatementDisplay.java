@@ -1,9 +1,8 @@
-package gov.nist.hit.hl7.igamt.common.base.domain.display;
+package gov.nist.hit.hl7.igamt.common.constraint.domain;
 
 import java.util.HashMap;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;

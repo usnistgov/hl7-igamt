@@ -9,12 +9,13 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.base.domain;
+package gov.nist.hit.hl7.igamt.common.constraint.domain;
 
 import java.io.Serializable;
 
 import gov.nist.diff.annotation.DeltaField;
-import gov.nist.hit.hl7.igamt.common.base.assertion.Assertion;
+import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Assertion;
 
 /**
  * @author jungyubw
