@@ -34,7 +34,10 @@ import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({@JsonSubTypes.Type(value = FreeTextPredicate.class, name = "FREE"),
     @JsonSubTypes.Type(value = AssertionPredicate.class, name = "ASSERTION")})
-public abstract class Predicate implements Serializable{
+public class Predicate implements Serializable{
+
+  private static final long serialVersionUID = 160188380051171488L;
+  
   @Id
   private String id;
   private String identifier;
@@ -42,10 +45,16 @@ public abstract class Predicate implements Serializable{
   protected Usage trueUsage;
   protected Usage falseUsage;
   private Path context;
+  
+  @Deprecated
   private Level level;
+  @Deprecated
   private String structureId;
+  @Deprecated
   private HashSet<String> sourceIds;
+  @Deprecated
   private String igDocumentId;
+  @Deprecated
   private String location;
 
   public Predicate() {
@@ -84,62 +93,8 @@ public abstract class Predicate implements Serializable{
     this.id = id;
   }
   
-  public String generateDescription() {
-    if(this instanceof  FreeTextPredicate){
-      FreeTextPredicate cp = (FreeTextPredicate)this;
-      return cp.getFreeText();
-    }else if(this instanceof  AssertionPredicate){
-      AssertionPredicate cp = (AssertionPredicate)this;
-      if(cp.getAssertion() != null) return cp.getAssertion().getDescription();
-    }
-    return null;
-  }
-
-  public Level getLevel() {
-    return level;
-  }
-
-  public void setLevel(Level level) {
-    this.level = level;
-  }
-
-  public String getStructureId() {
-    return structureId;
-  }
-
-  public void setStructureId(String structureId) {
-    this.structureId = structureId;
-  }
-
-  public HashSet<String> getSourceIds() {
-    return sourceIds;
-  }
-
-  public void setSourceIds(HashSet<String> sourceIds) {
-    this.sourceIds = sourceIds;
-  }
-
-  public String getIgDocumentId() {
-    return igDocumentId;
-  }
-
-  public void setIgDocumentId(String igDocumentId) {
-    this.igDocumentId = igDocumentId;
-  }
-
-  public void addSourceId(String sourceId) {
-    if(this.sourceIds == null) this.sourceIds = new HashSet<String>();
-    this.sourceIds.add(sourceId);
-  }
-
-  public void removeSourceId(String sourceId) {
-    if(this.sourceIds != null) {
-      this.sourceIds.remove(sourceId);
-    }
-  }
-
   public Path getContext() {
-    return context;
+	return context;
   }
 
   public void setContext(Path context) {
@@ -153,11 +108,77 @@ public abstract class Predicate implements Serializable{
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
   }
+  
+  public String generateDescription() {
+    if(this instanceof  FreeTextPredicate){
+      FreeTextPredicate cp = (FreeTextPredicate)this;
+      return cp.getFreeText();
+    }else if(this instanceof  AssertionPredicate){
+      AssertionPredicate cp = (AssertionPredicate)this;
+      if(cp.getAssertion() != null) return cp.getAssertion().getDescription();
+    }
+    return null;
+  }
 
+  @Deprecated
+  public Level getLevel() {
+    return level;
+  }
+
+  @Deprecated
+  public void setLevel(Level level) {
+    this.level = level;
+  }
+
+  @Deprecated
+  public String getStructureId() {
+    return structureId;
+  }
+
+  @Deprecated
+  public void setStructureId(String structureId) {
+    this.structureId = structureId;
+  }
+  
+  @Deprecated
+  public HashSet<String> getSourceIds() {
+    return sourceIds;
+  }
+
+  @Deprecated
+  public void setSourceIds(HashSet<String> sourceIds) {
+    this.sourceIds = sourceIds;
+  }
+
+  @Deprecated
+  public String getIgDocumentId() {
+    return igDocumentId;
+  }
+
+  @Deprecated
+  public void setIgDocumentId(String igDocumentId) {
+    this.igDocumentId = igDocumentId;
+  }
+
+  @Deprecated
+  public void addSourceId(String sourceId) {
+    if(this.sourceIds == null) this.sourceIds = new HashSet<String>();
+    this.sourceIds.add(sourceId);
+  }
+
+  @Deprecated
+  public void removeSourceId(String sourceId) {
+    if(this.sourceIds != null) {
+      this.sourceIds.remove(sourceId);
+    }
+  }
+
+  @Deprecated
   public String getLocation() {
     return location;
   }
 
+  @Deprecated
   public void setLocation(String location) {
     this.location = location;
   }

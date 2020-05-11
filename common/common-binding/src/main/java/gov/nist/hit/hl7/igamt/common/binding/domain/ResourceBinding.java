@@ -26,8 +26,8 @@ public class ResourceBinding extends Binding {
 	 * 
 	 */
   private static final long serialVersionUID = 1L;
-//  @Deprecated
-//  private Set<String> conformanceStatementIds;
+  @Deprecated
+  private Set<String> conformanceStatementIds;
   private Set<ConformanceStatement> conformanceStatements;
 
   public ResourceBinding() {
@@ -39,16 +39,16 @@ public class ResourceBinding extends Binding {
     this.conformanceStatements = conformanceStatements;
   }
 
-//  @Deprecated
-//  public Set<String> getConformanceStatementIds() {
-//    return conformanceStatementIds;
-//  }
-//
-//  @Deprecated
-//  public void setConformanceStatementIds(Set<String> conformanceStatementIds) {
-//    this.conformanceStatementIds = conformanceStatementIds;
-//  }
-//
+  @Deprecated
+  public Set<String> getConformanceStatementIds() {
+    return conformanceStatementIds;
+  }
+
+  @Deprecated
+  public void setConformanceStatementIds(Set<String> conformanceStatementIds) {
+    this.conformanceStatementIds = conformanceStatementIds;
+  }
+
 
   public void addConformanceStatement(ConformanceStatement cs) {
     if (conformanceStatements == null) {

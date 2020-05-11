@@ -42,9 +42,14 @@ public class ConformanceStatement implements Serializable{
   private ConstraintType type;
   protected String identifier;
   private Path context;
+  
+  @Deprecated
   private Level level;
+  @Deprecated
   private String structureId;
+  @Deprecated
   private HashSet<String> sourceIds;
+  @Deprecated
   private String igDocumentId;
 
   public ConformanceStatement() {
@@ -94,43 +99,53 @@ public class ConformanceStatement implements Serializable{
     return null;
   }
 
+  @Deprecated
   public Level getLevel() {
     return level;
   }
 
+  @Deprecated
   public void setLevel(Level level) {
     this.level = level;
   }
 
+  @Deprecated
   public String getStructureId() {
     return structureId;
   }
 
+  @Deprecated
   public void setStructureId(String structureId) {
     this.structureId = structureId;
   }
 
+  @Deprecated
   public String getIgDocumentId() {
     return igDocumentId;
   }
 
+  @Deprecated
   public void setIgDocumentId(String igDocumentId) {
     this.igDocumentId = igDocumentId;
   }
 
+  @Deprecated
   public HashSet<String> getSourceIds() {
     return sourceIds;
   }
 
+  @Deprecated
   public void setSourceIds(HashSet<String> sourceIds) {
     this.sourceIds = sourceIds;
   }
 
+  @Deprecated
   public void addSourceId(String sourceId) {
     if(this.sourceIds == null) this.sourceIds = new HashSet<String>();
     this.sourceIds.add(sourceId);
   }
 
+  @Deprecated
   public void removeSourceId(String sourceId) {
     if(this.sourceIds != null) {
       this.sourceIds.remove(sourceId);

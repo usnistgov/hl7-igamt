@@ -27,6 +27,8 @@ public class StructureElementBinding extends Binding {
   private InternalSingleCode internalSingleCode;
   private ExternalSingleCode externalSingleCode;
   private Predicate predicate;
+  @Deprecated
+  private String predicateId;
 
   public StructureElementBinding() {
     super();
@@ -68,5 +70,14 @@ public class StructureElementBinding extends Binding {
   
   public void setPredicate(Predicate predicate) {
 	this.predicate = predicate;
+  }
+  @Deprecated
+  public String getPredicateId() {
+	return predicateId;
+  }
+  
+  @Deprecated
+  public void setPredicateId(String predicateId) {
+	this.predicateId = predicateId;
   }
 }

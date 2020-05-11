@@ -199,11 +199,11 @@ public class BindingServiceImpl implements BindingService {
         }
       }
     }
-    if(elm.getPredicateId() != null) {
-    	if(newKeys.containsKey(new RealKey(elm.getPredicateId(), Type.PREDICATE))) {
-    		elm.setPredicateId(newKeys.get(new RealKey(elm.getPredicateId(), Type.PREDICATE)));
-    	}
-    }
+//    if(elm.getPredicateId() != null) {
+//    	if(newKeys.containsKey(new RealKey(elm.getPredicateId(), Type.PREDICATE))) {
+//    		elm.setPredicateId(newKeys.get(new RealKey(elm.getPredicateId(), Type.PREDICATE)));
+//    	}
+//    }
     if(elm.getChildren() !=null) { 
       for (StructureElementBinding child: elm.getChildren()) {
         processAndSubstitute(child, newKeys);
