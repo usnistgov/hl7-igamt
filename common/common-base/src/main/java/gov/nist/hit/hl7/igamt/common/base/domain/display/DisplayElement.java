@@ -7,115 +7,133 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class DisplayElement {
 
-	private String id;
-	private String fixedName;
-	private String variableName;
-	private String description;
-	private DomainInfo domainInfo;
-	private Type type;
-	private boolean leaf; // eventually for lazy loading
-	private int position;
-	private boolean differantial;
-	private DeltaAction delta;
-	private String origin;
-	private boolean isFlavor;
+  private String id;
+  private String fixedName;
+  private String variableName;
+  private String description;
+  private DomainInfo domainInfo;
+  private Type type;
+  private boolean leaf; // eventually for lazy loading
+  private int position;
+  private boolean differantial;
+  private DeltaAction delta;
+  private String origin;
+  private boolean isFlavor;
 
-	public DeltaAction getDelta() {
-		return delta;
-	}
 
-	public void setDelta(DeltaAction delta) {
-		this.delta = delta;
-	}
+  private Type parentType;
+  private String parentId;
 
-	public String getOrigin() {
-		return origin;
-	}
+  public DeltaAction getDelta() {
+    return delta;
+  }
 
-	public void setOrigin(String origin) {
-		this.origin = origin;
-	}
+  public void setDelta(DeltaAction delta) {
+    this.delta = delta;
+  }
 
-	public String getFixedName() {
-		return fixedName;
-	}
+  public String getOrigin() {
+    return origin;
+  }
 
-	public void setFixedName(String fixedName) {
-		this.fixedName = fixedName;
-	}
+  public void setOrigin(String origin) {
+    this.origin = origin;
+  }
 
-	public String getVariableName() {
-		return variableName;
-	}
+  public String getFixedName() {
+    return fixedName;
+  }
 
-	public void setVariableName(String variableName) {
-		this.variableName = variableName;
-	}
+  public void setFixedName(String fixedName) {
+    this.fixedName = fixedName;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public String getVariableName() {
+    return variableName;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setVariableName(String variableName) {
+    this.variableName = variableName;
+  }
 
-	public DomainInfo getDomainInfo() {
-		return domainInfo;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public void setDomainInfo(DomainInfo domainInfo) {
-		this.domainInfo = domainInfo;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public Type getType() {
-		return type;
-	}
+  public DomainInfo getDomainInfo() {
+    return domainInfo;
+  }
 
-	public void setType(Type type) {
-		this.type = type;
-	}
+  public void setDomainInfo(DomainInfo domainInfo) {
+    this.domainInfo = domainInfo;
+  }
 
-	public boolean isLeaf() {
-		return leaf;
-	}
+  public Type getType() {
+    return type;
+  }
 
-	public void setLeaf(boolean leaf) {
-		this.leaf = leaf;
-	}
+  public void setType(Type type) {
+    this.type = type;
+  }
 
-	public int getPosition() {
-		return position;
-	}
+  public boolean isLeaf() {
+    return leaf;
+  }
 
-	public void setPosition(int position) {
-		this.position = position;
-	}
+  public void setLeaf(boolean leaf) {
+    this.leaf = leaf;
+  }
 
-	public boolean isDifferantial() {
-		return differantial;
-	}
+  public int getPosition() {
+    return position;
+  }
 
-	public void setDifferantial(boolean differantial) {
-		this.differantial = differantial;
-	}
+  public void setPosition(int position) {
+    this.position = position;
+  }
 
-	public String getId() {
-		return id;
-	}
+  public boolean isDifferantial() {
+    return differantial;
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public void setDifferantial(boolean differantial) {
+    this.differantial = differantial;
+  }
 
-	public boolean isFlavor() {
-		return isFlavor;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public void setFlavor(boolean isFlavor) {
-		this.isFlavor = isFlavor;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	
+  public boolean isFlavor() {
+    return isFlavor;
+  }
+
+  public void setFlavor(boolean isFlavor) {
+    this.isFlavor = isFlavor;
+  }
+
+  public Type getParentType() {
+    return parentType;
+  }
+
+  public void setParentType(Type documentType) {
+    this.parentType = documentType;
+  }
+
+  public String getParentId() {
+    return parentId;
+  }
+
+  public void setParentId(String documentId) {
+    this.parentId = documentId;
+  }
 
 }

@@ -1,5 +1,6 @@
 import { Dictionary } from '@ngrx/entity';
 import { Type } from '../../shared/constants/type.enum';
+import {IDocumentRef} from '../../shared/models/abstract-domain.interface';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
@@ -84,7 +85,7 @@ export class IgTOCNodeHelper {
     return this.sort(ret);
   }
 
-  static buildLibraryTree(structure: IContent[], datatypesNodes: IDisplayElement[], derivedNodes: IDisplayElement[]) {
+  static buildLibraryTree(documentRef: IDocumentRef, structure: IContent[], datatypesNodes: IDisplayElement[]) {
     const ret: IDisplayElement[] = [];
     for (const section of structure) {
       switch (section.type) {
@@ -92,7 +93,7 @@ export class IgTOCNodeHelper {
           ret.push(this.createNarativeSection(section, section.position + ''));
           break;
         case Type.PROFILE:
-          ret.push(this.createLibProfileSection(section, datatypesNodes, derivedNodes, section.position + ''));
+          ret.push(this.createLibProfileSection(documentRef, section, datatypesNodes, section.position + ''));
           break;
         default:
           break;
@@ -101,17 +102,17 @@ export class IgTOCNodeHelper {
     return this.sort(ret);
   }
 
-  static createLibProfileSection(section: IContent, datatypesNodes: IDisplayElement[], derivedNodes: IDisplayElement[], path: string) {
+  static createLibProfileSection(documentRef: IDocumentRef, section: IContent, datatypesNodes: IDisplayElement[], path: string) {
     const ret = this.initializeIDisplayElement(section, path);
     if (section.children && section.children.length > 0) {
       for (const child of section.children) {
         const retChild = this.initializeIDisplayElement(child, ret.path + '.' + child.position);
         switch (child.type) {
           case Type.DATATYPEREGISTRY:
-            retChild.children = datatypesNodes;
+            retChild.children = datatypesNodes.filter((dt: IDisplayElement) => dt.parentId && dt.parentId === documentRef.documentId);
             break;
           case Type.DERIVEDDATATYPEREGISTRY:
-            retChild.children = derivedNodes;
+            retChild.children = datatypesNodes.filter((dt: IDisplayElement) =>  documentRef.documentId !== dt.parentId  );
             break;
         }
         ret.children.push(retChild);
@@ -136,7 +137,6 @@ export class IgTOCNodeHelper {
       children[i].position = i + 1;
     }
   }
-
   static getIDisplayFromSections(children: IContent[], path: string): IDisplayElement[] {
     if (children) {
       const sections: IDisplayElement[] = children.map((section) => this.initializeIDisplayElement(section, path + section.position + ''));

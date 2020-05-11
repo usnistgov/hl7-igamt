@@ -139,6 +139,8 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setVariableName(datatype.getExt());
 		displayElement.setType(Type.DATATYPE);
 		displayElement.setOrigin(datatype.getOrigin());
+		displayElement.setParentId(datatype.getParentId());
+		displayElement.setParentType(datatype.getParentType());
 		return displayElement;
 	}
 
@@ -152,6 +154,8 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setDomainInfo(base.getDomainInfo());
 		displayElement.setLeaf(true);
 		displayElement.setType(Type.COCONSTRAINTGROUP);
+		displayElement.setParentId(base.getParentId());
+        displayElement.setParentType(base.getParentType());
 
 		return displayElement;
 	}
@@ -168,6 +172,8 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setVariableName(conformanceProfile.getName());
 		displayElement.setType(Type.CONFORMANCEPROFILE);
 		displayElement.setOrigin(conformanceProfile.getOrigin());
+		displayElement.setParentId(conformanceProfile.getParentId());
+        displayElement.setParentType(conformanceProfile.getParentType());
 		return displayElement;
 		
 	}
@@ -184,6 +190,8 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setVariableName(segment.getExt());
 		displayElement.setType(Type.SEGMENT);
 		displayElement.setOrigin(segment.getOrigin());
+		displayElement.setParentId(segment.getParentId());
+	    displayElement.setParentType(segment.getParentType());
 		return displayElement;
 	}
 
@@ -199,6 +207,8 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setType(Type.VALUESET);
 		displayElement.setOrigin(valueset.getOrigin());
 		displayElement.setFlavor(valueset.isFlavor());
+	    displayElement.setParentId(valueset.getParentId());
+	    displayElement.setParentType(valueset.getParentType());
 		return displayElement;
 	}
 

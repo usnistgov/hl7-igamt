@@ -210,6 +210,8 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
                       }
                       Link link = new Link(datatype.getId(), datatype.getDomainInfo(),
                               lib.getDatatypeRegistry().getChildren().size() + 1);
+                      link.setParentId(datatype.getParentId());
+                      link.setParentType(datatype.getParentType());
                       ret.getDatatypes().add(datatype);
                       lib.getDatatypeRegistry().getChildren().add(link);
 
@@ -244,6 +246,8 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
                           new Link(datatype.getId(), datatype.getDomainInfo(), lib.getDatatypeRegistry().getChildren().size() + 1);
                   lib.getDatatypeRegistry().getChildren().add(link);
                   ret.getDatatypes().add(datatype);
+                  link.setParentType(datatype.getParentType());
+                  link.setParentId(datatype.getParentId());
                   if (datatype instanceof ComplexDatatype) {
                       ComplexDatatype p = (ComplexDatatype) datatype;
                       addDatatypes(getDatatypeResourceDependenciesIds(p), lib, ret);

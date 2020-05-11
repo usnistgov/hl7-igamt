@@ -18,13 +18,13 @@
     <h5 class="title-text">
       <app-scope-badge *ngIf="active.display.domainInfo" [scope]="active.display.domainInfo.scope" [version]="active.display.domainInfo.version" [flavor]="active.display.flavor"></app-scope-badge>
       <app-entity-bagde [type]="active.display.type"></app-entity-bagde>
-      <span *ngIf="active.display.type !== 'IGDOCUMENT'" >
+      <span *ngIf="active.display.type !== 'DTATYPELIBRARY'" >
         <span *ngIf="active.display.path"> {{active.display.path}} </span>
         <span>&nbsp;{{active.display.fixedName}}</span>
         <span *ngIf="active.display.fixedName && active.display.variableName">_</span>
           <span>{{active.display.variableName}}</span>
       </span>
-      <span *ngIf="active.display.type === 'IGDOCUMENT'" > Implementation Guide</span>
+      <span *ngIf="active.display.type === 'DTATYPELIBRARY'" > Data Type Library</span>
     </h5>
     <ng-container *ngIf="active.editor.title && !options?.excludeTitle">
       <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>

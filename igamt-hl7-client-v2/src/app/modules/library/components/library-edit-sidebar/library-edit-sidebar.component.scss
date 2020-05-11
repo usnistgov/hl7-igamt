@@ -2,7 +2,7 @@
   display: grid;
   grid-gap: 2px;
   grid-template-columns: [sidebar-content] auto;
-  grid-template-rows: [sidebar-controls] 40px [sidebar-filter] 40px  [sidebar-delta-filter] minmax(auto, auto) [sidebar-content-row] auto;
+  grid-template-rows: [sidebar-controls] 40px [sidebar-filter] 40px   [sidebar-content-row] auto;
   overflow: hidden;
 }
 

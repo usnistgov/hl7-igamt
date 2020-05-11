@@ -5,23 +5,6 @@
   <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername"
           placeholder="Filter" required style="background-color: #f0f0f0;" type="text">
 </div>
-<div class="delta-filter" *ngIf="derived">
-
-  <div>
-    <div class="custom-control custom-switch">
-      <input [(ngModel)]="delta" class="custom-control-input" id="deltaSwitch" type="checkbox" (ngModelChange)="toggleDelta()">
-      <label class="custom-control-label" for="deltaSwitch">Differential view </label>
-    </div>
-  </div>
-
-  <div *ngIf="delta" style="display: flex; flex-direction: row">
-      <span class="badge delta-badge delta-changed"> <p-checkbox name="delta-display" value="UPDATED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> updated</span>
-      <span class="badge delta-badge delta-deleted">   <p-checkbox name="delta-display" value="DELETED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> deleted</span>
-      <span class="badge delta-badge delta-added"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> added </span>
-      <span class="badge delta-badge badge-default">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"> </p-checkbox> unchanged</span>
-  </div>
-
-</div>
 <div class="sidebar-controls">
   <app-dam-side-bar-toggle></app-dam-side-bar-toggle>
   <div class="btn-group mr-2" role="group">

@@ -73,6 +73,9 @@ public class LibraryDisplayInfoServiceImpl implements LibraryDisplayInfoService 
 		displayElement.setLeaf(!(datatype instanceof ComplexDatatype));
 		displayElement.setVariableName(datatype.getExt());
 		displayElement.setType(Type.DATATYPE);
+		displayElement.setParentId(datatype.getParentId());
+	    displayElement.setParentType(datatype.getParentType());
+
 		displayElement.setOrigin(datatype.getOrigin());
 		return displayElement;
 	}
@@ -90,6 +93,8 @@ public class LibraryDisplayInfoServiceImpl implements LibraryDisplayInfoService 
 		displayElement.setType(Type.VALUESET);
 		displayElement.setOrigin(valueset.getOrigin());
 		displayElement.setFlavor(valueset.isFlavor());
+		displayElement.setParentId(valueset.getParentId());
+	    displayElement.setParentType(valueset.getParentType());
 		return displayElement;
 	}
 

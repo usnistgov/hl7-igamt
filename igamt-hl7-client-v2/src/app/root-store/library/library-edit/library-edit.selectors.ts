@@ -6,10 +6,12 @@ import {IgTOCNodeHelper} from '../../../modules/document/services/ig-toc-node-he
 import {ITitleBarMetadata} from '../../../modules/library/components/library-edit-titlebar/library-edit-titlebar.component';
 import {ILibrary} from '../../../modules/library/models/library.class';
 import { Scope } from '../../../modules/shared/constants/scope.enum';
-import { SharePermission, Status } from '../../../modules/shared/models/abstract-domain.interface';
+import {Type} from '../../../modules/shared/constants/type.enum';
+import {IDocumentRef, SharePermission, Status} from '../../../modules/shared/models/abstract-domain.interface';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { IRegistry } from '../../../modules/shared/models/registry.interface';
+import {selectLoadedDocumentInfo} from '../../dam-igamt/igamt.selectors';
 
 export const selectLibrary = createSelector(
   fromDam.selectPayloadData,
@@ -121,14 +123,15 @@ export const selectStructure = createSelector(
 );
 
 export const selectToc = createSelector(
+  selectLoadedDocumentInfo,
   selectStructure,
   selectDatatypesNodes, (
+    documentInfo: IDocumentRef,
     structure: IContent[],
     datatypesNodes: IDisplayElement[],
-    derivedNodes: IDisplayElement[],
 ) => {
 
-  return IgTOCNodeHelper.buildLibraryTree(structure, datatypesNodes,derivedNodes);
+  return IgTOCNodeHelper.buildLibraryTree( documentInfo, structure, datatypesNodes);
 },
 );
 

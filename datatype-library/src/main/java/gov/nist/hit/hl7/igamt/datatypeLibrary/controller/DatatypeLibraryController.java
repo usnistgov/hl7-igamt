@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import org.springframework.security.core.Authentication;
@@ -44,6 +45,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
@@ -110,10 +112,6 @@ public class DatatypeLibraryController {
   @Autowired
   DatatypeLibraryDisplayConverterService displayConverterService;
 
-  //
-  //  @Autowired
-  //  private XRefService xRefService;
-
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
   private static final String DATATYPE_LIBRARY_DELETED = "DATATYPE_LIBRARY_DELETED";
@@ -176,24 +174,27 @@ public class DatatypeLibraryController {
   @RequestMapping(value = "/api/datatype-library/create", method = RequestMethod.POST,
       produces = {"application/json"})
 
-  public @ResponseBody ResponseMessage<DatatypeLibrary> create(@RequestBody CreationWrapper wrapper,
+  public @ResponseBody ResponseMessage<String> create(@RequestBody CreationWrapper wrapper,
       Authentication authentication) throws JsonParseException, JsonMappingException,
   FileNotFoundException, IOException, AddingException, DatatypeNotFoundException {
 
     String username = authentication.getPrincipal().toString();
     DatatypeLibrary empty = dataypeLibraryService.createEmptyDatatypeLibrary();
     empty.setUsername(username);
+    String id = new ObjectId().toString();
     DomainInfo info = new DomainInfo();
     info.setScope(Scope.USER);
     empty.setDomainInfo(info);
     empty.setMetadata(wrapper.getMetadata());
     empty.setCreationDate(new Date());
+    empty.setId(id);
     Set<String> savedIds = new HashSet<String>();
 
     if (wrapper.getSelected() != null || !wrapper.getSelected().isEmpty()) {
       for (AddingInfo elm : wrapper.getSelected()) {
         List<Datatype> datatypes = datatypeService.findByNameAndVersionAndScope(elm.getName(),
             elm.getDomainInfo().getVersion(), SCOPE.HL7STANDARD.toString());
+        if (elm.isFlavor()) {
 
         if (datatypes != null && !datatypes.isEmpty()) {
           Datatype clone = datatypes.get(0).clone();
@@ -202,8 +203,13 @@ public class DatatypeLibraryController {
           clone.setName(datatypes.get(0).getName());
           clone.setExt(elm.getExt());
           clone.setDomainInfo(elm.getDomainInfo());
+          clone.setParentId(id);
+          clone.setParentType(Type.DATATYPELIBRARY);
           clone = datatypeService.save(clone);
           savedIds.add(clone.getId());
+        }else {
+          savedIds.add(elm.getOriginalId());
+        }
         } else {
           throw new DatatypeNotFoundException(elm.getName(), elm.getDomainInfo().getVersion(),
               SCOPE.HL7STANDARD.toString().toString());
@@ -214,7 +220,9 @@ public class DatatypeLibraryController {
 
     empty.setMetadata(wrapper.getMetadata());
     DatatypeLibrary lib = dataypeLibraryService.save(empty);
-    return new ResponseMessage<DatatypeLibrary>(Status.SUCCESS, "", "Datatype Library Created", lib.getId(), false, lib.getCreationDate(), lib);
+    
+    return new ResponseMessage<String>(Status.SUCCESS, "", "Library created Successfuly", lib.getId(), false,
+        lib.getUpdateDate(), lib.getId());
 
   }
 
