@@ -324,34 +324,34 @@ export class LibraryEditEffects extends DamWidgetEffect {
       return this.finalizeAdd(doAdd);
     }),
   );
-  // @Effect()
-  // IgCopyResource$ = this.actions$.pipe(
-  //   ofType(LibEditActionTypes.CopyResource),
-  //   switchMap((action: CopyResource) => {
-  //     this.store.dispatch(new fromDAM.TurnOnLoader({
-  //       blockUI: true,
-  //     }));
-  //     const doAdd: Observable<Action> =
-  //       combineLatest(
-  //         this.libraryService.copyResource(action.payload),
-  //         this.store.select(selectLibrary).pipe(take(1))).pipe(
-  //         flatMap(([response, lib]) => {
-  //           return [
-  //             new fromDAM.TurnOffLoader(),
-  //             ...this.libraryService.insertRepositoryCopyResource(response.data.reg, response.data.display, lib),
-  //             new CopyResourceSuccess(response.data),
-  //           ];
-  //         }),
-  //         catchError((error: HttpErrorResponse) => {
-  //           return of(
-  //             new fromDAM.TurnOffLoader(),
-  //             new CopyResourceFailure(error),
-  //           );
-  //         }),
-  //       );
-  //     return this.finalizeAdd(doAdd);
-  //   }),
-  // );
+  @Effect()
+  libCopyResource$ = this.actions$.pipe(
+    ofType(LibraryEditActionTypes.CopyResource),
+    switchMap((action: CopyResource) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      const doAdd: Observable<Action> =
+        combineLatest(
+          this.libraryService.copyResource(action.payload),
+          this.store.select(selectLibrary).pipe(take(1))).pipe(
+          flatMap(([response, lib]) => {
+            return [
+              new fromDAM.TurnOffLoader(),
+              ...this.libraryService.insertRepositoryCopyResource(response.data.reg, response.data.display, lib),
+              new CopyResourceSuccess(response.data),
+            ];
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return of(
+              new fromDAM.TurnOffLoader(),
+              new CopyResourceFailure(error),
+            );
+          }),
+        );
+      return this.finalizeAdd(doAdd);
+    }),
+  );
 
   @Effect()
   libDeleteResource = this.actions$.pipe(

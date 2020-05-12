@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,10 +52,12 @@ import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.common.exception.SectionNotFoundException;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -85,9 +88,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.util.DeltaTreeNode;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SCOPE;
-import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
-//import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsNode;
-//import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
+
 
 
 /**
@@ -232,43 +233,6 @@ public class DatatypeLibraryController {
         lib.getUpdateDate(), lib.getId());
 
   }
-
-  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/add", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage<AddDatatypeResponseDisplay> addDatatypes(@PathVariable("id") String id,
-      @RequestBody AddingWrapper wrapper, Authentication authentication)
-          throws DatatypeLibraryNotFoundException, AddingException {
-    String username = authentication.getPrincipal().toString();
-    DatatypeLibrary lib = dataypeLibraryService.findById(id);
-    Set<String> savedIds = new HashSet<String>();
-    for (AddingInfo elm : wrapper.getSelected()) {
-      if (elm.isFlavor()) {
-        Datatype datatype = datatypeService.findOneByNameAndVersionAndScope(elm.getName(),
-            elm.getDomainInfo().getVersion(), SCOPE.HL7STANDARD.toString().toString());
-        if (datatype != null) {
-          Datatype clone = datatype.clone();
-          clone.setDomainInfo(elm.getDomainInfo());
-          clone.setUsername(username);
-          clone.setId(null);
-          clone.setName(datatype.getName());
-          clone.setExt(elm.getExt());
-          clone = datatypeService.save(clone);
-          savedIds.add(clone.getId());
-        }
-      } else {
-        savedIds.add(elm.getId());
-      }
-    }
-    AddDatatypeResponseObject objects =
-        dataypeLibraryService.addDatatypes(savedIds, lib, lib.getDomainInfo().getScope());
-
-
-    return new ResponseMessage<AddDatatypeResponseDisplay>(Status.SUCCESS, "", "Datatype Library Created", id, false, lib.getUpdateDate(), displayConverterService.convertDatatypeResponseToDisplay(objects));
-
-
-
-  }
-
 
   @RequestMapping(value = "/api/datatype-library/{id}/display", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -618,11 +582,6 @@ public class DatatypeLibraryController {
   "application/json" })
   public ResponseMessage deleteDatatype(@PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
       Authentication authentication) throws DatatypeLibraryNotFoundException {
-    // Map<String, List<CrossRefsNode>> xreferences = findDatatypeCrossRef(id,
-    // datatypeId, authentication);
-    // if (xreferences != null && !xreferences.isEmpty()) {
-    // throw new XReferenceFoundException(datatypeId, xreferences);
-    // }
     DatatypeLibrary library = dataypeLibraryService.findById(id);
     Link found = findLinkById(datatypeId, library.getDatatypeRegistry().getChildren());
     if (found != null) {
@@ -638,4 +597,71 @@ public class DatatypeLibraryController {
     return new ResponseMessage(Status.SUCCESS, DATATYPE_DELETED, datatypeId, new Date());
   }
 
+  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/add", method = RequestMethod.POST, produces = {
+  "application/json" })
+  public ResponseMessage<DocumentDisplayInfo> add(@PathVariable("id") String id,
+      @RequestBody AddingWrapper wrapper, Authentication authentication) throws AddingException{
+    String username = authentication.getPrincipal().toString();
+    DatatypeLibrary library = dataypeLibraryService.findById(id);
+    Set<String> savedIds = new HashSet<String>();
+    for (AddingInfo elm : wrapper.getSelected()) {
+      if (elm.isFlavor()) {
+        Datatype datatype = datatypeService.findById(elm.getOriginalId());
+        if (datatype != null) {
+          Datatype clone = datatype.clone();
+          clone.getDomainInfo().setScope(Scope.USER);
+          clone.setParentId(id);
+          clone.setParentType(Type.DATATYPELIBRARY);
+          clone.setUsername(username);
+          clone.setName(datatype.getName());
+          clone.setExt(elm.getExt());
+          clone = datatypeService.save(clone);
+
+          savedIds.add(clone.getId());
+        }
+      } else {
+        savedIds.add(elm.getId());
+      }
+    }
+    AddDatatypeResponseObject objects = dataypeLibraryService.addDatatypes(savedIds, library);
+    library = dataypeLibraryService.save(library);
+    DocumentDisplayInfo info = new DocumentDisplayInfo();
+    info.setIg(library);
+    info.setDatatypes(display.convertDatatypes(objects.getDatatypes()));
+    info.setValueSets(display.convertValueSets(objects.getValueSets()));
+
+    return new ResponseMessage<DocumentDisplayInfo>(Status.SUCCESS, "", "Data type Added Succesfully", library.getId(), false,
+        library.getUpdateDate(), info);
+  }
+  
+
+@RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/clone", method = RequestMethod.POST, produces = {
+"application/json" })
+public ResponseMessage<AddResourceResponse> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
+    @PathVariable("datatypeId") String datatypeId, Authentication authentication) throws CloneException
+        {
+  DatatypeLibrary library = dataypeLibraryService.findById(id);
+  String username = authentication.getPrincipal().toString();
+  Datatype datatype = datatypeService.findById(datatypeId);
+  if (datatype == null) {
+    throw new CloneException("Cannot find datatype with id=" + datatypeId);
+  }
+  Datatype clone = datatype.clone();
+  clone.setUsername(username);
+  clone.setId(new ObjectId().toString());
+  clone.setExt(wrapper.getSelected().getExt());
+  clone.getDomainInfo().setScope(Scope.USER);
+  clone.setParentId(id);
+  clone.setParentType(Type.DATATYPELIBRARY);
+  clone = datatypeService.save(clone);
+  library.getDatatypeRegistry().getChildren()
+  .add(new Link(clone.getId(), clone.getDomainInfo(), library.getDatatypeRegistry().getChildren().size() + 1));
+  library = dataypeLibraryService.save(library);
+  AddResourceResponse response = new AddResourceResponse();
+  response.setId(clone.getId());
+  response.setReg(library.getDatatypeRegistry());
+  response.setDisplay(display.convertDatatype(clone));
+  return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Datatype clone Success", clone.getId(), false,
+      clone.getUpdateDate(), response);
+}
 }
