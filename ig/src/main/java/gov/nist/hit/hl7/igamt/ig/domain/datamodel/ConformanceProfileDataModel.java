@@ -20,9 +20,9 @@ import java.util.Set;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -85,10 +85,9 @@ public class ConformanceProfileDataModel implements Serializable{
 		this.model = cp;
 
 		if (cp.getBinding() != null) {
-			if (cp.getBinding().getConformanceStatementIds() != null) {
-				for (String csId : cp.getBinding().getConformanceStatementIds()) {
-					conformanceStatementRepository.findById(csId)
-					.ifPresent(cs -> this.conformanceStatements.add(cs));
+			if (cp.getBinding().getConformanceStatements() != null) {
+				for (ConformanceStatement cs : cp.getBinding().getConformanceStatements()) {
+					this.conformanceStatements.add(cs);
 				}
 			}
 			if (cp.getBinding().getChildren() != null) {
@@ -121,11 +120,10 @@ public class ConformanceProfileDataModel implements Serializable{
 				key = path + "." + seb.getLocationInfo().getPosition();
 			}
 
-			if (seb.getPredicateId() != null) {
-				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> {
-				  cp.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
-				  this.predicateMap.put(key, cp); 
-				});
+			if (seb.getPredicate() != null) {
+				Predicate p = seb.getPredicate();
+				p.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
+				this.predicateMap.put(key, p); 
 			}
 
 			if (seb.getExternalSingleCode() != null) {

@@ -1,8 +1,6 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,13 +32,11 @@ import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
-import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -49,21 +45,21 @@ import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.domain.ConnectingInfo;
-import gov.nist.hit.hl7.igamt.common.config.domain.VersionRepresntation;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
-import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontConfigurationService;
-import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant;
 
 @SpringBootApplication
 //@EnableMongoAuditing
@@ -103,7 +99,13 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   private ExportConfigurationService exportConfigurationService;
+  
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository;
 
+  @Autowired
+  private PredicateRepository predicateRepository;
+  
   //  @Autowired
   //  RelationShipService testCache;
 
@@ -126,6 +128,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   ConformanceProfileService messageService;
+  
   @Autowired
   BindingCollector bindingCollector;
 
@@ -641,6 +644,122 @@ public class BootstrapApplication implements CommandLineRunner {
     public void fix0396() throws ValidationException{
       tableFixes.fix0396();
     }
+    
+    @PostConstruct
+    public void recoveryConstraints() {
+    	this.conformanceStatementRepository.findAll().forEach(cs -> {
+    		if(cs.getLevel() != null) {
+        		if(cs.getLevel().equals(Level.DATATYPE)) {
+        			if(cs.getSourceIds() != null) {
+        				cs.getSourceIds().forEach(sId -> {
+                			Datatype dt = this.dataypeService.findById(sId);
+                			if(dt != null) {
+                				this.updateConformanceStatementForResourceBinding(dt.getBinding(), cs);
+                			}
+                			this.dataypeService.save(dt);
+        				});
+        			}
+        		} else if(cs.getLevel().equals(Level.SEGMENT)) {
+        			if(cs.getSourceIds() != null) {
+        				cs.getSourceIds().forEach(sId -> {
+                			Segment s = this.segmentService.findById(sId);
+                			if(s != null) {
+                				this.updateConformanceStatementForResourceBinding(s.getBinding(), cs);
+                			}
+                			try {
+								this.segmentService.save(s);
+							} catch (ValidationException e) {
+								e.printStackTrace();
+							}
+        				});
+        			}
+        		} else if(cs.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+        			if(cs.getSourceIds() != null) {
+        				cs.getSourceIds().forEach(sId -> {
+                			ConformanceProfile cp = this.messageService.findById(sId);
+                			if(cp != null) {
+                				this.updateConformanceStatementForResourceBinding(cp.getBinding(), cs);
+                			}
+                			this.messageService.save(cp);
+        				});
+        			}
+        		}  			
+    		}
+    	});
+
+    	this.predicateRepository.findAll().forEach(cp -> {
+    		if(cp.getLevel() != null) {
+        		if(cp.getLevel().equals(Level.DATATYPE)) {
+        			if(cp.getSourceIds() != null) {
+        				cp.getSourceIds().forEach(sId -> {
+                			Datatype dt = this.dataypeService.findById(sId);
+                			if(dt != null) this.visitBindingForPredicateUpdate(dt.getBinding(), cp);
+                			this.dataypeService.save(dt);
+        				});
+        			}
+        		} else if(cp.getLevel().equals(Level.SEGMENT)) {
+        			if(cp.getSourceIds() != null) {
+        				cp.getSourceIds().forEach(sId -> {
+                			Segment s = this.segmentService.findById(sId);
+                			if(s != null) this.visitBindingForPredicateUpdate(s.getBinding(), cp);
+                			try {
+								this.segmentService.save(s);
+							} catch (ValidationException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+        				});
+        			}
+        		} else if(cp.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+        			if(cp.getSourceIds() != null) {
+        				cp.getSourceIds().forEach(sId -> {
+        					ConformanceProfile m = this.messageService.findById(sId);
+        					if(m != null) this.visitBindingForPredicateUpdate(m.getBinding(), cp);
+                			this.messageService.save(m);
+        				});
+        			}
+        		}  			
+    		}
+    	});
+    }
+
+	private void updateConformanceStatementForResourceBinding(ResourceBinding binding, ConformanceStatement cs) {
+		if(binding != null && binding.getConformanceStatementIds() != null && binding.getConformanceStatementIds().contains(cs.getId())) {
+			if(!this.isExistingCS(binding, cs)) binding.addConformanceStatement(cs);
+			binding.getConformanceStatementIds().remove(cs.getId());
+		}
+		
+	}
+
+	private void visitBindingForPredicateUpdate(ResourceBinding binding, Predicate predicate) {
+		if(binding != null && binding.getChildren() != null) {
+			this.visitSBindingForPredicateUpdate(binding.getChildren(), predicate);
+		}
+	}
+
+	private void visitSBindingForPredicateUpdate(Set<StructureElementBinding> sebs, Predicate predicate) {
+		if(sebs != null) {
+			sebs.forEach(seb -> {
+				if(seb.getPredicateId() != null && seb.getPredicateId().equals(predicate.getId())) {
+					seb.setPredicate(predicate);
+					seb.setPredicateId(null);
+				}
+				if(seb.getChildren() != null) this.visitSBindingForPredicateUpdate(seb.getChildren(), predicate);
+			});
+		}
+	}
+
+
+
+	private boolean isExistingCS(ResourceBinding binding, ConformanceStatement targetCS) {
+		if(binding != null && binding.getConformanceStatements() != null) {
+			for(ConformanceStatement cs :binding.getConformanceStatements()) {
+				if(cs.getId() != null && cs.getId().equals(targetCS.getId())) return true;
+			}	
+		}
+		
+		return false;
+	}
 
     //   @PostConstruct
     //   void classifyDatatypes() throws DatatypeNotFoundException {
@@ -688,5 +807,6 @@ public class BootstrapApplication implements CommandLineRunner {
     //  System.out.println(refs);
     //
     //}
+    
 
   }

@@ -27,6 +27,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.DisplayPredicate;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
@@ -35,8 +37,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConforman
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
-import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 
 /**
  *
@@ -124,8 +124,6 @@ public interface ConformanceProfileService {
   public Set<RelationShip> collectDependencies(ConformanceProfile cp);
   
   List<ConformanceProfile> findByIdIn(Set<String> set);
-  
-  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
   
   public Set<Resource> getDependencies(ConformanceProfile cp);
 

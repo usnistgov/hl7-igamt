@@ -1,7 +1,13 @@
 package gov.nist.hit.hl7.igamt.delta.service;
 
 import gov.nist.diff.domain.DeltaAction;
-import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.*;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.*;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.*;

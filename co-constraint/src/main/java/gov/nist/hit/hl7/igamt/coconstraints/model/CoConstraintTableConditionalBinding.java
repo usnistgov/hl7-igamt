@@ -1,6 +1,6 @@
 package gov.nist.hit.hl7.igamt.coconstraints.model;
 
-import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Assertion;
 
 public class CoConstraintTableConditionalBinding {
     private Assertion condition;
