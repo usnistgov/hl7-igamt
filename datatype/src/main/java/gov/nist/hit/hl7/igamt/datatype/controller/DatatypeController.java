@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -35,9 +34,9 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDisplay;
-import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementDisplay;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeDisplayMetadata;
@@ -146,11 +145,9 @@ public class DatatypeController extends BaseController {
 
 		ConformanceStatementDisplay conformanceStatementDisplay = new ConformanceStatementDisplay();
 		Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
-		if (datatype.getBinding() != null && datatype.getBinding().getConformanceStatementIds() != null) {
-			for (String csId : datatype.getBinding().getConformanceStatementIds()) {
-				Optional<ConformanceStatement> cs = conformanceStatementRepository.findById(csId);
-				if (cs.isPresent())
-					cfs.add(cs.get());
+		if (datatype.getBinding() != null && datatype.getBinding().getConformanceStatements() != null) {
+			for (ConformanceStatement cs : datatype.getBinding().getConformanceStatements()) {
+				cfs.add(cs);
 			}
 		}
 
