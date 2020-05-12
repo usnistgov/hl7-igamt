@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import {Observable, throwError} from 'rxjs';
+import {Type} from '../constants/type.enum';
 import { IDocumentRef } from '../models/abstract-domain.interface';
 import { IPredicate } from '../models/predicate.interface';
 
@@ -12,7 +13,14 @@ export class PredicateService {
   constructor(private http: HttpClient) { }
 
   getPredicate(documentRef: IDocumentRef, predicateId: string): Observable<IPredicate> {
-    return this.http.get<IPredicate>('/api/igdocuments/' + documentRef.documentId + '/predicate/' + predicateId);
-  }
+    if (documentRef.type === Type.IGDOCUMENT) {
+      return this.http.get<IPredicate>('/api/igdocuments/' + documentRef.documentId + '/predicate/' + predicateId);
 
+    } else if (documentRef.type === Type.DATATYPELIBRARY) {
+      return this.http.get<IPredicate>('/api/datatype-library/' + documentRef.documentId + '/predicate/' + predicateId);
+
+    } else {
+      throwError('Bad URL');
+    }
+  }
 }

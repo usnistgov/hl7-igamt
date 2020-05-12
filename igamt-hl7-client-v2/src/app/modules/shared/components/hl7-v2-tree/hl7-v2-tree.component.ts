@@ -14,7 +14,6 @@ import { IChange } from '../../models/save-change';
 import { Hl7V2TreeService, IBindingContext, IElementBinding } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { IBindingLocationInfo } from '../binding-selector/binding-selector.component';
-import { ILengthAndConfLength } from './columns/length/length.component';
 
 export enum HL7v2TreeColumnType {
   USAGE = 'Usage',

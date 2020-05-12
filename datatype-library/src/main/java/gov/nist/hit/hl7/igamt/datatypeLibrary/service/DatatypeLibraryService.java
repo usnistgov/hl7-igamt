@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
@@ -56,5 +57,12 @@ public interface DatatypeLibraryService {
    */
   AddValueSetResponseObject addValueSets(Set<String> ids, DatatypeLibrary lib)
       throws AddingException;
+
+  /**
+   * @param content
+   * @param sectionId
+   * @return
+   */
+  TextSection findSectionById(Set<TextSection> content, String sectionId);
 
 }

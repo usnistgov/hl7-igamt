@@ -65,6 +65,14 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
               id: 'extension',
               name: 'extension',
             },
+            compatibilityVersions: {
+              label: 'Compatibility version',
+              placeholder: 'Compatibility Versions',
+              type: FieldType.STRING_LIST,
+              validators: [],
+              id: 'compatibilityVersions',
+              name: 'compatibilityVersions',
+            },
             description: {
               label: 'Description',
               placeholder: 'Description',
@@ -207,4 +215,5 @@ export interface IResourceMetadata {
   description?: string;
   authorNotes?: string;
   usageNotes?: string;
+  compatibilityVersions?: string[];
 }

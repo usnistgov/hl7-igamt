@@ -353,33 +353,33 @@ export class LibraryEditEffects extends DamWidgetEffect {
   //   }),
   // );
 
-  // @Effect()
-  // igDeleteResource = this.actions$.pipe(
-  //   ofType(LibraryEditActionTypes.DeleteResource),
-  //   switchMap((action: DeleteResource) => {
-  //     this.store.dispatch(new fromDAM.TurnOnLoader({
-  //       blockUI: true,
-  //     }));
-  //     return combineLatest(
-  //       this.libraryService.deleteResource(action.payload.documentId, action.payload.element),
-  //       this.store.select(selectLibrary).pipe(take(1))).pipe(
-  //       take(1),
-  //       flatMap(([response, ig]) => {
-  //         return [
-  //           new fromDAM.TurnOffLoader(),
-  //           ...this.libraryService.deleteOneFromRepository(action.payload.element, ig),
-  //           new DeleteResourceSuccess(action.payload.element),
-  //         ];
-  //       }),
-  //       catchError((error: HttpErrorResponse) => {
-  //         return of(
-  //           new fromDAM.TurnOffLoader(),
-  //           new DeleteResourceFailure(error),
-  //         );
-  //       }),
-  //     );
-  //   }),
-  // );
+  @Effect()
+  libDeleteResource = this.actions$.pipe(
+    ofType(LibraryEditActionTypes.DeleteResource),
+    switchMap((action: DeleteResource) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      return combineLatest(
+        this.libraryService.deleteResource(action.payload.documentId, action.payload.element),
+        this.store.select(selectLibrary).pipe(take(1))).pipe(
+        take(1),
+        flatMap(([response, ig]) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            ...this.libraryService.deleteOneFromRepository(action.payload.element, ig),
+            new DeleteResourceSuccess(action.payload.element),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new DeleteResourceFailure(error),
+          );
+        }),
+      );
+    }),
+  );
   // @Effect()
   // displayDelta$ = this.actions$.pipe(
   //   ofType(LibraryEditActionTypes.ToggleDelta),

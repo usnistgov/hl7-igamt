@@ -292,7 +292,7 @@ export class OpenEditorService {
       (action: A) => {
         return this.store.select(documentInfo).pipe(
           concatMap((info: IDocumentRef) => {
-            return service(info, documentType, elementType, action.payload.id);
+            return service(info, info.type, elementType, action.payload.id);
           }),
         );
       },

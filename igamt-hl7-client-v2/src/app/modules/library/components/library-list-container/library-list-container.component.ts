@@ -16,8 +16,7 @@ import {
 import * as fromIgList from 'src/app/root-store/library/library-list/library-list.index';
 import {
   DeleteIgListItemRequest,
-  IgListLoad, LoadIgList,
-  SelectIgListViewType,
+  IgListLoad,
 } from '../../../../root-store/ig/ig-list/ig-list.actions';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { Message } from '../../../dam-framework/models/messages/message.class';

@@ -146,7 +146,7 @@ export const selectProfileTree = createSelector(
 );
 
 export const selectVersion = createSelector(
-  fromILibraryDamtDisplaySelectors.selectMessagesEntites,
+  fromILibraryDamtDisplaySelectors.selectDatatypesEntites,
   (dts: Dictionary<IDisplayElement>) => {
     const sorted = Object.keys(dts).map((key) => dts[key].domainInfo.version).sort();
     return sorted[sorted.length - 1];

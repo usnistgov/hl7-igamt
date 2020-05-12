@@ -199,17 +199,7 @@ export class LibraryService {
   }
 
   private buildDeleteUrl(documentId: string, element: IDisplayElement) {
-    switch (element.type) {
-      case Type.CONFORMANCEPROFILE:
-        return this.LIBRARY_END_POINT + documentId + '/conformanceprofiles/' + element.id + '/delete';
-      case Type.DATATYPE:
-        return this.LIBRARY_END_POINT + documentId + '/datatypes/' + element.id + '/delete';
-      case Type.SEGMENT:
-        return this.LIBRARY_END_POINT + documentId + '/segments/' + element.id + '/delete';
-      case Type.VALUESET:
-        return this.LIBRARY_END_POINT + documentId + '/valuesets/' + element.id + '/delete';
-      default: return null;
-    }
+    return this.LIBRARY_END_POINT + documentId + '/datatypes/' + element.id + '/delete';
   }
 
   saveTextSection(id: string, narrative: INarrative): Observable<Message<string>> {

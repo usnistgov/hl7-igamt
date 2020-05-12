@@ -111,6 +111,7 @@ export class LibraryEditSidebarComponent implements OnInit {
   }
 
   addChildren(event: IAddWrapper) {
+    console.log(event);
     const subscription = this.hl7Version$.pipe(
       withLatestFrom(this.version$),
       take(1),
@@ -174,7 +175,7 @@ export class LibraryEditSidebarComponent implements OnInit {
     this.documentRef$.pipe(
       take(1),
       concatMap((documentRef: IDocumentRef) => {
-        return this.crossReferencesService.findUsagesDisplay(documentRef, Type.IGDOCUMENT, $event.type, $event.id).pipe(
+        return this.crossReferencesService.findUsagesDisplay(documentRef, Type.DATATYPELIBRARY, $event.type, $event.id).pipe(
           take(1),
           map((usages: IUsages[]) => {
             if (usages.length === 0) {
