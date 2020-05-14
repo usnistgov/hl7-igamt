@@ -48,7 +48,8 @@
 
         <ng-container *ngSwitchCase="'DATATYPE'">
           <app-display-section [contextMenu]="datatypeContextMenu" #rla="routerLinkActive" [element]="node.data"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" [compatibility]="node.data.domainInfo.scope!=='HL7STANDARD'"></app-display-section>
+
           <context-menu #datatypeContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-copy"></i> Create Flavor

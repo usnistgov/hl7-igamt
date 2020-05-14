@@ -25,7 +25,13 @@ export class ResourceService {
       case Type.EVENTS:
         return 'api/igdocuments/findMessageEvents/' + info.version;
       case Type.DATATYPE:
-        return 'api/datatypes/' + info.scope + '/' + info.version;
+        const datatypeURL = 'api/datatypes/';
+
+        if (!info.compatibility) {
+          return datatypeURL + info.scope + '/' + info.version;
+        } else {
+          return datatypeURL + info.scope + '/' + info.version + '/compatibility';
+        }
       case Type.SEGMENT:
         return 'api/segments/' + info.scope + '/' + info.version;
       case Type.VALUESET:

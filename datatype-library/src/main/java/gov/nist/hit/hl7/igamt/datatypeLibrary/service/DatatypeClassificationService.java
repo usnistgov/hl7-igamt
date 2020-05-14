@@ -28,6 +28,9 @@ public interface DatatypeClassificationService {
   public void deleteAll();
 
   public DatatypeClassification findByName(String name);
+  
+  public List<String> findCompatibility(String name, String version);
+
 
   public void deleteById(String id);
 

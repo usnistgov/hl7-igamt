@@ -14,6 +14,10 @@
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;

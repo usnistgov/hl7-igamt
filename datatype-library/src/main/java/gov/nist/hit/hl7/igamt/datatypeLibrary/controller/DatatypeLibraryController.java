@@ -119,6 +119,7 @@ public class DatatypeLibraryController {
   
   @Autowired
   PredicateRepository predicateRepository;
+  
 
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
@@ -152,16 +153,14 @@ public class DatatypeLibraryController {
 
     } else {
       HashMap<EvolutionPropertie, Boolean> criterias1 = new HashMap<EvolutionPropertie, Boolean>();
-      criterias1.put(EvolutionPropertie.CONFLENGTH, true);
-      criterias1.put(EvolutionPropertie.MAXLENGTH, true);
-      criterias1.put(EvolutionPropertie.MINLENGTH, true);
       criterias1.put(EvolutionPropertie.CPDATATYPE, true);
+      criterias1.put(EvolutionPropertie.CPUSAGE, true);
       criterias1.put(EvolutionPropertie.CPNUMBER, true);
-      criterias1.put(EvolutionPropertie.CPNAME, true);
 
       return deltaService.getDatatypesDelta(d1, d2, criterias1).getChildren();
     }
   }
+
 
   @RequestMapping(value = "/api/datatype-library/classification", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -173,10 +172,7 @@ public class DatatypeLibraryController {
     List<DatatypeClassification> ordred =
         ret.stream().sorted((DatatypeClassification l1, DatatypeClassification l2) -> l1.getName()
             .compareTo(l2.getName())).collect(Collectors.toList());
-
     return ordred;
-
-
   }
 
   @RequestMapping(value = "/api/datatype-library/create", method = RequestMethod.POST,
@@ -211,6 +207,7 @@ public class DatatypeLibraryController {
           clone.setName(datatypes.get(0).getName());
           clone.setExt(elm.getExt());
           clone.setDomainInfo(elm.getDomainInfo());
+          clone.getDomainInfo().setCompatibilityVersion(datatypeClassificationService.findCompatibility(clone.getName(), clone.getDomainInfo().getVersion()));
           clone.setParentId(id);
           clone.setParentType(Type.DATATYPELIBRARY);
           clone = datatypeService.save(clone);
@@ -343,7 +340,7 @@ public class DatatypeLibraryController {
         DatatypeVersionGroupDisplay display = new DatatypeVersionGroupDisplay();
         display.setName(cl.getName());
         DomainInfo info = new DomainInfo();
-        info.setCompatibilityVersion(new HashSet<String>(gr.getVersions()));
+        info.setCompatibilityVersion(gr.getVersions());
         info.setScope(Scope.HL7STANDARD);
         display.setDomainInfo(info);
         display.setPosition(gr.getPosition());
@@ -612,6 +609,7 @@ public class DatatypeLibraryController {
           clone.getDomainInfo().setScope(Scope.USER);
           clone.setParentId(id);
           clone.setParentType(Type.DATATYPELIBRARY);
+          clone.getDomainInfo().setCompatibilityVersion(datatypeClassificationService.findCompatibility(clone.getName(), clone.getDomainInfo().getVersion()));
           clone.setUsername(username);
           clone.setName(datatype.getName());
           clone.setExt(elm.getExt());
@@ -664,4 +662,18 @@ public ResponseMessage<AddResourceResponse> copyDatatype(@RequestBody CopyWrappe
   return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Datatype clone Success", clone.getId(), false,
       clone.getUpdateDate(), response);
 }
+
+@RequestMapping(value = "/api/datatypes/{scope}/{version:.+}/compatibility", method = RequestMethod.GET, produces = {
+"application/json" })
+public @ResponseBody ResponseMessage<List<Datatype>> findDatatypesWithCompatibility(@PathVariable String version,
+@PathVariable String scope, Authentication authentication) {
+  
+      List<Datatype> datatypes= datatypeService.findDisplayFormatByScopeAndVersion(scope, version);
+      for(Datatype dt : datatypes) {
+        dt.getDomainInfo().setCompatibilityVersion(datatypeClassificationService.findCompatibility(dt.getName(), dt.getDomainInfo().getVersion()));
+      }
+      return new ResponseMessage<List<Datatype>>(Status.SUCCESS, "", "", null, false, null,
+          datatypes);
+}
+
 }

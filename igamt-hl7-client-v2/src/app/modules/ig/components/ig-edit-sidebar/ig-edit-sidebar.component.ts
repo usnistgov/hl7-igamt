@@ -139,6 +139,8 @@ export class IgEditSidebarComponent implements OnInit {
           data: this.store.select(fromResource.getData),
           version: selectedVersion,
           scope: event.scope,
+          master: false,
+          documentType: Type.IGDOCUMENT,
           versionChange: (version: string) => {
             this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version }));
           },

@@ -177,7 +177,7 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 			DomainInfo domainInfo = new DomainInfo();
 			domainInfo.setScope(Scope.PHINVADS);
 			domainInfo.setVersion(fhirVs.getVersion().toString());
-			Set<String> compatibilityVersion = new HashSet<String>();
+			List<String> compatibilityVersion = new ArrayList<String>();
 			compatibilityVersion.add(fhirVs.getVersion().toString());
 			domainInfo.setCompatibilityVersion(compatibilityVersion);
 			vs.setDomainInfo(domainInfo);

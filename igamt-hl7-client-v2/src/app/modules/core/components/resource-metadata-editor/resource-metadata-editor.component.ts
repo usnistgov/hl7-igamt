@@ -9,6 +9,7 @@ import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.
 import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
+import {selectIsAdmin} from '../../../dam-framework/store/authentication';
 import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
 import { validateConvention } from '../../../shared/functions/convention-factory';
 import { validateUnity } from '../../../shared/functions/unicity-factory';
@@ -24,7 +25,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
   metadataFormInput$: Observable<IMetadataFormInput<IResourceMetadata>>;
   froalaConfig$: Observable<any>;
   selectedResource$: Observable<IResource>;
-
+  admin$: Observable<boolean>;
   constructor(
     readonly editor: IHL7EditorMetadata,
     protected actions$: Actions,
@@ -34,6 +35,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
     this.froalaConfig$ = froalaService.getConfig();
     const authorNotes = 'Author Notes';
     const usageNotes = 'Usage Notes';
+    this.admin$ = this.store.select(selectIsAdmin);
     this.selectedResource$ = this.store.select(fromIgamtSelectedSelectors.selectSelectedResource);
     const name$ = this.selectedResource$.pipe(
       map((resource) => {
@@ -41,9 +43,9 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
       }),
     );
 
-    this.metadataFormInput$ = combineLatest(this.selectedResource$, name$, this.getOthers()).pipe(
+    this.metadataFormInput$ = combineLatest(this.selectedResource$, name$, this.getOthers(), this.documentRef$, this.admin$).pipe(
       take(1),
-      map(([selectedResource, name, existing]) => {
+      map(([selectedResource, name, existing, ref, admin]) => {
         return {
           viewOnly: this.viewOnly$,
           data: this.currentSynchronized$,
@@ -60,19 +62,19 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
             ext: {
               label: 'Extension',
               placeholder: 'Extension',
-              validators: [validateUnity(existing, name, selectedResource.domainInfo), validateConvention(selectedResource.domainInfo.scope, selectedResource.type), Validators.required],
+              validators: [validateUnity(existing, name, selectedResource.domainInfo), validateConvention(selectedResource.domainInfo.scope, selectedResource.type, ref.type, admin), Validators.required],
               type: FieldType.TEXT,
               id: 'extension',
               name: 'extension',
             },
-            compatibilityVersions: {
-              label: 'Compatibility version',
-              placeholder: 'Compatibility Versions',
-              type: FieldType.STRING_LIST,
-              validators: [],
-              id: 'compatibilityVersions',
-              name: 'compatibilityVersions',
-            },
+            // compatibilityVersions: {
+            //   label: 'Compatibility Versions',
+            //   placeholder: 'Compatibility Versions',
+            //   type: FieldType.STRING_LIST,
+            //   validators: [],
+            //   id: 'compatibilityVersions',
+            //   name: 'compatibilityVersions',
+            // },
             description: {
               label: 'Description',
               placeholder: 'Description',
@@ -215,5 +217,7 @@ export interface IResourceMetadata {
   description?: string;
   authorNotes?: string;
   usageNotes?: string;
-  compatibilityVersions?: string[];
+  compatibilityVersions?: [];
+  username?: string;
+
 }

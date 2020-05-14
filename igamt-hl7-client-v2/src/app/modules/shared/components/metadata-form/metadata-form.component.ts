@@ -29,6 +29,7 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
   }
 
   initializeForm(model: MetadataModel<any>) {
+    console.log(model);
     const formGroup = new FormGroup({});
     this.model = [];
     for (const field of Object.keys(model)) {
@@ -40,6 +41,7 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
         });
       }
     }
+    console.log(this.model);
     this.metadataForm = formGroup;
   }
 
@@ -55,7 +57,6 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
     if (this.viewOnlySubscription) {
       this.viewOnlySubscription.unsubscribe();
     }
-
     this.initializeForm(input.model);
 
     this.viewOnlySubscription = input.viewOnly.subscribe(

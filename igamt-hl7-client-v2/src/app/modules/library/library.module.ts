@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import { ContextMenuModule, RadioButtonModule } from 'primeng/primeng';
+import {ContextMenuModule, RadioButtonModule, TreeTableModule} from 'primeng/primeng';
 import { StepsModule } from 'primeng/steps';
 import { TableModule } from 'primeng/table';
 import { TabViewModule } from 'primeng/tabview';
@@ -15,6 +15,7 @@ import { LibraryEditEffects } from './../../root-store/library/library-edit/libr
 import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
 import {CreateLibraryComponent} from './components/create-library/create-library.component';
+import {DatatypesEvolutionComponent} from './components/datatypes-eveolution/datatypes-evolution.component';
 import { LibraryEditActiveTitlebarComponent } from './components/library-edit-active-titlebar/library-edit-active-titlebar.component';
 import { LibraryEditContainerComponent } from './components/library-edit-container/library-edit-container.component';
 import { LibraryEditSidebarComponent } from './components/library-edit-sidebar/library-edit-sidebar.component';
@@ -44,6 +45,7 @@ import { LibraryService } from './services/library.service';
     LibraryMetadataEditorComponent,
     CreateLibraryComponent,
     LibraryListItemCardComponent,
+    DatatypesEvolutionComponent,
   ],
   imports: [
     DamFrameworkModule.forRoot(),
@@ -59,6 +61,7 @@ import { LibraryService } from './services/library.service';
     ColorPickerModule,
     ContextMenuModule,
     ExportConfigurationModule,
+    TreeTableModule,
   ],
   providers: [
     LibraryListService,

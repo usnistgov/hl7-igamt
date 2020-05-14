@@ -34,9 +34,7 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
   @ViewChild('vsLib') vsLib: ElementRef;
   @ViewChild('dtLib') dtLib: ElementRef;
-  @ViewChild('segLib') segLib: ElementRef;
   @ViewChild('cpLib') cpLib: ElementRef;
-  @ViewChild('ccgLib') ccgLib: ElementRef;
   @ViewChild('top') top: ElementRef;
   // TODO set type
   options;
@@ -149,16 +147,10 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
     return './' + type + '/' + elm.id;
   }
   scroll(type: string) {
-    if (type === 'messages') {
-      this.cpLib.nativeElement.scrollIntoView();
-    } else if (type === 'segments') {
-      this.segLib.nativeElement.scrollIntoView();
-    } else if (type === 'datatypes') {
+    if (type === 'datatypes') {
       this.dtLib.nativeElement.scrollIntoView();
     } else if (type === 'valueSets') {
       this.vsLib.nativeElement.scrollIntoView();
-    } else if (type === 'coConstraintGroups') {
-      this.ccgLib.nativeElement.scrollIntoView();
     }
   }
 

@@ -13,22 +13,22 @@ export function isDuplicated(fixedName: string, variableName: string, domainInfo
     return filtered.length > 0;
 }
 
-export function validConvention(scope: Scope, type: Type, ext: string): IConventionError {
+export function validConvention(scope: Scope, type: Type, ext: string, documentType: Type, admin: boolean): IConventionError {
    const initial: IConventionError = {valid: true};
-
    if (ext) {
-    if (scope === Scope.SDTF) {
-      if ( !isTowDigets(ext)) {
-        return {valid: false, error: 'The extension must be 2 digets '};
-      }
-      } else if (scope === Scope.USER && (type === Type.DATATYPE || type === Type.SEGMENT)) {
-      if (!startWithLetter(ext)) {
-        return {valid: false, error: 'User extension must start with a letter'};
-      } else if (ext.length > 4) {
-        return {valid: false, error: 'User extension is too long'};
-      }
-    }
-  }
+     if (documentType === Type.DATATYPELIBRARY && admin) {
+       return initial;
+     } else {
+       if (scope === Scope.USER && (type === Type.DATATYPE || type === Type.SEGMENT) ) {
+       if (!startWithLetter(ext)) {
+         return {valid: false, error: 'User extension must start with a letter'};
+       } else if (ext.length > 8) {
+         return {valid: false, error: 'User extension is too long'};
+       }
+     }
+     }
+
+   }
    return initial;
 }
 

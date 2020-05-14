@@ -1,20 +1,20 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {IgEditSidebarComponent} from './library-edit-sidebar.component';
+import {LibraryEditSidebarComponent} from './library-edit-sidebar.component';
 
-describe('IgEditSidebarComponent', () => {
-  let component: IgEditSidebarComponent;
-  let fixture: ComponentFixture<IgEditSidebarComponent>;
+describe('LibraryEditSidebarComponent', () => {
+  let component: LibraryEditSidebarComponent;
+  let fixture: ComponentFixture<LibraryEditSidebarComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [IgEditSidebarComponent],
+      declarations: [LibraryEditSidebarComponent],
     })
       .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(IgEditSidebarComponent);
+    fixture = TestBed.createComponent(LibraryEditSidebarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

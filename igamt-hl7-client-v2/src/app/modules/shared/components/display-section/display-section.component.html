@@ -14,3 +14,6 @@
     </ng-container>
   </span>
 </div>
+<ng-container *ngIf="compatibility">
+<span class="badge badge-secondary" style="padding: 1px; margin-left:3px;" *ngFor="let version of  element?.domainInfo?.compatibilityVersion"> {{version}}</span>
+</ng-container>

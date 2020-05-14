@@ -15,6 +15,8 @@ export class DisplaySectionComponent implements OnInit {
   @Input() hideDescription: boolean;
   @Input()
   inline: boolean;
+  @Input()
+  compatibility: boolean;
 
   constructor(    private router: Router,
                   private activeRoute: ActivatedRoute) {

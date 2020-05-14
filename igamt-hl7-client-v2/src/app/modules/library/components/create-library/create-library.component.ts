@@ -6,6 +6,7 @@ import {getHl7Versions} from '../../../../root-store/config/config.reducer';
 import {CreateLibrary} from '../../../../root-store/create-library/create-library.actions';
 import {LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';
 import {getData} from '../../../../root-store/resource-loader/resource-loader.reducer';
+import {selectIsAdmin} from '../../../dam-framework/store/authentication';
 import {IDocumentCreationWrapper} from '../../../document/models/document/document-creation.interface';
 import {Scope} from '../../../shared/constants/scope.enum';
 import {Type} from '../../../shared/constants/type.enum';
@@ -22,6 +23,7 @@ export class CreateLibraryComponent implements OnInit {
   hl7Version$: Observable<string[]>;
   metaDataForm: FormGroup;
   selected: IAddingInfo[] = [];
+  master$: Observable<boolean>;
 
   constructor(private store: Store<any>) {
     this.hl7Version$ = this.store.select(getHl7Versions);
@@ -29,13 +31,14 @@ export class CreateLibraryComponent implements OnInit {
       title: new FormControl('', [Validators.required]),
     });
     this.resources$ = this.store.select(getData);
+    this.master$ = this.store.select(selectIsAdmin);
   }
 
   ngOnInit() {
   }
 
   selectVersion($event: string) {
-    this.store.dispatch(new LoadResource({ type: Type.DATATYPE, scope: Scope.HL7STANDARD, version: $event }));
+    this.store.dispatch(new LoadResource({ type: Type.DATATYPE, scope: Scope.HL7STANDARD, version: $event, compatibility: true }));
   }
   submit() {
 

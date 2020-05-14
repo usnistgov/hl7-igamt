@@ -14,6 +14,8 @@ import { DamWidgetRoute } from '../dam-framework/services/router-helpers.service
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { CreateLibraryComponent } from './components/create-library/create-library.component';
+import {DatatypeEvolutionResolver} from './components/datatypes-eveolution/datatype-evolution-resolver.service';
+import {DatatypesEvolutionComponent} from './components/datatypes-eveolution/datatypes-evolution.component';
 import { LIBRARY_EDIT_WIDGET_ID, LibraryEditContainerComponent } from './components/library-edit-container/library-edit-container.component';
 import { LibraryListContainerComponent } from './components/library-list-container/library-list-container.component';
 import { LibraryMetadataEditorComponent } from './components/library-metadata-editor/library-metadata-editor.component';
@@ -29,6 +31,12 @@ const routes: Routes = [
     path: 'create',
     component: CreateLibraryComponent,
     canActivate: [AuthenticatedGuard],
+  },
+  {path: 'evolution',
+    component: DatatypesEvolutionComponent,
+    resolve: {
+      matrix: DatatypeEvolutionResolver,
+    },
   },
   {
     path: 'error',

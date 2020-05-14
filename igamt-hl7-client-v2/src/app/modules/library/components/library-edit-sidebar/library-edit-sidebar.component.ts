@@ -26,6 +26,7 @@ import { ClearResource, LoadResource } from '../../../../root-store/resource-loa
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
+import {selectIsAdmin} from '../../../dam-framework/store/authentication';
 import {IAddWrapper} from '../../../document/models/document/add-wrapper.class';
 import {IDocumentDisplayInfo} from '../../../ig/models/ig/ig-document.class';
 import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
@@ -57,6 +58,7 @@ export class LibraryEditSidebarComponent implements OnInit {
   viewOnly$: Observable<boolean>;
   @Input()
   deltaMode = false;
+  master$: Observable<boolean>;
   @ViewChild(LibraryTocComponent) toc: LibraryTocComponent;
   optionsToDisplay: any;
   deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
@@ -77,6 +79,7 @@ export class LibraryEditSidebarComponent implements OnInit {
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromLibraryEdit.selectVersion);
     this.viewOnly$ = this.store.select(selectViewOnly);
+    this.master$ = this.store.select(selectIsAdmin);
   }
 
   getNodes() {
@@ -112,11 +115,10 @@ export class LibraryEditSidebarComponent implements OnInit {
 
   addChildren(event: IAddWrapper) {
     console.log(event);
-    const subscription = this.hl7Version$.pipe(
-      withLatestFrom(this.version$),
+    const subscription = combineLatest(this.hl7Version$, this.version$, this.master$).pipe(
       take(1),
-      map(([versions, selectedVersion]) => {
-        this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version: selectedVersion }));
+      map(([versions, selectedVersion, ms]) => {
+        this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version: selectedVersion , compatibility: true}));
 
         const dialogData: IResourcePickerData = {
           hl7Versions: versions,
@@ -125,8 +127,10 @@ export class LibraryEditSidebarComponent implements OnInit {
           data: this.store.select(fromResource.getData),
           version: selectedVersion,
           scope: event.scope,
+          documentType: Type.DATATYPELIBRARY,
+          master: ms,
           versionChange: (version: string) => {
-            this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version }));
+            this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version, compatibility: true }));
           },
           type: event.type,
         };
@@ -213,7 +217,7 @@ export class LibraryEditSidebarComponent implements OnInit {
     ).subscribe();
   }
   private getDialogTitle(event: IAddWrapper) {
-    return 'Add ' + this.getStringFormScope(event.scope) + ' ' + this.getStringFromType(event.type);
+    return 'Add ' + this.getStringFromType(event.type);
   }
 
   private getStringFormScope(scope: Scope) {
