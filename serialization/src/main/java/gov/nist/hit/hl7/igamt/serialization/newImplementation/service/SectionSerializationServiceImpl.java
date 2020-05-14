@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -78,7 +80,6 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
             if (exportConfiguration.isIncludeMessageTable()) {
                 serializedSection = SerializeConformanceProfileRegistry(section, level, igDataModel,
                         exportConfiguration, exportFilterDecision);
-
             }
         } else if (Type.VALUESETREGISTRY.equals(section.getType())) {
             if (exportConfiguration.isIncludeValuesetsTable()) {
@@ -111,6 +112,8 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
         }
         sectionElement.addAttribute(new Attribute("type", section.getType() != null ? section.getType().name() : ""));
         sectionElement.addAttribute(new Attribute("h", String.valueOf(level)));
+        sectionElement.addAttribute(new Attribute("TESTABC", "TESTABC"));
+
         return sectionElement;
     }
 
@@ -158,7 +161,9 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
             Element datatypeRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
             if (datatypeRegistry != null) {
                 if (!datatypeRegistry.getChildren().isEmpty()) {
-                    for (Link datatypeLink : datatypeRegistry.getChildren()) {
+                	ArrayList<Link> sorted = new ArrayList<>(datatypeRegistry.getChildren());
+                	Collections.sort(sorted);
+                    for (Link datatypeLink : sorted) {
                         if (exportFilterDecision != null && exportFilterDecision.getDatatypesFilterMap() != null
                                 && exportFilterDecision.getDatatypesFilterMap().containsKey(datatypeLink.getId())
                                 && exportFilterDecision.getDatatypesFilterMap().get(datatypeLink.getId())) {
@@ -212,7 +217,9 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
             Element valuesetRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
             if (valuesetRegistry != null) {
                 if (!valuesetRegistry.getChildren().isEmpty()) {
-                    for (Link valuesetLink : valuesetRegistry.getChildren()) {
+                 	ArrayList<Link> sorted = new ArrayList<>(valuesetRegistry.getChildren());
+                	Collections.sort(sorted);
+                    for (Link valuesetLink : sorted) {
                         ValuesetDataModel valuesetDataModel = igDataModel.getValuesets().stream()
                                 .filter(vs -> valuesetLink.getId().equals(vs.getModel().getId())).findAny()
                                 .orElseThrow(() -> new ValuesetNotFoundException(valuesetLink.getId()));
@@ -264,7 +271,9 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
                     exportConfiguration);
             if (conformanceProfileRegistry != null) {
                 if (!conformanceProfileRegistry.getChildren().isEmpty()) {
-                    for (Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
+                	ArrayList<Link> sorted = new ArrayList<>(conformanceProfileRegistry.getChildren());
+                	Collections.sort(sorted);
+                    for (Link conformanceProfileLink : sorted) {
                         ConformanceProfileDataModel conformanceProfileDataModel = igDataModel
                                 .getConformanceProfiles().stream()
                                 .filter(cp -> conformanceProfileLink.getId().equals(cp.getModel().getId()))
@@ -320,19 +329,12 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
             throws RegistrySerializationException {
         Registry segmentRegistry = igDataModel.getModel().getSegmentRegistry();
         try {
-
-            // In case need to go back to this again.
-            // List<ValuesetDataModel> sortedList = vsMap.keySet().stream().sorted(new
-            // Comparator<ValuesetDataModel>() {
-            // public int compare(ValuesetDataModel vsDm1, ValuesetDataModel vsDm2) {
-            // return vsDm1.getModel().getLabel().compareTo(vsDm2.getModel().getLabel());
-            // };
-            // }).collect(Collectors.toList());
-
             Element segmentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
             if (segmentRegistry != null) {
                 if (segmentRegistry.getChildren() != null && !segmentRegistry.getChildren().isEmpty()) {
-                    for (Link segmentLink : segmentRegistry.getChildren()) {
+                	ArrayList<Link> sorted = new ArrayList<>(segmentRegistry.getChildren());
+                	Collections.sort(sorted);
+                    for (Link segmentLink : sorted) {
                         if (exportFilterDecision != null
                                 && exportFilterDecision.getSegmentFilterMap().containsKey(segmentLink.getId())
                                 && exportFilterDecision.getSegmentFilterMap().get(segmentLink.getId())) {

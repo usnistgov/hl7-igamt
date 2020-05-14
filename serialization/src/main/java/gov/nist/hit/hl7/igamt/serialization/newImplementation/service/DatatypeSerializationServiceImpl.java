@@ -12,6 +12,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -150,6 +151,23 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	              new Attribute("text", component.getText() != null ? frolaCleaning.cleanFroalaInput(component.getText()) : ""));
 	          componentElement
 	              .addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
+	          Element comments = new Element("Comments");
+	          datatypeElement.appendChild(comments);
+        	  if(component.getComments() != null) {
+	          for(Comment comment : component.getComments()) {
+		          Element commentElement = new Element("Comment");
+		          if(complexDatatype.getExt() != null) {
+		          commentElement
+	              .addAttribute(new Attribute("name", complexDatatype.getName()+"_"+complexDatatype.getExt() + "." + component.getPosition()));
+		          } else {
+		        	  commentElement
+		              .addAttribute(new Attribute("name", complexDatatype.getName() + "." + component.getPosition()));
+			          } 
+		          commentElement
+	              .addAttribute(new Attribute("description", comment.getDescription()));
+		          comments.appendChild(commentElement);
+	          }
+	          }
 	          if (datatypeDataModel != null && datatypeDataModel.getValuesetMap() != null && datatypeDataModel.getValuesetMap().containsKey(component.getPosition() + "")) {
 	        	String vs = datatypeDataModel.getValuesetMap().get(component.getPosition()+"").stream().map((element) -> {
                 	return element.getBindingIdentifier();

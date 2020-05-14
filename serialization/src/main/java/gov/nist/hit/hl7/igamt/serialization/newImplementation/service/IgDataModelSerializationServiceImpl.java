@@ -147,12 +147,8 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	@Override
 	public Element serializeResource(Resource resource, Type type, int position, ResourceExportConfiguration resourceExportConfiguration) {
 		Element element = serializeAbstractDomain(resource,type,position, resource.getName(), resourceExportConfiguration);
-		System.out.println("in function");
 		if (resource != null && element != null) {
-			System.out.println("in first IF");
 			if(resourceExportConfiguration.isPreDef()) {
-				System.out.println("in seconf Id and post def is :" +resource.getPostDef() );
-
 				element.addAttribute(new Attribute("postDef",
 						resource.getPostDef() != null && !resource.getPostDef().isEmpty()
 						? this.formatStringData(resource.getPostDef())

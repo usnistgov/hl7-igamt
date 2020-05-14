@@ -19,7 +19,7 @@
                 <xsl:value-of select="concat('#{',@id,'}')" />
             </xsl:attribute>
 			<xsl:element name="br" />
-			<xsl:value-of select="concat(@name,' - ',@description)" />
+			<xsl:value-of select="concat(@name,' - SegmentFirstTemplate ',@description)" />
 		</xsl:element>
 	</xsl:template>
 
@@ -197,9 +197,11 @@
 				</xsl:element>
 			</xsl:element>
 		</xsl:element>
+		 					<xsl:call-template name="CommentList" />
+		
 		
 						<xsl:call-template name="PostDef" />
-		<xsl:if test="count(Constraintss/ConformanceStatement)  &gt; 0">
+		<xsl:if test="count(Constraints/ConformanceStatement)  &gt; 0">
 
 			<!-- <xsl:if test="count(./Constraint[@Type='cs']) &gt; 0"> -->
 			<xsl:element name="br" />
@@ -239,13 +241,15 @@
 		<xsl:apply-templates select="./coconstraints" />		
 		<xsl:call-template name="ValueSetBindingList"/>	
 				<xsl:call-template name="InternalSingleCode"/>		
-			
-		<xsl:apply-templates select="./DynamicMapping" />
-		<xsl:if test="$columnDisplay.segment.comment = 'true'">
-			<xsl:apply-templates select="./Binding/CommentList" />
-		</xsl:if>
-
-
+						
+<!-- 		<xsl:apply-templates select="./Comments" />
+ --><!-- 		<xsl:if test="$columnDisplay.segment.comment = 'true'">
+ -->		
+<!--  	<xsl:apply-templates select="./Binding/CommentList" />
+ -->
+ 			
+<!-- 		</xsl:if>
+ -->
 		<xsl:for-each select="Field">
 			<xsl:sort select="@Position" data-type="number"></xsl:sort>
 			<xsl:if test="count(./Text[@Type='Text']) &gt; 0">

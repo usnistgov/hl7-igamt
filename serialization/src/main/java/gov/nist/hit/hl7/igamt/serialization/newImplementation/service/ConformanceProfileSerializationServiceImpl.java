@@ -17,17 +17,20 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializationException;
@@ -105,6 +108,20 @@ private FroalaSerializationUtil frolaCleaning;
 	        
 	        if (conformanceProfile.getChildren() != null
 		            && conformanceProfile.getChildren().size() > 0) {
+		    	  Element commentsElement = new Element("Comments"); 
+		    	  for(SegmentRefOrGroup segmentRefOrGroup : conformanceProfile.getChildren()) {
+		    		  if(segmentRefOrGroup.getComments() != null) {
+		    			  for(Comment comment : segmentRefOrGroup.getComments()) {
+			    			  Element commentElement = new Element("Comment");
+			    			  commentElement.addAttribute(new Attribute("name",segmentRefOrGroup.getName()));
+		    				  commentElement.addAttribute(new Attribute("description",comment.getDescription()));
+			    			  commentsElement.appendChild(commentElement);
+		    			  }
+		    			  
+		    		  }
+		    	  }
+		    	  conformanceProfileElement.appendChild(commentsElement);
+
 	        	
 		        	List<MsgStructElement> msgStructElementList = conformanceProfile.getChildren().stream().sorted((e1, e2) -> 
 		        	e1.getPosition() - e2.getPosition()).collect(Collectors.toList());

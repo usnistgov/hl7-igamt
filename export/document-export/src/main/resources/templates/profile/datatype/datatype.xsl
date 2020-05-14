@@ -260,6 +260,8 @@
                     </xsl:element>
                 </xsl:element>
             </xsl:element>
+                        			 					<xsl:call-template name="CommentList" />
+            
             		<xsl:call-template name="ValueSetBindingList"/>	
 						<xsl:call-template name="InternalSingleCode"/>		
             			
