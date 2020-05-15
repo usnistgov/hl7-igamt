@@ -19,12 +19,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -99,7 +94,7 @@ public class ExportController {
 				String username = authentication.getPrincipal().toString();				
 				if(format.toLowerCase().equals("html")) {	
 					
-				ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, configId);
+				ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, configId, false);
 				response.setContentType("text/html");
 				response.setHeader("Content-disposition",
 						"attachment;filename=" + exportedFile.getFileName());
@@ -116,7 +111,7 @@ public class ExportController {
 				}
 				
 				if(format.toLowerCase().equals("html1")) {											  
-					   ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, configId);
+					   ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, configId, false);
 					   File coCons;
 					   response.setContentType("text/html");
 					   response.setHeader("Content-disposition",
@@ -141,7 +136,7 @@ public class ExportController {
 	}
 	
 	@RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-	public @ResponseBody void exportIgDocumentHtml(@PathVariable("igId") String igId,
+	public @ResponseBody void exportIgDocumentHtml(@PathVariable("igId") String igId, @RequestParam(name = "fhir", required = false) boolean isFhir,
 			HttpServletResponse response, FormData formData) throws ExportException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
@@ -150,15 +145,15 @@ public class ExportController {
 			    Ig igDocument = igService.findById(igId);
 			    ExportedFile exportedFile;
 			    if(igDocument.getLastUserConfiguration() != null) {
-					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, igDocument.getLastUserConfiguration().getDecision(), igDocument.getLastUserConfiguration().getConfigId());
+					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, igDocument.getLastUserConfiguration().getDecision(), igDocument.getLastUserConfiguration().getConfigId(), isFhir);
 			    }
 			    else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
 			    		ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
-					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId());
+					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId(), isFhir);
 			    } 
 			    else {
 		    		ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfig(true);
-				 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId());
+				 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId(), isFhir);
 
 			    }
 				response.setContentType("text/html");

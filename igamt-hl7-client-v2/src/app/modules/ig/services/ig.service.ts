@@ -299,7 +299,7 @@ export class IgService {
   }
 
   exportAsHtmlQuick(igId: string) {
-    this.submitForm(null, this.EXPORT_URL + igId + '/quickHtml');
+    this.submitForm(null, this.EXPORT_URL + igId + '/quickHtml?fhir=true');
   }
 
   exportAsWordQuick(igId: string) {

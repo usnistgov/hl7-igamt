@@ -100,15 +100,15 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	CoConstraintService coConstraintService;
 
 	private static final String IG_XSLT_PATH = "/IGDocumentExport.xsl";
-	
+	private static final String IG_FHIR_XSLT_PATH = "/IGDocumentFHIRExport.xsl";
 
 	@Override
-	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId)
+	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId, boolean isFhir)
 			throws Exception {
 		Ig igDocument = igService.findById(igDocumentId);
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration);
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration, isFhir);
 			return htmlFile;
 		}
 		return null;
@@ -116,7 +116,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 	@Override
 	public ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument, ExportFormat exportFormat,
-			ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception {
+			ExportFilterDecision decision, ExportConfiguration exportConfiguration, boolean isFhir) throws Exception {
 		try {
 //			ExportConfiguration exportConfiguration =
 //					exportConfigurationService.getExportConfiguration(username);
@@ -139,8 +139,15 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
 					igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
 					exportFontConfiguration, "2.0_beta");
-			InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH,
-					exportParameters);
+			InputStream htmlContent = null;
+			if(isFhir){
+				htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_FHIR_XSLT_PATH,
+						exportParameters);
+			} else {
+				htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH,
+						exportParameters);
+			}
+
 			ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(),
 					exportFormat);
 			exportedFile.setContent(htmlContent);
@@ -332,7 +339,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		Ig igDocument = igService.findById(id);
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD, decision, exportConfiguration);
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD, decision, exportConfiguration, false);
 			ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(),
 					igDocument.getUpdateDate(),
 					igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
