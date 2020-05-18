@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -310,4 +311,13 @@ public class ValuesetServiceImpl implements ValuesetService {
 		}
 		return codeSystems;
 	}
+
+    @Override
+    public Valueset findExternalPhinvadsByOid(String oid) {
+        Criteria where = Criteria.where("oid").is(oid);
+        where.andOperator(Criteria.where("domainInfo.scope").is(Constant.SCOPE.PHINVADS),Criteria.where("isFlavor").is(false));
+        Query qry = Query.query(where);
+        Valueset valueSet = mongoTemplate.findOne(qry, Valueset.class);
+        return valueSet;
+    }
 }

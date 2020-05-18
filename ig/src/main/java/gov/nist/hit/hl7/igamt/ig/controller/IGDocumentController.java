@@ -273,12 +273,12 @@ public class IGDocumentController extends BaseController {
   }
 
 
-  /**
-   * 
-   * @param id
-   * @param response
-   * @throws ExportException
-   */
+//  /**
+//   *
+//   * @param id
+//   * @param response
+//   * @throws ExportException
+//   */
   //	@RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
   //	public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id, HttpServletResponse response)
   //			throws ExportException {
@@ -1267,24 +1267,27 @@ public class IGDocumentController extends BaseController {
 			}
 		} else {
 			if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-	
-				Valueset valueset = new Valueset();
-				DomainInfo info = new DomainInfo();
-				info.setScope(Scope.PHINVADS);
-				info.setVersion(elm.getDomainInfo().getVersion());
-				valueset.setDomainInfo(info);
-				valueset.setSourceType(SourceType.EXTERNAL);
-				valueset.setUsername(username);
-				valueset.setBindingIdentifier(elm.getName());
-				valueset.setUrl(elm.getUrl());
-				valueset.setOid(elm.getOid());
-				valueset.setFlavor(false);
-				valueset.setExtensibility(Extensibility.Closed);
-				valueset.setStability(Stability.Dynamic);
-				valueset.setContentDefinition(ContentDefinition.Extensional);
-				Valueset saved = valuesetService.save(valueset);
-				ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
-				savedIds.add(saved.getId());
+              Valueset valueset = valuesetService.findExternalPhinvadsByOid(elm.getOid());
+              if(valueset == null) {
+                Valueset newValueset = new Valueset();
+                DomainInfo info = new DomainInfo();
+                info.setScope(Scope.PHINVADS);
+                info.setVersion(elm.getDomainInfo().getVersion());
+                newValueset.setDomainInfo(info);
+                newValueset.setSourceType(SourceType.EXTERNAL);
+                newValueset.setUsername(username);
+                newValueset.setBindingIdentifier(elm.getName());
+                newValueset.setUrl(elm.getUrl());
+                newValueset.setOid(elm.getOid());
+                newValueset.setFlavor(false);
+                newValueset.setExtensibility(Extensibility.Closed);
+                newValueset.setStability(Stability.Dynamic);
+                newValueset.setContentDefinition(ContentDefinition.Extensional);
+                Valueset saved = valuesetService.save(newValueset);
+                ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+                savedIds.add(saved.getId());
+              }
+
 			} else {
 				ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
 				savedIds.add(elm.getId());
