@@ -693,29 +693,35 @@ public class BootstrapApplication implements CommandLineRunner {
         			if(cp.getSourceIds() != null) {
         				cp.getSourceIds().forEach(sId -> {
                 			Datatype dt = this.dataypeService.findById(sId);
-                			if(dt != null) this.visitBindingForPredicateUpdate(dt.getBinding(), cp);
-                			this.dataypeService.save(dt);
+                			if(dt != null) {
+                				this.visitBindingForPredicateUpdate(dt.getBinding(), cp);
+                    			this.dataypeService.save(dt);
+                			}
         				});
         			}
         		} else if(cp.getLevel().equals(Level.SEGMENT)) {
         			if(cp.getSourceIds() != null) {
         				cp.getSourceIds().forEach(sId -> {
                 			Segment s = this.segmentService.findById(sId);
-                			if(s != null) this.visitBindingForPredicateUpdate(s.getBinding(), cp);
-                			try {
-								this.segmentService.save(s);
-							} catch (ValidationException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
+                			if(s != null) {
+                				this.visitBindingForPredicateUpdate(s.getBinding(), cp);
+                				try {
+    								this.segmentService.save(s);
+    							} catch (ValidationException e) {
+    								e.printStackTrace();
+    							}
+                			}
+                			
         				});
         			}
         		} else if(cp.getLevel().equals(Level.CONFORMANCEPROFILE)) {
         			if(cp.getSourceIds() != null) {
         				cp.getSourceIds().forEach(sId -> {
         					ConformanceProfile m = this.messageService.findById(sId);
-        					if(m != null) this.visitBindingForPredicateUpdate(m.getBinding(), cp);
-                			this.messageService.save(m);
+        					if(m != null) {
+        						this.visitBindingForPredicateUpdate(m.getBinding(), cp);
+                    			this.messageService.save(m);
+        					}
         				});
         			}
         		}  			
