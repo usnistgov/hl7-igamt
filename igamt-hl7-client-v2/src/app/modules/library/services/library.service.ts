@@ -17,6 +17,7 @@ import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
 import { INarrative } from '../components/library-section-editor/library-section-editor.component';
+import {IPublicationSummary} from '../components/publish-library-dialog/publish-library-dialog.component';
 import {ILibrary} from '../models/library.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 import { IgTOCNodeHelper } from './library-toc-node-helper.service';
@@ -157,6 +158,10 @@ export class LibraryService {
 
   publish(id: string): Observable<Message<string>> {
     return this.http.post<Message<string>>(this.LIBRARY_END_POINT + id + '/publish', {}).pipe();
+  }
+
+  getPublicationSummary(id: string): Observable<IPublicationSummary> {
+    return this.http.get<IPublicationSummary>(this.LIBRARY_END_POINT + id + '/publicationSummary', {}).pipe();
   }
 
   updateSharedUsers(sharedUsers: any, id: string): Observable<Message<string>> {

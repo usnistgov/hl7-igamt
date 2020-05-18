@@ -11,6 +11,10 @@
     class="badge">
     PHIN <span style="font-size: 0.9em; font-weight: 300;"></span>
   </span>
+  <span *ngSwitchCase="'STDF'"
+        class="badge scope-badge-dynamic">
+    STDF <span style="font-size: 0.9em; font-weight: 300;">{{version}}</span>
+  </span>
   <span *ngSwitchCase="'PRELOADED'" class="badge scope-badge-preloaded">
     PUBLISHED
   </span>

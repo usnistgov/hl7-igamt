@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
+import {MatSelectModule} from '@angular/material/select';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import {ContextMenuModule, RadioButtonModule, TreeTableModule} from 'primeng/primeng';
+import {AutoCompleteModule, ContextMenuModule, RadioButtonModule, TreeTableModule} from 'primeng/primeng';
 import { StepsModule } from 'primeng/steps';
 import { TableModule } from 'primeng/table';
 import { TabViewModule } from 'primeng/tabview';
@@ -30,6 +31,7 @@ import { NarrativeSectionFormComponent } from './components/narrative-section-fo
 import { LibraryRoutingModule } from './library-routing.module';
 import { LibraryListService } from './services/library-list.service';
 import { LibraryService } from './services/library.service';
+import { PublishLibraryDialogComponent } from './components/publish-library-dialog/publish-library-dialog.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +48,7 @@ import { LibraryService } from './services/library.service';
     CreateLibraryComponent,
     LibraryListItemCardComponent,
     DatatypesEvolutionComponent,
+    PublishLibraryDialogComponent,
   ],
   imports: [
     DamFrameworkModule.forRoot(),
@@ -62,6 +65,8 @@ import { LibraryService } from './services/library.service';
     ContextMenuModule,
     ExportConfigurationModule,
     TreeTableModule,
+    AutoCompleteModule,
+    MatSelectModule,
   ],
   providers: [
     LibraryListService,
@@ -78,6 +83,7 @@ import { LibraryService } from './services/library.service';
     LibraryMetadataEditorComponent,
     CreateLibraryComponent,
   ],
+  entryComponents: [PublishLibraryDialogComponent],
 })
 export class LibraryModule {
 }

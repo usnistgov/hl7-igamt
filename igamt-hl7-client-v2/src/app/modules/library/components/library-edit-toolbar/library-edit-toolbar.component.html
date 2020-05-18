@@ -19,7 +19,7 @@
     <i class="fa fa-share"></i>
     Verify
   </button>
-  <button *ngIf="!viewOnly" class="btn btn-warning btn-sm toolbar-button" type="button">
+  <button *ngIf="!viewOnly" class="btn btn-warning btn-sm toolbar-button" type="button" (click)="publish()">
     <i class="fa fa-globe"></i>
     Publish
   </button>

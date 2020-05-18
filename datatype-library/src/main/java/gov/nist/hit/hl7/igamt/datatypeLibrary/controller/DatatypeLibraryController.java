@@ -49,6 +49,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -676,4 +677,11 @@ public @ResponseBody ResponseMessage<List<Datatype>> findDatatypesWithCompatibil
           datatypes);
 }
 
+@RequestMapping(value = "/api/datatype-library/{id}/publicationSummary", method = RequestMethod.GET,
+produces = {"application/json"})
+public PublicationSummary publicationSummary(@PathVariable("id") String id,
+Authentication authentication) {
+  
+  return dataypeLibraryService.getPublicationSummary(id);
+}
 }

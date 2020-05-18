@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationEntry;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -63,6 +66,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeLibraryRepository;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.LibraryDisplayInfoService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -80,6 +84,9 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
   @Autowired
   DatatypeLibraryRepository datatypeLibraryRepository;
+  
+  @Autowired
+  LibraryDisplayInfoService display;
 
   @Autowired
   MongoTemplate mongoTemplate;
@@ -463,6 +470,56 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       return null;
     }
     return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#getPublicationSummary()
+   */
+  @Override
+  public PublicationSummary getPublicationSummary(String id) {
+    // TODO Auto-generated method stub
+    PublicationSummary summary= new PublicationSummary();
+    summary.entries= new ArrayList<PublicationEntry>();
+    List<Datatype> toPublish = this.datatypeService.findByParentId(id);
+    System.out.println(toPublish.size());
+    
+    for(Datatype d : toPublish) {
+      summary.entries.add(getPublicationEntry(d));
+    }
+    return summary;
+  }
+
+  /**
+   * @param d
+   * @return
+   */
+  private PublicationEntry getPublicationEntry(Datatype d) {
+    // TODO Auto-generated method stub
+    PublicationEntry entry = new PublicationEntry();
+    List<String> availableExtensions = new ArrayList<String>();
+
+    entry.display = display.convertDatatype(d);
+    entry.suggested = d.getExt();
+    Criteria where = Criteria.where("name").is(d.getName())
+        .andOperator(Criteria.where("domainInfo.scope").is(Scope.SDTF.toString()));
+   Query qry = Query.query(where);
+   List<String> used=  this.mongoTemplate.findDistinct(qry, "ext", "datatype", Datatype.class, String.class);
+   Map<String, Boolean> map = used.stream().collect(Collectors.toMap(x ->  x, x->true));
+   for(int i= 1; i<10; i++) {
+    if(!map.containsKey(String.valueOf("0"+i))) {
+      availableExtensions.add("0"+i);
+    }
+   }
+   for(int i=10; i<100; i++ ) {
+     if(!map.containsKey(String.valueOf(i))) {
+       availableExtensions.add(String.valueOf(i));
+     }
+   }
+   if(!map.containsKey(d.getExt())) {
+     entry.suggested= availableExtensions.get(0);
+   }
+   entry.availableExtensions = availableExtensions;
+  return entry;
   }
 }
 
