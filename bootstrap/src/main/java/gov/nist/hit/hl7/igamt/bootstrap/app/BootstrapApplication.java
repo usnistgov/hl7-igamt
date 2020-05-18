@@ -655,8 +655,8 @@ public class BootstrapApplication implements CommandLineRunner {
                 			Datatype dt = this.dataypeService.findById(sId);
                 			if(dt != null) {
                 				this.updateConformanceStatementForResourceBinding(dt.getBinding(), cs);
+                    			this.dataypeService.save(dt);
                 			}
-                			this.dataypeService.save(dt);
         				});
         			}
         		} else if(cs.getLevel().equals(Level.SEGMENT)) {
@@ -665,12 +665,12 @@ public class BootstrapApplication implements CommandLineRunner {
                 			Segment s = this.segmentService.findById(sId);
                 			if(s != null) {
                 				this.updateConformanceStatementForResourceBinding(s.getBinding(), cs);
+                				try {
+    								this.segmentService.save(s);
+    							} catch (ValidationException e) {
+    								e.printStackTrace();
+    							}
                 			}
-                			try {
-								this.segmentService.save(s);
-							} catch (ValidationException e) {
-								e.printStackTrace();
-							}
         				});
         			}
         		} else if(cs.getLevel().equals(Level.CONFORMANCEPROFILE)) {
@@ -679,8 +679,8 @@ public class BootstrapApplication implements CommandLineRunner {
                 			ConformanceProfile cp = this.messageService.findById(sId);
                 			if(cp != null) {
                 				this.updateConformanceStatementForResourceBinding(cp.getBinding(), cs);
+                				this.messageService.save(cp);
                 			}
-                			this.messageService.save(cp);
         				});
         			}
         		}  			
