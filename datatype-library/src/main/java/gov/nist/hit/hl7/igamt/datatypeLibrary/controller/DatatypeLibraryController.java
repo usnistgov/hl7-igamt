@@ -58,8 +58,6 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.common.exception.SectionNotFoundException;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -504,19 +502,19 @@ public class DatatypeLibraryController {
     }
   }
 
-  @RequestMapping(value = "/api/datatype-library/{libId}/predicate/{id}", method = RequestMethod.GET,
-      produces = {"application/json"})
-  public @ResponseBody
-  Predicate getPredicate(@PathVariable("libId") String libId, @PathVariable("id") String id, Authentication authentication) throws DatatypeLibraryNotFoundException, SectionNotFoundException {
-    DatatypeLibrary library = dataypeLibraryService.findById(libId);
-    if(library.getUsername().equals(authentication.getName())) {
-      return this.predicateRepository.findById(id).orElseThrow(() -> {
-        return new SectionNotFoundException(id);
-      });
-    } else {
-      throw new SectionNotFoundException(id);
-    }
-  }
+//  @RequestMapping(value = "/api/datatype-library/{libId}/predicate/{id}", method = RequestMethod.GET,
+//      produces = {"application/json"})
+//  public @ResponseBody
+//  Predicate getPredicate(@PathVariable("libId") String libId, @PathVariable("id") String id, Authentication authentication) throws DatatypeLibraryNotFoundException, SectionNotFoundException {
+//    DatatypeLibrary library = dataypeLibraryService.findById(libId);
+//    if(library.getUsername().equals(authentication.getName())) {
+//      return this.predicateRepository.findById(id).orElseThrow(() -> {
+//        return new SectionNotFoundException(id);
+//      });
+//    } else {
+//      throw new SectionNotFoundException(id);
+//    }
+//  }
   
   @RequestMapping(value = "/api/datatype-library/{id}/datatypeLabels", method = RequestMethod.GET, produces = {
   "application/json" })

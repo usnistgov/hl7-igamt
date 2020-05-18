@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
 
 
 /**
@@ -25,6 +26,8 @@ public class StructureElementBinding extends Binding {
   private Set<ValuesetBinding> valuesetBindings;
   private InternalSingleCode internalSingleCode;
   private ExternalSingleCode externalSingleCode;
+  private Predicate predicate;
+  @Deprecated
   private String predicateId;
 
   public StructureElementBinding() {
@@ -60,12 +63,21 @@ public class StructureElementBinding extends Binding {
   public void setInternalSingleCode(InternalSingleCode internalSingleCode) {
     this.internalSingleCode = internalSingleCode;
   }
-
-  public String getPredicateId() {
-    return predicateId;
+  
+  public Predicate getPredicate() {
+	return predicate;
   }
-
+  
+  public void setPredicate(Predicate predicate) {
+	this.predicate = predicate;
+  }
+  @Deprecated
+  public String getPredicateId() {
+	return predicateId;
+  }
+  
+  @Deprecated
   public void setPredicateId(String predicateId) {
-    this.predicateId = predicateId;
+	this.predicateId = predicateId;
   }
 }

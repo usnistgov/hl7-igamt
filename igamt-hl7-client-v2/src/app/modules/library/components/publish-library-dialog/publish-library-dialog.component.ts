@@ -1,5 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material/dialog';
+import {Scope} from '../../../shared/constants/scope.enum';
+import {Type} from '../../../shared/constants/type.enum';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 
 @Component({
@@ -8,7 +10,8 @@ import {IDisplayElement} from '../../../shared/models/display-element.interface'
   styleUrls: ['./publish-library-dialog.component.css'],
 })
 export class PublishLibraryDialogComponent implements OnInit {
-
+  duplicated: boolean;
+  publicationResult: IPublicationResult = { version: '', elements: [], comments: ''  };
   constructor(
     public dialogRef: MatDialogRef<PublishLibraryDialogComponent>,
     private dialog: MatDialog,
@@ -17,9 +20,35 @@ export class PublishLibraryDialogComponent implements OnInit {
 
   ngOnInit() {
   }
+  submit() {
+    for (const entry of this.data.entries) {
+      this.publicationResult.elements.push(
+        {
+          scope: Scope.SDTF,
+          id: entry.display.id,
+          ext: entry.suggested,
+        },
+      );
+    }
+    this.dialogRef.close(this.publicationResult);
+  }
+  print(form: any) {
+    console.log(form);
+  }
 
-  search($event, rowData) {
-    rowData.availableExtensions = ['01', '02'];
+  isDuplicated(fixedName: any, suggested: any) {
+    return this.data.entries.filter((entry) =>  entry.display.fixedName === fixedName && entry.suggested === suggested).length > 1 ;
+  }
+  disabled() {
+    for (const entry of this.data.entries) {
+      if (this.isDuplicated(entry.display.fixedName, entry.suggested)) {
+        return true;
+      }
+    }
+    return false;
+  }
+  close() {
+    this.dialogRef.close();
   }
 }
 export interface IPublicationSummary {
@@ -30,4 +59,17 @@ export interface IPublicationEntry {
   display: IDisplayElement;
   availableExtensions?: string[];
   suggested?: string;
+}
+
+export interface IPublishedEntry {
+  scope?: Scope;
+  id: string;
+  type?: Type;
+  ext: string;
+}
+
+export interface IPublicationResult {
+  version?: string;
+  comments?: string;
+  elements: IPublishedEntry[];
 }

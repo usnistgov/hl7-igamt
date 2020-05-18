@@ -28,6 +28,7 @@ import { LibraryMetadataEditorComponent } from './components/library-metadata-ed
 import { LibrarySectionEditorComponent } from './components/library-section-editor/library-section-editor.component';
 import { LibraryTocComponent } from './components/library-toc/library-toc.component';
 import { NarrativeSectionFormComponent } from './components/narrative-section-form/narrative-section-form.component';
+import {NamingSelectionDirective} from './components/publish-library-dialog/naming-selection-directive';
 import { LibraryRoutingModule } from './library-routing.module';
 import { LibraryListService } from './services/library-list.service';
 import { LibraryService } from './services/library.service';
@@ -49,6 +50,7 @@ import { PublishLibraryDialogComponent } from './components/publish-library-dial
     LibraryListItemCardComponent,
     DatatypesEvolutionComponent,
     PublishLibraryDialogComponent,
+    NamingSelectionDirective,
   ],
   imports: [
     DamFrameworkModule.forRoot(),

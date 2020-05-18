@@ -1,7 +1,21 @@
+<h2 mat-dialog-title>Publish Library </h2>
+<mat-dialog-content style="overflow: hidden; max-height: 500px;">
 <form #form="ngForm">
 
-  <p-table #dt1 [globalFilterFields]="['name', 'description']" [style]="{'min-height': '800px', 'max-height':'700'}" [value]="data.entries"
-           scrollHeight="400px;" scrollable="true"
+  <div class="form-group">
+    <label class="form-label-lg">Publication Version</label>
+    <input class="form-control" id="versions" name="version" placeholder="publication version"
+           [(ngModel)]="publicationResult.version">
+
+  </div>
+  <div class="form-group">
+    <label class="form-label-lg"> Publication Comments</label>
+    <input class="form-control" id="comments" name="version" placeholder="publication version"
+           [(ngModel)]="publicationResult.comments">
+
+  </div>
+  <p-table #dt1 [globalFilterFields]="['name', 'description']" [style]="{'min-height': '500px', 'max-height':'500'}" [value]="data.entries"
+           scrollHeight="500px;" scrollable="true"
            sortField="name">
     <ng-template pTemplate="caption">
       <div style="text-align: left">
@@ -28,31 +42,38 @@
                  let-rowNode pTemplate="body">
       <tr>
         <td>
-          <app-display-section [element]="rowData.display" compatibility="true"></app-display-section>
+          <app-display-section [element]="rowData.display" compatibility="true" (click)="print(data.entries)"></app-display-section>
         </td>
         <td #td>
           <div style="display: flex; flex-direction: row; justify-content: flex-start">
-
-
             <div>
-              <app-scope-badge [scope]="'STDF'" [version]="rowData.display.domainInfo.version">
+              <app-scope-badge [scope]="'SDTF'" [version]="rowData.display.domainInfo.version">
               </app-scope-badge>
               <span> {{rowData.display.fixedName}}
             </span>
             </div>
-
             <div>
               <strong>__</strong>
             </div>
             <div style="width: 50px">
-              <mat-select [(value)]="rowData.suggested">
+              <mat-select  matNativeControl [(value)]="rowData.suggested" [name]="rowData.display.id" [id]="rowData.display.id" [(ngModel)]="rowData.suggested"  [id]="rowData.display.id">
                 <mat-option *ngFor="let opt of rowData.availableExtensions" [value]="opt">{{opt}}</mat-option>
               </mat-select>
+            </div>
+          </div>
+          <div *ngIf="isDuplicated(rowData.display.fixedName, rowData.suggested)">
+            <div>
+              <span style="color: red"> *Flavor name is duplicated</span>
             </div>
           </div>
         </td>
       </tr>
     </ng-template>
   </p-table>
-</form>
 
+</form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button  class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="close()">Cancel</button>
+  <button  class="btn btn-sm btn-success" [disabled]="disabled()" (click)="submit()" >Submit</button>
+</mat-dialog-actions>
