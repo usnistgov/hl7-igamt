@@ -29,10 +29,10 @@ import { LibrarySectionEditorComponent } from './components/library-section-edit
 import { LibraryTocComponent } from './components/library-toc/library-toc.component';
 import { NarrativeSectionFormComponent } from './components/narrative-section-form/narrative-section-form.component';
 import {NamingSelectionDirective} from './components/publish-library-dialog/naming-selection-directive';
+import { PublishLibraryDialogComponent } from './components/publish-library-dialog/publish-library-dialog.component';
 import { LibraryRoutingModule } from './library-routing.module';
 import { LibraryListService } from './services/library-list.service';
 import { LibraryService } from './services/library.service';
-import { PublishLibraryDialogComponent } from './components/publish-library-dialog/publish-library-dialog.component';
 
 @NgModule({
   declarations: [

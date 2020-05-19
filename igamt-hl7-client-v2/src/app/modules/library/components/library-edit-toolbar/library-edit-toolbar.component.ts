@@ -16,7 +16,7 @@ import {ILibrary} from '../../models/library.class';
 import { LibraryService } from '../../services/library.service';
 import {
   IPublicationSummary,
-  PublishLibraryDialogComponent
+  PublishLibraryDialogComponent,
 } from '../publish-library-dialog/publish-library-dialog.component';
 
 @Component({

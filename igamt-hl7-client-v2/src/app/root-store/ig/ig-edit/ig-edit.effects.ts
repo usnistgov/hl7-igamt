@@ -19,7 +19,7 @@ import { ResourceService } from '../../../modules/shared/services/resource.servi
 import {
   LoadResourceReferences,
   LoadResourceReferencesFailure,
-  LoadResourceReferencesSuccess
+  LoadResourceReferencesSuccess,
 } from '../../dam-igamt/igamt.loaded-resources.actions';
 import {
   CreateCoConstraintGroup,

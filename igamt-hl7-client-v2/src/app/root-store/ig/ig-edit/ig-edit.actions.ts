@@ -18,7 +18,7 @@ import {IHL7EditorMetadata} from '../../../modules/shared/models/editor.enum';
 import {
   LoadResourceReferences,
   LoadResourceReferencesFailure,
-  LoadResourceReferencesSuccess
+  LoadResourceReferencesSuccess,
 } from '../../dam-igamt/igamt.loaded-resources.actions';
 
 export enum IgEditActionTypes {

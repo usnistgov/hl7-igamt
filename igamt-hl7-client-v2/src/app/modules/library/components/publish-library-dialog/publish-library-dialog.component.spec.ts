@@ -8,7 +8,7 @@ describe('PublishLibraryDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PublishLibraryDialogComponent ]
+      declarations: [ PublishLibraryDialogComponent ],
     })
     .compileComponents();
   }));

@@ -649,13 +649,13 @@ public class BootstrapApplication implements CommandLineRunner {
 //      this.dataFixer.readCsv();
 //    }
 
-    // @PostConstruct
+    //@PostConstruct
     public void fix0396() throws ValidationException{
       tableFixes.fix0396();
     }
     
     @SuppressWarnings("deprecation")
-   // @PostConstruct
+   //@PostConstruct
     public void recoveryConstraints() {
     	this.conformanceStatementRepository.findAll().forEach(cs -> {
     		if(cs.getLevel() != null) {
