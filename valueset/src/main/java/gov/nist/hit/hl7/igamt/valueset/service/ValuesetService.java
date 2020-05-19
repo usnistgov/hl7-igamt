@@ -88,4 +88,7 @@ public interface ValuesetService {
 			throws JsonProcessingException, IOException;
 	
 	public Set<String> extractCodeSystemsFromCodes(Set<Code> codes);
+
+	public Valueset findExternalPhinvadsByOid(String oid);
+
 }
