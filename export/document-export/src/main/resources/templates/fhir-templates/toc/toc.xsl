@@ -15,7 +15,9 @@
         <div>
             <xsl:for-each select="Document/Section">
                 <xsl:sort select="@position" data-type="number"></xsl:sort>
-                <xsl:call-template name="displayTableOfContentSection"/>
+                <xsl:call-template name="displayTableOfContentSection">
+                    <xsl:with-param name="parentPosition" select="@position"/>
+                </xsl:call-template>
             </xsl:for-each>
         </div>
     </xsl:template>

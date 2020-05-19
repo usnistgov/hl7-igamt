@@ -3,11 +3,12 @@
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:param name="displayMasterDatatypeLabel" select="'false'"></xsl:param>
     <xsl:template name="displayTableOfContentInfoSection">
+        <xsl:param name="parentPosition"/>
         <xsl:if test="name() = 'Section'">
-        
+
             <xsl:element name="a">
                 <xsl:attribute name="href">
-                    <xsl:value-of select="concat('#',@id)"/>
+                    <xsl:value-of select="concat('#',$parentPosition)"/>
                 </xsl:attribute>
                 <xsl:attribute name="class">
                     <xsl:value-of select="concat('divh', @h)"/>

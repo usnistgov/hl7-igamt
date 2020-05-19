@@ -12,7 +12,7 @@
 
         <div>
             <div class="pa-5">
-
+                <xsl:text disable-output-escaping="yes">&amp;</xsl:text>nbsp;
                 <div class="card-container">
                     <div>
                         <b>First time here?</b>
@@ -23,6 +23,7 @@
                 </div>
             </div>
             <div class="pa-5">
+                <xsl:text disable-output-escaping="yes">&amp;</xsl:text>nbsp;
 
                 <div class="card-container">
                     <div>

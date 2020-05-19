@@ -34,6 +34,15 @@
         <div class="page" id="toc">
             <xsl:call-template name="toc"/>
         </div>
+        <xsl:for-each select="Document/Section">
+            <xsl:sort select="@position" data-type="number"></xsl:sort>
+            <xsl:element name="{concat('h', @h)}">
+                <xsl:element name="span">
+                    <xsl:value-of select="@title" />
+                </xsl:element>
+            </xsl:element>
+
+        </xsl:for-each>
 
     </xsl:template>
 </xsl:stylesheet>

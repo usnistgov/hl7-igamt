@@ -33,7 +33,7 @@
                 padding: 5px;
             }
 
-                        body {counter-reset: h1}
+            body {counter-reset: h1}
             h1 {counter-reset: h2}
             h2 {counter-reset: h3}
             h3 {counter-reset: h4}

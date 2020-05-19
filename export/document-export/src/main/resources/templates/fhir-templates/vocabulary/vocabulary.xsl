@@ -7,12 +7,40 @@
 
         <xsl:call-template name="sub-headbar">
             <xsl:with-param name="sub-header1" select="'Home'"/>
-            <xsl:with-param name="sub-path1" select="'#home'"/>
-            <xsl:with-param name="sub-header2" select="'Vocabulary'"/>
+            <xsl:with-param name="sub-path1" select="'#home'"/>h
+            <xsl:with-param name="sub-header2" select="'Tables'"/>
             <xsl:with-param name="sub-path2" select="'#tables'"/>
         </xsl:call-template>
         <div>
-            tables
+            <xsl:text disable-output-escaping="yes">&amp;</xsl:text>nbsp;
+
+            <xsl:for-each select="Document/Section">
+                <xsl:choose>
+                    <xsl:when test="@type='PROFILE'">
+                        <xsl:variable name="sectionPos" select="@position" />
+                        <xsl:for-each select="Section">
+                            <xsl:choose>
+                                <xsl:when test="@type='VALUESETREGISTRY'">
+                                    <xsl:variable name="vsSectionPos" select="@position" />
+                                    <h4>
+                                        <xsl:value-of select="$sectionPos" /> . <xsl:value-of select="$vsSectionPos" /> Tables
+                                    </h4>
+                                    <ul>
+                                        <xsl:for-each select="Section">
+                                            <xsl:sort select="@position" data-type="number"></xsl:sort>
+                                            <li>
+                                                <xsl:value-of select="Valueset/@bindingIdentifier" />
+                                            </li>
+
+                                        </xsl:for-each>
+                                    </ul>
+
+                                </xsl:when>
+                            </xsl:choose>
+                        </xsl:for-each>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:for-each>
         </div>
     </xsl:template>
 </xsl:stylesheet>
