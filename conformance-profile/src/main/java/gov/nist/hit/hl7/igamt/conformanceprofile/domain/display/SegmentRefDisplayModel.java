@@ -17,9 +17,9 @@ import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ViewScope;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingDisplay;
 
 /**

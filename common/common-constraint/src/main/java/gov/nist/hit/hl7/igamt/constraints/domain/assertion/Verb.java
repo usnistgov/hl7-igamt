@@ -9,37 +9,35 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.constraint.domain;
-
-import java.io.Serializable;
-
-import gov.nist.diff.annotation.DeltaField;
-import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Assertion;
+package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
 
 /**
  * @author jungyubw
  *
  */
-public class AssertionPredicate extends Predicate implements Serializable{
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -8306847581430345712L;
-  @DeltaField
-  private Assertion assertion;
+public class Verb {
 
-  public AssertionPredicate() {
+  private String key;
+  private String value;
+
+  public Verb(String key, String value) {
     super();
-    this.setType(ConstraintType.ASSERTION);
+    this.key = key;
+    this.value = value;
   }
-
-  public Assertion getAssertion() {
-    return assertion;
+  
+  public String getKey() {
+    return key;
   }
-
-  public void setAssertion(Assertion assertion) {
-    this.assertion = assertion;
+  public void setKey(String key) {
+    this.key = key;
   }
-
+  public String getValue() {
+    return value;
+  }
+  public void setValue(String value) {
+    this.value = value;
+  }
 }
+
+//[QUESTION][WOO] Which class/collection contains this?

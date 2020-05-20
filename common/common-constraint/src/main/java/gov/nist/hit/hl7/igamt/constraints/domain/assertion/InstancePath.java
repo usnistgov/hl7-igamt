@@ -9,53 +9,33 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion;
-
-import java.util.HashSet;
-import java.util.Set;
+package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
 
 /**
  * @author jungyubw
  *
  */
-public class OperatorAssertion extends Assertion {
+public class InstancePath extends Path {
 
-  public enum Operator {
-    AND, OR, XOR
+  /*
+   * instanceParameter is instance number ex) ORDER[2]-OBSERVATION[1]-OBX[*]-3[1].1[1] elementId :
+   * ORDER groupd id instanceParameter : 2 elementId of child : OBSERVATION group id
+   * instanceParameter of child : 1 ...
+   */
+
+  private String instanceParameter;
+
+  public String getInstanceParameter() {
+    return instanceParameter;
   }
 
-  private Operator operator;
-  private Set<Assertion> assertions = new HashSet<Assertion>();
-
-  public OperatorAssertion() {
-    super();
-    this.setMode(AssertionMode.ANDOR);
-  }
-
-  public Set<Assertion> getAssertions() {
-    return assertions;
-  }
-
-  public void setAssertions(Set<Assertion> assertions) {
-    this.assertions = assertions;
-  }
-
-  public Operator getOperator() {
-    return operator;
-  }
-
-  public void setOperator(Operator operator) {
-    this.operator = operator;
-  }
-  
-  public void addAssertion(Assertion assertion){
-    this.assertions.add(assertion);
+  public void setInstanceParameter(String instanceParameter) {
+    this.instanceParameter = instanceParameter;
   }
 
   @Override
   public String toString() {
-    return "OperatorAssertion [operator=" + operator + ", assertions=" + assertions + "]";
+    return "InstancePath [instanceParameter=" + instanceParameter + ", toString()="
+        + super.toString() + "]";
   }
-
-
 }

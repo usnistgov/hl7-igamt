@@ -9,12 +9,37 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.constraint.domain;
+package gov.nist.hit.hl7.igamt.constraints.domain;
+
+import java.io.Serializable;
+
+import gov.nist.diff.annotation.DeltaField;
+import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
 
 /**
  * @author jungyubw
  *
  */
-public enum ViewScope {
-  CONFORMANCEPROFILE, SEGMENT, DATATYPE, VALUESET
+public class AssertionPredicate extends Predicate implements Serializable{
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -8306847581430345712L;
+  @DeltaField
+  private Assertion assertion;
+
+  public AssertionPredicate() {
+    super();
+    this.setType(ConstraintType.ASSERTION);
+  }
+
+  public Assertion getAssertion() {
+    return assertion;
+  }
+
+  public void setAssertion(Assertion assertion) {
+    this.assertion = assertion;
+  }
+
 }

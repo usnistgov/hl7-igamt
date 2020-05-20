@@ -14,7 +14,10 @@ package gov.nist.hit.hl7.igamt.common.binding.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
+import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextConformanceStatement;
 
 
 /**
@@ -54,7 +57,15 @@ public class ResourceBinding extends Binding {
     if (conformanceStatements == null) {
       this.conformanceStatements = new HashSet<ConformanceStatement>();
     }
-    this.conformanceStatements.add(cs);
+    if(cs.getType().equals(ConstraintType.FREE)){
+        this.conformanceStatements.add((FreeTextConformanceStatement)cs);    	
+    } else if(cs.getType().equals(ConstraintType.ASSERTION)){
+        this.conformanceStatements.add((AssertionConformanceStatement)cs);    	
+    } else {
+    	System.out.println("wrong!!!");
+    
+    }
+
 
   }
   

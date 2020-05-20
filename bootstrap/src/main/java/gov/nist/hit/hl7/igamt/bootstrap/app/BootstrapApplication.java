@@ -46,10 +46,12 @@ import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.domain.ConnectingInfo;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.constraints.domain.AssertionPredicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextPredicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -674,6 +676,7 @@ public class BootstrapApplication implements CommandLineRunner {
         				cs.getSourceIds().forEach(sId -> {
                 			Segment s = this.segmentService.findById(sId);
                 			if(s != null) {
+                				System.out.println(s.getLabel());
                 				this.updateConformanceStatementForResourceBinding(s.getBinding(), cs);
                 				try {
     								this.segmentService.save(s);
@@ -744,7 +747,6 @@ public class BootstrapApplication implements CommandLineRunner {
 			if(!this.isExistingCS(binding, cs)) binding.addConformanceStatement(cs);
 			binding.getConformanceStatementIds().remove(cs.getId());
 		}
-		
 	}
 
 	private void visitBindingForPredicateUpdate(ResourceBinding binding, Predicate predicate) {
@@ -757,8 +759,14 @@ public class BootstrapApplication implements CommandLineRunner {
 		if(sebs != null) {
 			sebs.forEach(seb -> {
 				if(seb.getPredicateId() != null && seb.getPredicateId().equals(predicate.getId())) {
-					seb.setPredicate(predicate);
-					seb.setPredicateId(null);
+					if(predicate instanceof FreeTextPredicate) {
+						seb.setPredicate((FreeTextPredicate)predicate);
+						seb.setPredicateId(null);
+					}else if (predicate instanceof AssertionPredicate) {
+						seb.setPredicate((AssertionPredicate)predicate);		
+						seb.setPredicateId(null);
+						
+					}
 				}
 				if(seb.getChildren() != null) this.visitSBindingForPredicateUpdate(seb.getChildren(), predicate);
 			});
