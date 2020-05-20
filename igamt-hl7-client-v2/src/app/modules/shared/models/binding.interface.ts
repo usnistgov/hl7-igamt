@@ -1,3 +1,5 @@
+import {IPredicate} from './predicate.interface';
+
 export enum LocationType {
   FIELD = 'FIELD', COMPONENT = 'COMPONENT', SUBCOMPONENT = 'SUBCOMPONENT', SEGREF = 'SEGREF', GROUP = 'GROUP',
 
@@ -39,7 +41,7 @@ export interface IStructureElementBindingProperties {
   valuesetBindings: IValuesetBinding[];
   internalSingleCode: InternalSingleCode;
   externalSingleCode?: IExternalSingleCode;
-  predicateId?: string;
+  predicate?: IPredicate;
 }
 
 export interface IStructureElementBinding extends IBinding, IStructureElementBindingProperties {

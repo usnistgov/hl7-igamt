@@ -1,7 +1,9 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import gov.nist.diff.annotation.DeltaField;
 
@@ -9,7 +11,7 @@ public class DomainInfo implements Serializable{
   @DeltaField
   private String version;
   @DeltaField
-  private Set<String> compatibilityVersion = new HashSet<String>();
+  private List<String> compatibilityVersion = new ArrayList<String>();
   @DeltaField
   private Scope scope;
 
@@ -22,11 +24,11 @@ public class DomainInfo implements Serializable{
     this.version = version;
   }
 
-  public Set<String> getCompatibilityVersion() {
+  public List<String> getCompatibilityVersion() {
     return compatibilityVersion;
   }
 
-  public void setCompatibilityVersion(Set<String> compatibilityVersion) {
+  public void setCompatibilityVersion(List<String> compatibilityVersion) {
     this.compatibilityVersion = compatibilityVersion;
   }
 

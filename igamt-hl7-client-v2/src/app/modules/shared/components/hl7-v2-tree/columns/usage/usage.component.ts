@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
-import { BehaviorSubject, Observable } from 'rxjs';
+import {BehaviorSubject, Observable, of} from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { IUsageConfiguration } from '../../../../../export-configuration/models/default-export-configuration.interface';
 import { Type } from '../../../../constants/type.enum';
@@ -74,36 +74,29 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   }
 
   @Input()
-  set predicate({ documentRef, predicates }: { documentRef: IDocumentRef, predicates: Array<IBinding<string>> }) {
+  set predicate({ documentRef, predicates }: { documentRef: IDocumentRef, predicates: Array<IBinding<IPredicate>> }) {
     if (predicates && predicates.length > 0) {
       predicates.sort((a, b) => {
         return a.level - b.level;
       });
 
       const top = predicates[0];
-      let display: IBinding<string> = predicates.length > 1 ? predicates[1] : undefined;
+      let display: IBinding<IPredicate> = predicates.length > 1 ? predicates[1] : undefined;
 
       if (top.level === 1) {
-        this.predicateService.getPredicate(documentRef, top.value).pipe(
-          tap((p: IPredicate) => {
-            this.initial = p;
-            this.editablePredicate.next({ value: p });
-          }),
-        ).subscribe();
+        this.initial = top.value;
+        this.editablePredicate.next({ value: top.value });
+
       } else {
         display = top;
       }
 
       if (display) {
-        this.freezePredicate$ = this.predicateService.getPredicate(documentRef, display.value).pipe(
-          map((p: IPredicate) => {
-            return {
+        this.freezePredicate$ = of( {
               level: display.level,
               context: display.context,
-              value: p,
-            };
-          }),
-        );
+              value: display.value,
+            });
       }
     } else {
       this.editablePredicate.next({ value: undefined });

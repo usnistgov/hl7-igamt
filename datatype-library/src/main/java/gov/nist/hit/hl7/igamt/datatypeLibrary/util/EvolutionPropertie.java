@@ -24,6 +24,8 @@ public enum EvolutionPropertie {
   MINLENGTH("Min Length"), MAXLENGTH("Min Length"),
 
   CONFLENGTH("Conf. Length"), CPDATATYPE("Component Data Type"),
+  CPUSAGE("USAGE of components"),
+  PRESENCE("PRESENCE"),
 
   CPDATATYPENAME("CPDTName");
 

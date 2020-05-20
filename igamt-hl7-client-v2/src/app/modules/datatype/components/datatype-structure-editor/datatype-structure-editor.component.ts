@@ -2,8 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {map, take} from 'rxjs/operators';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import {selectLoadedDocumentInfo} from '../../../../root-store/dam-igamt/igamt.selectors';
 import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../dam-framework/models/messages/message.class';
@@ -68,6 +69,22 @@ export class DatatypeStructureEditorComponent extends StructureEditorComponent<I
         HL7v2TreeColumnType.TEXT,
         HL7v2TreeColumnType.COMMENT,
       ]);
+    const subsc = this.store.select(selectLoadedDocumentInfo).pipe(take(1),
+      map((doc: IDocumentRef) => {
+      if (doc.type === Type.DATATYPELIBRARY) {
+        this.columns = [
+          HL7v2TreeColumnType.NAME,
+          HL7v2TreeColumnType.DATATYPE,
+          HL7v2TreeColumnType.USAGE,
+          HL7v2TreeColumnType.CONSTANTVALUE,
+          HL7v2TreeColumnType.LENGTH,
+          HL7v2TreeColumnType.CONFLENGTH,
+          HL7v2TreeColumnType.TEXT,
+          HL7v2TreeColumnType.COMMENT,
+        ];
+      }
+    })).subscribe();
+    subsc.unsubscribe();
   }
 
   isDTM(): Observable<boolean> {

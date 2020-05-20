@@ -30,7 +30,6 @@ export interface IAbstractDomain {
   dateTimeConstraints?: any;
   sharePermission?: string;
 }
-
 export enum Status {
   DRAFT = 'DRAFT',
   PUBLISHED = 'PUBLISHED',

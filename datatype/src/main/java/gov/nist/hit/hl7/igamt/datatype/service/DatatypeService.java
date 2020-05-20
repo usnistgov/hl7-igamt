@@ -126,4 +126,6 @@ public interface DatatypeService {
 	public void collectResources(Datatype d, HashMap<String, Resource> used);
 
 	public Set<Resource> getDependencies(Datatype datatype);
+
+    List<Datatype> findByParentId(String id);
 }

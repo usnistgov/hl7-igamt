@@ -37,7 +37,6 @@ public class StructureElementBinding extends Binding {
   public Set<ValuesetBinding> getValuesetBindings() {
     return valuesetBindings;
   }
-
   public void setValuesetBindings(Set<ValuesetBinding> valuesetBindings) {
     this.valuesetBindings = valuesetBindings;
   }

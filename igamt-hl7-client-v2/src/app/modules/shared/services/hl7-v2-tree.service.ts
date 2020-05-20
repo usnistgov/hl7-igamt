@@ -554,7 +554,7 @@ export class Hl7V2TreeService {
   getBindingProperties(binding: IStructureElementBinding): IStructureElementBindingProperties {
     return {
       valuesetBindings: binding.valuesetBindings,
-      predicateId: binding.predicateId,
+      predicate: binding.predicate,
       externalSingleCode: binding.externalSingleCode,
       internalSingleCode: binding.internalSingleCode,
     };
@@ -577,7 +577,7 @@ export class Hl7V2TreeService {
 
     pick('valuesetBindings', (property) => property.valuesetBindings.length > 0);
     pick('internalSingleCode', (property) => true);
-    pick('predicateId', (property) => true);
+    pick('predicate', (property) => true);
     return values;
   }
 

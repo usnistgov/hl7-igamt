@@ -25,7 +25,9 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
  *
  */
 public class AddDatatypeResponseObject {
+  Set<Datatype> datatypes = new HashSet<Datatype>();
 
+  Set<Valueset > valueSets = new HashSet<Valueset>();
     public Set<Datatype> getDatatypes() {
     return datatypes;
   }
@@ -42,9 +44,7 @@ public class AddDatatypeResponseObject {
     this.valueSets = valueSets;
   }
 
-    Set<Datatype> datatypes = new HashSet<Datatype>();
 
-    Set<Valueset > valueSets = new HashSet<Valueset>();
 
  
 

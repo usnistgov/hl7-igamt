@@ -155,6 +155,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DisplayRefComponent,
     NgxDropdownComponent,
     CsListComponent,
+    SelectDatatypesComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -243,6 +244,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     FormInputComponent,
     SelectVersionsComponent,
     SelectMessagesComponent,
+    SelectDatatypesComponent,
     DisplaySectionComponent,
     TocSubMenuComponent,
     FroalaEditorModule,
@@ -296,6 +298,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ResourceDropdownComponent,
     ValuesetDeltaComponent,
     DisplayRefComponent,
+    SelectDatatypesComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

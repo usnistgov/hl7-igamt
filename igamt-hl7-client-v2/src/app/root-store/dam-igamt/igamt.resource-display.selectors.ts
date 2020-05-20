@@ -54,6 +54,7 @@ export const selectSectionsEntities = createSelector(
 export const selectSectionDisplayById = createSelector(
   selectSectionsEntities,
   (sections: Dictionary<IDisplayElement>, props: { id: string }) => {
+    console.log(sections);
     return sections[props.id];
   },
 );

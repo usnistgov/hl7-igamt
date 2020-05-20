@@ -1391,4 +1391,14 @@ public class DatatypeServiceImpl implements DatatypeService {
 		ret.addAll(usedDatatypes.values());
 		return ret;
 	}
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#findByParentId()
+   */
+  @Override
+  public List<Datatype> findByParentId(String id) {
+    // TODO Auto-generated method stub
+    return datatypeRepository.findByParentId(id);
+    
+  }
 }

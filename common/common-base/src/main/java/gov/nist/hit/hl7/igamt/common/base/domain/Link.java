@@ -8,6 +8,9 @@ public class Link implements Serializable{
   private int position;
   private DomainInfo domainInfo;
   private Type type;
+  private Type parentType;
+  private String parentId;
+
   private String username;
 
   public Link(String id, int position) {
@@ -122,6 +125,22 @@ public class Link implements Serializable{
   }
   public boolean isUser(){
     return this.domainInfo.getScope() !=null &&  this.domainInfo.getScope().equals(Scope.USER);
+  }
+  
+  public Type getParentType() {
+    return parentType;
+  }
+
+  public void setParentType(Type documentType) {
+    this.parentType = documentType;
+  }
+
+  public String getParentId() {
+    return parentId;
+  }
+
+  public void setParentId(String documentId) {
+    this.parentId = documentId;
   }
 
 

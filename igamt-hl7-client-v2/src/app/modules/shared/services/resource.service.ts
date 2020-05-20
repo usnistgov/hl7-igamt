@@ -25,7 +25,13 @@ export class ResourceService {
       case Type.EVENTS:
         return 'api/igdocuments/findMessageEvents/' + info.version;
       case Type.DATATYPE:
-        return 'api/datatypes/' + info.scope + '/' + info.version;
+        const datatypeURL = 'api/datatypes/';
+
+        if (!info.compatibility) {
+          return datatypeURL + info.scope + '/' + info.version;
+        } else {
+          return datatypeURL + info.scope + '/' + info.version + '/compatibility';
+        }
       case Type.SEGMENT:
         return 'api/segments/' + info.scope + '/' + info.version;
       case Type.VALUESET:
@@ -37,8 +43,8 @@ export class ResourceService {
     }
   }
 
-  getResources(id: string, type: Type, documentId: string): Observable<IResource[]> {
-    const url = this.getResourcesUrl(type, id, documentId);
+  getResources(id: string, type: Type, documentId: string, documentType: Type): Observable<IResource[]> {
+    const url = this.getResourcesUrl(type, id, documentId); // TODO update urls to include document type
     if (url) {
       return this.http.get<IResource[]>(url);
     } else {

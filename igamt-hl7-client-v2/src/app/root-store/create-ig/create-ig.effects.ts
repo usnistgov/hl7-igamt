@@ -8,7 +8,7 @@ import { catchError, map, mergeMap } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { Message } from '../../modules/dam-framework/models/messages/message.class';
 import { RxjsStoreHelperService } from '../../modules/dam-framework/services/rxjs-store-helper.service';
-import { MessageEventTreeNode } from '../../modules/ig/models/message-event/message-event.class';
+import { MessageEventTreeNode } from '../../modules/document/models/message-event/message-event.class';
 import { IgService } from '../../modules/ig/services/ig.service';
 import {
   CreateIg,

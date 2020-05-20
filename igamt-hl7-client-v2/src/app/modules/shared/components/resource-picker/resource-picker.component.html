@@ -13,6 +13,8 @@
       <app-select-segments #child (added)="selected($event)"
                            (selected)="data.versionChange($event)"
                            [existing]="data.existing"
+                           [documentType]="data.documentType"
+                           [master]="data.master"
                            [hl7Versions]="data.hl7Versions" [selectedVersion]="data.version"
                            [table]="data.data | async "></app-select-segments>
     </ng-container>
@@ -27,6 +29,8 @@
       <app-select-datatypes #child (added)="selected($event)"
                             (selected)="data.versionChange($event)"
                             [existing]="data.existing" [hl7Versions]="data.hl7Versions"
+                            [documentType]="data.documentType"
+                            [master]="data.master"
                             [selectedVersion]="data.version" [table]="data.data | async "></app-select-datatypes>
     </ng-container>
   </ng-container>

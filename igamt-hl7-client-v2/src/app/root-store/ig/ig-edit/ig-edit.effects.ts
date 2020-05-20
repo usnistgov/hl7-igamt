@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import {catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap} from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
@@ -13,9 +13,14 @@ import { RxjsStoreHelperService } from '../../../modules/dam-framework/services/
 import { DamWidgetEffect } from '../../../modules/dam-framework/store/dam-widget-effect.class';
 import { LoadPayloadData } from '../../../modules/dam-framework/store/data/dam.actions';
 import { IG_EDIT_WIDGET_ID } from '../../../modules/ig/components/ig-edit-container/ig-edit-container.component';
-import { IGDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { IDocumentDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
+import {
+  LoadResourceReferences,
+  LoadResourceReferencesFailure,
+  LoadResourceReferencesSuccess,
+} from '../../dam-igamt/igamt.loaded-resources.actions';
 import {
   CreateCoConstraintGroup,
   CreateCoConstraintGroupFailure,
@@ -40,9 +45,6 @@ import {
   ImportResourceFromFile,
   ImportResourceFromFileFailure,
   ImportResourceFromFileSuccess,
-  LoadResourceReferences,
-  LoadResourceReferencesFailure,
-  LoadResourceReferencesSuccess,
   OpenIgMetadataEditorNode,
   OpenNarrativeEditorNode,
   TableOfContentSave,
@@ -73,49 +75,6 @@ export class IgEditEffects extends DamWidgetEffect {
       );
     }),
   );
-
-  @Effect()
-  loadReferences$ = this.actions$.pipe(
-    ofType(IgEditActionTypes.LoadResourceReferences),
-    concatMap((action: LoadResourceReferences) => {
-      this.store.dispatch(new fromDAM.TurnOnLoader({
-        blockUI: true,
-      }));
-      return this.store.select(selectIgId).pipe(
-        take(1),
-        mergeMap((igId) => {
-          return this.resourceService.getResources(action.payload.id, action.payload.resourceType, igId).pipe(
-            take(1),
-            flatMap((resources: IResource[]) => {
-              return [
-                new fromDAM.TurnOffLoader(),
-                new fromDAM.InsertResourcesInRepostory({
-                  collections: [{
-                    key: 'resources',
-                    values: resources,
-                  }],
-                }),
-                new LoadResourceReferencesSuccess(resources),
-              ];
-            }),
-            catchError((error: HttpErrorResponse) => {
-              return of(
-                new fromDAM.TurnOffLoader(),
-                new LoadResourceReferencesFailure(error),
-              );
-            }),
-          );
-        }),
-      );
-    }));
-
-  @Effect()
-  loadReferencesFailure$ = this.actions$.pipe(
-    ofType(IgEditActionTypes.LoadResourceReferencesFailure),
-    map((action: LoadResourceReferencesFailure) => {
-      return this.message.actionFromError(action.error);
-    }),
-  );
   @Effect()
   igEditResolverLoad$ = this.actions$.pipe(
     ofType(IgEditActionTypes.IgEditResolverLoad),
@@ -126,7 +85,7 @@ export class IgEditEffects extends DamWidgetEffect {
 
       return this.igService.getIgInfo(action.id).pipe(
         take(1),
-        flatMap((igInfo: IGDisplayInfo) => {
+        flatMap((igInfo: IDocumentDisplayInfo<IgDocument>) => {
           return [
             new fromDAM.TurnOffLoader(),
             new fromDAM.LoadPayloadData(igInfo.ig),
@@ -550,7 +509,7 @@ export class IgEditEffects extends DamWidgetEffect {
         blockUI: true,
       }));
       return this.igService.getDisplay(action.igId, action.delta).pipe(
-        flatMap((igInfo: IGDisplayInfo) => {
+        flatMap((igInfo: IDocumentDisplayInfo<IgDocument>) => {
           return [
             this.igService.loadRepositoryFromIgDisplayInfo(igInfo),
             new fromDAM.SetValue({
@@ -615,7 +574,6 @@ export class IgEditEffects extends DamWidgetEffect {
     private igService: IgService,
     private store: Store<any>,
     private message: MessageService,
-    private resourceService: ResourceService,
   ) {
     super(IG_EDIT_WIDGET_ID, actions$);
   }

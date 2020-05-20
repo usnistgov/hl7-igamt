@@ -3,6 +3,7 @@ import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
 import * as fromIgamtResourcesSelectors from 'src/app/root-store/dam-igamt/igamt.loaded-resources.selectors';
+import {LoadResourceReferences} from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
 import {
   selectCoConstraintGroupsById,
   selectDatatypesById,
@@ -10,7 +11,6 @@ import {
   selectSegmentsById,
   selectValueSetById,
 } from '../../../root-store/dam-igamt/igamt.resource-display.selectors';
-import { LoadResourceReferences } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
 import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';

@@ -14,7 +14,7 @@ package gov.nist.hit.hl7.igamt.ig.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 
 /**
  * @author ena3
