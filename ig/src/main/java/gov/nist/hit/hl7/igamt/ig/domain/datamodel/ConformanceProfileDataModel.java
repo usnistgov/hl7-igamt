@@ -19,10 +19,11 @@ import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -36,7 +37,7 @@ public class ConformanceProfileDataModel implements Serializable{
 
 	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
 	private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
-	private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
+	private Map<String, InternalSingleCode> singleCodeMap = new HashMap<String, InternalSingleCode>();
 	private Map<String, Set<ValuesetBindingDataModel>> valuesetMap =
 			new HashMap<String, Set<ValuesetBindingDataModel>>();
 
@@ -59,11 +60,11 @@ public class ConformanceProfileDataModel implements Serializable{
 		this.predicateMap = predicateMap;
 	}
 
-	public Map<String, ExternalSingleCode> getSingleCodeMap() {
+	public Map<String, InternalSingleCode> getSingleCodeMap() {
 		return singleCodeMap;
 	}
 
-	public void setSingleCodeMap(Map<String, ExternalSingleCode> singleCodeMap) {
+	public void setSingleCodeMap(Map<String, InternalSingleCode> singleCodeMap) {
 		this.singleCodeMap = singleCodeMap;
 	}
 
@@ -126,8 +127,8 @@ public class ConformanceProfileDataModel implements Serializable{
 				this.predicateMap.put(key, p); 
 			}
 
-			if (seb.getExternalSingleCode() != null) {
-				this.singleCodeMap.put(key, seb.getExternalSingleCode());
+			if (seb.getInternalSingleCode() != null) {
+				this.singleCodeMap.put(key, seb.getInternalSingleCode());
 			}
 
 			if (seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0) {

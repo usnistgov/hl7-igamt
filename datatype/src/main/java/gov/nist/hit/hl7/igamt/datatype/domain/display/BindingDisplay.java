@@ -17,8 +17,8 @@ import gov.nist.diff.annotation.DeltaIdentity;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ViewScope;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;
 
 /**
  * @author jungyubw

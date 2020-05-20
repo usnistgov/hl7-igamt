@@ -9,9 +9,9 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement;
+package gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement;
 
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 /**
  * @author jungyubw

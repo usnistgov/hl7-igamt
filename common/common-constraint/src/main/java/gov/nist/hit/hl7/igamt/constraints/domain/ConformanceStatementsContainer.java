@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.common.constraint.domain;
+package gov.nist.hit.hl7.igamt.constraints.domain;
 
 import java.util.List;
 import java.util.Set;

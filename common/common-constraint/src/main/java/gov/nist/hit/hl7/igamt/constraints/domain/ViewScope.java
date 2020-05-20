@@ -9,35 +9,12 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion;
+package gov.nist.hit.hl7.igamt.constraints.domain;
 
 /**
  * @author jungyubw
  *
  */
-public class Verb {
-
-  private String key;
-  private String value;
-
-  public Verb(String key, String value) {
-    super();
-    this.key = key;
-    this.value = value;
-  }
-  
-  public String getKey() {
-    return key;
-  }
-  public void setKey(String key) {
-    this.key = key;
-  }
-  public String getValue() {
-    return value;
-  }
-  public void setValue(String value) {
-    this.value = value;
-  }
+public enum ViewScope {
+  CONFORMANCEPROFILE, SEGMENT, DATATYPE, VALUESET
 }
-
-//[QUESTION][WOO] Which class/collection contains this?

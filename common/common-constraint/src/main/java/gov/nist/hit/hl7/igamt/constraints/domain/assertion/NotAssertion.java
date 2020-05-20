@@ -9,12 +9,31 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion;
+package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
 
 /**
  * @author jungyubw
  *
  */
-public enum AssertionMode {
-  SIMPLE, IFTHEN, ANDOR, NOT
+public class NotAssertion extends Assertion {
+  private Assertion child;
+
+  
+  public NotAssertion() {
+    super();
+    this.setMode(AssertionMode.NOT);
+  }
+
+  public Assertion getChild() {
+    return child;
+  }
+
+  public void setChild(Assertion child) {
+    this.child = child;
+  }
+
+  @Override
+  public String toString() {
+    return "NotAssertion [child=" + child + "]";
+  }
 }
