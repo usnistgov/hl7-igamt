@@ -51,12 +51,15 @@ export class DatatypesEvolutionComponent implements OnInit {
   buildMatrix(classes) {
     const result: any[] = [];
 
+    // tslint:disable-next-line:prefer-for-of
     for (let i = 0; i < classes.length; i++) {
       const obj: any = {};
       obj['#'] = classes[i].name;
 
+      // tslint:disable-next-line:prefer-for-of
       for (let j = 0; j < classes[i].classes.length; j++) {
 
+        // tslint:disable-next-line:prefer-for-of
         for (let v = 0; v < classes[i].classes[j].versions.length; v++) {
 
           obj[classes[i].classes[j].versions[v]] = classes[i].classes[j].position;

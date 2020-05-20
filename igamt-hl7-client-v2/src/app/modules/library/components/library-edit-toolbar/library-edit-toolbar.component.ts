@@ -124,6 +124,9 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
               const dialogRef = this.dialog.open(PublishLibraryDialogComponent, {
                 data: summary,
               });
+              dialogRef.afterClosed().pipe(
+                filter((y) => y !== undefined),
+              ).subscribe();
             }),
           );
         },

@@ -3,7 +3,7 @@ import {AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn
 import {IPublicationEntry} from './publish-library-dialog.component';
 
 @Directive({
-  selector: '[NamingSelectionDirective]',
+  selector: '[appNamingSelectionDirective]',
   providers: [{provide: NG_VALIDATORS, useExisting: NamingSelectionDirective, multi: true}],
 
 })
