@@ -9,7 +9,7 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.constraint.domain;
+package gov.nist.hit.hl7.igamt.constraints.domain;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 /**
  * @author jungyubw
@@ -45,9 +45,8 @@ public class Predicate implements Serializable{
   protected Usage trueUsage;
   protected Usage falseUsage;
   private Path context;
-  
-  @Deprecated
   private Level level;
+  
   @Deprecated
   private String structureId;
   @Deprecated
@@ -120,12 +119,10 @@ public class Predicate implements Serializable{
     return null;
   }
 
-  @Deprecated
   public Level getLevel() {
     return level;
   }
-
-  @Deprecated
+  
   public void setLevel(Level level) {
     this.level = level;
   }

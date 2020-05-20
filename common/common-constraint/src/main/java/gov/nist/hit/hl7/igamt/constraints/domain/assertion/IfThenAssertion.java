@@ -9,47 +9,47 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.constraint.domain;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
 
 /**
  * @author jungyubw
  *
+ *
  */
-public class DisplayPredicate {
+public class IfThenAssertion extends Assertion {
+  public IfThenAssertion() {
+    super();
+    this.setMode(AssertionMode.IFTHEN);
+  }
 
-  private Predicate predicate;
-  private String location;
-  
-  public Predicate getPredicate() {
-    return predicate;
+  /*
+   * This is if_assertion statement.
+   */
+  private Assertion ifAssertion;
+
+  /*
+   * This is then_assertion statement.
+   */
+  private Assertion thenAssertion;
+
+  public Assertion getIfAssertion() {
+    return ifAssertion;
   }
-  
-  public void setPredicate(Predicate predicate) {
-    this.predicate = predicate;
+
+  public void setIfAssertion(Assertion ifAssertion) {
+    this.ifAssertion = ifAssertion;
   }
-  
-  public void setLocation(String location) {
-    this.location = location;
+
+  public Assertion getThenAssertion() {
+    return thenAssertion;
   }
-  
-  public String getLocation() {
-    return location;
+
+  public void setThenAssertion(Assertion thenAssertion) {
+    this.thenAssertion = thenAssertion;
   }
-  
-  public Usage getTrueUsage(){
-    if(predicate != null) return this.predicate.getTrueUsage();
-    return null;
-  }
-  
-  public Usage getFalseUsage(){
-    if(predicate != null) return this.predicate.getFalseUsage();
-    return null;
-  }
-  
-  public String getDescription(){
-    if(predicate != null) return this.predicate.generateDescription();
-    return null;
+
+  @Override
+  public String toString() {
+    return "IfThenAssertion [ifAssertion=" + ifAssertion + ", thenAssertion=" + thenAssertion + "]";
   }
 }

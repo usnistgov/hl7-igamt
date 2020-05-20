@@ -9,32 +9,47 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.constraint.domain;
+package gov.nist.hit.hl7.igamt.constraints.domain;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Assertion;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 
 /**
  * @author jungyubw
  *
  */
-public class AssertionConformanceStatement extends ConformanceStatement {
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 5906567957257311681L;
-  private Assertion assertion;
+public class DisplayPredicate {
 
-  public AssertionConformanceStatement() {
-    super();
-    this.setType(ConstraintType.ASSERTION);
+  private Predicate predicate;
+  private String location;
+  
+  public Predicate getPredicate() {
+    return predicate;
   }
-
-  public Assertion getAssertion() {
-    return assertion;
+  
+  public void setPredicate(Predicate predicate) {
+    this.predicate = predicate;
   }
-
-  public void setAssertion(Assertion assertion) {
-    this.assertion = assertion;
+  
+  public void setLocation(String location) {
+    this.location = location;
+  }
+  
+  public String getLocation() {
+    return location;
+  }
+  
+  public Usage getTrueUsage(){
+    if(predicate != null) return this.predicate.getTrueUsage();
+    return null;
+  }
+  
+  public Usage getFalseUsage(){
+    if(predicate != null) return this.predicate.getFalseUsage();
+    return null;
+  }
+  
+  public String getDescription(){
+    if(predicate != null) return this.predicate.generateDescription();
+    return null;
   }
 }
