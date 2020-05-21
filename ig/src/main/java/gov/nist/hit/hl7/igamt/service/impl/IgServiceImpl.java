@@ -48,13 +48,11 @@ import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
 //import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 //import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
@@ -63,6 +61,9 @@ import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructure
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -85,7 +86,6 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
-import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService;
@@ -189,12 +189,12 @@ public class IgServiceImpl implements IgService {
   }
 
   @Override
-  public List<IgSummary> convertListToDisplayList(List<Ig> igdouments) {
+  public List<DocumentSummary> convertListToDisplayList(List<Ig> igdouments) {
     // TODO Auto-generated method stub
 
-    List<IgSummary> igs = new ArrayList<IgSummary>();
+    List<DocumentSummary> igs = new ArrayList<DocumentSummary>();
     for (Ig ig : igdouments) {
-      IgSummary element = new IgSummary();
+      DocumentSummary element = new DocumentSummary();
 
       element.setCoverpage(ig.getMetadata().getCoverPicture());
       element.setDateUpdated(ig.getUpdateDate());
@@ -223,7 +223,7 @@ public class IgServiceImpl implements IgService {
           }
         }
       }
-      element.setConformanceProfiles(conformanceProfileNames);
+      element.setElements(conformanceProfileNames);
       igs.add(element);
     }
     return igs;

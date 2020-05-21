@@ -14,7 +14,6 @@ export class ResourcePickerComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<ResourcePickerComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IResourcePickerData) {
   }
-
   ngOnInit() {
   }
 

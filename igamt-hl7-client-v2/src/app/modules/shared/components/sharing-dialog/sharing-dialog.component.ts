@@ -3,7 +3,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {SelectItem} from 'primeng/api';
 import {Observable} from 'rxjs';
-import {IgListItem} from '../../../ig/models/ig/ig-list-item.class';
+import {IgListItem} from '../../../document/models/document/ig-list-item.class';
 
 @Component({
   selector: 'app-sharing-dialog',

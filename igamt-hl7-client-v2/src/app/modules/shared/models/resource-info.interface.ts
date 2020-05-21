@@ -5,4 +5,6 @@ export interface IResourceInfo {
   type?: Type;
   scope?: Scope;
   version?: string;
+  compatibility?: boolean;
+
 }

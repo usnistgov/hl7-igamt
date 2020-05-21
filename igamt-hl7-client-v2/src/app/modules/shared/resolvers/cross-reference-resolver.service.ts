@@ -27,7 +27,7 @@ export class CrossReferenceResolverService implements Resolve<any> {
     return this.documentRef$.pipe(
       concatMap(
         (documentRef: IDocumentRef) => {
-          return this.crossReferenceService.findUsagesDisplay(documentRef, Type.IGDOCUMENT, resourceType, elementId);
+          return this.crossReferenceService.findUsagesDisplay(documentRef, documentRef.type, resourceType, elementId);
         },
       ), take(1));
   }

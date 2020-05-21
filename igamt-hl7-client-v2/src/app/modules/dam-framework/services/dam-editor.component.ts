@@ -48,6 +48,8 @@ export abstract class DamAbstractEditorComponent {
         return !current || !current.time || (current.time.getTime() !== this.changeTime.getTime());
       }),
       tap((current) => this.changeTime = current.time),
+      tap((current) => console.log(current)),
+
       map((current) => current.data),
     );
   }

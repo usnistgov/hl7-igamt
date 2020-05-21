@@ -14,6 +14,8 @@ export interface IDisplayElement {
   position?: number;
   differential: boolean;
   children?: IDisplayElement[];
+  parentType?: Type;
+  parentId?: string;
   isExpanded: boolean;
   path?: string;
   delta?: DeltaAction;

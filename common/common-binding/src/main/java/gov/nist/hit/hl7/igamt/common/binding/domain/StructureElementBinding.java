@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 
 
 /**
@@ -37,7 +37,6 @@ public class StructureElementBinding extends Binding {
   public Set<ValuesetBinding> getValuesetBindings() {
     return valuesetBindings;
   }
-
   public void setValuesetBindings(Set<ValuesetBinding> valuesetBindings) {
     this.valuesetBindings = valuesetBindings;
   }

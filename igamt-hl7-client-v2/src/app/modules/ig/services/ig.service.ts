@@ -5,6 +5,14 @@ import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Message } from '../../dam-framework/models/messages/message.class';
+import {IDocumentCreationWrapper} from '../../document/models/document/document-creation.interface';
+import {MessageEventTreeNode} from '../../document/models/message-event/message-event.class';
+import {
+  IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse,
+  ICreateCoConstraintGroup,
+  ICreateCoConstraintGroupResponse,
+} from '../../document/models/toc/toc-operation.class';
+import { IgTOCNodeHelper } from '../../document/services/ig-toc-node-helper.service';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Type } from '../../shared/constants/type.enum';
@@ -15,13 +23,9 @@ import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
-import { IDocumentCreationWrapper } from '../models/ig/document-creation.interface';
-import { IGDisplayInfo } from '../models/ig/ig-document.class';
+import { IDocumentDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
-import { MessageEventTreeNode } from '../models/message-event/message-event.class';
-import { IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse, ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../models/toc/toc-operation.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
-import { IgTOCNodeHelper } from './ig-toc-node-helper.service';
 
 @Injectable({
   providedIn: 'root',
@@ -59,7 +63,7 @@ export class IgService {
     return { registry, collection };
   }
 
-  loadOrInsertRepositoryFromIgDisplayInfo(igInfo: IGDisplayInfo, load: boolean, values?: string[]): fromDam.InsertResourcesInRepostory | fromDam.LoadResourcesInRepostory {
+  loadOrInsertRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, load: boolean, values?: string[]): fromDam.InsertResourcesInRepostory | fromDam.LoadResourcesInRepostory {
     const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'sections'];
     const collections = (values ? values : _default).map((key) => {
       return {
@@ -75,11 +79,11 @@ export class IgService {
     });
   }
 
-  loadRepositoryFromIgDisplayInfo(igInfo: IGDisplayInfo, values?: string[]): Action {
+  loadRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, values?: string[]): Action {
     return this.loadOrInsertRepositoryFromIgDisplayInfo(igInfo, true, values);
   }
 
-  insertRepositoryFromIgDisplayInfo(igInfo: IGDisplayInfo, values?: string[]): Action {
+  insertRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, values?: string[]): Action {
     return this.loadOrInsertRepositoryFromIgDisplayInfo(igInfo, false, values);
   }
 
@@ -175,12 +179,12 @@ export class IgService {
     return this.http.post<Message<string>>(this.IG_END_POINT + 'create/', wrapper);
   }
 
-  getIgInfo(id: string): Observable<IGDisplayInfo> {
-    return this.http.get<IGDisplayInfo>(this.IG_END_POINT + id + '/state');
+  getIgInfo(id: string): Observable<IDocumentDisplayInfo<IgDocument>> {
+    return this.http.get<IDocumentDisplayInfo<IgDocument>>(this.IG_END_POINT + id + '/state');
   }
 
-  addResource(wrapper: IAddNodes): Observable<Message<IGDisplayInfo>> {
-    return this.http.post<Message<IGDisplayInfo>>(this.buildAddingUrl(wrapper), wrapper);
+  addResource(wrapper: IAddNodes): Observable<Message<IDocumentDisplayInfo<IgDocument>>> {
+    return this.http.post<Message<IDocumentDisplayInfo<IgDocument>>>(this.buildAddingUrl(wrapper), wrapper);
   }
 
   createCoConstraintGroup(request: ICreateCoConstraintGroup): Observable<Message<ICreateCoConstraintGroupResponse>> {
@@ -357,7 +361,7 @@ export class IgService {
 
   getDisplay(id: string, delta: boolean) {
     if (delta) {
-      return this.http.get<IGDisplayInfo>('api/delta/display/' + id);
+      return this.http.get<IDocumentDisplayInfo<IgDocument>>('api/delta/display/' + id);
     } else {
       return this.getIgInfo(id);
     }

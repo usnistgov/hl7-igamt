@@ -14,7 +14,8 @@ package gov.nist.hit.hl7.igamt.delta.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+
 
 /**
  * @author Abdelghani El Ouakili

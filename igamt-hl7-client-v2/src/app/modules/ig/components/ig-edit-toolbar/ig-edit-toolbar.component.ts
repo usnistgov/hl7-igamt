@@ -12,7 +12,7 @@ import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-
 import { VerifyIgDialogComponent } from '../../../shared/components/verify-ig-dialog/verify-ig-dialog.component';
 import { IConnectingInfo } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IGDisplayInfo } from '../../models/ig/ig-document.class';
+import {IDocumentDisplayInfo, IgDocument} from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
 
 @Component({
@@ -27,7 +27,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   toolConfig: Observable<IConnectingInfo[]>;
 
   constructor(
-    private store: Store<IGDisplayInfo>,
+    private store: Store<IDocumentDisplayInfo<IgDocument>>,
     private exportConfigurationService: ExportConfigurationService,
     private igService: IgService,
     private dialog: MatDialog) {

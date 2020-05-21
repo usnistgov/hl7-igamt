@@ -17,6 +17,10 @@ export class SelectDatatypesComponent implements OnInit {
   table: any;
   @Input()
   existing: IDisplayElement[];
+  @Input()
+  documentType: Type;
+  @Input()
+  master: boolean;
   @ViewChild('dt1') tableRef: Table;
   selectedData: IAddingInfo[] = [];
   @Output() selected = new EventEmitter<string>();
@@ -26,7 +30,6 @@ export class SelectDatatypesComponent implements OnInit {
   selectedVersion: string;
   @Input()
   hl7Versions: string[] = [];
-
   @ViewChild(NgForm) form;
   constructor() {
   }

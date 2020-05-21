@@ -1,7 +1,7 @@
 package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
-import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 
 public class CoConstraintGroupCreateResponse {
     private String id;

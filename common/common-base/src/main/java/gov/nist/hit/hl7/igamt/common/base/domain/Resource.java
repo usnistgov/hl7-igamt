@@ -4,6 +4,8 @@ public abstract class Resource extends AbstractDomain {
 
   private String preDef;
   private String postDef;
+  protected String parentId;
+  protected Type parentType;
   
 
   public Resource() {
@@ -40,6 +42,28 @@ public abstract class Resource extends AbstractDomain {
       super.complete(elm);
       elm.postDef=preDef;
       elm.postDef=postDef;
+      elm.parentId = parentId;
+      elm.parentType = parentType;
+  }
+
+
+  public String getParentId() {
+    return parentId;
+  }
+
+
+  public void setParentId(String documentId) {
+    this.parentId = documentId;
+  }
+
+
+  public Type getParentType() {
+    return parentType;
+  }
+
+
+  public void setParentType(Type documentType) {
+    this.parentType = documentType;
   }  
   
  

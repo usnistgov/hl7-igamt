@@ -42,8 +42,8 @@ const routes: Routes = [
     loadChildren: './modules/ig/ig.module#IgModule',
   },
   {
-    path: 'library',
-    loadChildren: './modules/datatype-library/datatype-library.module#DatatypeLibraryModule',
+    path: 'datatype-library',
+    loadChildren: './modules/library/library.module#LibraryModule',
   },
   {
     path: 'documentation',

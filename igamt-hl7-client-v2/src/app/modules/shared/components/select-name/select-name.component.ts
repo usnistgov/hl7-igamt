@@ -21,6 +21,10 @@ export class SelectNameComponent implements OnInit {
   existing: IDisplayElement[];
   @Input()
   targetScope: Scope;
+  @Input()
+  documentType: Type = Type.IGDOCUMENT;
+  @Input()
+  master = false;
   @Output()
   flavor: EventEmitter<IAddingInfo> = new EventEmitter<IAddingInfo>();
 

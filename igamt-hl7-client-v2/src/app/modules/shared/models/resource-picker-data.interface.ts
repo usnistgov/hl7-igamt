@@ -12,4 +12,6 @@ export interface IResourcePickerData {
   title: string;
   version: string;
   scope: Scope;
+  master: boolean;
+  documentType: Type;
 }

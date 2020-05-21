@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.display.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
 public class IGDisplayInfo {
