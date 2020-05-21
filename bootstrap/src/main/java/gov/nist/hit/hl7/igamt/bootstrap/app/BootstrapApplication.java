@@ -657,118 +657,184 @@ public class BootstrapApplication implements CommandLineRunner {
     }
     
     @SuppressWarnings("deprecation")
-   //@PostConstruct
+   @PostConstruct
     public void recoveryConstraints() {
-    	this.conformanceStatementRepository.findAll().forEach(cs -> {
-    		if(cs.getLevel() != null) {
-        		if(cs.getLevel().equals(Level.DATATYPE)) {
-        			if(cs.getSourceIds() != null) {
-        				cs.getSourceIds().forEach(sId -> {
-                			Datatype dt = this.dataypeService.findById(sId);
-                			if(dt != null) {
-                				this.updateConformanceStatementForResourceBinding(dt.getBinding(), cs);
-                    			this.dataypeService.save(dt);
-                			}
-        				});
-        			}
-        		} else if(cs.getLevel().equals(Level.SEGMENT)) {
-        			if(cs.getSourceIds() != null) {
-        				cs.getSourceIds().forEach(sId -> {
-                			Segment s = this.segmentService.findById(sId);
-                			if(s != null) {
-                				System.out.println(s.getLabel());
-                				this.updateConformanceStatementForResourceBinding(s.getBinding(), cs);
-                				try {
-    								this.segmentService.save(s);
-    							} catch (ValidationException e) {
-    								e.printStackTrace();
-    							}
-                			}
-        				});
-        			}
-        		} else if(cs.getLevel().equals(Level.CONFORMANCEPROFILE)) {
-        			if(cs.getSourceIds() != null) {
-        				cs.getSourceIds().forEach(sId -> {
-                			ConformanceProfile cp = this.messageService.findById(sId);
-                			if(cp != null) {
-                				this.updateConformanceStatementForResourceBinding(cp.getBinding(), cs);
-                				this.messageService.save(cp);
-                			}
-        				});
-        			}
-        		}  			
+    	this.dataypeService.findAll().forEach(dt -> {
+    		if(dt.getBinding() != null) {
+    			if(dt.getBinding().getConformanceStatementIds() != null) {
+    				dt.getBinding().getConformanceStatementIds().forEach(csId -> {
+    					this.conformanceStatementRepository.findById(csId).ifPresent(cs -> {
+    						this.updateConformanceStatementForResourceBinding(dt.getBinding(), cs);
+    					});	
+    				});
+    			}
+    			
+    			if(dt.getBinding().getChildren() != null) {
+    				this.visitBindingForPredicateUpdate(dt.getBinding());	
+    			}
+    			dt.getBinding().setConformanceStatementIds(null);
+    			
+    			this.dataypeService.save(dt);
     		}
     	});
-
-    	this.predicateRepository.findAll().forEach(cp -> {
-    		if(cp.getLevel() != null) {
-        		if(cp.getLevel().equals(Level.DATATYPE)) {
-        			if(cp.getSourceIds() != null) {
-        				cp.getSourceIds().forEach(sId -> {
-                			Datatype dt = this.dataypeService.findById(sId);
-                			if(dt != null) {
-                				this.visitBindingForPredicateUpdate(dt.getBinding(), cp);
-                    			this.dataypeService.save(dt);
-                			}
-        				});
-        			}
-        		} else if(cp.getLevel().equals(Level.SEGMENT)) {
-        			if(cp.getSourceIds() != null) {
-        				cp.getSourceIds().forEach(sId -> {
-                			Segment s = this.segmentService.findById(sId);
-                			if(s != null) {
-                				this.visitBindingForPredicateUpdate(s.getBinding(), cp);
-                				try {
-    								this.segmentService.save(s);
-    							} catch (ValidationException e) {
-    								e.printStackTrace();
-    							}
-                			}
-                			
-        				});
-        			}
-        		} else if(cp.getLevel().equals(Level.CONFORMANCEPROFILE)) {
-        			if(cp.getSourceIds() != null) {
-        				cp.getSourceIds().forEach(sId -> {
-        					ConformanceProfile m = this.messageService.findById(sId);
-        					if(m != null) {
-        						this.visitBindingForPredicateUpdate(m.getBinding(), cp);
-                    			this.messageService.save(m);
-        					}
-        				});
-        			}
-        		}  			
+    	
+    	this.segmentService.findAll().forEach(seg -> {
+    		if(seg.getBinding() != null) {
+    			if(seg.getBinding().getConformanceStatementIds() != null) {
+    				seg.getBinding().getConformanceStatementIds().forEach(csId -> {
+    					this.conformanceStatementRepository.findById(csId).ifPresent(cs -> {
+    						this.updateConformanceStatementForResourceBinding(seg.getBinding(), cs);
+    					});
+    					
+    				});
+    			}
+    			
+    			if(seg.getBinding().getChildren() != null) {
+    				this.visitBindingForPredicateUpdate(seg.getBinding());	
+    			}
+    			seg.getBinding().setConformanceStatementIds(null);
+    			try {
+					this.segmentService.save(seg);
+				} catch (ValidationException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     		}
     	});
+    	
+    	this.messageService.findAll().forEach(m -> {
+    		if(m.getBinding() != null) {
+    			if(m.getBinding().getConformanceStatementIds() != null) {
+    				m.getBinding().getConformanceStatementIds().forEach(csId -> {
+    					this.conformanceStatementRepository.findById(csId).ifPresent(cs -> {
+    						this.updateConformanceStatementForResourceBinding(m.getBinding(), cs);
+    					});
+    					
+    				});
+    			}
+    			
+    			if(m.getBinding().getChildren() != null) {
+    				this.visitBindingForPredicateUpdate(m.getBinding());	
+    			}
+    			m.getBinding().setConformanceStatementIds(null);
+    			this.messageService.save(m);
+    		}
+    	});
+    	
+    	
+    	
+//    	this.conformanceStatementRepository.findAll().forEach(cs -> {
+//    		if(cs.getLevel() != null) {
+//        		if(cs.getLevel().equals(Level.DATATYPE)) {
+//        			if(cs.getSourceIds() != null) {
+//        				cs.getSourceIds().forEach(sId -> {
+//                			Datatype dt = this.dataypeService.findById(sId);
+//                			if(dt != null) {
+//                				this.updateConformanceStatementForResourceBinding(dt.getBinding(), cs);
+//                    			this.dataypeService.save(dt);
+//                			}
+//        				});
+//        			}
+//        		} else if(cs.getLevel().equals(Level.SEGMENT)) {
+//        			if(cs.getSourceIds() != null) {
+//        				cs.getSourceIds().forEach(sId -> {
+//                			Segment s = this.segmentService.findById(sId);
+//                			if(s != null) {
+//                				System.out.println(s.getLabel());
+//                				this.updateConformanceStatementForResourceBinding(s.getBinding(), cs);
+//                				try {
+//    								this.segmentService.save(s);
+//    							} catch (ValidationException e) {
+//    								e.printStackTrace();
+//    							}
+//                			}
+//        				});
+//        			}
+//        		} else if(cs.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+//        			if(cs.getSourceIds() != null) {
+//        				cs.getSourceIds().forEach(sId -> {
+//                			ConformanceProfile cp = this.messageService.findById(sId);
+//                			if(cp != null) {
+//                				this.updateConformanceStatementForResourceBinding(cp.getBinding(), cs);
+//                				this.messageService.save(cp);
+//                			}
+//        				});
+//        			}
+//        		}  			
+//    		}
+//    	});
+//
+//    	this.predicateRepository.findAll().forEach(cp -> {
+//    		if(cp.getLevel() != null) {
+//        		if(cp.getLevel().equals(Level.DATATYPE)) {
+//        			if(cp.getSourceIds() != null) {
+//        				cp.getSourceIds().forEach(sId -> {
+//                			Datatype dt = this.dataypeService.findById(sId);
+//                			if(dt != null) {
+//                				this.visitBindingForPredicateUpdate(dt.getBinding(), cp);
+//                    			this.dataypeService.save(dt);
+//                			}
+//        				});
+//        			}
+//        		} else if(cp.getLevel().equals(Level.SEGMENT)) {
+//        			if(cp.getSourceIds() != null) {
+//        				cp.getSourceIds().forEach(sId -> {
+//                			Segment s = this.segmentService.findById(sId);
+//                			if(s != null) {
+//                				this.visitBindingForPredicateUpdate(s.getBinding(), cp);
+//                				try {
+//    								this.segmentService.save(s);
+//    							} catch (ValidationException e) {
+//    								e.printStackTrace();
+//    							}
+//                			}
+//                			
+//        				});
+//        			}
+//        		} else if(cp.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+//        			if(cp.getSourceIds() != null) {
+//        				cp.getSourceIds().forEach(sId -> {
+//        					ConformanceProfile m = this.messageService.findById(sId);
+//        					if(m != null) {
+//        						this.visitBindingForPredicateUpdate(m.getBinding(), cp);
+//                    			this.messageService.save(m);
+//        					}
+//        				});
+//        			}
+//        		}  			
+//    		}
+//    	});
     }
 
 	private void updateConformanceStatementForResourceBinding(ResourceBinding binding, ConformanceStatement cs) {
 		if(binding != null && binding.getConformanceStatementIds() != null && binding.getConformanceStatementIds().contains(cs.getId())) {
 			if(!this.isExistingCS(binding, cs)) binding.addConformanceStatement(cs);
-			binding.getConformanceStatementIds().remove(cs.getId());
 		}
 	}
 
-	private void visitBindingForPredicateUpdate(ResourceBinding binding, Predicate predicate) {
+	private void visitBindingForPredicateUpdate(ResourceBinding binding) {
 		if(binding != null && binding.getChildren() != null) {
-			this.visitSBindingForPredicateUpdate(binding.getChildren(), predicate);
+			this.visitSBindingForPredicateUpdate(binding.getChildren());
 		}
 	}
 
-	private void visitSBindingForPredicateUpdate(Set<StructureElementBinding> sebs, Predicate predicate) {
+	private void visitSBindingForPredicateUpdate(Set<StructureElementBinding> sebs) {
 		if(sebs != null) {
 			sebs.forEach(seb -> {
-				if(seb.getPredicateId() != null && seb.getPredicateId().equals(predicate.getId())) {
-					if(predicate instanceof FreeTextPredicate) {
-						seb.setPredicate((FreeTextPredicate)predicate);
-						seb.setPredicateId(null);
-					}else if (predicate instanceof AssertionPredicate) {
-						seb.setPredicate((AssertionPredicate)predicate);		
-						seb.setPredicateId(null);
-						
-					}
+				if(seb.getPredicateId() != null) {
+					this.predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> {
+						if(cp instanceof FreeTextPredicate) {
+							seb.setPredicate((FreeTextPredicate)cp);
+							seb.setPredicateId(null);
+						}else if (cp instanceof AssertionPredicate) {
+							seb.setPredicate((AssertionPredicate)cp);		
+							seb.setPredicateId(null);
+							
+						}	
+					});
+					
 				}
-				if(seb.getChildren() != null) this.visitSBindingForPredicateUpdate(seb.getChildren(), predicate);
+				if(seb.getChildren() != null) this.visitSBindingForPredicateUpdate(seb.getChildren());
 			});
 		}
 	}
