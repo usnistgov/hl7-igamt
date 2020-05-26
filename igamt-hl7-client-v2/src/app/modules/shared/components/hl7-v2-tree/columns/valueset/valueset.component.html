@@ -3,8 +3,6 @@
     <ng-container *ngIf="editable$ | async as edit">
       <ng-container [ngSwitch]="!!edit.value && edit.value.length > 0">
         <ng-container *ngSwitchCase="true">
-            <!-- [EDIT VALUE]
-            {{edit.value.length}} -->
             <ng-container [ngSwitch]="edit.type">
               <ng-container *ngSwitchCase="'VALUESET'">
 
@@ -31,6 +29,7 @@
 
               </ng-container>
               <ng-container *ngSwitchCase="'SINGLECODE'">
+                -call template
                 <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: freeze.binding.value, context : freeze.context }"></ng-container>
               </ng-container>
             </ng-container>

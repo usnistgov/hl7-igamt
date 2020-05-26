@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import {filter, map, mergeMap, take, withLatestFrom} from 'rxjs/operators';
+import {PublishLibrary, ToggleDeltaFailure} from 'src/app/root-store/library/library-edit/library-edit.index';
 import * as fromLibrayEdit from 'src/app/root-store/library/library-edit/library-edit.index';
 import { selectExternalTools } from '../../../../root-store/config/config.reducer';
 import { ExportDialogComponent } from '../../../export-configuration/components/export-dialog/export-dialog.component';
@@ -15,6 +16,7 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import {ILibrary} from '../../models/library.class';
 import { LibraryService } from '../../services/library.service';
 import {
+  IPublicationResult,
   IPublicationSummary,
   PublishLibraryDialogComponent,
 } from '../publish-library-dialog/publish-library-dialog.component';
@@ -126,6 +128,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
               });
               dialogRef.afterClosed().pipe(
                 filter((y) => y !== undefined),
+                map((result: IPublicationResult) => this.store.dispatch(new PublishLibrary(libId, result))),
               ).subscribe();
             }),
           );

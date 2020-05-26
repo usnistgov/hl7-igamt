@@ -9,40 +9,44 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.change.entity.domain;
+package gov.nist.hit.hl7.igamt.common.base.model;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 /**
- * @author jungyubw
+ * @author Abdelghani El Ouakili
  *
  */
-public enum PropertyType {
-  //METDATA
-  EXT, AUTHORNOTES, USAGENOTES, IDENTIFIER, BINDINGIDENTIFIER, DESCRIPTION, NAME, AUTHORS, PROFILETYPE, ROLE, PROFILEIDENTIFIER, ORGANISATION,
-  //PRETEXT
-  PREDEF,
+public class PublishedEntry {
+
+  private Scope scope;
+  private String id;
+  private Type type;
+  private String ext;
+  public Scope getScope() {
+    return scope;
+  }
+  public void setScope(Scope scope) {
+    this.scope = scope;
+  }
+  public String getId() {
+    return id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
+  public Type getType() {
+    return type;
+  }
+  public void setType(Type type) {
+    this.type = type;
+  }
+  public String getExt() {
+    return ext;
+  }
+  public void setExt(String ext) {
+    this.ext = ext;
+  }
   
-  //POSTTEXT
-  POSTDEF,
-  
-  //DYNAMICMAPPING
-  MAPPINGITEM,
-  
-  //CONFORMANCESTATEMENT
-  STATEMENT, PATTERN,
-  
-  //COCONSTRAINT
-  COCONSTRAINT,
-  COCONSTRAINTBINDINGS,
-  
-  //VALUESET
-  CODES,
-  CODESYSTEM,
-  EXTENSIBILITY,
-  CONTENTDEFINITION,
-  STABILITY,
-  URL,
-  INTENSIONALCOMMENT,
-  
-  //STRUCTURE
-  USAGE, TRUEUSAGE, FALSEUSAGE, CARDINALITYMIN, CARDINALITYMAX, LENGTHMIN, LENGTHMAX, CONFLENGTH, LENGTHTYPE, DATATYPE, VALUESET, SINGLECODE, CONSTANTVALUE, PREDICATE, DEFINITIONTEXT, COMMENT, SEGMENTREF, DTMSTRUC, SHORTDESCRIPTION
 }

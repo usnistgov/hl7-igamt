@@ -17,7 +17,10 @@ import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
 import { INarrative } from '../components/library-section-editor/library-section-editor.component';
-import {IPublicationSummary} from '../components/publish-library-dialog/publish-library-dialog.component';
+import {
+  IPublicationResult,
+  IPublicationSummary
+} from '../components/publish-library-dialog/publish-library-dialog.component';
 import {ILibrary} from '../models/library.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 import { IgTOCNodeHelper } from './library-toc-node-helper.service';
@@ -156,8 +159,8 @@ export class LibraryService {
     return this.http.post<Message<string>>(this.LIBRARY_END_POINT + id + '/clone', { mode, data }).pipe();
   }
 
-  publish(id: string): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.LIBRARY_END_POINT + id + '/publish', {}).pipe();
+  publish(id: string, publicationResult: IPublicationResult): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.LIBRARY_END_POINT + id + '/publish', publicationResult).pipe();
   }
 
   getPublicationSummary(id: string): Observable<IPublicationSummary> {

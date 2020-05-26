@@ -28,7 +28,7 @@
           <div #dtLib>
             <span [contextMenu]="addDatatypeContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #addDatatypeContextMenu>
-              <ng-template (execute)="import(node.data, 'DATATYPE', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <ng-template (execute)="import(node.data, 'DATATYPE', 'HL7STANDARD', false, true)" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add HL7 Data Types
               </ng-template>
             </context-menu>
@@ -39,8 +39,8 @@
           <div #dtLib>
             <span [contextMenu]="addDatatypeContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #addDatatypeContextMenu>
-              <ng-template (execute)="import(node.data, 'DATATYPE', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
-                <i class="fa fa-plus"></i> Add HL7 Data Types
+              <ng-template (execute)="import(node.data, 'DATATYPE', 'HL7STANDARD', true , false)" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-plus"></i> import Data Types
               </ng-template>
             </context-menu>
           </div>
@@ -52,7 +52,7 @@
 
           <context-menu #datatypeContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
-              <i class="fa fa-copy"></i> Create Flavor
+              <i class="fa fa-copy"></i> Clone
             </ng-template>
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-remove"></i> Delete

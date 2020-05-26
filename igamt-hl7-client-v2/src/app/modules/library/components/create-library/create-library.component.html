@@ -13,7 +13,7 @@
     </form>
   </div>
   <div class="messages">
-    <app-select-datatypes [hl7Versions]="hl7Version$ | async" (selected)="selectVersion($event)"  [table]="resources$ |async" (added)="updateAdded($event)" [existing]="[]" [master]="master$ |async" [documentType]="'DATATYPELIBRARY'"></app-select-datatypes>
+    <app-select-datatypes [hl7Versions]="hl7Version$ | async" (selected)="selectVersion($event)"  [table]="resources$ |async" (added)="updateAdded($event)" [existing]="[]" [master]="master$ |async" [documentType]="'DATATYPELIBRARY'" [hideFlavor]="false" [hideAsIs]="true"></app-select-datatypes>
   </div>
 
   <div class="submit">

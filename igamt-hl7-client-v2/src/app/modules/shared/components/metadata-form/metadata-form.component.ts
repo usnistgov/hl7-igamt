@@ -33,6 +33,7 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
     const formGroup = new FormGroup({});
     this.model = [];
     for (const field of Object.keys(model)) {
+       console.log(field);
       if (model.hasOwnProperty(field)) {
         formGroup.addControl(field, new FormControl('', model[field].validators));
         this.model.push({
