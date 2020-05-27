@@ -16,6 +16,8 @@ export class UsageViewerComponent implements OnInit {
   refs: IUsages[] = [];
   @Input()
   igId: string;
+  @Input()
+  documentType: Type;
   types: SelectItem[];
   usages: SelectItem[];
 

@@ -4,8 +4,13 @@ import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngr
 import { combineLatest, Observable, of } from 'rxjs';
 import { concatMap, flatMap, switchMap, take } from 'rxjs/operators';
 import { OpenEditor, OpenEditorBase, OpenEditorFailure } from 'src/app/modules/dam-framework/store/index';
-import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess } from '../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectIgId } from '../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {
+  IgamtLoadedResourcesActionTypes,
+  LoadResourceReferences,
+  LoadResourceReferencesFailure,
+  LoadResourceReferencesSuccess,
+} from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
+import {selectLoadedDocumentInfo} from '../../../root-store/dam-igamt/igamt.selectors';
 import { MessageType, UserMessage } from '../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../dam-framework/services/message.service';
 import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
@@ -81,12 +86,12 @@ export class OpenEditorService {
         });
         this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
         return RxjsStoreHelperService.listenAndReact(this.actions$, {
-          [IgEditActionTypes.LoadResourceReferencesSuccess]: {
+          [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
             do: (loadSuccess: LoadResourceReferencesSuccess) => {
               return of(openEditor);
             },
           },
-          [IgEditActionTypes.LoadResourceReferencesFailure]: {
+          [IgamtLoadedResourcesActionTypes.LoadResourceReferencesFailure]: {
             do: (loadFailure: LoadResourceReferencesFailure) => {
               return of(new OpenEditorFailure({ id: action.payload.id }));
             },
@@ -120,12 +125,12 @@ export class OpenEditorService {
         });
         this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
         return RxjsStoreHelperService.listenAndReact(this.actions$, {
-          [IgEditActionTypes.LoadResourceReferencesSuccess]: {
+          [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
             do: (loadSuccess: LoadResourceReferencesSuccess) => {
               return of(openEditor);
             },
           },
-          [IgEditActionTypes.LoadResourceReferencesFailure]: {
+          [IgamtLoadedResourcesActionTypes.LoadResourceReferencesFailure]: {
             do: (loadFailure: LoadResourceReferencesFailure) => {
               return of(new OpenEditorFailure({ id: action.payload.id }));
             },
@@ -146,9 +151,9 @@ export class OpenEditorService {
       _action,
       displayElement$,
       (a: OpenEditorBase) => {
-        return this.store.select(selectIgId).pipe(
-          flatMap((igId) => {
-            return resource$(type, a.payload.id, igId);
+        return this.store.select(selectLoadedDocumentInfo).pipe(
+          flatMap((documentInfo) => {
+            return resource$(type, a.payload.id, documentInfo.documentId);
           }),
         );
       },
@@ -181,12 +186,12 @@ export class OpenEditorService {
         });
         this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
         return RxjsStoreHelperService.listenAndReact(this.actions$, {
-          [IgEditActionTypes.LoadResourceReferencesSuccess]: {
+          [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
             do: (loadSuccess: LoadResourceReferencesSuccess) => {
               return of(openEditor);
             },
           },
-          [IgEditActionTypes.LoadResourceReferencesFailure]: {
+          [IgamtLoadedResourcesActionTypes.LoadResourceReferencesFailure]: {
             do: (loadFailure: LoadResourceReferencesFailure) => {
               return of(new OpenEditorFailure({ id: action.payload.id }));
             },
@@ -287,7 +292,7 @@ export class OpenEditorService {
       (action: A) => {
         return this.store.select(documentInfo).pipe(
           concatMap((info: IDocumentRef) => {
-            return service(info, documentType, elementType, action.payload.id);
+            return service(info, info.type, elementType, action.payload.id);
           }),
         );
       },

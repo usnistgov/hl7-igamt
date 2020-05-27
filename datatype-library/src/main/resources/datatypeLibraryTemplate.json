@@ -59,7 +59,7 @@
 	"position":1
 	}, 
 	{
-	"label" : "Derived Data Types",
+	"label" : "Referenced Data Types",
 	"type": "DERIVEDDATATYPEREGISTRY",
 	"position":2
 	}

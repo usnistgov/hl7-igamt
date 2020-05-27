@@ -20,6 +20,12 @@ export class ValueSetExportConfigurationComponent implements OnInit {
   @Input()
   derived: boolean;
 
+  @Input()
+  origin = null;
+
+  @Input()
+  delta: boolean;
+
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
 

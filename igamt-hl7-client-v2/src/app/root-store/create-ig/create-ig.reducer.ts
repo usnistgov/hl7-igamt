@@ -1,5 +1,5 @@
 import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {EventTreeData, MessageEventTreeNode} from '../../modules/ig/models/message-event/message-event.class';
+import {EventTreeData, MessageEventTreeNode} from '../../modules/document/models/message-event/message-event.class';
 import {CreateIgActions, CreateIgActionTypes} from './create-ig.actions';
 
 export interface IState {

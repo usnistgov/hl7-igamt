@@ -151,16 +151,16 @@ public class BindingServiceImpl implements BindingService {
    */
   @Override
   public void substitute(ResourceBinding binding, HashMap<RealKey, String> newKeys) {
-	  if (binding.getConformanceStatementIds() != null) {
-		  Set<String> newIds = new HashSet<String>();
-		  
-		  for(String oldId:binding.getConformanceStatementIds()) {
-			  String newId = newKeys.get(new RealKey(oldId,Type.CONFORMANCESTATEMENT));
-			  if(newId != null) newIds.add(newId);
-		  }
-		  
-		  binding.setConformanceStatementIds(newIds);
-	  }
+//	  if (binding.getConformanceStatementIds() != null) {
+//		  Set<String> newIds = new HashSet<String>();
+//		  
+//		  for(String oldId:binding.getConformanceStatementIds()) {
+//			  String newId = newKeys.get(new RealKey(oldId,Type.CONFORMANCESTATEMENT));
+//			  if(newId != null) newIds.add(newId);
+//		  }
+//		  
+//		  binding.setConformanceStatementIds(newIds);
+//	  }
 	  if(binding.getChildren() !=null ) {
 		  for (StructureElementBinding child : binding.getChildren() ) {
 			  processAndSubstitute(child, newKeys);
@@ -182,6 +182,8 @@ public class BindingServiceImpl implements BindingService {
             RealKey realKey= new RealKey(s, Type.VALUESET);
             if( newKeys.containsKey(realKey)) {
               newVs.add(newKeys.get(realKey));
+            }else {
+              newVs.add(s);
             }
           }
           vs.setValueSets(newVs);
@@ -197,11 +199,11 @@ public class BindingServiceImpl implements BindingService {
         }
       }
     }
-    if(elm.getPredicateId() != null) {
-    	if(newKeys.containsKey(new RealKey(elm.getPredicateId(), Type.PREDICATE))) {
-    		elm.setPredicateId(newKeys.get(new RealKey(elm.getPredicateId(), Type.PREDICATE)));
-    	}
-    }
+//    if(elm.getPredicateId() != null) {
+//    	if(newKeys.containsKey(new RealKey(elm.getPredicateId(), Type.PREDICATE))) {
+//    		elm.setPredicateId(newKeys.get(new RealKey(elm.getPredicateId(), Type.PREDICATE)));
+//    	}
+//    }
     if(elm.getChildren() !=null) { 
       for (StructureElementBinding child: elm.getChildren()) {
         processAndSubstitute(child, newKeys);

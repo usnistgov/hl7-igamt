@@ -1,14 +1,19 @@
 import { Component, OnInit } from '@angular/core';
+import {Validators} from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
-import { concatMap, switchMap, take } from 'rxjs/operators';
+import {concatMap, map, switchMap, take} from 'rxjs/operators';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import {selectLoadedDocumentInfo} from '../../../../root-store/dam-igamt/igamt.selectors';
 import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
 import { ResourceMetadataEditorComponent } from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
+import {FieldType} from '../../../shared/components/metadata-form/metadata-form.component';
 import { Type } from '../../../shared/constants/type.enum';
+import {validateConvention} from '../../../shared/functions/convention-factory';
+import {validateUnity} from '../../../shared/functions/unicity-factory';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
@@ -37,8 +42,16 @@ export class MetadataEditComponent extends ResourceMetadataEditorComponent imple
       store,
       froalaService,
     );
+    this.metadataFormInput$ = combineLatest(this.metadataFormInput$, store.select(selectLoadedDocumentInfo)).pipe(
+      take(1),
+      map(([form, info]) => {
+        // tslint:disable-next-line:no-all-duplicated-branches
+        if (info.type === Type.DATATYPELIBRARY) {
+          return form;
+        } else { return form; }
+      }),
+    );
   }
-
   save(changes: IChange[]): Observable<Message<any>> {
     return combineLatest(this.elementId$, this.documentRef$).pipe(
       take(1),

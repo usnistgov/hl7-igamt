@@ -13,6 +13,10 @@ export class NamingConventionDirective  implements Validator, OnInit {
   scope: Scope;
   @Input()
   type: Type;
+  @Input()
+  documentType: Type;
+  @Input()
+  master: boolean;
   fn: ValidatorFn;
 
   constructor() {
@@ -21,6 +25,6 @@ export class NamingConventionDirective  implements Validator, OnInit {
     return this.fn(control);
   }
   ngOnInit(): void {
-    this.fn = validateConvention(this.scope, this.type);
+    this.fn = validateConvention(this.scope, this.type, this.documentType, this.master);
   }
 }

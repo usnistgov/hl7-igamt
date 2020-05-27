@@ -17,6 +17,7 @@ import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 
@@ -30,7 +31,7 @@ public class ComponentDataModel implements Serializable{
 
   private DatatypeBindingDataModel datatype;
   private Predicate predicate;
-  private ExternalSingleCode singleCode;
+  private InternalSingleCode singleCode;
   private Set<ValuesetBindingDataModel> valuesets = new HashSet<ValuesetBindingDataModel>();
   
   public ComponentDataModel(){
@@ -38,7 +39,7 @@ public class ComponentDataModel implements Serializable{
   }
 
   public ComponentDataModel(Component c, Predicate predicate,
-      ExternalSingleCode singleCode, Set<ValuesetBindingDataModel> valuesets, DatatypeBindingDataModel datatype) {
+		  InternalSingleCode singleCode, Set<ValuesetBindingDataModel> valuesets, DatatypeBindingDataModel datatype) {
     this.model = c;
     this.predicate = predicate;
     this.singleCode = singleCode;
@@ -69,11 +70,11 @@ public Component getModel() {
     this.predicate = predicate;
   }
   
-  public ExternalSingleCode getSingleCode() {
+  public InternalSingleCode getSingleCode() {
     return singleCode;
   }
 
-  public void setSingleCode(ExternalSingleCode singleCode) {
+  public void setSingleCode(InternalSingleCode singleCode) {
     this.singleCode = singleCode;
   }
 

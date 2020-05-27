@@ -25,12 +25,14 @@ export class SelectValueSetsComponent implements OnInit {
   @Output() added = new EventEmitter<IAddingInfo[]>();
   @Output() valid = new EventEmitter<boolean>();
   @Input() scope: Scope;
+  _hl7Versions: string[];
 
   @Input()
   selectedVersion: string;
   @Input()
-  hl7Versions: string[] = [];
-
+  set hl7Versions(hl7Versions: string[]) {
+    this._hl7Versions = [... hl7Versions, '2.x'];
+  }
   @ViewChild(NgForm) form;
   constructor() {
   }

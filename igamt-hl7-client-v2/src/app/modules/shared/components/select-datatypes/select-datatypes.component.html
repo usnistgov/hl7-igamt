@@ -5,11 +5,11 @@
       <app-select-versions (selected)="select($event)" [hl7Versions]="hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
       <div style="text-align: left">
         <div class="input-group" style="margin-left: 10px;">
-          <div class="input-group-prepend" style="height: 35px;">
+          <div class="input-group-prepend" style="height: 35px; text-align: left">
             <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
           </div>
           <input (input)="dt1.filterGlobal($event.target.value, 'contains')" class="form-control" placeholder="Filter"
-                 style="background-color: #f0f0f0; text-align: center; height: 35px;" type="text">
+                 style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
         </div>
       </div>
     </ng-template>
@@ -18,11 +18,17 @@
         <th>
           Data Type
         </th>
-        <th style="width:100px">
-          As Is
+        <th *ngIf="master&& documentType =='DATATYPELIBRARY'">
+         Compatibility
         </th>
-        <th style="width:100px">
-          As Flavor
+        <th style="width:100px" *ngIf="!hideAsIs">
+          <span *ngIf="!hideFlavor">As Is</span>
+          <span *ngIf="hideFlavor">Add</span>
+        </th>
+        <th style="width:100px" *ngIf="!hideFlavor">
+          <span *ngIf="!hideAsIs">As Flavor</span>
+          <span *ngIf="hideAsIs">Add</span>
+
         </th>
       </tr>
     </ng-template>
@@ -37,13 +43,16 @@
             </ng-container>
           </span>
         </td>
-        <td style="width:100px">
-          <button class="btn-primary btn btn-sm" (click)="addAsIs(rowData)">
+        <td *ngIf="master&& documentType =='DATATYPELIBRARY'">
+          <span class=" badge badge-secondary" style="margin-left:5px;" *ngFor="let version of  rowData.domainInfo?.compatibilityVersion"> {{version}}</span>
+        </td>
+        <td style="width:100px" *ngIf="!hideAsIs">
+          <button class="btn-primary btn btn-sm" (click)="addAsIs(rowData)" *ngIf="!hideAsIs">
             <i class="fa fa-plus"></i>
           </button>
         </td>
-        <td style="width:100px">
-          <button class="btn-primary btn btn-sm" (click)="addAsFlavor(rowData)">
+        <td style="width:100px" *ngIf="!hideFlavor">
+          <button class="btn-primary btn btn-sm" (click)="addAsFlavor(rowData)" *ngIf="!hideFlavor">
             <i class="fa fa-plus"></i>
           </button>
         </td>
@@ -69,7 +78,10 @@
         <th>
           Data Type
         </th>
-        <th>
+        <th *ngIf="master && documentType ==='DTATYPELIBRARY'">
+          Compatibility
+        </th>
+        <th *ngIf="!hideFlavor">
           Extension
         </th>
         <th>
@@ -84,10 +96,14 @@
           </app-scope-badge>
           <span> {{rowData.name}}
           </span>
+
         </td>
-        <td>
+        <th *ngIf="master && documentType ==='DTATYPELIBRARY'">
+          {{rowData.domainInfo.compatibilityVersion}}
+        </th>
+        <td *ngIf="!hideFlavor">
           <ng-container *ngIf="rowData.domainInfo.scope !='HL7STANDARD'">
-            <input [name]="rowData.id" [id]="rowData.id" appNamingDuplication appNamingConvention  [type]="'DATATYPE'" [scope]="rowData.domainInfo.scope" [existing]="existing" [fixedName]="rowData.name" [domainInfo]="rowData.domainInfo" type="text" style="width: 100%"  [(ngModel)]="rowData.ext" required (input)="emitData()"/>
+            <input [name]="rowData.id" [id]="rowData.id" appNamingDuplication appNamingConvention  [type]="'DATATYPE'" [scope]="rowData.domainInfo.scope" [documentType]="documentType" [master]="master" [existing]="existing" [fixedName]="rowData.name" [domainInfo]="rowData.domainInfo" type="text" style="width: 100%"  [(ngModel)]="rowData.ext" required (input)="emitData()"/>
           <div *ngIf="addingEditForm.controls[rowData.id] && addingEditForm.controls[rowData.id].errors" style="color:red; font-size: 11px">
             <div *ngIf="addingEditForm.controls[rowData.id].errors.required">
               <span>*extension is required</span>

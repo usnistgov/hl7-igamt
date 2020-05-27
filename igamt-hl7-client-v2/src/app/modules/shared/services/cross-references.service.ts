@@ -31,11 +31,11 @@ export class CrossReferencesService {
   }
 
   getUsageUrl(documentId: string, documentType: Type, elementType: Type, elementId: string): string {
-    if (documentType === Type.IGDOCUMENT) {
+    if (!documentType || documentType === Type.IGDOCUMENT) {
       return 'api/igdocuments/' + documentId + '/' + elementType + '/' + elementId + '/usage';
-    } else {
-      return null;
-    }
+    } else if (documentType === Type.DATATYPELIBRARY) {
+      return 'api/datatype-library/' + documentId + '/' + elementType + '/' + elementId + '/usage';
+    } else { return null; }
   }
 
   getUsagesFromRelationShip(relations: IRelationShip[]): Observable<IUsages[]> {

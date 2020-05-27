@@ -8,7 +8,8 @@ import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
-import { LoadResourceReferences, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import {LoadResourceReferences} from '../../../../root-store/dam-igamt/igamt.loaded-resources.actions';
+import { LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
   selectValueSetsNodes,
 } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
@@ -111,7 +112,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
           mergeMap((message) => {
             return this.getById(id).pipe(
               flatMap((resource) => {
-                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false })];
+                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({selected: resource})];
               }),
             );
           }),

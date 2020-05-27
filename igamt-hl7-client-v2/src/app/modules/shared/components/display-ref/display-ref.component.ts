@@ -23,7 +23,12 @@ export class DisplayRefComponent implements OnInit {
   }
 
   redirect() {
-    this.router.navigate(['/ig/' + this.documentId + '/' + this.element.type.toLowerCase() + '/' + this.element.id]);
+    console.log(this.documentType);
+    let documentUrl = '/ig/';
+    if (this.documentType != null && this.documentType === Type.DATATYPELIBRARY ) {
+      documentUrl = '/datatype-library/';
+    }
+    this.router.navigate([documentUrl + this.documentId + '/' + this.element.type.toLowerCase() + '/' + this.element.id]);
 
   }
 }

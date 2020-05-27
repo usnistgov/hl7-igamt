@@ -15,13 +15,15 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
 /**
  * @author jungyubw
  *
  */
-public class IgDataModel implements Serializable {
+public class IgDataModel extends DocumentStructureDataModel implements Serializable{
+	
 	private Ig model;
 
 	private Set<DatatypeDataModel> datatypes = new HashSet<DatatypeDataModel>();

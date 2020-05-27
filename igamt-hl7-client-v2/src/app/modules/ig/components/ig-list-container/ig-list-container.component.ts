@@ -19,8 +19,8 @@ import { ConfirmDialogComponent } from '../../../dam-framework/components/fragme
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { ClearAll } from '../../../dam-framework/store/messages/messages.actions';
+import {IgListItem} from '../../../document/models/document/ig-list-item.class';
 import { CloneModeEnum } from '../../../shared/constants/clone-mode.enum';
-import { IgListItem } from '../../models/ig/ig-list-item.class';
 import { IgService } from '../../services/ig.service';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 import { IgListItemControl } from './../ig-list-item-card/ig-list-item-card.component';

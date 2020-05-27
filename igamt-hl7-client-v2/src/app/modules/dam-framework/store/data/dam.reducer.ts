@@ -184,15 +184,17 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
       };
 
     case DamActionTypes.LoadResourcesInRepostory:
-      const collections: ICollections = state.repository.collections;
+      const loaded: ICollections = {};
       action.payload.collections.forEach((value) => {
-        collections[value.key] = repositoryAdapter.addAll(value.values, repositoryAdapter.getInitialState());
+        loaded[value.key] = repositoryAdapter.addAll(value.values, repositoryAdapter.getInitialState());
       });
-
       return {
         ...state,
         repository: {
-          collections,
+          collections: {
+            ...state.repository.collections,
+            ...loaded,
+          },
         },
       };
 

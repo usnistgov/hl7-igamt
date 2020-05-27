@@ -53,4 +53,5 @@ public interface DatatypeRepository extends MongoRepository<Datatype, String> {
   @Query(value = "{ 'domainInfo.scope' : ?0 }")
   List<Datatype> findByScope(Scope scope);
   List<Datatype> findByIdIn(Set<String> ids);
+  List<Datatype> findByParentId(String id);
 }

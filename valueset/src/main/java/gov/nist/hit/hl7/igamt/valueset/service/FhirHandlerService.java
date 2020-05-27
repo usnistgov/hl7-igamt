@@ -10,4 +10,5 @@ public interface FhirHandlerService {
 	
 	public List<Valueset> getPhinvadsValuesets();
 	public Set<Code> getValusetCodes(String oid);
+	Set<Code> getValusetCodeForDynamicTable();
 }

@@ -24,7 +24,7 @@
     </div>
 
     <input (ngModelChange)="emitData($event)" [(ngModel)]="element.variableName" [domainInfo]="element.domainInfo" [existing]="existing" [fixedName]="element.fixedName"
-           [id]="element.id" [scope]="targetScope" [type]="element.type" appNamingConvention
+           [id]="element.id" [scope]="targetScope" [type]="element.type" [master]="master" [documentType]="documentType" appNamingConvention
            appNamingDuplication class="form-control" name="variableName" required style="width: 100%"
            type="text"/>
   </div>
