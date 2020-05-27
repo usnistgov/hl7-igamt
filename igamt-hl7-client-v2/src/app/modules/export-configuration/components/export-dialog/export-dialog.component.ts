@@ -3,9 +3,9 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IgService } from '../../../ig/services/ig.service';
+import { IExportConfigurationGlobal } from '../../models/config.interface';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
 import { ExportConfigurationDialogComponent } from '../export-configuration-dialog/export-configuration-dialog.component';
-import { IExportConfigurationGlobal } from '../../models/config.interface';
 
 @Component({
   selector: 'app-export-dialog',

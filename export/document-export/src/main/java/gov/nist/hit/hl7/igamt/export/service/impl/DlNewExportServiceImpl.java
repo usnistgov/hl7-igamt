@@ -153,7 +153,15 @@ public class DlNewExportServiceImpl implements DlNewExportService {
 	@Override
 	public ExportedFile exportDlDocumentToWord(String username, String id, ExportFilterDecision decision,
 			String configId) throws Exception {
-		// TODO Auto-generated method stub
+		DatatypeLibrary dl = datatypeLibraryService.findById(id);
+		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
+		if (dl != null) {
+			ExportedFile htmlFile = this.serializeDlDocumentToHtml(username, dl, ExportFormat.WORD, decision, exportConfiguration);
+			ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, dl.getMetadata(),
+					dl.getUpdateDate(),
+					dl.getDomainInfo() != null ? dl.getDomainInfo().getVersion() : null);
+			return wordFile;
+		}
 		return null;
 	}
 	

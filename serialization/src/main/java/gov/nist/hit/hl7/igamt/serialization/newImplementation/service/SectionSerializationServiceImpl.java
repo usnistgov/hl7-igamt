@@ -187,7 +187,6 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
                         			datatypeDataModel = ((DatatypeLibraryDataModel) documentStructureDataModel).getDatatypes().stream()
                                             .filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
                                             .orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId())); 
-                                    System.out.println("dfdfd");
 
                         			}
                         	
@@ -197,11 +196,11 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
                                             .containsKey(datatypeLink.getId())) {
                                 datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
                                         level + 1, datatypeLink.getPosition(),
-                                        exportFilterDecision.getOveriddedDatatypesMap().get(datatypeLink.getId()));
+                                        exportFilterDecision.getOveriddedDatatypesMap().get(datatypeLink.getId()),documentStructureDataModel.getModel().getType());
                             } else {
                                 datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
                                         level + 1, datatypeLink.getPosition(),
-                                        exportConfiguration.getDatatypeExportConfiguration());
+                                        exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType());
                             }
                             if (datatypeElement != null) {
                                 datatypeRegistryElement.appendChild(datatypeElement);
@@ -222,7 +221,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
                             Element datatypeElement;
                                 datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
                                         level + 1, datatypeLink.getPosition(),
-                                        exportConfiguration.getDatatypeExportConfiguration());
+                                        exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType());
                             
                             if (datatypeElement != null) {
                                 datatypeRegistryElement.appendChild(datatypeElement);

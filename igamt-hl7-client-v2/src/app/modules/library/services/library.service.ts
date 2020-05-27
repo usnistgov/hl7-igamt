@@ -306,7 +306,7 @@ export class LibraryService {
   getExportFirstDecision = (libId: string, conflibId: string): Observable<IExportConfigurationGlobal> => {
     return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + libId + this.CONFIGURATION + conflibId + '/getFilteredDocument');
   }
-  
+
   getDisplay(id: string, delta: boolean) {
       return this.getDisplayInfo(id);
   }

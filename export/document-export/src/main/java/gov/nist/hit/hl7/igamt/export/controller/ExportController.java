@@ -120,15 +120,15 @@ public class ExportController {
 						"attachment;filename=" + exportedFile.getFileName());
 				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 				}			
-//				if(format.toLowerCase().equals("word")) {					
-//				ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, igId, decision, configId);
-////			    ExportedFile wordFile = WordUtil.convertHtmlToWord(exportedFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
-//
-//				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-//				response.setHeader("Content-disposition",
-//						"attachment;filename=" + exportedFile.getFileName());
-//				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-//				}
+				if(format.toLowerCase().equals("word")) {					
+				ExportedFile exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, decision, configId);
+//			    ExportedFile wordFile = WordUtil.convertHtmlToWord(exportedFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
+
+				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+				response.setHeader("Content-disposition",
+						"attachment;filename=" + exportedFile.getFileName());
+				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+				}
 				
 				if(format.toLowerCase().equals("html1")) {} 
 					   
@@ -188,9 +188,13 @@ public class ExportController {
 						"attachment;filename=" + exportedFile.getFileName());
 				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 				}			
-				if(format.toLowerCase().equals("word")) {					
-				ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, igId, decision, configId);
-//			    ExportedFile wordFile = WordUtil.convertHtmlToWord(exportedFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
+				if(format.toLowerCase().equals("word")) {	
+					ExportedFile exportedFile = null;
+					if(ds instanceof Ig) {
+						 exportedFile = igExportService.exportIgDocumentToWord(username, igId, decision, configId);
+						} else if(ds instanceof DatatypeLibrary) {
+							 exportedFile = dlNewExportService.exportDlDocumentToWord(username, igId, decision, configId);
+						}
 
 				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 				response.setHeader("Content-disposition",
