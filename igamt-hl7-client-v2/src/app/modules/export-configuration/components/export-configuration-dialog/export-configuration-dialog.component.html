@@ -73,16 +73,16 @@
       <div class="content">
         <ng-container [ngSwitch]="type">
           <ng-container *ngSwitchCase="'SEGMENT'">
-            <app-segment-export-configuration [config]="current" [derived]="derived" (detectChange)="applyChange($event)" *ngIf="!loading"></app-segment-export-configuration>
+            <app-segment-export-configuration [config]="current" [derived]="derived" [delta]="delta" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading"></app-segment-export-configuration>
           </ng-container>
           <ng-container *ngSwitchCase="'VALUESET'">
-            <app-value-set-export-configuration [config]="current" [derived]="derived" (detectChange)="applyChange($event)" *ngIf="!loading" ></app-value-set-export-configuration>
+            <app-value-set-export-configuration [config]="current" [derived]="derived" [delta]="delta" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading" ></app-value-set-export-configuration>
           </ng-container>
           <ng-container *ngSwitchCase="'DATATYPE'">
-            <app-datatype-export-configuration [config]="current" [derived]="derived" (detectChange)="applyChange($event)" *ngIf="!loading"></app-datatype-export-configuration>
+            <app-datatype-export-configuration [config]="current" [derived]="derived" [delta]="delta" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading"></app-datatype-export-configuration>
           </ng-container>
           <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-            <app-conformance-profile-export-configuration [config]="current" [derived]="derived" (detectChange)="applyChange($event)" *ngIf="!loading"></app-conformance-profile-export-configuration>
+            <app-conformance-profile-export-configuration [config]="current" [derived]="derived" [delta]="delta" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading"></app-conformance-profile-export-configuration>
           </ng-container>
         </ng-container>
       </div>

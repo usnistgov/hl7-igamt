@@ -23,6 +23,12 @@ export class ConformanceProfileExportConfigurationComponent implements OnInit {
   @Input()
   displayColumns: boolean;
 
+  @Input()
+  origin = null;
+
+  @Input()
+  delta: boolean;
+
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
 
