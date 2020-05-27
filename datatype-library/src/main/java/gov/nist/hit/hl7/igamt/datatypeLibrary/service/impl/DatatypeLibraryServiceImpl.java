@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -48,10 +49,12 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationEntry;
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationResult;
@@ -61,12 +64,17 @@ import gov.nist.hit.hl7.igamt.common.base.model.PublishedEntry;
 //import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibraryDataModel;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeLibraryRepository;
@@ -74,9 +82,17 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.LibraryDisplayInfoService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.STATUS;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 /**
@@ -98,8 +114,24 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
   @Autowired
   DatatypeService datatypeService;
+  
   @Autowired
   ValuesetService valuesetService;
+  
+  @Autowired
+  PredicateRepository predicateRepository;
+  
+  @Autowired
+  ConformanceStatementRepository conformanceStatementRepository;
+
+  @Autowired
+  FhirHandlerService fhirHandlerService;
+  
+  @Autowired
+  ConfigService configService;
+
+
+
 
   @Override
   public DatatypeLibrary findById(String id) {
@@ -554,6 +586,111 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     lib.setPublicationInfo(info);
     this.save(lib);
     return lib.getId();
+  }
+
+  @Override
+  public DatatypeLibraryDataModel generateDataModel(DatatypeLibrary dl) throws Exception {
+  	DatatypeLibraryDataModel datatypeLibraryDataModel = new DatatypeLibraryDataModel();
+  	datatypeLibraryDataModel.setModel(dl);
+
+  	    Set<DatatypeDataModel> datatypes = new HashSet<DatatypeDataModel>();
+  	    Set<SegmentDataModel> segments = new HashSet<SegmentDataModel>();
+  	    Set<ConformanceProfileDataModel> conformanceProfiles =
+  	        new HashSet<ConformanceProfileDataModel>();
+  	    Set<ValuesetDataModel> valuesets = new HashSet<ValuesetDataModel>();
+  	    Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap =
+  	        new HashMap<String, ValuesetBindingDataModel>();
+
+  	    for (Link link : dl.getValueSetRegistry().getChildren()) {
+  	      Valueset vs = this.getValueSetInIg(dl.getId(), link.getId());
+  	      if (vs != null) {
+  	        ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
+  	        valuesetDataModel.setModel(vs);
+  	        valuesetBindingDataModelMap.put(vs.getId(), new ValuesetBindingDataModel(vs));
+  	        valuesets.add(valuesetDataModel);
+  	      } else
+  	        throw new Exception("Valueset is missing.");
+  	    }
+
+  	    for (Link link : dl.getDatatypeRegistry().getChildren()) {
+  	      Datatype d = this.datatypeService.findById(link.getId());
+  	      if (d != null) {
+  	        DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
+  	        datatypeDataModel.putModel(d, this.datatypeService, valuesetBindingDataModelMap,
+  	            this.conformanceStatementRepository, this.predicateRepository);
+  	        datatypes.add(datatypeDataModel);
+  	      }
+  	      else throw new Exception("Datatype is missing.");
+  	    }
+
+//  	    for (Link link : dl.getSegmentRegistry().getChildren()) {
+//  	      Segment s = this.segmentService.findById(link.getId());
+//  	      if (s != null) {
+//  	        SegmentDataModel segmentDataModel = new SegmentDataModel();
+//  	        segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
+//  	        // CoConstraintTable coConstraintTable =
+//  	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
+//  	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
+//  	        segments.add(segmentDataModel);
+//  	      } else
+//  	        throw new Exception("Segment is missing.");
+//  	    }
+
+//  	    for (Link link : ig.getConformanceProfileRegistry().getChildren()) {
+//  	      ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
+//  	      if (cp != null) {
+//  	        ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
+//  	        conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap,
+//  	            this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
+//  	        conformanceProfiles.add(conformanceProfileDataModel);
+//  	      } else
+//  	        throw new Exception("ConformanceProfile is missing.");
+//  	    }
+
+  	    datatypeLibraryDataModel.setDatatypes(datatypes);
+//  	    igDataModel.setSegments(segments);
+//  	    igDataModel.setConformanceProfiles(conformanceProfiles);
+//  	    igDataModel.setValuesets(valuesets);
+
+
+  	    return datatypeLibraryDataModel;
+  	  }
+
+  @Override
+  public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
+  	DatatypeLibrary dl = this.findById(id);
+    if(dl == null ) {
+      throw new IGNotFoundException(id);
+    }
+    Valueset vs= valuesetService.findById(vsId);
+
+    if(vs == null) {
+      throw new ValuesetNotFoundException(vsId);
+    }
+    if(vs.getBindingIdentifier().equals("HL70396") && vs.getSourceType().equals(SourceType.EXTERNAL)) {
+      vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
+    }
+    if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
+      if(vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+        Config conf = this.configService.findOne();
+        if(conf !=null) {
+          vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
+        }
+      }
+    }
+    if(dl.getValueSetRegistry().getCodesPresence() != null ) {
+      if (dl.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
+        if (dl.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
+          vs.setIncludeCodes(true);
+        } else {
+          vs.setIncludeCodes(false);
+          vs.setCodes(new HashSet<Code>());
+        }
+      }else {
+        vs.setIncludeCodes(true);
+      }
+    }
+    return vs;
   }
 }
 
