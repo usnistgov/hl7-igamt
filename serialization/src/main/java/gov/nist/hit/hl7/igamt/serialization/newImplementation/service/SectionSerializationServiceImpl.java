@@ -6,6 +6,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
@@ -16,6 +17,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNot
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibraryDataModel;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
@@ -57,50 +59,53 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 
 
     @Override
-    public Element SerializeSection(Section section, int level, IgDataModel igDataModel,
+    public Element SerializeSection(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
             ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
             throws RegistrySerializationException {
         Element serializedSection = null;
+        if(documentStructureDataModel instanceof IgDataModel) {
         if (Type.TEXT.equals(section.getType())) {
-            serializedSection = SerializeTextSection((TextSection) section, level, igDataModel, exportConfiguration);
+            serializedSection = SerializeTextSection((TextSection) section, level, (IgDataModel) documentStructureDataModel, exportConfiguration);
         } else if (Type.PROFILE.equals(section.getType())) {
-            serializedSection = SerializeProfile((TextSection) section, level, igDataModel, exportConfiguration,
+            serializedSection = SerializeProfile((TextSection) section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
                     exportFilterDecision);
         } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
-            serializedSection = SerializeDatatypeRegistry(section, level, igDataModel, exportConfiguration,
+            serializedSection = SerializeDatatypeRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
                     exportFilterDecision);
         } else if (Type.SEGMENTREGISTRY.equals(section.getType())) {
             if (exportConfiguration.isIncludeSegmentTable()) {
-                serializedSection = SerializeSegmentRegistry(section, level, igDataModel, exportConfiguration,
+                serializedSection = SerializeSegmentRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
                         exportFilterDecision);
             }
         } else if (Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
             if (exportConfiguration.isIncludeMessageTable()) {
-                serializedSection = SerializeConformanceProfileRegistry(section, level, igDataModel,
+                serializedSection = SerializeConformanceProfileRegistry(section, level, (IgDataModel) documentStructureDataModel,
                         exportConfiguration, exportFilterDecision);
 
             }
         } else if (Type.VALUESETREGISTRY.equals(section.getType())) {
             if (exportConfiguration.isIncludeValuesetsTable()) {
-                serializedSection = SerializeValuesetRegistry(section, level, igDataModel, exportConfiguration,
+                serializedSection = SerializeValuesetRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
                         exportFilterDecision);
             }
         }
-        // } else if (Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
-        // if(exportConfiguration.isIncludeProfileComponentTable()) {
-        // //TODO add profile component registry serialization
-        // }
-        // } else if (Type.COMPOSITEPROFILEREGISTRY.equals(section.getType())) {
-        // if(exportConfiguration.isIncludeCompositeProfileTable()) {
-        // //TODO add composite profile registry serialization
-        // }
-
+        } else if(documentStructureDataModel instanceof DatatypeLibraryDataModel) {
+        	if (Type.TEXT.equals(section.getType())) {
+                serializedSection = SerializeTextSection((TextSection) section, level, (DatatypeLibraryDataModel) documentStructureDataModel, exportConfiguration);
+            } else if (Type.PROFILE.equals(section.getType())) {
+                serializedSection = SerializeProfile((TextSection) section, level, (DatatypeLibraryDataModel) documentStructureDataModel, exportConfiguration,
+                        exportFilterDecision);
+            } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
+                serializedSection = SerializeDatatypeRegistry(section, level, (DatatypeLibraryDataModel) documentStructureDataModel, exportConfiguration,
+                        exportFilterDecision);
+            }
+        }
         return serializedSection;
     }
     //
     // }
 
-    public Element SerializeCommonSection(Section section, int level, IgDataModel igDataModel,
+    public Element SerializeCommonSection(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
             ExportConfiguration exportConfiguration) {
         Element sectionElement = igDataModelSerializationService.getElement(Type.SECTION, section.getPosition(),
                 section.getId(), section.getLabel());
@@ -115,12 +120,12 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
     }
 
     @Override
-    public Element SerializeTextSection(TextSection section, int level, IgDataModel igDataModel,
+    public Element SerializeTextSection(TextSection section, int level, DocumentStructureDataModel documentStructureDataModel,
             ExportConfiguration exportConfiguration) {
-        Element textSectionElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+        Element textSectionElement = SerializeCommonSection(section, level, documentStructureDataModel, exportConfiguration);
         if (section.getChildren() != null) {
             for (TextSection child : section.getChildren()) {
-                Element childElement = SerializeTextSection(child, level + 1, igDataModel, exportConfiguration);
+                Element childElement = SerializeTextSection(child, level + 1, documentStructureDataModel, exportConfiguration);
                 if (childElement != null) {
                     textSectionElement.appendChild(childElement);
                 }
@@ -131,14 +136,14 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
     }
 
     @Override
-    public Element SerializeProfile(TextSection section, int level, IgDataModel igDataModel,
+    public Element SerializeProfile(TextSection section, int level, DocumentStructureDataModel documentStructureDataModel,
             ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
             throws RegistrySerializationException {
-        Element profileElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+        Element profileElement = SerializeCommonSection(section, level, documentStructureDataModel, exportConfiguration);
         if (section.getChildren() != null) {
             for (TextSection childSection : section.getChildren()) {
                 if (childSection != null) {
-                    Element childSectionElement = SerializeSection(childSection, level + 1, igDataModel,
+                    Element childSectionElement = SerializeSection(childSection, level + 1, documentStructureDataModel,
                             exportConfiguration, exportFilterDecision);
                     if (childSectionElement != null) {
                         profileElement.appendChild(childSectionElement);
@@ -150,30 +155,46 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
     }
 
     @Override
-    public Element SerializeDatatypeRegistry(Section section, int level, IgDataModel igDataModel,
+    public Element SerializeDatatypeRegistry(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
             ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
             throws RegistrySerializationException {
-        Registry datatypeRegistry = igDataModel.getModel().getDatatypeRegistry();
+    		Registry datatypeRegistry = null;
+        if(documentStructureDataModel instanceof IgDataModel) {
+         datatypeRegistry = ((IgDataModel) documentStructureDataModel).getModel().getDatatypeRegistry();
+        }else if(documentStructureDataModel instanceof DatatypeLibraryDataModel) {
+             datatypeRegistry = ((DatatypeLibraryDataModel) documentStructureDataModel).getModel().getDatatypeRegistry();
+        }
         try {
-            Element datatypeRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+            Element datatypeRegistryElement = SerializeCommonSection(section, level, documentStructureDataModel, exportConfiguration);
             if (datatypeRegistry != null) {
                 if (!datatypeRegistry.getChildren().isEmpty()) {
                     for (Link datatypeLink : datatypeRegistry.getChildren()) {
                         if (exportFilterDecision != null && exportFilterDecision.getDatatypesFilterMap() != null
                                 && exportFilterDecision.getDatatypesFilterMap().containsKey(datatypeLink.getId())
                                 && exportFilterDecision.getDatatypesFilterMap().get(datatypeLink.getId())) {
-                            DatatypeDataModel datatypeDataModel = igDataModel.getDatatypes().stream()
-                                    .filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
-                                    .orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId()));
+                        	DatatypeDataModel datatypeDataModel = null;
+                        	
+                        	if(documentStructureDataModel instanceof IgDataModel) {
+                        		datatypeDataModel = ((IgDataModel) documentStructureDataModel).getDatatypes().stream()
+                                        .filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
+                                        .orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId()));
+                        		}else if(documentStructureDataModel instanceof DatatypeLibraryDataModel) {
+                        			datatypeDataModel = ((DatatypeLibraryDataModel) documentStructureDataModel).getDatatypes().stream()
+                                            .filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
+                                            .orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId())); 
+                                    System.out.println("dfdfd");
+
+                        			}
+                        	
                             Element datatypeElement;
                             if (exportFilterDecision != null && exportFilterDecision.getOveriddedDatatypesMap() != null
                                     && exportFilterDecision.getOveriddedDatatypesMap()
                                             .containsKey(datatypeLink.getId())) {
-                                datatypeElement = datatypeSerializationService.serializeDatatype(igDataModel.getModel().getId(),datatypeDataModel,
+                                datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
                                         level + 1, datatypeLink.getPosition(),
                                         exportFilterDecision.getOveriddedDatatypesMap().get(datatypeLink.getId()));
                             } else {
-                                datatypeElement = datatypeSerializationService.serializeDatatype(igDataModel.getModel().getId(),datatypeDataModel,
+                                datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
                                         level + 1, datatypeLink.getPosition(),
                                         exportConfiguration.getDatatypeExportConfiguration());
                             }
@@ -181,11 +202,20 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
                                 datatypeRegistryElement.appendChild(datatypeElement);
                             }
                         } else if(exportFilterDecision == null) {
-                            DatatypeDataModel datatypeDataModel = igDataModel.getDatatypes().stream()
-                                    .filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
-                                    .orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId()));
+           	DatatypeDataModel datatypeDataModel = null;
+                        	
+                        	if(documentStructureDataModel instanceof IgDataModel) {
+                        		datatypeDataModel = ((IgDataModel) documentStructureDataModel).getDatatypes().stream()
+                                        .filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
+                                        .orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId()));
+                        		}else if(documentStructureDataModel instanceof DatatypeLibraryDataModel) {
+                        			datatypeDataModel = ((DatatypeLibraryDataModel) documentStructureDataModel).getDatatypes().stream()
+                                            .filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
+                                            .orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId())); 
+                        			}
+                          
                             Element datatypeElement;
-                                datatypeElement = datatypeSerializationService.serializeDatatype(igDataModel.getModel().getId(),datatypeDataModel,
+                                datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
                                         level + 1, datatypeLink.getPosition(),
                                         exportConfiguration.getDatatypeExportConfiguration());
                             
@@ -377,5 +407,9 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
         }
 
     }
+
+
+
+
 
 }
