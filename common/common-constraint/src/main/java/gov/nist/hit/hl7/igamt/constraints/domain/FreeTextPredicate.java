@@ -13,33 +13,39 @@ package gov.nist.hit.hl7.igamt.constraints.domain;
 
 import java.io.Serializable;
 
-import gov.nist.diff.annotation.DeltaField;
-import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
-import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
+import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
 
 /**
  * @author jungyubw
  *
  */
-public class AssertionPredicate extends Predicate implements Serializable{
+public class FreeTextPredicate extends Predicate  implements Serializable{
+
   /**
    * 
    */
-  private static final long serialVersionUID = -8306847581430345712L;
-  @DeltaField
-  private Assertion assertion;
+  private static final long serialVersionUID = 8137080477013985379L;
+  private String freeText;
+  private String assertionScript;
 
-  public AssertionPredicate() {
+  public FreeTextPredicate() {
     super();
-    this.setType(ConstraintType.ASSERTION);
+    this.setType(ConstraintType.FREE);
   }
 
-  public Assertion getAssertion() {
-    return assertion;
+  public String getFreeText() {
+    return freeText;
   }
 
-  public void setAssertion(Assertion assertion) {
-    this.assertion = assertion;
+  public void setFreeText(String freeText) {
+    this.freeText = freeText;
   }
 
+  public String getAssertionScript() {
+    return assertionScript;
+  }
+
+  public void setAssertionScript(String assertionScript) {
+    this.assertionScript = assertionScript;
+  }
 }

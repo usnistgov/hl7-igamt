@@ -20,41 +20,60 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Level;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 /**
  * @author jungyubw
  *
  */
+
 @Document
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({@JsonSubTypes.Type(value = FreeTextConformanceStatement.class, name = "FREE"),
-    @JsonSubTypes.Type(value = AssertionConformanceStatement.class, name = "ASSERTION")})
-public class ConformanceStatement implements Serializable{
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 5188411006490923627L;
+@JsonSubTypes({@JsonSubTypes.Type(value = FreeTextPredicate.class, name = "FREE"),
+    @JsonSubTypes.Type(value = AssertionPredicate.class, name = "ASSERTION")})
+public class Predicate implements Serializable{
+
+  private static final long serialVersionUID = 160188380051171488L;
+  
   @Id
   private String id;
-  private ConstraintType type;
-  protected String identifier;
+  private String identifier;
+  protected ConstraintType type;
+  protected Usage trueUsage;
+  protected Usage falseUsage;
   private Path context;
   private Level level;
+  
+  @Deprecated
   private String structureId;
+  @Deprecated
   private HashSet<String> sourceIds;
+  @Deprecated
   private String igDocumentId;
+  @Deprecated
+  private String location;
 
-  public ConformanceStatement() {
+  public Predicate() {
     super();
   }
 
-  public String getIdentifier() {
-    return identifier;
+  public Usage getTrueUsage() {
+    return trueUsage;
   }
 
-  public void setIdentifier(String identifier) {
-    this.identifier = identifier;
+  public void setTrueUsage(Usage trueUsage) {
+    this.trueUsage = trueUsage;
+  }
+
+  public Usage getFalseUsage() {
+    return falseUsage;
+  }
+
+  public void setFalseUsage(Usage falseUsage) {
+    this.falseUsage = falseUsage;
   }
 
   public ConstraintType getType() {
@@ -65,14 +84,6 @@ public class ConformanceStatement implements Serializable{
     this.type = type;
   }
 
-  public Path getContext() {
-    return context;
-  }
-
-  public void setContext(Path context) {
-    this.context = context;
-  }
-
   public String getId() {
     return id;
   }
@@ -81,13 +92,29 @@ public class ConformanceStatement implements Serializable{
     this.id = id;
   }
   
+  public Path getContext() {
+	return context;
+  }
+
+  public void setContext(Path context) {
+    this.context = context;
+  }
+
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
+  
   public String generateDescription() {
-    if(this instanceof  FreeTextConformanceStatement){
-      FreeTextConformanceStatement cs = (FreeTextConformanceStatement)this;
-      return cs.getFreeText();
-    }else if(this instanceof  AssertionConformanceStatement){
-      AssertionConformanceStatement cs = (AssertionConformanceStatement)this;
-      if(cs.getAssertion() != null) return cs.getAssertion().getDescription();
+    if(this instanceof  FreeTextPredicate){
+      FreeTextPredicate cp = (FreeTextPredicate)this;
+      return cp.getFreeText();
+    }else if(this instanceof  AssertionPredicate){
+      AssertionPredicate cp = (AssertionPredicate)this;
+      if(cp.getAssertion() != null) return cp.getAssertion().getDescription();
     }
     return null;
   }
@@ -95,43 +122,61 @@ public class ConformanceStatement implements Serializable{
   public Level getLevel() {
     return level;
   }
-
+  
   public void setLevel(Level level) {
     this.level = level;
   }
 
+  @Deprecated
   public String getStructureId() {
     return structureId;
   }
 
+  @Deprecated
   public void setStructureId(String structureId) {
     this.structureId = structureId;
   }
-
-  public String getIgDocumentId() {
-    return igDocumentId;
-  }
-
-  public void setIgDocumentId(String igDocumentId) {
-    this.igDocumentId = igDocumentId;
-  }
-
+  
+  @Deprecated
   public HashSet<String> getSourceIds() {
     return sourceIds;
   }
 
+  @Deprecated
   public void setSourceIds(HashSet<String> sourceIds) {
     this.sourceIds = sourceIds;
   }
 
+  @Deprecated
+  public String getIgDocumentId() {
+    return igDocumentId;
+  }
+
+  @Deprecated
+  public void setIgDocumentId(String igDocumentId) {
+    this.igDocumentId = igDocumentId;
+  }
+
+  @Deprecated
   public void addSourceId(String sourceId) {
     if(this.sourceIds == null) this.sourceIds = new HashSet<String>();
     this.sourceIds.add(sourceId);
   }
 
+  @Deprecated
   public void removeSourceId(String sourceId) {
     if(this.sourceIds != null) {
       this.sourceIds.remove(sourceId);
     }
+  }
+
+  @Deprecated
+  public String getLocation() {
+    return location;
+  }
+
+  @Deprecated
+  public void setLocation(String location) {
+    this.location = location;
   }
 }

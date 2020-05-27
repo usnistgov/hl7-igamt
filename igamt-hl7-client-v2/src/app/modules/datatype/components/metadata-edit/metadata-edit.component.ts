@@ -45,15 +45,9 @@ export class MetadataEditComponent extends ResourceMetadataEditorComponent imple
     this.metadataFormInput$ = combineLatest(this.metadataFormInput$, store.select(selectLoadedDocumentInfo)).pipe(
       take(1),
       map(([form, info]) => {
+        // tslint:disable-next-line:no-all-duplicated-branches
         if (info.type === Type.DATATYPELIBRARY) {
-          return {...form, model: { ...form.model, compatibilityVersions: {
-                label: 'Compatibility Versions',
-                placeholder: 'Compatibility Versions',
-                type: FieldType.STRING_LIST,
-                validators: [],
-                id: 'compatibilityVersions',
-                name: 'compatibilityVersions',
-              } } };
+          return form;
         } else { return form; }
       }),
     );

@@ -129,6 +129,8 @@ export class LibraryEditSidebarComponent implements OnInit {
           scope: event.scope,
           documentType: Type.DATATYPELIBRARY,
           master: ms,
+          hideAsIs: event.hideAsIs,
+          hideFlavor: event.hideFlavor,
           versionChange: (version: string) => {
             this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version, compatibility: true }));
           },
@@ -154,26 +156,32 @@ export class LibraryEditSidebarComponent implements OnInit {
     subscription.unsubscribe();
   }
   copy($event: ICopyResourceData) {
-    const dialogRef = this.dialog.open(CopyResourceComponent, {
-      data: { ...$event, targetScope: Scope.USER, title: this.getCopyTitle($event.element.type) },
-    });
-    dialogRef.afterClosed().pipe(
-      filter((x) => x !== undefined),
-      withLatestFrom(this.documentRef$),
-      map(([result, documentRef]) => {
-        if (result && result.redirect) {
-          RxjsStoreHelperService.listenAndReact(this.actions, {
-            [LibraryEditActionTypes.CopyResourceSuccess]: {
-              do: (action: CopyResourceSuccess) => {
-                this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
-                return of();
-              },
-            },
-          }).subscribe();
-        }
-        this.store.dispatch(new CopyResource({ documentId: documentRef.documentId, selected: result.flavor }));
-      }),
-    ).subscribe();
+
+    const subscription = combineLatest(this.documentRef$, this.master$).pipe(
+      take(1),
+      map(([documentRef, master]) => {
+          const dialogRef = this.dialog.open(CopyResourceComponent, {
+            data: {...$event, targetScope: Scope.USER, title: this.getCopyTitle($event.element.type), documentType: documentRef.type, master},
+          });
+          dialogRef.afterClosed().pipe(
+            filter((x) => x !== undefined),
+            map((result) => {
+              if (result && result.redirect) {
+                RxjsStoreHelperService.listenAndReact(this.actions, {
+                  [LibraryEditActionTypes.CopyResourceSuccess]: {
+                    do: (action: CopyResourceSuccess) => {
+                      this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], {relativeTo: this.activeRoute});
+                      return of();
+                    },
+                  },
+                }).subscribe();
+              }
+              this.store.dispatch(new CopyResource({documentId: documentRef.documentId, selected: result.flavor}));
+            }),
+          ).subscribe();
+        }),
+      ).subscribe();
+    subscription.unsubscribe();
   }
   delete($event: IDisplayElement) {
     this.documentRef$.pipe(

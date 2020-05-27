@@ -104,7 +104,7 @@
                     [context]="type"
                     [predicate]="{
                       documentRef: documentRef,
-                      predicates: rowData.bindings?.values?.predicateId
+                      predicates: rowData.bindings?.values?.predicate
                     }"
                     (valueChange)="registerChange($event)"
                   ></app-usage>
@@ -218,7 +218,7 @@
                   <app-valueset
                     [changeEvent]="changes$"
                     [viewOnly]="viewOnly || !rowData.changeable"
-                    [globalViewOnly]="viewOnly || documentRef.type !=='IGDOCUMENT'"
+                    [globalViewOnly]="viewOnly || documentRef.type =='DATATYPELIBRARY'"
                     [context]="type"
                     [type]="rowData.type"
                     [location]="rowData.pathId"

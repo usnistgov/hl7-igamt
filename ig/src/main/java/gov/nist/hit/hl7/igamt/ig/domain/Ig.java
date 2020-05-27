@@ -75,6 +75,7 @@ public class Ig extends DocumentStructure {
   public Ig() {
     super();
     // TODO Auto-generated constructor stub
+    this.setType(Type.IGDOCUMENT);
   }
 
   public Ig(String id, String version, String name, PublicationInfo publicationInfo,

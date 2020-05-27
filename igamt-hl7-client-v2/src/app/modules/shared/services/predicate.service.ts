@@ -11,16 +11,4 @@ import { IPredicate } from '../models/predicate.interface';
 export class PredicateService {
 
   constructor(private http: HttpClient) { }
-
-  getPredicate(documentRef: IDocumentRef, predicateId: string): Observable<IPredicate> {
-    if (documentRef.type === Type.IGDOCUMENT) {
-      return this.http.get<IPredicate>('/api/igdocuments/' + documentRef.documentId + '/predicate/' + predicateId);
-
-    } else if (documentRef.type === Type.DATATYPELIBRARY) {
-      return this.http.get<IPredicate>('/api/datatype-library/' + documentRef.documentId + '/predicate/' + predicateId);
-
-    } else {
-      throwError('Bad URL');
-    }
-  }
 }

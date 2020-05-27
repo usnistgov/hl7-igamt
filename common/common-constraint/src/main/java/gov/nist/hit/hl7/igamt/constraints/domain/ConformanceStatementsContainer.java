@@ -1,10 +1,9 @@
-package gov.nist.hit.hl7.igamt.constraints.domain.display;
+package gov.nist.hit.hl7.igamt.constraints.domain;
 
 import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 
 
 public class ConformanceStatementsContainer {

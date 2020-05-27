@@ -11,29 +11,39 @@
  */
 package gov.nist.hit.hl7.igamt.constraints.domain;
 
-import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
+import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
 
 /**
  * @author jungyubw
  *
  */
-public class AssertionConformanceStatement extends ConformanceStatement {
+public class FreeTextConformanceStatement extends ConformanceStatement {
+
   /**
    * 
    */
-  private static final long serialVersionUID = 5906567957257311681L;
-  private Assertion assertion;
+  private static final long serialVersionUID = -7899147064970467492L;
+  private String freeText;
+  private String assertionScript;
 
-  public AssertionConformanceStatement() {
+  public FreeTextConformanceStatement() {
     super();
-    this.setType(ConstraintType.ASSERTION);
+    this.setType(ConstraintType.FREE);
   }
 
-  public Assertion getAssertion() {
-    return assertion;
+  public String getFreeText() {
+    return freeText;
   }
 
-  public void setAssertion(Assertion assertion) {
-    this.assertion = assertion;
+  public void setFreeText(String freeText) {
+    this.freeText = freeText;
+  }
+
+  public String getAssertionScript() {
+    return assertionScript;
+  }
+
+  public void setAssertionScript(String assertionScript) {
+    this.assertionScript = assertionScript;
   }
 }

@@ -49,6 +49,9 @@ import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationResult;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
+//import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -57,8 +60,6 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.common.exception.SectionNotFoundException;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -503,19 +504,19 @@ public class DatatypeLibraryController {
     }
   }
 
-  @RequestMapping(value = "/api/datatype-library/{libId}/predicate/{id}", method = RequestMethod.GET,
-      produces = {"application/json"})
-  public @ResponseBody
-  Predicate getPredicate(@PathVariable("libId") String libId, @PathVariable("id") String id, Authentication authentication) throws DatatypeLibraryNotFoundException, SectionNotFoundException {
-    DatatypeLibrary library = dataypeLibraryService.findById(libId);
-    if(library.getUsername().equals(authentication.getName())) {
-      return this.predicateRepository.findById(id).orElseThrow(() -> {
-        return new SectionNotFoundException(id);
-      });
-    } else {
-      throw new SectionNotFoundException(id);
-    }
-  }
+//  @RequestMapping(value = "/api/datatype-library/{libId}/predicate/{id}", method = RequestMethod.GET,
+//      produces = {"application/json"})
+//  public @ResponseBody
+//  Predicate getPredicate(@PathVariable("libId") String libId, @PathVariable("id") String id, Authentication authentication) throws DatatypeLibraryNotFoundException, SectionNotFoundException {
+//    DatatypeLibrary library = dataypeLibraryService.findById(libId);
+//    if(library.getUsername().equals(authentication.getName())) {
+//      return this.predicateRepository.findById(id).orElseThrow(() -> {
+//        return new SectionNotFoundException(id);
+//      });
+//    } else {
+//      throw new SectionNotFoundException(id);
+//    }
+//  }
   
   @RequestMapping(value = "/api/datatype-library/{id}/datatypeLabels", method = RequestMethod.GET, produces = {
   "application/json" })
@@ -676,4 +677,22 @@ public @ResponseBody ResponseMessage<List<Datatype>> findDatatypesWithCompatibil
           datatypes);
 }
 
+@RequestMapping(value = "/api/datatype-library/{id}/publicationSummary", method = RequestMethod.GET,
+produces = {"application/json"})
+public PublicationSummary publicationSummary(@PathVariable("id") String id,
+Authentication authentication) {
+  
+  return dataypeLibraryService.getPublicationSummary(id);
+}
+
+@RequestMapping(value = "/api/datatype-library/{id}/publish", method = RequestMethod.POST,
+produces = {"application/json"})
+public ResponseMessage<String> publish(@PathVariable("id") String id,  @RequestBody PublicationResult publicationResult,
+Authentication authentication) {
+  
+  
+  return new ResponseMessage<String>(Status.SUCCESS, "", "Publish Library Success", id, false,
+      new Date(), dataypeLibraryService.publishLibray(id, publicationResult));
+
+}
 }

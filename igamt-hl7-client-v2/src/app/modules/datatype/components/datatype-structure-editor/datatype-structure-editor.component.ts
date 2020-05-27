@@ -69,9 +69,9 @@ export class DatatypeStructureEditorComponent extends StructureEditorComponent<I
         HL7v2TreeColumnType.TEXT,
         HL7v2TreeColumnType.COMMENT,
       ]);
-    const subsc = this.store.select(selectLoadedDocumentInfo).pipe(      take(1),
+    const subsc = this.store.select(selectLoadedDocumentInfo).pipe(take(1),
       map((doc: IDocumentRef) => {
-      if (doc.type !== Type.IGDOCUMENT) {
+      if (doc.type === Type.DATATYPELIBRARY) {
         this.columns = [
           HL7v2TreeColumnType.NAME,
           HL7v2TreeColumnType.DATATYPE,

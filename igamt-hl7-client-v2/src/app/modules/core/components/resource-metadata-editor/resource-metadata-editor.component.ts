@@ -67,14 +67,6 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
               id: 'extension',
               name: 'extension',
             },
-            // compatibilityVersions: {
-            //   label: 'Compatibility Versions',
-            //   placeholder: 'Compatibility Versions',
-            //   type: FieldType.STRING_LIST,
-            //   validators: [],
-            //   id: 'compatibilityVersions',
-            //   name: 'compatibilityVersions',
-            // },
             description: {
               label: 'Description',
               placeholder: 'Description',
@@ -84,14 +76,13 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
               disabled: true,
               name: 'Description',
             },
-            authorNotes: {
-              label: authorNotes,
-              placeholder: authorNotes,
+            shortDescription: {
+              label: 'Short Description',
+              placeholder: 'Short Description',
               validators: [],
-              enum: [],
-              type: FieldType.RICH,
-              id: 'authornotes',
-              name: authorNotes,
+              type: FieldType.TEXT,
+              id: 'shortDescription',
+              name: 'shortDescription',
             },
             usageNotes: {
               label: usageNotes,
@@ -101,6 +92,15 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
               type: FieldType.RICH,
               id: 'usagenotes',
               name: usageNotes,
+            },
+            authorNotes: {
+              label: authorNotes,
+              placeholder: authorNotes,
+              validators: [],
+              enum: [],
+              type: FieldType.RICH,
+              id: 'authornotes',
+              name: authorNotes,
             },
           },
         };
@@ -179,6 +179,16 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
         changeType: ChangeType.UPDATE,
       });
     }
+    if (current.shortDescription !== old.shortDescription) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.shortDescription,
+        propertyValue: current.shortDescription,
+        propertyType: PropertyType.SHORTDESCRIPTION,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
 
     return changes;
   }
@@ -219,5 +229,6 @@ export interface IResourceMetadata {
   usageNotes?: string;
   compatibilityVersions?: [];
   username?: string;
+  shortDescription: string;
 
 }

@@ -11,11 +11,35 @@
  */
 package gov.nist.hit.hl7.igamt.constraints.domain;
 
+import java.io.Serializable;
+
+import gov.nist.diff.annotation.DeltaField;
+import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
+
 /**
  * @author jungyubw
  *
  */
-public enum Level {
+public class AssertionPredicate extends Predicate implements Serializable{
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -8306847581430345712L;
+  @DeltaField
+  private Assertion assertion;
 
-  DATATYPE, SEGMENT, CONFORMANCEPROFILE, GROUP
+  public AssertionPredicate() {
+    super();
+    this.setType(ConstraintType.ASSERTION);
+  }
+
+  public Assertion getAssertion() {
+    return assertion;
+  }
+
+  public void setAssertion(Assertion assertion) {
+    this.assertion = assertion;
+  }
+
 }

@@ -9,12 +9,13 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.base.domain.display;
+package gov.nist.hit.hl7.igamt.common.base.domain;
 
 /**
  * @author jungyubw
  *
  */
-public enum ViewScope {
-  CONFORMANCEPROFILE, SEGMENT, DATATYPE, VALUESET
+public enum Level {
+
+  DATATYPE, SEGMENT, CONFORMANCEPROFILE, GROUP
 }

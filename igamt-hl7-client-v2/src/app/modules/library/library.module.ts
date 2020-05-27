@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
+import {MatSelectModule} from '@angular/material/select';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import {ContextMenuModule, RadioButtonModule, TreeTableModule} from 'primeng/primeng';
+import {AutoCompleteModule, ContextMenuModule, RadioButtonModule, TreeTableModule} from 'primeng/primeng';
 import { StepsModule } from 'primeng/steps';
 import { TableModule } from 'primeng/table';
 import { TabViewModule } from 'primeng/tabview';
@@ -27,6 +28,8 @@ import { LibraryMetadataEditorComponent } from './components/library-metadata-ed
 import { LibrarySectionEditorComponent } from './components/library-section-editor/library-section-editor.component';
 import { LibraryTocComponent } from './components/library-toc/library-toc.component';
 import { NarrativeSectionFormComponent } from './components/narrative-section-form/narrative-section-form.component';
+import {NamingSelectionDirective} from './components/publish-library-dialog/naming-selection-directive';
+import { PublishLibraryDialogComponent } from './components/publish-library-dialog/publish-library-dialog.component';
 import { LibraryRoutingModule } from './library-routing.module';
 import { LibraryListService } from './services/library-list.service';
 import { LibraryService } from './services/library.service';
@@ -46,6 +49,8 @@ import { LibraryService } from './services/library.service';
     CreateLibraryComponent,
     LibraryListItemCardComponent,
     DatatypesEvolutionComponent,
+    PublishLibraryDialogComponent,
+    NamingSelectionDirective,
   ],
   imports: [
     DamFrameworkModule.forRoot(),
@@ -62,6 +67,8 @@ import { LibraryService } from './services/library.service';
     ContextMenuModule,
     ExportConfigurationModule,
     TreeTableModule,
+    AutoCompleteModule,
+    MatSelectModule,
   ],
   providers: [
     LibraryListService,
@@ -78,6 +85,7 @@ import { LibraryService } from './services/library.service';
     LibraryMetadataEditorComponent,
     CreateLibraryComponent,
   ],
+  entryComponents: [PublishLibraryDialogComponent],
 })
 export class LibraryModule {
 }

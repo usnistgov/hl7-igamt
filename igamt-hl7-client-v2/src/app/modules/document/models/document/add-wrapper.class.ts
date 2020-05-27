@@ -7,6 +7,8 @@ export interface IAddWrapper {
   type?: Type;
   scope?: Scope;
   title?: string;
+  hideFlavor?: boolean;
+  hideAsIs?: boolean;
 }
 
 export interface IAddNewWrapper {

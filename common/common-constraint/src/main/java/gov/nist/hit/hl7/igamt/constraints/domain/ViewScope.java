@@ -11,39 +11,10 @@
  */
 package gov.nist.hit.hl7.igamt.constraints.domain;
 
-import java.io.Serializable;
-
 /**
  * @author jungyubw
  *
  */
-public class FreeTextPredicate extends Predicate  implements Serializable{
-
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 8137080477013985379L;
-  private String freeText;
-  private String assertionScript;
-
-  public FreeTextPredicate() {
-    super();
-    this.setType(ConstraintType.FREE);
-  }
-
-  public String getFreeText() {
-    return freeText;
-  }
-
-  public void setFreeText(String freeText) {
-    this.freeText = freeText;
-  }
-
-  public String getAssertionScript() {
-    return assertionScript;
-  }
-
-  public void setAssertionScript(String assertionScript) {
-    this.assertionScript = assertionScript;
-  }
+public enum ViewScope {
+  CONFORMANCEPROFILE, SEGMENT, DATATYPE, VALUESET
 }

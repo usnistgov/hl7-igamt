@@ -2,7 +2,8 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import { filter, map, take, withLatestFrom } from 'rxjs/operators';
+import {filter, map, mergeMap, take, withLatestFrom} from 'rxjs/operators';
+import {PublishLibrary, ToggleDeltaFailure} from 'src/app/root-store/library/library-edit/library-edit.index';
 import * as fromLibrayEdit from 'src/app/root-store/library/library-edit/library-edit.index';
 import { selectExternalTools } from '../../../../root-store/config/config.reducer';
 import { ExportDialogComponent } from '../../../export-configuration/components/export-dialog/export-dialog.component';
@@ -14,6 +15,11 @@ import { IConnectingInfo } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import {ILibrary} from '../../models/library.class';
 import { LibraryService } from '../../services/library.service';
+import {
+  IPublicationResult,
+  IPublicationSummary,
+  PublishLibraryDialogComponent,
+} from '../publish-library-dialog/publish-library-dialog.component';
 
 @Component({
   selector: 'app-library-edit-toolbar',
@@ -39,7 +45,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
 
   exportWord() {
     combineLatest(
-      this.getIgId(),
+      this.getLibId(),
       this.exportConfigurationService.getAllExportConfigurations()).pipe(
         map(([igId, configurations]) => {
           console.log(igId);
@@ -67,7 +73,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
 
   exportHTML() {
     combineLatest(
-      this.getIgId(),
+      this.getLibId(),
       this.exportConfigurationService.getAllExportConfigurations()).pipe(
         map(([igId, configurations]) => {
           console.log(igId);
@@ -90,13 +96,13 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   exportQuickHTML() {
-    this.getIgId().subscribe((id) => this.libraryService.exportAsHtmlQuick(id));
+    this.getLibId().subscribe((id) => this.libraryService.exportAsHtmlQuick(id));
   }
 
   exportQuickWORD() {
-    this.getIgId().subscribe((id) => this.libraryService.exportAsWordQuick(id));
+    this.getLibId().subscribe((id) => this.libraryService.exportAsWordQuick(id));
   }
-  getIgId(): Observable<string> {
+  getLibId(): Observable<string> {
     return this.store.select(fromLibrayEdit.selectLibraryId);
   }
   getMessages(): Observable<IDisplayElement[]> {
@@ -112,5 +118,24 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
+  }
+
+  publish() {
+    this.getLibId().pipe(
+      mergeMap((libId) => {
+          return this.libraryService.getPublicationSummary(libId).pipe(
+            map((summary: IPublicationSummary) => {
+              const dialogRef = this.dialog.open(PublishLibraryDialogComponent, {
+                data: summary,
+              });
+              dialogRef.afterClosed().pipe(
+                filter((y) => y !== undefined),
+                map((result: IPublicationResult) => this.store.dispatch(new PublishLibrary(libId, result))),
+              ).subscribe();
+            }),
+          );
+        },
+      ),
+    ).subscribe();
   }
 }

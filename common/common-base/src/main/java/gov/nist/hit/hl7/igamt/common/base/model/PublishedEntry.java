@@ -9,39 +9,44 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.constraints.domain;
+package gov.nist.hit.hl7.igamt.common.base.model;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 /**
- * @author jungyubw
+ * @author Abdelghani El Ouakili
  *
  */
-public class FreeTextConformanceStatement extends ConformanceStatement {
+public class PublishedEntry {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -7899147064970467492L;
-  private String freeText;
-  private String assertionScript;
-
-  public FreeTextConformanceStatement() {
-    super();
-    this.setType(ConstraintType.FREE);
+  private Scope scope;
+  private String id;
+  private Type type;
+  private String ext;
+  public Scope getScope() {
+    return scope;
   }
-
-  public String getFreeText() {
-    return freeText;
+  public void setScope(Scope scope) {
+    this.scope = scope;
   }
-
-  public void setFreeText(String freeText) {
-    this.freeText = freeText;
+  public String getId() {
+    return id;
   }
-
-  public String getAssertionScript() {
-    return assertionScript;
+  public void setId(String id) {
+    this.id = id;
   }
-
-  public void setAssertionScript(String assertionScript) {
-    this.assertionScript = assertionScript;
+  public Type getType() {
+    return type;
   }
+  public void setType(Type type) {
+    this.type = type;
+  }
+  public String getExt() {
+    return ext;
+  }
+  public void setExt(String ext) {
+    this.ext = ext;
+  }
+  
 }

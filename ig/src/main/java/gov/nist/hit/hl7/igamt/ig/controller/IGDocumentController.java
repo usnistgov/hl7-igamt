@@ -158,9 +158,6 @@ public class IGDocumentController extends BaseController {
   ValuesetService valuesetService;
 
   @Autowired
-  ConformanceStatementRepository conformanceStatementRepository;
-
-  @Autowired
   PredicateRepository predicateRepository;
 
   @Autowired
@@ -275,12 +272,12 @@ public class IGDocumentController extends BaseController {
   }
 
 
-  /**
-   * 
-   * @param id
-   * @param response
-   * @throws ExportException
-   */
+//  /**
+//   *
+//   * @param id
+//   * @param response
+//   * @throws ExportException
+//   */
   //	@RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
   //	public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id, HttpServletResponse response)
   //			throws ExportException {
@@ -914,8 +911,7 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage(Status.SUCCESS, CONFORMANCE_PROFILE_DELETE, conformanceProfileId, new Date());
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {
-  "application/json" })
+  @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
   public ResponseMessage<AddResourceResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("conformanceProfileId") String conformanceProfileId,
       Authentication authentication) throws CloneException, IGNotFoundException {
@@ -931,15 +927,6 @@ public class IGDocumentController extends BaseController {
     clone.getDomainInfo().setScope(Scope.USER);
     clone = conformanceProfileService.save(clone);
 
-    if (clone.getBinding() != null && clone.getBinding().getConformanceStatementIds() != null) {
-      for (String csId : clone.getBinding().getConformanceStatementIds()) {
-        Optional<ConformanceStatement> container = this.conformanceStatementRepository.findById(csId);
-        if (container.isPresent()) {
-          container.get().addSourceId(clone.getId());
-          this.conformanceStatementRepository.save(container.get());
-        }
-      }
-    }
     ig.getConformanceProfileRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(),
         ig.getConformanceProfileRegistry().getChildren().size() + 1));
     ig = igService.save(ig);
@@ -972,15 +959,6 @@ public class IGDocumentController extends BaseController {
 
     clone = segmentService.save(clone);
 
-    if (clone.getBinding() != null && clone.getBinding().getConformanceStatementIds() != null) {
-      for (String csId : clone.getBinding().getConformanceStatementIds()) {
-        Optional<ConformanceStatement> container = this.conformanceStatementRepository.findById(csId);
-        if (container.isPresent()) {
-          container.get().addSourceId(clone.getId());
-          this.conformanceStatementRepository.save(container.get());
-        }
-      }
-    }
     ig.getSegmentRegistry().getChildren()
     .add(new Link(clone.getId(), clone.getDomainInfo(), ig.getSegmentRegistry().getChildren().size() + 1));
     ig = igService.save(ig);
@@ -1012,15 +990,6 @@ public class IGDocumentController extends BaseController {
 
     clone = datatypeService.save(clone);
 
-    if (clone.getBinding() != null && clone.getBinding().getConformanceStatementIds() != null) {
-      for (String csId : clone.getBinding().getConformanceStatementIds()) {
-        Optional<ConformanceStatement> container = this.conformanceStatementRepository.findById(csId);
-        if (container.isPresent()) {
-          container.get().addSourceId(clone.getId());
-          this.conformanceStatementRepository.save(container.get());
-        }
-      }
-    }
     ig.getDatatypeRegistry().getChildren()
     .add(new Link(clone.getId(), clone.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size() + 1));
     ig = igService.save(ig);
@@ -1297,24 +1266,27 @@ public class IGDocumentController extends BaseController {
 			}
 		} else {
 			if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-	
-				Valueset valueset = new Valueset();
-				DomainInfo info = new DomainInfo();
-				info.setScope(Scope.PHINVADS);
-				info.setVersion(elm.getDomainInfo().getVersion());
-				valueset.setDomainInfo(info);
-				valueset.setSourceType(SourceType.EXTERNAL);
-				valueset.setUsername(username);
-				valueset.setBindingIdentifier(elm.getName());
-				valueset.setUrl(elm.getUrl());
-				valueset.setOid(elm.getOid());
-				valueset.setFlavor(false);
-				valueset.setExtensibility(Extensibility.Closed);
-				valueset.setStability(Stability.Dynamic);
-				valueset.setContentDefinition(ContentDefinition.Extensional);
-				Valueset saved = valuesetService.save(valueset);
-				ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
-				savedIds.add(saved.getId());
+              Valueset valueset = valuesetService.findExternalPhinvadsByOid(elm.getOid());
+              if(valueset == null) {
+                Valueset newValueset = new Valueset();
+                DomainInfo info = new DomainInfo();
+                info.setScope(Scope.PHINVADS);
+                info.setVersion(elm.getDomainInfo().getVersion());
+                newValueset.setDomainInfo(info);
+                newValueset.setSourceType(SourceType.EXTERNAL);
+                newValueset.setUsername(username);
+                newValueset.setBindingIdentifier(elm.getName());
+                newValueset.setUrl(elm.getUrl());
+                newValueset.setOid(elm.getOid());
+                newValueset.setFlavor(false);
+                newValueset.setExtensibility(Extensibility.Closed);
+                newValueset.setStability(Stability.Dynamic);
+                newValueset.setContentDefinition(ContentDefinition.Extensional);
+                Valueset saved = valuesetService.save(newValueset);
+                ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+                savedIds.add(saved.getId());
+              }
+
 			} else {
 				ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
 				savedIds.add(elm.getId());

@@ -8,8 +8,9 @@
     </p-header>
     <ng-template let-user pTemplate="item">
       <div class="ui-helper-clearfix">
-        <span>{{user.label}}</span>
-        <span *ngIf="user.value === currentAuthor"> #CurrentAuthor</span>
+        <span>{{user.value}}</span>
+        <span *ngIf="user.label.indexOf('#Owner') > 0" style="color:red"> #Owner</span>
+        <span *ngIf="user.value === currentAuthor" style="color:blue"> #CurrentAuthor</span>
         <span style="float:right;margin:0 0 0 0"><i *ngIf="user.label.indexOf('#Owner') < 0" (click)="removeUser(user)" class="fa fa-times"></i></span>
       </div>
     </ng-template>

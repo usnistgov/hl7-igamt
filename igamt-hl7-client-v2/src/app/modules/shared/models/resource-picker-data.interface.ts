@@ -1,3 +1,4 @@
+import {Input} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Scope} from '../constants/scope.enum';
 import {Type} from '../constants/type.enum';
@@ -14,4 +15,6 @@ export interface IResourcePickerData {
   scope: Scope;
   master: boolean;
   documentType: Type;
+  hideFlavor?: boolean;
+  hideAsIs?: boolean;
 }
