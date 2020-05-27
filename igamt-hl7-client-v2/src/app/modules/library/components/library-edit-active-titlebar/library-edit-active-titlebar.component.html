@@ -50,7 +50,7 @@
         <strong>Status: </strong> {{active.display?.status}}
       </div>
       <div *ngIf="active.display?.publicationInfo" style="margin-left: 10px;">
-        <strong>, Publication Date: </strong>   <i class="fa fa-calendar"></i>{{active.display?.publicationInfo?.publicationDate | date}}
+        <strong>Publication Date: </strong>  {{active.display?.publicationInfo?.publicationDate | date}}
       </div>
     </div>
   </div>

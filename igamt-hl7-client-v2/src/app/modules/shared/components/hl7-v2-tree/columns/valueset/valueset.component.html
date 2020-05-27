@@ -64,7 +64,7 @@
     <tr *ngFor="let item of vsBinding.valueSets">
       <td colspan="3">
         <div [pTooltip]="item?.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
-           <app-display-ref [documentId]="documentRef.documentId" [element]="item" [hideDescription]="true"></app-display-ref>
+           <app-display-ref [documentId]="documentRef.documentId" [documentType]="documentRef.type" [element]="item" [hideDescription]="true"></app-display-ref>
         </div>
       </td>
     </tr>
@@ -89,7 +89,7 @@
     <tr>
       <td colspan="3">
         <div [pTooltip]="singleCode.valueSet?.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
-          <app-display-ref [documentId]="documentRef.documentId" [element]="singleCode.valueSet" [hideDescription]="true"></app-display-ref>
+          <app-display-ref [documentId]="documentRef.documentId" [documentType]="documentRef.type" [element]="singleCode.valueSet" [hideDescription]="true"></app-display-ref>
         </div>
       </td>
     </tr>
