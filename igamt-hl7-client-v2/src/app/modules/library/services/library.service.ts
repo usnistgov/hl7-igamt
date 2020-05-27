@@ -19,7 +19,7 @@ import { IRegistry } from '../../shared/models/registry.interface';
 import { INarrative } from '../components/library-section-editor/library-section-editor.component';
 import {
   IPublicationResult,
-  IPublicationSummary
+  IPublicationSummary,
 } from '../components/publish-library-dialog/publish-library-dialog.component';
 import {ILibrary} from '../models/library.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';

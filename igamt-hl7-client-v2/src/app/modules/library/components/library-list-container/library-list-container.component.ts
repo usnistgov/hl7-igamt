@@ -30,7 +30,7 @@ import {IgListItemControl} from '../library-list-item-card/library-list-item-car
 import {
   IPublicationResult,
   IPublicationSummary,
-  PublishLibraryDialogComponent
+  PublishLibraryDialogComponent,
 } from '../publish-library-dialog/publish-library-dialog.component';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 
@@ -159,20 +159,6 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
                   return false;
                 },
               },
-              // {
-              //   label: 'Publish',
-              //   class: 'btn-secondary',
-              //   icon: 'fa fa-globe',
-              //   action: (item: IgListItem) => {
-              //     this.publishDialog(item);
-              //   },
-              //   disabled: (item: IgListItem): boolean => {
-              //     return !admin || item.type === 'PUBLISHED';
-              //   },
-              //   hide: (item: IgListItem): boolean => {
-              //     return item.type === 'PUBLISHED' || item.type === 'SHARED';
-              //   },
-              // },
               {
                 label: 'Derive from',
                 class: 'btn-secondary',
@@ -267,16 +253,6 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
               ).subscribe();
             }),
           ).subscribe();
-
-          // this.libraryService.publish(item.id).subscribe(
-          //   (response: Message<string>) => {
-          //     this.store.dispatch(this.message.messageToAction(response));
-          //     this.router.navigateByUrl('/library/list?type=PUBLISHED');
-          //   },
-          //   (error) => {
-          //     this.store.dispatch(this.message.actionFromError(error));
-          //   },
-          // );
         }
       },
     );
