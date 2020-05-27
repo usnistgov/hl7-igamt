@@ -117,8 +117,8 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
     this.update();
   }
 
-  import(node, type: Type, scope: Scope) {
-    this.addChildren.emit({ node, type, scope });
+  import(node, type: Type, scope: Scope, hideFlavor, hideAsIs ) {
+    this.addChildren.emit({ node, type, scope, hideFlavor, hideAsIs});
   }
 
   importCSV(node, type: Type, scope: Scope) {

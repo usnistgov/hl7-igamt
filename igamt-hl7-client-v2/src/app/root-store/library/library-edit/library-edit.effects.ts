@@ -18,7 +18,7 @@ import {LibraryService} from '../../../modules/library/services/library.service'
 import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
 import {
-  LibOpenNarrativeEditorNode,
+  LibOpenNarrativeEditorNode, PublishLibrary, PublishLibraryFailure,
   UpdateSections,
 } from './library-edit.actions';
 import {
@@ -97,8 +97,41 @@ export class LibraryEditEffects extends DamWidgetEffect {
   );
 
   @Effect()
+  libraryPublish$ = this.actions$.pipe(
+    ofType(LibraryEditActionTypes.PublishLibrary),
+    switchMap((action: PublishLibrary) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      return this.libraryService.publish(action.libId, action.publicationResult).pipe(
+        take(1),
+        flatMap((response: Message<string>) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            this.message.messageToAction(new Message(MessageType.SUCCESS, 'Library Publish Success', null)),
+            new LibraryEditResolverLoad(response.data),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new PublishLibraryFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
   igEditResolverLoadFailure$ = this.actions$.pipe(
     ofType(LibraryEditActionTypes.LibraryEditResolverLoadFailure),
+    map((action: LibraryEditResolverLoadFailure) => {
+      return this.message.actionFromError(action.error);
+    }),
+  );
+  @Effect()
+  publishLibraryFailure = this.actions$.pipe(
+    ofType(LibraryEditActionTypes.PublishLibraryFailure),
     map((action: LibraryEditResolverLoadFailure) => {
       return this.message.actionFromError(action.error);
     }),
