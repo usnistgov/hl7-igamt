@@ -48,6 +48,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
               toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
               igId,
               configurations,
+              getExportFirstDecision: this.igService.getExportFirstDecision,
             },
           });
           dialogRef.afterClosed().pipe(
@@ -75,6 +76,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
               toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
               igId,
               configurations,
+              getExportFirstDecision: this.igService.getExportFirstDecision,
             },
           });
           dialogRef.afterClosed().pipe(

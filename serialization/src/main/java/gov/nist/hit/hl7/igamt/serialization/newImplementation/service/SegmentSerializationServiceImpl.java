@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -62,8 +63,7 @@ private DeltaService deltaService;
 	@Override
 	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision) throws SerializationException {
 		Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, position, segmentExportConfiguration);
-	      Segment segment = segmentDataModel.getModel();
-	      
+	      Segment segment = segmentDataModel.getModel();	      
 	      if(segment.getExt() != null) {
 	    segmentElement
 	          .addAttribute(new Attribute("ext", segment.getExt() != null ? segment.getExt() : ""));
@@ -102,6 +102,26 @@ private DeltaService deltaService;
         }
 	      }
 	      if (segment.getChildren() != null) {
+	    	  Element commentsElement = new Element("Comments"); 
+	    	  for(Field field : segment.getChildren()) {
+	    		  if(field.getComments() != null) {
+	    			  for(Comment comment : field.getComments()) {
+		    			  Element commentElement = new Element("Comment");
+		    			  if(segment.getExt() != null) {
+		    		          commentElement
+		    	              .addAttribute(new Attribute("name", segment.getName()+"_"+segment.getExt() + "." + field.getPosition()));
+		    		          } else {
+		    		        	  commentElement
+			    	              .addAttribute(new Attribute("name", segment.getName()+ "." + field.getPosition()));
+		    			          } 
+		    			  commentElement.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
+	    				  commentElement.addAttribute(new Attribute("description",comment.getDescription()));
+		    			  commentsElement.appendChild(commentElement);
+	    			  }
+	    			  
+	    		  }
+	    	  }
+			  segmentElement.appendChild(commentsElement);
 	        Element fieldsElement = this.serializeFields(segment.getChildren(),igDataModel,segmentDataModel, segmentExportConfiguration);
 	        if (fieldsElement != null) {
 	          segmentElement.appendChild(fieldsElement);

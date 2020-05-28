@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
@@ -24,15 +25,13 @@ import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 
 
 @Document
-public class Ig extends AbstractDomain {
+public class Ig extends DocumentStructure {
 
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
 
-  private DocumentMetadata metadata = new DocumentMetadata();
-  private Set<TextSection> content = new HashSet<TextSection>();
   private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
   private SegmentRegistry segmentRegistry = new SegmentRegistry();
   private ProfileComponentRegistry profileComponentRegistry = new ProfileComponentRegistry();

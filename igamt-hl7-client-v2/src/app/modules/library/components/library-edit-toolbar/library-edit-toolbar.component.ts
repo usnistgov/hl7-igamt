@@ -54,6 +54,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
               toc: this.store.select(fromLibrayEdit.selectProfileTree),
               igId,
               configurations,
+              getExportFirstDecision: this.libraryService.getExportFirstDecision,
             },
           });
           dialogRef.afterClosed().pipe(
@@ -81,6 +82,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
               toc: this.store.select(fromLibrayEdit.selectProfileTree),
               igId,
               configurations,
+              getExportFirstDecision: this.libraryService.getExportFirstDecision,
             },
           });
           dialogRef.afterClosed().pipe(
