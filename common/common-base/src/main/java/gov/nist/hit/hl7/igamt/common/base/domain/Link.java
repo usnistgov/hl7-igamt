@@ -2,7 +2,7 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
 
-public class Link implements Serializable{
+public class Link implements Serializable,Comparable{
   private String id;
   private String origin;
   private int position;
@@ -142,6 +142,13 @@ public class Link implements Serializable{
   public void setParentId(String documentId) {
     this.parentId = documentId;
   }
+
+@Override
+public int compareTo(Object o) {
+	// TODO Auto-generated method stub
+		return this.position - ((Link) o).position;
+}	
+
 
 
 }

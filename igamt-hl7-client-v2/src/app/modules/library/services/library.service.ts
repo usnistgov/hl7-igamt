@@ -303,9 +303,10 @@ export class LibraryService {
     return this.location.prepareExternalUrl('api/export/datatype-library/' + libId + '/export/' + type).replace('#', '');
   }
 
-  getExportFirstDecision(libId: string, conflibId: string): Observable<IExportConfigurationGlobal> {
-    return this.http.get<IExportConfigurationGlobal>('/api/export/datatype-library/' + libId + this.CONFIGURATION + conflibId + '/getFilteredDocument');
+  getExportFirstDecision = (libId: string, conflibId: string): Observable<IExportConfigurationGlobal> => {
+    return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + libId + this.CONFIGURATION + conflibId + '/getFilteredDocument');
   }
+
   getDisplay(id: string, delta: boolean) {
       return this.getDisplayInfo(id);
   }

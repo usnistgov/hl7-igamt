@@ -25,6 +25,8 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.DatatypeCell;
 import gov.nist.hit.hl7.igamt.coconstraints.model.ValueSetCell;
 import gov.nist.hit.hl7.igamt.coconstraints.model.VariesCell;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
@@ -38,6 +40,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
@@ -131,8 +134,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
+			DocumentStructureDataModel documentStructureDataModel = new DocumentStructureDataModel();
 			String xmlContent =
-					igDataModelSerializationService.serializeIgDocument(igDataModel, exportConfiguration,decision).toXML();
+					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,decision).toXML();
 					      System.out.println("XML_EXPORT : " + xmlContent);
 //					      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version
@@ -155,9 +159,10 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	@Override
-	public ExportFilterDecision getExportFilterDecision(Ig ig, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
+	public ExportFilterDecision getExportFilterDecision(DocumentStructure documentStructure, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
 		ExportFilterDecision decision = new ExportFilterDecision();
-
+		if(documentStructure instanceof Ig) {
+			Ig ig = (Ig) documentStructure;
 		for (Link l : ig.getConformanceProfileRegistry().getChildren()) {
 			decision.getConformanceProfileFilterMap().put(l.getId(), true);
 		}
@@ -172,6 +177,15 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		}
 		processConformanceProfiles(ig, decision, config);
 		return decision;
+		}else if(documentStructure instanceof DatatypeLibrary) {
+			DatatypeLibrary datatypeLibrary = (DatatypeLibrary) documentStructure;
+			for (Link l : datatypeLibrary.getDatatypeRegistry().getChildren()) {
+				decision.getDatatypesFilterMap().put(l.getId(), false);
+			}
+			return decision;
+
+		}
+		return null;
 	}
 
 	private void processConformanceProfiles(Ig ig, ExportFilterDecision decision, ExportConfiguration config) throws CoConstraintGroupNotFoundException {

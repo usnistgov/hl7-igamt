@@ -545,7 +545,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
   }
 
   
-  //@PostConstruct
+//  @PostConstruct
   void classifyDatatypes() throws DatatypeNotFoundException {
     datatypeClassificationService.deleteAll();
     System.out.println("Classifying dts");

@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -34,20 +36,20 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	private FroalaSerializationUtil frolaCleaning;
 
 	@Override
-	public Element serializeIgDocument(IgDataModel igDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException {
+	public Element serializeDocument(DocumentStructureDataModel documentStructureDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException {
 		//		if(exportConfiguration.getAbstractDomainExportConfiguration() == null) {System.out.println("Export IG document export null ici");}
-		Ig igDocument = igDataModel.getModel();
-		Element igDocumentElement = serializeAbstractDomain(igDocument, Type.IGDOCUMENT, 1, igDocument.getName(), exportConfiguration.getAbstractDomainExportConfiguration());
-		Element metadataElement = serializeDocumentMetadata(igDocument.getMetadata(), igDocument.getDomainInfo(),
-				igDocument.getPublicationInfo(), exportConfiguration.getDocumentMetadataConfiguration());
+		DocumentStructure documentStructure = documentStructureDataModel.getModel();
+		Element igDocumentElement = serializeAbstractDomain(documentStructure, Type.IGDOCUMENT, 1, documentStructure.getName(), exportConfiguration.getAbstractDomainExportConfiguration());
+		Element metadataElement = serializeDocumentMetadata(documentStructure.getMetadata(), documentStructure.getDomainInfo(),
+				documentStructure.getPublicationInfo(), exportConfiguration.getDocumentMetadataConfiguration());
 		if (metadataElement != null) {
 			igDocumentElement.appendChild(metadataElement);
 		}
 
-		for (Section section : igDocument.getContent()) {
+		for (Section section : documentStructure.getContent()) {
 			// startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
 			int startLevel = 1;
-			Element sectionElement = sectionSerializationService.SerializeSection(section, startLevel, igDataModel, exportConfiguration, exportFilterDecision);
+			Element sectionElement = sectionSerializationService.SerializeSection(section, startLevel, documentStructureDataModel, exportConfiguration, exportFilterDecision);
 			igDocumentElement.appendChild(sectionElement);
 		}
 		return igDocumentElement;
@@ -147,12 +149,8 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	@Override
 	public Element serializeResource(Resource resource, Type type, int position, ResourceExportConfiguration resourceExportConfiguration) {
 		Element element = serializeAbstractDomain(resource,type,position, resource.getName(), resourceExportConfiguration);
-		System.out.println("in function");
 		if (resource != null && element != null) {
-			System.out.println("in first IF");
 			if(resourceExportConfiguration.isPreDef()) {
-				System.out.println("in seconf Id and post def is :" +resource.getPostDef() );
-
 				element.addAttribute(new Attribute("postDef",
 						resource.getPostDef() != null && !resource.getPostDef().isEmpty()
 						? this.formatStringData(resource.getPostDef())

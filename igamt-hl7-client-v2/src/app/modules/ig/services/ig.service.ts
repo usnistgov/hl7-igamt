@@ -349,8 +349,8 @@ export class IgService {
     return this.location.prepareExternalUrl('api/export/igdocuments/' + igId + '/export/' + type).replace('#', '');
   }
 
-  getExportFirstDecision(igId: string, configId: string): Observable<IExportConfigurationGlobal> {
-    return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + igId + this.CONFIGURATION + configId + '/getFilteredDocument');
+  getExportFirstDecision = (igId: string, configId: string): Observable<IExportConfigurationGlobal> => {
+    return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + igId + this.CONFIGURATION + configId + '/getFilteredDocument');
   }
 
   importFromFile(documentId, resourceType: Type, targetType: Type, file: any) {

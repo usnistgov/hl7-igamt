@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IgService } from '../../../ig/services/ig.service';
+import { IExportConfigurationGlobal } from '../../models/config.interface';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
 import { ExportConfigurationDialogComponent } from '../export-configuration-dialog/export-configuration-dialog.component';
 
@@ -20,11 +21,11 @@ export class ExportDialogComponent implements OnInit {
   igId: string;
   toc: any;
   customized: boolean;
+  getExportFirstDecision: (documentId: string, configId: string) => Observable<IExportConfigurationGlobal>;
 
   constructor(
     public dialogRef: MatDialogRef<ExportDialogComponent>,
     private dialog: MatDialog,
-    private igService: IgService,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.overrides = new BehaviorSubject<any>(undefined);
@@ -32,6 +33,7 @@ export class ExportDialogComponent implements OnInit {
     this.igId = data.igId;
     this.toc = data.toc;
     this.configlist = data.configurations;
+    this.getExportFirstDecision = data.getExportFirstDecision;
     this.selectedConfig = this.configlist.find( (x) => {
         return x.defaultConfig;
       },
@@ -85,7 +87,7 @@ export class ExportDialogComponent implements OnInit {
   }
 
   change(configuration) {
-    this.igService.getExportFirstDecision(this.igId, configuration.id).pipe(
+    this.getExportFirstDecision(this.igId, configuration.id).pipe(
       map((decision) => {
         console.log(decision);
         this.overrides.next(decision);

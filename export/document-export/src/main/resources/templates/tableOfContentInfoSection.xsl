@@ -30,8 +30,11 @@
                     <xsl:value-of select="@title"/>
 <!--                       <xsl:sort select="@title"/>
  -->                </xsl:when>
+ 
+ 
                 <xsl:when test="normalize-space(@description) !='' ">
-                		<xsl:value-of select="concat(@title,' - ',@description)"/>
+<!--                     <xsl:sort lang="langage-code" data-type="number" select="position"  order="ascending" />
+ -->                		<xsl:value-of select="concat(@title,'-',@description)"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:value-of select="@title"/>
