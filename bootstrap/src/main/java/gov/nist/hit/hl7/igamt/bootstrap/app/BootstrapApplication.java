@@ -143,8 +143,8 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   TablesFixes tableFixes;
 
-
-
+  
+ 
   @Bean
   public JavaMailSenderImpl mailSender() {
     JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -172,6 +172,7 @@ public class BootstrapApplication implements CommandLineRunner {
   public FhirContext fhirR4Context() {
     return FhirContext.forR4();
   }
+  
 
   //
   //   @Bean(name = "multipartResolver")
@@ -261,10 +262,9 @@ public class BootstrapApplication implements CommandLineRunner {
         }
       }
     }
-
-
-
   }
+  
+  
 
 
   /**
@@ -287,8 +287,14 @@ public class BootstrapApplication implements CommandLineRunner {
 
   /**
    * @param s
+   * @throws ValidationException 
    */
 
+  
+@PostConstruct
+void fixSegmentduplicatedBinding() throws ValidationException {
+  tableFixes.removeSegmentsDuplicatedBinding();
+}
 
   //@PostConstruct
   void generateDefaultExportConfig() {
