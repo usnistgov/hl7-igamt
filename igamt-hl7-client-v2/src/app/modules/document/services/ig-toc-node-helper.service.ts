@@ -102,6 +102,22 @@ export class IgTOCNodeHelper {
     return this.sort(ret);
   }
 
+  static buildLibraryProfileTree(documentRef: IDocumentRef, structure: IContent[], datatypesNodes: IDisplayElement[]) {
+    const ret: IDisplayElement[] = [];
+    for (const section of structure) {
+      switch (section.type) {
+        case Type.TEXT:
+          break;
+        case Type.PROFILE:
+          ret.push(this.createLibProfileSection(documentRef, section, datatypesNodes, section.position + ''));
+          break;
+        default:
+          break;
+      }
+    }
+    return this.sort(ret);
+  }
+
   static createLibProfileSection(documentRef: IDocumentRef, section: IContent, datatypesNodes: IDisplayElement[], path: string) {
     const ret = this.initializeIDisplayElement(section, path);
     if (section.children && section.children.length > 0) {

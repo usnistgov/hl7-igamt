@@ -2,7 +2,7 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
 
-public class Link implements Serializable,Comparable{
+public class Link implements Serializable, Comparable{
   private String id;
   private String origin;
   private int position;
@@ -10,7 +10,6 @@ public class Link implements Serializable,Comparable{
   private Type type;
   private Type parentType;
   private String parentId;
-
   private String username;
 
   public Link(String id, int position) {

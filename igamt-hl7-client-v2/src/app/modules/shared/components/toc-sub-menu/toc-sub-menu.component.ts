@@ -49,6 +49,9 @@ export class TocSubMenuComponent implements OnInit {
       }
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'cross-references', 'Cross references', Icons.LIST));
     }
+    if (this.element.origin) {
+      ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'delta', 'Delta', Icons.LIST));
+    }
 
     return ret;
   }

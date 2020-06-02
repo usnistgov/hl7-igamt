@@ -22,6 +22,17 @@ public class StructureDeltaData {
     private DeltaValueSetBinding valueSetBinding;
     private ReferenceDelta reference;
     private DeltaNode<String> name;
+    private DeltaNode<String> format;
+
+
+    public DeltaNode<String> getFormat() {
+      return format;
+    }
+
+    public void setFormat(DeltaNode<String> format) {
+      this.crunchAction(format.getAction());
+      this.format = format;
+    }
 
     public StructureDeltaData() {
         this.action = DeltaAction.UNCHANGED;

@@ -291,7 +291,7 @@ public class BootstrapApplication implements CommandLineRunner {
    */
 
   
-@PostConstruct
+//@PostConstruct
 void fixSegmentduplicatedBinding() throws ValidationException {
   tableFixes.removeSegmentsDuplicatedBinding();
 }

@@ -13,9 +13,10 @@ import { PostdefEditorComponent } from './components/postdef-editor/postdef-edit
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
 import { DatatypeRoutingModule } from './datatype-routing.module';
 import { DatatypeService } from './services/datatype.service';
+import { DtmDeltaEditorComponent } from './components/dtm-delta-editor/dtm-delta-editor.component';
 
 @NgModule({
-  declarations: [PredefEditorComponent, PostdefEditorComponent, MetadataEditComponent, DatatypeStructureEditorComponent, DatatypeCrossRefsComponent, DatatypeConformanceStatementEditorComponent, DeltaEditorComponent],
+  declarations: [PredefEditorComponent, PostdefEditorComponent, MetadataEditComponent, DatatypeStructureEditorComponent, DatatypeCrossRefsComponent, DatatypeConformanceStatementEditorComponent, DeltaEditorComponent, DtmDeltaEditorComponent],
   imports: [
     CommonModule,
     DatatypeRoutingModule,

@@ -154,6 +154,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setDomainInfo(base.getDomainInfo());
 		displayElement.setLeaf(true);
 		displayElement.setType(Type.COCONSTRAINTGROUP);
+	    displayElement.setOrigin(group.getOrigin());
 		displayElement.setParentId(base.getParentId());
         displayElement.setParentType(base.getParentType());
 

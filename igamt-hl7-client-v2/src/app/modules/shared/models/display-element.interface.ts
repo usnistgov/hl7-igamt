@@ -23,6 +23,7 @@ export interface IDisplayElement {
   delta?: DeltaAction;
   flavor?: boolean;
   status?: Status;
+  origin?: string;
   publicationInfo?: IPublicationInfo;
 
 }

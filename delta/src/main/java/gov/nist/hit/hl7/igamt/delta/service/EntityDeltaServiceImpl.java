@@ -9,6 +9,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.*;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
+import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
+import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.*;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
@@ -271,6 +273,11 @@ public class EntityDeltaServiceImpl {
                 this.getValueSetBinding(source.getData().getBindings()),
                 this.getValueSetBinding(target.getData().getBindings())
          ));
+        if(source.getData().getPredicate() !=null || target.getData().getPredicate() !=null) {
+
+          System.out.println(target.getData().getPredicate().generateDescription());
+
+        }
         this.compare(structure, (Field) source.getData(), (Field) target.getData());
         structure.setChildren(this.compareComponents(source.getChildren(), target.getChildren()));
     }
@@ -467,5 +474,50 @@ public class EntityDeltaServiceImpl {
 //        delta.setUpdated(updated);
 
         return  delta;
+    }
+
+    /**
+     * @param source
+     * @param target
+     * @return 
+     */
+    public List<StructureDelta> compareDateAndTimeDatatypes(DateTimeDatatype source, DateTimeDatatype target) {
+      // TODO Auto-generated method
+     List<StructureDelta> deltas= new ArrayList<StructureDelta>();
+     Map<Integer , DateTimeComponentDefinition>  sourceMap = source.getDateTimeConstraints().getDateTimeComponentDefinitions().stream().collect(Collectors.toMap(x -> x.getPosition()  , x -> x));
+     Map<Integer , DateTimeComponentDefinition>  targetMap= target.getDateTimeConstraints().getDateTimeComponentDefinitions().stream().collect(Collectors.toMap(x -> x.getPosition()  , x -> x));
+     for(DateTimeComponentDefinition component: source.getDateTimeConstraints().getDateTimeComponentDefinitions()) {
+       if(targetMap.containsKey(component.getPosition())) {
+         deltas.add(this.compare(component, targetMap.get(component.getPosition())));
+       }else {
+         deltas.add( this.compare(component, null));
+       }
+     }
+     for(DateTimeComponentDefinition component: target.getDateTimeConstraints().getDateTimeComponentDefinitions()) {
+       if(!targetMap.containsKey(component.getPosition())) {
+         deltas.add( this.compare(null, component));
+       }
+     }
+     
+      return deltas;
+    }
+
+    /**
+     * @param component
+     * @param dateTimeComponentDefinition
+     * @return
+     */
+    private StructureDelta compare(DateTimeComponentDefinition source,
+        DateTimeComponentDefinition target) {
+      // TODO Auto-generated method stub
+      StructureDelta result = new StructureDelta(); 
+      StructureDeltaData data = new StructureDeltaData();
+      data.setUsage(this.compare(source.getUsage(), target.getUsage()));
+      data.setFormat(this.compare(source.getFormat(), target.getFormat()));
+      data.setName(this.compare(source.getName(), target.getName()));
+      data.setPosition(source.getPosition());
+      result.setData(data);
+     
+      return result;
     }
 }

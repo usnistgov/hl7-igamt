@@ -169,7 +169,7 @@
   </ng-template>
 </p-treeTable>
 <ng-template #diff let-delta let-styleCurrent="styleCurrent" let-stylePrevious="stylePrevious" let-styleUnchanged="styleUnchanged" >
-  <ng-container *ngIf="delta" >
+  <ng-container *ngIf="delta">
     <app-delta-column [action]="delta.action" [currentValue]="delta.current" [previousValue]="delta.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
       <ng-template #default let-value>
         {{value}}
