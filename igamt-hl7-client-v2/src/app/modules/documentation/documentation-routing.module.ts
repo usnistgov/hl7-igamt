@@ -5,9 +5,12 @@ import {
   LoadDocumentations,
   OpenDocumentationSection,
 } from '../../root-store/documentation/documentation.actions';
+import { DamWidgetContainerComponent } from '../dam-framework/components/data-widget/dam-widget-container/dam-widget-container.component';
+import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
-import { DamWidgetRoute } from '../dam-framework/services/router-helpers.service';
+import { WidgetDeactivateGuard } from '../dam-framework/guards/widget-deactivate.guard';
+import { WidgetSetupGuard } from '../dam-framework/guards/widget-setup.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { DOC_WIDGET_ID, DocumentationContainerComponent } from './components/documentation-container/documentation-contrainer.component';
@@ -15,14 +18,22 @@ import { DocumentationContentComponent } from './components/documentation-conten
 
 const routes: Routes = [
   {
-    ...DamWidgetRoute({
+    data: {
       widgetId: DOC_WIDGET_ID,
       loadAction: LoadDocumentations,
       successAction: DocumentationActionTypes.LoadDocumentationsSuccess,
       failureAction: DocumentationActionTypes.LoadDocumentationsFailure,
       redirectTo: ['documentation', 'error'],
       component: DocumentationContainerComponent,
-    }),
+    },
+    component: DamWidgetContainerComponent,
+    canActivate: [
+      WidgetSetupGuard,
+      DataLoaderGuard,
+    ],
+    canDeactivate: [
+      WidgetDeactivateGuard,
+    ],
     path: '',
     children: [
       {
