@@ -2,10 +2,13 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { IgEditActionTypes, IgEditResolverLoad, OpenConformanceStatementSummaryEditorNode, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
+import { DamWidgetContainerComponent } from '../dam-framework/components/data-widget/dam-widget-container/dam-widget-container.component';
 import { AuthenticatedGuard } from '../dam-framework/guards/auth-guard.guard';
+import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
-import { DamWidgetRoute } from '../dam-framework/services/router-helpers.service';
+import { WidgetDeactivateGuard } from '../dam-framework/guards/widget-deactivate.guard';
+import { WidgetSetupGuard } from '../dam-framework/guards/widget-setup.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { ConformanceStatementsSummaryEditorComponent } from './components/conformance-statements-summary-editor/conformance-statements-summary-editor.component';
@@ -31,7 +34,7 @@ const routes: Routes = [
     component: ErrorPageComponent,
   },
   {
-    ...DamWidgetRoute({
+    data: {
       widgetId: IG_EDIT_WIDGET_ID,
       routeParam: 'igId',
       loadAction: IgEditResolverLoad,
@@ -39,7 +42,15 @@ const routes: Routes = [
       failureAction: IgEditActionTypes.IgEditResolverLoadFailure,
       redirectTo: ['ig', 'error'],
       component: IgEditContainerComponent,
-    }),
+    },
+    component: DamWidgetContainerComponent,
+    canActivate: [
+      WidgetSetupGuard,
+      DataLoaderGuard,
+    ],
+    canDeactivate: [
+      WidgetDeactivateGuard,
+    ],
     path: ':igId',
     children: [
       {
