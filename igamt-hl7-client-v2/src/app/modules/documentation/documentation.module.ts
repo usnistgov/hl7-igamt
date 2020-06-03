@@ -25,6 +25,9 @@ import { DocumentationRoutingModule } from './documentation-routing.module';
     EffectsModule.forFeature([DocumentationEffects]),
     StoreModule.forFeature(fromDocumentation.featureName, fromDocumentation.reducer),
   ],
+  entryComponents: [
+    DocumentationContainerComponent,
+  ],
   providers: [],
 })
 export class DocumentationModule { }

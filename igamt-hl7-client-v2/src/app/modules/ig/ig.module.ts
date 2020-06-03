@@ -64,6 +64,9 @@ import { IgService } from './services/ig.service';
     ContextMenuModule,
     ExportConfigurationModule,
   ],
+  entryComponents: [
+    IgEditContainerComponent,
+  ],
   providers: [
     IgListService,
     IgService,
