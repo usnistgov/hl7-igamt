@@ -1,7 +1,7 @@
 <div style="display: flex; justify-content: space-between;">
   <div>
     <ng-container *ngIf="editable$ | async as edit">
-      <ng-container [ngSwitch]="!!edit.value && edit.value.length > 0">
+      <ng-container [ngSwitch]="!!edit.value && (edit.type === 'SINGLECODE' || edit.value.length > 0)">
         <ng-container *ngSwitchCase="true">
             <ng-container [ngSwitch]="edit.type">
               <ng-container *ngSwitchCase="'VALUESET'">
