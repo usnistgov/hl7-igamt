@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.rmi.server.ExportException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,13 +12,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletResponse;
 
-import gov.nist.hit.hl7.igamt.ig.service.*;
-import gov.nist.hit.hl7.igamt.service.impl.XMLSerializeServiceImpl;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -68,22 +65,27 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
-import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.display.model.CloneMode;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGMetaDataDisplay;
@@ -112,16 +114,24 @@ import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
+import gov.nist.hit.hl7.igamt.ig.service.CrudService;
+import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
+import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
+import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.service.impl.XMLSerializeServiceImpl;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
@@ -1575,15 +1585,18 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/export/ig/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
   public void exportXML(@PathVariable("id") String id, Authentication authentication, FormData formData, HttpServletResponse response) throws Exception {
-    IgDataModel igModel = this.igService.generateDataModel(findIgById(id));		
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
-
-    InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
-    response.setContentType("application/zip");
-    response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
-    FileCopyUtils.copy(content, response.getOutputStream());
+    Ig ig = findIgById(id);
+	  if (ig != null)  {
+		  Ig selectedIg = this.makeSelectedIg(ig, reqIds);
+		  IgDataModel igModel = this.igService.generateDataModel(selectedIg);	
+		    InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
+		    response.setContentType("application/zip");
+		    response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
+		    FileCopyUtils.copy(content, response.getOutputStream());
+	  }
   }
 
   @RequestMapping(value = "/api/igdocuments/{ig}/predicate/{id}", method = RequestMethod.GET,
@@ -1659,7 +1672,7 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{igid}/verification", method = RequestMethod.GET, produces = {"application/json"})
   public @ResponseBody VerificationReport verificationIGById(@PathVariable("igid") String igid, Authentication authentication) {
     Ig ig = this.igService.findById(igid);
-    if (ig != null) return this.verificationService.verifyIg(igid);
+    if (ig != null) return this.verificationService.verifyIg(igid, true);
     return null;
   }
   
@@ -1668,5 +1681,120 @@ public class IGDocumentController extends BaseController {
     Ig ig = this.igService.findById(igid);
     if (ig != null) return this.verificationService.verifyIgForCompliance(igid);
     return null;
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{igid}/preverification", method = RequestMethod.POST, produces = { "application/json" })
+  public @ResponseBody VerificationReport preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds, Authentication authentication) throws Exception {	    
+	    System.out.println(reqIds);  
+	  Ig ig = this.igService.findById(igid);
+	  if (ig != null)  {
+		  Ig selectedIg = this.makeSelectedIg(ig, reqIds);
+		  return this.verificationService.verifyIg(selectedIg, false);		  
+	  }
+	  return null;
+  }
+
+  private Ig makeSelectedIg(Ig ig, ReqId reqIds) {
+	  Ig selectedIg = new Ig();
+	  selectedIg.setId(ig.getId());
+	  selectedIg.setDomainInfo(ig.getDomainInfo());
+	  selectedIg.setMetadata(ig.getMetadata());
+	  selectedIg.setConformanceProfileRegistry(new ConformanceProfileRegistry());
+	  selectedIg.setSegmentRegistry(new SegmentRegistry());
+	  selectedIg.setDatatypeRegistry(new DatatypeRegistry());
+	  selectedIg.setValueSetRegistry(new ValueSetRegistry());
+
+	  for(String id : reqIds.getConformanceProfilesId()) {
+		  Link l = ig.getConformanceProfileRegistry().getLinkById(id);
+		  
+		  if(l != null) {
+			  selectedIg.getConformanceProfileRegistry().getChildren().add(l);
+			  
+			  this.visitSegmentRefOrGroup(this.conformanceProfileService.findById(l.getId()).getChildren(), selectedIg, ig);
+		  }
+	  }
+	  
+	  return selectedIg;
+}
+
+  private void visitSegmentRefOrGroup(Set<SegmentRefOrGroup> srgs, Ig selectedIg, Ig all) {
+	  srgs.forEach(srg -> {
+		  if(srg instanceof Group) {
+			  Group g = (Group)srg;
+			  if(g.getChildren() != null) this.visitSegmentRefOrGroup(g.getChildren(), selectedIg, all);
+		  } else if (srg instanceof SegmentRef) {
+			  SegmentRef sr = (SegmentRef)srg;
+			  
+			  if(sr != null && sr.getId() != null && sr.getRef() != null) {
+				  Link l = all.getSegmentRegistry().getLinkById(sr.getRef().getId());
+				  if(l != null) {
+					  selectedIg.getSegmentRegistry().getChildren().add(l);
+					  Segment s = this.segmentService.findById(l.getId());
+					  if (s != null && s.getChildren() != null) {
+						  this.visitSegment(s.getChildren(), selectedIg, all);
+						  if(s.getBinding() != null && s.getBinding().getChildren() != null) this.collectVS(s.getBinding().getChildren(), selectedIg, all);
+					  }
+				  }
+			  }
+		  }
+	  });
+		
+  }
+  
+  private void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all) {
+	  sebs.forEach(seb -> {
+		  if(seb.getValuesetBindings() != null) {
+			  seb.getValuesetBindings().forEach(b -> {
+				  if(b.getValueSets() != null) {
+					  b.getValueSets().forEach(id -> {
+						  Link l = all.getValueSetRegistry().getLinkById(id);
+						  if(l != null) {
+							  selectedIg.getValueSetRegistry().getChildren().add(l);
+						  }
+					  });
+				  }
+			  });
+		  }
+	  });
+	
+  }
+
+  private void visitSegment(Set<Field> fields, Ig selectedIg, Ig all) {
+	  fields.forEach(f -> {
+		  if(f.getRef() != null && f.getRef().getId() != null) {
+			  Link l = all.getDatatypeRegistry().getLinkById(f.getRef().getId());
+			  if(l != null) {
+				  selectedIg.getDatatypeRegistry().getChildren().add(l);
+				  Datatype dt = this.datatypeService.findById(l.getId());
+				  if (dt != null && dt instanceof ComplexDatatype) {
+					  ComplexDatatype cdt = (ComplexDatatype)dt;
+					  if(cdt.getComponents() != null) {
+						  this.visitDatatype(cdt.getComponents(), selectedIg, all);
+						  if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+					  }
+				  }
+			  }
+		  }
+	  });
+		
+  }
+  
+  private void visitDatatype(Set<Component> components, Ig selectedIg, Ig all) {
+	  components.forEach(c -> {
+		  if(c.getRef() != null && c.getRef().getId() != null) {
+			  Link l = all.getDatatypeRegistry().getLinkById(c.getRef().getId());
+			  if(l != null) {
+				  selectedIg.getDatatypeRegistry().getChildren().add(l);
+				  Datatype dt = this.datatypeService.findById(l.getId());
+				  if (dt != null && dt instanceof ComplexDatatype) {
+					  ComplexDatatype cdt = (ComplexDatatype)dt;
+					  if(cdt.getComponents() != null) {
+						  this.visitDatatype(cdt.getComponents(), selectedIg, all);
+						  if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+					  }
+				  }
+			  }
+		  }
+	  });
   }
 }
