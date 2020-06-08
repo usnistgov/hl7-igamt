@@ -19,7 +19,9 @@ public class StructureDeltaData {
     private DeltaNode<String> maxCardinality;
     private DeltaNode<String> confLength;
     private DeltaNode<String> definition;
-    private DeltaValueSetBinding valueSetBinding;
+    private DeltaValuesetBinding valuesetBinding;
+    private DeltaInternalSingleCode internalSingleCode;
+    private PredicateDelta predicate;
     private ReferenceDelta reference;
     private DeltaNode<String> name;
     private DeltaNode<String> format;
@@ -33,6 +35,7 @@ public class StructureDeltaData {
       this.crunchAction(format.getAction());
       this.format = format;
     }
+    private ConformanceStatementDelta conformanceStatement;
 
     public StructureDeltaData() {
         this.action = DeltaAction.UNCHANGED;
@@ -156,25 +159,45 @@ public class StructureDeltaData {
         return name;
     }
 
-    public DeltaValueSetBinding getValueSetBinding() {
-        return valueSetBinding;
+    public DeltaValuesetBinding getValuesetBinding() {
+        return valuesetBinding;
     }
 
-    public void setValueSetBinding(DeltaValueSetBinding valueSetBinding) {
-        boolean hasChange =
-                valueSetBinding.getAdded().size() > 0 ||
-                valueSetBinding.getRemoved().size() > 0 ||
-                valueSetBinding.getUpdated().size() > 0;
-
-        if(hasChange) {
-            this.setAction(DeltaAction.UPDATED);
-        }
-        this.valueSetBinding = valueSetBinding;
+    public void setValuesetBinding(DeltaValuesetBinding valuesetBinding) {
+        this.crunchAction(valuesetBinding.getAction());
+        this.valuesetBinding = valuesetBinding;
     }
 
     public void setName(DeltaNode<String> name) {
         this.crunchAction(name.getAction());
         this.name = name;
+    }
+
+    public DeltaInternalSingleCode getInternalSingleCode() {
+        return internalSingleCode;
+    }
+
+    public void setInternalSingleCode(DeltaInternalSingleCode internalSingleCode) {
+        this.crunchAction(internalSingleCode.getAction());
+        this.internalSingleCode = internalSingleCode;
+    }
+
+    public PredicateDelta getPredicate() {
+        return predicate;
+    }
+
+    public void setPredicate(PredicateDelta predicate) {
+        this.crunchAction(predicate.getAction());
+        this.predicate = predicate;
+    }
+
+    public ConformanceStatementDelta getConformanceStatement() {
+        return conformanceStatement;
+    }
+
+    public void setConformanceStatement(ConformanceStatementDelta conformanceStatement) {
+        this.crunchAction(conformanceStatement.getAction());
+        this.conformanceStatement = conformanceStatement;
     }
 
     public void crunchAction(DeltaAction a) {

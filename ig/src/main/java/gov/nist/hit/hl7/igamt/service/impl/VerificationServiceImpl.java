@@ -362,10 +362,10 @@ public class VerificationServiceImpl implements VerificationService {
     }
   }
   
-  private void checkingStructureForConformanceProfile(ConformanceProfile conformanceProfile, CPVerificationResult result) {
+  private void checkingStructureForConformanceProfile(ConformanceProfile conformanceProfile, CPVerificationResult result, boolean needDeep) {
     Set<StructureElementBinding> sebs = null;
     if(conformanceProfile.getBinding() != null) sebs = conformanceProfile.getBinding().getChildren();
-    this.checkingSegmentRefOrGroups(conformanceProfile, conformanceProfile.getChildren(), result, null, null, sebs);
+    this.checkingSegmentRefOrGroups(conformanceProfile, conformanceProfile.getChildren(), result, null, null, sebs, needDeep);
   }
   
   private void checkingStructureForConformanceProfileForCompliance(ConformanceProfile conformanceProfile, CPComplianceResult result) {
@@ -380,9 +380,9 @@ public class VerificationServiceImpl implements VerificationService {
     }
   }
   
-  private void checkingSegmentRefOrGroups(ConformanceProfile conformanceProfile, Set<SegmentRefOrGroup> segmentRefOrGroups, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+  private void checkingSegmentRefOrGroups(ConformanceProfile conformanceProfile, Set<SegmentRefOrGroup> segmentRefOrGroups, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs, boolean needDeep) {
     if (segmentRefOrGroups != null) {
-      segmentRefOrGroups.forEach(srog -> this.checkingSegmentRefOrGroup(conformanceProfile, srog, result, positionPath, path, this.findSEB(sebs, srog.getId())));
+      segmentRefOrGroups.forEach(srog -> this.checkingSegmentRefOrGroup(conformanceProfile, srog, result, positionPath, path, this.findSEB(sebs, srog.getId()), needDeep));
     }
   }
 
@@ -408,11 +408,11 @@ public class VerificationServiceImpl implements VerificationService {
     } 
   }
   
-  private void checkingSegmentRefOrGroup(ConformanceProfile conformanceProfile, SegmentRefOrGroup srog, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+  private void checkingSegmentRefOrGroup(ConformanceProfile conformanceProfile, SegmentRefOrGroup srog, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs, boolean needDeep) {
     if(srog instanceof SegmentRef) {
-      this.chekcingSegmentRef(conformanceProfile, (SegmentRef)srog, result, positionPath, path, sebs);
+      this.chekcingSegmentRef(conformanceProfile, (SegmentRef)srog, result, positionPath, path, sebs, needDeep);
     } else if(srog instanceof Group) {
-      this.checkingGroup(conformanceProfile, (Group)srog, result, positionPath, path, sebs);
+      this.checkingGroup(conformanceProfile, (Group)srog, result, positionPath, path, sebs, needDeep);
     } 
   }
 
@@ -455,7 +455,7 @@ public class VerificationServiceImpl implements VerificationService {
     }
   }
   
-  private void chekcingSegmentRef(ConformanceProfile conformanceProfile, SegmentRef sr, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+  private void chekcingSegmentRef(ConformanceProfile conformanceProfile, SegmentRef sr, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs, boolean needDeep) {
     int position = sr.getPosition();
     Usage usage = sr.getUsage();
     int min = sr.getMin();
@@ -486,11 +486,13 @@ public class VerificationServiceImpl implements VerificationService {
         this.checkUsageVerificationError(conformanceProfile, conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), usage, positionPath, path, result);
         this.checkCardinalityVerificationError(conformanceProfile.getId(), conformanceProfile.getType(), new CPMetadata(conformanceProfile), usage, min, max, positionPath, path, result);
         
-        if(segment.getChildren() != null) {
-          
-          for(Field field : segment.getChildren() ){
-            this.checkFieldForConformanceProfileForVerification(conformanceProfile, segment, field, positionPath, path, result); 
-          }
+        if(needDeep) {
+            if(segment.getChildren() != null) {
+                
+                for(Field field : segment.getChildren() ){
+                  this.checkFieldForConformanceProfileForVerification(conformanceProfile, segment, field, positionPath, path, result); 
+                }
+              }        	
         }
       } 
     }
@@ -844,7 +846,7 @@ public class VerificationServiceImpl implements VerificationService {
     }
   }
   
-  private void checkingGroup(ConformanceProfile conformanceProfile, Group group, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs) {
+  private void checkingGroup(ConformanceProfile conformanceProfile, Group group, CPVerificationResult result, String positionPath, String path, Set<StructureElementBinding> sebs, boolean needDeep) {
     String name = group.getName();
     int position = group.getPosition();
     Usage usage = group.getUsage();
@@ -871,7 +873,7 @@ public class VerificationServiceImpl implements VerificationService {
       
       if(group.getChildren() != null) {
         for (SegmentRefOrGroup child : group.getChildren()) {
-          this.checkingSegmentRefOrGroup(conformanceProfile, child, result, positionPath, path, this.findSEB(sebs, child.getId()));
+          this.checkingSegmentRefOrGroup(conformanceProfile, child, result, positionPath, path, this.findSEB(sebs, child.getId()), needDeep);
         } 
       } 
     }
@@ -912,11 +914,7 @@ public class VerificationServiceImpl implements VerificationService {
    * @param components
    */
   private void checkingComponents(ComplexDatatype cDt, Set<Component> components, DTSegVerificationResult result) {
-    if(components == null || components.size() == 0) {
-      result.getErrors().add(new IgamtObjectError("Component_Missing", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "Component is missing for Complex Datatype", null, "FATAL", "User"));
-    } else {
       components.forEach(c -> this.checkingComponent(cDt, c, result));
-    }
   }
   
   private void checkingCode(Valueset valueset, Code c, VSVerificationResult result) {
@@ -972,7 +970,7 @@ public class VerificationServiceImpl implements VerificationService {
       cDt.getComponents().forEach(otherC -> {
         if(!otherC.getId().equals(c.getId())){
           if (otherC.getPosition() == position) result.getErrors().add(new IgamtObjectError("Position_Dupilicated", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "The position:" + position + " is duplicated.", position + "", "FATAL", "Internal"));
-          if (otherC.getName().equals(c.getName())) result.getErrors().add(new IgamtObjectError("Name_Duplicated", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "name is duplicated for " + position + " and " + otherC.getPosition(), position + "", "ERROR", "User"));
+//          if (otherC.getName().equals(c.getName())) result.getErrors().add(new IgamtObjectError("Name_Duplicated", cDt.getId(), cDt.getType(), new DTSegMetadata(cDt), "name is duplicated for " + position + " and " + otherC.getPosition(), position + "", "ERROR", "User"));
         }
       });
       
@@ -1036,7 +1034,7 @@ public class VerificationServiceImpl implements VerificationService {
       segment.getChildren().forEach(otherF -> {
         if(!otherF.getId().equals(f.getId())){
           if (otherF.getPosition() == position) result.getErrors().add(new IgamtObjectError("Position_Dupilicated", segment.getId(), segment.getType(), new DTSegMetadata(segment), "The position:" + position + " is duplicated.", position + "", "FATAL", "Internal"));
-          if (otherF.getName().equals(f.getName())) result.getErrors().add(new IgamtObjectError("Name_Duplicated", segment.getId(), segment.getType(), new DTSegMetadata(segment), "name is duplicated for " + position + " and " + otherF.getPosition(), position + "", "ERROR", "User"));
+//          if (otherF.getName().equals(f.getName())) result.getErrors().add(new IgamtObjectError("Name_Duplicated", segment.getId(), segment.getType(), new DTSegMetadata(segment), "name is duplicated for " + position + " and " + otherF.getPosition(), position + "", "ERROR", "User"));
         }
       });
       
@@ -1471,7 +1469,7 @@ public class VerificationServiceImpl implements VerificationService {
   }
   
   @Override
-  public CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile) {
+  public CPVerificationResult verifyConformanceProfile(ConformanceProfile conformanceProfile, boolean needDeep) {
     CPVerificationResult result = new CPVerificationResult(conformanceProfile);
 
     //0. Create parentMap for Compliance Checking
@@ -1486,7 +1484,7 @@ public class VerificationServiceImpl implements VerificationService {
     this.checkingMetadataForConformanceProfile(conformanceProfile, result);
     
     // 2. Structure Checking
-    this.checkingStructureForConformanceProfile(conformanceProfile, result);
+    this.checkingStructureForConformanceProfile(conformanceProfile, result, needDeep);
     
     return result;
   }
@@ -1677,11 +1675,15 @@ public class VerificationServiceImpl implements VerificationService {
   }
 
   @Override
-  public VerificationReport verifyIg(String documentId) {
+  public VerificationReport verifyIg(String igId, boolean needDeep) {
+	  return verifyIg(this.igService.findById(igId), needDeep);
+  }
+  
+  @Override
+  public VerificationReport verifyIg(Ig ig, boolean needDeep) {
     parentComplianceMap = new HashMap<String,ComplianceObject>();
     childComplianceMap = new HashMap<String,ComplianceObject>();
     VerificationReport report = new VerificationReport();
-    Ig ig = this.igService.findById(documentId);
     IgVerificationResult result = new IgVerificationResult(ig);
     
     HashSet<String> bIdSet = new HashSet<String> ();
@@ -1697,9 +1699,14 @@ public class VerificationServiceImpl implements VerificationService {
         
         if(vs == null) result.getErrors().add(new IgamtObjectError("Link_NotAccessable", id, Type.VALUESET, null, "In valueset Repository, valueset : " + id  + " is not accesable", null, "ERROR", "Internal"));
         else {
-          if(!bIdSet.add(vs.getBindingIdentifier())) result.getErrors().add(new IgamtObjectError("BindingId_Duplicated", vs.getId(), Type.VALUESET, new VSMetadata(vs), "Binding Identifier of " + vs.getBindingIdentifier() + " is duplicated in the IG", null, "ERROR", "User"));
+        	String bindingIdWithVersion = vs.getBindingIdentifier();
+        	if(!vs.getDomainInfo().getScope().equals(Scope.USER)) {
+        		bindingIdWithVersion = bindingIdWithVersion + vs.getDomainInfo().getVersion();
+        	}
+        	
+          if(!bIdSet.add(bindingIdWithVersion)) result.getErrors().add(new IgamtObjectError("BindingId_Duplicated", vs.getId(), Type.VALUESET, new VSMetadata(vs), "Binding Identifier of " + vs.getBindingIdentifier() + " is duplicated in the IG", null, "ERROR", "User"));
           if(vs.getDomainInfo().getScope() == null || !vs.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("Link_Scope_notMatched", vs.getId(), Type.VALUESET, new VSMetadata(vs), "In valueset Repository, " + vs.getLabel() + "'s scope value of the Link is not matched with actual Valueset's scope.", null, "ERROR", "Internal"));
-          if(vs.getDomainInfo().getVersion() == null || !vs.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", vs.getId(), Type.VALUESET, new VSMetadata(vs), "In valueset Repository, "+  vs.getLabel() + "'s version value of the Link is not matched with actual Valueset's version.", null, "ERROR", "Internal"));
+          if(vs.getDomainInfo().getVersion() != null && !vs.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", vs.getId(), Type.VALUESET, new VSMetadata(vs), "In valueset Repository, "+  vs.getLabel() + "'s version value of the Link is not matched with actual Valueset's version.", null, "ERROR", "Internal"));
           report.addValuesetVerificationResult(this.verifyValueset(vs));
         }
         
@@ -1716,7 +1723,14 @@ public class VerificationServiceImpl implements VerificationService {
         Datatype dt = this.datatypeService.findById(id);
         if(dt == null) result.getErrors().add(new IgamtObjectError("Link_NotAccessable", id, Type.DATATYPE, null, "In dataytpe Repository, datatype : " + id  + " is not accesable", null, "ERROR", "Internal"));
         else {
-          if(!dtLabelSet.add(dt.getLabel())) result.getErrors().add(new IgamtObjectError("Label_Duplicated", dt.getId(), Type.DATATYPE, new DTSegMetadata(dt), "Datatype Label of " + dt.getLabel() + " is duplicated in the IG", null, "ERROR", "User"));
+        	
+        	String labelWithVersion = dt.getLabel();
+        	if(!dt.getDomainInfo().getScope().equals(Scope.USER)) {
+        		labelWithVersion = labelWithVersion + dt.getDomainInfo().getVersion();
+        	}
+        	
+        	
+          if(!dtLabelSet.add(labelWithVersion)) result.getErrors().add(new IgamtObjectError("Label_Duplicated", dt.getId(), Type.DATATYPE, new DTSegMetadata(dt), "Datatype Label of " + dt.getLabel() + " is duplicated in the IG", null, "ERROR", "User"));
           if(dt.getDomainInfo().getScope() == null || !dt.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("Link_Scope_notMatched", dt.getId(), Type.DATATYPE, new DTSegMetadata(dt), "In datatype Repository, " + dt.getLabel() + "'s scope value of the Link is not matched with actual datatype's scope.", null, "ERROR", "Internal"));
           if(dt.getDomainInfo().getVersion() == null || !dt.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", dt.getId(), Type.DATATYPE, new DTSegMetadata(dt), "In datatype Repository, "+  dt.getLabel() + "'s version value of the Link is not matched with actual datatype's version.", null, "ERROR", "Internal"));
           
@@ -1736,9 +1750,13 @@ public class VerificationServiceImpl implements VerificationService {
         
         if(s == null) result.getErrors().add(new IgamtObjectError("Link_NotAccessable", id, Type.SEGMENT, null, "In segment Repository, segment : " + id  + " is not accesable", null, "ERROR", "Internal"));
         else {
+        	String labelWithVersion = s.getLabel();
+        	if(!s.getDomainInfo().getScope().equals(Scope.USER)) {
+        		labelWithVersion = labelWithVersion + s.getDomainInfo().getVersion();
+        	}
           if(!segLabelSet.add(s.getLabel())) result.getErrors().add(new IgamtObjectError("Label_Duplicated", s.getId(), Type.SEGMENT, new DTSegMetadata(s),"Segment Label of " + s.getLabel() + " is duplicated in the IG", null, "ERROR", "User"));
           if(s.getDomainInfo().getScope() == null || !s.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("Link_Scope_notMatched", s.getId(), Type.SEGMENT, new DTSegMetadata(s), "In segment Repository, " + s.getLabel() + "'s scope value of the Link is not matched with actual segment scope.", null, "ERROR", "Internal"));
-          if(s.getDomainInfo().getVersion() == null || !s.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", s.getId(), Type.SEGMENT, new DTSegMetadata(s), "In segment Repository, "+  s.getLabel() + "'s version value of the Link is not matched with actual segment version.", null, "ERROR", "Internal"));
+          if(s.getDomainInfo().getVersion() != null && !s.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", s.getId(), Type.SEGMENT, new DTSegMetadata(s), "In segment Repository, "+  s.getLabel() + "'s version value of the Link is not matched with actual segment version.", null, "ERROR", "Internal"));
           
           report.addSegmentVerificationResult(this.verifySegment(s));
         }
@@ -1758,8 +1776,8 @@ public class VerificationServiceImpl implements VerificationService {
         if(cp == null) result.getErrors().add(new IgamtObjectError("Link_NotAccessable", id, Type.CONFORMANCEPROFILE, null, "In conformance profile Repository, conformance profile : " + id  + " is not accesable", null, "ERROR", "Internal"));
         else {
           if(cp.getDomainInfo().getScope() == null || !cp.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("Link_Scope_notMatched", cp.getId(), Type.CONFORMANCEPROFILE, new CPMetadata(cp), "In conformance profile Repository, " + cp.getLabel() + "'s scope value of the Link is not matched with actual conformance profile scope.", null, "ERROR", "Internal"));
-          if(cp.getDomainInfo().getVersion() == null || !cp.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", cp.getId(), Type.CONFORMANCEPROFILE, new CPMetadata(cp), "In conformance profile Repository, "+  cp.getLabel() + "'s version value of the Link is not matched with actual conformance profile version.", null, "ERROR", "Internal"));
-          report.addConformanceProfileVerificationResult(this.verifyConformanceProfile(cp));
+          if(cp.getDomainInfo().getVersion() != null && !cp.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", cp.getId(), Type.CONFORMANCEPROFILE, new CPMetadata(cp), "In conformance profile Repository, "+  cp.getLabel() + "'s version value of the Link is not matched with actual conformance profile version.", null, "ERROR", "Internal"));
+          report.addConformanceProfileVerificationResult(this.verifyConformanceProfile(cp, needDeep));
         }
         
       } 

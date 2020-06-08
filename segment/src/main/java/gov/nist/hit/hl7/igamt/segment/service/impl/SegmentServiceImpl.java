@@ -221,6 +221,8 @@ public class SegmentServiceImpl implements SegmentService {
       result.setLabel(segment.getName());
     }
 
+    result.setConformanceStatements( segment.getBinding().getConformanceStatements());
+
     if (segment.getChildren() != null && segment.getChildren().size() > 0) {
       for (Field f : segment.getChildren()) {
         Datatype childDt = this.findDatatype(f.getRef().getId(), datatypesMap);
@@ -235,7 +237,7 @@ public class SegmentServiceImpl implements SegmentService {
           StructureElementBinding fSeb = this.findStructureElementBindingByFieldIdForSegment(segment,
               f.getId());
           if (fSeb != null) {
-            fModel.addBinding(
+            fModel.setBinding(
                 this.createBindingDisplay(fSeb, segment.getId(), ViewScope.SEGMENT, 1, valueSetsMap));
             if (fSeb.getPredicate() != null) {
               Predicate p = fSeb.getPredicate();
@@ -266,7 +268,7 @@ public class SegmentServiceImpl implements SegmentService {
                       .findStructureElementBindingByComponentIdFromStructureElementBinding(fSeb,
                           c.getId());
                   if (childSeb != null) {
-                    cModel.addBinding(this.createBindingDisplay(childSeb, segment.getId(),
+                    cModel.setBinding(this.createBindingDisplay(childSeb, segment.getId(),
                         ViewScope.SEGMENT, 1, valueSetsMap));
                     if (childSeb.getPredicate() != null) {
                       Predicate p = childSeb.getPredicate();
@@ -282,7 +284,7 @@ public class SegmentServiceImpl implements SegmentService {
                   StructureElementBinding cSeb = this
                       .findStructureElementBindingByComponentIdForDatatype(childDt, c.getId());
                   if (cSeb != null) {
-                    cModel.addBinding(this.createBindingDisplay(cSeb, childDt.getId(),
+                    cModel.setBinding(this.createBindingDisplay(cSeb, childDt.getId(),
                         ViewScope.DATATYPE, 2, valueSetsMap));
                     if (cSeb.getPredicate() != null) {
                       Predicate p = cSeb.getPredicate();
@@ -319,7 +321,7 @@ public class SegmentServiceImpl implements SegmentService {
                               .findStructureElementBindingByComponentIdFromStructureElementBinding(
                                   childSeb, sc.getId());
                           if (childChildSeb != null) {
-                            scModel.addBinding(this.createBindingDisplay(childChildSeb,
+                            scModel.setBinding(this.createBindingDisplay(childChildSeb,
                                 segment.getId(), ViewScope.SEGMENT, 1, valueSetsMap));
                             if (childChildSeb.getPredicate() != null) {
                               Predicate p = childChildSeb.getPredicate();
@@ -339,7 +341,7 @@ public class SegmentServiceImpl implements SegmentService {
                               .findStructureElementBindingByComponentIdFromStructureElementBinding(
                                   cSeb, sc.getId());
                           if (childCSeb != null) {
-                            scModel.addBinding(this.createBindingDisplay(childCSeb,
+                            scModel.setBinding(this.createBindingDisplay(childCSeb,
                                 childDt.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
                             if (childCSeb.getPredicate() != null) {
                               Predicate p = childCSeb.getPredicate();
@@ -359,7 +361,7 @@ public class SegmentServiceImpl implements SegmentService {
                               .findStructureElementBindingByComponentIdForDatatype(
                                   childChildDt, sc.getId());
                           if (scSeb != null) {
-                            scModel.addBinding(
+                            scModel.setBinding(
                                 this.createBindingDisplay(scSeb, childChildDt.getId(),
                                     ViewScope.DATATYPE, 3, valueSetsMap));
                             if (scSeb.getPredicate() != null) {
@@ -1031,10 +1033,40 @@ public class SegmentServiceImpl implements SegmentService {
       int priority, HashMap<String, Valueset> valueSetsMap) {
     BindingDisplay bindingDisplay = new BindingDisplay();
 
+    bindingDisplay.setSourceId(sourceId);
+    bindingDisplay.setSourceType(sourceType);
+    bindingDisplay.setPriority(priority);
+    bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
+
+    if (seb.getPredicate() != null) {
+    	bindingDisplay.setPredicate(seb.getPredicate());
+    }
+    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+
     return bindingDisplay;
   }
 
-  private DatatypeLabel createDatatypeLabel(Datatype dt) {
+	private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings,
+															   HashMap<String, Valueset> valueSetsMap) {
+		if (valuesetBindings != null) {
+			Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
+			for (ValuesetBinding vb : valuesetBindings) {
+
+				DisplayValuesetBinding dvb = new DisplayValuesetBinding();
+
+				dvb.setStrength(vb.getStrength());
+				dvb.setValueSets(vb.getValueSets());
+				dvb.setValuesetLocations(vb.getValuesetLocations());
+				result.add(dvb);
+
+			}
+			return result;
+		}
+		return null;
+	}
+
+
+	private DatatypeLabel createDatatypeLabel(Datatype dt) {
     DatatypeLabel label = new DatatypeLabel();
     label.setDomainInfo(dt.getDomainInfo());
     label.setExt(dt.getExt());
@@ -1076,7 +1108,7 @@ public class SegmentServiceImpl implements SegmentService {
           StructureElementBinding fSeb = this.findStructureElementBindingByFieldIdForSegment(segment,
               f.getId());
           if (fSeb != null) {
-            fModel.addBinding(
+            fModel.setBinding(
                 this.createBindingDisplay(fSeb, segment.getId(), ViewScope.SEGMENT, 2, valueSetsMap));
             if (fSeb.getPredicate() != null) {
               Predicate p = fSeb.getPredicate();
@@ -1106,7 +1138,7 @@ public class SegmentServiceImpl implements SegmentService {
                       .findStructureElementBindingByComponentIdFromStructureElementBinding(fSeb,
                           c.getId());
                   if (childSeb != null) {
-                    cModel.addBinding(this.createBindingDisplay(childSeb, segment.getId(),
+                    cModel.setBinding(this.createBindingDisplay(childSeb, segment.getId(),
                         ViewScope.SEGMENT, 2, valueSetsMap));
                     if (childSeb.getPredicate() != null) {
                       Predicate p = childSeb.getPredicate();
@@ -1122,7 +1154,7 @@ public class SegmentServiceImpl implements SegmentService {
                   StructureElementBinding cSeb = this
                       .findStructureElementBindingByComponentIdForDatatype(childDt, c.getId());
                   if (cSeb != null) {
-                    cModel.addBinding(this.createBindingDisplay(cSeb, childDt.getId(),
+                    cModel.setBinding(this.createBindingDisplay(cSeb, childDt.getId(),
                         ViewScope.DATATYPE, 3, valueSetsMap));
                     if (cSeb.getPredicate() != null) {
                       Predicate p = cSeb.getPredicate();
@@ -1158,7 +1190,7 @@ public class SegmentServiceImpl implements SegmentService {
                               .findStructureElementBindingByComponentIdFromStructureElementBinding(
                                   childSeb, sc.getId());
                           if (childChildSeb != null) {
-                            scModel.addBinding(this.createBindingDisplay(childChildSeb,
+                            scModel.setBinding(this.createBindingDisplay(childChildSeb,
                                 segment.getId(), ViewScope.SEGMENT, 2, valueSetsMap));
                             if (childChildSeb.getPredicate() != null) {
                               Predicate p = childChildSeb.getPredicate();
@@ -1176,7 +1208,7 @@ public class SegmentServiceImpl implements SegmentService {
                               .findStructureElementBindingByComponentIdFromStructureElementBinding(
                                   cSeb, sc.getId());
                           if (childCSeb != null) {
-                            scModel.addBinding(this.createBindingDisplay(childCSeb,
+                            scModel.setBinding(this.createBindingDisplay(childCSeb,
                                 childDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
                             if (childCSeb.getPredicate() != null) {
                               Predicate p = childCSeb.getPredicate();
@@ -1194,7 +1226,7 @@ public class SegmentServiceImpl implements SegmentService {
                               .findStructureElementBindingByComponentIdForDatatype(
                                   childChildDt, sc.getId());
                           if (scSeb != null) {
-                            scModel.addBinding(
+                            scModel.setBinding(
                                 this.createBindingDisplay(scSeb, childChildDt.getId(),
                                     ViewScope.DATATYPE, 4, valueSetsMap));
                             if (scSeb.getPredicate() != null) {

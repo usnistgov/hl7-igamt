@@ -144,19 +144,21 @@
             </td>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.VALUESET">
-            <td [class]="vsBindingClass(rowData.valueSetBinding)">
-              <div class="delta-updated">
-                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.valueSetBinding.updated }"></ng-container>
+            <td [class]="cellClass(rowData.valuesetBinding?.action)">
+                <ng-container *ngTemplateOutlet="diff; context : { $implicit: rowData.valuesetBinding }"></ng-container>
+
+              <!-- <div class="delta-updated">
+                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.structureElementBinding.updated }"></ng-container>
               </div>
               <div class="delta-added">
-                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.valueSetBinding.added }"></ng-container>
+                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.structureElementBinding.added }"></ng-container>
               </div>
               <div class="delta-deleted">
-                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.valueSetBinding.removed }"></ng-container>
+                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.structureElementBinding.removed }"></ng-container>
               </div>
               <div>
-                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.valueSetBinding.unchanged }"></ng-container>
-              </div>
+                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.structureElementBinding.unchanged }"></ng-container>
+              </div> -->
             </td>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.CONSTANTVALUE">

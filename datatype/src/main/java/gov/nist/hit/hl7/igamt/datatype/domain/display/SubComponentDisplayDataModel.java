@@ -52,7 +52,7 @@ public class SubComponentDisplayDataModel extends Component {
   @DeltaField
   private DatatypeLabel datatypeLabel;
   @DeltaField
-  private Set<BindingDisplay> bindings;
+  private BindingDisplay binding;
 
   @DeltaField
   private ViewScope viewScope;
@@ -93,22 +93,15 @@ public class SubComponentDisplayDataModel extends Component {
     this.viewScope = viewScope;
   }
 
-  public Set<BindingDisplay> getBindings() {
-    return bindings;
+  public BindingDisplay getBinding() {
+    return binding;
   }
 
-  public void setBindings(Set<BindingDisplay> bindings) {
-    this.bindings = bindings;
+  public void setBinding(BindingDisplay binding) {
+    this.binding = binding;
   }
 
-  /**
-   * @param bindingDisplay
-   */
-  public void addBinding(BindingDisplay bindingDisplay) {
-    if (this.bindings == null)
-      this.bindings = new HashSet<BindingDisplay>();
-    this.bindings.add(bindingDisplay);
-  }
+
 
   public Usage getTrueUsage() {
     return trueUsage;

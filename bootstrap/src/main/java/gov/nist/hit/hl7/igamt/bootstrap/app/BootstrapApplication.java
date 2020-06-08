@@ -28,11 +28,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import ca.uhn.fhir.context.FhirContext;
-import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -51,7 +49,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.constraints.domain.AssertionPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -66,6 +63,8 @@ import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfiguratio
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 @SpringBootApplication
 //@EnableMongoAuditing
@@ -131,6 +130,9 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   SegmentService segmentService;
+  
+  @Autowired
+  ValuesetService valuesetService;
 
   @Autowired
   ConformanceProfileService messageService;
@@ -661,6 +663,23 @@ void fixSegmentduplicatedBinding() throws ValidationException {
     public void fix0396() throws ValidationException{
       tableFixes.fix0396();
     }
+    @PostConstruct
+    public void fixPHINValuesets() {
+    	this.valuesetService.findByDomainInfoScope("PHINVADS").forEach(v -> {
+    		if(v.getName() == null) {
+    			v.setName(v.getBindingIdentifier());
+    		}
+    		if(v.getCodes() != null) {
+    			v.getCodes().forEach(c -> {
+    				if(c.getUsage() == null) {
+    					c.setUsage(CodeUsage.R);
+    				}
+    			});
+    		}
+			this.valuesetService.save(v);
+    	});
+    }
+    
     
     @SuppressWarnings("deprecation")
   // @PostConstruct

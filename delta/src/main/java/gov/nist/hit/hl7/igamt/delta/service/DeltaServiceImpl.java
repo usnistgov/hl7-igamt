@@ -71,20 +71,23 @@ public class DeltaServiceImpl implements DeltaService {
       Datatype source = this.datatypeService.findById(target.getOrigin());
       DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), source.getExt(), source.getDescription(), source.getId());
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), target.getExt(), target.getDescription(), target.getId());
-      if(target instanceof ComplexDatatype) {
-        
-        DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
-        DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
-        List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
-
-        return new Delta(sourceInfo, targetInfo, structure);
-      } else if (target instanceof DateTimeDatatype && source instanceof DateTimeDatatype){
+      
+      DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
+      DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
+      
+      if (target instanceof DateTimeDatatype && source instanceof DateTimeDatatype) {
         
         List<StructureDelta> structure = entityDeltaService.compareDateAndTimeDatatypes((DateTimeDatatype) source,(DateTimeDatatype) target);
+        List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+        return new Delta(sourceInfo, targetInfo, structure,conformanceStatements);
+      } else {
+        
 
-        return new Delta(sourceInfo, targetInfo, structure);
-      }
-      
+        List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+
+        List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+        return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
+      } 
 
 
     } else if(type.equals(Type.SEGMENT)) {
@@ -99,8 +102,9 @@ public class DeltaServiceImpl implements DeltaService {
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), target.getExt(), target.getDescription(), target.getId());
 
       List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
-      return new Delta(sourceInfo, targetInfo, structure);
+      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
 
     } else if(type.equals(Type.CONFORMANCEPROFILE)) {
 
@@ -115,8 +119,9 @@ public class DeltaServiceImpl implements DeltaService {
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), null, target.getDescription(), target.getId());
 
       List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
-      return new Delta(sourceInfo, targetInfo, structure);
+      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
 
     } else if(type.equals(Type.VALUESET)) {
 
