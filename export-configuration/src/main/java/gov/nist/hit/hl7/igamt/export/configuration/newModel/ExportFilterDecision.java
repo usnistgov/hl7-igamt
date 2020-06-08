@@ -8,6 +8,9 @@ import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.SegmentT
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 
 public class ExportFilterDecision {
+	
+//	private Map<String, Boolean> datatypesLibraryFilterMap = new HashMap<String, Boolean>();
+//	private Map<String, DatatypeLibraryExportConfiguration> OveriddedDatatypesLibraryMap = new HashMap<String, DatatypeLibraryExportConfiguration>();
 
 	private Map<String, Boolean> datatypesFilterMap = new HashMap<String, Boolean>();
 	private Map<String, DatatypeExportConfiguration> OveriddedDatatypesMap = new HashMap<String, DatatypeExportConfiguration>();
@@ -23,13 +26,16 @@ public class ExportFilterDecision {
 	
 	
 	
-public ExportFilterDecision(Map<String, Boolean> datatypesFilterMap,
+public ExportFilterDecision(
+		Map<String, Boolean> datatypesFilterMap,
 			Map<String, DatatypeExportConfiguration> overiddedDatatypesMap, Map<String, Boolean> segmentFilterMap,
 			Map<String, SegmentExportConfiguration> overiddedSegmentMap,
 			Map<String, Boolean> conformanceProfileFilterMap,
 			Map<String, ConformanceProfileExportConfiguration> overiddedConformanceProfileMap,
 			Map<String, Boolean> valueSetFilterMap, Map<String, ValueSetExportConfiguration> overiddedValueSetMap) {
 		super();
+//		this.datatypesLibraryFilterMap = datatypesLibraryFilterMap;
+//		OveriddedDatatypesLibraryMap = overiddedDatatypesLibraryMap;
 		this.datatypesFilterMap = datatypesFilterMap;
 		OveriddedDatatypesMap = overiddedDatatypesMap;
 		this.segmentFilterMap = segmentFilterMap;
@@ -56,9 +62,28 @@ public ExportFilterDecision() {
 //		return exportFilterDecision;		
 //		}
 //	
+
+
 	public Map<String, Boolean> getDatatypesFilterMap() {
 		return datatypesFilterMap;
 	}
+//	public Map<String, Boolean> getDatatypesLibraryFilterMap() {
+//		return datatypesLibraryFilterMap;
+//	}
+//
+//	public void setDatatypesLibraryFilterMap(Map<String, Boolean> datatypesLibraryFilterMap) {
+//		this.datatypesLibraryFilterMap = datatypesLibraryFilterMap;
+//	}
+//
+//	public Map<String, DatatypeLibraryExportConfiguration> getOveriddedDatatypesLibraryMap() {
+//		return OveriddedDatatypesLibraryMap;
+//	}
+//
+//	public void setOveriddedDatatypesLibraryMap(
+//			Map<String, DatatypeLibraryExportConfiguration> overiddedDatatypesLibraryMap) {
+//		OveriddedDatatypesLibraryMap = overiddedDatatypesLibraryMap;
+//	}
+
 	public void setDatatypesFilterMap(Map<String, Boolean> datatypesFilterMap) {
 		this.datatypesFilterMap = datatypesFilterMap;
 	}

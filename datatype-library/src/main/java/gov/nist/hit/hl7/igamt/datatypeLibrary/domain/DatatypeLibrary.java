@@ -24,6 +24,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentExportConfiguration;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 
 
@@ -41,6 +42,8 @@ public class DatatypeLibrary extends DocumentStructure {
 
 	private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
 	private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
+	  private DocumentExportConfiguration lastUserConfiguration;
+
 
 	/**
 	 * 
@@ -49,6 +52,24 @@ public class DatatypeLibrary extends DocumentStructure {
 		super();
 		this.setType(Type.DATATYPELIBRARY);
 		// TODO Auto-generated constructor stub
+	}
+
+
+
+	public DocumentExportConfiguration getLastUserConfiguration() {
+		return lastUserConfiguration;
+	}
+
+
+
+	public void setLastUserConfiguration(DocumentExportConfiguration lastUserConfiguration) {
+		this.lastUserConfiguration = lastUserConfiguration;
+	}
+
+
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
 	}
 
 
