@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { IExportConfiguration } from '../../export-configuration/models/default-export-configuration.interface';
-import { IExportConfigurationItemList } from '../models/exportConfigurationForFrontEnd.interface';
 import { Type } from '../../shared/constants/type.enum';
+import { IExportConfigurationItemList } from '../models/exportConfigurationForFrontEnd.interface';
 
 @Injectable()
 export class ExportConfigurationService {
@@ -17,7 +17,7 @@ export class ExportConfigurationService {
     return this.http.get<IExportConfiguration>(this.URL + '/' + id);
   }
 
-  createExportConfiguration(type:Type): Observable<IExportConfiguration> {
+  createExportConfiguration(type: Type): Observable<IExportConfiguration> {
     return this.http.get<IExportConfiguration>(this.URL + '/create/' + type);
   }
 
@@ -33,8 +33,8 @@ export class ExportConfigurationService {
     return this.http.post<Message<any>>(this.URL + '/delete', exportConfiguration);
   }
 
-  getAllExportConfigurations(type:Type): Observable<IExportConfigurationItemList[]> {
-    return this.http.get<IExportConfigurationItemList[]>(this.URL + '/generalConfigurations/'+type);
+  getAllExportConfigurations(type: Type): Observable<IExportConfigurationItemList[]> {
+    return this.http.get<IExportConfigurationItemList[]>(this.URL + '/generalConfigurations/' + type);
   }
 
 }

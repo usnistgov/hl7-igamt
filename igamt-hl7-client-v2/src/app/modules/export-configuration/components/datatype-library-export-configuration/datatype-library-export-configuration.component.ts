@@ -4,9 +4,9 @@ import {CardModule} from 'primeng/card';
 import {TabViewModule} from 'primeng/tabview';
 
 @Component({
-  selector: 'app-datatypeLibrary-export-configuration',
-  templateUrl: './datatypeLibrary-export-configuration.component.html',
-  styleUrls: ['./datatypeLibrary-export-configuration.component.scss'],
+  selector: 'app-datatype-library-export-configuration',
+  templateUrl: './datatype-library-export-configuration.component.html',
+  styleUrls: ['./datatype-library-export-configuration.component.scss'],
 })
 export class DatatypeLibraryExportConfigurationComponent implements OnInit {
 

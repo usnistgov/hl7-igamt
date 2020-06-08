@@ -3,10 +3,10 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IgService } from '../../../ig/services/ig.service';
+import { Type } from '../../../shared/constants/type.enum';
 import { IExportConfigurationGlobal } from '../../models/config.interface';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
 import { ExportConfigurationDialogComponent } from '../export-configuration-dialog/export-configuration-dialog.component';
-import { Type } from '../../../shared/constants/type.enum';
 
 @Component({
   selector: 'app-export-dialog',
@@ -37,7 +37,7 @@ export class ExportDialogComponent implements OnInit {
     this.type = data.type;
     this.configlist = data.configurations;
     this.getExportFirstDecision = data.getExportFirstDecision;
-    console.log("selected config : ",this.selectedConfig);
+    console.log('selected config : ', this.selectedConfig);
     this.selectedConfig = this.configlist.find( (x) => {
         return x.defaultConfig;
       },
@@ -59,8 +59,8 @@ export class ExportDialogComponent implements OnInit {
       filter((value) => !!value),
       take(1),
       map((decision) => {
-        console.log("decision : " , decision);
-        console.log("selectedConfig : " + this.selectedConfig.configName);
+        console.log('decision : ' , decision);
+        console.log('selectedConfig : ' + this.selectedConfig.configName);
 
         const tocDialog = this.dialog.open(ExportConfigurationDialogComponent, {
           maxWidth: '95vw',

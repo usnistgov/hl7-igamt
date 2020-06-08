@@ -63,7 +63,7 @@
           </p-tabView>
           <p-tabView *ngIf="type === 'DATATYPELIBRARY'" [styleClass]="'configuration-tab-view'" >
               <p-tabPanel header="Datatype Library Datatypes" [selected]="true">
-                <app-datatypeLibrary-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.datatypeExportConfiguration" [displayUsages]="true" (detectChange)="change($event)" ></app-datatypeLibrary-export-configuration>
+                <app-datatype-library-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.datatypeExportConfiguration" [displayUsages]="true" (detectChange)="change($event)" ></app-datatype-library-export-configuration>
               </p-tabPanel>
             </p-tabView>
         </div>

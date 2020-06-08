@@ -26,7 +26,7 @@ import { ConfigurationTocComponent } from '../configuration-toc/configuration-to
 export class ExportConfigurationDialogComponent implements OnInit {
   selected: IDisplayElement;
   type: Type;
-  docType : Type;
+  docType: Type;
   @ViewChild(ConfigurationTocComponent) toc;
   initialConfig: IExportConfigurationGlobal;
   filter: any;
@@ -52,7 +52,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.filter = this.initialConfig.exportFilterDecision;
     this.defaultConfig = _.cloneDeep(data.decision.exportConfiguration);
     this.type = data.type;
-    this.docType=data.type;
+    this.docType = data.type;
   }
   select(node) {
     this.loading = true;
@@ -60,7 +60,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.type = node.type;
     switch (this.type) {
       case Type.SEGMENT: {
-        console.log("Type in TOC is S:" + this.type);
+        console.log('Type in TOC is S:' + this.type);
         if (this.filter.overiddedSegmentMap[node.id]) {
           this.current = this.filter.overiddedSegmentMap[node.id];
         } else {
@@ -71,14 +71,14 @@ export class ExportConfigurationDialogComponent implements OnInit {
         break;
       }
       case Type.DATATYPE: {
-        console.log("Type in TOC is D:" + this.type);
+        console.log('Type in TOC is D:' + this.type);
         if (this.filter.overiddedDatatypesMap[node.id]) {
           this.current = this.filter.overiddedDatatypesMap[node.id];
-          console.log("current 1" , this.current);
+          console.log('current 1' , this.current);
 
         } else {
           this.current = _.cloneDeep(this.defaultConfig.datatypeExportConfiguration);
-          console.log("current 2" , this.current);
+          console.log('current 2' , this.current);
 
         }
         this.loading = false;

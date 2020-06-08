@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { Observable, Subject } from 'rxjs';
@@ -9,11 +10,10 @@ import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { MessageType } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
+import { Type } from '../../../shared/constants/type.enum';
 import { IExportConfiguration } from '../../models/default-export-configuration.interface';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
 import { ExportConfigurationService } from '../../services/export-configuration.service';
-import { ActivatedRoute } from '@angular/router';
-import { Type } from '../../../shared/constants/type.enum';
 
 @Component({
   selector: 'app-default-configuration',
@@ -44,7 +44,7 @@ export class DefaultConfigurationComponent implements OnInit {
     this.exportConfigurationService.getAllExportConfigurations(type).subscribe(
       (x) => this.configList = x,
     );
-    console.log("config list : ",this.configList);
+    console.log('config list : ', this.configList);
   }
 
   filteredList(): IExportConfigurationItemList[] {

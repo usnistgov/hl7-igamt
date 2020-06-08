@@ -11,6 +11,7 @@ import { ExportConfigurationService } from '../../../export-configuration/servic
 import {IDocumentDisplayInfo} from '../../../ig/models/ig/ig-document.class';
 import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
+import { Type } from '../../../shared/constants/type.enum';
 import { IConnectingInfo } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import {ILibrary} from '../../models/library.class';
@@ -20,7 +21,6 @@ import {
   IPublicationSummary,
   PublishLibraryDialogComponent,
 } from '../publish-library-dialog/publish-library-dialog.component';
-import { Type } from '../../../shared/constants/type.enum';
 
 @Component({
   selector: 'app-library-edit-toolbar',

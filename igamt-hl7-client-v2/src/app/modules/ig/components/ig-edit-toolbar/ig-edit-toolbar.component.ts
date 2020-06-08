@@ -10,11 +10,11 @@ import { ExportConfigurationService } from '../../../export-configuration/servic
 import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
 import { VerifyIgDialogComponent } from '../../../shared/components/verify-ig-dialog/verify-ig-dialog.component';
+import { Type } from '../../../shared/constants/type.enum';
 import { IConnectingInfo } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import {IDocumentDisplayInfo, IgDocument} from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
-import { Type } from '../../../shared/constants/type.enum';
 
 @Component({
   selector: 'app-ig-edit-toolbar',
