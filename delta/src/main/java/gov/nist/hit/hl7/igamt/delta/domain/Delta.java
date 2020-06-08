@@ -7,11 +7,20 @@ public class Delta<T> {
     private DeltaInfo source;
     private DeltaInfo target;
     private T delta;
+    private List<ConformanceStatementDelta> conformanceStatements;
+
 
     public Delta(DeltaInfo source, DeltaInfo target, T delta) {
         this.source = source;
         this.target = target;
         this.delta = delta;
+    }
+
+    public Delta(DeltaInfo source, DeltaInfo target, T delta, List<ConformanceStatementDelta> conformanceStatements) {
+        this.source = source;
+        this.target = target;
+        this.delta = delta;
+        this.conformanceStatements = conformanceStatements;
     }
 
     public DeltaInfo getSource() {
@@ -36,6 +45,14 @@ public class Delta<T> {
 
     public void setDelta(T delta) {
         this.delta = delta;
+    }
+
+    public List<ConformanceStatementDelta> getConformanceStatements() {
+        return conformanceStatements;
+    }
+
+    public void setConformanceStatements(List<ConformanceStatementDelta> conformanceStatements) {
+        this.conformanceStatements = conformanceStatements;
     }
 
 }

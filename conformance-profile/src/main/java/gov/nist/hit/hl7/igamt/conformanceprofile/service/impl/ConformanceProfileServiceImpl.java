@@ -525,6 +525,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     if (conformanceProfile.getIdentifier() != null)
       label = label + "-" + conformanceProfile.getIdentifier();
     result.setLabel(label);
+    result.setConformanceStatements( conformanceProfile.getBinding().getConformanceStatements());
 
     if (conformanceProfile.getChildren() != null && conformanceProfile.getChildren().size() > 0) {
       for (SegmentRefOrGroup sog : conformanceProfile.getChildren()) {
@@ -613,7 +614,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     StructureElementBinding childSeb = this.findStructureElementBindingByIdFromBinding(parentBinding,
         segmentRef.getId());
     if (childSeb != null) {
-      segmentRefDisplayModel.addBinding(this.createBindingDisplay(childSeb, conformanceProfileId,
+      segmentRefDisplayModel.setBinding(this.createBindingDisplay(childSeb, conformanceProfileId,
           ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
       if (childSeb.getPredicate() != null) {
         Predicate p = childSeb.getPredicate();
@@ -645,7 +646,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             StructureElementBinding childChildSeb = this
                 .findStructureElementBindingByIdFromBinding(childSeb, f.getId());
             if (childChildSeb != null) {
-              fModel.addBinding(this.createBindingDisplay(childChildSeb, conformanceProfileId,
+              fModel.setBinding(this.createBindingDisplay(childChildSeb, conformanceProfileId,
                   ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
               if (childChildSeb.getPredicate() != null) {
                 Predicate p = childChildSeb.getPredicate();
@@ -661,7 +662,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             StructureElementBinding fSeb = this.findStructureElementBindingByFieldIdForSegment(s,
                 f.getId());
             if (fSeb != null) {
-              fModel.addBinding(
+              fModel.setBinding(
                   this.createBindingDisplay(fSeb, s.getId(), ViewScope.SEGMENT, 2, valueSetsMap));
               if (fSeb.getPredicate() != null) {
                 Predicate p = fSeb.getPredicate();
@@ -692,7 +693,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                     StructureElementBinding childChildChildSeb = this
                         .findStructureElementBindingByIdFromBinding(childChildSeb, c.getId());
                     if (childChildChildSeb != null) {
-                      cModel.addBinding(
+                      cModel.setBinding(
                           this.createBindingDisplay(childChildChildSeb, conformanceProfileId,
                               ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
                       if (childChildChildSeb.getPredicate() != null) {
@@ -711,7 +712,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                         .findStructureElementBindingByComponentIdFromStructureElementBinding(
                             fSeb, c.getId());
                     if (childFSeb != null) {
-                      cModel.addBinding(this.createBindingDisplay(childFSeb, s.getId(),
+                      cModel.setBinding(this.createBindingDisplay(childFSeb, s.getId(),
                           ViewScope.SEGMENT, 2, valueSetsMap));
                       if (childFSeb.getPredicate() != null) {
                         Predicate p = childFSeb.getPredicate();
@@ -730,7 +731,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                         .findStructureElementBindingByComponentIdForDatatype(childDt,
                             c.getId());
                     if (cSeb != null) {
-                      cModel.addBinding(this.createBindingDisplay(cSeb, childDt.getId(),
+                      cModel.setBinding(this.createBindingDisplay(cSeb, childDt.getId(),
                           ViewScope.DATATYPE, 3, valueSetsMap));
                       if (cSeb.getPredicate() != null) {
                         Predicate p = cSeb.getPredicate();
@@ -768,7 +769,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                                 .findStructureElementBindingByIdFromBinding(
                                     childChildChildSeb, sc.getId());
                             if (childChildChildChildSeb != null) {
-                              scModel.addBinding(this.createBindingDisplay(
+                              scModel.setBinding(this.createBindingDisplay(
                                   childChildChildChildSeb, conformanceProfileId,
                                   ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
                               if (childChildChildChildSeb.getPredicate() != null) {
@@ -788,7 +789,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                                 .findStructureElementBindingByComponentIdFromStructureElementBinding(
                                     childFSeb, sc.getId());
                             if (childChildFSeb != null) {
-                              scModel.addBinding(this.createBindingDisplay(childChildFSeb,
+                              scModel.setBinding(this.createBindingDisplay(childChildFSeb,
                                   s.getId(), ViewScope.SEGMENT, 2, valueSetsMap));
                               if (childChildFSeb.getPredicate() != null) {
                                 Predicate p = childChildFSeb.getPredicate();
@@ -806,7 +807,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                                 .findStructureElementBindingByComponentIdFromStructureElementBinding(
                                     cSeb, sc.getId());
                             if (childCSeb != null) {
-                              scModel.addBinding(this.createBindingDisplay(childCSeb,
+                              scModel.setBinding(this.createBindingDisplay(childCSeb,
                                   childDt.getId(), ViewScope.DATATYPE, 3,
                                   valueSetsMap));
                               if (childCSeb.getPredicate() != null) {
@@ -826,7 +827,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                                 .findStructureElementBindingByComponentIdForDatatype(
                                     childChildDt, sc.getId());
                             if (scSeb != null) {
-                              scModel.addBinding(this.createBindingDisplay(scSeb,
+                              scModel.setBinding(this.createBindingDisplay(scSeb,
                                   childChildDt.getId(), ViewScope.DATATYPE, 4,
                                   valueSetsMap));
                               if (scSeb.getPredicate() != null) {
@@ -968,27 +969,20 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings,
       HashMap<String, Valueset> valueSetsMap) {
-    //		if (valuesetBindings != null) {
-    //			Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
-    //			for (ValuesetBinding vb : valuesetBindings) {
-    //				Valueset vs = valueSetsMap.get(vb.getValuesetId());
-    //				if (vs == null) {
-    //					vs = this.valuesetService.findById(vb.getValuesetId());
-    //					valueSetsMap.put(vs.getId(), vs);
-    //				}
-    //				if (vs != null) {
-    //					DisplayValuesetBinding dvb = new DisplayValuesetBinding();
-    //					dvb.setLabel(vs.getBindingIdentifier());
-    //					dvb.setName(vs.getName());
-    //					dvb.setStrength(vb.getStrength());
-    //					dvb.setValuesetId(vb.getValuesetId());
-    //					dvb.setValuesetLocations(vb.getValuesetLocations());
-    //					dvb.setDomainInfo(vs.getDomainInfo());
-    //					result.add(dvb);
-    //				}
-    //			}
-    //			return result;
-    //		}
+    		if (valuesetBindings != null) {
+    			Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
+    			for (ValuesetBinding vb : valuesetBindings) {
+
+    					DisplayValuesetBinding dvb = new DisplayValuesetBinding();
+
+    					dvb.setStrength(vb.getStrength());
+    					dvb.setValueSets(vb.getValueSets());
+    					dvb.setValuesetLocations(vb.getValuesetLocations());
+    					result.add(dvb);
+
+    			}
+    			return result;
+    		}
     return null;
   }
 

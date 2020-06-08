@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 
 /**
  * @author jungyubw
@@ -26,6 +27,9 @@ public class SegmentStructureDisplay extends SectionInfo {
   private Set<FieldStructureTreeModel> structure;
   @DeltaField
   private String name;
+
+  @DeltaField
+  private Set<ConformanceStatement> conformanceStatements;
 
   public String getId() {
     return id;
@@ -66,5 +70,13 @@ public class SegmentStructureDisplay extends SectionInfo {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public Set<ConformanceStatement> getConformanceStatements() {
+    return conformanceStatements;
+  }
+
+  public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
+    this.conformanceStatements = conformanceStatements;
   }
 }
