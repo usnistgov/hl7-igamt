@@ -556,7 +556,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
     criterias1.put(EvolutionPropertie.CPNUMBER, true);
     datatypeClassifier.classify(hl7Versions,criterias1);
     System.out.println("ENd of Classifying dts");
-   
+
   }
 
 
@@ -657,7 +657,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
 //      this.dataFixer.readCsv();
 //    }
 
-   //@PostConstruct
+  //@PostConstruct
     public void fix0396() throws ValidationException{
       tableFixes.fix0396();
     }
