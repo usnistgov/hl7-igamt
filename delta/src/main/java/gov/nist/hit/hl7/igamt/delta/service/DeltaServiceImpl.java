@@ -74,8 +74,8 @@ public class DeltaServiceImpl implements DeltaService {
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), target.getExt(), target.getDescription(), target.getId());
 
       List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
-
-      return new Delta(sourceInfo, targetInfo, structure);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
 
     } else if(type.equals(Type.SEGMENT)) {
 
@@ -89,8 +89,9 @@ public class DeltaServiceImpl implements DeltaService {
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), target.getExt(), target.getDescription(), target.getId());
 
       List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
-      return new Delta(sourceInfo, targetInfo, structure);
+      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
 
     } else if(type.equals(Type.CONFORMANCEPROFILE)) {
 
@@ -105,8 +106,9 @@ public class DeltaServiceImpl implements DeltaService {
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), null, target.getDescription(), target.getId());
 
       List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
-      return new Delta(sourceInfo, targetInfo, structure);
+      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
 
     } else if(type.equals(Type.VALUESET)) {
 
