@@ -56,27 +56,6 @@ export class DeltaTreeComponent implements OnInit {
     }
   }
 
-  vsBindingClass(valueSetBinding): string {
-    const removed = valueSetBinding.removed ? valueSetBinding.removed.length : 0;
-    const added = valueSetBinding.added ? valueSetBinding.added.length : 0;
-    const updated = valueSetBinding.updated ? valueSetBinding.updated.length : 0;
-    const unchanged = valueSetBinding.unchanged ? valueSetBinding.unchanged.length : 0;
-
-    if (removed > 0 && (updated + unchanged + added) === 0) {
-      return this.styleClasses.deleted;
-    } else if (added > 0 && (updated + unchanged + removed) === 0) {
-      return this.styleClasses.added;
-    } else if (updated > 0 && (added + unchanged + removed) === 0) {
-      return this.styleClasses.updated;
-    } else if (unchanged > 0 && (added + updated + removed) === 0) {
-      return this.styleClasses.unchanged;
-    } else if ((unchanged + added + updated + removed) === 0) {
-      return this.styleClasses.unchanged;
-    } else {
-      return this.styleClasses.updated;
-    }
-  }
-
   referenceAction(referenceDelta: IDeltaReference): DeltaAction {
     if (referenceDelta) {
       if (referenceDelta.label.action === referenceDelta.domainInfo.action) {

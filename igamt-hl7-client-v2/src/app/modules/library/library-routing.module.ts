@@ -7,15 +7,18 @@ import {
   OpenLibraryMetadataEditorNode,
 } from '../../root-store/library/library-edit/library-edit.actions';
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
+import { DamWidgetContainerComponent } from '../dam-framework/components/data-widget/dam-widget-container/dam-widget-container.component';
 import { AuthenticatedGuard } from '../dam-framework/guards/auth-guard.guard';
+import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
-import { DamWidgetRoute } from '../dam-framework/services/router-helpers.service';
+import { WidgetDeactivateGuard } from '../dam-framework/guards/widget-deactivate.guard';
+import { WidgetSetupGuard } from '../dam-framework/guards/widget-setup.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { CreateLibraryComponent } from './components/create-library/create-library.component';
-import {DatatypeEvolutionResolver} from './components/datatypes-eveolution/datatype-evolution-resolver.service';
-import {DatatypesEvolutionComponent} from './components/datatypes-eveolution/datatypes-evolution.component';
+import { DatatypeEvolutionResolver } from './components/datatypes-eveolution/datatype-evolution-resolver.service';
+import { DatatypesEvolutionComponent } from './components/datatypes-eveolution/datatypes-evolution.component';
 import { LIBRARY_EDIT_WIDGET_ID, LibraryEditContainerComponent } from './components/library-edit-container/library-edit-container.component';
 import { LibraryListContainerComponent } from './components/library-list-container/library-list-container.component';
 import { LibraryMetadataEditorComponent } from './components/library-metadata-editor/library-metadata-editor.component';
@@ -32,7 +35,8 @@ const routes: Routes = [
     component: CreateLibraryComponent,
     canActivate: [AuthenticatedGuard],
   },
-  {path: 'evolution',
+  {
+    path: 'evolution',
     component: DatatypesEvolutionComponent,
     resolve: {
       matrix: DatatypeEvolutionResolver,
@@ -43,7 +47,7 @@ const routes: Routes = [
     component: ErrorPageComponent,
   },
   {
-    ...DamWidgetRoute({
+    data: {
       widgetId: LIBRARY_EDIT_WIDGET_ID,
       routeParam: 'libraryId',
       loadAction: LibraryEditResolverLoad,
@@ -51,8 +55,16 @@ const routes: Routes = [
       failureAction: LibraryEditActionTypes.LibraryEditResolverLoadFailure,
       redirectTo: ['library', 'error'],
       component: LibraryEditContainerComponent,
-    }),
+    },
     path: ':libraryId',
+    component: DamWidgetContainerComponent,
+    canActivate: [
+      WidgetSetupGuard,
+      DataLoaderGuard,
+    ],
+    canDeactivate: [
+      WidgetDeactivateGuard,
+    ],
     children: [
       {
         path: '',
