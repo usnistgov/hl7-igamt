@@ -12,6 +12,8 @@ import { MessageService } from '../../../dam-framework/services/message.service'
 import { IExportConfiguration } from '../../models/default-export-configuration.interface';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
 import { ExportConfigurationService } from '../../services/export-configuration.service';
+import { ActivatedRoute } from '@angular/router';
+import { Type } from '../../../shared/constants/type.enum';
 
 @Component({
   selector: 'app-default-configuration',
@@ -28,18 +30,21 @@ export class DefaultConfigurationComponent implements OnInit {
   configName: string;
   hasChanges: boolean;
   filter: string;
+  type: Type;
 
   constructor(
     private exportConfigurationService: ExportConfigurationService,
     private store: Store<any>,
+    private activeRoute: ActivatedRoute,
     private messageService: MessageService,
     private dialog: MatDialog,
   ) { }
 
-  loadExportConfigurationList() {
-    this.exportConfigurationService.getAllExportConfigurations().subscribe(
+  loadExportConfigurationList(type: Type) {
+    this.exportConfigurationService.getAllExportConfigurations(type).subscribe(
       (x) => this.configList = x,
     );
+    console.log("config list : ",this.configList);
   }
 
   filteredList(): IExportConfigurationItemList[] {
@@ -59,7 +64,7 @@ export class DefaultConfigurationComponent implements OnInit {
 
   useAsDefaultConfiguration(configuration: IExportConfigurationItemList) {
     this.exportConfigurationService.saveAsDefaultExportConfiguration(configuration).subscribe(
-      (x) => this.loadExportConfigurationList(),
+      (x) => this.loadExportConfigurationList(this.type),
     );
 
   }
@@ -78,7 +83,7 @@ export class DefaultConfigurationComponent implements OnInit {
           this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: true }));
           this.exportConfigurationService.deleteExportConfiguration(configuration).subscribe(
             (response) => {
-              this.loadExportConfigurationList();
+              this.loadExportConfigurationList(this.type);
               this.store.dispatch(this.messageService.messageToAction(response));
               if (this.currentConfiguration && this.currentConfiguration.id === configuration.id) {
                 this.currentConfiguration = undefined;
@@ -103,7 +108,7 @@ export class DefaultConfigurationComponent implements OnInit {
     this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: true }));
     this.exportConfigurationService.saveExportConfiguration(this.currentConfiguration).subscribe(
       (response) => {
-        this.loadExportConfigurationList();
+        this.loadExportConfigurationList(this.type);
         this.store.dispatch(this.messageService.messageToAction(response));
         this.backupConfiguration = _.cloneDeep(this.currentConfiguration);
         this.hasChanges = false;
@@ -156,14 +161,14 @@ export class DefaultConfigurationComponent implements OnInit {
     }
   }
 
-  create() {
+  create(type: Type) {
     this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: true }));
-    this.exportConfigurationService.createExportConfiguration().subscribe(
+    this.exportConfigurationService.createExportConfiguration(type).subscribe(
       (x) => {
         this.currentConfiguration = x;
         this.open(this.currentConfiguration.id);
         this.store.dispatch(this.messageService.userMessageToAction(new UserMessage(MessageType.SUCCESS, 'Configuration Created Successfully')));
-        this.loadExportConfigurationList();
+        this.loadExportConfigurationList(type);
       },
       (error) => {
         this.store.dispatch(this.messageService.actionFromError(error));
@@ -176,7 +181,11 @@ export class DefaultConfigurationComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadExportConfigurationList();
+    this.activeRoute.queryParams.subscribe((params) => {
+      this.type = params.type;
+      console.log(this.type);
+      this.loadExportConfigurationList(this.type);
+    });
   }
 
   isDefault(item: IExportConfigurationItemList) {

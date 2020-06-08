@@ -20,6 +20,7 @@ import {
   IPublicationSummary,
   PublishLibraryDialogComponent,
 } from '../publish-library-dialog/publish-library-dialog.component';
+import { Type } from '../../../shared/constants/type.enum';
 
 @Component({
   selector: 'app-library-edit-toolbar',
@@ -46,7 +47,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
   exportWord() {
     combineLatest(
       this.getLibId(),
-      this.exportConfigurationService.getAllExportConfigurations()).pipe(
+      this.exportConfigurationService.getAllExportConfigurations(Type.DATATYPELIBRARY)).pipe(
         map(([igId, configurations]) => {
           console.log(igId);
           const dialogRef = this.dialog.open(ExportDialogComponent, {
@@ -54,6 +55,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
               toc: this.store.select(fromLibrayEdit.selectProfileTree),
               igId,
               configurations,
+              type: Type.DATATYPELIBRARY,
               getExportFirstDecision: this.libraryService.getExportFirstDecision,
             },
           });
@@ -74,7 +76,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
   exportHTML() {
     combineLatest(
       this.getLibId(),
-      this.exportConfigurationService.getAllExportConfigurations()).pipe(
+      this.exportConfigurationService.getAllExportConfigurations(Type.DATATYPELIBRARY)).pipe(
         map(([igId, configurations]) => {
           console.log(igId);
           const dialogRef = this.dialog.open(ExportDialogComponent, {
@@ -82,6 +84,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
               toc: this.store.select(fromLibrayEdit.selectProfileTree),
               igId,
               configurations,
+              type: Type.DATATYPELIBRARY,
               getExportFirstDecision: this.libraryService.getExportFirstDecision,
             },
           });

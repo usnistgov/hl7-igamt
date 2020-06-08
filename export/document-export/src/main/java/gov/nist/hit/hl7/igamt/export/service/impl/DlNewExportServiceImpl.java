@@ -134,7 +134,7 @@ public class DlNewExportServiceImpl implements DlNewExportService {
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
 					dl.getName(), dl.getMetadata().getCoverPicture(), exportConfiguration,
-					exportFontConfiguration, "2.0_beta");
+					exportFontConfiguration, "2.0_beta",dl.getType());
 			InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH,
 					exportParameters);
 			ExportedFile exportedFile = new ExportedFile(htmlContent, dl.getName(), dl.getId(),

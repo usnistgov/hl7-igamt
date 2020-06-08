@@ -211,7 +211,6 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 					valuesetBinding.getValuesetLocations() != null
 							? convertValuesetLocationsToString(location, valuesetBinding.getValuesetLocations())
 							: ""));
-			System.out.println("Location is : " + location + " ValueSet bindings : " + valuesetBinding.getValuesetLocations().toString());
 			return valuesetBindingElement;
 		}
 		return null;

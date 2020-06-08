@@ -308,8 +308,8 @@
 					</xsl:with-param>
 				</xsl:call-template>
 			</xsl:if>
-			<xsl:if test="count(./Constraint[@Type='pre'])  &gt; 0">
-				<xsl:element name="br" />
+<!-- 			<xsl:if test="count(./Constraint[@Type='pre'])  &gt; 0">
+ -->				<xsl:element name="br" />
 				<xsl:call-template name="Constraint">
 					<xsl:with-param name="title">
 						<xsl:text>Conditional Predicates</xsl:text>
@@ -324,8 +324,8 @@
 						<xsl:text>h4</xsl:text>
 					</xsl:with-param>
 				</xsl:call-template>
-			</xsl:if>
-			<!-- </xsl:if> -->
+<!-- 			</xsl:if>
+ -->			<!-- </xsl:if> -->
 			<xsl:call-template name="PostDef" />
 			<xsl:if test="$columnDisplay.dataType.comment = 'true'">
 				<xsl:apply-templates select="./Binding/CommentList" />

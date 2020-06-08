@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
@@ -78,6 +79,11 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   }
 
   @Override
+  public List<ExportConfiguration> getAllExportConfigurationWithType(String username,Type type) {
+    return exportConfigurationRepository.findByUsernameAndType(username, type);
+  }
+  
+  @Override
   public List<ExportConfiguration> getAllExportConfiguration(String username) {
     return exportConfigurationRepository.findByUsername(username);
   }
@@ -93,12 +99,24 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   }
 
   @Override
-  public ExportConfiguration create(String username) {
+  public ExportConfiguration create(String username, String type) {
     //	ExportConfiguration exportConfiguration = exportConfigurationRepository.findOneById("BasicExportConfiguration");
-    ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
+	  Type docType = Type.IGDOCUMENT;
+	    if(type.equals("IGDOCUMENT")) {
+	     docType = Type.IGDOCUMENT;
+	    } else if(type.equals("DATATYPELIBRARY")) {
+	         docType = Type.DATATYPELIBRARY;
+	    }
+    ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false,docType);
     exportConfiguration.setId(null);
     exportConfiguration.setConfigName("New Configuration");
     exportConfiguration.setUsername(username);
+    if(type.equals("IGDOCUMENT")){
+    exportConfiguration.setType(Type.IGDOCUMENT);
+    System.out.println("inside IF IGDOCUMENT ");
+  }	else if(type.equals("DATATYPELIBRARY")){
+	    exportConfiguration.setType(Type.DATATYPELIBRARY);
+  }
     exportConfigurationRepository.save(exportConfiguration);
     return exportConfiguration;
   }
@@ -116,6 +134,20 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   public ExportConfiguration getOriginalConfig(boolean isOriginal) {
 	    return exportConfigurationRepository.findOneByOriginal(isOriginal);
 	  }
+  
+  public ExportConfiguration getOriginalConfigWithType(boolean isOriginal, Type type) {
+	    return exportConfigurationRepository.findOneByOriginalAndType(isOriginal, type);
+	  }
+
+
+@Override
+public ExportConfiguration getExportConfigurationWithType(String id, Type type) {
+    return exportConfigurationRepository.findOneByIdAndType(id,type);
+
+}
+
+
+
 
 
 

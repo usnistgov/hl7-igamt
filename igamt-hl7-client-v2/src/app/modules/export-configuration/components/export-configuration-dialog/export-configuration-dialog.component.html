@@ -15,7 +15,7 @@
       </div>
       <div class="sidebar-controls">
         <div></div>
-        <div class="btn-group mr-2" role="group">
+        <div *ngIf="type === 'IGDOCUMENT'" class="btn-group mr-2" role="group">
           <button class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
             CP
           </button>
@@ -27,6 +27,20 @@
           </button>
           <button class="btn btn-text btn-sm entity-badge-valueset" type="button">
             VS
+          </button>
+          <button class="btn btn-text btn-sm btn-primary">
+            <i class="fa fa-expand"></i>
+          </button>
+          <button class="btn btn-text btn-sm btn-primary">
+            <i class="fa fa-compress"></i>
+          </button>
+          <button class="btn btn-text btn-sm btn-primary" type="button">
+            <i class="fa fa-plus"></i>
+          </button>
+        </div>
+        <div *ngIf="type === 'DATATYPELIBRARY'" class="btn-group mr-2" role="group">
+          <button class="btn btn-text btn-sm entity-badge-datatype" type="button">
+            DT
           </button>
           <button class="btn btn-text btn-sm btn-primary">
             <i class="fa fa-expand"></i>
@@ -70,7 +84,7 @@
           <span *ngIf="selected?.type === 'IGDOCUMENT'"> Implementation Guide</span>
         </h5>
       </div>
-      <div class="content">
+      <div *ngIf="docType === 'IGDOCUMENT'" class="content">
         <ng-container [ngSwitch]="type">
           <ng-container *ngSwitchCase="'SEGMENT'">
             <app-segment-export-configuration [config]="current" [derived]="derived" [delta]="delta" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading"></app-segment-export-configuration>
@@ -83,6 +97,13 @@
           </ng-container>
           <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
             <app-conformance-profile-export-configuration [config]="current" [derived]="derived" [delta]="delta" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading"></app-conformance-profile-export-configuration>
+          </ng-container>
+        </ng-container>
+      </div>
+      <div *ngIf="docType === 'DATATYPELIBRARY'" class="content">
+        <ng-container [ngSwitch]="type">
+          <ng-container *ngSwitchCase="'DATATYPE'">
+              <app-datatypeLibrary-export-configuration [config]="current" [derived]="derived"  [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading"></app-datatypeLibrary-export-configuration>
           </ng-container>
         </ng-container>
       </div>

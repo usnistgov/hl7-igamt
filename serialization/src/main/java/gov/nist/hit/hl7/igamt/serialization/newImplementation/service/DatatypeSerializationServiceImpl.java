@@ -64,24 +64,27 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 					datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
 		}
 		if(type.equals(Type.DATATYPELIBRARY)) {
-//			datatypeElement
-//			.addAttribute(new Attribute("PurposeUse", datatype.getUsageNotes() != null ? datatype.getUsageNotes(): ""));
-			datatypeElement
-			.addAttribute(new Attribute("datatypeFlavor", datatype.getLabel() != null ? datatype.getLabel(): ""));
-			datatypeElement
-			.addAttribute(new Attribute("datatypeName", datatype.getDescription() != null ? datatype.getDescription(): ""));
-			datatypeElement
-			.addAttribute(new Attribute("shortDescription", datatype.getShortDescription() != null ? datatype.getShortDescription(): ""));
-			if(datatype.getDomainInfo() != null) {
-			datatypeElement
-			.addAttribute(new Attribute("hl7versions", datatype.getDomainInfo().getCompatibilityVersion()!= null ? datatype.getDomainInfo().getCompatibilityVersion().toString(): ""));
+			//			datatypeElement
+			//			.addAttribute(new Attribute("PurposeUse", datatype.getUsageNotes() != null ? datatype.getUsageNotes(): ""));
+			if(datatypeExportConfiguration.getMetadataConfig().isDatatypeFlavor()) {
+				datatypeElement
+				.addAttribute(new Attribute("datatypeFlavor", datatype.getLabel() != null ? datatype.getLabel(): ""));}
+			if(datatypeExportConfiguration.getMetadataConfig().isDatatypeName()) {
+				datatypeElement
+				.addAttribute(new Attribute("datatypeName", datatype.getDescription() != null ? datatype.getDescription(): ""));}
+			if(datatypeExportConfiguration.getMetadataConfig().isShortDescription()) {
+				datatypeElement
+				.addAttribute(new Attribute("shortDescription", datatype.getShortDescription() != null ? datatype.getShortDescription(): ""));}
+			if(datatype.getDomainInfo() != null && datatypeExportConfiguration.getMetadataConfig().isHl7version()) {
+				datatypeElement
+				.addAttribute(new Attribute("hl7versions", datatype.getDomainInfo().getCompatibilityVersion()!= null ? datatype.getDomainInfo().getCompatibilityVersion().toString(): ""));
 			}
-			datatypeElement
-			.addAttribute(new Attribute("status", datatype.getStatus() != null ? datatype.getStatus().name(): ""));
-			if(datatype.getPublicationInfo() != null) {
-			datatypeElement
-			.addAttribute(new Attribute("publicationDate", datatype.getPublicationInfo().getPublicationDate()!= null ? datatype.getPublicationInfo().getPublicationDate().toString(): ""));
-		}
+			if(datatypeExportConfiguration.getMetadataConfig().isStatus()) {
+				datatypeElement
+				.addAttribute(new Attribute("status", datatype.getStatus() != null ? datatype.getStatus().name(): ""));}
+			if(datatype.getPublicationInfo() != null && datatypeExportConfiguration.getMetadataConfig().isPublicationDate()) {
+				datatypeElement
+				.addAttribute(new Attribute("publicationDate", datatype.getPublicationInfo().getPublicationDate()!= null ? datatype.getPublicationInfo().getPublicationDate().toString(): ""));}
 		}
 		if(type.equals(Type.IGDOCUMENT)) {
 			if (datatype.getBinding() != null) {
@@ -115,10 +118,8 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 		//	        }
 		//	      }
 		if (datatype instanceof ComplexDatatype) {
-			System.out.println("ComplexDatatype");
 			datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel,datatypeExportConfiguration, type);
 		} else if (datatype instanceof DateTimeDatatype) {
-			System.out.println("DateTime");
 			datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel, datatypeExportConfiguration);
 		}
 		if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
@@ -159,10 +160,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 			if (component != null && ExportTools.CheckUsage(datatypeExportConfiguration.getComponentExport(), component.getUsage())) {
 				//	      if(this.bindedComponents.contains(component.getId())) {
 				try {
-			      	if(type.equals(Type.DATATYPELIBRARY)) {
-			      		
-			      	}
-			      	
+					if(type.equals(Type.DATATYPELIBRARY)) {
+
+					}
+
 
 					Element componentElement = new Element("Component");
 					componentElement.addAttribute(new Attribute("confLength",

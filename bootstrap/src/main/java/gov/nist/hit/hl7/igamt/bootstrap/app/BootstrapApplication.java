@@ -290,19 +290,26 @@ public class BootstrapApplication implements CommandLineRunner {
    */
 
 
-  //@PostConstruct
+//  @PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
     if( originals == null || originals.isEmpty()) {
-      ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
-      basicExportConfiguration.setConfigName("Default Export Configuration");
+      ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, Type.IGDOCUMENT);
+      basicExportConfiguration.setConfigName("IG Document Default Export Configuration");
       basicExportConfiguration.setOriginal(true);
-      basicExportConfiguration.setConfigName("Default Export Configuration");
-      basicExportConfiguration.setId("DEFAULT-CONFIG-ID");
+      basicExportConfiguration.setId("IG-DEFAULT-CONFIG-ID");
       basicExportConfiguration.setDefaultType(false);
       basicExportConfiguration.setDefaultConfig(false);
       exportConfigurationRepository.save(basicExportConfiguration);
+      basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, Type.DATATYPELIBRARY);
+      basicExportConfiguration.setConfigName("DTL Document Default Export Configuration");
+      basicExportConfiguration.setOriginal(true);
+      basicExportConfiguration.setId("DTL-DEFAULT-CONFIG-ID");
+      basicExportConfiguration.setDefaultType(false);
+      basicExportConfiguration.setDefaultConfig(false);
+      exportConfigurationRepository.save(basicExportConfiguration);
+      
     }
   }
   //  
@@ -657,7 +664,7 @@ public class BootstrapApplication implements CommandLineRunner {
     }
     
     @SuppressWarnings("deprecation")
-  // @PostConstruct
+//   @PostConstruct
     public void recoveryConstraints() {
     	this.dataypeService.findAll().forEach(dt -> {
     		if(dt.getBinding() != null) {
