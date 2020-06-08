@@ -20,6 +20,10 @@ export class SelectDatatypesComponent implements OnInit {
   @Input()
   documentType: Type;
   @Input()
+  hideFlavor: boolean;
+  @Input()
+  hideAsIs: boolean;
+  @Input()
   master: boolean;
   @ViewChild('dt1') tableRef: Table;
   selectedData: IAddingInfo[] = [];

@@ -898,7 +898,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 			} else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
 				item.setOldPropertyValue(d.getUsageNotes());
 				d.setUsageNotes((String) item.getPropertyValue());
-			} else if (item.getPropertyType().equals(PropertyType.EXT)) {
+			}
+			 else if (item.getPropertyType().equals(PropertyType.SHORTDESCRIPTION)) {
+               item.setOldPropertyValue(d.getShortDescription());
+               d.setShortDescription((String) item.getPropertyValue());
+           } 
+		
+			else if (item.getPropertyType().equals(PropertyType.EXT)) {
 				item.setOldPropertyValue(d.getExt());
 				d.setExt((String) item.getPropertyValue());
 			} else if (item.getPropertyType().equals(PropertyType.USAGE)) {

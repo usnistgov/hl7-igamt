@@ -481,7 +481,35 @@ export class CsPropositionComponent implements OnInit {
         this.setSubject(info);
       }),
     ).subscribe();
-    this.subjectRepeatMax = this.repeatMax(event.node.data.cardinality);
+    this.subjectRepeatMax = this.getNodeRepeatMax(event.node);
+  }
+
+  getNodeRepeatMax(node: IHL7v2TreeNode) {
+    const nodeRepeat = this.repeatMax(node.data.cardinality);
+    if (nodeRepeat > 0) {
+      return nodeRepeat;
+    }
+
+    if (node.data.type === Type.COMPONENT || node.data.type === Type.SUBCOMPONENT) {
+      const field = this.getFieldFrom(node);
+      if (field) {
+        return this.repeatMax(field.data.cardinality);
+      }
+    }
+
+    return 0;
+  }
+
+  getFieldFrom(node: IHL7v2TreeNode): IHL7v2TreeNode {
+    if (!node) {
+      return node;
+    }
+
+    if (node.data.type === Type.FIELD) {
+      return node;
+    }
+
+    return this.getFieldFrom(node.parent);
   }
 
   comparativeElement(event) {
@@ -492,7 +520,7 @@ export class CsPropositionComponent implements OnInit {
         this.compareName = info.name;
       }),
     ).subscribe();
-    this.complementRepeatMax = this.repeatMax(event.node.data.cardinality);
+    this.complementRepeatMax = this.getNodeRepeatMax(event.node);
   }
 
   changeElement(event, elm: ISubject | IComplement) {

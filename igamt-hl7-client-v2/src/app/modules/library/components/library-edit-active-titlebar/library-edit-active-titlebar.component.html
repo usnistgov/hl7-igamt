@@ -5,7 +5,8 @@
         <ng-container *ngTemplateOutlet="defaultHeader; context: { $implicit : active }"></ng-container>
       </ng-container>
       <ng-container *ngIf="header">
-        <ng-container *ngTemplateOutlet="header; context : { $implicit: active, defaultTemplate: defaultHeader }"></ng-container>
+        <ng-container
+          *ngTemplateOutlet="header; context : { $implicit: active, defaultTemplate: defaultHeader }"></ng-container>
       </ng-container>
     </div>
     <div *ngIf="controls">
@@ -18,26 +19,39 @@
 
   <div style="display: flex; flex-direction: column">
 
-  <div style="display: flex; flex-direction: row">
-     <h5 class="title-text">
-       <app-scope-badge *ngIf="active.display.domainInfo" [scope]="active.display.domainInfo.scope" [version]="active.display.domainInfo.version" [flavor]="active.display.flavor"></app-scope-badge>
-       <app-entity-bagde [type]="active.display.type"></app-entity-bagde>
-       <span *ngIf="active.display.type !== 'DTATYPELIBRARY'" >
+    <div style="display: flex; flex-direction: row">
+      <h5 class="title-text">
+        <app-scope-badge *ngIf="active.display.domainInfo" [flavor]="active.display.flavor"
+                         [scope]="active.display.domainInfo.scope"
+                         [version]="active.display.domainInfo.version"></app-scope-badge>
+        <app-entity-bagde [type]="active.display.type"></app-entity-bagde>
+        <span *ngIf="active.display.type !== 'DTATYPELIBRARY'">
         <span *ngIf="active.display.path"> {{active.display.path}} </span>
         <span>&nbsp;{{active.display.fixedName}}</span>
         <span *ngIf="active.display.fixedName && active.display.variableName">_</span>
           <span>{{active.display.variableName}}</span>
       </span>
-       <span *ngIf="active.display.type === 'DTATYPELIBRARY'" > Data Type Library</span>
-     </h5>
-     <ng-container *ngIf="active.editor.title && !options?.excludeTitle">
-       <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;margin-top:10px; "></i>
-       <h5 class="title-text"> {{active.editor.title}} </h5>
-     </ng-container>
-  </div>
-  <div *ngIf="active.display?.domainInfo?.compatibilityVersion?.length>1">
-    <strong>Compatibility versions: </strong>
-    <span class="badge badge-secondary" style="margin-left:5px;" *ngFor="let version of  active.display?.domainInfo?.compatibilityVersion"> {{version}}</span>
-  </div>
+        <span *ngIf="active.display.type === 'DTATYPELIBRARY'"> Data Type Library</span>
+      </h5>
+      <ng-container *ngIf="active.editor.title && !options?.excludeTitle">
+        <i class="fa fa-chevron-right"
+           style="font-size: 1em; margin-right: 10px; margin-left: 10px;margin-top:10px; "></i>
+        <h5 class="title-text"> {{active.editor.title}} </h5>
+      </ng-container>
+    </div>
+    <div style="display: flex; flex-direction: row">
+
+      <div *ngIf="active.display?.domainInfo?.compatibilityVersion?.length>1">
+        <strong>Compatibility versions: </strong>
+        <span *ngFor="let version of  active.display?.domainInfo?.compatibilityVersion" class="badge badge-secondary"
+              style="margin-left:5px;"> {{version}}</span>
+      </div>
+      <div *ngIf="active.display?.status" style="margin-left: 10px;">
+        <strong>Status: </strong> {{active.display?.status}}
+      </div>
+      <div *ngIf="active.display?.publicationInfo" style="margin-left: 10px;">
+        <strong>Publication Date: </strong>  {{active.display?.publicationInfo?.publicationDate | date}}
+      </div>
+    </div>
   </div>
 </ng-template>

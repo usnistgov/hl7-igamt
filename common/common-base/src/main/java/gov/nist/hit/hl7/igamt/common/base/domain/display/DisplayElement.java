@@ -2,7 +2,9 @@ package gov.nist.hit.hl7.igamt.common.base.domain.display;
 
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class DisplayElement {
@@ -19,6 +21,8 @@ public class DisplayElement {
   private DeltaAction delta;
   private String origin;
   private boolean isFlavor;
+  private Status status;
+  private PublicationInfo publicationInfo;
 
 
   private Type parentType;
@@ -134,6 +138,22 @@ public class DisplayElement {
 
   public void setParentId(String documentId) {
     this.parentId = documentId;
+  }
+
+  public Status getStatus() {
+    return status;
+  }
+
+  public void setStatus(Status status) {
+    this.status = status;
+  }
+
+  public PublicationInfo getPublicationInfo() {
+    return publicationInfo;
+  }
+
+  public void setPublicationInfo(PublicationInfo publicationInfo) {
+    this.publicationInfo = publicationInfo;
   }
 
 }

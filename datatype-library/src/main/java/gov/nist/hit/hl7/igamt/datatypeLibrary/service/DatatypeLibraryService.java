@@ -11,12 +11,19 @@ import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationResult;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 //import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibraryDataModel;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+
 
 
 public interface DatatypeLibraryService {
@@ -65,8 +72,20 @@ public interface DatatypeLibraryService {
    * @return
    */
   TextSection findSectionById(Set<TextSection> content, String sectionId);
+  
+  public DatatypeLibraryDataModel generateDataModel(DatatypeLibrary dl) throws Exception;
 
-//  public PublicationSummary getPublicationSummary(String id);
+Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException;
+
+
+  public PublicationSummary getPublicationSummary(String id);
+
+  /**
+   * @param id
+   * @param publicationResult
+   * @return
+   */
+  public String publishLibray(String id, PublicationResult publicationResult);
 
 
 }

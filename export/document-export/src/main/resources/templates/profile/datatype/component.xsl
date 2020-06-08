@@ -162,6 +162,7 @@
                 <xsl:apply-templates select="." mode="inlineDt"></xsl:apply-templates>
             </xsl:if>
         </xsl:if>
+        
     </xsl:template>
 
 </xsl:stylesheet>

@@ -49,6 +49,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationResult;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 //import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
@@ -675,11 +677,22 @@ public @ResponseBody ResponseMessage<List<Datatype>> findDatatypesWithCompatibil
           datatypes);
 }
 
-//@RequestMapping(value = "/api/datatype-library/{id}/publicationSummary", method = RequestMethod.GET,
-//produces = {"application/json"})
-//public PublicationSummary publicationSummary(@PathVariable("id") String id,
-//Authentication authentication) {
-//  
-//  return dataypeLibraryService.getPublicationSummary(id);
-//}
+@RequestMapping(value = "/api/datatype-library/{id}/publicationSummary", method = RequestMethod.GET,
+produces = {"application/json"})
+public PublicationSummary publicationSummary(@PathVariable("id") String id,
+Authentication authentication) {
+  
+  return dataypeLibraryService.getPublicationSummary(id);
+}
+
+@RequestMapping(value = "/api/datatype-library/{id}/publish", method = RequestMethod.POST,
+produces = {"application/json"})
+public ResponseMessage<String> publish(@PathVariable("id") String id,  @RequestBody PublicationResult publicationResult,
+Authentication authentication) {
+  
+  
+  return new ResponseMessage<String>(Status.SUCCESS, "", "Publish Library Success", id, false,
+      new Date(), dataypeLibraryService.publishLibray(id, publicationResult));
+
+}
 }

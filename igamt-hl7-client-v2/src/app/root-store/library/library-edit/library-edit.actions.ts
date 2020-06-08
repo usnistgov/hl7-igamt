@@ -8,6 +8,7 @@ import {
   IDeleteNode,
 } from '../../../modules/document/models/toc/toc-operation.class';
 import { IDocumentDisplayInfo } from '../../../modules/ig/models/ig/ig-document.class';
+import {IPublicationResult} from '../../../modules/library/components/publish-library-dialog/publish-library-dialog.component';
 import {ILibrary} from '../../../modules/library/models/library.class';
 import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
@@ -45,6 +46,9 @@ export enum LibraryEditActionTypes {
   ToggleDelta = '[Library Edit] Toggle DELTA Delta',
   ToggleDeltaSuccess = '[Library Edit] Toggle DELTA Success',
   ToggleDeltaFailure = '[Library Edit] Toggle DELTA Failure',
+  PublishLibrary = '[Library] Publish Library',
+  PublishLibrarySuccess = '[Library] Publish Library Success',
+  PublishLibraryFailure = '[Library] Publish Library Failure',
 }
 
 export class ClearLibraryEdit implements Action {
@@ -135,12 +139,6 @@ export class CopyResource implements Action {
   }
 }
 
-export class CreateCoConstraintGroupFailure implements Action {
-  readonly type = LibraryEditActionTypes.CreateCoConstraintGroupFailure;
-  constructor(readonly payload: HttpErrorResponse) {
-  }
-}
-
 export class CopyResourceSuccess implements Action {
   readonly type = LibraryEditActionTypes.CopyResourceSuccess;
   constructor(readonly payload: ICopyResourceResponse) {
@@ -218,12 +216,10 @@ export class TableOfContentSave implements Action {
 
 export class TableOfContentSaveSuccess implements Action {
   readonly type = LibraryEditActionTypes.TableOfContentSaveSuccess;
-
   constructor(readonly igId: string) { }
 }
 export class TableOfContentSaveFailure implements Action {
   readonly type = LibraryEditActionTypes.TableOfContentSaveFailure;
-
   constructor(readonly igId: string) { }
 }
 
@@ -241,6 +237,19 @@ export class ToggleDeltaFailure implements Action {
   readonly type = LibraryEditActionTypes.ToggleDeltaFailure;
   constructor(readonly error: HttpErrorResponse) { }
 
+}
+export class PublishLibraryFailure implements Action {
+  readonly type = LibraryEditActionTypes.PublishLibraryFailure;
+  constructor(readonly error: HttpErrorResponse) { }
+
+}
+export class PublishLibrarySuccess implements Action {
+  readonly type = LibraryEditActionTypes.PublishLibrarySuccess;
+  constructor(readonly igId: string) { }
+}
+export class PublishLibrary implements Action {
+  readonly type = LibraryEditActionTypes.PublishLibrary;
+  constructor(readonly libId: string, readonly publicationResult: IPublicationResult) { }
 }
 export type LibraryEditActions =
   LibraryEditResolverLoad
@@ -269,4 +278,7 @@ export type LibraryEditActions =
   | ImportResourceFromFileFailure
   | ToggleDelta
   | ToggleDeltaSuccess
-  | ToggleDeltaFailure;
+  | ToggleDeltaFailure
+  | PublishLibrary
+  | PublishLibrarySuccess
+  | PublishLibraryFailure;

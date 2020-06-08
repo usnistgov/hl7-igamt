@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
@@ -31,61 +32,51 @@ import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
  *
  */
 @Document
-public class DatatypeLibrary extends AbstractDomain {
-  private DocumentMetadata metadata;
-  private Set<TextSection> content = new HashSet<TextSection>();
-  /**
-   * 
-   */
-  public DatatypeLibrary() {
-    super();
-    this.setType(Type.DATATYPELIBRARY);
-    // TODO Auto-generated constructor stub
-  }
+public class DatatypeLibrary extends DocumentStructure {
 
-  private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
-  private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-  public DocumentMetadata getMetadata() {
-    return this.metadata;
-  }
+	private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
+	private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
 
-  public void setMetadata(DocumentMetadata metadata) {
-    this.metadata = metadata;
-  }
+	/**
+	 * 
+	 */
+	public DatatypeLibrary() {
+		super();
+		this.setType(Type.DATATYPELIBRARY);
+		// TODO Auto-generated constructor stub
+	}
 
-  public Set<TextSection> getContent() {
-    return content;
-  }
 
-  public void setContent(Set<TextSection> content) {
-    this.content = content;
-  }
 
-  public DatatypeRegistry getDatatypeRegistry() {
-    return datatypeRegistry;
-  }
+	public DatatypeRegistry getDatatypeRegistry() {
+		return datatypeRegistry;
+	}
 
-  public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
-    this.datatypeRegistry = datatypeRegistry;
-  }
+	public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
+		this.datatypeRegistry = datatypeRegistry;
+	}
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain#getLabel()
-   */
-  @Override
-  public String getLabel() {
-    // TODO Auto-generated method stub
-    return null;
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain#getLabel()
+	 */
+	@Override
+	public String getLabel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-  public ValueSetRegistry getValueSetRegistry() {
-    return valueSetRegistry;
-  }
+	public ValueSetRegistry getValueSetRegistry() {
+		return valueSetRegistry;
+	}
 
-  public void setValueSetRegistry(ValueSetRegistry valueSetRegistry) {
-    this.valueSetRegistry = valueSetRegistry;
-  }
+	public void setValueSetRegistry(ValueSetRegistry valueSetRegistry) {
+		this.valueSetRegistry = valueSetRegistry;
+	}
 }

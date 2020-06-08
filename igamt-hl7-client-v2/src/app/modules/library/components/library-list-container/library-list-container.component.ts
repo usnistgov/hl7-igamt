@@ -3,11 +3,11 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {filter, map} from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromRoot from 'src/app/root-store/index';
 import {
-  ClearLibraryList,
+  ClearLibraryList, DeleteLibraryListItemRequest,
   LoadLibraryList,
   SelectLibraryListSortOption,
   SelectLibraryListViewType,
@@ -18,6 +18,7 @@ import {
   DeleteIgListItemRequest,
   IgListLoad,
 } from '../../../../root-store/ig/ig-list/ig-list.actions';
+import {PublishLibrary} from '../../../../root-store/library/library-edit/library-edit.actions';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
@@ -26,6 +27,11 @@ import {IgListItem} from '../../../document/models/document/ig-list-item.class';
 import { CloneModeEnum } from '../../../shared/constants/clone-mode.enum';
 import {LibraryService} from '../../services/library.service';
 import {IgListItemControl} from '../library-list-item-card/library-list-item-card.component';
+import {
+  IPublicationResult,
+  IPublicationSummary,
+  PublishLibraryDialogComponent,
+} from '../publish-library-dialog/publish-library-dialog.component';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 
 @Component({
@@ -110,7 +116,7 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
                 action: (item: IgListItem) => {
                   const dialogRef = this.dialog.open(ConfirmDialogComponent, {
                     data: {
-                      question: 'Are you sure you want to delete Implementation Guide "' + item.title + '" ?',
+                      question: 'Are you sure you want to delete Library "' + item.title + '" ?',
                       action: 'Delete Implementation Guide',
                     },
                   });
@@ -118,7 +124,7 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
                   dialogRef.afterClosed().subscribe(
                     (answer) => {
                       if (answer) {
-                        this.store.dispatch(new DeleteIgListItemRequest(item.id));
+                        this.store.dispatch(new DeleteLibraryListItemRequest(item.id));
                       }
                     },
                   );
@@ -151,20 +157,6 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
                 },
                 disabled: (item: IgListItem): boolean => {
                   return false;
-                },
-              },
-              {
-                label: 'Publish',
-                class: 'btn-secondary',
-                icon: 'fa fa-globe',
-                action: (item: IgListItem) => {
-                  this.publishDialog(item);
-                },
-                disabled: (item: IgListItem): boolean => {
-                  return !admin || item.type === 'PUBLISHED';
-                },
-                hide: (item: IgListItem): boolean => {
-                  return item.type === 'PUBLISHED' || item.type === 'SHARED';
                 },
               },
               {
@@ -249,15 +241,18 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(
       (answer) => {
         if (answer) {
-          this.libraryService.publish(item.id).subscribe(
-            (response: Message<string>) => {
-              this.store.dispatch(this.message.messageToAction(response));
-              this.router.navigateByUrl('/library/list?type=PUBLISHED');
-            },
-            (error) => {
-              this.store.dispatch(this.message.actionFromError(error));
-            },
-          );
+
+          return this.libraryService.getPublicationSummary(item.id).pipe(
+            map((summary: IPublicationSummary) => {
+              const newdialogRef = this.dialog.open(PublishLibraryDialogComponent, {
+                data: summary,
+              });
+              newdialogRef.afterClosed().pipe(
+                filter((y) => y !== undefined),
+                map((result: IPublicationResult) => this.store.dispatch(new PublishLibrary(item.id, result))),
+              ).subscribe();
+            }),
+          ).subscribe();
         }
       },
     );
