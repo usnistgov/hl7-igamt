@@ -117,8 +117,6 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
         }
         sectionElement.addAttribute(new Attribute("type", section.getType() != null ? section.getType().name() : ""));
         sectionElement.addAttribute(new Attribute("h", String.valueOf(level)));
-        sectionElement.addAttribute(new Attribute("TESTABC", "TESTABC"));
-
         return sectionElement;
     }
 
