@@ -8,7 +8,7 @@ describe('DtmDeltaEditorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DtmDeltaEditorComponent ]
+      declarations: [ DtmDeltaEditorComponent ],
     })
     .compileComponents();
   }));

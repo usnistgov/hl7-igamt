@@ -142,7 +142,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
 					igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
-					exportFontConfiguration, "2.0_beta");
+					exportFontConfiguration, "2.0_beta",igDocument.getType());
 			InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH,
 					exportParameters);
 			ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(),
@@ -180,7 +180,14 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		}else if(documentStructure instanceof DatatypeLibrary) {
 			DatatypeLibrary datatypeLibrary = (DatatypeLibrary) documentStructure;
 			for (Link l : datatypeLibrary.getDatatypeRegistry().getChildren()) {
+				Datatype dt = datatypeService.findById(l.getId());
+//				System.out.println("link id :" + l.getId() + " link parent id : " + l.getParentId() + " datatype parent id : " + dt.getParentId());
+				if(!l.getId().startsWith("HL7") && dt.getParentId().equals(datatypeLibrary.getId())) {
+					System.out.println("found one");
+				decision.getDatatypesFilterMap().put(l.getId(), true);
+			} else {
 				decision.getDatatypesFilterMap().put(l.getId(), false);
+			}
 			}
 			return decision;
 

@@ -78,7 +78,6 @@ private DeltaService deltaService;
 	  	      }
 	      if (segment.getDynamicMappingInfo() != null && segmentExportConfiguration.getDynamicMappingInfo()) {
 	        try {
-//	        	segment.getBinding().getc
 	          Element dynamicMappingElement =
 	              this.serializeDynamicMapping(segment.getDynamicMappingInfo(),igDataModel);
 	          if (dynamicMappingElement != null) {

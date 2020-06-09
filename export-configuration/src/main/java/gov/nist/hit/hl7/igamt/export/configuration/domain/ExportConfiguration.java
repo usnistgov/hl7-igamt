@@ -22,11 +22,13 @@ import gov.nist.diff.domain.DeltaAction;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.Columns;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConstraintExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeLibraryExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ResourceExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.SegmentExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ValueSetExportConfiguration;
@@ -42,10 +44,12 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.PositionAndPresence;
 public class ExportConfiguration {
 
   private String configName;
+  private Type type;
   @Id
   private String id;
   private boolean original; // true if it is the first time config
-
+  
+//  private DatatypeLibraryExportConfiguration datatypeLibraryExportConfiguration;
   private DatatypeExportConfiguration datatypeExportConfiguration;
   private SegmentExportConfiguration segmentExportConfiguration;
   private ConformanceProfileExportConfiguration conformamceProfileExportConfiguration;
@@ -119,8 +123,9 @@ public class ExportConfiguration {
     return exportConfiguration;
   }
 
-  public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue) {
+  public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue, Type type) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();
+    defaultConfiguration.setType(type);
     defaultConfiguration.setConfigName("");
     defaultConfiguration.setOriginal(false);
     defaultConfiguration.setDefaultConfig(false);
@@ -274,6 +279,10 @@ public class ExportConfiguration {
     //Setting AbstractDomainConfiguration
     AbstractDomainExportConfiguration abstractDomainExportConfiguration = new AbstractDomainExportConfiguration(true, true, true, false, false, false, true, false, true, true, false, true, true, false, true, true, true, deltaConfiguration);
 
+    //Setting DatatypeLibraryExportconfiguration
+    DatatypeLibraryExportConfiguration datatypeLibraryExportConfiguration = new DatatypeLibraryExportConfiguration(defaultConfiguration);
+    datatypeLibraryExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
+
 
     // Setting DatatypeExportConfiguration
     DatatypeExportConfiguration datatypeExportConfiguration = new DatatypeExportConfiguration(defaultConfiguration);
@@ -310,6 +319,7 @@ public class ExportConfiguration {
     ValueSetExportConfiguration valueSetExportConfiguration = new ValueSetExportConfiguration(defaultConfiguration);
     valueSetExportConfiguration.setDeltaMode(true);
     valueSetExportConfiguration.setDeltaConfig(deltaConfiguration);
+//    defaultConfiguration.setDatatypeLibraryExportConfiguration(datatypeLibraryExportConfiguration);
     defaultConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
     defaultConfiguration.setConformamceProfileExportConfiguration(conformanceProfileExportConfiguration);
     defaultConfiguration.setValueSetExportConfiguration(valueSetExportConfiguration);
@@ -322,19 +332,13 @@ public class ExportConfiguration {
     return defaultConfiguration;
   }
 
-
-
   public DatatypeExportConfiguration getDatatypeExportConfiguration() {
     return datatypeExportConfiguration;
   }
 
-
-
   public void setDatatypeExportConfiguration(DatatypeExportConfiguration datatypeExportConfiguration) {
     this.datatypeExportConfiguration = datatypeExportConfiguration;
   }
-
-
 
   public SegmentExportConfiguration getSegmentExportConfiguration() {
     return segmentExportConfiguration;
@@ -488,7 +492,16 @@ public class ExportConfiguration {
 
 
 
-  public void setUnboundCustom(boolean unboundCustom) {
+//  public DatatypeLibraryExportConfiguration getDatatypeLibraryExportConfiguration() {
+//	return datatypeLibraryExportConfiguration;
+//}
+//
+//public void setDatatypeLibraryExportConfiguration(
+//		DatatypeLibraryExportConfiguration datatypeLibraryExportConfiguration) {
+//	this.datatypeLibraryExportConfiguration = datatypeLibraryExportConfiguration;
+//}
+
+public void setUnboundCustom(boolean unboundCustom) {
     this.unboundCustom = unboundCustom;
   }
 
@@ -952,5 +965,15 @@ public class ExportConfiguration {
   public void setOriginal(boolean original) {
     this.original = original;
   }
+
+public Type getType() {
+	return type;
+}
+
+public void setType(Type type) {
+	this.type = type;
+}
+  
+  
 
 }

@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class DocumentStructure extends AbstractDomain{
 
 	  /**
@@ -12,6 +13,7 @@ public class DocumentStructure extends AbstractDomain{
 	
 	protected DocumentMetadata metadata;
 	protected Set<TextSection> content = new HashSet<TextSection>();
+
 	
 	  
 	

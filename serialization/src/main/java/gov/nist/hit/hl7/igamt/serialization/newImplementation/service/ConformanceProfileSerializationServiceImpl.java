@@ -20,6 +20,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -41,6 +42,7 @@ import nu.xom.Attribute;
 import nu.xom.Element;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,6 +66,9 @@ CoConstraintService coConstraintService;
 
 @Autowired
 private FroalaSerializationUtil frolaCleaning;
+
+@Autowired 
+BindingSerializationService bindingSerializationService;
 
 	@Override
 	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level,  int position,
@@ -104,6 +109,13 @@ private FroalaSerializationUtil frolaCleaning;
 	        	conformanceProfileElement.appendChild(constraints);
         }
 	        }
+	        
+		      if (conformanceProfile.getBinding() != null) {
+			        Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), new HashMap<String, Boolean>());
+			        if (bindingElement != null) {
+			        	conformanceProfileElement.appendChild(bindingElement);
+			        }
+			      }
 	
 	        
 	        if (conformanceProfile.getChildren() != null
@@ -166,7 +178,6 @@ private FroalaSerializationUtil frolaCleaning;
 				}
 
 		    }
-		    
 		    
 		    if (conformanceProfile.getCoConstraintsBindings() != null) {
 				Element coConstraintsElement = new Element("coConstraintsElement");
