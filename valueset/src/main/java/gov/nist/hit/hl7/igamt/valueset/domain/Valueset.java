@@ -125,7 +125,7 @@ public class Valueset extends Resource {
 
 	@Override
 	public String getLabel() {
-		return this.getBindingIdentifier() + " - " + this.getName();
+		return this.getBindingIdentifier();
 	}
 
 	public SourceType getSourceType() {

@@ -25,6 +25,7 @@ import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
@@ -49,6 +50,9 @@ public class ConformanceProfileController extends BaseController {
 	@Autowired
 	EntityChangeService entityChangeService;
 
+	@Autowired 
+	CommonService commonService;
+	
 	public ConformanceProfileController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -171,7 +175,9 @@ public class ConformanceProfileController extends BaseController {
 	public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
 										   @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
 										   Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException {
+	  
 		ConformanceProfile cp = this.conformanceProfileService.findById(id);
+	    commonService.checkOwnerShip(authentication, cp);
 		validateSaveOperation(cp);
 		this.conformanceProfileService.applyChanges(cp, cItems, documentId);
 		EntityChangeDomain entityChangeDomain = new EntityChangeDomain();

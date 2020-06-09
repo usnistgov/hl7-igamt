@@ -8,6 +8,8 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
+import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
+import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.*;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
@@ -670,6 +672,44 @@ public class EntityDeltaServiceImpl {
         });
     }
 
+    public List<StructureDelta> compareDateAndTimeDatatypes(DateTimeDatatype source, DateTimeDatatype target) {
+      // TODO Auto-generated method
+     List<StructureDelta> deltas= new ArrayList<StructureDelta>();
+     Map<Integer , DateTimeComponentDefinition>  sourceMap = source.getDateTimeConstraints().getDateTimeComponentDefinitions().stream().collect(Collectors.toMap(x -> x.getPosition()  , x -> x));
+     Map<Integer , DateTimeComponentDefinition>  targetMap= target.getDateTimeConstraints().getDateTimeComponentDefinitions().stream().collect(Collectors.toMap(x -> x.getPosition()  , x -> x));
+     for(DateTimeComponentDefinition component: source.getDateTimeConstraints().getDateTimeComponentDefinitions()) {
+       if(targetMap.containsKey(component.getPosition())) {
+         deltas.add(this.compare(component, targetMap.get(component.getPosition())));
+       }else {
+         deltas.add( this.compare(component, null));
+       }
+     }
+     for(DateTimeComponentDefinition component: target.getDateTimeConstraints().getDateTimeComponentDefinitions()) {
+       if(!targetMap.containsKey(component.getPosition())) {
+         deltas.add( this.compare(null, component));
+       }
+     }
+     
+      return deltas;
+    }
 
+    /**
+     * @param component
+     * @param dateTimeComponentDefinition
+     * @return
+     */
+    private StructureDelta compare(DateTimeComponentDefinition source,
+        DateTimeComponentDefinition target) {
+      // TODO Auto-generated method stub
+      StructureDelta result = new StructureDelta(); 
+      StructureDeltaData data = new StructureDeltaData();
+      data.setUsage(this.compare(source.getUsage(), target.getUsage()));
+      data.setFormat(this.compare(source.getFormat(), target.getFormat()));
+      data.setName(this.compare(source.getName(), target.getName()));
+      data.setPosition(source.getPosition());
+      result.setData(data);
+     
+      return result;
+    }
 
 }

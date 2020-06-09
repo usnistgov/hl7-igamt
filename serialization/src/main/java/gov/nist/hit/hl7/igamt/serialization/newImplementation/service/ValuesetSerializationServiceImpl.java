@@ -77,6 +77,7 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 			if (valueSet.getCodes().size() > 0) {
 
 				for (Code displayCode : valueSet.getCodes()) {
+				  
 					if (displayCode != null && CheckUsageForValueSets(valueSetExportConfiguration.getCodesExport(),
 							displayCode.getUsage())) {
 						Element codeRefElement = new Element("Code");
@@ -141,7 +142,10 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	}
 
 	public Boolean CheckUsageForValueSets(CodeUsageConfiguration usageConfiguration, CodeUsage usage) {
-		return usageConfiguration.isR() && usage.equals(CodeUsage.R)
+	  if(usage ==null) {
+	    return true;
+	  }
+		return  usageConfiguration.isR() && usage.equals(CodeUsage.R)
 				|| usageConfiguration.isP() && usage.equals(CodeUsage.P)
 				|| usageConfiguration.isE() && usage.equals(CodeUsage.E);
 	}

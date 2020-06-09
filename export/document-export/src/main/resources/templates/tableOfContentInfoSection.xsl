@@ -11,35 +11,10 @@
                 </xsl:attribute>
                 <xsl:attribute name="class">
                     <xsl:value-of select="concat('divh', @h)"/>
-                </xsl:attribute>
-                
-           <xsl:choose>
-                <!--xsl:when test="@prefix != ''">
-                	<xsl:value-of select="concat(@prefix,' - ', @title)"/>
-                </xsl:when-->
-                <xsl:when test="$displayMasterDatatypeLabel='true' and @scope = 'MASTER'">
-                	<xsl:element name="span">
-	                    <xsl:attribute name="class">
-                            <xsl:text>masterDatatypeLabel</xsl:text>
-                        </xsl:attribute>
-	                    <xsl:text>MAS</xsl:text>
-	                    <xsl:element name="span">
-                            <xsl:text> - </xsl:text>
-                        </xsl:element>
-                    </xsl:element>
-                    <xsl:value-of select="@title"/>
-<!--                       <xsl:sort select="@title"/>
- -->                </xsl:when>
- 
- 
-                <xsl:when test="normalize-space(@description) !='' ">
-<!--                     <xsl:sort lang="langage-code" data-type="number" select="position"  order="ascending" />
- -->                		<xsl:value-of select="concat(@title,'-',@description)"/>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:value-of select="@title"/>
-                </xsl:otherwise>
-          </xsl:choose>
+                </xsl:attribute>  
+                <xsl:value-of select="@title"/>
+
+        
           </xsl:element>
             
             <xsl:choose>

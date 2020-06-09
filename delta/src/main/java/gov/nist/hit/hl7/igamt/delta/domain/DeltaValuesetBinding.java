@@ -19,6 +19,7 @@ public class DeltaValuesetBinding {
     }
 
     public void setValueSets(DeltaNode<List<String>> valueSets) {
+        this.crunchAction(valueSets.getAction());
         this.valueSets = valueSets;
     }
 

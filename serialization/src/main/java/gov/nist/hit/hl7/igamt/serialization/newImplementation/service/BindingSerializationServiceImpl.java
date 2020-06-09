@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 
 	@Override
 	public Element serializeBinding(Binding binding, Map<String, Set<ValuesetBindingDataModel>> valuesetMap,
-			String name) throws SerializationException {
+			String name, Map<String, Boolean> bindedPaths) throws SerializationException {
 		if (binding != null) {
 			// try {
 			Element bindingElement = new Element("Binding");
@@ -45,7 +46,11 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 				// valuesetMap.values().stream().flatMap((set) -> {
 				// return set.stream();
 				// }).collect(Collectors.toList());
-				Element structureElementBindingsElement = this.serializeStructureElementBindings(null,binding.getChildren(),
+			  
+			  Set<StructureElementBinding>  filtered = binding.getChildren().stream()               
+	                .filter(child ->  (bindedPaths.containsKey(child.getElementId()) && bindedPaths.get(child.getElementId()))). 
+	                collect(Collectors.toSet()); 
+				Element structureElementBindingsElement = this.serializeStructureElementBindings(null,filtered,
 						name, valuesetMap);
 				if (structureElementBindingsElement != null) {
 					bindingElement.appendChild(structureElementBindingsElement);
@@ -226,10 +231,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 
 	private String getBindingLocationFromMap(Map<String, Set<ValuesetBindingDataModel>> valuesetMap,
 			ValuesetBinding valuesetBinding, String name) {
-		List<ValuesetBindingDataModel> vsDataModel = valuesetMap.values().stream().flatMap((set) -> {
-			return set.stream();
-		}).collect(Collectors.toList());
-		String location = "Not found in MAP";
+	    String location = "";
 		for (Set<ValuesetBindingDataModel> set : valuesetMap.values()) {
 			for (ValuesetBindingDataModel valuesetBindingDataModel : set) {
 				if (valuesetBindingDataModel.getValuesetBinding().getValueSets()

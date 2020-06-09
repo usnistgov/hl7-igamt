@@ -29,7 +29,8 @@ void checkAuthority(Authentication auth, String role) throws ForbiddenOperationE
 
 void checkOwnerShip(Authentication auth, AbstractDomain obj) throws ForbiddenOperationException;
 
-  
+void checkRight(Authentication auth, String resourceUsername) throws ForbiddenOperationException;
+
   
 
   

@@ -32,6 +32,11 @@
           <span> {{node.data.path}} {{node.data.variableName}}</span>
         </div>
       </ng-container>
+      <ng-container *ngSwitchCase="'DERIVEDDATATYPEREGISTRY'">
+        <div #dtLib>
+          <span> {{node.data.path}} {{node.data.variableName}}</span>
+        </div>
+      </ng-container>
 
       <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
         <div #vsLib>

@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -86,14 +87,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 				datatypeElement
 				.addAttribute(new Attribute("publicationDate", datatype.getPublicationInfo().getPublicationDate()!= null ? datatype.getPublicationInfo().getPublicationDate().toString(): ""));}
 		}
-		if(type.equals(Type.IGDOCUMENT)) {
-			if (datatype.getBinding() != null) {
-				Element bindingElement = bindingSerializationService.serializeBinding((Binding) datatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getModel().getName());
-				if (bindingElement != null) {
-					datatypeElement.appendChild(bindingElement);
-				}
-			}
-		}
+
 		//	      if (datatype.getBinding() != null) {
 		//	        Element bindingElement =  
 		//	            super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap);
@@ -119,6 +113,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 		//	      }
 		if (datatype instanceof ComplexDatatype) {
 			datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel,datatypeExportConfiguration, type);
+		    
 		} else if (datatype instanceof DateTimeDatatype) {
 			datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel, datatypeExportConfiguration);
 		}
@@ -156,15 +151,13 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	@Override
 	public Element serializeComplexDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel, DatatypeExportConfiguration datatypeExportConfiguration, Type type) throws SubStructElementSerializationException {
 		ComplexDatatype complexDatatype = (ComplexDatatype) datatypeDataModel.getModel();
+		HashMap<String, Boolean> bindedPaths = new HashMap<String, Boolean>();
+
 		for (Component component : complexDatatype.getComponents()) {
 			if (component != null && ExportTools.CheckUsage(datatypeExportConfiguration.getComponentExport(), component.getUsage())) {
 				//	      if(this.bindedComponents.contains(component.getId())) {
 				try {
-					if(type.equals(Type.DATATYPELIBRARY)) {
-
-					}
-
-
+				    bindedPaths.put(component.getId(), true);
 					Element componentElement = new Element("Component");
 					componentElement.addAttribute(new Attribute("confLength",
 							component.getConfLength() != null ? component.getConfLength() : ""));
@@ -226,6 +219,23 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 				//	      }
 			}
 		}
+		
+        if(type.equals(Type.IGDOCUMENT)) {
+          if (complexDatatype.getBinding() != null) {
+              Element bindingElement;
+              try {
+                bindingElement = bindingSerializationService.serializeBinding(complexDatatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getModel().getName(), bindedPaths);
+                if(bindingElement !=null) {
+                  datatypeElement.appendChild(bindingElement);
+                }
+
+              } catch (SerializationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              }
+              
+          }
+      }
 		return datatypeElement;
 
 	}
