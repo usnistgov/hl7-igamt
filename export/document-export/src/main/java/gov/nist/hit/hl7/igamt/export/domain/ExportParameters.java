@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.MetadataConfiguration;
@@ -48,6 +49,7 @@ public class ExportParameters {
   private MetadataConfiguration compositeProfileMetadataConfiguration;
   private ExportFontConfiguration exportFontConfiguration;
   private String appVersion;
+  private Type type;
 
   public ExportParameters(boolean inlineConstraints, boolean includeTOC, String targetFormat,
       String documentTitle, String appVersion) {
@@ -57,7 +59,7 @@ public class ExportParameters {
   public ExportParameters(boolean inlineConstraints, boolean includeTOC, String targetFormat,
       String documentTitle, String imageLogo, String appVersion) {
     this(inlineConstraints, includeTOC, targetFormat, documentTitle, imageLogo, null, null, null,
-        null, null, null, null, null, null, null, null, null, appVersion);
+        null, null, null, null, null, null, null, null, null, appVersion, null);
   }
 
 //  public ExportParameters(boolean inlineConstraints, boolean includeTOC, String targetFormat,
@@ -79,7 +81,7 @@ public class ExportParameters {
   
   public ExportParameters(boolean inlineConstraints, boolean includeTOC, String targetFormat,
 	      String documentTitle, String imageLogo, ExportConfiguration exportConfiguration,
-	      ExportFontConfiguration exportFontConfiguration, String appVersion) {
+	      ExportFontConfiguration exportFontConfiguration, String appVersion, Type type) {
 	    this(inlineConstraints, includeTOC, targetFormat, documentTitle, imageLogo,
 	        exportConfiguration.getConformamceProfileExportConfiguration().getColumns(),
 	        exportConfiguration.getCompositeProfileColumn().getColumns(),
@@ -91,7 +93,7 @@ public class ExportParameters {
 	        exportConfiguration.getSegmentMetadataConfig(),
 	        exportConfiguration.getMessageMetadataConfig(),
 	        exportConfiguration.getCompositeProfileMetadataConfig(), exportFontConfiguration,
-	        appVersion);
+	        appVersion,type);
 	  }
 
   public ExportParameters(boolean inlineConstraints, boolean includeTOC, String targetFormat,
@@ -106,7 +108,7 @@ public class ExportParameters {
       MetadataConfiguration segmentMetadataConfiguration,
       MetadataConfiguration messageMetadataConfiguration,
       MetadataConfiguration compositeProfileMetadataConfiguration,
-      ExportFontConfiguration exportFontConfiguration, String appVersion) {
+      ExportFontConfiguration exportFontConfiguration, String appVersion, Type type) {
     this.inlineConstraints = inlineConstraints;
     this.includeTOC = includeTOC;
     this.targetFormat = targetFormat;
@@ -125,9 +127,10 @@ public class ExportParameters {
     this.compositeProfileMetadataConfiguration = compositeProfileMetadataConfiguration;
     this.exportFontConfiguration = exportFontConfiguration;
     this.appVersion = appVersion;
+    this.type=type;
   }
 
-  public ExportParameters() {}
+
 
   public boolean isInlineConstraints() {
     return inlineConstraints;
@@ -160,8 +163,18 @@ public class ExportParameters {
   public void setDocumentTitle(String documentTitle) {
     this.documentTitle = documentTitle;
   }
+  
+  
 
-  public Map<String, String> toMap() {
+  public Type getType() {
+	return type;
+}
+
+public void setType(Type type) {
+	this.type = type;
+}
+
+public Map<String, String> toMap() {
     Map<String, String> params = new HashMap<>();
     params.put("includeTOC", String.valueOf(includeTOC));
     params.put("inlineConstraints", String.valueOf(inlineConstraints));
@@ -193,10 +206,23 @@ public class ExportParameters {
     }
     if (dataTypeColumns != null && !dataTypeColumns.isEmpty()) {
       String dataTypeColumn = "dataTypeColumn";
+      if(type.equals(Type.IGDOCUMENT)) {
       for (NameAndPositionAndPresence currentColumn : dataTypeColumns) {
         params.put(dataTypeColumn + currentColumn.getName().replace(" ", ""),
             String.valueOf(currentColumn.isPresent()));
       }
+    
+    } else if(type.equals(Type.DATATYPELIBRARY)) {
+        for (NameAndPositionAndPresence currentColumn : dataTypeColumns) {
+        	if(currentColumn.getName().equals("Value Set")) {
+            params.put(dataTypeColumn + currentColumn.getName().replace(" ", ""),
+                String.valueOf(false));
+          } else {
+        	  params.put(dataTypeColumn + currentColumn.getName().replace(" ", ""),
+        	            String.valueOf(currentColumn.isPresent()));
+          }
+        }
+    }
     }
     if (valueSetColumns != null && !valueSetColumns.isEmpty()) {
       String valueSetColumn = "valueSetColumn";
@@ -205,6 +231,17 @@ public class ExportParameters {
             String.valueOf(currentColumn.isPresent()));
       }
     }
+	valueSetColumns = null;
+    if (valueSetColumns != null && !valueSetColumns.isEmpty()) {
+        String valueSetColumn = "valueSetColumn";
+        for (NameAndPositionAndPresence currentColumn : valueSetColumns) {
+          params.put(valueSetColumn + currentColumn.getName().replace(" ", ""),
+              String.valueOf(false));
+        }
+      
+  }
+	
+
     if (segmentsColumns != null && !segmentsColumns.isEmpty()) {
       String segmentsColumn = "segmentColumn";
       for (NameAndPositionAndPresence currentColumn : segmentsColumns) {
