@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement;
 
+import java.util.Arrays;
+
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 /**
@@ -146,5 +148,16 @@ public class Complement {
 	public void setCodesys(String codesys) {
 		this.codesys = codesys;
 	}
+
+	@Override
+	public String toString() {
+		return "Complement [complementKey=" + complementKey + ", occurenceType=" + occurenceType + ", occurenceValue="
+				+ occurenceValue + ", occurenceIdPath=" + occurenceIdPath + ", occurenceLocationStr="
+				+ occurenceLocationStr + ", path=" + path + ", value=" + value + ", desc=" + desc + ", codesys="
+				+ codesys + ", values=" + Arrays.toString(values) + ", descs=" + Arrays.toString(descs) + ", codesyses="
+				+ Arrays.toString(codesyses) + ", ignoreCase=" + ignoreCase + "]";
+	}
+	
+	
 
 }
