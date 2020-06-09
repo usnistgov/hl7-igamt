@@ -27,6 +27,7 @@ export enum HL7v2TreeColumnType {
   COMMENT = 'Comment',
   TEXT = 'Definition Text',
   CONSTANTVALUE = 'Constant Value',
+  Format = 'Format',
 }
 
 export interface ILengthRange {

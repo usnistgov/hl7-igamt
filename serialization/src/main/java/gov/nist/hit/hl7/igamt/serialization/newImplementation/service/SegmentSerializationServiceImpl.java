@@ -88,21 +88,12 @@ private DeltaService deltaService;
 //	              segment.getDynamicMappingInfo());
 	        }
 	      }
-	      if (segment.getBinding() != null) {
-	        Element bindingElement = bindingSerializationService.serializeBinding((Binding) segment.getBinding(), segmentDataModel.getValuesetMap(), segmentDataModel.getModel().getName() );
-	        if (bindingElement != null) {
-	          segmentElement.appendChild(bindingElement);
-	        }
-	      }
-	      if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
-    	  Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
-	        if (constraints != null) {
-          segmentElement.appendChild(constraints);
-        }
-	      }
+	      Map<String, Boolean > bindedPaths = segment.getChildren().stream().filter(  field  -> field != null && ExportTools.CheckUsage(segmentExportConfiguration.getFieldsExport(), field.getUsage())).collect(Collectors.toMap( x -> x.getId(), x -> true ));
+	      
 	      if (segment.getChildren() != null) {
 	    	  Element commentsElement = new Element("Comments"); 
 	    	  for(Field field : segment.getChildren()) {
+	    	    if(bindedPaths.containsKey(field.getId())) {
 	    		  if(field.getComments() != null) {
 	    			  for(Comment comment : field.getComments()) {
 		    			  Element commentElement = new Element("Comment");
@@ -120,12 +111,25 @@ private DeltaService deltaService;
 	    			  
 	    		  }
 	    	  }
-			  segmentElement.appendChild(commentsElement);
+	    	  }
+			segmentElement.appendChild(commentsElement);
 	        Element fieldsElement = this.serializeFields(segment.getChildren(),igDataModel,segmentDataModel, segmentExportConfiguration);
 	        if (fieldsElement != null) {
 	          segmentElement.appendChild(fieldsElement);
 	        }
-	      }      
+	      }  
+	       if (segment.getBinding() != null) {
+	            Element bindingElement = bindingSerializationService.serializeBinding((Binding) segment.getBinding(), segmentDataModel.getValuesetMap(), segmentDataModel.getModel().getName(), bindedPaths );
+	            if (bindingElement != null) {
+	              segmentElement.appendChild(bindingElement);
+	            }
+	          }
+	          if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
+	          Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
+	            if (constraints != null) {
+	          segmentElement.appendChild(constraints);
+	        }
+	          }
 //	      if (coConstraintService.getCoConstraintForSegment(segment.getId()) != null && segment != null) { 
 //	      CoConstraintTable coConstraintsTable = coConstraintService.getCoConstraintForSegment(segment.getId()); 
 ////	      if (coConstraintsTable.getHeaders() != null){

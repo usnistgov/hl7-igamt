@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,15 +23,18 @@ import org.springframework.stereotype.Service;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
+import gov.nist.hit.hl7.igamt.common.base.domain.StandardKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
@@ -170,7 +174,65 @@ public class TablesFixes {
     }
   }
 
+  
+  
 
+  public void removeSegmentsDuplicatedBinding() throws ValidationException {
+    Map<String, String> vsDtMap = new HashMap<String, String>();
+    vsDtMap.put("HL70061", "CX");
+    vsDtMap.put("HL70064", "FC");
+    vsDtMap.put("HL70070", "SPS");
+    vsDtMap.put("HL70076", "MSG");
+    vsDtMap.put("HL70100", "CCD");
+    vsDtMap.put("HL70104", "VID");
+    vsDtMap.put("HL70113", "DLD");
+    vsDtMap.put("HL70136", "ICD");
+    vsDtMap.put("HL70145", "RMC");
+    vsDtMap.put("HL70147", "PTA");
+    vsDtMap.put("HL70148", "MOP");
+    vsDtMap.put("HL70149", "DTN");
+    vsDtMap.put("HL70150", "PCF");
+    vsDtMap.put("HL70153", "UVC");
+    vsDtMap.put("HL70200", "XPN");
+    vsDtMap.put("HL70203", "CX");
+    vsDtMap.put("HL70204", "XON");
+    vsDtMap.put("HL70267", "VH");
+    vsDtMap.put("HL70294", "SCV");
+    vsDtMap.put("HL70327", "JCC");
+    vsDtMap.put("HL70335", "RPT");
+    vsDtMap.put("HL70337", "SPD");
+    vsDtMap.put("HL70338", "PLN");
+    vsDtMap.put("HL70350", "OCD");
+    vsDtMap.put("HL70351", "OSP");
+    vsDtMap.put("HL70440", "RCD");
+    vsDtMap.put("HL70537", "DIN");
+    vsDtMap.put("HL79999", "");
+        
+    List<Segment> segments = segmentService.findByDomainInfoScope(SCOPE.HL7STANDARD.toString());
+    for(Segment s: segments) {
+      removeIf(s, vsDtMap);
+      segmentService.save(s);
+    }
+  }
+  
+  public void removeIf(Segment s, Map<String, String> vsDtMap) {
+    for(Field f: s.getChildren()) {
+      if(f.getConceptDomain() !=null && f.getConceptDomain().getName() !=null) {
+      if( vsDtMap.containsKey(f.getConceptDomain().getName()) ){
+        if(f.getRef().getId().startsWith("HL7"+ vsDtMap.get(f.getConceptDomain().getName()))) {
+          // only for HL7 because id starts with name.
+          removeBinding(s.getBinding(), f.getConceptDomain(), f.getId()); 
+        }
+    
+      }
+    }
+    }
+  }
 
+  private void removeBinding(ResourceBinding binding, StandardKey conceptDomain, String id) {
+    // TODO Auto-generated method stub
+    if(binding.getChildren() !=null)
+    binding.getChildren().removeIf(sub -> sub.getElementId().equals(id));
+  }
 
 }

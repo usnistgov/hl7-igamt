@@ -228,7 +228,6 @@ public class ExportController {
 
 	@RequestMapping(value = "/api/export/coconstraintTable", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	public @ResponseBody void exportCoconstraintTable(FormData formData, HttpServletResponse response) throws ExportException, JsonParseException, JsonMappingException, IOException {
-		System.out.println("We inside EXCEL");
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if(formData.getJson() != null) {
 			ObjectMapper mapper = new ObjectMapper();
