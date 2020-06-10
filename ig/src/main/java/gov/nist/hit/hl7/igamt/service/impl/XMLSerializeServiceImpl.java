@@ -1852,6 +1852,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   public String generateConditionScript(Predicate p, String targetId) {
     if (p instanceof FreeTextPredicate) {
       FreeTextPredicate cp = (FreeTextPredicate) p;
+      if(cp.getAssertionScript() != null)
       return cp.getAssertionScript().replace("\n", "").replace("\r", "");
     } else if (p instanceof AssertionPredicate) {
       AssertionPredicate cp = (AssertionPredicate) p;
@@ -1866,6 +1867,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   public String generateAssertionScript(ConformanceStatement c, String targetId) {
     if (c instanceof FreeTextConformanceStatement) {
       FreeTextConformanceStatement cs = (FreeTextConformanceStatement) c;
+      if (cs.getAssertionScript() != null)
       return cs.getAssertionScript().replace("\n", "").replace("\r", "");
     } else if (c instanceof AssertionConformanceStatement) {
       AssertionConformanceStatement cs = (AssertionConformanceStatement) c;

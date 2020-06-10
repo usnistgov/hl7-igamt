@@ -689,7 +689,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
     
     
     @SuppressWarnings("deprecation")
-//   @PostConstruct
+   @PostConstruct
     public void recoveryConstraints() {
     	this.dataypeService.findAll().forEach(dt -> {
     		if(dt.getBinding() != null) {
