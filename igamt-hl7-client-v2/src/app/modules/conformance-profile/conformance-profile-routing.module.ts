@@ -111,25 +111,6 @@ const routes: Routes = [
               idKey: 'conformanceProfileId',
             },
           },
-          {
-            path: 'delta',
-            component: DeltaEditorComponent,
-            canActivate: [EditorActivateGuard],
-            canDeactivate: [EditorDeactivateGuard],
-            data: {
-              editorMetadata: {
-                id: EditorID.CONFP_DELTA,
-                title: 'Delta',
-                resourceType: Type.CONFORMANCEPROFILE,
-              },
-              onLeave: {
-                saveEditor: true,
-                saveTableOfContent: true,
-              },
-              action: OpenConformanceProfileDeltaEditor,
-              idKey: 'conformanceProfileId',
-            },
-          },
         ],
       },
       {
@@ -167,6 +148,25 @@ const routes: Routes = [
             saveTableOfContent: true,
           },
           action: OpenConformanceProfileMetadataEditor,
+          idKey: 'conformanceProfileId',
+        },
+      },
+      {
+        path: 'delta',
+        component: DeltaEditorComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.CONFP_DELTA,
+            title: 'Delta',
+            resourceType: Type.CONFORMANCEPROFILE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenConformanceProfileDeltaEditor,
           idKey: 'conformanceProfileId',
         },
       },

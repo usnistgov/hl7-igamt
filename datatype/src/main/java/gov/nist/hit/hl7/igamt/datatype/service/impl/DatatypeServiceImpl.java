@@ -548,7 +548,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 			result.setLabel(datatype.getName());
 		}
 		result.setName(datatype.getName());
-		result.setConformanceStatements( datatype.getBinding().getConformanceStatements());
+		if(datatype.getBinding() !=null) {
+	        result.setConformanceStatements( datatype.getBinding().getConformanceStatements());
+		}
 
 		if (datatype instanceof ComplexDatatype) {
 			ComplexDatatype dt = (ComplexDatatype) datatype;

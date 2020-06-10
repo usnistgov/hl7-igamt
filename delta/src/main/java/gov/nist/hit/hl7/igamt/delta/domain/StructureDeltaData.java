@@ -24,6 +24,17 @@ public class StructureDeltaData {
     private PredicateDelta predicate;
     private ReferenceDelta reference;
     private DeltaNode<String> name;
+    private DeltaNode<String> format;
+
+
+    public DeltaNode<String> getFormat() {
+      return format;
+    }
+
+    public void setFormat(DeltaNode<String> format) {
+      this.crunchAction(format.getAction());
+      this.format = format;
+    }
     private ConformanceStatementDelta conformanceStatement;
 
     public StructureDeltaData() {

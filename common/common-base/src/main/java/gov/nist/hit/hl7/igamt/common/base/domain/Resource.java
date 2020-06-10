@@ -90,7 +90,6 @@ public abstract class Resource extends AbstractDomain {
     this.shortDescription = shortDescription;
   }  
   
- 
-  
+ // abstract String getSectionTitle();
   
 }

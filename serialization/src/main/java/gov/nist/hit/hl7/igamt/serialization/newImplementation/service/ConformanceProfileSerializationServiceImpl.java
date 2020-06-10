@@ -42,6 +42,7 @@ import nu.xom.Attribute;
 import nu.xom.Element;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -110,7 +111,7 @@ BindingSerializationService bindingSerializationService;
 	        }
 	        
 		      if (conformanceProfile.getBinding() != null) {
-			        Element bindingElement = bindingSerializationService.serializeBinding((Binding) conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName() );
+			        Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), new HashMap<String, Boolean>());
 			        if (bindingElement != null) {
 			        	conformanceProfileElement.appendChild(bindingElement);
 			        }

@@ -20,7 +20,9 @@ import gov.nist.diff.service.DeltaProcessor;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
@@ -64,18 +66,29 @@ public class DeltaServiceImpl implements DeltaService {
 
     if(type.equals(Type.DATATYPE)) {
 
+    
       Datatype target = this.datatypeService.findById(entityId);
       Datatype source = this.datatypeService.findById(target.getOrigin());
-
-      DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
-      DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
-
       DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), source.getExt(), source.getDescription(), source.getId());
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), target.getExt(), target.getDescription(), target.getId());
+      
+      DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
+      DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
+      
+      if (target instanceof DateTimeDatatype && source instanceof DateTimeDatatype) {
+        
+        List<StructureDelta> structure = entityDeltaService.compareDateAndTimeDatatypes((DateTimeDatatype) source,(DateTimeDatatype) target);
+        List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+        return new Delta(sourceInfo, targetInfo, structure,conformanceStatements);
+      } else {
+        
 
-      List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
-      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
-      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
+        List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+
+        List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+        return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
+      } 
+
 
     } else if(type.equals(Type.SEGMENT)) {
 

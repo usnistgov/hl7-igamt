@@ -51,8 +51,8 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
           data: this.currentSynchronized$,
           model: {
             name: {
-              label: 'Name',
-              placeholder: 'Name',
+              label: 'Identifier',
+              placeholder: 'identifier',
               validators: [],
               type: FieldType.TEXT,
               id: 'name',
@@ -68,8 +68,8 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
               name: 'extension',
             },
             description: {
-              label: 'Description',
-              placeholder: 'Description',
+              label: 'Name',
+              placeholder: 'name',
               validators: [],
               type: FieldType.TEXT,
               id: 'description',

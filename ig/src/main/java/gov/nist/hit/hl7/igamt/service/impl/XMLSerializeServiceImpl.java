@@ -1946,6 +1946,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     return null;
   }
 
+  
+  public String replaceLast(String text, String regex, String replacement) {
+      return text.replaceFirst("(?s)"+regex+"(?!.*?"+regex+")", replacement);
+  }
+  
+  
   /**
    * @param assertion
    * @param level
@@ -1956,13 +1962,16 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
    */
   private String generateSingleAssertionScript(SingleAssertion assertion, Level level,
       String targetId, Path context) {
+	  System.out.println(assertion);
     Complement complement = assertion.getComplement();
     ComplementKey key = complement.getComplementKey();
     boolean notAssertion = assertion.getVerbKey().contains("NOT");
 
     boolean atLeastOnce = false;
-
+    boolean noOccurrence = false;
+    
     String sPathStr = this.generatePath(assertion.getSubject().getPath(), targetId, level, context);
+    System.out.println(sPathStr);
     String cPathStr = null;
     if (complement.getPath() != null) {
       cPathStr = this.generatePath(complement.getPath(), targetId, level, context);
@@ -1973,13 +1982,15 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       if (assertion.getSubject().getOccurenceType().equals("atLeast")) {
         atLeastOnce = true;
       } else if (assertion.getSubject().getOccurenceType().equals("instance")) {
-        sPathStr.replaceFirst("//*", "" + assertion.getSubject().getOccurenceValue());
+    	  sPathStr = this.replaceLast(sPathStr, "[*]", "" + assertion.getSubject().getOccurenceValue());
+      } else if (assertion.getSubject().getOccurenceType().equals("noOccurrence")) {
+    	  noOccurrence = true;
       }
     }
 
     if (complement.getOccurenceType() != null && cPathStr != null) {
       if (complement.getOccurenceType().equals("instance")) {
-        cPathStr.replaceFirst("//*", "" + complement.getOccurenceValue());
+    	  cPathStr = this.replaceLast(cPathStr, "[*]", "" + complement.getOccurenceValue());
       }
     }
 
@@ -2112,8 +2123,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         break;
     }
 
+    if (noOccurrence)
+    	result = "<NOT>" + result + "</NOT>";
     if (notAssertion)
-      result = "<NOT>" + result + "</NOT>";
+    	result = "<NOT>" + result + "</NOT>";
 
     return result;
   }

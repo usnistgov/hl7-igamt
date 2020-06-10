@@ -145,8 +145,8 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   TablesFixes tableFixes;
 
-
-
+  
+ 
   @Bean
   public JavaMailSenderImpl mailSender() {
     JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -174,6 +174,7 @@ public class BootstrapApplication implements CommandLineRunner {
   public FhirContext fhirR4Context() {
     return FhirContext.forR4();
   }
+  
 
   //
   //   @Bean(name = "multipartResolver")
@@ -263,10 +264,9 @@ public class BootstrapApplication implements CommandLineRunner {
         }
       }
     }
-
-
-
   }
+  
+  
 
 
   /**
@@ -289,10 +289,16 @@ public class BootstrapApplication implements CommandLineRunner {
 
   /**
    * @param s
+   * @throws ValidationException 
    */
 
+  
+//@PostConstruct
+void fixSegmentduplicatedBinding() throws ValidationException {
+  tableFixes.removeSegmentsDuplicatedBinding();
+}
 
-//  @PostConstruct
+  //@PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
@@ -559,7 +565,7 @@ public class BootstrapApplication implements CommandLineRunner {
     criterias1.put(EvolutionPropertie.CPNUMBER, true);
     datatypeClassifier.classify(hl7Versions,criterias1);
     System.out.println("ENd of Classifying dts");
-   
+
   }
 
 
@@ -660,7 +666,7 @@ public class BootstrapApplication implements CommandLineRunner {
 //      this.dataFixer.readCsv();
 //    }
 
-   //@PostConstruct
+  //@PostConstruct
     public void fix0396() throws ValidationException{
       tableFixes.fix0396();
     }
