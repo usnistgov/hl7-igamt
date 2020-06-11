@@ -95,10 +95,11 @@ public class AuthenticationController {
   
   @RequestMapping(value = "api/users", method = RequestMethod.GET)
   @ResponseBody
-  public UserListResponse getAllUserList(HttpServletResponse res, Authentication authentication)
+  public UserListResponse getAllUserList(HttpServletRequest req,
+          HttpServletResponse res, Authentication authentication)
       throws IOException {
 
-    return authService.getAllUsers();
+    return authService.getAllUsers(req);
   }
 
   @RequestMapping(value = "api/password/reset", method = RequestMethod.POST)

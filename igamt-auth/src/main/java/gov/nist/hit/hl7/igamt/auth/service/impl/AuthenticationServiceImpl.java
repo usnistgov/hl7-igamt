@@ -14,6 +14,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -338,9 +339,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
 @Override
-public UserListResponse getAllUsers() {	
+public UserListResponse getAllUsers(HttpServletRequest req) {
+/*
 	RestTemplate restTemplate = new RestTemplate();
 	UserListResponse obj = restTemplate.getForObject(env.getProperty(AUTH_URL) + "/api/users", UserListResponse.class);
 	return obj;
+*/
+    Cookie cookie[] = req.getCookies();
+
+    HttpHeaders headers = new HttpHeaders();
+    headers.add("Cookie", "authCookie=" + cookie[0].getValue());
+
+    ResponseEntity<UserListResponse> response =
+        restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/users",
+        HttpMethod.GET,
+        new HttpEntity<String>(headers),
+        UserListResponse.class);
+    return response.getBody();
 }
 }
