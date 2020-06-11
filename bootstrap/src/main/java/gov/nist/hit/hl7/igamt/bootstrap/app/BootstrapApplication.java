@@ -298,7 +298,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
   tableFixes.removeSegmentsDuplicatedBinding();
 }
 
-  //@PostConstruct
+ // @PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
@@ -554,7 +554,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
   }
 
   
-//  @PostConstruct
+  //@PostConstruct
   void classifyDatatypes() throws DatatypeNotFoundException {
     datatypeClassificationService.deleteAll();
     System.out.println("Classifying dts");
@@ -666,11 +666,11 @@ void fixSegmentduplicatedBinding() throws ValidationException {
 //      this.dataFixer.readCsv();
 //    }
 
-  //@PostConstruct
+    //@PostConstruct
     public void fix0396() throws ValidationException{
       tableFixes.fix0396();
     }
-    @PostConstruct
+    //@PostConstruct
     public void fixPHINValuesets() {
     	this.valuesetService.findByDomainInfoScope("PHINVADS").forEach(v -> {
     		if(v.getName() == null) {
@@ -689,7 +689,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
     
     
     @SuppressWarnings("deprecation")
-//   @PostConstruct
+    //@PostConstruct
     public void recoveryConstraints() {
     	this.dataypeService.findAll().forEach(dt -> {
     		if(dt.getBinding() != null) {

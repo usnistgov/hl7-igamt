@@ -461,8 +461,7 @@ public class IgServiceImpl implements IgService {
     addKeys(ig.getValueSetRegistry(), Type.VALUESET, newKeys);
     addKeys(ig.getDatatypeRegistry(), Type.DATATYPE, newKeys);
     addKeys(ig.getSegmentRegistry(), Type.SEGMENT, newKeys);
-    addKeys(ig.getSegmentRegistry(), Type.COCONSTRAINTGROUP, newKeys);
-    addKeysForConstraints(newIg, ig, newKeys);
+    addKeys(ig.getCoConstraintGroupRegistry(), Type.COCONSTRAINTGROUP, newKeys);
     newIg.setValueSetRegistry(copyValueSetRegistry(ig.getValueSetRegistry(), newKeys, username));
     newIg.setDatatypeRegistry(copyDatatypeRegistry(ig.getDatatypeRegistry(), newKeys, username));
     newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),newKeys, username));

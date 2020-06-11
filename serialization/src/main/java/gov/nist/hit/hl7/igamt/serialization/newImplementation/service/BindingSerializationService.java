@@ -28,7 +28,7 @@ public interface BindingSerializationService {
 //	public Element serializeBinding(Binding binding, Set<ValuesetBindingDataModel> valuesetBindingDataModels)
 //			throws SerializationException;
 
-	public Element serializeBinding(Binding binding, Map<String, Set<ValuesetBindingDataModel>> valuesetMap, String name, Map<String, Boolean> bindedPaths) throws SerializationException;
+public Element serializeBinding(Binding binding, Map<String, Set<ValuesetBindingDataModel>> valuesetMap, String name, Map<String, Boolean> bindedPaths) throws SerializationException;
 
 //	public Element serializeBinding(Binding binding, DatatypeDataModel datatypeDataModel);
 }

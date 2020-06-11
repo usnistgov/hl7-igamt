@@ -48,6 +48,7 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
 
   @Input()
   set metadataFormInput(input: IMetadataFormInput<any>) {
+    console.log(input);
 
     if (this.changesSubscription) {
       this.changesSubscription.unsubscribe();

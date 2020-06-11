@@ -1866,6 +1866,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   public String generateAssertionScript(ConformanceStatement c, String targetId) {
     if (c instanceof FreeTextConformanceStatement) {
       FreeTextConformanceStatement cs = (FreeTextConformanceStatement) c;
+      if(cs.getAssertionScript() !=null)
       return cs.getAssertionScript().replace("\n", "").replace("\r", "");
     } else if (c instanceof AssertionConformanceStatement) {
       AssertionConformanceStatement cs = (AssertionConformanceStatement) c;

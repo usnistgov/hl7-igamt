@@ -1,7 +1,4 @@
 <ng-template #headerControls>
-    <button [class]="'btn btn-sm btn-default toggle-btn toggled-delta'" style="margin-left: 10px; border: 1px solid black;" [routerLink]="'../'">
-      <span style="font-weight: bold;" ><span style="font-size: 1em;" >Δ</span> delta</span>
-    </button>
 </ng-template>
 <ng-container *ngIf="delta$ | async as delta">
   <ng-template #headerTitle let-active let-defaultTemplate="defaultTemplate">
