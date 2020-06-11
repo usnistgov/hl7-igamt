@@ -345,10 +345,17 @@ public UserListResponse getAllUsers(HttpServletRequest req) {
 	UserListResponse obj = restTemplate.getForObject(env.getProperty(AUTH_URL) + "/api/users", UserListResponse.class);
 	return obj;
 */
-    Cookie cookie[] = req.getCookies();
+    Cookie cookies[] = req.getCookies();
 
     HttpHeaders headers = new HttpHeaders();
-    headers.add("Cookie", "authCookie=" + cookie[0].getValue());
+
+    if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("authCookie")) {
+                headers.add("Cookie", "authCookie=" + cookie.getValue());
+            }
+        }
+    }
 
     ResponseEntity<UserListResponse> response =
         restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/users",
