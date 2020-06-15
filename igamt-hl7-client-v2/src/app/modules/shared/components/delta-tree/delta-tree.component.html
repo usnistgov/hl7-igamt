@@ -145,20 +145,9 @@
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.VALUESET">
             <td [class]="cellClass(rowData.valuesetBinding?.action)">
-                <ng-container *ngTemplateOutlet="diff; context : { $implicit: rowData.valuesetBinding }"></ng-container>
 
-              <!-- <div class="delta-updated">
-                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.structureElementBinding.updated }"></ng-container>
-              </div>
-              <div class="delta-added">
-                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.structureElementBinding.added }"></ng-container>
-              </div>
-              <div class="delta-deleted">
-                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.structureElementBinding.removed }"></ng-container>
-              </div>
-              <div>
-                <ng-container *ngTemplateOutlet="vsList; context : { $implicit: rowData.structureElementBinding.unchanged }"></ng-container>
-              </div> -->
+        <ng-container *ngTemplateOutlet="vsBindingDelta; context : { $implicit: rowData.valuesetBinding }"></ng-container>
+
             </td>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.CONSTANTVALUE">
@@ -200,12 +189,44 @@
     </app-delta-column>
   </ng-container>
 </ng-template>
-<ng-template #vsList let-list >
-    <ng-container *ngFor="let item of list">
-        <div [pTooltip]="item.name" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
-          <app-entity-bagde [type]="'VALUESET'"></app-entity-bagde>
-          <app-scope-badge [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
-          <strong style="margin-left: 5px;"> {{item.label}}</strong>
-        </div>
-    </ng-container>
+<ng-template #vsBindingDelta let-vsDelta>
+  <table class="table table-striped table-sm table-bordered delta-current" style="text-align: center; margin-bottom: 5px;">
+    <tr>
+      <td [attr.rowspan]="vsDelta.valueSets?.current.length + 1" style="width: 10px;" class="binding-vs">
+      </td>
+      <td style="vertical-align: middle; width: 25px;">
+      </td>
+      <td pTooltip="Binding Strength" tooltipPosition="top">
+        <strong>{{vsDelta.strength?.current}}</strong>
+      </td>
+      <td pTooltip="Binding Locations" tooltipPosition="top">
+        <strong>{{vsDelta.bindingLocation?.current.length > 0 ? (vsDelta.bindingLocation?.current | json) : '.'}}</strong>
+      </td>
+    </tr>
+    <tr *ngFor="let item of vsDelta.valueSets?.current">
+      <td colspan="3">
+        <app-display-section [element]="item" [hideDescription]="true" ></app-display-section>
+      </td>
+    </tr>
+  </table>
+  <table class="table table-striped table-sm table-bordered delta-previous" style="text-align: center; margin-bottom: 0;">
+    <tr>
+      <td [attr.rowspan]="vsDelta.valueSets?.previous.length + 1" style="width: 10px;" class="binding-vs">
+      </td>
+      <td style="vertical-align: middle; width: 25px;">
+      </td>
+      <td pTooltip="Binding Strength" tooltipPosition="top">
+        <strong>{{vsDelta.strength?.previous}}</strong>
+      </td>
+      <td pTooltip="Binding Locations" tooltipPosition="top">
+        <strong>{{vsDelta.bindingLocation?.previous.length > 0 ? (vsDelta.bindingLocation?.previous | json) : '.'}}</strong>
+      </td>
+    </tr>
+    <tr *ngFor="let item of vsDelta.valueSets?.previous">
+      <td colspan="3">
+        <app-display-section  [element]="item" [hideDescription]="true" ></app-display-section>
+      </td>
+    </tr>
+  </table>
 </ng-template>
+

@@ -47,6 +47,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
@@ -572,6 +573,7 @@ public class SegmentServiceImpl implements SegmentService {
     Link newLink = l.clone(key);
     newLink.setOrigin(l.getId());
     elm.setId(newLink.getId());
+    elm.setUsername(username);
     newLink.setDomainInfo(elm.getDomainInfo());
     updateDependencies(elm, newKeys, username);
     updateDynamicMapping(elm, newKeys);
@@ -904,6 +906,7 @@ public class SegmentServiceImpl implements SegmentService {
         ValuesetBinding vb = new ValuesetBinding();
         vb.setStrength(dvb.getStrength());
         vb.setValueSets(dvb.getValueSets());
+       
         vb.setValuesetLocations(dvb.getValuesetLocations());
         result.add(vb);
       }
@@ -1054,6 +1057,18 @@ public class SegmentServiceImpl implements SegmentService {
 
 				DisplayValuesetBinding dvb = new DisplayValuesetBinding();
 
+                List<DisplayElement> vsDisplay = vb.getValueSets().stream().map(id -> {
+                  Valueset vs = this.valueSetService.findById(id);
+                  if(vs !=null) {
+                    DisplayElement obj = new DisplayElement();
+                      obj.setVariableName(vs.getBindingIdentifier());
+                      obj.setDomainInfo(vs.getDomainInfo());
+                      return obj;
+                  }else {
+                    return null;
+                  }
+             }).collect(Collectors.toList());
+             dvb.setValueSetsDisplay(vsDisplay);
 				dvb.setStrength(vb.getStrength());
 				dvb.setValueSets(vb.getValueSets());
 				dvb.setValuesetLocations(vb.getValuesetLocations());

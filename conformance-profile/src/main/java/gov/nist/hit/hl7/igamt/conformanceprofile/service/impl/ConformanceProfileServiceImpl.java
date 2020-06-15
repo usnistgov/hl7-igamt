@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
@@ -977,6 +979,19 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
     					dvb.setStrength(vb.getStrength());
     					dvb.setValueSets(vb.getValueSets());
+    					
+    		              List<DisplayElement> vsDisplay = vb.getValueSets().stream().map(id -> {
+    	                     Valueset vs = this.valuesetService.findById(id);
+    	                     if(vs !=null) {
+    	                       DisplayElement obj = new DisplayElement();
+    	                         obj.setVariableName(vs.getBindingIdentifier());
+    	                         obj.setDomainInfo(vs.getDomainInfo());
+    	                         return obj;
+    	                     }else {
+    	                       return null;
+    	                     }
+    	                }).collect(Collectors.toList());
+    	                dvb.setValueSetsDisplay(vsDisplay);
     					dvb.setValuesetLocations(vb.getValuesetLocations());
     					result.add(dvb);
 

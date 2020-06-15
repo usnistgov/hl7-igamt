@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.delta.service;
 
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.*;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
@@ -469,7 +470,6 @@ public class EntityDeltaServiceImpl {
     }
 
 
-
     private DeltaNode<CodeUsage> compare(CodeUsage source, CodeUsage target) {
         return this.compare(source, target, (s, t) -> {
             return s.equals(t);
@@ -500,11 +500,9 @@ public class EntityDeltaServiceImpl {
                 action = DeltaAction.UPDATED;
             }
         }
-
         node.setAction(action);
         node.setCurrent(target);
         node.setPrevious(source);
-
         return node;
     }
 
@@ -651,13 +649,68 @@ public class EntityDeltaServiceImpl {
                 DeltaNode<Set<Integer>> valuesetLocations = this.compare(sourceBindingDisplay.getValuesetLocations(), targetBindingDisplay.getValuesetLocations());
                 delta.setValuesetLocations(valuesetLocations);
 
-                DeltaNode<List<String>> valueSets = this.compare(sourceBindingDisplay.getValueSets(), targetBindingDisplay.getValueSets());
+                DeltaNode<List<DisplayElement>> valueSets = this.compareDisplay(sourceBindingDisplay.getValueSetsDisplay(), targetBindingDisplay.getValueSetsDisplay());
                 delta.setValueSets(valueSets);
             }
 
         }
 
         return  delta;
+    }
+
+    /**
+     * @param valueSetsDisplay
+     * @param valueSetsDisplay2
+     * @return
+     */
+    private DeltaNode<List<DisplayElement>> compareDisplay(List<DisplayElement> source,
+        List<DisplayElement> target) {
+      // TODO Auto-generated method stub
+      return this.compare(source, target, (s, t) -> {
+        return this.compareListOfBinding(source,target );
+    });
+    }
+
+    /**
+     * @param source
+     * @param target
+     * @return
+     */
+    private Boolean compareListOfBinding(List<DisplayElement> source, List<DisplayElement> target) {
+      // TODO Auto-generated method stub
+   
+      Map<String, DisplayElement> sourceMap = source.stream().collect(Collectors.toMap(x -> getUnicityKey(x) , x-> x));
+      Map<String, DisplayElement> targetMap = source.stream().collect(Collectors.toMap(x -> getUnicityKey(x) , x-> x));
+
+      Boolean equals = true;
+      for(DisplayElement element : source) {
+        String key = getUnicityKey(element);
+        if(targetMap.containsKey(key)){
+          element.setDelta(DeltaAction.UNCHANGED);
+        }else {
+          element.setDelta(DeltaAction.DELETED);
+          equals = false;
+
+        }
+      }
+      for(DisplayElement element : target) {
+        String key = getUnicityKey(element);
+        if(sourceMap.containsKey(key)){
+          element.setDelta(DeltaAction.UNCHANGED);
+        }else {
+          element.setDelta(DeltaAction.ADDED);
+          equals = false;
+        }
+      }
+      return equals;
+     
+    }
+    private String getUnicityKey(DisplayElement element) {
+     String ret = element.getVariableName();
+     if(element.getDomainInfo() !=null && element.getDomainInfo().getVersion() !=null) {
+       ret += element.getDomainInfo().getVersion();
+     }
+     return ret;
     }
 
     private DeltaNode<ValuesetStrength> compare(ValuesetStrength source, ValuesetStrength target) {
