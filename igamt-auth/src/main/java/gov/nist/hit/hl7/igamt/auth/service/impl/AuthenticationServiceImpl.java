@@ -140,7 +140,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       HttpEntity<LoginRequest> request = new HttpEntity<>(user);
       System.out.println(env.getProperty(AUTH_URL));
       ResponseEntity<ConnectionResponseMessage<UserResponse>> call =
-          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/login", HttpMethod.POST, request,
+          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/login", HttpMethod.POST, request,
               new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {});
       call.getBody().setHide(true);
       if (call.getStatusCode() == HttpStatus.OK) {
@@ -183,7 +183,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
       ResponseEntity<ConnectionResponseMessage<UserResponse>> response =
-          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/register", HttpMethod.POST, request,
+          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/register", HttpMethod.POST, request,
               new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {});
 
 
@@ -220,7 +220,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       HttpEntity<ChangePasswordRequest> request =
           new HttpEntity<ChangePasswordRequest>(changePasswordRequest);
       ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate
-          .exchange(env.getProperty(AUTH_URL) + "/api/password/reset", HttpMethod.POST, request,
+          .exchange(env.getProperty(AUTH_URL) + "/api/tool/password/reset", HttpMethod.POST, request,
               new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {});
       return response.getBody();
     } catch (HttpClientErrorException e) {
@@ -245,7 +245,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
       HttpEntity<String> request = new HttpEntity<String>(token);
       ResponseEntity<Boolean> response =
-          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/password/validatetoken",
+          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/password/validatetoken",
               HttpMethod.POST, request, Boolean.class);
       return response.getBody();
     } catch (HttpClientErrorException e) {
@@ -278,7 +278,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       HttpEntity<ChangePasswordConfirmRequest> request =
           new HttpEntity<ChangePasswordConfirmRequest>(requestObject);
       ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate
-          .exchange(env.getProperty(AUTH_URL) + "/api/password/reset/confirm", HttpMethod.POST, request,
+          .exchange(env.getProperty(AUTH_URL) + "/api/tool/password/reset/confirm", HttpMethod.POST, request,
               new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {});
       return response.getBody();
 
@@ -342,7 +342,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 public UserListResponse getAllUsers(HttpServletRequest req) {
 /*
 	RestTemplate restTemplate = new RestTemplate();
-	UserListResponse obj = restTemplate.getForObject(env.getProperty(AUTH_URL) + "/api/users", UserListResponse.class);
+	UserListResponse obj = restTemplate.getForObject(env.getProperty(AUTH_URL) + "/api/tool/users", UserListResponse.class);
 	return obj;
 */
     Cookie cookies[] = req.getCookies();
@@ -358,7 +358,7 @@ public UserListResponse getAllUsers(HttpServletRequest req) {
     }
 
     ResponseEntity<UserListResponse> response =
-        restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/users",
+        restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/users",
         HttpMethod.GET,
         new HttpEntity<String>(headers),
         UserListResponse.class);
