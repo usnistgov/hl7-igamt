@@ -461,8 +461,7 @@ public class IgServiceImpl implements IgService {
     addKeys(ig.getValueSetRegistry(), Type.VALUESET, newKeys);
     addKeys(ig.getDatatypeRegistry(), Type.DATATYPE, newKeys);
     addKeys(ig.getSegmentRegistry(), Type.SEGMENT, newKeys);
-    addKeys(ig.getSegmentRegistry(), Type.COCONSTRAINTGROUP, newKeys);
-    addKeysForConstraints(newIg, ig, newKeys);
+    addKeys(ig.getCoConstraintGroupRegistry(), Type.COCONSTRAINTGROUP, newKeys);
     newIg.setValueSetRegistry(copyValueSetRegistry(ig.getValueSetRegistry(), newKeys, username));
     newIg.setDatatypeRegistry(copyDatatypeRegistry(ig.getDatatypeRegistry(), newKeys, username));
     newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),newKeys, username));
@@ -1128,8 +1127,11 @@ public class IgServiceImpl implements IgService {
     ZipOutputStream out = new ZipOutputStream(outputStream);
 
     String profileXMLStr = this.xmlSerializeService.serializeProfileToDoc(igModel).toXML();
-    String valueSetXMLStr = this.xmlSerializeService.serializeValueSetXML(igModel).toXML();
     String constraintXMLStr = this.xmlSerializeService.serializeConstraintsXML(igModel).toXML();
+    
+    this.addValuesetsFromConstraints(constraintXMLStr, igModel, -1);
+    
+    String valueSetXMLStr = this.xmlSerializeService.serializeValueSetXML(igModel).toXML();
 
     this.xmlSerializeService.generateIS(out, profileXMLStr, "Profile.xml");
     this.xmlSerializeService.generateIS(out, valueSetXMLStr, "ValueSets.xml");
@@ -1140,7 +1142,48 @@ public class IgServiceImpl implements IgService {
     return new ByteArrayInputStream(bytes);
   }
 
-  @Override
+  private void addValuesetsFromConstraints(String constraintXMLStr, IgDataModel igModel, int fromIndex) {
+	  int beginIndex = constraintXMLStr.indexOf("ValueSetID=\"", fromIndex);
+	  int endIndex = constraintXMLStr.indexOf( "\"" , beginIndex + "ValueSetID=\"".length());
+	  if(beginIndex < 0 || endIndex < 0 || endIndex < beginIndex) {
+	  } else {
+		  String bId = constraintXMLStr.substring(beginIndex + "ValueSetID=\"".length() , endIndex);
+		  ValuesetDataModel vdm = igModel.findValuesetByBId(bId);
+		  
+		  if(vdm == null) {
+			  System.out.println("###### MissingValueSet Detected :: " + bId);
+			  Ig ig = this.findById(igModel.getModel().getId());
+			  
+			  Valueset found = this.findVSFromIGByBid(ig, bId);
+			  if(found != null) {
+				  System.out.println("###### MissingValueSet Found :: " + bId);
+				  
+				  
+			        ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
+			        valuesetDataModel.setModel(found);
+			        igModel.getValuesets().add(valuesetDataModel);
+			  }
+		  }
+		  
+		  this.addValuesetsFromConstraints(constraintXMLStr, igModel, endIndex);  
+	  }
+	
+  }
+
+  private Valueset findVSFromIGByBid(Ig ig, String bId) {
+	  for(Link l : ig.getValueSetRegistry().getChildren()) {
+		  if(l.getId() != null) {
+			  Valueset vs = this.valueSetService.findById(l.getId());
+			  
+			  if(vs.getBindingIdentifier().equals(bId)) return vs;
+		  }
+	  }
+	  
+	  return null;
+	
+}
+
+@Override
   public Set<RelationShip> findUsage(Set<RelationShip> relations, Type type, String elementId) {
     relations.removeIf(x -> (!x.getChild().getId().equals(elementId) || !x.getChild().getType().equals(type)));
     return relations;
