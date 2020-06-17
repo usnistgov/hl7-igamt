@@ -23,6 +23,7 @@ export class ExportDialogComponent implements OnInit {
   toc: any;
   type: Type;
   customized: boolean;
+  delta: boolean;
   getExportFirstDecision: (documentId: string, configId: string) => Observable<IExportConfigurationGlobal>;
 
   constructor(
@@ -37,6 +38,7 @@ export class ExportDialogComponent implements OnInit {
     this.type = data.type;
     this.configlist = data.configurations;
     this.getExportFirstDecision = data.getExportFirstDecision;
+    this.delta = data.delta;
     console.log('selected config : ', this.selectedConfig);
     this.selectedConfig = this.configlist.find( (x) => {
         return x.defaultConfig;
@@ -73,6 +75,7 @@ export class ExportDialogComponent implements OnInit {
             toc: this.toc,
             type: this.type,
             decision,
+            delta: this.delta,
           },
         });
         tocDialog.afterClosed().subscribe((result) => {

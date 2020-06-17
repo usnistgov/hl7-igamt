@@ -51,6 +51,8 @@ export interface IExportConfiguration {
   datatypeLibraryIncludeSummary: boolean;
   datatypeLibraryIncludeDerived: boolean;
   documentMetadataConfiguration?: any;
+  deltaMode?: boolean;
+  deltaConfig?: any;
 }
 
 export interface IMessageColumn {
@@ -109,6 +111,8 @@ export interface IValueSetExportConfiguration {
   extensibility: boolean;
   contentDefinition: boolean;
   uRL: boolean;
+  deltaMode?: boolean;
+  deltaConfig?: any;
 }
 
 export interface IValueSetMetadataConfig {
@@ -155,6 +159,8 @@ export interface IConformamceProfileExportConfiguration {
   columns: IColumn[];
   metadataConfig: IMetadataConfig;
   constraintExportConfiguration: IConstraintExportConfiguration;
+  deltaMode?: boolean;
+  deltaConfig?: any;
 }
 
 export interface ISegmentExportConfiguration {
@@ -186,6 +192,8 @@ export interface ISegmentExportConfiguration {
   fieldsExport: IUsageConfiguration;
   columns: IColumn[];
   metadataConfig: IMetadataConfig;
+  deltaMode?: boolean;
+  deltaConfig?: any;
 }
 
 export interface IDatatypeLibraryExportConfiguration {
@@ -250,6 +258,8 @@ export interface IDatatypeExportConfiguration {
   columns: IColumn[];
   metadataConfig: IMetadataConfig;
   includeVaries: boolean;
+  deltaMode?: boolean;
+  deltaConfig?: any;
 }
 export interface IMetadataConfig {
   datatypeName: boolean;

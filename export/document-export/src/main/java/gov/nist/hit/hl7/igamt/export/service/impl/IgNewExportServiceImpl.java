@@ -106,12 +106,26 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	
 
 	@Override
-	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId)
+	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId, String deltaMode)
 			throws Exception {
 		Ig igDocument = igService.findById(igDocumentId);
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration);
+//			if(deltaMode != null){
+//				exportConfiguration.setDeltaMode(true);
+//				exportConfiguration.getSegmentExportConfiguration().setDeltaMode(true);
+//				exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(true);
+//				exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(true);
+//				exportConfiguration.getValueSetExportConfiguration().setDeltaMode(true);
+//
+//			} else {
+//				exportConfiguration.setDeltaMode(false);
+//				exportConfiguration.getSegmentExportConfiguration().setDeltaMode(false);
+//				exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(false);
+//				exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(false);
+//				exportConfiguration.getValueSetExportConfiguration().setDeltaMode(false);
+//			}
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration, deltaMode);
 			return htmlFile;
 		}
 		return null;
@@ -119,7 +133,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 	@Override
 	public ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument, ExportFormat exportFormat,
-			ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception {
+			ExportFilterDecision decision, ExportConfiguration exportConfiguration, String deltaMode) throws Exception {
 		try {
 //			ExportConfiguration exportConfiguration =
 //					exportConfigurationService.getExportConfiguration(username);
@@ -130,13 +144,13 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 //			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
 //			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
 //			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
-			
+
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
 			DocumentStructureDataModel documentStructureDataModel = new DocumentStructureDataModel();
 			String xmlContent =
-					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,decision).toXML();
+					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,decision, deltaMode).toXML();
 					      System.out.println("XML_EXPORT : " + xmlContent);
 //					      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version
@@ -353,7 +367,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		Ig igDocument = igService.findById(id);
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD, decision, exportConfiguration);
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD, decision, exportConfiguration, null);
 			ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(),
 					igDocument.getUpdateDate(),
 					igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
