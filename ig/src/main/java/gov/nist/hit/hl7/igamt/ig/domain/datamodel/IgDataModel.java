@@ -102,6 +102,14 @@ public class IgDataModel extends DocumentStructureDataModel implements Serializa
 		}
 		return null;
 	}
+	
+	public ValuesetDataModel findValuesetByBId(String bId) {
+		for (ValuesetDataModel vsModel : this.valuesets) {
+			if (vsModel.getModel().getBindingIdentifier().contentEquals(bId))
+				return vsModel;
+		}
+		return null;
+	}
 
 	/**
 	 * @param value
