@@ -38,7 +38,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	private FroalaSerializationUtil frolaCleaning;
 
 	@Override
-	public Element serializeDocument(DocumentStructureDataModel documentStructureDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException {
+	public Element serializeDocument(DocumentStructureDataModel documentStructureDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision, String deltaMode) throws RegistrySerializationException {
 		//		if(exportConfiguration.getAbstractDomainExportConfiguration() == null) {System.out.println("Export IG document export null ici");}
 		DocumentStructure documentStructure = documentStructureDataModel.getModel();
 		Element igDocumentElement = serializeAbstractDomain(documentStructure, Type.IGDOCUMENT, 1, documentStructure.getName(), exportConfiguration.getAbstractDomainExportConfiguration());
@@ -51,7 +51,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		for (Section section : documentStructure.getContent()) {
 			// startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
 			int startLevel = 1;
-			Element sectionElement = sectionSerializationService.SerializeSection(section, startLevel, documentStructureDataModel, exportConfiguration, exportFilterDecision);
+			Element sectionElement = sectionSerializationService.SerializeSection(section, startLevel, documentStructureDataModel, exportConfiguration, exportFilterDecision, deltaMode);
 			igDocumentElement.appendChild(sectionElement);
 		}
 		return igDocumentElement;

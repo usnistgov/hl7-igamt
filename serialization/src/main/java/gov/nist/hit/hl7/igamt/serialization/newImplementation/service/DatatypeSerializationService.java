@@ -12,7 +12,7 @@ import nu.xom.Element;
 
 public interface DatatypeSerializationService {
 	
-	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type  ) throws SubStructElementSerializationException, SerializationException;
+	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type, String deltaMode ) throws SubStructElementSerializationException, SerializationException;
 
 	public Element serializeComplexDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel , DatatypeExportConfiguration datatypeExportConfiguration, Type type) throws SubStructElementSerializationException;
 

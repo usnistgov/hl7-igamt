@@ -289,7 +289,7 @@ public class ExportConfiguration {
     datatypeExportConfiguration.setBinding(true);
     datatypeExportConfiguration.setPurposeAndUse(true);
     datatypeExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    datatypeExportConfiguration.setDeltaMode(false);
+    datatypeExportConfiguration.setDeltaMode(true);
     datatypeExportConfiguration.setDeltaConfig(deltaConfiguration);
 
     // Setting SegmentExportConfiguration
@@ -297,7 +297,7 @@ public class ExportConfiguration {
     segmentExportConfiguration.setDynamicMappingInfo(true);
     segmentExportConfiguration.setBinding(true);
     segmentExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    segmentExportConfiguration.setDeltaMode(false);
+    segmentExportConfiguration.setDeltaMode(true);
     segmentExportConfiguration.setDeltaConfig(deltaConfiguration);
 
     // Setting ConformanceProfileExportConfiguration
@@ -308,7 +308,7 @@ public class ExportConfiguration {
     conformanceProfileExportConfiguration.setStructID(true);
     conformanceProfileExportConfiguration.setBinding(true);
     conformanceProfileExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    conformanceProfileExportConfiguration.setDeltaMode(false);
+    conformanceProfileExportConfiguration.setDeltaMode(true);
     conformanceProfileExportConfiguration.setDeltaConfig(deltaConfiguration);
     conformanceProfileExportConfiguration.setListedColumns(listedColumns);
     //    conformanceProfileExportConfiguration.getMetadataConfig().setType(false);

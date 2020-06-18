@@ -62,6 +62,24 @@ export class DefaultConfigurationComponent implements OnInit {
     this.hasChanges = true;
   }
 
+  updateDelta($event) {
+    this.hasChanges = true;
+    this.currentConfiguration.deltaMode = $event.active;
+    this.currentConfiguration.deltaConfig = $event.config;
+    this.currentConfiguration.conformamceProfileExportConfiguration.deltaMode = $event.active;
+    this.currentConfiguration.conformamceProfileExportConfiguration.deltaConfig = $event.config;
+
+    this.currentConfiguration.segmentExportConfiguration.deltaMode = $event.active;
+    this.currentConfiguration.segmentExportConfiguration.deltaConfig = $event.config;
+
+    this.currentConfiguration.datatypeExportConfiguration.deltaMode = $event.active;
+    this.currentConfiguration.datatypeExportConfiguration.deltaConfig = $event.config;
+
+    this.currentConfiguration.valueSetExportConfiguration.deltaMode = $event.active;
+    this.currentConfiguration.valueSetExportConfiguration.deltaConfig = $event.config;
+
+  }
+
   useAsDefaultConfiguration(configuration: IExportConfigurationItemList) {
     this.exportConfigurationService.saveAsDefaultExportConfiguration(configuration).subscribe(
       (x) => this.loadExportConfigurationList(this.type),

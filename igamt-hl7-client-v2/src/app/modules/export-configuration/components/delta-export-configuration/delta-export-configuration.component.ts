@@ -9,12 +9,20 @@ export class DeltaExportConfigurationComponent implements OnInit {
 
   modeOptions = [
     {
-      label: 'Highlight',
+      label: 'Highlight changes (Show only new values)',
       value: 'HIGHLIGHT',
     },
     {
-      label: 'Hide',
+      label: 'Highlight changes (Show old and new values)',
+      value: 'HIGHLIGHT_WITH_OLD_VALUES',
+    },
+    {
+      label: 'Hide unchanged rows and Highlight changes (Show only new values)',
       value: 'HIDE',
+    },
+    {
+      label: 'Hide unchanged rows and Highlight changes (Show old and new values)',
+      value: 'HIDE_WITH_OLD_VALUES',
     },
   ];
   public defaultColors = [

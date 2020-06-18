@@ -47,12 +47,12 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.nodes = data.toc;
     this.configurationName = data.configurationName;
     this.deltaMode$ = this.store.select(selectDelta);
-    this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.filter = this.initialConfig.exportFilterDecision;
     this.defaultConfig = _.cloneDeep(data.decision.exportConfiguration);
     this.type = data.type;
     this.docType = data.type;
+    this.delta = data.delta;
   }
   select(node) {
     this.loading = true;
@@ -74,12 +74,9 @@ export class ExportConfigurationDialogComponent implements OnInit {
         console.log('Type in TOC is D:' + this.type);
         if (this.filter.overiddedDatatypesMap[node.id]) {
           this.current = this.filter.overiddedDatatypesMap[node.id];
-          console.log('current 1' , this.current);
 
         } else {
           this.current = _.cloneDeep(this.defaultConfig.datatypeExportConfiguration);
-          console.log('current 2' , this.current);
-
         }
         this.loading = false;
         break;
