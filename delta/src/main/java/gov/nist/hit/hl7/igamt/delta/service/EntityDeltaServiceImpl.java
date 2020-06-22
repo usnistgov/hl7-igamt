@@ -84,11 +84,19 @@ public class EntityDeltaServiceImpl {
     List<ConformanceStatementDelta> deltas = new ArrayList<>();
     Map<String, ConformanceStatement> sourceMap = new HashMap<String, ConformanceStatement>();
     Map<String, ConformanceStatement> targetMap = new HashMap<String, ConformanceStatement>();
-    if(source!=null&& !source.isEmpty()) {
-      sourceMap =  source.stream().collect(Collectors.toMap(x->x.getIdentifier(), x->x));
+    if(source!=null && !source.isEmpty()) {
+      for(ConformanceStatement s : source) {
+        if(s.getIdentifier() !=null) {
+          sourceMap.put(s.getIdentifier(), s);
+        }
+      }
     }
     if(target !=null&& !source.isEmpty()) {
-      targetMap =  target.stream().collect(Collectors.toMap(x->x.getIdentifier(), x->x));
+      for(ConformanceStatement s : target) {
+        if(s.getIdentifier() !=null) {
+          targetMap.put(s.getIdentifier(), s);
+        }
+      }
     }
     if(source !=null)
     for(ConformanceStatement st: source) {
@@ -746,6 +754,7 @@ public class EntityDeltaServiceImpl {
         delta.setValuesetLocations(valuesetLocations);
         delta.setValueSets(valueSets);
       }else if (targetBindingDisplay ==null) {
+        if(sourceBindingDisplay !=null) {
  
         delta.setAction(DeltaAction.UPDATED);
         DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<List<DisplayElement>>();
@@ -758,8 +767,10 @@ public class EntityDeltaServiceImpl {
 
         DeltaNode<Set<Integer>> valuesetLocations = this.compare(sourceBindingDisplay.getValuesetLocations(), null);
         delta.setValuesetLocations(valuesetLocations);
+        }
 
       } else if (sourceBindingDisplay ==null) {
+        if(targetBindingDisplay !=null) {
         DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<List<DisplayElement>>();
         valueSets.setCurrent(targetBindingDisplay.getValueSetsDisplay());
         valueSets.setAction(DeltaAction.UPDATED);
@@ -770,7 +781,7 @@ public class EntityDeltaServiceImpl {
 
         DeltaNode<Set<Integer>> valuesetLocations = this.compare(null, targetBindingDisplay.getValuesetLocations());
         delta.setValuesetLocations(valuesetLocations);
-
+        }
       }
    
 
