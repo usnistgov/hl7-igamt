@@ -66,7 +66,7 @@
             </td>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.USAGE">
-            <td [class]="cellClass(rowData.usage.action)">
+            <td [class]="cellClass(rowData.usage.action)" style="padding: 0px !important;">
               <ng-container *ngTemplateOutlet="usage; context : { $implicit: rowData.usage, predicate: rowData.predicate }"></ng-container>
             </td>
           </ng-container>
@@ -265,7 +265,7 @@
 
 
 <ng-template #usage let-usage let-styleCurrent="styleCurrent" let-stylePrevious="stylePrevious" let-styleUnchanged="styleUnchanged" let-predicate="predicate">
-  <div style="display: flex; flex-direction: row; justify-content: space-between">
+  <div style="display: flex; flex-direction: row; justify-content: space-between;">
     <div style="width: 100%">
       <ng-container *ngIf="usage">
     <app-delta-column [action]="usage.action" [currentValue]="usage.current" [previousValue]="usage.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
@@ -273,52 +273,55 @@
         {{value}}
       </ng-template>
     </app-delta-column>
-  </ng-container>
+      </ng-container>
+    </div>
+    <div *ngIf="predicate" style="display: flex; flex-direction: column; justify-content: center;   height: 100%; width: 100%;
+    padding: 2px;">
+      <div style="display: flex; flex-direction: row; justify-content: flex-end; width: 100%;">
+        <button class="btn btn-sm btn-secondary" #tx (click)="selectPredicate($event,predicate,op3)" pTooltip="Compare Predicates" tooltipPosition="top">
+          <i class="fa fa-eye"></i>
+        </button>
+      </div>
+
+      <p-overlayPanel #op3 appendTo="tx" [dismissable]="false" [showCloseIcon]="true">
+        <table class="table table-striped table-sm table-bordered"  style="text-align: center;  margin-bottom: 0;">
+          <thead>
+          <tr>
+            <td width="60px"><strong>True Usage</strong></td>
+            <td width="60px"><strong>False Usage</strong></td>
+            <td><strong>Description</strong></td>
+          </tr>
+          </thead>
+          <tbody>
+          <tr [ngClass]="{'delta-added': predicate.action === 'ADDED', 'delta-deleted': predicate.action === 'DELETED'}">
+            <td width="60px">
+              <app-delta-column [action]="predicate.trueUsage.action" [currentValue]="predicate.trueUsage.current" [previousValue]="predicate.trueUsage.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
+                <ng-template #default let-value>
+                  {{value}}
+                </ng-template>
+              </app-delta-column>
+            </td>
+            <td  width="60px">
+              <app-delta-column [action]="predicate.falseUsage.action" [currentValue]="predicate.falseUsage.current" [previousValue]="predicate.falseUsage.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
+                <ng-template #default let-value>
+                  {{value}}
+                </ng-template>
+              </app-delta-column>
+            </td>
+            <td>
+              <app-delta-column [action]="predicate.description.action" [currentValue]="predicate.description.current" [previousValue]="predicate.description.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
+                <ng-template #default let-value>
+                  {{value}}
+                </ng-template>
+              </app-delta-column>
+            </td>
+          </tr>
+
+          </tbody>
+        </table>
+      </p-overlayPanel>
     </div>
   <div>
-  <div *ngIf="predicate" style="display: flex; flex-direction: column; justify-content: center;   height: 100%;
-    padding: 2px;">
-    <button class="btn btn-sm btn-secondary" #tx (click)="selectPredicate($event,predicate,op3)" pTooltip="Compare Predicates" tooltipPosition="top">
-      <i class="fa fa-eye"></i>
-    </button>
-    <p-overlayPanel #op3 appendTo="tx" [dismissable]="false" [showCloseIcon]="true">
-      <table class="table table-striped table-sm table-bordered"  style="text-align: center;  margin-bottom: 0;">
-        <thead>
-        <tr>
-          <td width="60px"><strong>True Usage</strong></td>
-          <td width="60px"><strong>False Usage</strong></td>
-          <td><strong>Description</strong></td>
-        </tr>
-        </thead>
-        <tbody>
-        <tr [ngClass]="{'delta-added': predicate.action === 'ADDED', 'delta-deleted': predicate.action === 'DELETED'}">
-          <td width="60px">
-            <app-delta-column [action]="predicate.trueUsage.action" [currentValue]="predicate.trueUsage.current" [previousValue]="predicate.trueUsage.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
-              <ng-template #default let-value>
-                {{value}}
-              </ng-template>
-            </app-delta-column>
-          </td>
-          <td  width="60px">
-            <app-delta-column [action]="predicate.falseUsage.action" [currentValue]="predicate.falseUsage.current" [previousValue]="predicate.falseUsage.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
-              <ng-template #default let-value>
-                {{value}}
-              </ng-template>
-            </app-delta-column>
-          </td>
-          <td>
-            <app-delta-column [action]="predicate.description.action" [currentValue]="predicate.description.current" [previousValue]="predicate.description.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
-              <ng-template #default let-value>
-                {{value}}
-              </ng-template>
-            </app-delta-column>
-          </td>
-        </tr>
-
-        </tbody>
-      </table>
-    </p-overlayPanel>
-  </div>
   </div>
   </div>
 
