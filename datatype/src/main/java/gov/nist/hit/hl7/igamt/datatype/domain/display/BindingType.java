@@ -11,31 +11,10 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
-import java.util.List;
-
-import gov.nist.diff.annotation.DeltaField;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
-import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-
 /**
- * @author jungyubw
+ * @author Abdelghani El Ouakili
  *
  */
-public class DisplayValuesetBinding extends ValuesetBinding {
-
-  
-  private List<DisplayElement> valueSetsDisplay;
-
-  public List<DisplayElement> getValueSetsDisplay() {
-    return valueSetsDisplay;
-  }
-
-  public void setValueSetsDisplay(List<DisplayElement> valueSetsDisplay) {
-    this.valueSetsDisplay = valueSetsDisplay;
-  }
-
-
-  
-
+public enum BindingType {
+VS, SC, NA
 }

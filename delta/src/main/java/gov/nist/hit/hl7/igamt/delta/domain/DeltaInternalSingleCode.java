@@ -1,13 +1,14 @@
 package gov.nist.hit.hl7.igamt.delta.domain;
 
 import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 
 import java.util.List;
 
 public class DeltaInternalSingleCode {
 
     private DeltaAction action;
-    private DeltaNode<String> valueSetId;
+    private DeltaNode<DisplayElement> valueSetDisplay;
     private DeltaNode<String> code;
     private DeltaNode<String> codeSystem;
 
@@ -19,13 +20,13 @@ public class DeltaInternalSingleCode {
         this.action = action;
     }
 
-    public DeltaNode<String> getValueSetId() {
-        return valueSetId;
+    public DeltaNode<DisplayElement> getValueSetDisplay() {
+        return valueSetDisplay;
     }
 
-    public void setValueSetId(DeltaNode<String> valueSetId) {
-        this.crunchAction(valueSetId.getAction());
-        this.valueSetId = valueSetId;
+    public void setValueSetDisplay(DeltaNode<DisplayElement> valueSetDisplay) {
+        this.crunchAction(valueSetDisplay.getAction());
+        this.valueSetDisplay = valueSetDisplay;
     }
 
     public DeltaNode<String> getCode() {

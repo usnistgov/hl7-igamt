@@ -33,9 +33,9 @@
 
   </ng-template>
 
-  <app-delta-tree *ngIf="delta.delta.length > 0" [compare]="delta" [columns]="columns"></app-delta-tree>
+  <app-delta-tree *ngIf="delta.delta.length > 0 || delta.conformanceStatements?.length>0" [compare]="delta" [columns]="columns"></app-delta-tree>
   <div style="padding: 50px; text-align: center;">
-    <span style="color: gray;" *ngIf="delta.delta.length === 0">No changes were detected</span>
+    <span style="color: gray;" *ngIf="delta.delta.length === 0 && !(delta.conformanceStatements?.length>0)">No changes were detected</span>
   </div>
 </ng-container>
 
