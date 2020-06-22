@@ -10,6 +10,7 @@ import { IgService } from '../../../ig/services/ig.service';
 import { IConnectingInfo } from '../../models/config.class';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { ISelectedIds } from '../select-resource-ids/select-resource-ids.component';
+import {SelectItem} from 'primeng/api';
 
 @Component({
   selector: 'app-export-tool',
@@ -39,6 +40,8 @@ export class ExportToolComponent implements OnInit {
   selectedDomain: string;
   redirectUrl: string;
   errors: any = null;
+
+  severities: SelectItem[];
   constructor(
     private http: HttpClient,
     public dialogRef: MatDialogRef<ExportToolComponent>,
@@ -51,6 +54,13 @@ export class ExportToolComponent implements OnInit {
     this.reports = null;
     this.errorCounts = null;
     this.step = 0;
+    this.severities = [
+      { label: 'All Severities', value: null },
+      { label: 'FATAL', value: 'FATAL' },
+      { label: 'ERROR', value: 'ERROR' },
+      { label: 'WARNING', value: 'WARNING' },
+      { label: 'INFO', value: 'INFO' },
+    ];
   }
   cancel() {
     this.dialogRef.close();
