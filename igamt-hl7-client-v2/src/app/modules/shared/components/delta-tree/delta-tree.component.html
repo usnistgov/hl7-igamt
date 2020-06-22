@@ -1,4 +1,4 @@
-<p-treeTable [value]="compare.delta" [columns]="selectedColumns"  [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy">
+<p-treeTable [value]="compare.delta" [columns]="selectedColumns"  [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy" *ngIf="compare.delta.length>0">
   <ng-template pTemplate="caption">
     <div style="text-align:left">
       <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
@@ -67,7 +67,7 @@
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.USAGE">
             <td [class]="cellClass(rowData.usage.action)">
-              <ng-container *ngTemplateOutlet="diff; context : { $implicit: rowData.usage }"></ng-container>
+              <ng-container *ngTemplateOutlet="usage; context : { $implicit: rowData.usage, predicate: rowData.predicate }"></ng-container>
             </td>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.CARDINALITY">
@@ -144,10 +144,22 @@
             </td>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.VALUESET">
-            <td [class]="cellClass(rowData.valuesetBinding?.action)">
+            <td>
+              <div *ngIf="rowData.internalSingleCode&&rowData.internalSingleCode.action=='ADDED' ">
+                <ng-container *ngTemplateOutlet="displaySingleCode; context : { $implicit: rowData.internalSingleCode, prop: 'current' }">
+                </ng-container>
+              </div>
 
-        <ng-container *ngTemplateOutlet="vsBindingDelta; context : { $implicit: rowData.valuesetBinding }"></ng-container>
+              <ng-container *ngIf="rowData.valuesetBinding && rowData.valuesetBinding.action!=='UNCHANGED'">
 
+              <ng-container *ngTemplateOutlet="vsBindingDelta; context : { $implicit: rowData.valuesetBinding }"></ng-container>
+              </ng-container>
+
+
+              <div *ngIf="rowData.internalSingleCode&&rowData.internalSingleCode.action =='REMOVED'">
+                <ng-container *ngTemplateOutlet="displaySingleCode; context : { $implicit: rowData.internalSingleCode, prop: 'previous' }">
+                </ng-container>
+              </div>
             </td>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.CONSTANTVALUE">
@@ -168,7 +180,7 @@
     </app-delta-column>
   </ng-container>
 </ng-template>
-<ng-template #reference let-reference >
+<ng-template #reference let-reference>
   <ng-container *ngIf="reference">
     <app-delta-column [action]="referenceAction(reference)"
       [currentValue]="{
@@ -190,36 +202,35 @@
   </ng-container>
 </ng-template>
 <ng-template #vsBindingDelta let-vsDelta>
-  <table class="table table-striped table-sm table-bordered delta-current" style="text-align: center; margin-bottom: 5px;">
+
+  <table class="table table-striped table-sm table-bordered delta-current" style="text-align: center; margin-bottom: 5px;" *ngIf="vsDelta.valueSets?.current">
     <tr>
-      <td [attr.rowspan]="vsDelta.valueSets?.current.length + 1" style="width: 10px;" class="binding-vs">
-      </td>
-      <td style="vertical-align: middle; width: 25px;">
+      <td style="vertical-align: middle; width: 25px;" pTooltip="Value Set binding" tooltipPosition="top">
+        <strong> VS </strong>
       </td>
       <td pTooltip="Binding Strength" tooltipPosition="top">
         <strong>{{vsDelta.strength?.current}}</strong>
       </td>
       <td pTooltip="Binding Locations" tooltipPosition="top">
-        <strong>{{vsDelta.bindingLocation?.current.length > 0 ? (vsDelta.bindingLocation?.current | json) : '.'}}</strong>
+        <strong>{{vsDelta.bindingLocation?.current.length > 0 ? (vsDelta?.bindingLocation?.current | json) : '.'}}</strong>
       </td>
     </tr>
     <tr *ngFor="let item of vsDelta.valueSets?.current">
-      <td colspan="3">
+      <td colspan="2">
         <app-display-section [element]="item" [hideDescription]="true" ></app-display-section>
       </td>
     </tr>
   </table>
-  <table class="table table-striped table-sm table-bordered delta-previous" style="text-align: center; margin-bottom: 0;">
+  <table class="table table-striped table-sm table-bordered delta-previous" style="text-align: center; margin-bottom: 0;" *ngIf="vsDelta.valueSets?.previous">
     <tr>
-      <td [attr.rowspan]="vsDelta.valueSets?.previous.length + 1" style="width: 10px;" class="binding-vs">
-      </td>
-      <td style="vertical-align: middle; width: 25px;">
+      <td style="vertical-align: middle; width: 25px;" pTooltip="Value Set binding" tooltipPosition="top">
+        <strong> VS </strong>
       </td>
       <td pTooltip="Binding Strength" tooltipPosition="top">
         <strong>{{vsDelta.strength?.previous}}</strong>
       </td>
       <td pTooltip="Binding Locations" tooltipPosition="top">
-        <strong>{{vsDelta.bindingLocation?.previous.length > 0 ? (vsDelta.bindingLocation?.previous | json) : '.'}}</strong>
+        <strong>{{vsDelta.bindingLocation?.previous.length > 0 ? (vsDelta?.bindingLocation?.previous | json) : '.'}}</strong>
       </td>
     </tr>
     <tr *ngFor="let item of vsDelta.valueSets?.previous">
@@ -229,4 +240,117 @@
     </tr>
   </table>
 </ng-template>
+
+
+<ng-template #displaySingleCode let-singleCode let-prop="prop">
+  <table class="table table-striped table-sm table-bordered" [ngClass]="{'delta-previous': prop==='previous', 'delta-current': prop ==='current'}"  style="text-align: center;  margin-bottom: 0;">
+    <tr>
+      <td style="vertical-align: middle; width: 25px;" pTooltip="Single code binding" tooltipPosition="top">
+        <strong> SC </strong>
+      </td>
+      <td pTooltip="Code" tooltipPosition="top">
+        <strong>{{singleCode.code[prop]}}</strong>
+      </td>
+      <td pTooltip="Code System" tooltipPosition="top">
+        <strong>{{singleCode.codeSystem[prop]}}</strong>
+      </td>
+    </tr>
+    <tr *ngIf="singleCode.valueSetDisplay[prop]">
+      <td colspan="3">
+        <app-display-section [element]="singleCode.valueSetDisplay[prop]" [hideDescription]="true" ></app-display-section>
+      </td>
+    </tr>
+  </table>
+</ng-template>
+
+
+<ng-template #usage let-usage let-styleCurrent="styleCurrent" let-stylePrevious="stylePrevious" let-styleUnchanged="styleUnchanged" let-predicate="predicate">
+  <div style="display: flex; flex-direction: row; justify-content: space-between">
+    <div style="width: 100%">
+      <ng-container *ngIf="usage">
+    <app-delta-column [action]="usage.action" [currentValue]="usage.current" [previousValue]="usage.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
+      <ng-template #default let-value>
+        {{value}}
+      </ng-template>
+    </app-delta-column>
+  </ng-container>
+    </div>
+  <div>
+  <div *ngIf="predicate" style="display: flex; flex-direction: column; justify-content: center;   height: 100%;
+    padding: 2px;">
+    <button class="btn btn-sm btn-secondary" #tx (click)="selectPredicate($event,predicate,op3)" pTooltip="Compare Predicates" tooltipPosition="top">
+      <i class="fa fa-eye"></i>
+    </button>
+    <p-overlayPanel #op3 appendTo="tx" [dismissable]="false" [showCloseIcon]="true">
+      <table class="table table-striped table-sm table-bordered"  style="text-align: center;  margin-bottom: 0;">
+        <thead>
+        <tr>
+          <td width="60px"><strong>True Usage</strong></td>
+          <td width="60px"><strong>False Usage</strong></td>
+          <td><strong>Description</strong></td>
+        </tr>
+        </thead>
+        <tbody>
+        <tr [ngClass]="{'delta-added': predicate.action === 'ADDED', 'delta-deleted': predicate.action === 'DELETED'}">
+          <td width="60px">
+            <app-delta-column [action]="predicate.trueUsage.action" [currentValue]="predicate.trueUsage.current" [previousValue]="predicate.trueUsage.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
+              <ng-template #default let-value>
+                {{value}}
+              </ng-template>
+            </app-delta-column>
+          </td>
+          <td  width="60px">
+            <app-delta-column [action]="predicate.falseUsage.action" [currentValue]="predicate.falseUsage.current" [previousValue]="predicate.falseUsage.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
+              <ng-template #default let-value>
+                {{value}}
+              </ng-template>
+            </app-delta-column>
+          </td>
+          <td>
+            <app-delta-column [action]="predicate.description.action" [currentValue]="predicate.description.current" [previousValue]="predicate.description.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
+              <ng-template #default let-value>
+                {{value}}
+              </ng-template>
+            </app-delta-column>
+          </td>
+        </tr>
+
+        </tbody>
+      </table>
+    </p-overlayPanel>
+  </div>
+  </div>
+  </div>
+
+</ng-template>
+<div *ngIf="compare.conformanceStatements?.length>0" style="margin-top: 10px;">
+  <h5> Conformance Statements </h5>
+  <p-table [value]="compare.conformanceStatements">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>ID</th>
+        <th>Description</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-cf>
+      <tr [ngClass]="{'delta-added': cf.action === 'ADDED', 'delta-deleted': cf.action === 'DELETED'}">
+        <td>
+          <app-delta-column [action]="cf.identifier.action" [currentValue]="cf.identifier.current" [previousValue]="cf.identifier.previous" styleClassCurrent="delta-current" styleClassPrevious="delta-current">
+            <ng-template #default let-value>
+              {{value}}
+            </ng-template>
+          </app-delta-column>
+        </td>
+        <td>
+          <app-delta-column [action]="cf.description.action" [currentValue]="cf.description.current" [previousValue]="cf.description.previous" styleClassCurrent="delta-current" styleClassPrevious="delta-previous">
+            <ng-template #default let-value>
+              {{value}}
+            </ng-template>
+          </app-delta-column>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
+
 
