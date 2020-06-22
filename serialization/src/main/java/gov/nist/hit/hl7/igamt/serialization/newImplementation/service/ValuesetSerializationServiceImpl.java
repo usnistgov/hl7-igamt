@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 import gov.nist.hit.hl7.igamt.delta.domain.CodeDelta;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +42,7 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 
 	@Override
 	public Element serializeValueSet(ValuesetDataModel valuesetDataModel, int level, int position,
-			ValueSetExportConfiguration valueSetExportConfiguration) throws ResourceSerializationException {
+			ValueSetExportConfiguration valueSetExportConfiguration, String deltaMode) throws ResourceSerializationException {
 		try {
 			Element valueSetElement = igDataModelSerializationService.serializeResource(valuesetDataModel.getModel(),
 					Type.VALUESET, position, valueSetExportConfiguration);
@@ -117,7 +118,7 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 //	      valueSetElement.appendChild(codeSystemsElement);
 
 			// Calculate segment delta if the segment has an origin
-			if (valueSet.getOrigin() != null && valueSetExportConfiguration.isDeltaMode()) {
+			if (deltaMode != null && valueSet.getOrigin() != null && valueSetExportConfiguration.isDeltaMode()) {
 				ValuesetDelta valuesetDelta = deltaService.valuesetDelta(valueSet);
 
 				List<CodeDelta> codeDeltaChanged = valuesetDelta.getCodes().stream()
@@ -128,6 +129,12 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 					Element deltaElement = this.serializeDelta(codeDeltaChanged,
 							valueSetExportConfiguration.getDeltaConfig());
 					if (deltaElement != null) {
+						List<Element> addedRemovedElements = this.getAddedRemovedElements(codeDeltaChanged);
+						if(addedRemovedElements != null) {
+							for (Element el : addedRemovedElements) {
+								codesElement.appendChild(el);
+							}
+						}
 						valueSetElement.appendChild(deltaElement);
 					}
 				}
@@ -158,11 +165,35 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 		}
 	}
 
+	private List<Element> getAddedRemovedElements(List<CodeDelta> codeDeltaChanged) {
+		if (codeDeltaChanged.size() > 0) {
+			List<Element> elements = new ArrayList<Element>();
+			for (CodeDelta codeDelta : codeDeltaChanged) {
+				if(codeDelta.getAction().equals(DeltaAction.DELETED)) {
+					Element codeRefElement = new Element("Code");
+					codeRefElement.addAttribute(
+							new Attribute("value", codeDelta.getValue().getCurrent() != null ? codeDelta.getValue().getCurrent() : ""));
+					codeRefElement.addAttribute(new Attribute("codeSystem", codeDelta.getCodeSystem().getCurrent()));
+					codeRefElement.addAttribute(new Attribute("usage",
+							codeDelta.getUsage().getCurrent() != null ? codeDelta.getUsage().getCurrent().name() : ""));
+					codeRefElement.addAttribute(new Attribute("description",
+							codeDelta.getDescription().getCurrent() != null ? codeDelta.getDescription().getCurrent() : ""));
+					codeRefElement.addAttribute(new Attribute("comment",
+							codeDelta.getComments().getCurrent() != null ? codeDelta.getComments().getCurrent() : ""));
+					elements.add(codeRefElement);
+				}
+
+			}
+			return  elements;
+
+		}
+		return null;
+	}
+
 	private Element serializeDelta(List<CodeDelta> codeDeltaChanged, DeltaConfiguration deltaConfiguration) {
 		if (codeDeltaChanged.size() > 0) {
 			Element changesElement = new Element("Changes");
 			changesElement.addAttribute(new Attribute("mode", deltaConfiguration.getMode().name()));
-
 
 //		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
 			changesElement.addAttribute(
@@ -184,44 +215,92 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 
 	private void setChangedElements(Element element, CodeDelta codeDelta) {
 		if (codeDelta != null) {
-			if (codeDelta.getUsage() != null
-					&& !codeDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", "CODE"));
-				changedElement.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
-				changedElement.addAttribute(new Attribute("action", codeDelta.getUsage().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
-				element.appendChild(changedElement);
-			}
+			if(codeDelta.getAction().equals(DeltaAction.DELETED) || codeDelta.getAction().equals(DeltaAction.ADDED)){
 
-			if (codeDelta.getDescription() != null
-					&& !codeDelta.getDescription().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", "CODE"));
-				changedElement.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
-				changedElement.addAttribute(new Attribute("action", codeDelta.getDescription().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.DESCRIPTION.name()));
-				element.appendChild(changedElement);
-			}
+				Element addedValue = new Element("Change");
+				addedValue.addAttribute(new Attribute("type", "CODE"));
+				addedValue.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
+				addedValue.addAttribute(new Attribute("action", codeDelta.getAction().name()));
+				addedValue.addAttribute(new Attribute("property", PropertyType.VALUE.name()));
+				element.appendChild(addedValue);
 
-			if (codeDelta.getCodeSystem() != null
-					&& !codeDelta.getCodeSystem().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", "CODE"));
-				changedElement.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
-				changedElement.addAttribute(new Attribute("action", codeDelta.getCodeSystem().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.CODESYSTEM.name()));
-				element.appendChild(changedElement);
-			}
+				Element addedUsage = new Element("Change");
+				addedUsage.addAttribute(new Attribute("type", "CODE"));
+				addedUsage.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
+				addedUsage.addAttribute(new Attribute("action", codeDelta.getAction().name()));
+				addedUsage.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
+				element.appendChild(addedUsage);
 
-			if (codeDelta.getComments() != null
-					&& !codeDelta.getComments().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", "CODE"));
-				changedElement.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
-				changedElement.addAttribute(new Attribute("action", codeDelta.getComments().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.COMMENT.name()));
-				element.appendChild(changedElement);
+				Element addedDescription = new Element("Change");
+				addedDescription.addAttribute(new Attribute("type", "CODE"));
+				addedDescription.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
+				addedDescription.addAttribute(new Attribute("action", codeDelta.getAction().name()));
+				addedDescription.addAttribute(new Attribute("property", PropertyType.DESCRIPTION.name()));
+				element.appendChild(addedDescription);
+
+				Element addedCodeSystem = new Element("Change");
+				addedCodeSystem.addAttribute(new Attribute("type", "CODE"));
+				addedCodeSystem.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
+				addedCodeSystem.addAttribute(new Attribute("action", codeDelta.getAction().name()));
+				addedCodeSystem.addAttribute(new Attribute("property", PropertyType.CODESYSTEM.name()));
+				element.appendChild(addedCodeSystem);
+
+				Element addedComment = new Element("Change");
+				addedComment.addAttribute(new Attribute("type", "CODE"));
+				addedComment.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
+				addedComment.addAttribute(new Attribute("action", codeDelta.getAction().name()));
+				addedComment.addAttribute(new Attribute("property", PropertyType.COMMENT.name()));
+				element.appendChild(addedComment);
+
+			} else {
+				if (codeDelta.getUsage() != null
+						&& !codeDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", "CODE"));
+					changedElement.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
+					changedElement.addAttribute(new Attribute("action", codeDelta.getUsage().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
+					changedElement.addAttribute(new Attribute("oldValue", codeDelta.getUsage().getPrevious().name()));
+
+					element.appendChild(changedElement);
+				}
+
+				if (codeDelta.getDescription() != null
+						&& !codeDelta.getDescription().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", "CODE"));
+					changedElement.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
+					changedElement.addAttribute(new Attribute("action", codeDelta.getDescription().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.DESCRIPTION.name()));
+					changedElement.addAttribute(new Attribute("oldValue", codeDelta.getDescription().getPrevious()));
+
+					element.appendChild(changedElement);
+				}
+
+				if (codeDelta.getCodeSystem() != null
+						&& !codeDelta.getCodeSystem().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", "CODE"));
+					changedElement.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
+					changedElement.addAttribute(new Attribute("action", codeDelta.getCodeSystem().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.CODESYSTEM.name()));
+					changedElement.addAttribute(new Attribute("oldValue", codeDelta.getCodeSystem().getPrevious()));
+
+					element.appendChild(changedElement);
+				}
+
+				if (codeDelta.getComments() != null
+						&& !codeDelta.getComments().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", "CODE"));
+					changedElement.addAttribute(new Attribute("value", codeDelta.getValue().getCurrent()));
+					changedElement.addAttribute(new Attribute("action", codeDelta.getComments().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.COMMENT.name()));
+					changedElement.addAttribute(new Attribute("oldValue", codeDelta.getComments().getPrevious()));
+
+					element.appendChild(changedElement);
+				}
+
 			}
 
 

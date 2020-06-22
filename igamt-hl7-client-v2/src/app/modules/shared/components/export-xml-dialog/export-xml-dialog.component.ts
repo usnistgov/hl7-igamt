@@ -3,6 +3,7 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {IDisplayElement} from '../../models/display-element.interface';
 import {ISelectedIds} from '../select-resource-ids/select-resource-ids.component';
+import {SelectItem} from 'primeng/api';
 
 @Component({
   selector: 'app-export-xml-dialog',
@@ -24,11 +25,20 @@ export class ExportXmlDialogComponent implements OnInit {
   dtVerificationResultTableForUser: any[] = [];
   vsVerificationResultTableForUser: any[] = [];
   ids: ISelectedIds = {conformanceProfilesId: [], compositeProfilesId: []};
+  severities: SelectItem[];
+
   constructor(private http: HttpClient, public dialogRef: MatDialogRef<ExportXmlDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IExportXmlDialogData) {
 
   }
   ngOnInit() {
+    this.severities = [
+      { label: 'All Severities', value: null },
+      { label: 'FATAL', value: 'FATAL' },
+      { label: 'ERROR', value: 'ERROR' },
+      { label: 'WARNING', value: 'WARNING' },
+      { label: 'INFO', value: 'INFO' },
+    ];
     this.reports = null;
     this.errorCounts = null;
     this.step = 0;

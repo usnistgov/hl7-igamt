@@ -60,6 +60,10 @@
             <p-tabPanel header="ValueSet">
               <app-value-set-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.valueSetExportConfiguration" [displayColumns]="true" (detectChange)="change($event)" ></app-value-set-export-configuration>
             </p-tabPanel>
+            <p-tabPanel header="Delta">
+                <app-delta-export-configuration [active]="currentConfiguration.deltaMode" [config]="currentConfiguration.deltaConfig" (updateDelta)="updateDelta($event)"></app-delta-export-configuration>
+              </p-tabPanel>
+
           </p-tabView>
           <p-tabView *ngIf="type === 'DATATYPELIBRARY'" [styleClass]="'configuration-tab-view'" >
               <p-tabPanel header="Datatype Library Datatypes" [selected]="true">

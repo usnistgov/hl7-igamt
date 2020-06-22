@@ -26,7 +26,7 @@
     <xsl:for-each select="SegmentRef|Group">
         <xsl:variable name="changedPosition" select="./@position" />
         <xsl:choose>
-            <xsl:when test="not($changes/@mode) or $changes/@mode = 'HIGHLIGHT'">
+            <xsl:when test="not($changes/@mode) or $changes/@mode = 'HIGHLIGHT' or $changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
                 <xsl:if test="name(.)='SegmentRef'">
 
                     <xsl:choose>
@@ -36,6 +36,8 @@
                                 <xsl:with-param name="updatedColor" select="$changes/@updatedColor" />
                                 <xsl:with-param name="addedColor" select="$changes/@addedColor" />
                                 <xsl:with-param name="deletedColor" select="$changes/@deletedColor" />
+                                <xsl:with-param name="mode" select="$changes/@mode" />
+
                             </xsl:apply-templates>
                         </xsl:when>
                         <xsl:otherwise>
@@ -44,6 +46,7 @@
                                 <xsl:with-param name="updatedColor" select="$changes/@updatedColor" />
                                 <xsl:with-param name="addedColor" select="$changes/@addedColor" />
                                 <xsl:with-param name="deletedColor" select="$changes/@deletedColor" />
+                                <xsl:with-param name="mode" select="$changes/@mode" />
                             </xsl:apply-templates>
                         </xsl:otherwise>
                     </xsl:choose>
@@ -66,6 +69,8 @@
                                     <xsl:with-param name="updatedColor" select="$changes/@updatedColor" />
                                     <xsl:with-param name="addedColor" select="$changes/@addedColor" />
                                     <xsl:with-param name="deletedColor" select="$changes/@deletedColor" />
+                                    <xsl:with-param name="mode" select="$changes/@mode" />
+
                                 </xsl:apply-templates>
                             </xsl:when>
                             <xsl:otherwise>
@@ -74,6 +79,7 @@
                                     <xsl:with-param name="updatedColor" select="$changes/@updatedColor" />
                                     <xsl:with-param name="addedColor" select="$changes/@addedColor" />
                                     <xsl:with-param name="deletedColor" select="$changes/@deletedColor" />
+                                    <xsl:with-param name="mode" select="$changes/@mode" />
                                 </xsl:apply-templates>
                             </xsl:otherwise>
                         </xsl:choose>
