@@ -11,7 +11,42 @@
             <xsl:with-param name="sub-path2" select="'#datatypes'"/>
         </xsl:call-template>
         <div>
-            Datatypes
+            <xsl:text disable-output-escaping="yes">&amp;</xsl:text>nbsp;
+
+            <xsl:for-each select="Document/Section">
+                <xsl:choose>
+                    <xsl:when test="@type='PROFILE'">
+                        <xsl:variable name="sectionPos" select="@position" />
+                        <xsl:for-each select="Section">
+                            <xsl:choose>
+                                <xsl:when test="@type='DATATYPEREGISTRY'">
+                                    <xsl:variable name="segSectionPos" select="@position" />
+                                    <h4>
+                                        <xsl:value-of select="$sectionPos" /> . <xsl:value-of select="$segSectionPos" /> Data Types
+                                    </h4>
+                                    <ul>
+                                        <xsl:for-each select="Section">
+                                            <xsl:sort select="@position" data-type="number"></xsl:sort>
+                                            <li>
+                                                <xsl:element name="a">
+
+                                                    <xsl:attribute name="href">
+                                                        <xsl:value-of select="concat('#datatype-', Datatype/@id)"/>
+                                                    </xsl:attribute>
+                                                    <xsl:value-of select="concat(./@title, ' - ', Datatype/@description)" />
+                                                </xsl:element>
+                                            </li>
+
+                                        </xsl:for-each>
+                                    </ul>
+
+                                </xsl:when>
+                            </xsl:choose>
+                        </xsl:for-each>
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:for-each>
         </div>
+
     </xsl:template>
 </xsl:stylesheet>

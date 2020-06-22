@@ -5,8 +5,11 @@
     <xsl:import href="/templates/fhir-templates/headbar.xsl"/>
     <xsl:import href="/templates/fhir-templates/home.xsl"/>
     <xsl:import href="/templates/fhir-templates/vocabulary/vocabulary.xsl"/>
+    <xsl:import href="/templates/fhir-templates/vocabulary/table.xsl"/>
     <xsl:import href="/templates/fhir-templates/datatypes/datatypes.xsl"/>
+    <xsl:import href="/templates/fhir-templates/datatypes/datatype.xsl"/>
     <xsl:import href="/templates/fhir-templates/segments/segments.xsl"/>
+    <xsl:import href="/templates/fhir-templates/segments/segment.xsl"/>
     <xsl:import href="/templates/fhir-templates/conformanceProfiles/conformanceProfiles.xsl"/>
     <xsl:import href="/templates/fhir-templates/toc/toc.xsl"/>
 
@@ -34,6 +37,68 @@
         <div class="page" id="toc">
             <xsl:call-template name="toc"/>
         </div>
+
+
+        <xsl:for-each select="Document/Section[@type='PROFILE']/Section">
+            <xsl:variable name="sec" select="./@type" />
+
+            <xsl:choose>
+                <xsl:when test="$sec = 'VALUESETREGISTRY'">
+                    <xsl:for-each select="Section">
+
+                        <xsl:element name="div">
+                            <xsl:attribute name="class">
+                                <xsl:value-of select="'page'" />
+                            </xsl:attribute>
+                            <xsl:attribute name="id">
+                                <xsl:value-of select="concat('table-',./Valueset/@id)" />
+                            </xsl:attribute>
+                            <xsl:call-template name="table">
+                                <xsl:with-param name="valueset" select="./Valueset"/>
+                            </xsl:call-template>
+                        </xsl:element>
+
+                    </xsl:for-each>
+                </xsl:when>
+                <xsl:when test="$sec = 'SEGMENTREGISTRY'">
+                    <xsl:for-each select="Section">
+
+                        <xsl:element name="div">
+                            <xsl:attribute name="class">
+                                <xsl:value-of select="'page'" />
+                            </xsl:attribute>
+                            <xsl:attribute name="id">
+                                <xsl:value-of select="concat('segment-',./Segment/@id)" />
+                            </xsl:attribute>
+                            <xsl:call-template name="segmentF">
+                                <xsl:with-param name="segment" select="./Segment"/>
+                            </xsl:call-template>
+                        </xsl:element>
+
+                    </xsl:for-each>
+                </xsl:when>
+                <xsl:when test="$sec = 'DATATYPEREGISTRY'">
+                    <xsl:for-each select="Section">
+
+                        <xsl:element name="div">
+                            <xsl:attribute name="class">
+                                <xsl:value-of select="'page'" />
+                            </xsl:attribute>
+                            <xsl:attribute name="id">
+                                <xsl:value-of select="concat('datatype-',./Datatype/@id)" />
+                            </xsl:attribute>
+                            <xsl:call-template name="datatypeF">
+                                <xsl:with-param name="datatype" select="./Datatype"/>
+                                <xsl:with-param name="title" select="./@title"/>
+                            </xsl:call-template>
+                        </xsl:element>
+
+                    </xsl:for-each>
+                </xsl:when>
+            </xsl:choose>
+
+        </xsl:for-each>
+
         <xsl:for-each select="Document/Section">
             <xsl:sort select="@position" data-type="number"></xsl:sort>
             <xsl:element name="{concat('h', @h)}">

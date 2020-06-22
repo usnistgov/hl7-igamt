@@ -40,6 +40,24 @@
 
             </xsl:if>
 
+            <xsl:if test="$sub-header3">
+                <div class="pa-5">
+                    <span>></span>
+                </div>
+                <xsl:element name="a">
+                    <xsl:attribute name="href">
+                        <xsl:value-of select="$sub-path3"/>
+                    </xsl:attribute>
+                    <xsl:attribute name="class">
+                        <xsl:value-of select="'pa-5 subtitle'"/>
+                    </xsl:attribute>
+                    <b>
+                        <xsl:value-of select="$sub-header3"/>
+                    </b>
+                </xsl:element>
+
+            </xsl:if>
+
         </div>
 
     </xsl:template>

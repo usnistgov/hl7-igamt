@@ -87,6 +87,65 @@
                 padding-left: 60px;
             }
 
+            .resource-title {
+                margin: 0 0 0.4em 0;
+                font-weight: 500;
+                line-height: 20px;
+                color: #000000;
+                text-rendering: optimizelegibility;
+                font-size: 16.099999999999998px;
+            }
+            th.green {
+                background-color: #00DD00;
+                color: white;
+            }
+            th.red {
+                background-color: #EE0000;
+                color: white;
+            },
+            .centered {
+                text-align: center;
+            }
+            .element-table{
+                font-size: 12px;
+                font-family: verdana;
+                vertical-align: top;
+                width: 100%;
+            }
+            .element-header {
+                border: 1px #F0F0F0 solid;
+                font-size: 11px;
+                font-family: verdana;
+                vertical-align: top;
+            }
+            .element-header-column {
+                vertical-align: top;
+                text-align: left;
+                background-color: white;
+                padding: 0px 4px 0px 4px;
+            }
+
+            table.element-table tr:nth-child(odd) td{
+                background-color: rgb(238, 238, 238);
+                vertical-align: top;
+                border-width: 0px;
+                border-style: initial;
+                border-color: initial;
+                border-image: initial;
+                padding: 0px;
+            }
+            table.element-table tr:nth-child(even) td{
+                background-color: rgb(255, 255, 255);
+                vertical-align: top;
+                border-width: 0px;
+                border-style: initial;
+                border-color: initial;
+                border-image: initial;
+                padding: 0px;
+            }
+
+
+
         </xsl:text>
     </xsl:template>
 

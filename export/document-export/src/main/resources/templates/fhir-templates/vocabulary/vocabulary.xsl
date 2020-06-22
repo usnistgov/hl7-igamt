@@ -29,7 +29,14 @@
                                         <xsl:for-each select="Section">
                                             <xsl:sort select="@position" data-type="number"></xsl:sort>
                                             <li>
-                                                <xsl:value-of select="Valueset/@bindingIdentifier" />
+                                                <xsl:element name="a">
+
+                                                    <xsl:attribute name="href">
+                                                        <xsl:value-of select="concat('#table-', Valueset/@id)"/>
+                                                    </xsl:attribute>
+                                                    <xsl:value-of select="concat(Valueset/@bindingIdentifier, ' - ', Valueset/@title)" />
+                                                </xsl:element>
+
                                             </li>
 
                                         </xsl:for-each>

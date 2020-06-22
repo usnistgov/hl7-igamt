@@ -135,7 +135,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 	@Override
 	public Datatype save(Datatype datatype) {
 		// datatype.setId(StringUtil.updateVersion(datatype.getId()));
-		datatype = datatypeRepository.save(datatype);
+//		datatype = datatypeRepository.save(datatype);
 		return datatype;
 	}
 

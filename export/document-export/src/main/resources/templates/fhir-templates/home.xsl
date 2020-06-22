@@ -53,6 +53,53 @@
                             </div>
                         </div>
                     </div>
+
+                    <div>
+                        <b>Level 3 </b> Building Blocks
+                        <div class="home-row-container row ">
+                            <div class="col-4 home-column1">
+                                <a>
+                                    <span class="level-span">Technical</span>
+                                </a>
+                            </div>
+                            <div class="col-8 home-column2">
+                                <a href="#datatypes">
+                                    <span class="level-span">Data Types</span>
+                                </a> ->
+                                <a href="#segments">
+                                    <span class="level-span"> Segments</span>
+                                </a>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <b>Level 4 </b> Domains
+                        <div class="home-row-container row ">
+                            <div class="col-4 home-column1">
+
+                            </div>
+                            <div class="col-8 home-column2">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <b>Level 5 </b> Conformance
+                        <div class="home-row-container row ">
+                            <div class="col-4 home-column1">
+                                <a href="#conformanceprofile">
+                                    <span class="level-span">Conformance</span>
+                                </a>
+                            </div>
+                            <div class="col-8 home-column2">
+                                <a href="#conformanceprofile">
+                                    <span class="level-span">Conformance Profiles</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
