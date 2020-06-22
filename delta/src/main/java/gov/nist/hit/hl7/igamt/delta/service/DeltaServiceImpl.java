@@ -273,9 +273,7 @@ public class DeltaServiceImpl implements DeltaService {
       ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
 
       List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
-
       return structure;
-
     }
     return null;
   }
