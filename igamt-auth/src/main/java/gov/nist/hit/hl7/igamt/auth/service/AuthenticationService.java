@@ -49,4 +49,7 @@ public interface AuthenticationService {
   public UserListResponse getAllUsers(HttpServletRequest req);
   public UserResponse getCurrentUser(String username, HttpServletRequest req);
 
+  public ConnectionResponseMessage<UserResponse> update(RegistrationRequest user, HttpServletRequest req)
+      throws AuthenticationException;
+
 }

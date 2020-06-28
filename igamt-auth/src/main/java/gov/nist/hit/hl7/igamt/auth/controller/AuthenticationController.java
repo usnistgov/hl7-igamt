@@ -113,6 +113,21 @@ public class AuthenticationController {
     return authService.getCurrentUser(username, req);
   }
 
+  @RequestMapping(value = "/api/user", method = RequestMethod.POST)
+  public ConnectionResponseMessage<UserResponse> update(@RequestBody RegistrationRequest user, HttpServletRequest req)
+      throws AuthenticationException {
+    try {
+
+      ConnectionResponseMessage<UserResponse> response = authService.update(user, req);
+      return response;
+
+    } catch (AuthenticationException e) {
+      throw e;
+    } catch (Exception e) {
+      throw e;
+    }
+  }
+
   @RequestMapping(value = "api/password/reset", method = RequestMethod.POST)
   @ResponseBody
   public ConnectionResponseMessage<PasswordResetTokenResponse> resetPaswordRequest(

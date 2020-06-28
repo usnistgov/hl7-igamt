@@ -206,7 +206,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
   }
 
-
   @Override
   public ConnectionResponseMessage<PasswordResetTokenResponse> requestPasswordChange(String email)
       throws AuthenticationException {
@@ -338,8 +337,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
   }
 
-@Override
-public UserListResponse getAllUsers(HttpServletRequest req) {
+  @Override
+  public UserListResponse getAllUsers(HttpServletRequest req) {
 /*
 	RestTemplate restTemplate = new RestTemplate();
 	UserListResponse obj = restTemplate.getForObject(env.getProperty(AUTH_URL) + "/api/tool/users", UserListResponse.class);
@@ -363,10 +362,10 @@ public UserListResponse getAllUsers(HttpServletRequest req) {
         new HttpEntity<String>(headers),
         UserListResponse.class);
     return response.getBody();
-}
+  }
 
-@Override
-public UserResponse getCurrentUser(String username, HttpServletRequest req) {
+  @Override
+  public UserResponse getCurrentUser(String username, HttpServletRequest req) {
     Cookie cookies[] = req.getCookies();
 
     HttpHeaders headers = new HttpHeaders();
@@ -386,7 +385,51 @@ public UserResponse getCurrentUser(String username, HttpServletRequest req) {
             new HttpEntity<String>(headers),
             UserResponse.class);
     return response.getBody();
-}
+  }
 
+  @Override
+  public ConnectionResponseMessage<UserResponse> update(RegistrationRequest user, HttpServletRequest req)
+      throws AuthenticationException {
+
+    try {
+      Cookie cookies[] = req.getCookies();
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-type", "application/json");
+
+      if (cookies != null) {
+          for (Cookie cookie : cookies) {
+              if (cookie.getName().equals("authCookie")) {
+                  headers.add("Cookie", "authCookie=" + cookie.getValue());
+              }
+          }
+      }
+
+      RestTemplate restTemplate = new RestTemplate();
+      HttpEntity<RegistrationRequest> request = new HttpEntity<>(user);
+
+      ResponseEntity<ConnectionResponseMessage<UserResponse>> response =
+          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/user",
+              HttpMethod.POST,
+              request,
+              new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {});
+
+      return response.getBody();
+    } catch (HttpClientErrorException e) {
+      String message = e.getResponseBodyAsString();
+
+      throw new AuthenticationException(getMessageString(message));
+    }
+
+
+    catch (HttpServerErrorException e) {
+      String message = e.getResponseBodyAsString();
+
+      throw new AuthenticationException(getMessageString(message));
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new AuthenticationException(e.getMessage());
+    }
+  }
 
 }
