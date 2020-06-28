@@ -47,5 +47,6 @@ public interface AuthenticationService {
   public UserResponse getAuthentication(Authentication authentiction);
   
   public UserListResponse getAllUsers(HttpServletRequest req);
+  public UserResponse getCurrentUser(String username, HttpServletRequest req);
 
 }

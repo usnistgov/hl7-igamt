@@ -364,4 +364,29 @@ public UserListResponse getAllUsers(HttpServletRequest req) {
         UserListResponse.class);
     return response.getBody();
 }
+
+@Override
+public UserResponse getCurrentUser(String username, HttpServletRequest req) {
+    Cookie cookies[] = req.getCookies();
+
+    HttpHeaders headers = new HttpHeaders();
+
+    if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("authCookie")) {
+                headers.add("Cookie", "authCookie=" + cookie.getValue());
+            }
+        }
+    }
+
+    ResponseEntity<UserResponse> response =
+        restTemplate.exchange(
+                env.getProperty(AUTH_URL) + "/api/tool/user/" + username,
+            HttpMethod.GET,
+            new HttpEntity<String>(headers),
+            UserResponse.class);
+    return response.getBody();
+}
+
+
 }

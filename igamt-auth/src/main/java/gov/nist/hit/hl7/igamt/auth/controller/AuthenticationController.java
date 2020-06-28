@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -100,6 +101,16 @@ public class AuthenticationController {
       throws IOException {
 
     return authService.getAllUsers(req);
+  }
+
+  @RequestMapping(value = "api/user/{username}", method = RequestMethod.GET)
+  @ResponseBody
+  public UserResponse getCurrentUser(@PathVariable("username") String username,
+          HttpServletRequest req, HttpServletResponse res,
+          Authentication authentication)
+      throws IOException {
+
+    return authService.getCurrentUser(username, req);
   }
 
   @RequestMapping(value = "api/password/reset", method = RequestMethod.POST)
