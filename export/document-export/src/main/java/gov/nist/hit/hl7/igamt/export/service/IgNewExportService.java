@@ -10,11 +10,11 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
 public interface IgNewExportService {
 
-	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId, String deltaMode) throws Exception;
+	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId) throws Exception;
 	
 	public ExportFilterDecision getExportFilterDecision(DocumentStructure documentStructure, ExportConfiguration config) throws CoConstraintGroupNotFoundException;
 	public  ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument,
-			ExportFormat exportFormat, ExportFilterDecision decision, ExportConfiguration exportConfiguration, String deltaMode) throws Exception;
+			ExportFormat exportFormat, ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception;
 
 	public ExportedFile exportIgDocumentToWord(String username, String id, ExportFilterDecision decision, String configId ) throws Exception;
 		

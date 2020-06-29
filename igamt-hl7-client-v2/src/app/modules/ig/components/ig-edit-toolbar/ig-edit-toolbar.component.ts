@@ -94,7 +94,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
           dialogRef.afterClosed().pipe(
             filter((y) => y !== undefined),
             map((result) => {
-              this.igService.exportAsHtml(igId, result.decision, result.configurationId, this.delta);
+              this.igService.exportAsHtml(igId, result.decision, result.configurationId);
             }),
           ).subscribe();
         }),

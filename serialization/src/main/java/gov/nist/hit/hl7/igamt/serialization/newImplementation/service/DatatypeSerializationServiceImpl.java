@@ -54,10 +54,28 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	private FroalaSerializationUtil frolaCleaning;
 
 	@Override
-	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type, String deltaMode) throws SerializationException {
+	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type, Boolean deltaMode) throws SerializationException {
 		//	    try {
 		Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
 		Datatype datatype = datatypeDataModel.getModel();
+
+		if(deltaMode && datatype.getOrigin() == null) {
+			return null;
+		}
+		// Calculate datatype delta if the datatype has an origin
+		if(deltaMode && datatype.getOrigin() != null && datatypeExportConfiguration.isDeltaMode()) {
+			List<StructureDelta> structureDelta = deltaService.delta(Type.DATATYPE, datatype);
+			List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+			if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
+				Element deltaElement = this.serializeDelta(structureDeltaChanged, datatypeExportConfiguration.getDeltaConfig());
+				if (deltaElement != null) {
+					datatypeElement.appendChild(deltaElement);
+				}
+			} else {
+				return  null;
+			}
+		}
+
 		datatypeElement
 		.addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
 		if(datatypeExportConfiguration.getPurposeAndUse()) {
@@ -124,17 +142,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 			}
 		}
 
-		// Calculate datatype delta if the datatype has an origin
-		if(deltaMode != null && datatype.getOrigin() != null && datatypeExportConfiguration.isDeltaMode()) {
-			List<StructureDelta> structureDelta = deltaService.delta(Type.DATATYPE, datatype);
-			List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-			if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
-				Element deltaElement = this.serializeDelta(structureDeltaChanged, datatypeExportConfiguration.getDeltaConfig());
-				if (deltaElement != null) {
-					datatypeElement.appendChild(deltaElement);
-				}
-			}
-		}
+
 		return igDataModelSerializationService.getSectionElement(datatypeElement, datatypeDataModel.getModel(), level, datatypeExportConfiguration);
 
 		//	    } catch (Exception exception) {

@@ -298,9 +298,8 @@ export class IgService {
     form.submit();
   }
 
-  exportAsHtml(igId: string, decision: any, configurationId: string, deltaMode = null) {
-    const deltaParam = deltaMode ? `?deltamode=true` : '';
-    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/html' + deltaParam);
+  exportAsHtml(igId: string, decision: any, configurationId: string) {
+    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/html');
   }
 
   exportAsHtmlQuick(igId: string) {

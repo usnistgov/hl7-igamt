@@ -42,11 +42,41 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 
 	@Override
 	public Element serializeValueSet(ValuesetDataModel valuesetDataModel, int level, int position,
-			ValueSetExportConfiguration valueSetExportConfiguration, String deltaMode) throws ResourceSerializationException {
+			ValueSetExportConfiguration valueSetExportConfiguration, Boolean deltaMode) throws ResourceSerializationException {
 		try {
 			Element valueSetElement = igDataModelSerializationService.serializeResource(valuesetDataModel.getModel(),
 					Type.VALUESET, position, valueSetExportConfiguration);
+			Element codesElement = new Element("Codes");
+
 			Valueset valueSet = valuesetDataModel.getModel();
+			if(deltaMode && valueSet.getOrigin() == null) {
+				return null;
+			}
+
+			if (deltaMode != null && valueSet.getOrigin() != null && valueSetExportConfiguration.isDeltaMode()) {
+				ValuesetDelta valuesetDelta = deltaService.valuesetDelta(valueSet);
+
+				List<CodeDelta> codeDeltaChanged = valuesetDelta.getCodes().stream()
+						.filter(d -> !d.getAction().equals(DeltaAction.UNCHANGED))
+						.collect(Collectors.toList());
+
+				if (codeDeltaChanged != null && codeDeltaChanged.size() > 0) {
+					Element deltaElement = this.serializeDelta(codeDeltaChanged,
+							valueSetExportConfiguration.getDeltaConfig());
+					if (deltaElement != null) {
+						List<Element> addedRemovedElements = this.getAddedRemovedElements(codeDeltaChanged);
+						if(addedRemovedElements != null) {
+							for (Element el : addedRemovedElements) {
+								codesElement.appendChild(el);
+							}
+						}
+						valueSetElement.appendChild(deltaElement);
+					}
+				} else {
+					return null;
+				}
+			}
+
 			valueSetElement.addAttribute(new Attribute("bindingIdentifier",
 					valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
 			valueSetElement.addAttribute(new Attribute("oid", valueSet.getOid() != null ? valueSet.getOid() : ""));
@@ -74,7 +104,6 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 			valueSetElement.addAttribute(new Attribute("numberOfCodes", String.valueOf(valueSet.getNumberOfCodes())));
 			valueSetElement
 					.addAttribute(new Attribute("codeSystemIds", getCodSystemDispaly(valueSet.getCodeSystems())));
-			Element codesElement = new Element("Codes");
 			if (valueSet.getCodes().size() > 0) {
 
 				for (Code displayCode : valueSet.getCodes()) {
@@ -117,28 +146,7 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 //	      }
 //	      valueSetElement.appendChild(codeSystemsElement);
 
-			// Calculate segment delta if the segment has an origin
-			if (deltaMode != null && valueSet.getOrigin() != null && valueSetExportConfiguration.isDeltaMode()) {
-				ValuesetDelta valuesetDelta = deltaService.valuesetDelta(valueSet);
 
-				List<CodeDelta> codeDeltaChanged = valuesetDelta.getCodes().stream()
-						.filter(d -> !d.getAction().equals(DeltaAction.UNCHANGED))
-						.collect(Collectors.toList());
-
-				if (codeDeltaChanged != null && codeDeltaChanged.size() > 0) {
-					Element deltaElement = this.serializeDelta(codeDeltaChanged,
-							valueSetExportConfiguration.getDeltaConfig());
-					if (deltaElement != null) {
-						List<Element> addedRemovedElements = this.getAddedRemovedElements(codeDeltaChanged);
-						if(addedRemovedElements != null) {
-							for (Element el : addedRemovedElements) {
-								codesElement.appendChild(el);
-							}
-						}
-						valueSetElement.appendChild(deltaElement);
-					}
-				}
-			}
 			return igDataModelSerializationService.getSectionElement(valueSetElement, valuesetDataModel.getModel(),
 					level, valueSetExportConfiguration);
 

@@ -61,10 +61,27 @@ private FroalaSerializationUtil frolaCleaning;
 private DeltaService deltaService;
 
 	@Override
-	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision, String deltaMode) throws SerializationException {
+	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision, Boolean deltaMode) throws SerializationException {
 		Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, position, segmentExportConfiguration);
-	      Segment segment = segmentDataModel.getModel();	      
-	      if(segment.getExt() != null) {
+	      Segment segment = segmentDataModel.getModel();
+		if(deltaMode && segment.getOrigin() == null) {
+	      	return null;
+		}
+
+		// Calculate segment delta if the segment has an origin
+		if(deltaMode && segment.getOrigin() != null && segmentExportConfiguration.isDeltaMode()) {
+			List<StructureDelta> structureDelta = deltaService.delta(Type.SEGMENT, segment);
+			List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+			if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
+				Element deltaElement = this.serializeDelta(structureDeltaChanged, segmentExportConfiguration.getDeltaConfig());
+				if (deltaElement != null) {
+					segmentElement.appendChild(deltaElement);
+				}
+			} else {
+				return null;
+			}
+		}
+		if(segment.getExt() != null) {
 	    segmentElement
 	          .addAttribute(new Attribute("ext", segment.getExt() != null ? segment.getExt() : ""));
 	      }
@@ -141,17 +158,7 @@ private DeltaService deltaService;
 //	        }
 //	      }
 	      
-	   // Calculate segment delta if the segment has an origin
-	      if(deltaMode != null && segment.getOrigin() != null && segmentExportConfiguration.isDeltaMode()) {
-			  List<StructureDelta> structureDelta = deltaService.delta(Type.SEGMENT, segment);
-			  List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-			  if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
-					  Element deltaElement = this.serializeDelta(structureDeltaChanged, segmentExportConfiguration.getDeltaConfig());
-					  if (deltaElement != null) {
-						  segmentElement.appendChild(deltaElement);
-					  }
-			  }
-	      }
+
 	        
 
 	      return igDataModelSerializationService.getSectionElement(segmentElement, segmentDataModel.getModel(), level, segmentExportConfiguration);

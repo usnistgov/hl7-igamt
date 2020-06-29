@@ -145,8 +145,15 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   getElementUrl(elm): string {
+    // const type = elm.type.toLowerCase();
+    // return './' + type + '/' + elm.id;
     const type = elm.type.toLowerCase();
-    return './' + type + '/' + elm.id;
+    const path = './' + type + '/' + elm.id;
+    if (!this.delta || !elm.origin) {
+      return path;
+    } else {
+      return path + '/' + 'delta';
+    }
   }
   scroll(type: string) {
     if (type === 'messages') {
