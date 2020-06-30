@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import {filter, map, mergeMap, take, withLatestFrom} from 'rxjs/operators';
+import {PublishLibrary, ToggleDeltaFailure} from 'src/app/root-store/library/library-edit/library-edit.index';
 import * as fromLibrayEdit from 'src/app/root-store/library/library-edit/library-edit.index';
 import { selectExternalTools } from '../../../../root-store/config/config.reducer';
 import { ExportDialogComponent } from '../../../export-configuration/components/export-dialog/export-dialog.component';
@@ -10,11 +11,13 @@ import { ExportConfigurationService } from '../../../export-configuration/servic
 import {IDocumentDisplayInfo} from '../../../ig/models/ig/ig-document.class';
 import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
+import { Type } from '../../../shared/constants/type.enum';
 import { IConnectingInfo } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import {ILibrary} from '../../models/library.class';
 import { LibraryService } from '../../services/library.service';
 import {
+  IPublicationResult,
   IPublicationSummary,
   PublishLibraryDialogComponent,
 } from '../publish-library-dialog/publish-library-dialog.component';
@@ -44,7 +47,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
   exportWord() {
     combineLatest(
       this.getLibId(),
-      this.exportConfigurationService.getAllExportConfigurations()).pipe(
+      this.exportConfigurationService.getAllExportConfigurations(Type.DATATYPELIBRARY)).pipe(
         map(([igId, configurations]) => {
           console.log(igId);
           const dialogRef = this.dialog.open(ExportDialogComponent, {
@@ -52,6 +55,8 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
               toc: this.store.select(fromLibrayEdit.selectProfileTree),
               igId,
               configurations,
+              type: Type.DATATYPELIBRARY,
+              getExportFirstDecision: this.libraryService.getExportFirstDecision,
             },
           });
           dialogRef.afterClosed().pipe(
@@ -71,7 +76,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
   exportHTML() {
     combineLatest(
       this.getLibId(),
-      this.exportConfigurationService.getAllExportConfigurations()).pipe(
+      this.exportConfigurationService.getAllExportConfigurations(Type.DATATYPELIBRARY)).pipe(
         map(([igId, configurations]) => {
           console.log(igId);
           const dialogRef = this.dialog.open(ExportDialogComponent, {
@@ -79,6 +84,8 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
               toc: this.store.select(fromLibrayEdit.selectProfileTree),
               igId,
               configurations,
+              type: Type.DATATYPELIBRARY,
+              getExportFirstDecision: this.libraryService.getExportFirstDecision,
             },
           });
           dialogRef.afterClosed().pipe(
@@ -126,6 +133,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
               });
               dialogRef.afterClosed().pipe(
                 filter((y) => y !== undefined),
+                map((result: IPublicationResult) => this.store.dispatch(new PublishLibrary(libId, result))),
               ).subscribe();
             }),
           );

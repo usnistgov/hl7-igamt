@@ -132,8 +132,11 @@
 				<xsl:text>pre</xsl:text>
 			</xsl:with-param>
 		</xsl:call-template>
-		<xsl:apply-templates select="./Binding/ValueSetBindingList" />
-				<xsl:call-template name="ValueSetBindingList"/>	
+				 					<xsl:call-template name="CommentList" />
+		
+<!-- 		<xsl:apply-templates select="./Binding/ValueSetBindingList" />
+ -->				
+						 <xsl:call-template name="ValueSetBindingList"/>	
 		
 						<xsl:call-template name="InternalSingleCode"/>		
 		

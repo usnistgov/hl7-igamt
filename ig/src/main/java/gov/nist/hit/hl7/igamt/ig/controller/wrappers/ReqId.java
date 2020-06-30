@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
+import java.util.Arrays;
+
 /**
  * @author jungyubw
  *
@@ -31,7 +33,11 @@ public class ReqId {
 	public void setCompositeProfilesId(String[] compositeProfilesId) {
 		this.compositeProfilesId = compositeProfilesId;
 	}
+	@Override
+	public String toString() {
+		return "ReqId [conformanceProfilesId=" + Arrays.toString(conformanceProfilesId) + ", compositeProfilesId="
+				+ Arrays.toString(compositeProfilesId) + "]";
+	}
 
-
-
+	
 }

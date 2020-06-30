@@ -48,166 +48,167 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 @RestController
 public class DatatypeController extends BaseController {
 
-	Logger log = LoggerFactory.getLogger(DatatypeController.class);
+    Logger log = LoggerFactory.getLogger(DatatypeController.class);
 
-	@Autowired
-	private DatatypeService datatypeService;
+    @Autowired
+    private DatatypeService datatypeService;
 
-	@Autowired
-	EntityChangeService entityChangeService;
+    @Autowired
+    EntityChangeService entityChangeService;
 
-	@Autowired
-	private CommonService commonService;
+    @Autowired
+    private CommonService commonService;
 
-	@Autowired
-	private ConformanceStatementRepository conformanceStatementRepository;
+    @Autowired
+    private ConformanceStatementRepository conformanceStatementRepository;
 
-	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
-	private static final String PREDEF_SAVED = "PREDEF_SAVED";
-	private static final String POSTDEF_SAVED = "POSTDEF_SAVED";
-	private static final String METADATA_SAVED = "METADATA_SAVED";
-	private static final String CONFORMANCESTATEMENT_SAVED = "CONFORMANCESTATEMENT_SAVED";
+    private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
+    private static final String PREDEF_SAVED = "PREDEF_SAVED";
+    private static final String POSTDEF_SAVED = "POSTDEF_SAVED";
+    private static final String METADATA_SAVED = "METADATA_SAVED";
+    private static final String CONFORMANCESTATEMENT_SAVED = "CONFORMANCESTATEMENT_SAVED";
 
-	public DatatypeController() {
-	}
+    public DatatypeController() {
+    }
 
-	@RequestMapping(value = "/api/datatypes/{id}/structure", method = RequestMethod.GET, produces = {
-			"application/json" })
-	public DatatypeStructureDisplay getDatatypeStructure(@PathVariable("id") String id, Authentication authentication)
-			throws DatatypeNotFoundException {
-		Datatype datatype = findById(id);
-		return datatypeService.convertDomainToStructureDisplay(datatype, getReadOnly(authentication, datatype));
-	}
+    @RequestMapping(value = "/api/datatypes/{id}/structure", method = RequestMethod.GET, produces = {
+            "application/json" })
+    public DatatypeStructureDisplay getDatatypeStructure(@PathVariable("id") String id, Authentication authentication)
+            throws DatatypeNotFoundException {
+        Datatype datatype = findById(id);
+        return datatypeService.convertDomainToStructureDisplay(datatype, getReadOnly(authentication, datatype));
+    }
 
-	@RequestMapping(value = "/api/datatypes/{id}/resources", method = RequestMethod.GET, produces = {
-			"application/json" })
-	public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) {
-		Datatype datatype = datatypeService.findById(id);
-		return datatypeService.getDependencies(datatype);
-	}
+    @RequestMapping(value = "/api/datatypes/{id}/resources", method = RequestMethod.GET, produces = {
+            "application/json" })
+    public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) {
+        Datatype datatype = datatypeService.findById(id);
+        return datatypeService.getDependencies(datatype);
+    }
 
-	@RequestMapping(value = "/api/datatypes/{id}/{idPath}/{path}/{viewscope}/structure-by-ref", method = RequestMethod.GET, produces = {
-			"application/json" })
-	public Set<?> getComponentStructure(@PathVariable("id") String id, @PathVariable("idPath") String idPath,
-			@PathVariable("path") String path, @PathVariable("viewscope") String viewScope,
-			Authentication authentication) throws DatatypeNotFoundException {
-		Datatype datatype = findById(id);
-		return datatypeService.convertComponentStructure(datatype, idPath, path, viewScope);
-	}
+    @RequestMapping(value = "/api/datatypes/{id}/{idPath}/{path}/{viewscope}/structure-by-ref", method = RequestMethod.GET, produces = {
+            "application/json" })
+    public Set<?> getComponentStructure(@PathVariable("id") String id, @PathVariable("idPath") String idPath,
+            @PathVariable("path") String path, @PathVariable("viewscope") String viewScope,
+            Authentication authentication) throws DatatypeNotFoundException {
+        Datatype datatype = findById(id);
+        return datatypeService.convertComponentStructure(datatype, idPath, path, viewScope);
+    }
 
-	@RequestMapping(value = "/api/datatypes/{id}/metadata", method = RequestMethod.GET, produces = {
-			"application/json" })
-	public DatatypeDisplayMetadata getDatatypeMetadata(@PathVariable("id") String id, Authentication authentication)
-			throws DatatypeNotFoundException {
-		Datatype datatype = findById(id);
-		DatatypeDisplayMetadata display = new DatatypeDisplayMetadata();
-		display.complete(datatype, SectionType.METADATA, getReadOnly(authentication, datatype));
-		return display;
-	}
+    @RequestMapping(value = "/api/datatypes/{id}/metadata", method = RequestMethod.GET, produces = {
+            "application/json" })
+    public DatatypeDisplayMetadata getDatatypeMetadata(@PathVariable("id") String id, Authentication authentication)
+            throws DatatypeNotFoundException {
+        Datatype datatype = findById(id);
+        DatatypeDisplayMetadata display = new DatatypeDisplayMetadata();
+        display.complete(datatype, SectionType.METADATA, getReadOnly(authentication, datatype));
+        return display;
+    }
 
-	@RequestMapping(value = "/api/datatypes/{id}/predef", method = RequestMethod.GET, produces = { "application/json" })
+    @RequestMapping(value = "/api/datatypes/{id}/predef", method = RequestMethod.GET, produces = { "application/json" })
 
-	public DefinitionDisplay getDatatypePredef(@PathVariable("id") String id, Authentication authentication)
-			throws DatatypeNotFoundException {
+    public DefinitionDisplay getDatatypePredef(@PathVariable("id") String id, Authentication authentication)
+            throws DatatypeNotFoundException {
 
-		Datatype datatype = findById(id);
-		DefinitionDisplay display = new DefinitionDisplay();
-		display.build(datatype, SectionType.PREDEF, getReadOnly(authentication, datatype));
-		return display;
-	}
+        Datatype datatype = findById(id);
+        DefinitionDisplay display = new DefinitionDisplay();
+        display.build(datatype, SectionType.PREDEF, getReadOnly(authentication, datatype));
+        return display;
+    }
 
-	private boolean getReadOnly(Authentication authentication, Datatype elm) {
-		// TODO Auto-generated method stub
-		if (elm.getUsername() == null) {
-			return true;
-		} else {
-			return !elm.getUsername().equals(authentication.getName());
-		}
-	}
+    private boolean getReadOnly(Authentication authentication, Datatype elm) {
+        // TODO Auto-generated method stub
+        if (elm.getUsername() == null) {
+            return true;
+        } else {
+            return !elm.getUsername().equals(authentication.getName());
+        }
+    }
 
-	@RequestMapping(value = "/api/datatypes/{id}/postdef", method = RequestMethod.GET, produces = {
-			"application/json" })
+    @RequestMapping(value = "/api/datatypes/{id}/postdef", method = RequestMethod.GET, produces = {
+            "application/json" })
 
-	public DefinitionDisplay getDatatypePostdef(@PathVariable("id") String id, Authentication authentication)
-			throws DatatypeNotFoundException {
-		Datatype datatype = findById(id);
-		DefinitionDisplay display = new DefinitionDisplay();
-		display.build(datatype, SectionType.POSTDEF, getReadOnly(authentication, datatype));
-		return display;
+    public DefinitionDisplay getDatatypePostdef(@PathVariable("id") String id, Authentication authentication)
+            throws DatatypeNotFoundException {
+        Datatype datatype = findById(id);
+        DefinitionDisplay display = new DefinitionDisplay();
+        display.build(datatype, SectionType.POSTDEF, getReadOnly(authentication, datatype));
+        return display;
 
-	}
+    }
 
-	@RequestMapping(value = "/api/datatypes/{id}/conformancestatement/{did}", method = RequestMethod.GET, produces = {
-			"application/json" })
-	public ConformanceStatementDisplay getDatatypeConformanceStatement(@PathVariable("id") String id,
-			@PathVariable("did") String did, Authentication authentication) throws DatatypeNotFoundException {
-		Datatype datatype = findById(id);
+    @RequestMapping(value = "/api/datatypes/{id}/conformancestatement/{did}", method = RequestMethod.GET, produces = {
+            "application/json" })
+    public ConformanceStatementDisplay getDatatypeConformanceStatement(@PathVariable("id") String id,
+            @PathVariable("did") String did, Authentication authentication) throws DatatypeNotFoundException {
+        Datatype datatype = findById(id);
 
-		ConformanceStatementDisplay conformanceStatementDisplay = new ConformanceStatementDisplay();
-		Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
-		if (datatype.getBinding() != null && datatype.getBinding().getConformanceStatements() != null) {
-			for (ConformanceStatement cs : datatype.getBinding().getConformanceStatements()) {
-				cfs.add(cs);
-			}
-		}
+        ConformanceStatementDisplay conformanceStatementDisplay = new ConformanceStatementDisplay();
+        Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
+        if (datatype.getBinding() != null && datatype.getBinding().getConformanceStatements() != null) {
+            for (ConformanceStatement cs : datatype.getBinding().getConformanceStatements()) {
+                cfs.add(cs);
+            }
+        }
 
-		Set<ConformanceStatement> acs = this.datatypeService.collectAvaliableConformanceStatements(did,
-				datatype.getId(), datatype.getName());
+        Set<ConformanceStatement> acs = this.datatypeService.collectAvaliableConformanceStatements(did,
+                datatype.getId(), datatype.getName());
 
-		HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
-		this.datatypeService.collectAssoicatedConformanceStatements(datatype, associatedConformanceStatementMap);
-		conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS,
-				getReadOnly(authentication, datatype), cfs, acs, associatedConformanceStatementMap);
-		conformanceStatementDisplay.setType(Type.DATATYPE);
-		return conformanceStatementDisplay;
-	}
+        HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
+        this.datatypeService.collectAssoicatedConformanceStatements(datatype, associatedConformanceStatementMap);
+        conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS,
+                getReadOnly(authentication, datatype), cfs, acs, associatedConformanceStatementMap);
+        conformanceStatementDisplay.setType(Type.DATATYPE);
+        return conformanceStatementDisplay;
+    }
 
-	@RequestMapping(value = "/api/datatypes/{scope}/{version:.+}", method = RequestMethod.GET, produces = {
-			"application/json" })
-	public @ResponseBody ResponseMessage<List<Datatype>> findHl7Datatypes(@PathVariable String version,
-			@PathVariable String scope, Authentication authentication) {
-		return new ResponseMessage<List<Datatype>>(Status.SUCCESS, "", "", null, false, null,
-				datatypeService.findDisplayFormatByScopeAndVersion(scope, version));
-	}
+    @RequestMapping(value = "/api/datatypes/{scope}/{version:.+}", method = RequestMethod.GET, produces = {
+            "application/json" })
+    public @ResponseBody ResponseMessage<List<Datatype>> findHl7Datatypes(@PathVariable String version,
+            @PathVariable String scope, Authentication authentication) {
+        return new ResponseMessage<List<Datatype>>(Status.SUCCESS, "", "", null, false, null,
+                datatypeService.findDisplayFormatByScopeAndVersion(scope, version));
+    }
 
-	private Datatype findById(String id) throws DatatypeNotFoundException {
-		Datatype Datatype = datatypeService.findById(id);
-		if (Datatype == null) {
-			throw new DatatypeNotFoundException(id);
-		}
-		return Datatype;
-	}
+    private Datatype findById(String id) throws DatatypeNotFoundException {
+        Datatype Datatype = datatypeService.findById(id);
+        if (Datatype == null) {
+            throw new DatatypeNotFoundException(id);
+        }
+        return Datatype;
+    }
 
-	@RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.GET, produces = {"application/json"})
-	public Datatype getSegment(
-			@PathVariable("id") String id,
-			Authentication authentication) throws DatatypeNotFoundException {
-		return this.findById(id);
-	}
+    @RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.GET, produces = {"application/json"})
+    public Datatype getSegment(
+            @PathVariable("id") String id,
+            Authentication authentication) throws DatatypeNotFoundException {
+        return this.findById(id);
+    }
 
-	@RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.POST, produces = { "application/json" })
-	@ResponseBody
-	public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
-			@RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
-			Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException {
-		Datatype dt = this.datatypeService.findById(id);
-		validateSaveOperation(dt);
-		this.datatypeService.applyChanges(dt, cItems, documentId);
-		EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-		entityChangeDomain.setDocumentId(documentId);
-		entityChangeDomain.setDocumentType(DocumentType.IG);
-		entityChangeDomain.setTargetId(id);
-		entityChangeDomain.setTargetType(EntityType.DATATYPE);
-		entityChangeDomain.setChangeItems(cItems);
-		entityChangeDomain.setTargetVersion(dt.getVersion());
-		entityChangeService.save(entityChangeDomain);
-		return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, dt.getId(), new Date());
-	}
+    @RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.POST, produces = { "application/json" })
+    @ResponseBody
+    public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
+            @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+            Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException {
+        Datatype dt = this.datatypeService.findById(id);
+        validateSaveOperation(dt);
+        commonService.checkRight(authentication, dt.getUsername());
+        this.datatypeService.applyChanges(dt, cItems, documentId);
+        EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
+        entityChangeDomain.setDocumentId(documentId);
+        entityChangeDomain.setDocumentType(DocumentType.IG);
+        entityChangeDomain.setTargetId(id);
+        entityChangeDomain.setTargetType(EntityType.DATATYPE);
+        entityChangeDomain.setChangeItems(cItems);
+        entityChangeDomain.setTargetVersion(dt.getVersion());
+        entityChangeService.save(entityChangeDomain);
+        return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, dt.getId(), new Date());
+    }
 
-	private void validateSaveOperation(Datatype dt) throws ForbiddenOperationException {
-		if (Scope.HL7STANDARD.equals(dt.getDomainInfo().getScope())) {
-			throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
-		}
-	}
+    private void validateSaveOperation(Datatype dt) throws ForbiddenOperationException {
+        if (Scope.HL7STANDARD.equals(dt.getDomainInfo().getScope())) {
+            throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
+        }
+    }
 
 }

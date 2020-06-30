@@ -10,6 +10,6 @@ import nu.xom.Element;
 
 public interface ConformanceProfileSerializationService {
 	
-	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level, int position, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration ) throws ResourceSerializationException;
+	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level, int position, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration, String deltaMode) throws ResourceSerializationException;
 
 }

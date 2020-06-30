@@ -16,6 +16,7 @@ export class HeaderComponent implements OnInit {
   isLoading: Observable<boolean>;
   isAdmin: Observable<boolean>;
   isIG: Observable<boolean>;
+  isConfig: Observable<boolean>;
 
   constructor(private store: Store<fromRoot.IRouteState>) {
     this.isLoading = store.select(fromDAM.selectLoaderIsLoading);
@@ -24,6 +25,13 @@ export class HeaderComponent implements OnInit {
       map(
         (url: string) => {
           return url.startsWith('/ig/');
+        },
+      ),
+    );
+    this.isConfig = store.select(fromDAM.selectRouterURL).pipe(
+      map(
+        (url: string) => {
+          return url.startsWith('/configuration');
         },
       ),
     );

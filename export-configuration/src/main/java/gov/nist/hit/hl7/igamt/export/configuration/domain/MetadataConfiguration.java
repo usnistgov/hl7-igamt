@@ -28,10 +28,18 @@ public class MetadataConfiguration {
   private boolean usageNotes = true;
   private boolean AuthorNotes = true;
   
+  //for conformance profiles
   private boolean organization = true;
   private boolean author = true;
   private boolean type = false;
   private boolean role = false;
+  
+  //for DatatypeLibrary
+  private boolean datatypeName = true;
+  private boolean datatypeFlavor = true;
+  private boolean shortDescription = true;
+  private boolean status = true;
+  
   
 
 
@@ -46,11 +54,44 @@ public class MetadataConfiguration {
     this.publicationDate = publicationDate;
     this.publicationVersion = publicationVersion;
     this.scope = scope;
+    
   }
   
   
   
-  public boolean isOrganization() {
+  public boolean isDatatypeName() {
+	return datatypeName;
+}
+
+public void setDatatypeName(boolean datatypeName) {
+	this.datatypeName = datatypeName;
+}
+
+public boolean isDatatypeFlavor() {
+	return datatypeFlavor;
+}
+
+public void setDatatypeFlavor(boolean datatypeFlavor) {
+	this.datatypeFlavor = datatypeFlavor;
+}
+
+public boolean isShortDescription() {
+	return shortDescription;
+}
+
+public void setShortDescription(boolean shortDescription) {
+	this.shortDescription = shortDescription;
+}
+
+public boolean isStatus() {
+	return status;
+}
+
+public void setStatus(boolean status) {
+	this.status = status;
+}
+
+public boolean isOrganization() {
 	return organization;
 }
 

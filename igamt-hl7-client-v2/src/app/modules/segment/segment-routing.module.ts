@@ -101,26 +101,26 @@ const routes: Routes = [
               idKey: 'segmentId',
             },
           },
-          {
-            path: 'delta',
-            component: DeltaEditorComponent,
-            canActivate: [EditorActivateGuard],
-            canDeactivate: [EditorDeactivateGuard],
-            data: {
-              editorMetadata: {
-                id: EditorID.SEGMENT_DELTA,
-                title: 'Delta',
-                resourceType: Type.SEGMENT,
-              },
-              onLeave: {
-                saveEditor: true,
-                saveTableOfContent: true,
-              },
-              action: OpenSegmentDeltaEditor,
-              idKey: 'segmentId',
-            },
-          },
         ],
+      },
+      {
+        path: 'delta',
+        component: DeltaEditorComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.SEGMENT_DELTA,
+            title: 'Delta',
+            resourceType: Type.SEGMENT,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenSegmentDeltaEditor,
+          idKey: 'segmentId',
+        },
       },
       {
         path: 'metadata',

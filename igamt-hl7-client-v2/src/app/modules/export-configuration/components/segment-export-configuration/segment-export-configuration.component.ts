@@ -22,6 +22,12 @@ export class SegmentExportConfigurationComponent implements OnInit {
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
 
+  @Input()
+  origin = null;
+
+  @Input()
+  delta: boolean;
+
   constructor() { }
 
   ngOnInit() {
@@ -39,4 +45,5 @@ export class SegmentExportConfigurationComponent implements OnInit {
 
   print() {
   }
+
 }

@@ -46,6 +46,22 @@ public void checkOwnerShip(Authentication auth, AbstractDomain obj) throws Forbi
 	}
 }
 
+/* (non-Javadoc)
+ * @see gov.nist.hit.hl7.igamt.common.base.service.CommonService#checkRight(org.springframework.security.core.Authentication, java.lang.String)
+ */
+@Override
+public void checkRight(Authentication auth, String resourceUsername)
+    throws ForbiddenOperationException {
+  // TODO Auto-generated method stub
+  if(resourceUsername==null) {
+    throw  new ForbiddenOperationException("Resource change not allowed");
+  } else if(!auth.getName().equals(resourceUsername) && !auth.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")))  {
+    throw  new ForbiddenOperationException("The User must be the owner or an admin of this resource to perform this operation");
+}
+  
+  
+}
+
   
   
   

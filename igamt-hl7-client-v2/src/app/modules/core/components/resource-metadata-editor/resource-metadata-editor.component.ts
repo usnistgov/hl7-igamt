@@ -42,7 +42,6 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
         return resource.name;
       }),
     );
-
     this.metadataFormInput$ = combineLatest(this.selectedResource$, name$, this.getOthers(), this.documentRef$, this.admin$).pipe(
       take(1),
       map(([selectedResource, name, existing, ref, admin]) => {
@@ -51,8 +50,8 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
           data: this.currentSynchronized$,
           model: {
             name: {
-              label: 'Name',
-              placeholder: 'Name',
+              label: 'Identifier',
+              placeholder: 'identifier',
               validators: [],
               type: FieldType.TEXT,
               id: 'name',
@@ -67,31 +66,22 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
               id: 'extension',
               name: 'extension',
             },
-            // compatibilityVersions: {
-            //   label: 'Compatibility Versions',
-            //   placeholder: 'Compatibility Versions',
-            //   type: FieldType.STRING_LIST,
-            //   validators: [],
-            //   id: 'compatibilityVersions',
-            //   name: 'compatibilityVersions',
-            // },
             description: {
-              label: 'Description',
-              placeholder: 'Description',
+              label: 'Name',
+              placeholder: 'name',
               validators: [],
               type: FieldType.TEXT,
               id: 'description',
               disabled: true,
               name: 'Description',
             },
-            authorNotes: {
-              label: authorNotes,
-              placeholder: authorNotes,
+            shortDescription: {
+              label: 'Short Description',
+              placeholder: 'Short Description',
               validators: [],
-              enum: [],
-              type: FieldType.RICH,
-              id: 'authornotes',
-              name: authorNotes,
+              type: FieldType.TEXT,
+              id: 'shortDescription',
+              name: 'shortDescription',
             },
             usageNotes: {
               label: usageNotes,
@@ -101,6 +91,15 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
               type: FieldType.RICH,
               id: 'usagenotes',
               name: usageNotes,
+            },
+            authorNotes: {
+              label: authorNotes,
+              placeholder: authorNotes,
+              validators: [],
+              enum: [],
+              type: FieldType.RICH,
+              id: 'authornotes',
+              name: authorNotes,
             },
           },
         };
@@ -135,7 +134,16 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
         changeType: ChangeType.UPDATE,
       });
     }
-
+    if (current.name !== old.name) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.name,
+        propertyValue: current.name,
+        propertyType: PropertyType.NAME,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
     if (current.description !== old.description) {
       changes.push({
         location: elementId,
@@ -175,6 +183,16 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
         oldPropertyValue: old.usageNotes,
         propertyValue: current.usageNotes,
         propertyType: PropertyType.USAGENOTES,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
+    if (current.shortDescription !== old.shortDescription) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.shortDescription,
+        propertyValue: current.shortDescription,
+        propertyType: PropertyType.SHORTDESCRIPTION,
         position: -1,
         changeType: ChangeType.UPDATE,
       });
@@ -219,5 +237,5 @@ export interface IResourceMetadata {
   usageNotes?: string;
   compatibilityVersions?: [];
   username?: string;
-
+  shortDescription: string;
 }

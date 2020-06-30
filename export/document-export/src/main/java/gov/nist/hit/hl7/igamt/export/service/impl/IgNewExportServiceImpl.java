@@ -25,6 +25,8 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.DatatypeCell;
 import gov.nist.hit.hl7.igamt.coconstraints.model.ValueSetCell;
 import gov.nist.hit.hl7.igamt.coconstraints.model.VariesCell;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
@@ -38,6 +40,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
@@ -103,12 +106,26 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	
 
 	@Override
-	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId)
+	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId, String deltaMode)
 			throws Exception {
 		Ig igDocument = igService.findById(igDocumentId);
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration);
+//			if(deltaMode != null){
+//				exportConfiguration.setDeltaMode(true);
+//				exportConfiguration.getSegmentExportConfiguration().setDeltaMode(true);
+//				exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(true);
+//				exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(true);
+//				exportConfiguration.getValueSetExportConfiguration().setDeltaMode(true);
+//
+//			} else {
+//				exportConfiguration.setDeltaMode(false);
+//				exportConfiguration.getSegmentExportConfiguration().setDeltaMode(false);
+//				exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(false);
+//				exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(false);
+//				exportConfiguration.getValueSetExportConfiguration().setDeltaMode(false);
+//			}
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration, deltaMode);
 			return htmlFile;
 		}
 		return null;
@@ -116,7 +133,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 	@Override
 	public ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument, ExportFormat exportFormat,
-			ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception {
+			ExportFilterDecision decision, ExportConfiguration exportConfiguration, String deltaMode) throws Exception {
 		try {
 //			ExportConfiguration exportConfiguration =
 //					exportConfigurationService.getExportConfiguration(username);
@@ -127,18 +144,19 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 //			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
 //			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
 //			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
-			
+
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
+			DocumentStructureDataModel documentStructureDataModel = new DocumentStructureDataModel();
 			String xmlContent =
-					igDataModelSerializationService.serializeIgDocument(igDataModel, exportConfiguration,decision).toXML();
+					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,decision, deltaMode).toXML();
 					      System.out.println("XML_EXPORT : " + xmlContent);
 //					      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
 					igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
-					exportFontConfiguration, "2.0_beta");
+					exportFontConfiguration, "2.0_beta",igDocument.getType());
 			InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH,
 					exportParameters);
 			ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(),
@@ -155,9 +173,10 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	@Override
-	public ExportFilterDecision getExportFilterDecision(Ig ig, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
+	public ExportFilterDecision getExportFilterDecision(DocumentStructure documentStructure, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
 		ExportFilterDecision decision = new ExportFilterDecision();
-
+		if(documentStructure instanceof Ig) {
+			Ig ig = (Ig) documentStructure;
 		for (Link l : ig.getConformanceProfileRegistry().getChildren()) {
 			decision.getConformanceProfileFilterMap().put(l.getId(), true);
 		}
@@ -172,6 +191,22 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		}
 		processConformanceProfiles(ig, decision, config);
 		return decision;
+		}else if(documentStructure instanceof DatatypeLibrary) {
+			DatatypeLibrary datatypeLibrary = (DatatypeLibrary) documentStructure;
+			for (Link l : datatypeLibrary.getDatatypeRegistry().getChildren()) {
+				Datatype dt = datatypeService.findById(l.getId());
+//				System.out.println("link id :" + l.getId() + " link parent id : " + l.getParentId() + " datatype parent id : " + dt.getParentId());
+				if(!l.getId().startsWith("HL7") && dt.getParentId().equals(datatypeLibrary.getId())) {
+					System.out.println("found one");
+				decision.getDatatypesFilterMap().put(l.getId(), true);
+			} else {
+				decision.getDatatypesFilterMap().put(l.getId(), false);
+			}
+			}
+			return decision;
+
+		}
+		return null;
 	}
 
 	private void processConformanceProfiles(Ig ig, ExportFilterDecision decision, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
@@ -332,7 +367,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		Ig igDocument = igService.findById(id);
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD, decision, exportConfiguration);
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD, decision, exportConfiguration, null);
 			ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(),
 					igDocument.getUpdateDate(),
 					igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);

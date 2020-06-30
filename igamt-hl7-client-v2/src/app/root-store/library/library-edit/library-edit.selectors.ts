@@ -136,15 +136,17 @@ export const selectToc = createSelector(
 );
 
 export const selectProfileTree = createSelector(
+  selectLoadedDocumentInfo,
   selectStructure,
   selectDatatypesNodes, (
+    documentInfo: IDocumentRef,
     structure: IContent[],
     datatypesNodes: IDisplayElement[],
-) => {
-  return IgTOCNodeHelper.buildProfileTree(structure, [], [], datatypesNodes, [], []);
-},
-);
+  ) => {
 
+    return IgTOCNodeHelper.buildLibraryProfileTree( documentInfo, structure, datatypesNodes);
+  },
+);
 export const selectVersion = createSelector(
   fromILibraryDamtDisplaySelectors.selectDatatypesEntites,
   (dts: Dictionary<IDisplayElement>) => {

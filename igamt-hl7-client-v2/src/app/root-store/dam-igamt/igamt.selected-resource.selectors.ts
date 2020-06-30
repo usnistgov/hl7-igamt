@@ -94,6 +94,7 @@ export const selectedResourceMetadata = createSelector(
       authorNotes: state.authorNotes,
       usageNotes: state.usageNotes,
       compatibilityVersions: state.compatibilityVersions,
+      shortDescription: state.shortDescription,
     };
   },
 );

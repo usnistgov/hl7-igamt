@@ -58,7 +58,7 @@ public class SegmentRefDisplayModel extends SegmentRefOrGroupDisplayModel {
   @DeltaField
   private SegmentLabel segmentLabel;
   @DeltaField
-  private Set<BindingDisplay> bindings;
+  private BindingDisplay binding;
 
   private ViewScope viewScope;
 
@@ -102,21 +102,15 @@ public class SegmentRefDisplayModel extends SegmentRefOrGroupDisplayModel {
     this.viewScope = viewScope;
   }
 
-  public Set<BindingDisplay> getBindings() {
-    return bindings;
+  public BindingDisplay getBinding() {
+    return binding;
   }
 
-  public void setBindings(Set<BindingDisplay> bindings) {
-    this.bindings = bindings;
+  public void setBinding(BindingDisplay binding) {
+    this.binding = binding;
   }
 
-  /**
-   * @param createBindingDisplay
-   */
-  public void addBinding(BindingDisplay binding) {
-    if (this.bindings == null) this.bindings = new HashSet<BindingDisplay>();
-    this.bindings.add(binding);
-  }
+
 
   public Usage getTrueUsage() {
     return trueUsage;

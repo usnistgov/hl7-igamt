@@ -19,6 +19,7 @@ import { DatatypeConformanceStatementEditorComponent } from './components/confor
 import { DatatypeCrossRefsComponent } from './components/datatype-cross-refs/datatype-cross-refs.component';
 import { DatatypeStructureEditorComponent } from './components/datatype-structure-editor/datatype-structure-editor.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
+import {DtmDeltaEditorComponent} from './components/dtm-delta-editor/dtm-delta-editor.component';
 import { MetadataEditComponent } from './components/metadata-edit/metadata-edit.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -153,26 +154,45 @@ const routes: Routes = [
               idKey: 'datatypeId',
             },
           },
-          {
-            path: 'delta',
-            component: DeltaEditorComponent,
-            canActivate: [EditorActivateGuard],
-            canDeactivate: [EditorDeactivateGuard],
-            data: {
-              editorMetadata: {
-                id: EditorID.DATATYPE_DELTA,
-                title: 'Delta',
-                resourceType: Type.DATATYPE,
-              },
-              onLeave: {
-                saveEditor: true,
-                saveTableOfContent: true,
-              },
-              action: OpenDatatypeDeltaEditor,
-              idKey: 'datatypeId',
-            },
-          },
         ],
+      },
+      {
+        path: 'delta',
+        component: DeltaEditorComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.DATATYPE_DELTA,
+            title: 'Delta',
+            resourceType: Type.DATATYPE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenDatatypeDeltaEditor,
+          idKey: 'datatypeId',
+        },
+      },
+      {
+        path: 'dtm-delta',
+        component: DtmDeltaEditorComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.DATATYPE_DELTA,
+            title: 'Delta',
+            resourceType: Type.DATATYPE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenDatatypeDeltaEditor,
+          idKey: 'datatypeId',
+        },
       },
 
     ],

@@ -6,7 +6,14 @@ public class ExportConfigurationForFrontEnd {
 	private String configName;
 	private boolean defaultConfig;
     private boolean original;
+    private String type;  
 	
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
 	public boolean isDefaultConfig() {
 		return defaultConfig;
 	}

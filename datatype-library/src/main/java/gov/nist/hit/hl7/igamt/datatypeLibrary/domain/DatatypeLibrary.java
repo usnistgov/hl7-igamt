@@ -18,11 +18,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentExportConfiguration;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 
 
@@ -31,9 +33,18 @@ import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
  *
  */
 @Document
-public class DatatypeLibrary extends AbstractDomain {
-  private DocumentMetadata metadata;
-  private Set<TextSection> content = new HashSet<TextSection>();
+public class DatatypeLibrary extends DocumentStructure {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
+  private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
+  private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
+  private DocumentExportConfiguration lastUserConfiguration;
+
+
   /**
    * 
    */
@@ -43,24 +54,25 @@ public class DatatypeLibrary extends AbstractDomain {
     // TODO Auto-generated constructor stub
   }
 
-  private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
-  private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
 
-  public DocumentMetadata getMetadata() {
-    return this.metadata;
+
+  public DocumentExportConfiguration getLastUserConfiguration() {
+    return lastUserConfiguration;
   }
 
-  public void setMetadata(DocumentMetadata metadata) {
-    this.metadata = metadata;
+
+
+  public void setLastUserConfiguration(DocumentExportConfiguration lastUserConfiguration) {
+    this.lastUserConfiguration = lastUserConfiguration;
   }
 
-  public Set<TextSection> getContent() {
-    return content;
+
+
+  public static long getSerialversionuid() {
+    return serialVersionUID;
   }
 
-  public void setContent(Set<TextSection> content) {
-    this.content = content;
-  }
+
 
   public DatatypeRegistry getDatatypeRegistry() {
     return datatypeRegistry;
