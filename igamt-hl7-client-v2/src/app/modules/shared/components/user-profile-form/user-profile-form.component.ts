@@ -1,10 +1,10 @@
-import {HttpClient} from '@angular/common/http';
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {AbstractControl, FormControl, FormGroup, ValidatorFn, Validators} from '@angular/forms';
-import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
-import {IAuthenticationState} from '../../../dam-framework/models/authentication/state';
-import {IUserProfile} from '../../../dam-framework/models/authentication/user-profile.class';
+import { HttpClient } from '@angular/common/http';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { IAuthenticationState } from '../../../dam-framework/models/authentication/state';
+import { IUserProfile } from '../../../dam-framework/models/authentication/user-profile.class';
 import * as fromAuth from '../../../dam-framework/store/authentication';
 
 @Component({
@@ -54,7 +54,7 @@ export class UserProfileFormComponent implements OnInit {
 
   ngOnInit() {
 
-    this.username.subscribe(uname => {
+    this.username.subscribe((uname) => {
       if (uname) {
         this.http.get<any>('api/user/' + uname).subscribe((o) => {
           console.log(o);
@@ -69,6 +69,6 @@ export class UserProfileFormComponent implements OnInit {
 
         });
       }
-    })
+    });
   }
 }

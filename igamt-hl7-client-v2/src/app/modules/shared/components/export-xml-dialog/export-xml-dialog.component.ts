@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {SelectItem} from 'primeng/api';
 import {IDisplayElement} from '../../models/display-element.interface';
 import {ISelectedIds} from '../select-resource-ids/select-resource-ids.component';
-import {SelectItem} from 'primeng/api';
 
 @Component({
   selector: 'app-export-xml-dialog',
