@@ -64,5 +64,8 @@ public interface MessageStructureRepository  extends MongoRepository<MessageStru
     public List<MessageStructure> findAllById(List<String> id);
 
     public List<MessageStructure> findByIdIn(Set<String> ids);
+    public List<MessageStructure> findByParticipantsContaining( String username);
+
+    
     
 }

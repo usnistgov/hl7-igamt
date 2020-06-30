@@ -1,4 +1,3 @@
-<div style="overflow: scroll">
   <p-accordion [multiple]="false" class="doc-accordion">
     <p-accordionTab header="User Guides">
       <app-documentation-list [list]="userguides" [documentationType]="'USERGUIDE'" (add)="addSection($event)" (delete)="deleteSection($event)" (reorder)="reorder($event)" [admin]="admin"> </app-documentation-list>
@@ -19,5 +18,3 @@
       <app-documentation-list [list]="glossary" [documentationType]="'GLOSSARY'" (add)="addSection($event)" (delete)="deleteSection($event)" (reorder)="reorder($event)" [admin]="admin"> </app-documentation-list>
     </p-accordionTab>
   </p-accordion>
-
-</div>

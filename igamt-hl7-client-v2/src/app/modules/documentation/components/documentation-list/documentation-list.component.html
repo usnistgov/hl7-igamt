@@ -1,7 +1,6 @@
 <div style="display: flex; flex-direction: row; justify-content: flex-end">
   <button class="btn-secondary btn-sm" (click)="addSection()" *ngIf="admin || documentationType==='USERNOTES'"><i class="fa fa-plus"></i></button>
 </div>
-<div style="overflow: scroll; max-height: 300px; background: white">
   <div cdkDropList (cdkDropListDropped)="drop($event)" class="doc-list" [cdkDropListDisabled]="!admin && documentationType!=='USERNOTES'">
     <li *ngFor="let l of list" [routerLink]="[getLinkByType(l)]" routerLinkActive="active" class="doc-link"  #rla="routerLinkActive" cdkDrag>
       <a [contextMenu]="contextMenu">{{l.label}}</a>
@@ -11,6 +10,5 @@
         </ng-template>
       </context-menu>
     </li>
-  </div>
 </div>
 

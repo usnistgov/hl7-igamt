@@ -26,11 +26,14 @@ export class SelectMessagesComponent implements OnInit {
   @Input()
   selectedVersion: string;
   @Input()
-  hl7Versions: string[] = [];
+  _hl7Versions: string[] = [];
   @Input()
   @Input()
   existing: IDisplayElement[] = [];
-
+  @Input()
+  set hl7Versions(hl7Versions: string[]) {
+    this._hl7Versions = [... hl7Versions, 'Custom'];
+  }
   constructor() {
   }
   ngOnInit() {

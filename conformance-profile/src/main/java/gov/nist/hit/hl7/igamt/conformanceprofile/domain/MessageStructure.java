@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +37,7 @@ public class MessageStructure extends Resource {
   private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
   private ResourceBinding binding;
   private List<Event> events;
+  private List<String> participants = new ArrayList<String>();
   
   
   public List<Event> getEvents() {
@@ -148,5 +150,13 @@ public class MessageStructure extends Resource {
 
   public void setProfileIdentifier(List<MessageProfileIdentifier> profileIdentifier) {
     this.profileIdentifier = profileIdentifier;
+  }
+
+  public List<String> getParticipants() {
+    return participants;
+  }
+
+  public void setParticipants(List<String> participants) {
+    this.participants = participants;
   }
 }

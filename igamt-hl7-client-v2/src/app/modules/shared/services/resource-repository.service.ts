@@ -83,6 +83,7 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
   }
 
   getRefData(ids: string[], type: Type): Observable<IRefData> {
+    console.log(ids);
     const values = ids.map((id) => this.store.select(this.getSelector(type), { id }).pipe(take(1)));
     return combineLatest(
       RxjsStoreHelperService.forkJoin(values),
@@ -91,6 +92,7 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
       map(([vals, leafs]) => {
         const val = {};
         vals.forEach((value) => {
+          console.log(vals);
           val[value.id] = {
             leaf: leafs[value.id],
             name: value.fixedName,
