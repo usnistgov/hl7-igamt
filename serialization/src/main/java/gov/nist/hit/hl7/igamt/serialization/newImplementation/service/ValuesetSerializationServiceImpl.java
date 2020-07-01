@@ -49,9 +49,6 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 			Element codesElement = new Element("Codes");
 
 			Valueset valueSet = valuesetDataModel.getModel();
-			if(deltaMode && valueSet.getOrigin() == null) {
-				return null;
-			}
 
 			if (deltaMode != null && valueSet.getOrigin() != null && valueSetExportConfiguration.isDeltaMode()) {
 				ValuesetDelta valuesetDelta = deltaService.valuesetDelta(valueSet);

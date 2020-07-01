@@ -59,9 +59,6 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 		Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
 		Datatype datatype = datatypeDataModel.getModel();
 
-		if(deltaMode && datatype.getOrigin() == null) {
-			return null;
-		}
 		// Calculate datatype delta if the datatype has an origin
 		if(deltaMode && datatype.getOrigin() != null && datatypeExportConfiguration.isDeltaMode()) {
 			List<StructureDelta> structureDelta = deltaService.delta(Type.DATATYPE, datatype);

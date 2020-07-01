@@ -64,10 +64,6 @@ private DeltaService deltaService;
 	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision, Boolean deltaMode) throws SerializationException {
 		Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, position, segmentExportConfiguration);
 	      Segment segment = segmentDataModel.getModel();
-		if(deltaMode && segment.getOrigin() == null) {
-	      	return null;
-		}
-
 		// Calculate segment delta if the segment has an origin
 		if(deltaMode && segment.getOrigin() != null && segmentExportConfiguration.isDeltaMode()) {
 			List<StructureDelta> structureDelta = deltaService.delta(Type.SEGMENT, segment);
