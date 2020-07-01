@@ -11,10 +11,12 @@ import { IPath } from '../models/cs.interface';
 import { IDatatype } from '../models/datatype.interface';
 import { IRef } from '../models/ref.interface';
 import { IResource } from '../models/resource.interface';
-import { ISegment } from '../models/segment.interface';
+import { ISegment, IField } from '../models/segment.interface';
 import { BindingService } from './binding.service';
 import { PredicateService } from './predicate.service';
 import { AResourceRepositoryService, IRefData } from './resource-repository.service';
+import { Usage } from '../constants/usage.enum';
+import { IDisplayElement } from '../models/display-element.interface';
 
 export interface IBindingMap {
   [bindingPath: string]: IBindingNode[];
@@ -634,6 +636,7 @@ export class Hl7V2TreeService {
               constantValue: {
                 value: child.constantValue,
               },
+              custom: child.custom,
               valueSetBindingsInfo: this.bindingService.getBingdingInfo(refsData[child.ref.id].version, segment.name, refsData[child.ref.id].name, child.position, Type.SEGMENT),
               pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
               confLength: child.confLength,
@@ -781,42 +784,150 @@ export class Hl7V2TreeService {
       const name = child.type === Type.GROUP ? child.name : segments[(child as ISegmentRef).ref.id].name;
       const level = parent ? parent.data.level + 1 : 0;
       const bds = this.mergeBindings(parent ? parent.data.bindings.children[child.id] || [] : [], child.id, { resource: Type.COMPOSITEPROFILE }, bindings, level);
-      const childNode: IHL7v2TreeNode = {
-        data: {
-          id: child.id,
-          name,
-          position: child.position,
-          type: child.type === Type.SEGMENTREF ? Type.SEGMENT : child.type,
-          usage: {
-            value: child.usage,
-          },
-          oldUsage: child.oldUsage,
-          cardinality: {
-            min: child.min,
-            max: child.max,
-          },
+      const childNode: IHL7v2TreeNode = this.makeMsgStructureElmNode(
+        name,
+        parent,
+        child,
+        {
           changeable,
           viewOnly,
-          level,
-          text: {
-            value: child.text,
-          },
-          comments: child.comments || [],
-          pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
-          ref: reference,
-          bindings: bds,
+          leaf,
         },
-        leaf,
-        parent,
-        $hl7V2TreeHelpers: {
-          ref$: child.type === Type.SEGMENTREF ? reference.asObservable() : undefined,
-          treeChildrenSubscription: undefined,
-        },
-      };
+        level,
+        reference,
+        bds,
+      );
       childNode.children = [
         ...((!leaf && child.type === Type.GROUP) ? this.formatStructure([], (child as IGroup).children, segments, refsData, viewOnly, changeable, childNode) : []),
       ];
       return childNode;
     }).sort((a, b) => a.data.position - b.data.position);
+  }
+
+  nodeToSegmentRef(node: IHL7v2TreeNode): ISegmentRef {
+    return {
+      id: node.data.id,
+      name: node.data.name,
+      position: node.data.position,
+      usage: node.data.usage.value as Usage,
+      oldUsage: node.data.oldUsage,
+      type: Type.SEGMENTREF,
+      custom: node.data.custom,
+      min: node.data.cardinality.min,
+      max: node.data.cardinality.max,
+      comments: node.data.comments,
+      ref: {
+        id: node.data.ref.getValue().id,
+      },
+    };
+  }
+
+  makeMsgStructureElmNode(
+    name: string,
+    parent: IHL7v2TreeNode,
+    child: IMsgStructElement,
+    view: {
+      changeable: boolean,
+      viewOnly: boolean,
+      leaf: boolean,
+    },
+    level: number,
+    reference: BehaviorSubject<IResourceRef>,
+    bds: IElementBinding,
+  ): IHL7v2TreeNode {
+    return {
+      data: {
+        id: child.id,
+        name,
+        position: child.position,
+        type: child.type === Type.SEGMENTREF ? Type.SEGMENT : child.type,
+        usage: {
+          value: child.usage,
+        },
+        oldUsage: child.oldUsage,
+        cardinality: {
+          min: child.min,
+          max: child.max,
+        },
+        changeable: view.changeable,
+        viewOnly: view.viewOnly,
+        level,
+        text: {
+          value: child.text,
+        },
+        comments: child.comments || [],
+        pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
+        ref: reference,
+        bindings: bds,
+        custom: child.custom,
+      },
+      leaf: view.leaf,
+      parent,
+      $hl7V2TreeHelpers: {
+        ref$: child.type === Type.SEGMENTREF ? reference.asObservable() : undefined,
+        treeChildrenSubscription: undefined,
+      },
+      children: [],
+    };
+  }
+
+  makeFieldElmNode(
+    segment: string,
+    parent: IHL7v2TreeNode,
+    child: IField,
+    view: {
+      changeable: boolean,
+      viewOnly: boolean,
+      leaf: boolean,
+    },
+    level: number,
+    reference: BehaviorSubject<IResourceRef>,
+    bds: IElementBinding,
+    datatype: IDisplayElement,
+  ): IHL7v2TreeNode {
+    return {
+      data: {
+        id: child.id,
+        name: child.name,
+        position: child.position,
+        type: child.type,
+        usage: {
+          value: child.usage,
+        },
+        oldUsage: child.oldUsage,
+        cardinality: {
+          min: child.min,
+          max: child.max,
+        },
+        length: {
+          min: child.minLength,
+          max: child.maxLength,
+        },
+        lengthType: child.lengthType,
+        changeable: view.changeable,
+        viewOnly: view.viewOnly,
+        level,
+        text: {
+          value: child.text,
+        },
+        comments: child.comments || [],
+        constantValue: {
+          value: child.constantValue,
+        },
+        valueSetBindingsInfo: this.bindingService.getBingdingInfo(datatype.domainInfo.version, segment, datatype.fixedName, child.position, Type.SEGMENT),
+        pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
+        confLength: child.confLength,
+        ref: reference,
+        bindings: bds,
+        custom: child.custom,
+      },
+      leaf: view.leaf,
+      parent,
+      $hl7V2TreeHelpers: {
+        ref$: reference.asObservable(),
+        treeChildrenSubscription: undefined,
+      },
+      children: [],
+    };
   }
 }

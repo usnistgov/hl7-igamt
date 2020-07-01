@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { LengthType } from '../../constants/length-type.enum';
 import { Type } from '../../constants/type.enum';
 import { Usage } from '../../constants/usage.enum';
@@ -10,10 +12,14 @@ import { Hl7Config, IValueSetBindingConfigMap } from '../../models/config.class'
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
-import { IChange } from '../../models/save-change';
+import { ChangeType, IChange, PropertyType } from '../../models/save-change';
+import { IField } from '../../models/segment.interface';
 import { Hl7V2TreeService, IBindingContext, IElementBinding } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
+import { IStructCreateDialogResult } from '../../services/struct-create-dialog.abstract';
 import { IBindingLocationInfo } from '../binding-selector/binding-selector.component';
+import { FieldAddDialogComponent } from '../field-add-dialog/field-add-dialog.component';
+import { SegmentAddDialogComponent } from '../segment-add-dialog/segment-add-dialog.component';
 
 export enum HL7v2TreeColumnType {
   USAGE = 'Usage',
@@ -77,6 +83,7 @@ export interface IHL7v2TreeNode extends TreeNode {
     ref?: BehaviorSubject<IResourceRef>,
     bindings?: IElementBinding,
     level?: number,
+    custom?: boolean,
   };
   parent?: IHL7v2TreeNode;
   children?: IHL7v2TreeNode[];
@@ -121,10 +128,15 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   config: Hl7Config;
   resource$: Observable<IResource>;
   treeExpandedNodes: string[];
+  resourceName: string;
+  _resource: IResource;
+  structChangeType: PropertyType.STRUCTSEGMENT | PropertyType.FIELD;
 
   @Input()
   set resource(resource: IResource) {
     this.type = resource.type;
+    this.resourceName = resource.name;
+    this._resource = resource;
     this.resource$ = of(resource);
     this.close(this.s_resource);
     this.s_resource = this.treeService.getTree(resource, this.repository, this.viewOnly, true, (value) => {
@@ -137,9 +149,11 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
         break;
       case Type.SEGMENT:
         this.context = { resource: Type.SEGMENT };
+        this.structChangeType = PropertyType.FIELD;
         break;
       case Type.CONFORMANCEPROFILE:
         this.context = { resource: Type.CONFORMANCEPROFILE };
+        this.structChangeType = PropertyType.STRUCTSEGMENT;
         break;
     }
   }
@@ -172,12 +186,95 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   }
 
   constructor(
+    private dialog: MatDialog,
     private treeService: Hl7V2TreeService) {
     this.nodes = [];
     this.treeSubscriptions = [];
     this.treeExpandedNodes = [];
     this.changes = new EventEmitter<IChange>();
     this.changes$ = this.changes.asObservable();
+  }
+
+  addChild<T>(
+    path: string,
+    nodes: IHL7v2TreeNode[],
+    openDialog: () => Observable<IStructCreateDialogResult<T>>,
+    parent?: IHL7v2TreeNode) {
+    return openDialog().pipe(
+      map((result) => {
+        if (result) {
+          nodes.push(result.node);
+          if (parent) {
+            parent.expanded = true;
+          }
+          this.nodes = [...this.nodes];
+          this.addStructElm(path, this.structChangeType, result.structElm, result.node.data.position);
+        }
+      }),
+    );
+  }
+
+  addField(path: string, nodes: IHL7v2TreeNode[], parent?: IHL7v2TreeNode) {
+    this.addChild<IField>(
+      path,
+      nodes,
+      () => {
+        return this.dialog.open(FieldAddDialogComponent, {
+          data: {
+            parent,
+            resources: this.datatypes,
+            position: nodes.length + 1,
+            root: this.resourceName,
+            type: this.type,
+            path,
+            usages: Hl7Config.getUsageOptions(this.config.usages, false, false),
+          },
+        }).afterClosed();
+      },
+      parent,
+    ).subscribe();
+  }
+
+  addSegment(path: string, nodes: IHL7v2TreeNode[], parent?: IHL7v2TreeNode) {
+    this.addChild<IField>(
+      path,
+      nodes,
+      () => {
+        return this.dialog.open(SegmentAddDialogComponent, {
+          data: {
+            parent,
+            resources: this.segments,
+            position: nodes.length + 1,
+            root: this.resourceName,
+            type: this.type,
+            path,
+            usages: Hl7Config.getUsageOptions(this.config.usages, false, false),
+          },
+        }).afterClosed();
+      },
+      parent,
+    ).subscribe();
+  }
+
+  canDeleteNode(node: IHL7v2TreeNode) {
+    if (node.parent) {
+      return node.data.position === node.parent.children.length;
+    } else {
+      return node.data.position === this.nodes.length;
+    }
+  }
+
+  addToNode(row) {
+    this.addSegment(row.node.data.pathId, row.node.children, row.node);
+  }
+
+  removeNode(node: IHL7v2TreeNode) {
+    const target = node.parent ? node.parent.children : this.nodes;
+    target.splice(node.data.position - 1, 1);
+    this.nodes = [
+      ...this.nodes,
+    ];
+    this.removeStructElm(node.parent ? node.parent.data.pathId : '', this.structChangeType, this.treeService.nodeToSegmentRef(node), node.data.position);
   }
 
   close(s: Subscription) {
@@ -206,6 +303,30 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
 
   registerChange(change: IChange) {
     this.changes.emit(change);
+  }
+
+  addStructElm<T>(location: string, type: PropertyType.STRUCTSEGMENT | PropertyType.FIELD, elm: T, position: number) {
+    const change: IChange = {
+      location,
+      propertyType: type,
+      propertyValue: elm,
+      oldPropertyValue: null,
+      position,
+      changeType: ChangeType.ADD,
+    };
+    this.registerChange(change);
+  }
+
+  removeStructElm<T>(location: string, type: PropertyType.STRUCTSEGMENT | PropertyType.FIELD, elm: T, position: number) {
+    const change: IChange = {
+      location,
+      propertyType: type,
+      oldPropertyValue: null,
+      propertyValue: elm,
+      position,
+      changeType: ChangeType.DELETE,
+    };
+    this.registerChange(change);
   }
 
   datatypeChange(change: IChange, row: { node: IHL7v2TreeNode }) {

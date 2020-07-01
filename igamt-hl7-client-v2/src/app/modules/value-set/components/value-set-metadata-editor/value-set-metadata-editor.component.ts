@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
-import { concatMap, map, switchMap, take } from 'rxjs/operators';
+import { concatMap, map, switchMap, take, tap } from 'rxjs/operators';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { LoadValueSet } from '../../../../root-store/value-set-edit/value-set-edit.actions';
@@ -29,7 +29,8 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
     store: Store<any>,
     actions$: Actions,
     private valueSetService: ValueSetService,
-    messageService: MessageService, froalaService: FroalaService) {
+    messageService: MessageService,
+    froalaService: FroalaService) {
     super(
       {
         id: EditorID.VALUESET_METADATA,
@@ -55,6 +56,7 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
     );
 
     this.metadataFormInput$ = combineLatest(domainInfo$, name$, super.getOthers()).pipe(
+      take(1),
       map(([domainInfo, name, existing]) => {
         return {
           data: this.currentSynchronized$,

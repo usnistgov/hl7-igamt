@@ -229,7 +229,7 @@ public class SegmentController extends BaseController {
 	@ResponseBody
 	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id,
 			@RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
-			Authentication authentication) throws SegmentException, IOException {
+			Authentication authentication) throws Exception {
 		try {
 			Segment s = this.segmentService.findById(id);
 			validateSaveOperation(s);

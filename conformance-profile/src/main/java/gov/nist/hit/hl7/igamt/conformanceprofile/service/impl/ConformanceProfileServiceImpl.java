@@ -14,18 +14,17 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,19 +36,6 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
-import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Role;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
@@ -1047,12 +1033,112 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     return null;
   }
 
+  Set<SegmentRefOrGroup> getTargetList(ConformanceProfile cp, String location) throws Exception {
+    if(!Strings.isNullOrEmpty(location)) {
+      SegmentRefOrGroup segOrGroup = findSegmentRefOrGroupById(cp.getChildren(), location);
+      if(segOrGroup == null) {
+        return null;
+      }
+      else if (segOrGroup.getType().equals(Type.GROUP)) {
+        return ((Group) segOrGroup).getChildren();
+      } else {
+        throw new Exception("Invalid element path " + location + " is " + segOrGroup.getType());
+      }
+    } else {
+      return cp.getChildren();
+    }
+  }
+
+  public void applyStructure(ConformanceProfile cp, List<ChangeItemDomain> cItems)
+          throws Exception {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    Map<ChangeType, List<ChangeItemDomain>> structureChangeItems = cItems
+            .stream()
+            .filter(c -> c.getPropertyType().equals(PropertyType.STRUCTSEGMENT))
+            .collect(Collectors.groupingBy(ChangeItemDomain::getChangeType));
+
+    // REMOVE FROM STRUCTURE
+    if(structureChangeItems.containsKey(ChangeType.DELETE)) {
+      for(ChangeItemDomain structDelete: structureChangeItems.get(ChangeType.DELETE)) {
+        // GET ADD SET
+        Set<SegmentRefOrGroup> targetList = this.getTargetList(cp, structDelete.getLocation());
+
+        // VALID PATH
+        if(targetList != null) {
+          // Make sure position does exist
+          Optional<SegmentRefOrGroup> element = targetList.stream().filter(elm -> elm.getPosition() == structDelete.getPosition()).findFirst();
+          if(element.isPresent()) {
+
+            // Remove Bindings
+            this.removeElementBindings(createPath(structDelete.getLocation(), element.get().getId()), cp.getBinding(), 0);
+            targetList.remove(element.get());
+          } else {
+            throw new Exception("At path " + structDelete.getLocation() + " cannot remove segment to position " + structDelete.getPosition() + " (Does not Exists)");
+          }
+        }
+      }
+    }
+
+    // ADD TO STRUCTURE
+    if(structureChangeItems.containsKey(ChangeType.ADD)) {
+      List<ChangeItemDomain> addList = structureChangeItems.get(ChangeType.ADD).stream().sorted(Comparator.comparingInt(ChangeItemDomain::getPosition)).collect(Collectors.toList());
+      for(ChangeItemDomain structAdd: addList) {
+        // GET ADD SET
+        Set<SegmentRefOrGroup> targetList = this.getTargetList(cp, structAdd.getLocation());
+
+        // VALID PATH
+        if(targetList != null) {
+          // Make sure position does not exist
+          if(targetList.stream().noneMatch(elm -> elm.getPosition() == structAdd.getPosition())) {
+            String jsonInString = mapper.writeValueAsString(structAdd.getPropertyValue());
+            SegmentRef segmentRef = mapper.readValue(jsonInString, SegmentRef.class);
+            segmentRef.setCustom(true);
+
+            // Can only add at the end
+            if((targetList.size() + 1) == segmentRef.getPosition()) {
+              targetList.add(segmentRef);
+            } else {
+              throw new Exception("At path " + structAdd.getLocation() + " cannot add segment to position " + structAdd.getPosition() + " (Not End Of Message)");
+            }
+          } else {
+            throw new Exception("At path " + structAdd.getLocation() + " cannot add segment to position " + structAdd.getPosition() + " (Already Exists)");
+          }
+        }
+      }
+    }
+  }
+
+  String[] createPath(String parent, String id) {
+    if(Strings.isNullOrEmpty(parent)) {
+      return ArrayUtils.toArray(id);
+    } else {
+      return ArrayUtils.addAll(parent.split("-"), id);
+    }
+  }
+
+  void removeElementBindings(String[] location, Binding binding, int i) {
+    int left = (location.length - 1) - i;
+    if(left >= 0) {
+      StructureElementBinding found = this.findStructureElementBindingByIdFromBinding(binding, location[i]);
+      if(found != null) {
+        if(left == 0) {
+          binding.getChildren().remove(found);
+        } else {
+          this.removeElementBindings(location, found, i + 1);
+        }
+      }
+    }
+  }
+
   @Override
   public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems, String documentId)
-      throws JsonProcessingException, IOException {
+          throws Exception {
     Collections.sort(cItems);
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    this.applyStructure(cp, cItems);
 
     for (ChangeItemDomain item : cItems) {
       if (item.getPropertyType().equals(PropertyType.NAME)) {

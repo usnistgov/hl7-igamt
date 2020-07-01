@@ -14,17 +14,12 @@
 package gov.nist.hit.hl7.igamt.segment.service.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import gov.nist.hit.hl7.igamt.common.binding.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,11 +49,6 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
-import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
-import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
-import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
@@ -668,6 +658,71 @@ public class SegmentServiceImpl implements SegmentService {
     return save(segment);
   }
 
+  public void applyStructure(Segment segment, List<ChangeItemDomain> cItems)
+          throws Exception {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    Map<ChangeType, List<ChangeItemDomain>> structureChangeItems = cItems
+            .stream()
+            .filter(c -> c.getPropertyType().equals(PropertyType.FIELD))
+            .collect(Collectors.groupingBy(ChangeItemDomain::getChangeType));
+
+    // REMOVE FROM STRUCTURE
+    if(structureChangeItems.containsKey(ChangeType.DELETE)) {
+      for(ChangeItemDomain structDelete: structureChangeItems.get(ChangeType.DELETE)) {
+        // Make sure position does exist
+        Optional<Field> element = segment.getChildren().stream().filter(elm -> elm.getPosition() == structDelete.getPosition()).findFirst();
+        if(element.isPresent()) {
+
+          // Remove Bindings
+          this.removeElementBindings(element.get().getId(), segment.getBinding());
+          segment.getChildren().remove(element.get());
+        } else {
+          throw new Exception("At path " + structDelete.getLocation() + " cannot remove field to position " + structDelete.getPosition() + " (Does not Exists)");
+        }
+      }
+    }
+
+
+    // ADD TO STRUCTURE
+    if(structureChangeItems.containsKey(ChangeType.ADD)) {
+      for(ChangeItemDomain structAdd: structureChangeItems.get(ChangeType.ADD)) {
+        // Make sure position does not exist
+        if(segment.getChildren().stream().noneMatch(elm -> elm.getPosition() == structAdd.getPosition())) {
+          String jsonInString = mapper.writeValueAsString(structAdd.getPropertyValue());
+          Field field = mapper.readValue(jsonInString, Field.class);
+          field.setCustom(true);
+
+          // Can only add at the end
+          if((segment.getChildren().size() + 1) == field.getPosition()) {
+            segment.getChildren().add(field);
+          } else {
+            throw new Exception("At path " + structAdd.getLocation() + " cannot add field to position " + structAdd.getPosition() + " (Not End Of Segment)");
+          }
+        } else {
+          throw new Exception("At path " + structAdd.getLocation() + " cannot add field to position " + structAdd.getPosition() + " (Already Exists)");
+        }
+      }
+    }
+  }
+
+
+  void removeElementBindings(String location, Binding binding) {
+    StructureElementBinding found = this.findStructureElementBindingByIdFromBinding(binding, location);
+    if(found != null) {
+      binding.getChildren().remove(found);
+    }
+  }
+
+  private StructureElementBinding findStructureElementBindingByIdFromBinding(Binding binding, String id) {
+    if (binding != null && binding.getChildren() != null) {
+      for (StructureElementBinding child : binding.getChildren()) {
+        if (child.getElementId().equals(id))
+          return child;
+      }
+    }
+    return null;
+  }
   /*
    * (non-Javadoc)
    * 
@@ -676,8 +731,11 @@ public class SegmentServiceImpl implements SegmentService {
    * java.util.List)
    */
   @Override
-  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws IOException {
+  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws Exception {
     Collections.sort(cItems);
+
+    this.applyStructure(s, cItems);
+
     for (ChangeItemDomain item : cItems) {
       if (item.getPropertyType().equals(PropertyType.PREDEF)) {
         item.setOldPropertyValue(s.getPreDef());
@@ -706,7 +764,15 @@ public class SegmentServiceImpl implements SegmentService {
           item.setOldPropertyValue(f.getUsage());
           f.setUsage(Usage.valueOf((String) item.getPropertyValue()));
         }
-      } else if (item.getPropertyType().equals(PropertyType.CARDINALITYMIN)) {
+      }
+      else if (item.getPropertyType().equals(PropertyType.NAME)) {
+        Field f = this.findFieldById(s, item.getLocation());
+        if (f != null) {
+          item.setOldPropertyValue(f.getName());
+          f.setName(item.getPropertyValue().toString());
+        }
+      }
+      else if (item.getPropertyType().equals(PropertyType.CARDINALITYMIN)) {
         Field f = this.findFieldById(s, item.getLocation());
         if (f != null) {
           item.setOldPropertyValue(f.getMin());

@@ -1,5 +1,5 @@
-<ng-template #headerControls let-router="router" *ngIf="hasOrigin$ | async">
-    <button class="btn btn-sm btn-default toggle-btn" style="margin-left: 10px; border: 1px solid black;" [routerLink]="'../delta'">
+<ng-template #headerControls let-router="router" >
+    <button *ngIf="hasOrigin$ | async" class="btn btn-sm btn-default toggle-btn" style="margin-left: 10px; border: 1px solid black;" [routerLink]="'../delta'">
       <span style="font-weight: bold;" ><span style="font-size: 1em;" >Δ</span> delta</span>
     </button>
 </ng-template>
