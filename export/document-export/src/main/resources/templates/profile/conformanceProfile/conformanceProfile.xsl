@@ -12,6 +12,7 @@
 	<xsl:import href="/templates/profile/resource/author.xsl" />
 	<xsl:import href="/templates/profile/resource/role.xsl" />
 	<xsl:import href="/templates/profile/resource/type.xsl" />
+		 	<xsl:import href="/templates/profile/definitionText2.xsl" />
 	<xsl:include href="/templates/profile/conformanceProfile/messageSegment.xsl" />
 	<xsl:include href="/templates/profile/messageConstraint.xsl" />
 	<xsl:include
@@ -135,6 +136,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 		<xsl:call-template name="CommentList" />
+ 		<xsl:call-template name="DefinitionText2" />
 
 		<!-- <xsl:apply-templates select="./Binding/ValueSetBindingList" /> -->
 		<xsl:call-template name="ValueSetBindingList" />

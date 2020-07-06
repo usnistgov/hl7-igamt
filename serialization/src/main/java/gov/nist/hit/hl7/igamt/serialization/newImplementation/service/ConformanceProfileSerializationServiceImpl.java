@@ -121,6 +121,7 @@ BindingSerializationService bindingSerializationService;
 	        if (conformanceProfile.getChildren() != null
 		            && conformanceProfile.getChildren().size() > 0) {
 		    	  Element commentsElement = new Element("Comments"); 
+		    	  Element definitionTextsElement = new Element("DefinitionTexts");
 		    	  for(SegmentRefOrGroup segmentRefOrGroup : conformanceProfile.getChildren()) {
 		    		  if(segmentRefOrGroup.getComments() != null) {
 		    			  for(Comment comment : segmentRefOrGroup.getComments()) {
@@ -131,8 +132,18 @@ BindingSerializationService bindingSerializationService;
 		    			  }
 		    			  
 		    		  }
+		    		  if(segmentRefOrGroup.getText() != null) {
+		    			  Element definitionText = new Element("DefinitionText");
+		    			  definitionText
+	    	              .addAttribute(new Attribute("text", segmentRefOrGroup.getText()));
+		    			  definitionText.addAttribute(new Attribute("name",segmentRefOrGroup.getName()));
+		    			  definitionTextsElement.appendChild(definitionText);
+		    		  }
 		    	  }
+		    	  
 		    	  conformanceProfileElement.appendChild(commentsElement);
+		    	  conformanceProfileElement.appendChild(definitionTextsElement);
+
 
 	        	
 		        	List<MsgStructElement> msgStructElementList = conformanceProfile.getChildren().stream().sorted((e1, e2) -> 

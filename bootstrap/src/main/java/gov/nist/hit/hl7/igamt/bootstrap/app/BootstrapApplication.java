@@ -298,7 +298,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
   tableFixes.removeSegmentsDuplicatedBinding();
 }
 
-  //@PostConstruct
+//  @PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);

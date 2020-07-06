@@ -48,6 +48,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
     combineLatest(
       this.getLibId(),
       this.exportConfigurationService.getAllExportConfigurations(Type.DATATYPELIBRARY)).pipe(
+        take(1),
         map(([igId, configurations]) => {
           console.log(igId);
           const dialogRef = this.dialog.open(ExportDialogComponent, {
@@ -77,8 +78,8 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
     combineLatest(
       this.getLibId(),
       this.exportConfigurationService.getAllExportConfigurations(Type.DATATYPELIBRARY)).pipe(
+        take(1),
         map(([igId, configurations]) => {
-          console.log(igId);
           const dialogRef = this.dialog.open(ExportDialogComponent, {
             data: {
               toc: this.store.select(fromLibrayEdit.selectProfileTree),
@@ -99,11 +100,17 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   exportQuickHTML() {
-    this.getLibId().subscribe((id) => this.libraryService.exportAsHtmlQuick(id));
+    this.getLibId().pipe(
+      take(1),
+      map((id) => this.libraryService.exportAsHtmlQuick(id))
+    ).subscribe();
   }
 
   exportQuickWORD() {
-    this.getLibId().subscribe((id) => this.libraryService.exportAsWordQuick(id));
+    this.getLibId().pipe(
+      take(1),
+      map((id) => this.libraryService.exportAsWordQuick(id))
+    ).subscribe();
   }
   getLibId(): Observable<string> {
     return this.store.select(fromLibrayEdit.selectLibraryId);

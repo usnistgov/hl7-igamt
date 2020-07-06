@@ -91,7 +91,8 @@ private DeltaService deltaService;
 	      Map<String, Boolean > bindedPaths = segment.getChildren().stream().filter(  field  -> field != null && ExportTools.CheckUsage(segmentExportConfiguration.getFieldsExport(), field.getUsage())).collect(Collectors.toMap( x -> x.getId(), x -> true ));
 	      
 	      if (segment.getChildren() != null) {
-	    	  Element commentsElement = new Element("Comments"); 
+	    	  Element commentsElement = new Element("Comments");
+	    	  Element definitionTextsElement = new Element("DefinitionTexts");
 	    	  for(Field field : segment.getChildren()) {
 	    	    if(bindedPaths.containsKey(field.getId())) {
 	    		  if(field.getComments() != null) {
@@ -107,12 +108,19 @@ private DeltaService deltaService;
 		    			  commentElement.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
 	    				  commentElement.addAttribute(new Attribute("description",comment.getDescription()));
 		    			  commentsElement.appendChild(commentElement);
-	    			  }
-	    			  
+	    			  }  
+	    		  }
+	    		  if(field.getText() != null) {
+	    			  Element definitionText = new Element("DefinitionText");
+	    			  definitionText
+    	              .addAttribute(new Attribute("text", field.getText()));
+	    			  definitionText.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
+	    			  definitionTextsElement.appendChild(definitionText);
 	    		  }
 	    	  }
 	    	  }
 			segmentElement.appendChild(commentsElement);
+			segmentElement.appendChild(definitionTextsElement);
 	        Element fieldsElement = this.serializeFields(segment.getChildren(),igDataModel,segmentDataModel, segmentExportConfiguration);
 	        if (fieldsElement != null) {
 	          segmentElement.appendChild(fieldsElement);

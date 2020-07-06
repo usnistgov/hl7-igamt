@@ -74,8 +74,8 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 			valueSetElement
 					.addAttribute(new Attribute("codeSystemIds", getCodSystemDispaly(valueSet.getCodeSystems())));
 			Element codesElement = new Element("Codes");
+			
 			if (valueSet.getCodes().size() > 0) {
-
 				for (Code displayCode : valueSet.getCodes()) {
 				  
 					if (displayCode != null && CheckUsageForValueSets(valueSetExportConfiguration.getCodesExport(),
@@ -85,7 +85,9 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 								new Attribute("codeId", displayCode.getId() != null ? displayCode.getId() : ""));
 						codeRefElement.addAttribute(
 								new Attribute("value", displayCode.getValue() != null ? displayCode.getValue() : ""));
-						codeRefElement.addAttribute(new Attribute("codeSystem", displayCode.getCodeSystem()));
+						codeRefElement.addAttribute(
+								new Attribute("value", displayCode.getCodeSystem() != null ? displayCode.getCodeSystem() : ""));
+//						codeRefElement.addAttribute(new Attribute("codeSystem", displayCode.getCodeSystem()));
 						codeRefElement.addAttribute(new Attribute("usage",
 								displayCode.getUsage() != null ? displayCode.getUsage().toString() : ""));
 						codeRefElement.addAttribute(new Attribute("description",
