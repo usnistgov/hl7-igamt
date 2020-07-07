@@ -107,17 +107,20 @@ export class CsDialogComponent implements OnDestroy {
         ...this.excludePaths,
         this.predicateElementId,
       ];
-      this.contextFilter.restrictions.push({
+      this.contextFilter.restrictions = [{
+        criterion: RestrictionType.PARENTS,
+        allow: true,
+        value: this.excludePaths[0],
+      }, {
+        criterion: RestrictionType.TYPE,
+        allow: true,
+        value: [Type.CONFORMANCEPROFILE],
+      }, {
         criterion: RestrictionType.PATH,
-        allow: false,
         combine: RestrictionCombinator.ENFORCE,
-        value: this.excludePaths.map((path) => {
-          return {
-            path,
-            excludeChildren: true,
-          };
-        }),
-      });
+        allow: false,
+        value: [{ path: this.predicateElementId, excludeChildren: true }],
+      }];
     }
 
     this.s_resource = data.resource.subscribe(

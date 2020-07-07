@@ -27,6 +27,7 @@ export enum RestrictionType {
   USAGE = 'USAGE',
   TYPE = 'TYPE',
   PATH = 'PATH',
+  PARENTS = 'PARENTS',
 }
 
 export interface IPathValue {
@@ -114,6 +115,8 @@ export class TreeFilterService {
         return this.type(node, restriction.value);
       case RestrictionType.PATH:
         return this.path(node, restriction.value);
+      case RestrictionType.PARENTS:
+        return this.parents(node, restriction.value);
     }
   }
 
@@ -131,6 +134,10 @@ export class TreeFilterService {
 
   path(node: IHL7v2TreeNode, payload: IPathValue[]): boolean {
     return this.pathIsProhibited(node.data.pathId, payload);
+  }
+
+  parents(node: IHL7v2TreeNode, payload: string): boolean {
+    return payload.startsWith(node.data.pathId);
   }
 
   type(node: IHL7v2TreeNode, types: Type[]): boolean {
