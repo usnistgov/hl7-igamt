@@ -2,8 +2,8 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { NgForm } from '@angular/forms';
 import { Guid } from 'guid-typescript';
 import { TreeNode } from 'primeng/primeng';
-import { combineLatest, Observable, of } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
+import { filter, map, take, tap } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
 import { ComparativeType, ConformanceStatementType, DeclarativeType, OccurrenceType, PropositionType, StatementType, VerbType } from '../../models/conformance-statements.domain';
 import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '../../models/cs.interface';
@@ -20,7 +20,10 @@ import { ICardinalityRange, IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.co
 })
 export class CsPropositionComponent implements OnInit {
 
-  assertion: ISimpleAssertion;
+  _assertion: BehaviorSubject<{
+    value: ISimpleAssertion;
+    is: boolean;
+  }>;
   statementType: StatementType = StatementType.DECLARATIVE;
   _statementType = StatementType;
   _declarativeType = DeclarativeType;
@@ -28,12 +31,24 @@ export class CsPropositionComponent implements OnInit {
   _propositionType = PropositionType;
   _occurrenceType = OccurrenceType;
   _csType = ConformanceStatementType;
-  _context: IPath;
+  _context: BehaviorSubject<{
+    path: IPath;
+    is: boolean;
+  }>;
   _tree: TreeNode[];
 
   res: IResource;
-  subjectName: string;
-  compareName: string;
+  subject: {
+    name: string,
+    node: IHL7v2TreeNode,
+    valid: boolean,
+  };
+
+  compare: {
+    name: string,
+    node: IHL7v2TreeNode,
+    valid: boolean,
+  };
 
   blank = {
     mode: AssertionMode.SIMPLE,
@@ -124,23 +139,6 @@ export class CsPropositionComponent implements OnInit {
     } else {
       this.statementType = StatementType.DECLARATIVE;
     }
-
-    this.getName(this.treeService.concatPath(this.context, assertion.subject.path)).pipe(
-      take(1),
-      map((info) => {
-        this.setSubject(info);
-      }),
-    ).subscribe();
-
-    if (assertion.complement.path) {
-      this.getName(this.treeService.concatPath(this.context, assertion.complement.path)).pipe(
-        take(1),
-        map((info) => {
-          this.compareName = info.name;
-        }),
-      ).subscribe();
-    }
-
     this.valueChange.emit(assertion);
   }
 
@@ -165,11 +163,22 @@ export class CsPropositionComponent implements OnInit {
 
   @Input()
   set context(ctx: IPath) {
-    this._context = ctx;
+    this._context.next({ path: ctx, is: true });
   }
 
   get context() {
-    return this._context;
+    return this._context.getValue().path;
+  }
+
+  set assertion(value: ISimpleAssertion) {
+    this._assertion.next({
+      value,
+      is: true,
+    });
+  }
+
+  get assertion() {
+    return this._assertion.getValue().value;
   }
 
   occurences = [
@@ -241,7 +250,6 @@ export class CsPropositionComponent implements OnInit {
   id: string;
 
   constructor(private treeService: Hl7V2TreeService) {
-    this.assertion = Object.assign({}, this.blank);
     this.csType = ConformanceStatementType.PROPOSITION;
     this.valueChange = new EventEmitter<ISimpleAssertion>();
     this.id = Guid.create().toString();
@@ -250,6 +258,75 @@ export class CsPropositionComponent implements OnInit {
     this.map(this.declarative_statements);
     this.map(this.comparative_statements);
     this.map(this.proposition_statements);
+    this._context = new BehaviorSubject<any>({
+      path: undefined,
+      is: false,
+    });
+    this._assertion = new BehaviorSubject<any>({
+      value: undefined,
+      is: false,
+    });
+    this.assertion = Object.assign({}, this.blank);
+    combineLatest(
+      this._context.asObservable().pipe(filter((value) => value.is), map((value) => value.path)),
+      this._assertion.asObservable().pipe(filter((value) => value.is), map((value) => value.value)),
+    ).pipe(
+      tap(([context, assertion]) => {
+        this.setSubject(context, assertion);
+        this.setCompare(context, assertion);
+      }),
+    ).subscribe();
+  }
+
+  setSubject(context: IPath, assertion: ISimpleAssertion, node?: IHL7v2TreeNode) {
+    this.subject = {
+      name: '',
+      valid: false,
+      node,
+    };
+
+    try {
+      this.getName(this.treeService.concatOverlapPath(context, assertion.subject.path)).pipe(
+        take(1),
+        map((info) => {
+          this.subject = {
+            name: info.name,
+            valid: true,
+            node: undefined,
+          };
+          if (info.nodeInfo) {
+            this.subjectIsComplex = !info.nodeInfo.leaf;
+          }
+        }),
+      ).subscribe();
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  setCompare(context: IPath, assertion: ISimpleAssertion, node?: IHL7v2TreeNode) {
+    this.compare = {
+      name: '',
+      valid: false,
+      node,
+    };
+
+    if (assertion.complement.path) {
+      try {
+        this.getName(this.treeService.concatOverlapPath(context, assertion.complement.path)).pipe(
+          take(1),
+          map((info) => {
+            this.compare = {
+              name: info.name,
+              valid: true,
+              node: undefined,
+            };
+          }),
+        ).subscribe();
+      } catch (e) {
+        console.error(e);
+      }
+    }
   }
 
   map(list: Array<{ label: string, value: string }>) {
@@ -278,8 +355,8 @@ export class CsPropositionComponent implements OnInit {
 
   change() {
     combineLatest(
-      this.getName(this.assertion.subject.path),
-      this.getName(this.assertion.complement.path),
+      this.getName(this.treeService.concatOverlapPath(this.context, this.assertion.subject.path)),
+      this.getName(this.treeService.concatOverlapPath(this.context, this.assertion.complement.path)),
     ).pipe(
       take(1),
       map(([node, compNode]) => {
@@ -403,17 +480,16 @@ export class CsPropositionComponent implements OnInit {
   }
 
   targetNodeValid() {
-    return this.nodeValid(this.assertion.subject);
+    return this.nodeValid(this.assertion.subject) && this.subject.valid;
   }
 
   nodeValid(elm: ISubject | IComplement) {
-    return !!elm.path && !!elm.occurenceIdPath && this.pathValid(this.context, elm.path);
+    return !!elm.path && !!elm.occurenceIdPath;
   }
 
   pathValid(context: IPath, path: IPath) {
     const ctx = this.treeService.pathToString(context);
     const elm = this.treeService.pathToString(path);
-
     return elm.startsWith(ctx);
   }
 
@@ -439,7 +515,7 @@ export class CsPropositionComponent implements OnInit {
 
   comparisonNodeValid() {
     if (this.statementType === this._statementType.COMPARATIVE) {
-      return this.nodeValid(this.assertion.complement);
+      return this.nodeValid(this.assertion.complement) && this.subject.valid;
     } else {
       return true;
     }
@@ -463,24 +539,9 @@ export class CsPropositionComponent implements OnInit {
     };
   }
 
-  setSubject(info: {
-    name: string,
-    nodeInfo: IPathInfo,
-  }) {
-    this.subjectName = info.name;
-    if (info.nodeInfo) {
-      this.subjectIsComplex = !info.nodeInfo.leaf;
-    }
-  }
-
   targetElement(event) {
     this.changeElement(event, this.assertion.subject);
-    this.getName(this.treeService.concatPath(this.context, event.path)).pipe(
-      take(1),
-      map((info) => {
-        this.setSubject(info);
-      }),
-    ).subscribe();
+    this.setSubject(this.context, this.assertion, event.node);
     this.subjectRepeatMax = this.getNodeRepeatMax(event.node);
   }
 
@@ -514,17 +575,12 @@ export class CsPropositionComponent implements OnInit {
 
   comparativeElement(event) {
     this.changeElement(event, this.assertion.complement);
-    this.getName(this.treeService.concatPath(this.context, event.path)).pipe(
-      take(1),
-      map((info) => {
-        this.compareName = info.name;
-      }),
-    ).subscribe();
+    this.setCompare(this.context, this.assertion, event.node);
     this.complementRepeatMax = this.getNodeRepeatMax(event.node);
   }
 
   changeElement(event, elm: ISubject | IComplement) {
-    elm.path = this.treeService.concatPath(this.context, event.path);
+    elm.path = event.path;
     elm.occurenceIdPath = event.node.data.id;
     elm.occurenceValue = undefined;
     elm.occurenceType = undefined;

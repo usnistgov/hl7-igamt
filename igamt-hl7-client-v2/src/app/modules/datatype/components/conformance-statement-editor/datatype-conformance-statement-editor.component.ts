@@ -56,7 +56,7 @@ export class DatatypeConformanceStatementEditorComponent extends ConformanceStat
           ];
         });
         return {
-          resourceConformanceStatement: dtCsList.conformanceStatements,
+          resourceConformanceStatement: dtCsList.conformanceStatements || [],
           complementConformanceStatements: {
             [Type.DATATYPE]: DTCSMap,
           },

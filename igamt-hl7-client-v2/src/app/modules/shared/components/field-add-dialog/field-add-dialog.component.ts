@@ -69,31 +69,6 @@ export class FieldAddDialogComponent extends StructCreateDialog<IField> implemen
     }
   }
 
-  makeNode(): IHL7v2TreeNode {
-    return this.treeService.makeFieldElmNode(
-      this.root,
-      this.parent,
-      this.blueprint,
-      {
-        changeable: true,
-        viewOnly: false,
-        leaf: this.resource.leaf,
-      },
-      !this.parent ? 0 : this.parent.data.level + 1,
-      new BehaviorSubject({
-        type: Type.DATATYPE,
-        id: this.resource.id,
-        version: this.resource.domainInfo.version,
-        name: this.resource.fixedName,
-      }),
-      {
-        children: {},
-        values: {},
-      },
-      this.resource,
-    );
-  }
-
   isValid(): boolean {
     return this.form.valid && !!this.blueprint.ref.id;
   }

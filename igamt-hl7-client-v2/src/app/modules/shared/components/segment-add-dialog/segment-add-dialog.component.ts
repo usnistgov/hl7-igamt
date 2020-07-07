@@ -2,14 +2,12 @@ import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import * as _ from 'lodash';
-import { BehaviorSubject } from 'rxjs';
 import { Type } from '../../constants/type.enum';
 import { Usage } from '../../constants/usage.enum';
 import { ISegmentRef } from '../../models/conformance-profile.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { StructCreateDialog } from '../../services/struct-create-dialog.abstract';
-import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 
 @Component({
   selector: 'app-segment-add-dialog',
@@ -53,30 +51,6 @@ export class SegmentAddDialogComponent extends StructCreateDialog<ISegmentRef> i
     );
     this.blueprint.position = this.position;
     this.blueprint.id = this.getPathId();
-  }
-
-  makeNode(): IHL7v2TreeNode {
-    return this.treeService.makeMsgStructureElmNode(
-      this.resource.fixedName,
-      this.parent,
-      this.blueprint,
-      {
-        changeable: true,
-        viewOnly: false,
-        leaf: false,
-      },
-      !this.parent ? 0 : this.parent.data.level + 1,
-      new BehaviorSubject({
-        type: Type.SEGMENT,
-        id: this.resource.id,
-        version: this.resource.domainInfo.version,
-        name: this.resource.fixedName,
-      }),
-      {
-        children: {},
-        values: {},
-      },
-    );
   }
 
   isValid(): boolean {

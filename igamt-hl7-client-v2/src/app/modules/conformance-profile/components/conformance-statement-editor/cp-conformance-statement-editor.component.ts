@@ -62,7 +62,7 @@ export class CPConformanceStatementEditorComponent extends ConformanceStatementE
           ];
         });
         return {
-          resourceConformanceStatement: cpList.conformanceStatements,
+          resourceConformanceStatement: cpList.conformanceStatements || [],
           complementConformanceStatements: {
             [Type.DATATYPE]: DTCSMap,
             [Type.SEGMENT]: SGCSMap,

@@ -55,7 +55,7 @@ export class SegmentConformanceStatementEditorComponent extends ConformanceState
           ];
         });
         return {
-          resourceConformanceStatement: segmentCsList.conformanceStatements,
+          resourceConformanceStatement: segmentCsList.conformanceStatements || [],
           complementConformanceStatements: {
             [Type.DATATYPE]: DTCSMap,
           },

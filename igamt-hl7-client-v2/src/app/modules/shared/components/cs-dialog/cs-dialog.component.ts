@@ -54,6 +54,7 @@ export class CsDialogComponent implements OnDestroy {
   s_resource: Subscription;
   showContext: boolean;
   contextName: string;
+  contextType: string;
   predicateMode: boolean;
   assertionMode: boolean;
   predicateElementId: string;
@@ -131,6 +132,7 @@ export class CsDialogComponent implements OnDestroy {
                 pathId: resource.id,
                 name: resource.name,
                 type: resource.type,
+                rootPath: { elementId: resource.id },
                 position: 0,
               },
               children: [...value],
@@ -138,6 +140,8 @@ export class CsDialogComponent implements OnDestroy {
             },
           ];
           this.context = this.structure;
+          this.contextName = resource.name;
+          this.contextType = resource.type;
 
           if (!this.assertionMode) {
             this.conformanceStatement = data.payload;
@@ -174,10 +178,14 @@ export class CsDialogComponent implements OnDestroy {
         take(1),
         map((value) => {
           this.contextName = value;
+          this.contextType = Type.GROUP;
         }),
       ).subscribe();
     } else if (node.data.type === Type.CONFORMANCEPROFILE) {
       this.cs.context = undefined;
+      this.cs.level = Type.CONFORMANCEPROFILE;
+      this.contextType = Type.CONFORMANCEPROFILE;
+      this.contextName = node.data.name;
       this.structure = [
         node,
       ];

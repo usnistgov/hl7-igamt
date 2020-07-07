@@ -6,7 +6,6 @@ import { IDisplayElement } from '../models/display-element.interface';
 
 export interface IStructCreateDialogResult<T> {
   resource: IDisplayElement;
-  node: IHL7v2TreeNode;
   structElm: T;
 }
 
@@ -30,13 +29,11 @@ export abstract class StructCreateDialog<T> {
     return (this.path && this.path !== '' ? this.path + '.' : '') + this.position;
   }
 
-  abstract makeNode(): IHL7v2TreeNode;
   abstract isValid(): boolean;
 
   resolve(): IStructCreateDialogResult<T> {
     return {
       resource: this.resource,
-      node: this.makeNode(),
       structElm: this.blueprint,
     };
   }

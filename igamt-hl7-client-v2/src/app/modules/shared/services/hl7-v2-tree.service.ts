@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
+import * as _ from 'lodash';
 import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { filter, flatMap, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
 import { ICardinalityRange, IHL7v2TreeNode, ILengthRange, IResourceRef, IStringValue } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
+import { Usage } from '../constants/usage.enum';
 import { IStructureElementBinding, IStructureElementBindingProperties } from '../models/binding.interface';
 import { IComment } from '../models/comment.interface';
 import { IConformanceProfile, IGroup, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
@@ -11,12 +13,10 @@ import { IPath } from '../models/cs.interface';
 import { IDatatype } from '../models/datatype.interface';
 import { IRef } from '../models/ref.interface';
 import { IResource } from '../models/resource.interface';
-import { ISegment, IField } from '../models/segment.interface';
+import { ISegment } from '../models/segment.interface';
 import { BindingService } from './binding.service';
 import { PredicateService } from './predicate.service';
 import { AResourceRepositoryService, IRefData } from './resource-repository.service';
-import { Usage } from '../constants/usage.enum';
-import { IDisplayElement } from '../models/display-element.interface';
 
 export interface IBindingMap {
   [bindingPath: string]: IBindingNode[];
@@ -86,7 +86,7 @@ export class Hl7V2TreeService {
     if (!path) {
       return '';
     } else {
-      return path.elementId + (path.instanceParameter ? ('[' + path.instanceParameter + ']') : '') + this.pathToString(path.child);
+      return path.elementId + '-' + this.pathToString(path.child);
     }
   }
 
@@ -171,10 +171,12 @@ export class Hl7V2TreeService {
         changeable: node.data.changeable,
         viewOnly: node.data.viewOnly,
         confLength: node.data.confLength,
+        custom: node.data.custom,
         valueSetBindingsInfo: node.data.valueSetBindingsInfo,
         ref,
         bindings: node.data.bindings,
         level: node.data.level,
+        rootPath: node.data.rootPath,
       },
       leaf: node.leaf,
       $hl7V2TreeHelpers: {
@@ -188,31 +190,50 @@ export class Hl7V2TreeService {
     return node ? (node.parent && node.parent.data.type === Type.COMPONENT) ? Type.SUBCOMPONENT : node.data.type : undefined;
   }
 
-  concatPath(pre: IPath, post: IPath): IPath {
-    const path = pre ? {
-      elementId: pre.elementId,
-      instanceParameter: pre.instanceParameter,
-    } : post;
-    let writer = path;
-    let reader = pre;
-    while (reader) {
+  getLastChild(p: IPath): IPath {
+    if (p.child) {
+      return this.getLastChild(p.child);
+    } else {
+      return p;
+    }
+  }
 
-      if (reader.elementId === post.elementId) {
-        reader = post.child;
-      } else {
-        reader = reader.child;
-      }
-
-      if (reader) {
-        writer.child = {
-          elementId: reader.elementId,
-          instanceParameter: reader.instanceParameter,
-        };
-      }
-      writer = writer.child;
+  concatOverlapPath(pre: IPath, post: IPath): IPath {
+    // If there are no prefixes return postfix
+    if (!pre) {
+      return _.cloneDeep(post);
+    }
+    // If there are no postfixes return prefix
+    if (!post) {
+      return _.cloneDeep(pre);
     }
 
-    return path;
+    const resultPath = _.cloneDeep(pre);
+    const prefixLastChild = this.getLastChild(resultPath);
+
+    // check overlap
+    if (prefixLastChild.elementId === post.elementId) {
+      prefixLastChild.child = _.cloneDeep(post.child);
+      return resultPath;
+    } else {
+      throw new Error('Cannot concat paths');
+    }
+  }
+
+  straightConcatPath(pre: IPath, post: IPath): IPath {
+    // If there are no prefixes return postfix
+    if (!pre) {
+      return _.cloneDeep(post);
+    }
+    // If there are no postfixes return prefix
+    if (!post) {
+      return _.cloneDeep(pre);
+    }
+
+    const resultPath = _.cloneDeep(pre);
+    const prefixLastChild = this.getLastChild(resultPath);
+    prefixLastChild.child = _.cloneDeep(post);
+    return resultPath;
   }
 
   formatBindings(nodes: IBindingNode[]): IBindingMap {
@@ -616,6 +637,7 @@ export class Hl7V2TreeService {
               usage: {
                 value: child.usage,
               },
+              rootPath: this.straightConcatPath(parent ? parent.data.rootPath : { elementId: segment.id }, { elementId: child.id }),
               oldUsage: child.oldUsage,
               cardinality: {
                 min: child.min,
@@ -688,6 +710,7 @@ export class Hl7V2TreeService {
               usage: {
                 value: child.usage,
               },
+              rootPath: this.straightConcatPath(parent ? parent.data.rootPath : { elementId: datatype.id }, { elementId: child.id }),
               oldUsage: child.oldUsage,
               length: {
                 min: child.minLength,
@@ -764,7 +787,7 @@ export class Hl7V2TreeService {
       )).pipe(
         take(1),
         map(([refsData, segments]) => {
-          return this.formatStructure(confProfile.binding ? confProfile.binding.children || [] : [], confProfile.children, segments, refsData, viewOnly, changeable, parent);
+          return this.formatStructure(confProfile.binding ? confProfile.binding.children || [] : [], confProfile.children, segments, refsData, viewOnly, changeable, confProfile, parent);
         }),
       );
   }
@@ -777,6 +800,7 @@ export class Hl7V2TreeService {
     refsData: IRefData,
     viewOnly: boolean,
     changeable: boolean,
+    cp: IConformanceProfile,
     parent?: IHL7v2TreeNode): IHL7v2TreeNode[] {
     return structure.map((child) => {
       const leaf = child.type === Type.SEGMENTREF ? refsData[(child as ISegmentRef).ref.id].leaf : !(child as IGroup).children || (child as IGroup).children.length === 0;
@@ -796,9 +820,10 @@ export class Hl7V2TreeService {
         level,
         reference,
         bds,
+        cp,
       );
       childNode.children = [
-        ...((!leaf && child.type === Type.GROUP) ? this.formatStructure([], (child as IGroup).children, segments, refsData, viewOnly, changeable, childNode) : []),
+        ...((!leaf && child.type === Type.GROUP) ? this.formatStructure([], (child as IGroup).children, segments, refsData, viewOnly, changeable, cp, childNode) : []),
       ];
       return childNode;
     }).sort((a, b) => a.data.position - b.data.position);
@@ -834,6 +859,7 @@ export class Hl7V2TreeService {
     level: number,
     reference: BehaviorSubject<IResourceRef>,
     bds: IElementBinding,
+    cp: IConformanceProfile,
   ): IHL7v2TreeNode {
     return {
       data: {
@@ -844,6 +870,7 @@ export class Hl7V2TreeService {
         usage: {
           value: child.usage,
         },
+        rootPath: this.straightConcatPath(parent ? parent.data.rootPath : { elementId: cp.id }, { elementId: child.id }),
         oldUsage: child.oldUsage,
         cardinality: {
           min: child.min,
@@ -871,63 +898,4 @@ export class Hl7V2TreeService {
     };
   }
 
-  makeFieldElmNode(
-    segment: string,
-    parent: IHL7v2TreeNode,
-    child: IField,
-    view: {
-      changeable: boolean,
-      viewOnly: boolean,
-      leaf: boolean,
-    },
-    level: number,
-    reference: BehaviorSubject<IResourceRef>,
-    bds: IElementBinding,
-    datatype: IDisplayElement,
-  ): IHL7v2TreeNode {
-    return {
-      data: {
-        id: child.id,
-        name: child.name,
-        position: child.position,
-        type: child.type,
-        usage: {
-          value: child.usage,
-        },
-        oldUsage: child.oldUsage,
-        cardinality: {
-          min: child.min,
-          max: child.max,
-        },
-        length: {
-          min: child.minLength,
-          max: child.maxLength,
-        },
-        lengthType: child.lengthType,
-        changeable: view.changeable,
-        viewOnly: view.viewOnly,
-        level,
-        text: {
-          value: child.text,
-        },
-        comments: child.comments || [],
-        constantValue: {
-          value: child.constantValue,
-        },
-        valueSetBindingsInfo: this.bindingService.getBingdingInfo(datatype.domainInfo.version, segment, datatype.fixedName, child.position, Type.SEGMENT),
-        pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
-        confLength: child.confLength,
-        ref: reference,
-        bindings: bds,
-        custom: child.custom,
-      },
-      leaf: view.leaf,
-      parent,
-      $hl7V2TreeHelpers: {
-        ref$: reference.asObservable(),
-        treeChildrenSubscription: undefined,
-      },
-      children: [],
-    };
-  }
 }
