@@ -23,7 +23,7 @@ import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/con
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { IResource } from '../../../shared/models/resource.interface';
-import { IChange, PropertyType, ChangeType } from '../../../shared/models/save-change';
+import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
 import { IBindingContext } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
@@ -113,8 +113,8 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     // Is it structure delete
     const isStruct = this.changeIsStruct(change);
     const isStructRm = isStruct && change.changeType === ChangeType.DELETE;
-    // const isStructAd = isStruct && change.changeType === ChangeType.ADD;
-    // const isStructUp = isStruct && change.changeType === ChangeType.UPDATE;
+    // TODO const isStructAd = isStruct && change.changeType === ChangeType.ADD;
+    // TODO const isStructUp = isStruct && change.changeType === ChangeType.UPDATE;
     const hasStructAdd = isStruct && changes[changeLocation] && changes[changeLocation][change.propertyType] && changes[changeLocation][change.propertyType].changeType === ChangeType.ADD;
 
     // If it is a structure delete, clean other changes

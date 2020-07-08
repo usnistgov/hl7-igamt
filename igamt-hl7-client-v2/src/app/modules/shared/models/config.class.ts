@@ -1,6 +1,6 @@
 import { IBindingLocationItem } from '../components/binding-selector/binding-selector.component';
-import { Type } from '../constants/type.enum';
 import { IUsageOption } from '../components/hl7-v2-tree/columns/usage/usage.component';
+import { Type } from '../constants/type.enum';
 import { Usage } from '../constants/usage.enum';
 
 export interface IConnectingInfo {

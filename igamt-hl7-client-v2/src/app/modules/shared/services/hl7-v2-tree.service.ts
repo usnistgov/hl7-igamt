@@ -793,6 +793,7 @@ export class Hl7V2TreeService {
   }
 
   // tslint:disable-next-line: cognitive-complexity
+  // tslint:disable-next-line: parameters-max-number
   formatStructure(
     bindings: IStructureElementBinding[],
     structure: IMsgStructElement[],
@@ -847,6 +848,7 @@ export class Hl7V2TreeService {
     };
   }
 
+  // tslint:disable-next-line: parameters-max-number
   makeMsgStructureElmNode(
     name: string,
     parent: IHL7v2TreeNode,

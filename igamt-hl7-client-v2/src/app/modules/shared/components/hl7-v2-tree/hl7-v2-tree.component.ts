@@ -1,14 +1,17 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import * as _ from 'lodash';
 import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
-import { map, flatMap, take } from 'rxjs/operators';
+import { flatMap, map, take } from 'rxjs/operators';
 import { LengthType } from '../../constants/length-type.enum';
 import { Type } from '../../constants/type.enum';
 import { Usage } from '../../constants/usage.enum';
 import { IDocumentRef } from '../../models/abstract-domain.interface';
 import { IComment } from '../../models/comment.interface';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../models/config.class';
+import { IConformanceProfile, IGroup, ISegmentRef } from '../../models/conformance-profile.interface';
+import { IPath } from '../../models/cs.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
@@ -20,9 +23,6 @@ import { IStructCreateDialogResult } from '../../services/struct-create-dialog.a
 import { IBindingLocationInfo } from '../binding-selector/binding-selector.component';
 import { FieldAddDialogComponent } from '../field-add-dialog/field-add-dialog.component';
 import { SegmentAddDialogComponent } from '../segment-add-dialog/segment-add-dialog.component';
-import { IConformanceProfile, ISegmentRef, IGroup } from '../../models/conformance-profile.interface';
-import * as _ from 'lodash';
-import { IPath } from '../../models/cs.interface';
 
 export enum HL7v2TreeColumnType {
   USAGE = 'Usage',
@@ -239,7 +239,7 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
     let cursor = message.children;
 
     for (const part of parts) {
-      const elm = cursor.find((elm) => elm.id === part);
+      const elm = cursor.find((e) => e.id === part);
       if (elm && elm.type === Type.GROUP) {
         cursor = (elm as IGroup).children;
       } else {

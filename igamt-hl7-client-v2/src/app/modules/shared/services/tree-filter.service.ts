@@ -85,12 +85,11 @@ export class TreeFilterService {
     const evaluate = (list: Array<ITreeRestriction<any>>, init: boolean, op: (a: boolean, b: boolean) => boolean): boolean => {
       let keep = init;
       for (const restriction of list) {
-        keep = op(keep, this.allow(restriction.allow, this.pass(node, restriction)));
+        keep = op(keep, this.allow(this.pass(node, restriction), restriction.allow));
       }
       return keep;
     };
-
-    return evaluate(combined, false, (a, b) => a || b) && (enforced.length === 0 || evaluate(enforced, true, (a, b) => a && b));
+    return (combined.length === 0 || evaluate(combined, false, (a, b) => a || b)) && (enforced.length === 0 || evaluate(enforced, true, (a, b) => a && b));
   }
 
   pathIsProhibited(path: string, list: IPathValue[]): boolean {
@@ -137,7 +136,7 @@ export class TreeFilterService {
   }
 
   parents(node: IHL7v2TreeNode, payload: string): boolean {
-    return payload.startsWith(node.data.pathId);
+    return (payload.startsWith(node.data.pathId) && payload !== node.data.pathId) || (node.data.type === Type.CONFORMANCEPROFILE || node.data.type === Type.DATATYPE || node.data.type === Type.SEGMENT);
   }
 
   type(node: IHL7v2TreeNode, types: Type[]): boolean {
