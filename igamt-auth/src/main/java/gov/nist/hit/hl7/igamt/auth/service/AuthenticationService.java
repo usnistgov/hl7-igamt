@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.auth.service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
@@ -45,6 +46,10 @@ public interface AuthenticationService {
 
   public UserResponse getAuthentication(Authentication authentiction);
   
-  public UserListResponse getAllUsers();
+  public UserListResponse getAllUsers(HttpServletRequest req);
+  public UserResponse getCurrentUser(String username, HttpServletRequest req);
+
+  public ConnectionResponseMessage<UserResponse> update(RegistrationRequest user, HttpServletRequest req)
+      throws AuthenticationException;
 
 }

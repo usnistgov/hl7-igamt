@@ -78,6 +78,7 @@ import { TextEditorDialogComponent } from './components/text-editor-dialog/text-
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
 import { UsageDialogComponent } from './components/usage-dialog/usage-dialog.component';
 import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.component';
+import { UserProfileFormComponent } from './components/user-profile-form/user-profile-form.component';
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
 import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
@@ -91,6 +92,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
 
 @NgModule({
   declarations: [
+    UserProfileFormComponent,
     RegisterFormComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
@@ -216,6 +218,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     FormsModule,
     FileUploadModule,
     ReactiveFormsModule,
+    UserProfileFormComponent,
     RegisterFormComponent,
     TooltipModule,
     NgbModule,
