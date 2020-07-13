@@ -16,6 +16,7 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
 import { ConformanceStatementService } from '../../../shared/services/conformance-statement.service';
+import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { DatatypeService } from '../../services/datatype.service';
 
@@ -30,6 +31,7 @@ export class DatatypeConformanceStatementEditorComponent extends ConformanceStat
     readonly repository: StoreResourceRepositoryService,
     private datatypeService: DatatypeService,
     csService: ConformanceStatementService,
+    treeService: Hl7V2TreeService,
     dialog: MatDialog,
     messageService: MessageService,
     actions$: Actions,
@@ -39,6 +41,7 @@ export class DatatypeConformanceStatementEditorComponent extends ConformanceStat
       messageService,
       dialog,
       csService,
+      treeService,
       actions$,
       store,
       {
