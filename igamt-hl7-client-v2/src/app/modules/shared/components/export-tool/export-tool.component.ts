@@ -3,6 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Store } from '@ngrx/store';
+import { SelectItem } from 'primeng/api';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { MessageType, UserMessage } from '../../../dam-framework/models/messages/message.class';
 import { AddMessage, ClearAll } from '../../../dam-framework/store/messages/messages.actions';
@@ -10,7 +11,6 @@ import { IgService } from '../../../ig/services/ig.service';
 import { IConnectingInfo } from '../../models/config.class';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { ISelectedIds } from '../select-resource-ids/select-resource-ids.component';
-import {SelectItem} from 'primeng/api';
 
 @Component({
   selector: 'app-export-tool',
@@ -117,12 +117,12 @@ export class ExportToolComponent implements OnInit {
 
   isProcessable(): boolean {
     if (this.errorCounts && this.errorCounts[0] && this.errorCounts[1] && this.errorCounts[2] && this.errorCounts[3] && this.errorCounts[4] &&
-            this.errorCounts[0][0] + this.errorCounts[0][1]
-          + this.errorCounts[1][1] + this.errorCounts[1][1]
-          + this.errorCounts[2][1] + this.errorCounts[2][1]
-          + this.errorCounts[3][1] + this.errorCounts[3][1]
-          + this.errorCounts[4][1] + this.errorCounts[4][1] === 0) {
-        return true;
+      this.errorCounts[0][0] + this.errorCounts[0][1]
+      + this.errorCounts[1][1] + this.errorCounts[1][1]
+      + this.errorCounts[2][1] + this.errorCounts[2][1]
+      + this.errorCounts[3][1] + this.errorCounts[3][1]
+      + this.errorCounts[4][1] + this.errorCounts[4][1] === 0) {
+      return true;
     }
     return false;
   }
@@ -130,14 +130,14 @@ export class ExportToolComponent implements OnInit {
   verify() {
     this.step = 2;
     this.http.post<any>('/api/igdocuments/' + this.data.igId + '/preverification', this.ids).pipe().subscribe(
-        (x) => {
-          this.reports = x;
-          this.errorCounts = this.countErrors(this.reports);
+      (x) => {
+        this.reports = x;
+        this.errorCounts = this.countErrors(this.reports);
 
-          console.log(x);
-        },
-        (error) => {
-        },
+        console.log(x);
+      },
+      (error) => {
+      },
     );
   }
 

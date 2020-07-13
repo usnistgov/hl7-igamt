@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -95,10 +96,36 @@ public class AuthenticationController {
   
   @RequestMapping(value = "api/users", method = RequestMethod.GET)
   @ResponseBody
-  public UserListResponse getAllUserList(HttpServletResponse res, Authentication authentication)
+  public UserListResponse getAllUserList(HttpServletRequest req,
+          HttpServletResponse res, Authentication authentication)
       throws IOException {
 
-    return authService.getAllUsers();
+    return authService.getAllUsers(req);
+  }
+
+  @RequestMapping(value = "api/user/{username}", method = RequestMethod.GET)
+  @ResponseBody
+  public UserResponse getCurrentUser(@PathVariable("username") String username,
+          HttpServletRequest req, HttpServletResponse res,
+          Authentication authentication)
+      throws IOException {
+
+    return authService.getCurrentUser(username, req);
+  }
+
+  @RequestMapping(value = "/api/user", method = RequestMethod.POST)
+  public ConnectionResponseMessage<UserResponse> update(@RequestBody RegistrationRequest user, HttpServletRequest req)
+      throws AuthenticationException {
+    try {
+
+      ConnectionResponseMessage<UserResponse> response = authService.update(user, req);
+      return response;
+
+    } catch (AuthenticationException e) {
+      throw e;
+    } catch (Exception e) {
+      throw e;
+    }
   }
 
   @RequestMapping(value = "api/password/reset", method = RequestMethod.POST)

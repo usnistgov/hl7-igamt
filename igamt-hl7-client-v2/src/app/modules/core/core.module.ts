@@ -7,6 +7,7 @@ import { StoreModule } from '@ngrx/store';
 import { CardModule } from 'primeng/card';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { RegistrationEffects } from '../../root-store/registration/registration.effects';
+import { UserProfileEffects} from '../../root-store/user-profile/user-profile.effects';
 import { DamAuthenticationModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { SharedModule } from '../shared/shared.module';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
@@ -16,6 +17,7 @@ import { HomeComponent } from './components/home/home.component';
 import { NewPasswordComponent } from './components/new-password/new-password.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordRequestComponent } from './components/reset-password-request/reset-password-request.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +25,7 @@ import { ResetPasswordRequestComponent } from './components/reset-password-reque
     FooterComponent,
     RegisterComponent,
     ResetPasswordRequestComponent,
+    UserProfileComponent,
     NewPasswordComponent,
     HomeComponent,
     ErrorPageComponent,
@@ -35,6 +38,7 @@ import { ResetPasswordRequestComponent } from './components/reset-password-reque
     StoreModule,
     MatProgressBarModule,
     EffectsModule.forFeature([RegistrationEffects]),
+    EffectsModule.forFeature([UserProfileEffects]),
     SharedModule.forRoot(),
     DamMessagesModule.forRoot(),
     DamAuthenticationModule.forRoot({
@@ -55,6 +59,7 @@ import { ResetPasswordRequestComponent } from './components/reset-password-reque
     HeaderComponent,
     FooterComponent,
     RegisterComponent,
+    UserProfileComponent,
     SharedModule,
     ProgressBarModule,
     HomeComponent,

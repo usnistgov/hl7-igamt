@@ -10,6 +10,7 @@
   <li class="nav-item" ngbDropdown>
     <span class="nav-link" href="#" ngbDropdownToggle><i class="fa fa-user"></i> {{username | async}} </span>
     <div ngbDropdownMenu>
+      <button (click)="userProfile()" ngbDropdownItem><i class="fa fa-pencil"></i> My Profile</button>
       <button (click)="logout()" ngbDropdownItem><i class="fa fa-sign-out"></i> Logout</button>
     </div>
   </li>

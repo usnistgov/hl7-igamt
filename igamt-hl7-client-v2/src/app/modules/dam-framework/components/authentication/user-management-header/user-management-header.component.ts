@@ -25,6 +25,10 @@ export class UserManagementHeaderComponent implements OnInit {
     this.store.dispatch(new LogoutRequest());
   }
 
+  userProfile() {
+    this.router.navigateByUrl('user-profile');
+  }
+
   ngOnInit() {
   }
 
