@@ -3,12 +3,32 @@ package gov.nist.hit.hl7.igamt.delta.domain;
 import gov.nist.diff.domain.DeltaAction;
 
 public class DeltaNode<T> {
+    /**
+   * 
+   */
+  public DeltaNode() {
+    super();
+    // TODO Auto-generated constructor stub
+  }
+
     private T previous;
     private T current;
     private DeltaAction action;
 
     public T getPrevious() {
         return previous;
+    }
+
+    /**
+     * @param previous
+     * @param current
+     * @param action
+     */
+    public DeltaNode(T previous, T current, DeltaAction action) {
+      super();
+      this.previous = previous;
+      this.current = current;
+      this.action = action;
     }
 
     public void setPrevious(T previous) {

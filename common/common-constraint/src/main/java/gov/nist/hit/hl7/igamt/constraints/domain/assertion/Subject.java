@@ -78,11 +78,13 @@ public class Subject {
     this.path = path;
   }
 
-  @Override
-  public String toString() {
-    return "Subject [path=" + path + "]";
-  }
+@Override
+public String toString() {
+	return "Subject [path=" + path + ", occurenceType=" + occurenceType + ", occurenceValue=" + occurenceValue
+			+ ", occurenceIdPath=" + occurenceIdPath + ", occurenceLocationStr=" + occurenceLocationStr + "]";
+}
 
+  
 
 
 }

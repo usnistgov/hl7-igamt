@@ -49,15 +49,9 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
         return resource.domainInfo;
       }),
     );
-    const name$ = this.store.select(fromIgamtSelectedSelectors.selectSelectedResource).pipe(
-      map((resource) => {
-        return resource.name;
-      }),
-    );
-
-    this.metadataFormInput$ = combineLatest(domainInfo$, name$, super.getOthers()).pipe(
+    this.metadataFormInput$ = combineLatest(domainInfo$, super.getOthers()).pipe(
       take(1),
-      map(([domainInfo, name, existing]) => {
+      map(([domainInfo, existing]) => {
         return {
           data: this.currentSynchronized$,
           viewOnly: this.viewOnly$,
@@ -65,7 +59,7 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
             bindingIdentifier: {
               label: 'Binding identifier',
               placeholder: 'Binding Identifier',
-              validators: [validateUnity(existing, name, domainInfo)],
+              validators: [validateUnity(existing, null, domainInfo)],
               type: FieldType.TEXT,
               id: 'bindingIdentifier',
               disabled: false,
@@ -77,8 +71,8 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
               validators: [],
               type: FieldType.TEXT,
               id: 'name',
-              disabled: true,
-              name: 'Name',
+              disabled: false,
+              name: 'name',
             },
             authorNotes: {
               label: authorNotes,

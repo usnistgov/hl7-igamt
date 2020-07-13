@@ -48,6 +48,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
@@ -411,7 +412,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 							StructureElementBinding cSeb = this
 									.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
 							if (cSeb != null) {
-								cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE,
+								cModel.setBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE,
 										2, valueSetsMap));
 								if (cSeb.getPredicate() != null) {
 									Predicate p = cSeb.getPredicate();
@@ -444,7 +445,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 													.findStructureElementBindingByComponentIdFromStructureElementBinding(
 															cSeb, sc.getId());
 											if (childCSeb != null) {
-												scModel.addBinding(this.createBindingDisplay(childCSeb,
+												scModel.setBinding(this.createBindingDisplay(childCSeb,
 														datatype.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
 												if (childCSeb.getPredicate() != null) {
 													Predicate p = childCSeb.getPredicate();
@@ -462,7 +463,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 													.findStructureElementBindingByComponentIdForDatatype(childChildDt,
 															sc.getId());
 											if (scSeb != null) {
-												scModel.addBinding(this.createBindingDisplay(scSeb,
+												scModel.setBinding(this.createBindingDisplay(scSeb,
 														childChildDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
 												if (scSeb.getPredicate() != null) {
 													Predicate p = scSeb.getPredicate();
@@ -508,7 +509,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 							StructureElementBinding scSeb = this
 									.findStructureElementBindingByComponentIdForDatatype(datatype, sc.getId());
 							if (scSeb != null) {
-								scModel.addBinding(this.createBindingDisplay(scSeb, datatype.getId(),
+								scModel.setBinding(this.createBindingDisplay(scSeb, datatype.getId(),
 										ViewScope.DATATYPE, 2, valueSetsMap));
 								if (scSeb.getPredicate() != null) {
 									Predicate p = scSeb.getPredicate();
@@ -548,6 +549,10 @@ public class DatatypeServiceImpl implements DatatypeService {
 			result.setLabel(datatype.getName());
 		}
 		result.setName(datatype.getName());
+		if(datatype.getBinding() !=null) {
+	        result.setConformanceStatements( datatype.getBinding().getConformanceStatements());
+		}
+
 		if (datatype instanceof ComplexDatatype) {
 			ComplexDatatype dt = (ComplexDatatype) datatype;
 
@@ -566,7 +571,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 						StructureElementBinding cSeb = this
 								.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
 						if (cSeb != null) {
-							cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE, 1,
+							cModel.setBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE, 1,
 									valueSetsMap));
 							if (cSeb.getPredicate() != null) {
 								Predicate p = cSeb.getPredicate();
@@ -598,7 +603,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 												.findStructureElementBindingByComponentIdFromStructureElementBinding(
 														cSeb, sc.getId());
 										if (childSeb != null) {
-											scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId(),
+											scModel.setBinding(this.createBindingDisplay(childSeb, datatype.getId(),
 													ViewScope.DATATYPE, 1, valueSetsMap));
 											if (childSeb.getPredicate() != null) {
 												Predicate p = childSeb.getPredicate();
@@ -616,7 +621,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 												.findStructureElementBindingByComponentIdForDatatype(childDt,
 														sc.getId());
 										if (scSeb != null) {
-											scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId(),
+											scModel.setBinding(this.createBindingDisplay(scSeb, childDt.getId(),
 													ViewScope.DATATYPE, 2, valueSetsMap));
 											if (scSeb.getPredicate() != null) {
 												Predicate p = scSeb.getPredicate();
@@ -676,29 +681,31 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 	private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings,
 			HashMap<String, Valueset> valueSetsMap) {
-		//		if (valuesetBindings != null) {
-		//			Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
-		//			for (ValuesetBinding vb : valuesetBindings) {
-		//				for(String s: vb.getValueSets()) {
-		//					Valueset vs = valueSetsMap.get(s);
-		//					if (vs == null) {
-		//						vs = this.valueSetService.findById(s);
-		//						valueSetsMap.put(vs.getId(), vs);
-		//					}
-		//					if (vs != null) {
-		//						DisplayValuesetBinding dvb = new DisplayValuesetBinding();
-		//						dvb.setLabel(vs.getBindingIdentifier());
-		//						dvb.setName(vs.getName());
-		//						dvb.setStrength(vb.getStrength());
-		//						dvb.setValueSets(vb.getValueSets());
-		//						dvb.setValuesetLocations(vb.getValuesetLocations());
-		//						dvb.setDomainInfo(vs.getDomainInfo());
-		//						result.add(dvb);
-		//					}
-		//				}
-		//			}
-		//			return result;
-		//		}
+		if (valuesetBindings != null) {
+			Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
+			for (ValuesetBinding vb : valuesetBindings) {
+
+				DisplayValuesetBinding dvb = new DisplayValuesetBinding();
+		         List<DisplayElement> vsDisplay = vb.getValueSets().stream().map(id -> {
+		             Valueset vs = this.valueSetService.findById(id);
+		             if(vs !=null) {
+		               DisplayElement obj = new DisplayElement();
+	                     obj.setVariableName(vs.getBindingIdentifier());
+	                     obj.setDomainInfo(vs.getDomainInfo());
+	                     return obj;
+		             }else {
+		               return null;
+		             }
+                }).collect(Collectors.toList());
+                dvb.setValueSetsDisplay(vsDisplay);
+				dvb.setStrength(vb.getStrength());
+				dvb.setValueSets(vb.getValueSets());
+				dvb.setValuesetLocations(vb.getValuesetLocations());
+				result.add(dvb);
+
+			}
+			return result;
+		}
 		return null;
 	}
 

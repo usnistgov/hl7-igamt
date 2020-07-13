@@ -42,7 +42,6 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
         return resource.name;
       }),
     );
-
     this.metadataFormInput$ = combineLatest(this.selectedResource$, name$, this.getOthers(), this.documentRef$, this.admin$).pipe(
       take(1),
       map(([selectedResource, name, existing, ref, admin]) => {
@@ -51,8 +50,8 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
           data: this.currentSynchronized$,
           model: {
             name: {
-              label: 'Name',
-              placeholder: 'Name',
+              label: 'Identifier',
+              placeholder: 'identifier',
               validators: [],
               type: FieldType.TEXT,
               id: 'name',
@@ -68,8 +67,8 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
               name: 'extension',
             },
             description: {
-              label: 'Description',
-              placeholder: 'Description',
+              label: 'Name',
+              placeholder: 'name',
               validators: [],
               type: FieldType.TEXT,
               id: 'description',
@@ -135,7 +134,16 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
         changeType: ChangeType.UPDATE,
       });
     }
-
+    if (current.name !== old.name) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.name,
+        propertyValue: current.name,
+        propertyType: PropertyType.NAME,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
     if (current.description !== old.description) {
       changes.push({
         location: elementId,
@@ -230,5 +238,4 @@ export interface IResourceMetadata {
   compatibilityVersions?: [];
   username?: string;
   shortDescription: string;
-
 }

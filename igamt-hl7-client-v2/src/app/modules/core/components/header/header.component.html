@@ -55,10 +55,16 @@
         <a class="nav-link" href="#">Shared Elements</a>
       </li>
 
-      <li class="nav-item" [routerLink]="[ '/configuration']" routerLinkActive="active">
-        <a class="nav-link">
-          Configuration
-        </a>
+      <li [ngClass]="{'active': isConfig | async }" class="nav-item" ngbDropdown>
+        <span class="nav-link" ngbDropdownToggle>Configurarion</span>
+        <div ngbDropdownMenu>
+          <button [routerLink]="[ '/configuration']" [queryParams]="{type: 'DATATYPELIBRARY'}" ngbDropdownItem routerLinkActive="active-dropdown">
+            Datatype Library Export Configuration
+          </button>
+          <button [routerLink]="[ '/configuration']" [queryParams]="{type: 'IGDOCUMENT'}" ngbDropdownItem routerLinkActive="active-dropdown">
+            Implementation Guide Export Configuration
+          </button>
+        </div>
       </li>
       <li class="nav-item" [routerLink]="[ '/documentation']" routerLinkActive="active">
         <a class="nav-link">

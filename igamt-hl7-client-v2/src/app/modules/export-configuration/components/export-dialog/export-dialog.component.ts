@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
 import { IgService } from '../../../ig/services/ig.service';
+import { Type } from '../../../shared/constants/type.enum';
 import { IExportConfigurationGlobal } from '../../models/config.interface';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
 import { ExportConfigurationDialogComponent } from '../export-configuration-dialog/export-configuration-dialog.component';
@@ -20,7 +21,9 @@ export class ExportDialogComponent implements OnInit {
   overrides$: Observable<any>;
   igId: string;
   toc: any;
+  type: Type;
   customized: boolean;
+  delta: boolean;
   getExportFirstDecision: (documentId: string, configId: string) => Observable<IExportConfigurationGlobal>;
 
   constructor(
@@ -32,8 +35,11 @@ export class ExportDialogComponent implements OnInit {
     this.overrides$ = this.overrides.asObservable();
     this.igId = data.igId;
     this.toc = data.toc;
+    this.type = data.type;
     this.configlist = data.configurations;
     this.getExportFirstDecision = data.getExportFirstDecision;
+    this.delta = data.delta;
+    console.log('selected config : ', this.selectedConfig);
     this.selectedConfig = this.configlist.find( (x) => {
         return x.defaultConfig;
       },
@@ -55,8 +61,8 @@ export class ExportDialogComponent implements OnInit {
       filter((value) => !!value),
       take(1),
       map((decision) => {
-        console.log(decision);
-        console.log(this.selectedConfig.configName);
+        console.log('decision : ' , decision);
+        console.log('selectedConfig : ' + this.selectedConfig.configName);
 
         const tocDialog = this.dialog.open(ExportConfigurationDialogComponent, {
           maxWidth: '95vw',
@@ -67,7 +73,9 @@ export class ExportDialogComponent implements OnInit {
           data: {
             configurationName: this.selectedConfig.configName,
             toc: this.toc,
+            type: this.type,
             decision,
+            delta: this.delta,
           },
         });
         tocDialog.afterClosed().subscribe((result) => {

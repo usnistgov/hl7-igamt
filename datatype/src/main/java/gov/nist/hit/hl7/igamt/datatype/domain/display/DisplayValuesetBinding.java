@@ -11,9 +11,12 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
+import java.util.List;
+
 import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 
 /**
  * @author jungyubw
@@ -21,37 +24,18 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
  */
 public class DisplayValuesetBinding extends ValuesetBinding {
 
-  @DeltaField
-  private String label;
-  @DeltaField
-  private String name;
-  private DomainInfo domainInfo;
+  
+  private List<DisplayElement> valueSetsDisplay;
 
-  public DisplayValuesetBinding() {
-    super();
+  public List<DisplayElement> getValueSetsDisplay() {
+    return valueSetsDisplay;
   }
 
-  public String getLabel() {
-    return label;
+  public void setValueSetsDisplay(List<DisplayElement> valueSetsDisplay) {
+    this.valueSetsDisplay = valueSetsDisplay;
   }
 
-  public void setLabel(String label) {
-    this.label = label;
-  }
 
-  public String getName() {
-    return name;
-  }
+  
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public DomainInfo getDomainInfo() {
-    return domainInfo;
-  }
-
-  public void setDomainInfo(DomainInfo domainInfo) {
-    this.domainInfo = domainInfo;
-  }
 }

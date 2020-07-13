@@ -249,7 +249,7 @@
 
 							<xsl:choose>
 								<xsl:when
-									test="not(../Changes/@mode) or ../Changes/@mode = 'HIGHLIGHT'">
+									test="not(../Changes/@mode) or ../Changes/@mode = 'HIGHLIGHT' or ../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
 									<xsl:call-template name="component">
 										<xsl:with-param name="style"
 											select="'background-color:white;text-decoration:normal'" />
@@ -259,6 +259,8 @@
 										<xsl:with-param name="updatedColor" select="../Changes/@updatedColor" />
 										<xsl:with-param name="addedColor" select="../Changes/@addedColor" />
 										<xsl:with-param name="deletedColor" select="../Changes/@deletedColor" />
+										<xsl:with-param name="mode" select="../Changes/@mode" />
+
 									</xsl:call-template>
 								</xsl:when>
 								<xsl:otherwise>
@@ -272,8 +274,9 @@
 											<xsl:with-param name="updatedColor"
 												select="../Changes/@updatedColor" />
 											<xsl:with-param name="addedColor" select="../Changes/@addedColor" />
-											<xsl:with-param name="deletedColor"
-												select="../Changes/@deletedColor" />
+											<xsl:with-param name="deletedColor" select="../Changes/@deletedColor" />
+											<xsl:with-param name="mode" select="../Changes/@mode" />
+
 										</xsl:call-template>
 									</xsl:if>
 								</xsl:otherwise>
@@ -308,8 +311,8 @@
 					</xsl:with-param>
 				</xsl:call-template>
 			</xsl:if>
-			<xsl:if test="count(./Constraint[@Type='pre'])  &gt; 0">
-				<xsl:element name="br" />
+<!-- 			<xsl:if test="count(./Constraint[@Type='pre'])  &gt; 0">
+ -->				<xsl:element name="br" />
 				<xsl:call-template name="Constraint">
 					<xsl:with-param name="title">
 						<xsl:text>Conditional Predicates</xsl:text>
@@ -324,8 +327,8 @@
 						<xsl:text>h4</xsl:text>
 					</xsl:with-param>
 				</xsl:call-template>
-			</xsl:if>
-			<!-- </xsl:if> -->
+<!-- 			</xsl:if>
+ -->			<!-- </xsl:if> -->
 			<xsl:call-template name="PostDef" />
 			<xsl:if test="$columnDisplay.dataType.comment = 'true'">
 				<xsl:apply-templates select="./Binding/CommentList" />

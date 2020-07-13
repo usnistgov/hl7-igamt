@@ -355,7 +355,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             // || (codePresenceMap.containsKey(t.getId()) &&
             // !(codePresenceMap.get(t.getId())))) {
             Element elmBindingIdentifier = new Element("BindingIdentifier");
-            if (defaultHL7Version != null && t.getDomainInfo() != null && t.getDomainInfo().getVersion() != null) {
+            if (defaultHL7Version != null && t.getDomainInfo() != null && t.getDomainInfo().getVersion() != null && !t.getBindingIdentifier().equals("HL70396")) {
               if (defaultHL7Version
                   .equals(t.getDomainInfo().getVersion())) {
                 elmBindingIdentifier.appendChild(this.str(t.getBindingIdentifier()));
@@ -371,7 +371,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
           Element elmValueSetDefinition = new Element("ValueSetDefinition");
 
-          if (defaultHL7Version != null && t.getDomainInfo() != null && t.getDomainInfo().getVersion() != null) {
+          if (defaultHL7Version != null && t.getDomainInfo() != null && t.getDomainInfo().getVersion() != null && !t.getBindingIdentifier().equals("HL70396")) {
             if (defaultHL7Version.equals(t.getDomainInfo().getVersion())) {
               elmValueSetDefinition.addAttribute(
                   new Attribute("BindingIdentifier", this.str(t.getBindingIdentifier())));
@@ -815,7 +815,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         for (ConformanceStatement cs : segModel.getConformanceStatements()) {
         	
         	String script = this.generateAssertionScript(cs, segModel.getModel().getId());
-        	System.out.println(script);
         	
         	if(script != null) {
                 Element elm_Constraint = new Element("Constraint");
@@ -1086,12 +1085,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                     if (defaultHL7Version != null
                         && binding.getDomainInfo() != null
                         && binding.getDomainInfo().getVersion() != null) {
-                      if (defaultHL7Version
-                          .equals(binding.getDomainInfo().getVersion())) {
+                      if (defaultHL7Version.equals(binding.getDomainInfo().getVersion()) || binding.getBindingIdentifier().equals("HL70396")) {
                         bindingString = bindingString + binding.getBindingIdentifier() + ":";
                       } else {
-                        bindingString = bindingString + binding.getBindingIdentifier() + "_"
-                            + binding.getDomainInfo().getVersion().replaceAll("\\.", "-") + ":";
+                        bindingString = bindingString + binding.getBindingIdentifier() + "_" + binding.getDomainInfo().getVersion().replaceAll("\\.", "-") + ":";
                       }
                     } else {
                       bindingString = bindingString + binding.getBindingIdentifier() + ":";
@@ -1422,8 +1419,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                     if (defaultHL7Version != null
                         && binding.getDomainInfo() != null
                         && binding.getDomainInfo().getVersion() != null) {
-                      if (defaultHL7Version
-                          .equals(binding.getDomainInfo().getVersion())) {
+                      if (defaultHL7Version.equals(binding.getDomainInfo().getVersion()) || binding.getBindingIdentifier().equals("HL70396")) {
                         bindingString = bindingString + binding.getBindingIdentifier() + ":";
                       } else {
                         bindingString = bindingString + binding.getBindingIdentifier() + "_"
@@ -1852,6 +1848,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   public String generateConditionScript(Predicate p, String targetId) {
     if (p instanceof FreeTextPredicate) {
       FreeTextPredicate cp = (FreeTextPredicate) p;
+      if(cp.getAssertionScript() !=null)
       return cp.getAssertionScript().replace("\n", "").replace("\r", "");
     } else if (p instanceof AssertionPredicate) {
       AssertionPredicate cp = (AssertionPredicate) p;
@@ -1866,6 +1863,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   public String generateAssertionScript(ConformanceStatement c, String targetId) {
     if (c instanceof FreeTextConformanceStatement) {
       FreeTextConformanceStatement cs = (FreeTextConformanceStatement) c;
+      if(cs.getAssertionScript() !=null)
       return cs.getAssertionScript().replace("\n", "").replace("\r", "");
     } else if (c instanceof AssertionConformanceStatement) {
       AssertionConformanceStatement cs = (AssertionConformanceStatement) c;
@@ -1946,6 +1944,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     return null;
   }
 
+  
+  public String replaceLast(String text, String regex, String replacement) {
+      return text.replaceFirst("(?s)"+regex+"(?!.*?"+regex+")", replacement);
+  }
+  
+  
   /**
    * @param assertion
    * @param level
@@ -1961,7 +1965,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     boolean notAssertion = assertion.getVerbKey().contains("NOT");
 
     boolean atLeastOnce = false;
-
+    boolean noOccurrence = false;
+    
     String sPathStr = this.generatePath(assertion.getSubject().getPath(), targetId, level, context);
     String cPathStr = null;
     if (complement.getPath() != null) {
@@ -1973,13 +1978,15 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       if (assertion.getSubject().getOccurenceType().equals("atLeast")) {
         atLeastOnce = true;
       } else if (assertion.getSubject().getOccurenceType().equals("instance")) {
-        sPathStr.replaceFirst("//*", "" + assertion.getSubject().getOccurenceValue());
+    	  sPathStr = this.replaceLast(sPathStr, "[*]", "" + assertion.getSubject().getOccurenceValue());
+      } else if (assertion.getSubject().getOccurenceType().equals("noOccurrence")) {
+    	  noOccurrence = true;
       }
     }
 
     if (complement.getOccurenceType() != null && cPathStr != null) {
       if (complement.getOccurenceType().equals("instance")) {
-        cPathStr.replaceFirst("//*", "" + complement.getOccurenceValue());
+    	  cPathStr = this.replaceLast(cPathStr, "[*]", "" + complement.getOccurenceValue());
       }
     }
 
@@ -2112,8 +2119,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         break;
     }
 
+    if (noOccurrence)
+    	result = "<NOT>" + result + "</NOT>";
     if (notAssertion)
-      result = "<NOT>" + result + "</NOT>";
+    	result = "<NOT>" + result + "</NOT>";
 
     return result;
   }

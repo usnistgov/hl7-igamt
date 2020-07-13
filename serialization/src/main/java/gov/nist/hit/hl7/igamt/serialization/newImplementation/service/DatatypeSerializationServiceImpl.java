@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	private FroalaSerializationUtil frolaCleaning;
 
 	@Override
-	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type) throws SerializationException {
+	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type, String deltaMode) throws SerializationException {
 		//	    try {
 		Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
 		Datatype datatype = datatypeDataModel.getModel();
@@ -64,33 +65,29 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 					datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
 		}
 		if(type.equals(Type.DATATYPELIBRARY)) {
-//			datatypeElement
-//			.addAttribute(new Attribute("PurposeUse", datatype.getUsageNotes() != null ? datatype.getUsageNotes(): ""));
-			datatypeElement
-			.addAttribute(new Attribute("datatypeFlavor", datatype.getLabel() != null ? datatype.getLabel(): ""));
-			datatypeElement
-			.addAttribute(new Attribute("datatypeName", datatype.getDescription() != null ? datatype.getDescription(): ""));
-			datatypeElement
-			.addAttribute(new Attribute("shortDescription", datatype.getShortDescription() != null ? datatype.getShortDescription(): ""));
-			if(datatype.getDomainInfo() != null) {
-			datatypeElement
-			.addAttribute(new Attribute("hl7versions", datatype.getDomainInfo().getCompatibilityVersion()!= null ? datatype.getDomainInfo().getCompatibilityVersion().toString(): ""));
+			//			datatypeElement
+			//			.addAttribute(new Attribute("PurposeUse", datatype.getUsageNotes() != null ? datatype.getUsageNotes(): ""));
+			if(datatypeExportConfiguration.getMetadataConfig().isDatatypeFlavor()) {
+				datatypeElement
+				.addAttribute(new Attribute("datatypeFlavor", datatype.getLabel() != null ? datatype.getLabel(): ""));}
+			if(datatypeExportConfiguration.getMetadataConfig().isDatatypeName()) {
+				datatypeElement
+				.addAttribute(new Attribute("datatypeName", datatype.getDescription() != null ? datatype.getDescription(): ""));}
+			if(datatypeExportConfiguration.getMetadataConfig().isShortDescription()) {
+				datatypeElement
+				.addAttribute(new Attribute("shortDescription", datatype.getShortDescription() != null ? datatype.getShortDescription(): ""));}
+			if(datatype.getDomainInfo() != null && datatypeExportConfiguration.getMetadataConfig().isHl7version()) {
+				datatypeElement
+				.addAttribute(new Attribute("hl7versions", datatype.getDomainInfo().getCompatibilityVersion()!= null ? datatype.getDomainInfo().getCompatibilityVersion().toString(): ""));
 			}
-			datatypeElement
-			.addAttribute(new Attribute("status", datatype.getStatus() != null ? datatype.getStatus().name(): ""));
-			if(datatype.getPublicationInfo() != null) {
-			datatypeElement
-			.addAttribute(new Attribute("publicationDate", datatype.getPublicationInfo().getPublicationDate()!= null ? datatype.getPublicationInfo().getPublicationDate().toString(): ""));
+			if(datatypeExportConfiguration.getMetadataConfig().isStatus()) {
+				datatypeElement
+				.addAttribute(new Attribute("status", datatype.getStatus() != null ? datatype.getStatus().name(): ""));}
+			if(datatype.getPublicationInfo() != null && datatypeExportConfiguration.getMetadataConfig().isPublicationDate()) {
+				datatypeElement
+				.addAttribute(new Attribute("publicationDate", datatype.getPublicationInfo().getPublicationDate()!= null ? datatype.getPublicationInfo().getPublicationDate().toString(): ""));}
 		}
-		}
-		if(type.equals(Type.IGDOCUMENT)) {
-			if (datatype.getBinding() != null) {
-				Element bindingElement = bindingSerializationService.serializeBinding((Binding) datatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getModel().getName());
-				if (bindingElement != null) {
-					datatypeElement.appendChild(bindingElement);
-				}
-			}
-		}
+
 		//	      if (datatype.getBinding() != null) {
 		//	        Element bindingElement =  
 		//	            super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap);
@@ -115,10 +112,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 		//	        }
 		//	      }
 		if (datatype instanceof ComplexDatatype) {
-			System.out.println("ComplexDatatype");
 			datatypeElement = serializeComplexDatatype(datatypeElement,datatypeDataModel,datatypeExportConfiguration, type);
+		    
 		} else if (datatype instanceof DateTimeDatatype) {
-			System.out.println("DateTime");
 			datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel, datatypeExportConfiguration);
 		}
 		if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
@@ -128,8 +124,8 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 			}
 		}
 
-		// Calculate datatype delta if the segment has an origin
-		if(datatype.getOrigin() != null && datatypeExportConfiguration.isDeltaMode()) {
+		// Calculate datatype delta if the datatype has an origin
+		if(deltaMode != null && datatype.getOrigin() != null && datatypeExportConfiguration.isDeltaMode()) {
 			List<StructureDelta> structureDelta = deltaService.delta(Type.DATATYPE, datatype);
 			List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
 			if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
@@ -155,15 +151,13 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	@Override
 	public Element serializeComplexDatatype(Element datatypeElement, DatatypeDataModel datatypeDataModel, DatatypeExportConfiguration datatypeExportConfiguration, Type type) throws SubStructElementSerializationException {
 		ComplexDatatype complexDatatype = (ComplexDatatype) datatypeDataModel.getModel();
+		HashMap<String, Boolean> bindedPaths = new HashMap<String, Boolean>();
+
 		for (Component component : complexDatatype.getComponents()) {
 			if (component != null && ExportTools.CheckUsage(datatypeExportConfiguration.getComponentExport(), component.getUsage())) {
 				//	      if(this.bindedComponents.contains(component.getId())) {
 				try {
-			      	if(type.equals(Type.DATATYPELIBRARY)) {
-			      		
-			      	}
-			      	
-
+				    bindedPaths.put(component.getId(), true);
 					Element componentElement = new Element("Component");
 					componentElement.addAttribute(new Attribute("confLength",
 							component.getConfLength() != null ? component.getConfLength() : ""));
@@ -225,6 +219,23 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 				//	      }
 			}
 		}
+		
+        if(type.equals(Type.IGDOCUMENT)) {
+          if (complexDatatype.getBinding() != null) {
+              Element bindingElement;
+              try {
+                bindingElement = bindingSerializationService.serializeBinding(complexDatatype.getBinding(), datatypeDataModel.getValuesetMap(), datatypeDataModel.getModel().getName(), bindedPaths);
+                if(bindingElement !=null) {
+                  datatypeElement.appendChild(bindingElement);
+                }
+
+              } catch (SerializationException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+              }
+              
+          }
+      }
 		return datatypeElement;
 
 	}
@@ -288,53 +299,112 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
 	private void setChangedElements(Element element, StructureDelta structureDelta) {
 		if(structureDelta != null) {
-			if(structureDelta.getUsage() != null && !structureDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
-				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				changedElement.addAttribute(new Attribute("action", structureDelta.getUsage().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
-				element.appendChild(changedElement);
-			}
-			if(structureDelta.getConstantValue() != null && !structureDelta.getConstantValue().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
-				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				changedElement.addAttribute(new Attribute("action", structureDelta.getConstantValue().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.CONSTANTVALUE.name()));
-				element.appendChild(changedElement);
-			}
-			if(structureDelta.getMinLength() != null && !structureDelta.getMinLength().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
-				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				changedElement.addAttribute(new Attribute("action", structureDelta.getMinLength().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.LENGTHMIN.name()));
-				element.appendChild(changedElement);
-			}
-			if(structureDelta.getMaxLength() != null && !structureDelta.getMaxLength().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
-				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				changedElement.addAttribute(new Attribute("action", structureDelta.getMaxLength().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.LENGTHMAX.name()));
-				element.appendChild(changedElement);
-			}
-			if(structureDelta.getConfLength() != null && !structureDelta.getConfLength().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type",structureDelta.getType().toString()));
-				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				changedElement.addAttribute(new Attribute("action", structureDelta.getConfLength().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.CONFLENGTH.name()));
-				element.appendChild(changedElement);
-			}
-			if(structureDelta.getReference() != null && !structureDelta.getReference().getAction().equals(DeltaAction.UNCHANGED)) {
-				Element changedElement = new Element("Change");
-				changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
-				changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				changedElement.addAttribute(new Attribute("action", structureDelta.getReference().getAction().name()));
-				changedElement.addAttribute(new Attribute("property", PropertyType.DATATYPE.name()));
-				element.appendChild(changedElement);
+			if(structureDelta.getAction().equals(DeltaAction.DELETED) || structureDelta.getAction().equals(DeltaAction.ADDED)) {
+				Element addedUsage = new Element("Change");
+				addedUsage.addAttribute(new Attribute("type", Type.COMPONENT.toString()));
+				addedUsage.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				addedUsage.addAttribute(new Attribute("action", structureDelta.getAction().name()));
+				addedUsage.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
+				element.appendChild(addedUsage);
+
+				Element addedConstant = new Element("Change");
+				addedConstant.addAttribute(new Attribute("type", Type.COMPONENT.toString()));
+				addedConstant.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				addedConstant.addAttribute(new Attribute("action", structureDelta.getAction().name()));
+				addedConstant.addAttribute(new Attribute("property", PropertyType.CONSTANTVALUE.name()));
+				element.appendChild(addedConstant);
+
+				Element addedMinL = new Element("Change");
+				addedMinL.addAttribute(new Attribute("type", Type.COMPONENT.toString()));
+				addedMinL.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				addedMinL.addAttribute(new Attribute("action", structureDelta.getAction().name()));
+				addedMinL.addAttribute(new Attribute("property", PropertyType.LENGTHMIN.name()));
+				element.appendChild(addedMinL);
+
+				Element addedMaxL = new Element("Change");
+				addedMaxL.addAttribute(new Attribute("type", Type.COMPONENT.toString()));
+				addedMaxL.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				addedMaxL.addAttribute(new Attribute("action", structureDelta.getAction().name()));
+				addedMaxL.addAttribute(new Attribute("property", PropertyType.LENGTHMAX.name()));
+				element.appendChild(addedMaxL);
+
+				Element addedConfL = new Element("Change");
+				addedConfL.addAttribute(new Attribute("type", Type.COMPONENT.toString()));
+				addedConfL.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				addedConfL.addAttribute(new Attribute("action", structureDelta.getAction().name()));
+				addedConfL.addAttribute(new Attribute("property", PropertyType.CONFLENGTH.name()));
+				element.appendChild(addedConfL);
+
+				Element addedRef = new Element("Change");
+				addedRef.addAttribute(new Attribute("type", Type.COMPONENT.toString()));
+				addedRef.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				addedRef.addAttribute(new Attribute("action", structureDelta.getAction().name()));
+				addedRef.addAttribute(new Attribute("property", PropertyType.DATATYPE.name()));
+				element.appendChild(addedRef);
+
+
+			} else {
+				if(structureDelta.getUsage() != null && !structureDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getUsage().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
+					changedElement.addAttribute(new Attribute("oldValue", structureDelta.getUsage().getPrevious().name()));
+
+					element.appendChild(changedElement);
+				}
+				if(structureDelta.getConstantValue() != null && !structureDelta.getConstantValue().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getConstantValue().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.CONSTANTVALUE.name()));
+					changedElement.addAttribute(new Attribute("oldValue", structureDelta.getConstantValue().getPrevious()));
+
+					element.appendChild(changedElement);
+				}
+				if(structureDelta.getMinLength() != null && !structureDelta.getMinLength().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getMinLength().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.LENGTHMIN.name()));
+					changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMinLength().getPrevious()));
+
+					element.appendChild(changedElement);
+				}
+				if(structureDelta.getMaxLength() != null && !structureDelta.getMaxLength().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getMaxLength().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.LENGTHMAX.name()));
+					changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMaxLength().getPrevious()));
+
+					element.appendChild(changedElement);
+				}
+				if(structureDelta.getConfLength() != null && !structureDelta.getConfLength().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type",structureDelta.getType().toString()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getConfLength().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.CONFLENGTH.name()));
+					changedElement.addAttribute(new Attribute("oldValue", structureDelta.getConfLength().getPrevious()));
+
+					element.appendChild(changedElement);
+				}
+				if(structureDelta.getReference() != null && !structureDelta.getReference().getAction().equals(DeltaAction.UNCHANGED)) {
+					Element changedElement = new Element("Change");
+					changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
+					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					changedElement.addAttribute(new Attribute("action", structureDelta.getReference().getAction().name()));
+					changedElement.addAttribute(new Attribute("property", PropertyType.DATATYPE.name()));
+					changedElement.addAttribute(new Attribute("oldValue", structureDelta.getReference().getLabel().getPrevious()));
+
+					element.appendChild(changedElement);
+				}
+
 			}
 
 

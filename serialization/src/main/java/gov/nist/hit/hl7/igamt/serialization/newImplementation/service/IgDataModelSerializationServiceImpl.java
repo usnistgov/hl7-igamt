@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import org.hl7.fhir.r4.model.ValueSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +24,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -36,7 +38,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	private FroalaSerializationUtil frolaCleaning;
 
 	@Override
-	public Element serializeDocument(DocumentStructureDataModel documentStructureDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException {
+	public Element serializeDocument(DocumentStructureDataModel documentStructureDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision, String deltaMode) throws RegistrySerializationException {
 		//		if(exportConfiguration.getAbstractDomainExportConfiguration() == null) {System.out.println("Export IG document export null ici");}
 		DocumentStructure documentStructure = documentStructureDataModel.getModel();
 		Element igDocumentElement = serializeAbstractDomain(documentStructure, Type.IGDOCUMENT, 1, documentStructure.getName(), exportConfiguration.getAbstractDomainExportConfiguration());
@@ -49,7 +51,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		for (Section section : documentStructure.getContent()) {
 			// startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
 			int startLevel = 1;
-			Element sectionElement = sectionSerializationService.SerializeSection(section, startLevel, documentStructureDataModel, exportConfiguration, exportFilterDecision);
+			Element sectionElement = sectionSerializationService.SerializeSection(section, startLevel, documentStructureDataModel, exportConfiguration, exportFilterDecision, deltaMode);
 			igDocumentElement.appendChild(sectionElement);
 		}
 		return igDocumentElement;
@@ -169,8 +171,14 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	public Element getSectionElement(Element resourceElement, Resource resource, int level, AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
 		Element element = serializeAbstractDomain(resource, Type.SECTION, level, resource.getName(), abstractDomainExportConfiguration);
 		element.addAttribute(new Attribute("h", String.valueOf(level)));
+		String title = resource.getLabel();
+		if(resource instanceof Valueset) {
+		  title += '-'+ resource.getName();
+		}else {
+          title += '-'+ resource.getDescription();
+		}
 		element.addAttribute(
-				new Attribute("title", resource.getLabel() != null ? resource.getLabel() : ""));
+				new Attribute("title", title != null ? title: ""));
 		element.addAttribute(new Attribute("description",
 				resource.getDescription() != null ? resource.getDescription() : ""));
 		element.appendChild(resourceElement);

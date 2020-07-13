@@ -31,6 +31,7 @@ import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
@@ -58,6 +59,8 @@ public class SegmentController extends BaseController {
 
 	@Autowired
 	SegmentService segmentService;
+	@Autowired
+	CommonService commonService;
 
 //	@Autowired
 //	CoConstraintService coconstraintService;
@@ -67,6 +70,7 @@ public class SegmentController extends BaseController {
 
 //	@Autowired
 //	CoConstraintService coConstraintService;
+
 
 	@Autowired
 	private ConformanceStatementRepository conformanceStatementRepository;
@@ -232,6 +236,8 @@ public class SegmentController extends BaseController {
 			Authentication authentication) throws Exception {
 		try {
 			Segment s = this.segmentService.findById(id);
+		    commonService.checkRight(authentication, s.getUsername());
+
 			validateSaveOperation(s);
 			this.segmentService.applyChanges(s, cItems, documentId);
 			EntityChangeDomain entityChangeDomain = new EntityChangeDomain();

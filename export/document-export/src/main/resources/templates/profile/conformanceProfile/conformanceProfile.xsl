@@ -134,8 +134,9 @@
 		</xsl:call-template>
 				 					<xsl:call-template name="CommentList" />
 		
-		<xsl:apply-templates select="./Binding/ValueSetBindingList" />
-				<xsl:call-template name="ValueSetBindingList"/>	
+<!-- 		<xsl:apply-templates select="./Binding/ValueSetBindingList" />
+ -->				
+						 <xsl:call-template name="ValueSetBindingList"/>	
 		
 						<xsl:call-template name="InternalSingleCode"/>		
 		

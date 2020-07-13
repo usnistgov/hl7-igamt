@@ -81,12 +81,13 @@
 						<xsl:sort select="@value" data-type="text"></xsl:sort>
 						<xsl:variable name="changedValue" select="./@value" />
 						<xsl:choose>
-							<xsl:when test="not(../../Changes/@mode) or ../../Changes/@mode = 'HIGHLIGHT'">
+							<xsl:when test="not(../../Changes/@mode) or ../../Changes/@mode = 'HIGHLIGHT' or ../../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
 								<xsl:call-template name="Code">
 									<xsl:with-param name="changeClass" select="../../Changes/Change[@value=$changedValue]"  />
 									<xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
 									<xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
 									<xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+									<xsl:with-param name="mode" select="../../Changes/@mode" />
 								</xsl:call-template>
 							</xsl:when>
 							<xsl:otherwise>
@@ -96,6 +97,7 @@
 										<xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
 										<xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
 										<xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+                                        <xsl:with-param name="mode" select="../../Changes/@mode" />
 									</xsl:call-template>
 								</xsl:if>
 							</xsl:otherwise>

@@ -19,12 +19,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -61,7 +56,7 @@ import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.SerializeC
 
 @RestController
 public class ExportController {
-	
+
 	@Autowired
 	DlNewExportService dlNewExportService;
 
@@ -70,83 +65,26 @@ public class ExportController {
 
 	@Autowired
 	IgService igService;
-	
+
 	@Autowired
 	DocumentStructureService documentStructureService;
-	
+
 	@Autowired
 	ExportConfigurationService exportConfigurationService;
-	
+
 	@Autowired
 	SerializeCoconstraintTableToExcel serializeCoconstraintTableToExcel;
-	
-	  @Autowired
-	  DatatypeLibraryService datatypeLibraryService;
-	
-	@RequestMapping(value = "/api/export/datatypeLibrary/{dlId}/configuration/{configId}/{format}", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-	public @ResponseBody void exportDatatypeLibrary(@PathVariable("dlId") String dlId,
-			@PathVariable("configId") String configId,
-			@PathVariable("format") String format,
-			HttpServletResponse response, FormData formData) throws ExportException {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication != null) {
-			try {
-				ExportFilterDecision decision = null;
-			    DatatypeLibrary datatypeLibrary = datatypeLibraryService.findById(dlId);
 
-				if(formData.getJson() != null) {
-					ObjectMapper mapper = new ObjectMapper();
-					mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-					decision = mapper.readValue(formData.getJson(), ExportFilterDecision.class);
-				} else {
-					ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
-//					 decision = igExportService.getExportFilterDecision(igDocument, exportConfiguration);
+	@Autowired
+	DatatypeLibraryService datatypeLibraryService;
 
-				}
-				
-				//Save lastUserConfiguration For quickHtmlExport
-//			    DocumentExportConfiguration lastUserConfiguration = new DocumentExportConfiguration();
-//			    lastUserConfiguration.setConfigId(configId);
-//			    lastUserConfiguration.setDecision(decision);
-//			    igDocument.setLastUserConfiguration(lastUserConfiguration);
-//			    igService.save(igDocument);
-
-				String username = authentication.getPrincipal().toString();				
-				if(format.toLowerCase().equals("html")) {	
-					
-				ExportedFile exportedFile = dlNewExportService.exportDlDocumentToHtml(username, dlId, decision, configId);
-				response.setContentType("text/html");
-				response.setHeader("Content-disposition",
-						"attachment;filename=" + exportedFile.getFileName());
-				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-				}			
-				if(format.toLowerCase().equals("word")) {					
-				ExportedFile exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, decision, configId);
-//			    ExportedFile wordFile = WordUtil.convertHtmlToWord(exportedFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
-
-				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-				response.setHeader("Content-disposition",
-						"attachment;filename=" + exportedFile.getFileName());
-				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-				}
-				
-				if(format.toLowerCase().equals("html1")) {} 
-					   
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-				throw new ExportException(e, "Error while sending back exported IG Document with id " + dlId);
-			}
-		} else {
-			throw new AuthenticationCredentialsNotFoundException("No Authentication");
-		}
-	}
 
 	@RequestMapping(value = "/api/export/{document}/{igId}/configuration/{configId}/{format}", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	public @ResponseBody void exportIgDocument(@PathVariable("igId") String igId,
 			@PathVariable("configId") String configId,
 			@PathVariable("format") String format,
 			@PathVariable("document") String document,
+		    @RequestParam(required = false) String deltamode,
 			HttpServletResponse response, FormData formData) throws ExportException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
@@ -154,7 +92,7 @@ public class ExportController {
 				ExportFilterDecision decision = null;
 				DocumentStructure ds = new DocumentStructure();			
 				if(document.toLowerCase().equals("ig")) {
-			     ds = igService.findById(igId);
+					ds = igService.findById(igId);
 				} else if(document.toLowerCase().equals("library")) {
 					ds = datatypeLibraryService.findById(igId);
 				}
@@ -164,60 +102,51 @@ public class ExportController {
 					decision = mapper.readValue(formData.getJson(), ExportFilterDecision.class);
 				} else {
 					ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
-					 decision = igExportService.getExportFilterDecision(ds, exportConfiguration);
+					decision = igExportService.getExportFilterDecision(ds, exportConfiguration);
 
 				}
-				
+
 				//Save lastUserConfiguration For quickHtmlExport
-//			    DocumentExportConfiguration lastUserConfiguration = new DocumentExportConfiguration();
-//			    lastUserConfiguration.setConfigId(configId);
-//			    lastUserConfiguration.setDecision(decision);
-//			    igDocument.setLastUserConfiguration(lastUserConfiguration);
-//			    igService.save(igDocument);
+				DocumentExportConfiguration lastUserConfiguration = new DocumentExportConfiguration();
+				lastUserConfiguration.setConfigId(configId);
+				lastUserConfiguration.setDecision(decision);
+				if(document.toLowerCase().equals("ig")) {
+					((Ig) ds).setLastUserConfiguration(lastUserConfiguration);
+					igService.save(((Ig) ds));					
+				} else if(document.toLowerCase().equals("library")) {
+					((DatatypeLibrary) ds).setLastUserConfiguration(lastUserConfiguration);
+					datatypeLibraryService.save((DatatypeLibrary) ds);
+				}
 
 				String username = authentication.getPrincipal().toString();				
 				if(format.toLowerCase().equals("html")) {
 					ExportedFile exportedFile = null;
 					if(ds instanceof Ig) {
-						 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, configId);
-						} else if(ds instanceof DatatypeLibrary) {
-							 exportedFile = dlNewExportService.exportDlDocumentToHtml(username, igId, decision, configId);
-						}
-				response.setContentType("text/html");
-				response.setHeader("Content-disposition",
-						"attachment;filename=" + exportedFile.getFileName());
-				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+						exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, configId, deltamode);
+					} else if(ds instanceof DatatypeLibrary) {
+						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, igId, decision, configId);
+					}
+					response.setContentType("text/html");
+					response.setHeader("Content-disposition",
+							"attachment;filename=" + exportedFile.getFileName());
+					FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 				}			
 				if(format.toLowerCase().equals("word")) {	
 					ExportedFile exportedFile = null;
 					if(ds instanceof Ig) {
-						 exportedFile = igExportService.exportIgDocumentToWord(username, igId, decision, configId);
-						} else if(ds instanceof DatatypeLibrary) {
-							 exportedFile = dlNewExportService.exportDlDocumentToWord(username, igId, decision, configId);
-						}
+						exportedFile = igExportService.exportIgDocumentToWord(username, igId, decision, configId);
+					} else if(ds instanceof DatatypeLibrary) {
+						exportedFile = dlNewExportService.exportDlDocumentToWord(username, igId, decision, configId);
+					}
 
-				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-				response.setHeader("Content-disposition",
-						"attachment;filename=" + exportedFile.getFileName());
-				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+					response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+					response.setHeader("Content-disposition",
+							"attachment;filename=" + exportedFile.getFileName());
+					FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 				}
-				
-				if(format.toLowerCase().equals("html1")) {											  
-					   ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, configId);
-					   File coCons;
-					   response.setContentType("text/html");
-					   response.setHeader("Content-disposition",
-					   "attachment;filename=" + "CoconstraintExcel.xls");
-					   try {
-//					   coCons = new ClassPathResource("CoconstaintHTMLForConverting.html").getFile();
-					   InputStream targetStream = exportedFile.getContent();
-					   FileCopyUtils.copy(targetStream, response.getOutputStream());
-					   } catch (IOException e) {
-					   throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
-					   }
-					   } 
-					   
-				
+
+
+
 			} catch (Exception e) {
 				e.printStackTrace();
 				throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
@@ -226,66 +155,98 @@ public class ExportController {
 			throw new AuthenticationCredentialsNotFoundException("No Authentication");
 		}
 	}
-	
-	@RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-	public @ResponseBody void exportIgDocumentHtml(@PathVariable("igId") String igId,
-			HttpServletResponse response, FormData formData) throws ExportException {
+
+	@RequestMapping(value = "/api/export/{document}/{documentId}/quickHtml", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	public @ResponseBody void exportIgDocumentHtml(@PathVariable("documentId") String documentId,
+			@PathVariable("document") String document,
+			HttpServletResponse response,
+			FormData formData) throws ExportException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
 			try {
-				String username = authentication.getPrincipal().toString();				
-			    Ig igDocument = igService.findById(igId);
-			    ExportedFile exportedFile;
-			    if(igDocument.getLastUserConfiguration() != null) {
-					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, igDocument.getLastUserConfiguration().getDecision(), igDocument.getLastUserConfiguration().getConfigId());
-			    }
-			    else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
-			    		ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
-					 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId());
-			    } 
-			    else {
-		    		ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfig(true);
-				 exportedFile = igExportService.exportIgDocumentToHtml(username, igId, null, exportConfiguration.getId());
+				String username = authentication.getPrincipal().toString();
+				DocumentStructure ds = new DocumentStructure();			
+				if(document.toLowerCase().equals("ig")) {
+					ds = igService.findById(documentId);
+				} else if(document.toLowerCase().equals("library")) {
+					ds = datatypeLibraryService.findById(documentId);
+				}
+				ExportedFile exportedFile= null;			    
+				if(document.toLowerCase().equals("ig")) {
+					if(((Ig) ds).getLastUserConfiguration() != null) {
+						ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((Ig) ds).getLastUserConfiguration().getConfigId());
+						ExportFilterDecision efc = ((Ig) ds).getLastUserConfiguration().getDecision();
+						if(ec != null) {
+						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, ((Ig) ds).getLastUserConfiguration().getDecision(), ((Ig) ds).getLastUserConfiguration().getConfigId(), null);
+					} else {
+						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, ((Ig) ds).getLastUserConfiguration().getDecision(), exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT).getId(), null);
+					}
+					}
+					else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
+						ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
+						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, null, exportConfiguration.getId(), null);
+					} 
+					else {
+						ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT);
+						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, null, exportConfiguration.getId(), null);
 
-			    }
+					}					
+				} else if(document.toLowerCase().equals("library")) {
+					if(((DatatypeLibrary) ds).getLastUserConfiguration() != null) {
+						ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((DatatypeLibrary) ds).getLastUserConfiguration().getConfigId());
+						ExportFilterDecision efc = ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision();
+						if(ec != null) {
+						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision(), ((DatatypeLibrary) ds).getLastUserConfiguration().getConfigId());
+					} else {
+						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision(), exportConfigurationService.getOriginalConfigWithType(true,Type.DATATYPELIBRARY).getId());
+					}
+										}
+					else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
+						ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
+						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, null, exportConfiguration.getId());
+					} 
+					else {
+						ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,Type.DATATYPELIBRARY);
+						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, null, exportConfiguration.getId());
+					}
+				}
 				response.setContentType("text/html");
 				response.setHeader("Content-disposition",
 						"attachment;filename=" + exportedFile.getFileName());
 				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());		
 			} catch (Exception e) {
-				throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
+				throw new ExportException(e, "Error while sending back exported  Document with id " + documentId);
 			}
 		} else {
 			throw new AuthenticationCredentialsNotFoundException("No Authentication");
 		}
 	}
-	
+
 	@RequestMapping(value = "/api/export/coconstraintTable", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	public @ResponseBody void exportCoconstraintTable(FormData formData, HttpServletResponse response) throws ExportException, JsonParseException, JsonMappingException, IOException {
-		 System.out.println("We inside EXCEL");
-		  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		  	if(formData.getJson() != null) {
-				ObjectMapper mapper = new ObjectMapper();
-				mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-				CoConstraintTable coConstraintTable = mapper.readValue(formData.getJson(), CoConstraintTable.class);
-				if (authentication != null) {
-			  		String username = authentication.getPrincipal().toString();
-			  		ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(coConstraintTable);
-			  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-			  		response.setHeader("Content-disposition",
-			  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
-			  		try {
-			  			response.getOutputStream().write(excelFile.toByteArray());
-			  		} catch (IOException e) {
-			  			throw new ExportException(e, "Error while sending back excel Document for coconstraintTable with id " + coConstraintTable.getId());
-			  		}
-			  	} else {
-			  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-			  	}
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if(formData.getJson() != null) {
+			ObjectMapper mapper = new ObjectMapper();
+			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+			CoConstraintTable coConstraintTable = mapper.readValue(formData.getJson(), CoConstraintTable.class);
+			if (authentication != null) {
+				String username = authentication.getPrincipal().toString();
+				ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(coConstraintTable);
+				response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+				response.setHeader("Content-disposition",
+						"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
+				try {
+					response.getOutputStream().write(excelFile.toByteArray());
+				} catch (IOException e) {
+					throw new ExportException(e, "Error while sending back excel Document for coconstraintTable with id " + coConstraintTable.getId());
+				}
+			} else {
+				throw new AuthenticationCredentialsNotFoundException("No Authentication ");
 			}
-		  	
-		  }
-	
+		}
+
+	}
+
 	@RequestMapping(value = "/api/export/ig/{igId}/quickWord", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	public @ResponseBody void exportIgDocumentWord(@PathVariable("igId") String igId,
 			HttpServletResponse response, FormData formData) throws ExportException {
@@ -293,21 +254,27 @@ public class ExportController {
 		if (authentication != null) {
 			try {
 				String username = authentication.getPrincipal().toString();				
-			    Ig igDocument = igService.findById(igId);
-			    ExportedFile exportedFile;
-			    if(igDocument.getLastUserConfiguration() != null) {
-					 exportedFile = igExportService.exportIgDocumentToWord(username, igId, igDocument.getLastUserConfiguration().getDecision(), igDocument.getLastUserConfiguration().getConfigId());
-			    }
-			    else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
-			    		ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
-					 exportedFile = igExportService.exportIgDocumentToWord(username, igId, null, exportConfiguration.getId());
-			    } 
-			    else {
-		    		ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
-				 exportedFile = igExportService.exportIgDocumentToWord(username, igId, null, exportConfiguration.getId());
+				Ig igDocument = igService.findById(igId);
+				ExportedFile exportedFile;
+				if(igDocument.getLastUserConfiguration() != null) {
+					ExportConfiguration ec = exportConfigurationService.getExportConfiguration(igDocument.getLastUserConfiguration().getConfigId());
+					ExportFilterDecision efc = igDocument.getLastUserConfiguration().getDecision();
+					if(ec != null) {
+					exportedFile = igExportService.exportIgDocumentToHtml(username, igId, igDocument.getLastUserConfiguration().getDecision(), igDocument.getLastUserConfiguration().getConfigId(), null);
+				} else {
+					exportedFile = igExportService.exportIgDocumentToHtml(username, igId, igDocument.getLastUserConfiguration().getDecision(), exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT).getId(), null);
+								}
+				}
+				else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
+					ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
+					exportedFile = igExportService.exportIgDocumentToWord(username, igId, null, exportConfiguration.getId());
+				} 
+				else {
+					ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false,Type.IGDOCUMENT);
+					exportedFile = igExportService.exportIgDocumentToWord(username, igId, null, exportConfiguration.getId());
 
-			    }
-			    response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+				}
+				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 				response.setHeader("Content-disposition",
 						"attachment;filename=" + exportedFile.getFileName());
 				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());		
@@ -319,26 +286,58 @@ public class ExportController {
 		}
 	}
 	
-//	 @RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST)
-//	  public @ResponseBody void exportCoConstraintsToExcel(@PathVariable("igId") String id,
-//	  		HttpServletResponse response) throws ExportException {
-//		 System.out.println("We inside EXCEL");
-//	  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//	  	if (authentication != null) {
-//	  		String username = authentication.getPrincipal().toString();
-//	  		ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(null);
-//	  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-//	  		response.setHeader("Content-disposition",
-//	  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
-//	  		try {
-//	  			response.getOutputStream().write(excelFile.toByteArray());
-//	  		} catch (IOException e) {
-//	  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
-//	  		}
-//	  	} else {
-//	  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-//	  	}
-//	  }
+	@RequestMapping(value = "/api/export/library/{dlId}/quickWord", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	public @ResponseBody void exportDtlDocumentWord(@PathVariable("dlId") String dlId,
+			HttpServletResponse response, FormData formData) throws ExportException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null) {
+			try {
+				String username = authentication.getPrincipal().toString();				
+				DatatypeLibrary dl = datatypeLibraryService.findById(dlId);
+				ExportedFile exportedFile;
+				if(dl.getLastUserConfiguration() != null) {
+					exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, dl.getLastUserConfiguration().getDecision(), dl.getLastUserConfiguration().getConfigId());
+				}
+				else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
+					ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
+					exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, null, exportConfiguration.getId());
+				} 
+				else {
+					ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false,Type.DATATYPELIBRARY);
+					exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, null, exportConfiguration.getId());
+				}
+				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+				response.setHeader("Content-disposition",
+						"attachment;filename=" + exportedFile.getFileName());
+				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());		
+			} catch (Exception e) {
+				throw new ExportException(e, "Error while sending back exported Datatype Library Document with id " + dlId);
+			}
+		} else {
+			throw new AuthenticationCredentialsNotFoundException("No Authentication");
+		}
+	}
+
+	//	 @RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST)
+	//	  public @ResponseBody void exportCoConstraintsToExcel(@PathVariable("igId") String id,
+	//	  		HttpServletResponse response) throws ExportException {
+	//		 System.out.println("We inside EXCEL");
+	//	  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	//	  	if (authentication != null) {
+	//	  		String username = authentication.getPrincipal().toString();
+	//	  		ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(null);
+	//	  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+	//	  		response.setHeader("Content-disposition",
+	//	  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
+	//	  		try {
+	//	  			response.getOutputStream().write(excelFile.toByteArray());
+	//	  		} catch (IOException e) {
+	//	  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
+	//	  		}
+	//	  	} else {
+	//	  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+	//	  	}
+	//	  }
 
 	@RequestMapping(value = "/api/export/{document}/{id}/configuration/{configId}/getFilteredDocument", method = RequestMethod.GET)
 	public @ResponseBody ExportConfigurationGlobal getFilteredDocument(
@@ -348,12 +347,14 @@ public class ExportController {
 			HttpServletResponse response) throws ExportException, IGNotFoundException, CoConstraintGroupNotFoundException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
-			ExportConfiguration config = exportConfigurationService.getExportConfiguration(configId);
+			ExportConfiguration config = new ExportConfiguration();
 			DocumentStructure ds = new DocumentStructure();			
 			if(document.toLowerCase().equals("ig")) {
-		     ds = igService.findById(id);
+				ds = igService.findById(id);
+				config = exportConfigurationService.getExportConfigurationWithType(configId, Type.IGDOCUMENT);
 			} else if(document.toLowerCase().equals("library")) {
 				ds = datatypeLibraryService.findById(id);
+				config = exportConfigurationService.getExportConfigurationWithType(configId, Type.DATATYPELIBRARY);
 			}
 			if (ds == null) {
 				throw  new IGNotFoundException(id);
@@ -368,7 +369,7 @@ public class ExportController {
 			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
 		}
 	}
-	
+
 
 
 }

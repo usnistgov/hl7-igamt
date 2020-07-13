@@ -6,6 +6,7 @@ import { SharedModule } from '../shared/shared.module';
 import { ConfigurationTocComponent } from './components/configuration-toc/configuration-toc.component';
 import { ConformanceProfileExportConfigurationComponent } from './components/conformance-profile-export-configuration/conformance-profile-export-configuration.component';
 import { DatatypeExportConfigurationComponent } from './components/datatype-export-configuration/datatype-export-configuration.component';
+import { DatatypeLibraryExportConfigurationComponent } from './components/datatype-library-export-configuration/datatype-library-export-configuration.component';
 import { DefaultConfigurationComponent } from './components/default-configuration/default-configuration.component';
 import { DeltaExportConfigurationComponent } from './components/delta-export-configuration/delta-export-configuration.component';
 import { ExportConfigurationDialogComponent } from './components/export-configuration-dialog/export-configuration-dialog.component';
@@ -26,6 +27,7 @@ import { ExportConfigurationService } from './services/export-configuration.serv
     DefaultConfigurationComponent,
     DeltaExportConfigurationComponent,
     ExportDialogComponent,
+    DatatypeLibraryExportConfigurationComponent,
   ],
   imports: [
     CommonModule,

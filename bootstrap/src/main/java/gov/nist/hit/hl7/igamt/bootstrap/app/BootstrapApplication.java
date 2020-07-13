@@ -28,11 +28,9 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import ca.uhn.fhir.context.FhirContext;
-import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -51,7 +49,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.constraints.domain.AssertionPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -66,6 +63,8 @@ import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfiguratio
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 @SpringBootApplication
 //@EnableMongoAuditing
@@ -131,6 +130,9 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   SegmentService segmentService;
+  
+  @Autowired
+  ValuesetService valuesetService;
 
   @Autowired
   ConformanceProfileService messageService;
@@ -143,8 +145,8 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   TablesFixes tableFixes;
 
-
-
+  
+ 
   @Bean
   public JavaMailSenderImpl mailSender() {
     JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -172,6 +174,7 @@ public class BootstrapApplication implements CommandLineRunner {
   public FhirContext fhirR4Context() {
     return FhirContext.forR4();
   }
+  
 
   //
   //   @Bean(name = "multipartResolver")
@@ -261,10 +264,9 @@ public class BootstrapApplication implements CommandLineRunner {
         }
       }
     }
-
-
-
   }
+  
+  
 
 
   /**
@@ -287,22 +289,35 @@ public class BootstrapApplication implements CommandLineRunner {
 
   /**
    * @param s
+   * @throws ValidationException 
    */
 
+  
+//@PostConstruct
+void fixSegmentduplicatedBinding() throws ValidationException {
+  tableFixes.removeSegmentsDuplicatedBinding();
+}
 
-  //@PostConstruct
+ // @PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
     if( originals == null || originals.isEmpty()) {
-      ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false);
-      basicExportConfiguration.setConfigName("Default Export Configuration");
+      ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, Type.IGDOCUMENT);
+      basicExportConfiguration.setConfigName("IG Document Default Export Configuration");
       basicExportConfiguration.setOriginal(true);
-      basicExportConfiguration.setConfigName("Default Export Configuration");
-      basicExportConfiguration.setId("DEFAULT-CONFIG-ID");
+      basicExportConfiguration.setId("IG-DEFAULT-CONFIG-ID");
       basicExportConfiguration.setDefaultType(false);
       basicExportConfiguration.setDefaultConfig(false);
       exportConfigurationRepository.save(basicExportConfiguration);
+      basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, Type.DATATYPELIBRARY);
+      basicExportConfiguration.setConfigName("DTL Document Default Export Configuration");
+      basicExportConfiguration.setOriginal(true);
+      basicExportConfiguration.setId("DTL-DEFAULT-CONFIG-ID");
+      basicExportConfiguration.setDefaultType(false);
+      basicExportConfiguration.setDefaultConfig(false);
+      exportConfigurationRepository.save(basicExportConfiguration);
+      
     }
   }
   //  
@@ -539,7 +554,7 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
   
-//  @PostConstruct
+  //@PostConstruct
   void classifyDatatypes() throws DatatypeNotFoundException {
     datatypeClassificationService.deleteAll();
     System.out.println("Classifying dts");
@@ -550,7 +565,7 @@ public class BootstrapApplication implements CommandLineRunner {
     criterias1.put(EvolutionPropertie.CPNUMBER, true);
     datatypeClassifier.classify(hl7Versions,criterias1);
     System.out.println("ENd of Classifying dts");
-   
+
   }
 
 
@@ -651,13 +666,30 @@ public class BootstrapApplication implements CommandLineRunner {
 //      this.dataFixer.readCsv();
 //    }
 
-   //@PostConstruct
+    //@PostConstruct
     public void fix0396() throws ValidationException{
       tableFixes.fix0396();
     }
+    //@PostConstruct
+    public void fixPHINValuesets() {
+    	this.valuesetService.findByDomainInfoScope("PHINVADS").forEach(v -> {
+    		if(v.getName() == null) {
+    			v.setName(v.getBindingIdentifier());
+    		}
+    		if(v.getCodes() != null) {
+    			v.getCodes().forEach(c -> {
+    				if(c.getUsage() == null) {
+    					c.setUsage(CodeUsage.R);
+    				}
+    			});
+    		}
+			this.valuesetService.save(v);
+    	});
+    }
+    
     
     @SuppressWarnings("deprecation")
-  // @PostConstruct
+    //@PostConstruct
     public void recoveryConstraints() {
     	this.dataypeService.findAll().forEach(dt -> {
     		if(dt.getBinding() != null) {

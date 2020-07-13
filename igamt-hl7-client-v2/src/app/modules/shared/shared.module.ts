@@ -16,7 +16,7 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
-import { ListboxModule } from 'primeng/primeng';
+import {ListboxModule, OverlayPanelModule} from 'primeng/primeng';
 import { AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TabViewModule, TooltipModule, TreeTableModule } from 'primeng/primeng';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
@@ -81,6 +81,7 @@ import { TextEditorDialogComponent } from './components/text-editor-dialog/text-
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
 import { UsageDialogComponent } from './components/usage-dialog/usage-dialog.component';
 import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.component';
+import { UserProfileFormComponent } from './components/user-profile-form/user-profile-form.component';
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
 import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
@@ -94,6 +95,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
 
 @NgModule({
   declarations: [
+    UserProfileFormComponent,
     RegisterFormComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
@@ -166,61 +168,63 @@ import { MinNumberDirective } from './validators/min-number.directive';
   providers: [
     StoreResourceRepositoryService,
   ],
-  imports: [
-    CommonModule,
-    RouterModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgbModule,
-    TooltipModule,
-    TreeModule,
-    CardModule,
-    CheckboxModule,
-    ReactiveFormsModule,
-    MatRadioModule,
-    MatDialogModule,
-    FileUploadModule,
-    pTreeModule,
-    DropdownModule,
-    ToastyModule.forRoot(),
-    TreeModule,
-    TreeTableModule,
-    TableModule,
-    SelectButtonModule,
-    ColorPickerModule,
-    ContextMenuModule.forRoot({
-      useBootstrap4: true,
-    }),
-    DamMessagesModule,
-    DamLoaderModule,
-    DamComponentsModule,
-    RadioButtonModule,
-    AccordionModule,
-    ListboxModule,
-    InputSwitchModule,
-    TableModule,
-    SelectButtonModule,
-    ExtendedModule,
-    FroalaEditorModule.forRoot(),
-    FroalaViewModule.forRoot(),
-    ChipsModule,
-    MultiSelectModule,
-    OrganizationChartModule,
-    PanelModule,
-    AutoCompleteModule,
-    PrimeNgDragDrop,
-    DragDropModule,
-    MatSelectModule,
-    MatFormFieldModule,
-    NgxMatSelectSearchModule,
-    TabViewModule,
-  ],
+    imports: [
+        CommonModule,
+        RouterModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NgbModule,
+        TooltipModule,
+        TreeModule,
+        CardModule,
+        CheckboxModule,
+        ReactiveFormsModule,
+        MatRadioModule,
+        MatDialogModule,
+        FileUploadModule,
+        pTreeModule,
+        DropdownModule,
+        ToastyModule.forRoot(),
+        TreeModule,
+        TreeTableModule,
+        TableModule,
+        SelectButtonModule,
+        ColorPickerModule,
+        ContextMenuModule.forRoot({
+            useBootstrap4: true,
+        }),
+        DamMessagesModule,
+        DamLoaderModule,
+        DamComponentsModule,
+        RadioButtonModule,
+        AccordionModule,
+        ListboxModule,
+        InputSwitchModule,
+        TableModule,
+        SelectButtonModule,
+        ExtendedModule,
+        FroalaEditorModule.forRoot(),
+        FroalaViewModule.forRoot(),
+        ChipsModule,
+        MultiSelectModule,
+        OrganizationChartModule,
+        PanelModule,
+        AutoCompleteModule,
+        PrimeNgDragDrop,
+        DragDropModule,
+        MatSelectModule,
+        MatFormFieldModule,
+        NgxMatSelectSearchModule,
+        TabViewModule,
+        OverlayPanelModule,
+    ],
   exports: [
     CommonModule,
     RouterModule,
     FormsModule,
     FileUploadModule,
     ReactiveFormsModule,
+    UserProfileFormComponent,
     RegisterFormComponent,
     TooltipModule,
     NgbModule,
