@@ -35,69 +35,69 @@ import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 @Document
 public class DatatypeLibrary extends DocumentStructure {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
-	private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
-	private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
-	  private DocumentExportConfiguration lastUserConfiguration;
-
-
-	/**
-	 * 
-	 */
-	public DatatypeLibrary() {
-		super();
-		this.setType(Type.DATATYPELIBRARY);
-		// TODO Auto-generated constructor stub
-	}
+  private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
+  private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
+  private DocumentExportConfiguration lastUserConfiguration;
 
 
-
-	public DocumentExportConfiguration getLastUserConfiguration() {
-		return lastUserConfiguration;
-	}
+  /**
+   * 
+   */
+  public DatatypeLibrary() {
+    super();
+    this.setType(Type.DATATYPELIBRARY);
+    // TODO Auto-generated constructor stub
+  }
 
 
 
-	public void setLastUserConfiguration(DocumentExportConfiguration lastUserConfiguration) {
-		this.lastUserConfiguration = lastUserConfiguration;
-	}
+  public DocumentExportConfiguration getLastUserConfiguration() {
+    return lastUserConfiguration;
+  }
 
 
 
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
+  public void setLastUserConfiguration(DocumentExportConfiguration lastUserConfiguration) {
+    this.lastUserConfiguration = lastUserConfiguration;
+  }
 
 
 
-	public DatatypeRegistry getDatatypeRegistry() {
-		return datatypeRegistry;
-	}
+  public static long getSerialversionuid() {
+    return serialVersionUID;
+  }
 
-	public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
-		this.datatypeRegistry = datatypeRegistry;
-	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain#getLabel()
-	 */
-	@Override
-	public String getLabel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
-	public ValueSetRegistry getValueSetRegistry() {
-		return valueSetRegistry;
-	}
+  public DatatypeRegistry getDatatypeRegistry() {
+    return datatypeRegistry;
+  }
 
-	public void setValueSetRegistry(ValueSetRegistry valueSetRegistry) {
-		this.valueSetRegistry = valueSetRegistry;
-	}
+  public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
+    this.datatypeRegistry = datatypeRegistry;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain#getLabel()
+   */
+  @Override
+  public String getLabel() {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  public ValueSetRegistry getValueSetRegistry() {
+    return valueSetRegistry;
+  }
+
+  public void setValueSetRegistry(ValueSetRegistry valueSetRegistry) {
+    this.valueSetRegistry = valueSetRegistry;
+  }
 }

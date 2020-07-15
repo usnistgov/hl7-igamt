@@ -9,40 +9,32 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.change.entity.domain;
+package gov.nist.hit.hl7.igamt.export.configuration.newModel;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * @author jungyubw
+ * @author Abdelghani El Ouakili
  *
  */
-public enum PropertyType {
-  //METDATA
-  EXT, AUTHORNOTES, USAGENOTES, IDENTIFIER, BINDINGIDENTIFIER, DESCRIPTION, NAME, AUTHORS, PROFILETYPE, ROLE, PROFILEIDENTIFIER, ORGANISATION,
-  //PRETEXT
-  PREDEF,
+public class DeltaExportFilterDecision  extends ExportFilterDecision {
   
-  //POSTTEXT
-  POSTDEF,
+  private Map<String, Boolean> added = new HashMap<String, Boolean>();
+  private Map<String, Boolean> changed = new HashMap<String, Boolean>();
   
-  //DYNAMICMAPPING
-  MAPPINGITEM,
-  
-  //CONFORMANCESTATEMENT
-  STATEMENT, PATTERN,
-  
-  //COCONSTRAINT
-  COCONSTRAINT,
-  COCONSTRAINTBINDINGS,
-  
-  //VALUESET
-  CODES,
-  CODESYSTEM,
-  EXTENSIBILITY,
-  CONTENTDEFINITION,
-  STABILITY,
-  URL,
-  INTENSIONALCOMMENT,
-  
-  //STRUCTURE
-  USAGE, TRUEUSAGE, FALSEUSAGE, CARDINALITYMIN, CARDINALITYMAX, LENGTHMIN, LENGTHMAX, CONFLENGTH, LENGTHTYPE, DATATYPE, VALUESET, SINGLECODE, CONSTANTVALUE, PREDICATE, DEFINITIONTEXT, COMMENT, SEGMENTREF, DTMSTRUC, SHORTDESCRIPTION, VALUE
+  public Map<String, Boolean> getAdded() {
+    return added;
+  }
+  public void setAdded(Map<String, Boolean> added) {
+    this.added = added;
+  }
+  public Map<String, Boolean> getChanged() {
+    return changed;
+  }
+  public void setChanged(Map<String, Boolean> changed) {
+    this.changed = changed;
+  }
+
+
 }

@@ -353,6 +353,10 @@ export class IgService {
     return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + igId + this.CONFIGURATION + configId + '/getFilteredDocument');
   }
 
+  getLastUserConfiguration = (igId: string): Observable<IExportConfigurationGlobal> => {
+    return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + igId +   '/getLastUserConfiguration');
+  }
+
   importFromFile(documentId, resourceType: Type, targetType: Type, file: any) {
     const form: FormData = new FormData();
     form.append('file', file);

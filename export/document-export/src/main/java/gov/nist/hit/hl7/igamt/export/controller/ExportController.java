@@ -19,12 +19,7 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -42,6 +37,7 @@ import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
+import gov.nist.hit.hl7.igamt.delta.exception.IGDeltaException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfigurationGlobal;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentExportConfiguration;
@@ -89,6 +85,7 @@ public class ExportController {
 			@PathVariable("configId") String configId,
 			@PathVariable("format") String format,
 			@PathVariable("document") String document,
+		    @RequestParam(required = false) String deltamode,
 			HttpServletResponse response, FormData formData) throws ExportException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
@@ -158,7 +155,44 @@ public class ExportController {
 			throw new AuthenticationCredentialsNotFoundException("No Authentication");
 		}
 	}
+	
+	@RequestMapping(value = "/api/export/{document}/{documentId}/getLastUserConfiguration", method = RequestMethod.GET, produces = { "application/json" })
+	public @ResponseBody ExportConfigurationGlobal getLastUserConfiguration(@PathVariable("documentId") String documentId,
+			@PathVariable("document") String document,
+			HttpServletResponse response,
+			FormData formData) throws ExportException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null) {
+			try {
+				String username = authentication.getPrincipal().toString();
+				DocumentStructure ds = new DocumentStructure();
+				ExportConfigurationGlobal exportConfigurationGlobal = new ExportConfigurationGlobal();
+				if(document.toLowerCase().equals("ig")) {
+					System.out.println("We here in IG");
+					ds = igService.findById(documentId);
+					ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((Ig) ds).getLastUserConfiguration().getConfigId());
+					ExportFilterDecision efc = ((Ig) ds).getLastUserConfiguration().getDecision();
+					exportConfigurationGlobal.setExportConfiguration(ec);
+					exportConfigurationGlobal.setExportFilterDecision(efc);
+				} else if(document.toLowerCase().equals("library")) {
+					System.out.println("We here in DTL");
 
+					ds = datatypeLibraryService.findById(documentId);
+					ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((DatatypeLibrary) ds).getLastUserConfiguration().getConfigId());
+					ExportFilterDecision efc = ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision();
+					exportConfigurationGlobal.setExportConfiguration(ec);
+					exportConfigurationGlobal.setExportFilterDecision(efc);
+				}
+				return exportConfigurationGlobal;
+			}catch (Exception e) {
+				throw new ExportException(e, "Error while sending back last user configuration for Document with id " + documentId);
+			}
+		} else {
+			throw new AuthenticationCredentialsNotFoundException("No Authentication");
+		}
+	}
+
+				
 	@RequestMapping(value = "/api/export/{document}/{documentId}/quickHtml", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	public @ResponseBody void exportIgDocumentHtml(@PathVariable("documentId") String documentId,
 			@PathVariable("document") String document,
@@ -360,7 +394,7 @@ public class ExportController {
 			@PathVariable("id") String id,
 			@PathVariable("configId") String configId,
 			@PathVariable("document") String document,
-			HttpServletResponse response) throws ExportException, IGNotFoundException, CoConstraintGroupNotFoundException {
+			HttpServletResponse response) throws ExportException, IGNotFoundException, CoConstraintGroupNotFoundException, IGDeltaException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
 			ExportConfiguration config = new ExportConfiguration();

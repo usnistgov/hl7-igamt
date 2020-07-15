@@ -9,40 +9,12 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.change.entity.domain;
+package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
 /**
- * @author jungyubw
+ * @author Abdelghani El Ouakili
  *
  */
-public enum PropertyType {
-  //METDATA
-  EXT, AUTHORNOTES, USAGENOTES, IDENTIFIER, BINDINGIDENTIFIER, DESCRIPTION, NAME, AUTHORS, PROFILETYPE, ROLE, PROFILEIDENTIFIER, ORGANISATION,
-  //PRETEXT
-  PREDEF,
-  
-  //POSTTEXT
-  POSTDEF,
-  
-  //DYNAMICMAPPING
-  MAPPINGITEM,
-  
-  //CONFORMANCESTATEMENT
-  STATEMENT, PATTERN,
-  
-  //COCONSTRAINT
-  COCONSTRAINT,
-  COCONSTRAINTBINDINGS,
-  
-  //VALUESET
-  CODES,
-  CODESYSTEM,
-  EXTENSIBILITY,
-  CONTENTDEFINITION,
-  STABILITY,
-  URL,
-  INTENSIONALCOMMENT,
-  
-  //STRUCTURE
-  USAGE, TRUEUSAGE, FALSEUSAGE, CARDINALITYMIN, CARDINALITYMAX, LENGTHMIN, LENGTHMAX, CONFLENGTH, LENGTHTYPE, DATATYPE, VALUESET, SINGLECODE, CONSTANTVALUE, PREDICATE, DEFINITIONTEXT, COMMENT, SEGMENTREF, DTMSTRUC, SHORTDESCRIPTION, VALUE
+public enum BindingType {
+VS, SC, NA
 }

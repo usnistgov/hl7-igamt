@@ -8,13 +8,11 @@
 	<xsl:import href="/templates/profile/constraint.xsl" />
 	<xsl:import href="/templates/profile/segment/segmentField.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
-	<xsl:import href="/templates/profile/singleCode/internalSingleCode.xsl" />
+		<xsl:import href="/templates/profile/singleCode/internalSingleCode.xsl" />
 	<xsl:import href="/templates/profile/commentList.xsl" />
- 	<xsl:import href="/templates/profile/definitionText2.xsl" />
- <xsl:import href="/templates/profile/dynamicMapping.xsl" />
+	<xsl:import href="/templates/profile/dynamicMapping.xsl" />
 	<xsl:import href="/templates/profile/metadata.xsl" />
-
-
+	
 	<xsl:template match="Segment" mode="toc">
 		<xsl:element name="a">
 			<xsl:attribute name="href">
@@ -26,15 +24,15 @@
 	</xsl:template>
 
 	<xsl:template match="Segment">
-
+	
 		<xsl:param name="inlineConstraint" />
 
-
+		
 		<xsl:call-template name="VersionDisplay" />
-		<xsl:call-template name="UsageNotes" />
+		<xsl:call-template name="UsageNotes"/>
 		<xsl:call-template name="AuthorNotes" />
 		<xsl:call-template name="PreDef" />
-
+	
 
 		<xsl:if test="$segmentMetadata.display = 'true'">
 			<xsl:apply-templates select="Metadata">
@@ -172,18 +170,16 @@
 						<xsl:sort select="@position" data-type="number"></xsl:sort>
 						<xsl:variable name="changedPosition" select="./@position" />
 						<xsl:choose>
-							<xsl:when
-								test="not(../../Changes/@mode) or ../../Changes/@mode = 'HIGHLIGHT'">
+							<xsl:when test="not(../../Changes/@mode) or ../../Changes/@mode = 'HIGHLIGHT' or ../../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
 								<xsl:call-template name="SegmentField">
 									<xsl:with-param name="inlineConstraint" select="$inlineConstraint" />
 									<xsl:with-param name="showConfLength" select="../@ShowConfLength" />
-									<xsl:with-param name="changeClass"
-										select="../../Changes/Change[@position=$changedPosition]" />
-									<xsl:with-param name="updatedColor"
-										select="../../Changes/@updatedColor" />
+									<xsl:with-param name="changeClass" select="../../Changes/Change[@position=$changedPosition]"  />
+									<xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
 									<xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
-									<xsl:with-param name="deletedColor"
-										select="../../Changes/@deletedColor" />
+									<xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+									<xsl:with-param name="mode" select="../../Changes/@mode" />
+
 								</xsl:call-template>
 							</xsl:when>
 							<xsl:otherwise>
@@ -191,14 +187,12 @@
 									<xsl:call-template name="SegmentField">
 										<xsl:with-param name="inlineConstraint" select="$inlineConstraint" />
 										<xsl:with-param name="showConfLength" select="../@ShowConfLength" />
-										<xsl:with-param name="changeClass"
-											select="../../Changes/Change[@position=$changedPosition]" />
-										<xsl:with-param name="updatedColor"
-											select="../../Changes/@updatedColor" />
-										<xsl:with-param name="addedColor"
-											select="../../Changes/@addedColor" />
-										<xsl:with-param name="deletedColor"
-											select="../../Changes/@deletedColor" />
+										<xsl:with-param name="changeClass" select="../../Changes/Change[@position=$changedPosition]"  />
+										<xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
+										<xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
+										<xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+										<xsl:with-param name="mode" select="../../Changes/@mode" />
+
 									</xsl:call-template>
 								</xsl:if>
 							</xsl:otherwise>
@@ -207,13 +201,10 @@
 				</xsl:element>
 			</xsl:element>
 		</xsl:element>
+		 					<xsl:call-template name="CommentList" />
 		
-		<xsl:call-template name="CommentList" />
- 		<xsl:call-template name="DefinitionText2" />
-
-
-
-		<xsl:call-template name="PostDef" />
+		
+						<xsl:call-template name="PostDef" />
 		<xsl:if test="count(Constraints/ConformanceStatement)  &gt; 0">
 
 			<!-- <xsl:if test="count(./Constraint[@Type='cs']) &gt; 0"> -->
@@ -251,14 +242,18 @@
 			</xsl:call-template>
 		</xsl:if>
 		<!-- </xsl:if> -->
-		<xsl:apply-templates select="./coconstraints" />
-		<xsl:call-template name="ValueSetBindingList" />
-		<xsl:call-template name="InternalSingleCode" />
-
-		<!-- <xsl:apply-templates select="./Comments" /> --><!-- <xsl:if test="$columnDisplay.segment.comment = 'true'"> -->
-		<!-- <xsl:apply-templates select="./Binding/CommentList" /> -->
-
-		<!-- </xsl:if> -->
+		<xsl:apply-templates select="./coconstraints" />		
+		<xsl:call-template name="ValueSetBindingList"/>	
+				<xsl:call-template name="InternalSingleCode"/>		
+						
+<!-- 		<xsl:apply-templates select="./Comments" />
+ --><!-- 		<xsl:if test="$columnDisplay.segment.comment = 'true'">
+ -->		
+<!--  	<xsl:apply-templates select="./Binding/CommentList" />
+ -->
+ 			
+<!-- 		</xsl:if>
+ -->
 		<xsl:for-each select="Field">
 			<xsl:sort select="@Position" data-type="number"></xsl:sort>
 			<xsl:if test="count(./Text[@Type='Text']) &gt; 0">

@@ -251,7 +251,7 @@
 
 							<xsl:choose>
 								<xsl:when
-									test="not(../Changes/@mode) or ../Changes/@mode = 'HIGHLIGHT'">
+									test="not(../Changes/@mode) or ../Changes/@mode = 'HIGHLIGHT' or ../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
 									<xsl:call-template name="component">
 										<xsl:with-param name="style"
 											select="'background-color:white;text-decoration:normal'" />
@@ -261,6 +261,8 @@
 										<xsl:with-param name="updatedColor" select="../Changes/@updatedColor" />
 										<xsl:with-param name="addedColor" select="../Changes/@addedColor" />
 										<xsl:with-param name="deletedColor" select="../Changes/@deletedColor" />
+										<xsl:with-param name="mode" select="../Changes/@mode" />
+
 									</xsl:call-template>
 								</xsl:when>
 								<xsl:otherwise>
@@ -274,8 +276,9 @@
 											<xsl:with-param name="updatedColor"
 												select="../Changes/@updatedColor" />
 											<xsl:with-param name="addedColor" select="../Changes/@addedColor" />
-											<xsl:with-param name="deletedColor"
-												select="../Changes/@deletedColor" />
+											<xsl:with-param name="deletedColor" select="../Changes/@deletedColor" />
+											<xsl:with-param name="mode" select="../Changes/@mode" />
+
 										</xsl:call-template>
 									</xsl:if>
 								</xsl:otherwise>

@@ -10,12 +10,12 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
 public interface DlNewExportService {
 
-	public ExportedFile exportDlDocumentToHtml(String username, String dlDocumentId, ExportFilterDecision decision, String configId) throws Exception;
-	
-	public ExportFilterDecision getExportFilterDecision(DatatypeLibrary dl, ExportConfiguration config) throws CoConstraintGroupNotFoundException;
-	public  ExportedFile serializeDlDocumentToHtml(String username, DatatypeLibrary dl,
-			ExportFormat exportFormat, ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception;
+    public ExportedFile exportDlDocumentToHtml(String username, String dlDocumentId, ExportFilterDecision decision, String configId) throws Exception;
+    
+    public ExportFilterDecision getExportFilterDecision(DatatypeLibrary dl, ExportConfiguration config) throws CoConstraintGroupNotFoundException;
+    public  ExportedFile serializeDlDocumentToHtml(String username, DatatypeLibrary dl,
+            ExportFormat exportFormat, ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception;
 
-	public ExportedFile exportDlDocumentToWord(String username, String id, ExportFilterDecision decision, String configId ) throws Exception;
-		
+    public ExportedFile exportDlDocumentToWord(String username, String id, ExportFilterDecision decision, String configId ) throws Exception;
+        
 }

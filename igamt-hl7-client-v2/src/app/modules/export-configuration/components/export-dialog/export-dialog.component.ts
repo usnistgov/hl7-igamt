@@ -73,6 +73,7 @@ export class ExportDialogComponent implements OnInit {
             toc: this.toc,
             type: this.type,
             decision,
+            documentId :this.igId,
           },
         });
         tocDialog.afterClosed().subscribe((result) => {
