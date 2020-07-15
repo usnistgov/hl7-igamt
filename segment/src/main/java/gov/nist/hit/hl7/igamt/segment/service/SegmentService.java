@@ -111,7 +111,7 @@ public interface SegmentService extends ResourceService {
 	 */
 
 	public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId)
-			throws JsonProcessingException, IOException;
+            throws Exception;
 
 	/**
 	 * @param datatype

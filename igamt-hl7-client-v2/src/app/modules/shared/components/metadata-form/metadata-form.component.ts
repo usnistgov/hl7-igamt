@@ -29,12 +29,11 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
   }
 
   initializeForm(model: MetadataModel<any>) {
-    console.log(model);
     const formGroup = new FormGroup({});
     this.model = [];
     for (const field of Object.keys(model)) {
-       console.log(field);
-       if (model.hasOwnProperty(field)) {
+      console.log(field);
+      if (model.hasOwnProperty(field)) {
         formGroup.addControl(field, new FormControl('', model[field].validators));
         this.model.push({
           key: field,
@@ -42,7 +41,6 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
         });
       }
     }
-    console.log(this.model);
     this.metadataForm = formGroup;
   }
 

@@ -9,7 +9,7 @@ import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
-import {LoadResourceReferences} from '../../../../root-store/dam-igamt/igamt.loaded-resources.actions';
+import { LoadResourceReferences } from '../../../../root-store/dam-igamt/igamt.loaded-resources.actions';
 import { LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { CoConstraintBindingDialogComponent, IBindingDialogResult } from '../../../co-constraints/components/co-constraint-binding-dialog/co-constraint-binding-dialog.component';
@@ -134,6 +134,7 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
                 pathId: data.resource.id,
                 name: data.resource.name,
                 type: data.resource.type,
+                rootPath: { elementId: data.resource.id },
                 position: 0,
               },
               expanded: true,

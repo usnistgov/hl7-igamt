@@ -14,6 +14,7 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -139,7 +140,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       HttpEntity<LoginRequest> request = new HttpEntity<>(user);
       System.out.println(env.getProperty(AUTH_URL));
       ResponseEntity<ConnectionResponseMessage<UserResponse>> call =
-          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/login", HttpMethod.POST, request,
+          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/login", HttpMethod.POST, request,
               new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {});
       call.getBody().setHide(true);
       if (call.getStatusCode() == HttpStatus.OK) {
@@ -182,7 +183,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
       ResponseEntity<ConnectionResponseMessage<UserResponse>> response =
-          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/register", HttpMethod.POST, request,
+          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/register", HttpMethod.POST, request,
               new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {});
 
 
@@ -205,7 +206,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
   }
 
-
   @Override
   public ConnectionResponseMessage<PasswordResetTokenResponse> requestPasswordChange(String email)
       throws AuthenticationException {
@@ -219,7 +219,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       HttpEntity<ChangePasswordRequest> request =
           new HttpEntity<ChangePasswordRequest>(changePasswordRequest);
       ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate
-          .exchange(env.getProperty(AUTH_URL) + "/api/password/reset", HttpMethod.POST, request,
+          .exchange(env.getProperty(AUTH_URL) + "/api/tool/password/reset", HttpMethod.POST, request,
               new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {});
       return response.getBody();
     } catch (HttpClientErrorException e) {
@@ -244,7 +244,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
       HttpEntity<String> request = new HttpEntity<String>(token);
       ResponseEntity<Boolean> response =
-          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/password/validatetoken",
+          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/password/validatetoken",
               HttpMethod.POST, request, Boolean.class);
       return response.getBody();
     } catch (HttpClientErrorException e) {
@@ -277,7 +277,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       HttpEntity<ChangePasswordConfirmRequest> request =
           new HttpEntity<ChangePasswordConfirmRequest>(requestObject);
       ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate
-          .exchange(env.getProperty(AUTH_URL) + "/api/password/reset/confirm", HttpMethod.POST, request,
+          .exchange(env.getProperty(AUTH_URL) + "/api/tool/password/reset/confirm", HttpMethod.POST, request,
               new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {});
       return response.getBody();
 
@@ -337,10 +337,99 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
   }
 
-@Override
-public UserListResponse getAllUsers() {	
+  @Override
+  public UserListResponse getAllUsers(HttpServletRequest req) {
+/*
 	RestTemplate restTemplate = new RestTemplate();
-	UserListResponse obj = restTemplate.getForObject(env.getProperty(AUTH_URL) + "/api/users", UserListResponse.class);
+	UserListResponse obj = restTemplate.getForObject(env.getProperty(AUTH_URL) + "/api/tool/users", UserListResponse.class);
 	return obj;
-}
+*/
+    Cookie cookies[] = req.getCookies();
+
+    HttpHeaders headers = new HttpHeaders();
+
+    if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("authCookie")) {
+                headers.add("Cookie", "authCookie=" + cookie.getValue());
+            }
+        }
+    }
+
+    ResponseEntity<UserListResponse> response =
+        restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/users",
+        HttpMethod.GET,
+        new HttpEntity<String>(headers),
+        UserListResponse.class);
+    return response.getBody();
+  }
+
+  @Override
+  public UserResponse getCurrentUser(String username, HttpServletRequest req) {
+    Cookie cookies[] = req.getCookies();
+
+    HttpHeaders headers = new HttpHeaders();
+
+    if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals("authCookie")) {
+                headers.add("Cookie", "authCookie=" + cookie.getValue());
+            }
+        }
+    }
+
+    ResponseEntity<UserResponse> response =
+        restTemplate.exchange(
+                env.getProperty(AUTH_URL) + "/api/tool/user/" + username,
+            HttpMethod.GET,
+            new HttpEntity<String>(headers),
+            UserResponse.class);
+    return response.getBody();
+  }
+
+  @Override
+  public ConnectionResponseMessage<UserResponse> update(RegistrationRequest user, HttpServletRequest req)
+      throws AuthenticationException {
+
+    try {
+      Cookie cookies[] = req.getCookies();
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-type", "application/json");
+
+      if (cookies != null) {
+          for (Cookie cookie : cookies) {
+              if (cookie.getName().equals("authCookie")) {
+                  headers.add("Cookie", "authCookie=" + cookie.getValue());
+              }
+          }
+      }
+
+      RestTemplate restTemplate = new RestTemplate();
+      HttpEntity<RegistrationRequest> request = new HttpEntity<>(user);
+
+      ResponseEntity<ConnectionResponseMessage<UserResponse>> response =
+          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/tool/user",
+              HttpMethod.POST,
+              request,
+              new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {});
+
+      return response.getBody();
+    } catch (HttpClientErrorException e) {
+      String message = e.getResponseBodyAsString();
+
+      throw new AuthenticationException(getMessageString(message));
+    }
+
+
+    catch (HttpServerErrorException e) {
+      String message = e.getResponseBodyAsString();
+
+      throw new AuthenticationException(getMessageString(message));
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new AuthenticationException(e.getMessage());
+    }
+  }
+
 }
