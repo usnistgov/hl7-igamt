@@ -2,7 +2,7 @@
   <p-table #dt1 [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="table" dataKey="data.name" scrollHeight="100%"
            scrollable="true">
     <ng-template pTemplate="caption">
-      <app-select-versions (selected)="select($event)" [hl7Versions]=" hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
+      <app-select-versions (selected)="select($event)" [hl7Versions]="_hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
       <div style="text-align: left">
         <div class="input-group" style="margin-left: 10px;">
           <div class="input-group-prepend" style="height: 35px;">
@@ -105,4 +105,3 @@
     </ng-template>
   </p-table>
 </form>
-

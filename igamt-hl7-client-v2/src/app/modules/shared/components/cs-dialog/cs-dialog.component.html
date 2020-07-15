@@ -44,11 +44,8 @@
     </table>
     <div class="form-group" *ngIf="resourceType === 'CONFORMANCEPROFILE' && !assertionMode">
       <label for="free" class="form-label-lg"> Context </label>
-      <span *ngIf="cs?.context" >
-        <span style="margin-left: 5px;" ><app-entity-bagde [type]='structure[0].data.type' ></app-entity-bagde> {{ contextName }}</span>
-      </span>
-      <span *ngIf="!cs?.context" >
-          <span style="margin-left: 5px;" ><app-entity-bagde [type]='structure[0].data.type' ></app-entity-bagde> {{ structure[0].data.name }}</span>
+      <span>
+          <span style="margin-left: 5px;" ><app-entity-bagde [type]="contextType" ></app-entity-bagde> {{ contextName }}</span>
         </span>
       <button class="btn btn-primary" (click)="showContext = true;" style="margin-left: 10px;" *ngIf="!showContext">
         <i class="fa fa-pencil"></i>

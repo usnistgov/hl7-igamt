@@ -16,6 +16,7 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
 import { ConformanceStatementService } from '../../../shared/services/conformance-statement.service';
+import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { SegmentService } from '../../services/segment.service';
 
@@ -30,6 +31,7 @@ export class SegmentConformanceStatementEditorComponent extends ConformanceState
     readonly repository: StoreResourceRepositoryService,
     private segmentService: SegmentService,
     csService: ConformanceStatementService,
+    treeService: Hl7V2TreeService,
     dialog: MatDialog,
     messageService: MessageService,
     actions$: Actions,
@@ -39,6 +41,7 @@ export class SegmentConformanceStatementEditorComponent extends ConformanceState
       messageService,
       dialog,
       csService,
+      treeService,
       actions$,
       store,
       {
@@ -55,7 +58,7 @@ export class SegmentConformanceStatementEditorComponent extends ConformanceState
           ];
         });
         return {
-          resourceConformanceStatement: segmentCsList.conformanceStatements,
+          resourceConformanceStatement: segmentCsList.conformanceStatements || [],
           complementConformanceStatements: {
             [Type.DATATYPE]: DTCSMap,
           },

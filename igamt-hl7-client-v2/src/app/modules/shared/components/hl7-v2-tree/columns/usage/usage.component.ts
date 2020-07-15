@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { IUsageConfiguration } from '../../../../../export-configuration/models/default-export-configuration.interface';
 import { Type } from '../../../../constants/type.enum';
@@ -51,26 +51,7 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
     const includeW = original === 'W';
     const includeB = original === 'B';
 
-    this.options = config.usages.map((u) => {
-      return {
-        label: u === 'CAB' ? 'C (A/B)' : u,
-        value: u as Usage,
-      };
-    }).filter((elm) => {
-      if (elm.value === Usage.W && includeW) {
-        return true;
-      }
-
-      if (elm.value === Usage.B && includeB) {
-        return true;
-      }
-
-      if (elm.value === Usage.W || elm.value === Usage.B) {
-        return false;
-      }
-
-      return true;
-    });
+    this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB);
   }
 
   @Input()
@@ -92,11 +73,11 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
       }
 
       if (display) {
-        this.freezePredicate$ = of( {
-              level: display.level,
-              context: display.context,
-              value: display.value,
-            });
+        this.freezePredicate$ = of({
+          level: display.level,
+          context: display.context,
+          value: display.value,
+        });
       }
     } else {
       this.editablePredicate.next({ value: undefined });

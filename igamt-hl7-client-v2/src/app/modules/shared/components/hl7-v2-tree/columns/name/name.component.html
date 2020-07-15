@@ -1,0 +1,31 @@
+<span [contextMenu]="elmCtxMenu">
+  <div style="display: flex; align-items: center;">
+    <app-entity-bagde [type]="type" ></app-entity-bagde>
+    <span style="margin-left: 5px;"> {{position}}. </span>
+
+    <!-- EDIT FIELD -->
+    <div class="input-group" *ngIf="editMode">
+      <input type="text" class="form-control" placeholder="value" [(ngModel)]="tmp">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="button" (click)="setValue()"><i class="fa fa-check" style="color: green;"></i></button>
+        <button class="btn btn-outline-secondary" type="button" (click)="toggleEdit()"><i class="fa fa-times" style="color: red;"></i></button>
+      </div>
+    </div>
+
+    <span *ngIf="!editMode" style="margin-left: 5px;"> {{nname.name}}</span>
+
+    <button class="btn btn-sm btn-primary" style="margin-left: 20px;" *ngIf="!viewOnly && type === 'FIELD' && !editMode" (click)="toggleEdit()"><i class="fa fa-pencil"></i></button>
+    <!-- DELETE -->
+    <button *ngIf="!viewOnly && nname.custom && !editMode" [disabled]="!delete" class="btn btn-sm btn-danger" (click)="btnRemove()" style="margin-left: 5px;">
+      <i class="fa fa-trash"></i>
+    </button>
+  </div>
+</span>
+
+<!-- CONTEXT MENU -->
+<context-menu #elmCtxMenu [disabled]="extendable">
+  <ng-template (execute)="ctxAdd()" contextMenuItem>
+    <i class="fa fa-plus"></i> Add Child
+  </ng-template>
+</context-menu>
+
