@@ -29,12 +29,12 @@
                                             <xsl:sort select="@position" data-type="number"></xsl:sort>
                                             <li>
                                                 <xsl:element name="a">
-
                                                     <xsl:attribute name="href">
                                                         <xsl:value-of select="concat('#datatype-', Datatype/@id)"/>
                                                     </xsl:attribute>
                                                     <xsl:value-of select="concat(./@title, ' - ', Datatype/@description)" />
                                                 </xsl:element>
+
                                             </li>
 
                                         </xsl:for-each>

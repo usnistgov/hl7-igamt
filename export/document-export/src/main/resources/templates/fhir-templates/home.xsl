@@ -89,12 +89,12 @@
                         <b>Level 5 </b> Conformance
                         <div class="home-row-container row ">
                             <div class="col-4 home-column1">
-                                <a href="#conformanceprofile">
+                                <a href="#conformanceprofiles">
                                     <span class="level-span">Conformance</span>
                                 </a>
                             </div>
                             <div class="col-8 home-column2">
-                                <a href="#conformanceprofile">
+                                <a href="#conformanceprofiles">
                                     <span class="level-span">Conformance Profiles</span>
                                 </a>
                             </div>

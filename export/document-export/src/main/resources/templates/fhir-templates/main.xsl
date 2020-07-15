@@ -11,6 +11,7 @@
     <xsl:import href="/templates/fhir-templates/segments/segments.xsl"/>
     <xsl:import href="/templates/fhir-templates/segments/segment.xsl"/>
     <xsl:import href="/templates/fhir-templates/conformanceProfiles/conformanceProfiles.xsl"/>
+    <xsl:import href="/templates/fhir-templates/conformanceProfiles/conformanceProfile.xsl"/>
     <xsl:import href="/templates/fhir-templates/toc/toc.xsl"/>
 
     <xsl:template name="displayContent">
@@ -30,8 +31,8 @@
         <div class="page" id="segments">
             <xsl:call-template name="segments"/>
         </div>
-        <div class="page" id="conformance-profiles">
-            <xsl:call-template name="conformance-profiles"/>
+        <div class="page" id="conformanceprofiles">
+            <xsl:call-template name="conformanceprofiles"/>
         </div>
 
         <div class="page" id="toc">
@@ -89,6 +90,25 @@
                             </xsl:attribute>
                             <xsl:call-template name="datatypeF">
                                 <xsl:with-param name="datatype" select="./Datatype"/>
+                                <xsl:with-param name="title" select="./@title"/>
+                            </xsl:call-template>
+                        </xsl:element>
+
+                    </xsl:for-each>
+                </xsl:when>
+
+                <xsl:when test="$sec = 'CONFORMANCEPROFILEREGISTRY'">
+                    <xsl:for-each select="Section">
+
+                        <xsl:element name="div">
+                            <xsl:attribute name="class">
+                                <xsl:value-of select="'page'" />
+                            </xsl:attribute>
+                            <xsl:attribute name="id">
+                                <xsl:value-of select="concat('conformanceprofile-',./ConformanceProfile/@id)" />
+                            </xsl:attribute>
+                            <xsl:call-template name="conformanceprofileF">
+                                <xsl:with-param name="conformanceprofile" select="./ConformanceProfile"/>
                                 <xsl:with-param name="title" select="./@title"/>
                             </xsl:call-template>
                         </xsl:element>

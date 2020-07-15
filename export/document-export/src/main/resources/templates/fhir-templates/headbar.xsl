@@ -19,7 +19,7 @@
                         <a class="nav-link" href="#datatypes">Data Types</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#conformance-profiles">Conformance Profiles</a>
+                        <a class="nav-link" href="#conformanceprofiles">Conformance Profiles</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#segments">Segments</a>
