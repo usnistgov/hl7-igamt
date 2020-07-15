@@ -353,6 +353,7 @@ export class CoConstraintTableComponent implements OnInit {
               pathId: segment.id,
               name: segment.name,
               type: segment.type,
+              rootPath: { elementId: segment.id },
               position: 0,
             },
             expanded: true,

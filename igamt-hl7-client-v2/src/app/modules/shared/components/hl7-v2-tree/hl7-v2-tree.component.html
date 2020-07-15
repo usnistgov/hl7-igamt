@@ -1,28 +1,23 @@
 <div *ngIf="nodes && nodes.length > 0">
     <p-treeTable [value]="nodes" [columns]="selectedColumns" (onNodeExpand)="onNodeExpand($event)" (onNodeCollapse)="onNodeCollapse($event)" [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy">
         <ng-template pTemplate="caption">
-          <div style="text-align:left">
-            <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
-                        selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
+          <div style="display: flex; justify-content: flex-start; align-items: flex-start;">
+            <p-multiSelect
+              [options]="cols"
+              [(ngModel)]="selectedColumns"
+              optionLabel="header"
+              selectedItemsLabel="{0} columns selected"
+              [style]="{minWidth: '200px'}"
+              defaultLabel="Choose Columns">
+            </p-multiSelect>
+            <button *ngIf="type === 'CONFORMANCEPROFILE' && !viewOnly && !delta" class="btn btn-sm btn-primary" style="margin-left: 10px;" (click)="addSegment('', nodes)">
+              <i class="fa fa-plus"></i> Add Segment
+            </button>
+            <button *ngIf="type === 'SEGMENT' && !viewOnly && !delta" class="btn btn-sm btn-primary" style="margin-left: 10px;" (click)="addField('', nodes)">
+              <i class="fa fa-plus"></i> Add Field
+            </button>
           </div>
         </ng-template>
-        <!-- <ng-template pTemplate="colgroup" let-columns>
-          <colgroup>
-            <ng-container *ngFor="let col of columns" [ngSwitch]="col.field">
-              <col *ngSwitchCase="columnTypes.NAME" style="width: 380px;">
-              <col *ngSwitchCase="columnTypes.USAGE" style="width: 115px;">
-              <col *ngSwitchCase="columnTypes.DATATYPE" style="width: 210px;">
-              <col *ngSwitchCase="columnTypes.SEGMENT" style="width: 250px;">
-              <col *ngSwitchCase="columnTypes.VALUESET" style="width: 250px;">
-              <col *ngSwitchCase="columnTypes.CONSTANTVALUE" style="width: 180px;">
-              <col *ngSwitchCase="columnTypes.CARDINALITY" style="width: 150px;">
-              <col *ngSwitchCase="columnTypes.LENGTH" style="width: 180px;">
-              <col *ngSwitchCase="columnTypes.CONFLENGTH" style="width: 180px;">
-              <col *ngSwitchCase="columnTypes.COMMENT" style="width: 340px;">
-              <col *ngSwitchCase="columnTypes.TEXT" style="width: 135px;">
-            </ng-container>
-          </colgroup>
-        </ng-template> -->
         <ng-template pTemplate="header" let-columns>
             <tr>
               <ng-container *ngFor="let col of columns" [ngSwitch]="col.field">
@@ -78,7 +73,24 @@
                         <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
                       </td>
                       <td style="white-space: normal;">
-                        <app-entity-bagde [type]="nodeType(rowNode.node)" ></app-entity-bagde> {{rowData.position}}. {{rowData.name}}
+                        <app-name
+                          [viewOnly]="viewOnly || !rowData.changeable || !rowData.custom"
+                          [globalViewOnly]="viewOnly"
+                          [type]="rowData.type"
+                          [location]="rowData.pathId"
+                          [position]="rowData.position"
+                          [level]="rowData.level"
+                          (valueChange)="registerChange($event)"
+                          [type]="nodeType(rowNode.node)"
+                          [value]="{
+                            name: rowData.name,
+                            custom: rowData.custom
+                          }"
+                          [delete]="canDeleteNode(rowNode.node)"
+                          (add)="addToNode(rowNode)"
+                          (remove)="removeNode(rowNode.node)"
+                          [extendable]="nodeType(rowNode.node) !== 'GROUP'"
+                        ></app-name>
                       </td>
                     </tr>
                   </tbody>

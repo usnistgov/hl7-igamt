@@ -174,7 +174,7 @@ public class ConformanceProfileController extends BaseController {
     @ResponseBody
     public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
                                            @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
-                                           Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException {
+                                           Authentication authentication) throws Exception {
       
         ConformanceProfile cp = this.conformanceProfileService.findById(id);
         commonService.checkOwnerShip(authentication, cp);

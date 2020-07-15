@@ -16,6 +16,7 @@ export class HeaderComponent implements OnInit {
   isLoading: Observable<boolean>;
   isAdmin: Observable<boolean>;
   isIG: Observable<boolean>;
+  isDtLib: Observable<boolean>;
   isConfig: Observable<boolean>;
 
   constructor(private store: Store<fromRoot.IRouteState>) {
@@ -25,6 +26,13 @@ export class HeaderComponent implements OnInit {
       map(
         (url: string) => {
           return url.startsWith('/ig/');
+        },
+      ),
+    );
+    this.isDtLib = store.select(fromDAM.selectRouterURL).pipe(
+      map(
+        (url: string) => {
+          return url.startsWith('/datatype-library/');
         },
       ),
     );

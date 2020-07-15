@@ -30,7 +30,7 @@
           </button>
         </div>
       </li>
-      <li [ngClass]="{'active': isIG | async }" class="nav-item" ngbDropdown>
+      <li [ngClass]="{'active': isDtLib | async }" class="nav-item" ngbDropdown>
         <span class="nav-link" ngbDropdownToggle>Data Type Libraries</span>
         <div ngbDropdownMenu>
           <button [routerLink]="[ '/datatype-library/create']" ngbDropdownItem routerLinkActive="active-dropdown">

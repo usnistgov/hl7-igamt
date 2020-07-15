@@ -111,7 +111,7 @@ public interface ConformanceProfileService {
   
   public ConformanceProfileStructureDisplay convertDomainToDisplayStructureFromContext(ConformanceProfile conformanceProfile, String contextId, boolean readOnly);
   
-  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems, String documentId) throws JsonProcessingException, IOException;
+  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems, String documentId) throws Exception;
 
   /**
    * @param conformanceProfile

@@ -593,22 +593,21 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/findMessageEvents/{version:.+}", method = RequestMethod.GET, produces = {
-  "application/json" })
-
+          "application/json" })
   public @ResponseBody ResponseMessage<List<MessageEventTreeNode>> getMessageEvents(
-      @PathVariable("version") String version, Authentication authentication) {
+          @PathVariable("version") String version, Authentication authentication) {
     try {
-
-
-      List<MessageStructure>  allStuctures= messageStructureRepository.findByDomainInfoVersion(version);
-
-      List<MessageEventTreeNode> list = messageEventService.convertMessageStructureToEventTree(allStuctures);
-
+      List<MessageStructure>  structures= new ArrayList<MessageStructure>();
+      if(!version.toLowerCase().equals("custom")) {
+        structures= messageStructureRepository.findByDomainInfoVersion(version);
+      }else {
+        structures= messageStructureRepository.findByParticipantsContaining(authentication.getPrincipal().toString());
+      }
+      List<MessageEventTreeNode> list = messageEventService.convertMessageStructureToEventTree(structures);
       return new ResponseMessage<List<MessageEventTreeNode>>(Status.SUCCESS, null, null, null, false, null, list);
     } catch (Exception e) {
       throw e;
     }
-
   }
 
   /**

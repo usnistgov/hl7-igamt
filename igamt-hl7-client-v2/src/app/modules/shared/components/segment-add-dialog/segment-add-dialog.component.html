@@ -1,0 +1,40 @@
+<h2 mat-dialog-title> Add Segment to <app-entity-bagde [type]="type" ></app-entity-bagde> {{ root }} at position {{ blueprint.position }}</h2>
+<mat-dialog-content>
+  <form #form='ngForm'>
+    <div class="form-group">
+      <label for="segment" style="font-weight: bold;"> Segment </label>
+      <app-resource-dropdown
+      [placeholder]="'Flavor'"
+      [name]="'segment'"
+      [filter]="true"
+      [required]="true"
+      [(id)]="blueprint.ref.id"
+      (valueChange)="segmentChange($event)"
+      [resources]="resources"
+    ></app-resource-dropdown>
+    </div>
+    <div class="form-group">
+      <label for="segment" style="font-weight: bold;" #ust> Usage </label>
+      <p-dropdown
+      [style]="{'min-width': '100%'}"
+      [autoDisplayFirst]="false"
+      [name]="'usage'"
+      required
+      [options]="usageOptions"
+      [(ngModel)]="blueprint.usage"
+      (ngModelChange)="usageChange($event)"
+      [appendTo]="ust" ></p-dropdown>
+    </div>
+    <div class="form-group">
+      <label for="segment" style="font-weight: bold;"> Cardinality </label>
+      <div style="display: flex; align-items: center;">
+        <input required class="range-input" type="number" name="min" placeholder="Min" min="0" [(ngModel)]="blueprint.min"> ..
+        <input required class="range-input" type="text" name="max" placeholder="Max" [(ngModel)]="blueprint.max">
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button class="btn btn-sm btn-secondary" style="margin-right: 5px;" (click)="cancel()" >Cancel</button>
+  <button class="btn btn-sm btn-success" [disabled]="!isValid()" (click)="done()" >Done</button>
+</mat-dialog-actions>

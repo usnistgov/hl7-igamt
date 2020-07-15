@@ -40,6 +40,7 @@ import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-ma
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
+import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
 import { CardinalityComponent } from './components/hl7-v2-tree/columns/cardinality/cardinality.component';
@@ -48,6 +49,7 @@ import { ConformanceLengthComponent } from './components/hl7-v2-tree/columns/con
 import { ConstantValueComponent } from './components/hl7-v2-tree/columns/constant-value/constant-value.component';
 import { DatatypeComponent } from './components/hl7-v2-tree/columns/datatype/datatype.component';
 import { LengthComponent } from './components/hl7-v2-tree/columns/length/length.component';
+import { NameComponent } from './components/hl7-v2-tree/columns/name/name.component';
 import { PredicateComponent } from './components/hl7-v2-tree/columns/predicate/predicate.component';
 import { SegmentComponent } from './components/hl7-v2-tree/columns/segment/segment.component';
 import { TextComponent } from './components/hl7-v2-tree/columns/text/text.component';
@@ -65,6 +67,7 @@ import { ResetPasswordRequestFormComponent } from './components/reset-password-r
 import { ResourceDropdownComponent } from './components/resource-dropdown/resource-dropdown.component';
 import { ResourcePickerComponent } from './components/resource-picker/resource-picker.component';
 import { ScopeBadgeComponent } from './components/scope-badge/scope-badge.component';
+import { SegmentAddDialogComponent } from './components/segment-add-dialog/segment-add-dialog.component';
 import { SelectDatatypesComponent } from './components/select-datatypes/select-datatypes.component';
 import { SelectMessagesComponent } from './components/select-messages/select-messages.component';
 import { SelectNameComponent } from './components/select-name/select-name.component';
@@ -158,6 +161,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     NgxDropdownComponent,
     CsListComponent,
     SelectDatatypesComponent,
+    SegmentAddDialogComponent,
+    FieldAddDialogComponent,
+    NameComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -303,6 +309,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ValuesetDeltaComponent,
     DisplayRefComponent,
     SelectDatatypesComponent,
+    SegmentAddDialogComponent,
+    FieldAddDialogComponent,
+    NameComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -320,6 +329,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddCoConstraintGroupComponent,
     ImportCsvValuesetComponent,
     VerifyIgDialogComponent,
+    SegmentAddDialogComponent,
+    FieldAddDialogComponent,
   ],
 })
 export class SharedModule {

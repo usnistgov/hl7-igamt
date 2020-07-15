@@ -18,3 +18,13 @@
 .binding-sg {
   background-color: $single_code_binding_color;
 }
+
+.trash-active {
+  color: red;
+  cursor: pointer;
+}
+
+.trash-inactive {
+  color: grey;
+  cursor: not-allowed;
+}
