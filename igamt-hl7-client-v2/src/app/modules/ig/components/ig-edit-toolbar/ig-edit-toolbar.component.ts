@@ -87,7 +87,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
               configurations,
               type: Type.IGDOCUMENT,
               getExportFirstDecision: this.igService.getExportFirstDecision,
-             //getExportFirstDecision: this.igService.getExportFirstDecision,
+             // getExportFirstDecision: this.igService.getExportFirstDecision,
               delta: this.delta,
 
             },

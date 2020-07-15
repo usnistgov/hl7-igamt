@@ -73,7 +73,7 @@ export class ExportDialogComponent implements OnInit {
             toc: this.toc,
             type: this.type,
             decision,
-            documentId :this.igId,
+            documentId : this.igId,
           },
         });
         tocDialog.afterClosed().subscribe((result) => {
@@ -111,6 +111,5 @@ export class ExportDialogComponent implements OnInit {
 
   ngOnInit() {
   }
-  
 
 }

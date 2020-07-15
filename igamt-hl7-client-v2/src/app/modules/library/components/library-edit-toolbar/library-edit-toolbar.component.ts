@@ -102,14 +102,14 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
   exportQuickHTML() {
     this.getLibId().pipe(
       take(1),
-      map((id) => this.libraryService.exportAsHtmlQuick(id))
+      map((id) => this.libraryService.exportAsHtmlQuick(id)),
     ).subscribe();
   }
 
   exportQuickWORD() {
     this.getLibId().pipe(
       take(1),
-      map((id) => this.libraryService.exportAsWordQuick(id))
+      map((id) => this.libraryService.exportAsWordQuick(id)),
     ).subscribe();
   }
   getLibId(): Observable<string> {
