@@ -593,22 +593,21 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/findMessageEvents/{version:.+}", method = RequestMethod.GET, produces = {
-  "application/json" })
-
+          "application/json" })
   public @ResponseBody ResponseMessage<List<MessageEventTreeNode>> getMessageEvents(
-      @PathVariable("version") String version, Authentication authentication) {
+          @PathVariable("version") String version, Authentication authentication) {
     try {
-
-
-      List<MessageStructure>  allStuctures= messageStructureRepository.findByDomainInfoVersion(version);
-
-      List<MessageEventTreeNode> list = messageEventService.convertMessageStructureToEventTree(allStuctures);
-
+      List<MessageStructure>  structures= new ArrayList<MessageStructure>();
+      if(!version.toLowerCase().equals("custom")) {
+        structures= messageStructureRepository.findByDomainInfoVersion(version);
+      }else {
+        structures= messageStructureRepository.findByParticipantsContaining(authentication.getPrincipal().toString());
+      }
+      List<MessageEventTreeNode> list = messageEventService.convertMessageStructureToEventTree(structures);
       return new ResponseMessage<List<MessageEventTreeNode>>(Status.SUCCESS, null, null, null, false, null, list);
     } catch (Exception e) {
       throw e;
     }
-
   }
 
   /**
@@ -1246,6 +1245,7 @@ public class IGDocumentController extends BaseController {
 					}
 					valueset.setUsername(username);
 					valueset.setBindingIdentifier(elm.getName());
+                    valueset.setName(elm.getDescription());
 					valueset.setUrl(elm.getUrl());
 					valueset.setOid(elm.getOid());
 					valueset.setFlavor(true);
@@ -1277,6 +1277,7 @@ public class IGDocumentController extends BaseController {
 		} else {
 			if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
               Valueset valueset = valuesetService.findExternalPhinvadsByOid(elm.getOid());
+
               if(valueset == null) {
                 Valueset newValueset = new Valueset();
                 DomainInfo info = new DomainInfo();
@@ -1295,6 +1296,9 @@ public class IGDocumentController extends BaseController {
                 Valueset saved = valuesetService.save(newValueset);
                 ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
                 savedIds.add(saved.getId());
+              } else {
+                ig.getValueSetRegistry().getCodesPresence().put(valueset.getId(), elm.isIncludeChildren());
+                savedIds.add(valueset.getId());
               }
 
 			} else {

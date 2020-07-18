@@ -8,7 +8,7 @@ import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
-import {LoadResourceReferences} from '../../../../root-store/dam-igamt/igamt.loaded-resources.actions';
+import { LoadResourceReferences } from '../../../../root-store/dam-igamt/igamt.loaded-resources.actions';
 import { LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
   selectValueSetsNodes,
@@ -23,7 +23,7 @@ import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/con
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { IResource } from '../../../shared/models/resource.interface';
-import { IChange } from '../../../shared/models/save-change';
+import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
 import { IBindingContext } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
@@ -47,6 +47,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   resource$: Observable<T>;
   workspace_s: Subscription;
   hasOrigin$: Observable<boolean>;
+  resourceType: Type;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -58,6 +59,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     public legend: BindingLegend,
     public columns: HL7v2TreeColumnType[]) {
     super(editorMetadata, actions$, store);
+    this.resourceType = editorMetadata.resourceType;
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
     this.config = this.store.select(getHl7ConfigState);
     this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);
@@ -86,14 +88,51 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   onDeactivate() {
   }
 
+  changeIsStruct(change: IChange) {
+    return change.propertyType === PropertyType.STRUCTSEGMENT || change.propertyType === PropertyType.FIELD;
+  }
+
+  getChangeLocation(change: IChange): string {
+    return [
+      ...(change.location && change.location !== '' ? [change.location] : []),
+      ...(this.changeIsStruct(change) ? [change.propertyValue.id] : []),
+    ].join('-');
+  }
+
+  changeLocationAndPropHasType(changes: IStructureChanges, prop: PropertyType, location: string, type: ChangeType): boolean {
+    return changes[location] && changes[location][prop] && changes[location][prop].changeType === type;
+  }
+
+  mergeStructChange(change: IChange, changes: IStructureChanges): IStructureChanges {
+    const edits = {
+      ...changes,
+    };
+
+    const changeLocation = this.getChangeLocation(change);
+
+    // Is it structure delete
+    const isStruct = this.changeIsStruct(change);
+    const isStructRm = isStruct && change.changeType === ChangeType.DELETE;
+    // TODO const isStructAd = isStruct && change.changeType === ChangeType.ADD;
+    // TODO const isStructUp = isStruct && change.changeType === ChangeType.UPDATE;
+    const hasStructAdd = isStruct && changes[changeLocation] && changes[changeLocation][change.propertyType] && changes[changeLocation][change.propertyType].changeType === ChangeType.ADD;
+
+    // If it is a structure delete, clean other changes
+    // If it was added and removed before save clean all
+    edits[changeLocation] = {
+      ...(isStructRm ? {} : edits[changeLocation]),
+      ...(hasStructAdd && isStructRm ? {} : { [change.propertyType]: change }),
+    };
+
+    return edits;
+  }
+
   change(change: IChange) {
     combineLatest(this.changes.asObservable(), this.resource$).pipe(
       take(1),
       map(([changes, resource]) => {
-        changes[change.location] = {
-          ...changes[change.location],
-          [change.propertyType]: change,
-        };
+        changes = this.mergeStructChange(change, changes);
+        console.log(changes);
         this.changes.next(changes);
         this.editorChange({ changes, resource }, true);
       }),
@@ -112,7 +151,8 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
           mergeMap((message) => {
             return this.getById(id).pipe(
               flatMap((resource) => {
-                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({selected: resource})];
+                this.changes.next({});
+                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
               }),
             );
           }),
