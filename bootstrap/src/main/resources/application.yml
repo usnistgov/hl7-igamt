@@ -28,7 +28,7 @@ db:
   host: localhost
   
 key: 
-  public: /usr/local/etc/hit/auth/publicKey.txt
+  public: D:\Works2\hl7-auth\auth-utils\KeyPair\publicKey.txt
 auth:
   url: http://localhost:8090
    
