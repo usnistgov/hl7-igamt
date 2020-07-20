@@ -83,7 +83,7 @@
     <!-- Location -->
     <td style="white-space: nowrap;" [ngClass]="{'invalid': !targetNodeValid()}">
       <span class="value" *ngIf="!assertion.subject.path"> SELECT </span>
-      <span *ngIf="assertion.subject.path"> {{ subjectName }} </span>
+      <span *ngIf="assertion.subject.path"> {{ subject.name }} </span>
     </td>
 
     <!-- Verb -->
@@ -238,7 +238,7 @@
     <!-- Comparative Node -->
     <td style="white-space: nowrap;" *ngIf="statementType === _statementType.COMPARATIVE" [ngClass]="{'invalid': !comparisonNodeValid()}">
       <span class="value" *ngIf="!assertion.complement.path"> SELECT </span>
-      <span *ngIf="assertion.complement.path"> {{ compareName }} </span>
+      <span *ngIf="assertion.complement.path"> {{ compare.name }} </span>
     </td>
 
     <th *ngIf="csType === _csType.PROPOSITION && !predicateMode"> then </th>

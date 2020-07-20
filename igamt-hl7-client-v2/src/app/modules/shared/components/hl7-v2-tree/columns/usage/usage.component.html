@@ -34,7 +34,7 @@
 
 
 <ng-template #addButton>
-  <button class="btn btn-sm btn-primary" style="margin-left: 5px;" (click)="createPredicateDialog()" *ngIf="!globalViewOnly && ((usage.value === 'CAB' && level === 0) || ( level !== 0 && (usage.value === 'CAB' || usage.value === 'C') &&  type === 'FIELD'))">
+  <button class="btn btn-sm btn-primary" style="margin-left: 5px;" (click)="createPredicateDialog()" *ngIf="!globalViewOnly && ((usage.value === 'CAB' && level === 0) || (usage.value === 'CAB' && level !== 0 && type === 'SEGMENT') || ( level !== 0 && (usage.value === 'CAB' || usage.value === 'C') &&  type === 'FIELD'))">
     <app-entity-bagde type="PREDICATE" ></app-entity-bagde>  <i class="fa fa-pencil" style="margin-left: 5px;"></i>
   </button>
 </ng-template>
