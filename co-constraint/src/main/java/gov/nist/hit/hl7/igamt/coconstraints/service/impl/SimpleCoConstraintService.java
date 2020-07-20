@@ -397,7 +397,8 @@ public class SimpleCoConstraintService implements CoConstraintService {
     updateDependencies(elm, newKeys, username);
     this.coConstraintGroupRepository.save(elm);
     return newLink;
-    }else return null;
+    }
+    else return null;
 
   }
 

@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -26,6 +27,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
@@ -61,8 +68,12 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
+import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
+import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
+import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -90,6 +101,8 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   ConfigService sharedConstantService;
+  @Autowired
+  IgTemplateRepository igTemplateRepository;
 //
 //  @Autowired
 //  DataFixer dataFixer;
@@ -859,10 +872,9 @@ void fixSegmentduplicatedBinding() throws ValidationException {
 							seb.setPredicate((FreeTextPredicate)cp);
 							seb.setPredicateId(null);
 						}else if (cp instanceof AssertionPredicate) {
-							seb.setPredicate((AssertionPredicate)cp);		
+							seb.setPredicate((AssertionPredicate)cp);
 							seb.setPredicateId(null);
-							
-						}	
+						}
 					});
 					
 				}
@@ -877,7 +889,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
 		if(binding != null && binding.getConformanceStatements() != null) {
 			for(ConformanceStatement cs :binding.getConformanceStatements()) {
 				if(cs.getId() != null && cs.getId().equals(targetCS.getId())) return true;
-			}	
+			}
 		}
 		
 		return false;
@@ -930,5 +942,19 @@ void fixSegmentduplicatedBinding() throws ValidationException {
     //
     //}
     
-
+	//@PostConstruct
+	private void createIgTemplate() throws JsonParseException, JsonMappingException, IOException {
+	  
+	   ObjectMapper objectMapper = new ObjectMapper();
+	    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	    List<SectionTemplate> sections =
+	        objectMapper.readValue(IgServiceImpl.class.getResourceAsStream("/IgTemplate.json"),
+	            new TypeReference<List<SectionTemplate>>() {});
+	   IgTemplate template = new IgTemplate();
+	   template.setChildren(sections);
+	   template.setDomain("Default");
+       template.setName("Default");
+	   this.igTemplateRepository.insert(template);
+	}
+	
   }

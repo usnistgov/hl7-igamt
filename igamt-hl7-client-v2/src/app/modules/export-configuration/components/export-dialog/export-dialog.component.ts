@@ -2,7 +2,6 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { filter, map, take } from 'rxjs/operators';
-import { IgService } from '../../../ig/services/ig.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IExportConfigurationGlobal } from '../../models/config.interface';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
@@ -97,7 +96,6 @@ export class ExportDialogComponent implements OnInit {
   change(configuration) {
     this.getExportFirstDecision(this.igId, configuration.id).pipe(
       map((decision) => {
-        console.log(decision);
         this.overrides.next(decision);
         this.customized = false;
       }),
