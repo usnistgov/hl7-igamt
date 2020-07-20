@@ -72,11 +72,40 @@ BindingSerializationService bindingSerializationService;
 
 	@Override
 	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level,  int position,
-			ConformanceProfileExportConfiguration conformanceProfileExportConfiguration, String deltaMode) throws ResourceSerializationException {
+			ConformanceProfileExportConfiguration conformanceProfileExportConfiguration, Boolean deltaMode) throws ResourceSerializationException {
 	    ConformanceProfile conformanceProfile = conformanceProfileDataModel.getModel();
 	    if (conformanceProfile != null) {
 	      try {
 			Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, position, conformanceProfileExportConfiguration);
+
+			  // Calculate conformanceProfile delta if the conformanceProfile has an origin
+
+			  if(deltaMode && conformanceProfile.getOrigin() != null && conformanceProfileExportConfiguration.isDeltaMode()) {
+				  List<StructureDelta> structureDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
+				  if(structureDelta != null){
+					  List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+					  if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
+						  Element changesElement = new Element("Changes");
+						  changesElement.addAttribute(new Attribute("mode", conformanceProfileExportConfiguration.getDeltaConfig().getMode().name()));
+						  changesElement.addAttribute(new Attribute("updatedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.UPDATED)));
+						  changesElement.addAttribute(new Attribute("addedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.ADDED)));
+						  changesElement.addAttribute(new Attribute("deletedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.DELETED)));
+						  List<Element> deltaElements = this.serializeDelta(structureDeltaChanged, conformanceProfileExportConfiguration.getDeltaConfig());
+						  if (deltaElements != null) {
+							  for (Element el : deltaElements){
+								  changesElement.appendChild(el);
+							  }
+							  conformanceProfileElement.appendChild(changesElement);
+
+						  }
+					  } else {
+					  	return  null;
+					  }
+				  } else {
+					  return  null;
+				  }
+
+			  }
 			if(conformanceProfileExportConfiguration.getIdentifier()) {
 	        conformanceProfileElement.addAttribute(new Attribute("identifier",
 	            conformanceProfile.getIdentifier() != null ? conformanceProfile.getIdentifier() : ""));
@@ -121,6 +150,7 @@ BindingSerializationService bindingSerializationService;
 	        if (conformanceProfile.getChildren() != null
 		            && conformanceProfile.getChildren().size() > 0) {
 		    	  Element commentsElement = new Element("Comments"); 
+		    	  Element definitionTextsElement = new Element("DefinitionTexts");
 		    	  for(SegmentRefOrGroup segmentRefOrGroup : conformanceProfile.getChildren()) {
 		    		  if(segmentRefOrGroup.getComments() != null) {
 		    			  for(Comment comment : segmentRefOrGroup.getComments()) {
@@ -131,8 +161,18 @@ BindingSerializationService bindingSerializationService;
 		    			  }
 		    			  
 		    		  }
+		    		  if(segmentRefOrGroup.getText() != null) {
+		    			  Element definitionText = new Element("DefinitionText");
+		    			  definitionText
+	    	              .addAttribute(new Attribute("text", segmentRefOrGroup.getText()));
+		    			  definitionText.addAttribute(new Attribute("name",segmentRefOrGroup.getName()));
+		    			  definitionTextsElement.appendChild(definitionText);
+		    		  }
 		    	  }
+		    	  
 		    	  conformanceProfileElement.appendChild(commentsElement);
+		    	  conformanceProfileElement.appendChild(definitionTextsElement);
+
 
 	        	
 		        	List<MsgStructElement> msgStructElementList = conformanceProfile.getChildren().stream().sorted((e1, e2) -> 
@@ -152,32 +192,6 @@ BindingSerializationService bindingSerializationService;
 		          }
 		        }
 
-	        // Calculate conformanceProfile delta if the conformanceProfile has an origin
-	        
-		    if(deltaMode != null && conformanceProfile.getOrigin() != null && conformanceProfileExportConfiguration.isDeltaMode()) {
-				List<StructureDelta> structureDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
-			  	if(structureDelta != null){
-					List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-					if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
-						Element changesElement = new Element("Changes");
-						changesElement.addAttribute(new Attribute("mode", conformanceProfileExportConfiguration.getDeltaConfig().getMode().name()));
-
-//		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
-						changesElement.addAttribute(new Attribute("updatedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.UPDATED)));
-						changesElement.addAttribute(new Attribute("addedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.ADDED)));
-						changesElement.addAttribute(new Attribute("deletedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.DELETED)));
-						List<Element> deltaElements = this.serializeDelta(structureDeltaChanged, conformanceProfileExportConfiguration.getDeltaConfig());
-						if (deltaElements != null) {
-							for (Element el : deltaElements){
-								changesElement.appendChild(el);
-							}
-							conformanceProfileElement.appendChild(changesElement);
-
-						}
-					}
-				}
-
-		    }
 		    
 		    if (conformanceProfile.getCoConstraintsBindings() != null) {
 				Element coConstraintsElement = new Element("coConstraintsElement");

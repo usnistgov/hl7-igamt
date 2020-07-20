@@ -37,6 +37,7 @@ import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
+import gov.nist.hit.hl7.igamt.delta.exception.IGDeltaException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfigurationGlobal;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentExportConfiguration;
@@ -103,7 +104,6 @@ public class ExportController {
 				} else {
 					ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 					decision = igExportService.getExportFilterDecision(ds, exportConfiguration);
-
 				}
 
 				//Save lastUserConfiguration For quickHtmlExport
@@ -122,7 +122,7 @@ public class ExportController {
 				if(format.toLowerCase().equals("html")) {
 					ExportedFile exportedFile = null;
 					if(ds instanceof Ig) {
-						exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, configId, deltamode);
+						exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, configId);
 					} else if(ds instanceof DatatypeLibrary) {
 						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, igId, decision, configId);
 					}
@@ -155,7 +155,44 @@ public class ExportController {
 			throw new AuthenticationCredentialsNotFoundException("No Authentication");
 		}
 	}
+	
+	@RequestMapping(value = "/api/export/{document}/{documentId}/getLastUserConfiguration", method = RequestMethod.GET, produces = { "application/json" })
+	public @ResponseBody ExportConfigurationGlobal getLastUserConfiguration(@PathVariable("documentId") String documentId,
+			@PathVariable("document") String document,
+			HttpServletResponse response,
+			FormData formData) throws ExportException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication != null) {
+			try {
+				String username = authentication.getPrincipal().toString();
+				DocumentStructure ds = new DocumentStructure();
+				ExportConfigurationGlobal exportConfigurationGlobal = new ExportConfigurationGlobal();
+				if(document.toLowerCase().equals("ig")) {
+					System.out.println("We here in IG");
+					ds = igService.findById(documentId);
+					ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((Ig) ds).getLastUserConfiguration().getConfigId());
+					ExportFilterDecision efc = ((Ig) ds).getLastUserConfiguration().getDecision();
+					exportConfigurationGlobal.setExportConfiguration(ec);
+					exportConfigurationGlobal.setExportFilterDecision(efc);
+				} else if(document.toLowerCase().equals("library")) {
+					System.out.println("We here in DTL");
 
+					ds = datatypeLibraryService.findById(documentId);
+					ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((DatatypeLibrary) ds).getLastUserConfiguration().getConfigId());
+					ExportFilterDecision efc = ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision();
+					exportConfigurationGlobal.setExportConfiguration(ec);
+					exportConfigurationGlobal.setExportFilterDecision(efc);
+				}
+				return exportConfigurationGlobal;
+			}catch (Exception e) {
+				throw new ExportException(e, "Error while sending back last user configuration for Document with id " + documentId);
+			}
+		} else {
+			throw new AuthenticationCredentialsNotFoundException("No Authentication");
+		}
+	}
+
+				
 	@RequestMapping(value = "/api/export/{document}/{documentId}/quickHtml", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	public @ResponseBody void exportIgDocumentHtml(@PathVariable("documentId") String documentId,
 			@PathVariable("document") String document,
@@ -173,41 +210,45 @@ public class ExportController {
 				}
 				ExportedFile exportedFile= null;			    
 				if(document.toLowerCase().equals("ig")) {
-					if(((Ig) ds).getLastUserConfiguration() != null) {
-						ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((Ig) ds).getLastUserConfiguration().getConfigId());
-						ExportFilterDecision efc = ((Ig) ds).getLastUserConfiguration().getDecision();
-						if(ec != null) {
-						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, ((Ig) ds).getLastUserConfiguration().getDecision(), ((Ig) ds).getLastUserConfiguration().getConfigId(), null);
-					} else {
-						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, ((Ig) ds).getLastUserConfiguration().getDecision(), exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT).getId(), null);
-					}
-					}
-					else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
+//					if(((Ig) ds).getLastUserConfiguration() != null) {
+//						ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((Ig) ds).getLastUserConfiguration().getConfigId());
+//						ExportFilterDecision efc = ((Ig) ds).getLastUserConfiguration().getDecision();
+//						if(ec != null) {
+//						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, ((Ig) ds).getLastUserConfiguration().getDecision(), ((Ig) ds).getLastUserConfiguration().getConfigId());
+//					} else {
+//						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, ((Ig) ds).getLastUserConfiguration().getDecision(), exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT).getId());
+//					}
+//					}
+//					else
+						if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
 						ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
-						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, null, exportConfiguration.getId(), null);
+						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, null, exportConfiguration.getId());
 					} 
 					else {
 						ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT);
-						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, null, exportConfiguration.getId(), null);
+						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, null, exportConfiguration.getId());
 
 					}					
 				} else if(document.toLowerCase().equals("library")) {
-					if(((DatatypeLibrary) ds).getLastUserConfiguration() != null) {
-						ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((DatatypeLibrary) ds).getLastUserConfiguration().getConfigId());
-						ExportFilterDecision efc = ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision();
-						if(ec != null) {
-						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision(), ((DatatypeLibrary) ds).getLastUserConfiguration().getConfigId());
-					} else {
-						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision(), exportConfigurationService.getOriginalConfigWithType(true,Type.DATATYPELIBRARY).getId());
-					}
-										}
-					else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
+//					if(((DatatypeLibrary) ds).getLastUserConfiguration() != null) {
+//						ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((DatatypeLibrary) ds).getLastUserConfiguration().getConfigId());
+//						ExportFilterDecision efc = ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision();
+//						if(ec != null) {
+//						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision(), ((DatatypeLibrary) ds).getLastUserConfiguration().getConfigId());
+//					} else {
+//						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision(), exportConfigurationService.getOriginalConfigWithType(true,Type.DATATYPELIBRARY).getId());
+//					}
+//										}
+//					else 
+						if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
 						ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
-						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, null, exportConfiguration.getId());
+						ExportFilterDecision exportFilterDecision = igExportService.getExportFilterDecision(ds, exportConfiguration);
+						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, exportFilterDecision, exportConfiguration.getId());
 					} 
 					else {
 						ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,Type.DATATYPELIBRARY);
-						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, null, exportConfiguration.getId());
+						ExportFilterDecision exportFilterDecision = igExportService.getExportFilterDecision(ds, exportConfiguration);
+						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, exportFilterDecision, exportConfiguration.getId());
 					}
 				}
 				response.setContentType("text/html");
@@ -256,21 +297,27 @@ public class ExportController {
 				String username = authentication.getPrincipal().toString();				
 				Ig igDocument = igService.findById(igId);
 				ExportedFile exportedFile;
-				if(igDocument.getLastUserConfiguration() != null) {
-					ExportConfiguration ec = exportConfigurationService.getExportConfiguration(igDocument.getLastUserConfiguration().getConfigId());
-					ExportFilterDecision efc = igDocument.getLastUserConfiguration().getDecision();
-					if(ec != null) {
-					exportedFile = igExportService.exportIgDocumentToHtml(username, igId, igDocument.getLastUserConfiguration().getDecision(), igDocument.getLastUserConfiguration().getConfigId(), null);
-				} else {
-					exportedFile = igExportService.exportIgDocumentToHtml(username, igId, igDocument.getLastUserConfiguration().getDecision(), exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT).getId(), null);
-								}
-				}
-				else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
+//				if(igDocument.getLastUserConfiguration() != null) {
+//					ExportConfiguration ec = exportConfigurationService.getExportConfiguration(igDocument.getLastUserConfiguration().getConfigId());
+//					ExportFilterDecision efc = igDocument.getLastUserConfiguration().getDecision();
+//					if(ec != null) {
+//					exportedFile = igExportService.exportIgDocumentToWord(username, igId, igDocument.getLastUserConfiguration().getDecision(), igDocument.getLastUserConfiguration().getConfigId());
+//				} else {
+//					exportedFile = igExportService.exportIgDocumentToWord(username, igId, igDocument.getLastUserConfiguration().getDecision(), exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT).getId());
+//								}
+//				}
+//				else
+					if(exportConfigurationService.getDefaultConfig(true, username) != null) {	
+					// erasing after compile ok
+					// adding compiled jars for upcoing modification
 					ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
+					System.out.println("ADFDSFDSF");
 					exportedFile = igExportService.exportIgDocumentToWord(username, igId, null, exportConfiguration.getId());
 				} 
 				else {
-					ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false,Type.IGDOCUMENT);
+//					ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false,Type.IGDOCUMENT);
+					ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT);
+					System.out.println("ADFDSFDSF");
 					exportedFile = igExportService.exportIgDocumentToWord(username, igId, null, exportConfiguration.getId());
 
 				}
@@ -295,16 +342,19 @@ public class ExportController {
 				String username = authentication.getPrincipal().toString();				
 				DatatypeLibrary dl = datatypeLibraryService.findById(dlId);
 				ExportedFile exportedFile;
-				if(dl.getLastUserConfiguration() != null) {
-					exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, dl.getLastUserConfiguration().getDecision(), dl.getLastUserConfiguration().getConfigId());
-				}
-				else if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
+//				if(dl.getLastUserConfiguration() != null) {
+//					exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, dl.getLastUserConfiguration().getDecision(), dl.getLastUserConfiguration().getConfigId());
+//				}
+//				else
+					if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
 					ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
-					exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, null, exportConfiguration.getId());
+					ExportFilterDecision exportFilterDecision = igExportService.getExportFilterDecision(dl, exportConfiguration);
+					exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, exportFilterDecision, exportConfiguration.getId());
 				} 
 				else {
-					ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false,Type.DATATYPELIBRARY);
-					exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, null, exportConfiguration.getId());
+					ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,Type.DATATYPELIBRARY);
+					ExportFilterDecision exportFilterDecision = igExportService.getExportFilterDecision(dl, exportConfiguration);
+					exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, exportFilterDecision, exportConfiguration.getId());
 				}
 				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
 				response.setHeader("Content-disposition",
@@ -344,7 +394,7 @@ public class ExportController {
 			@PathVariable("id") String id,
 			@PathVariable("configId") String configId,
 			@PathVariable("document") String document,
-			HttpServletResponse response) throws ExportException, IGNotFoundException, CoConstraintGroupNotFoundException {
+			HttpServletResponse response) throws ExportException, IGNotFoundException, CoConstraintGroupNotFoundException, IGDeltaException {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null) {
 			ExportConfiguration config = new ExportConfiguration();

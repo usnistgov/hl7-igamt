@@ -49,6 +49,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     combineLatest(
       this.getIgId(),
       this.exportConfigurationService.getAllExportConfigurations(this.type)).pipe(
+        take(1),
         map(([igId, configurations]) => {
           console.log(igId);
           const dialogRef = this.dialog.open(ExportDialogComponent, {
@@ -56,7 +57,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
               toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
               igId,
               configurations,
-              type: Type.DATATYPELIBRARY,
+              type: Type.IGDOCUMENT,
               getExportFirstDecision: this.igService.getExportFirstDecision,
             },
           });
@@ -78,6 +79,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     combineLatest(
       this.getIgId(),
       this.exportConfigurationService.getAllExportConfigurations(this.type)).pipe(
+        take(1),
         map(([igId, configurations]) => {
           console.log(igId);
           const dialogRef = this.dialog.open(ExportDialogComponent, {
@@ -87,6 +89,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
               configurations,
               type: Type.IGDOCUMENT,
               getExportFirstDecision: this.igService.getExportFirstDecision,
+             // getExportFirstDecision: this.igService.getExportFirstDecision,
               delta: this.delta,
 
             },
@@ -94,7 +97,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
           dialogRef.afterClosed().pipe(
             filter((y) => y !== undefined),
             map((result) => {
-              this.igService.exportAsHtml(igId, result.decision, result.configurationId, this.delta);
+              this.igService.exportAsHtml(igId, result.decision, result.configurationId);
             }),
           ).subscribe();
         }),
@@ -102,11 +105,19 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   exportQuickHTML() {
-    this.getIgId().subscribe((id) => this.igService.exportAsHtmlQuick(id));
+    this.getIgId().pipe(
+      take(1),
+      map((id) => this.igService.exportAsHtmlQuick(id)),
+    ).subscribe();
+
   }
 
   exportQuickWORD() {
-    this.getIgId().subscribe((id) => this.igService.exportAsWordQuick(id));
+    this.getIgId().pipe(
+      take(1),
+      map((id) => this.igService.exportAsWordQuick(id)),
+    ).subscribe();
+
   }
 
   verifyIG(type: string) {
