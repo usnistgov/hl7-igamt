@@ -13,7 +13,7 @@ package gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement;
 
 import java.util.Arrays;
 
-import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 
 /**
  * @author jungyubw
@@ -29,7 +29,7 @@ public class Complement {
 	private String occurenceIdPath;
 	private String occurenceLocationStr;
 
-	private Path path;
+	private InstancePath path;
 
 	private String value;
 	private String desc;
@@ -85,11 +85,11 @@ public class Complement {
 		this.occurenceLocationStr = occurenceLocationStr;
 	}
 
-	public Path getPath() {
+	public InstancePath getPath() {
 		return path;
 	}
 
-	public void setPath(Path path) {
+	public void setPath(InstancePath path) {
 		this.path = path;
 	}
 

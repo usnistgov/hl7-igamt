@@ -621,18 +621,25 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
           if (p.getLevel().equals(Level.GROUP)) {
 
-            int count = countContextChild(p.getContext().getChild(), 1);
-
+            int count = countContextChild(p.getContext(), 1);
+            
+            System.out.println("GROUP------------");
+            System.out.println(key);
+            System.out.println(count);
+            System.out.println(key.split("\\.").length);
             String groupKey = "";
 
-            for (int i = count; i < key.split("//.").length; i++) {
-              if (count + 1 == key.split("//.").length)
-                groupKey = groupKey + key.split("//.")[i];
+            for (int i = count; i < key.split("\\.").length; i++) {
+              if (count + 1 == key.split("\\.").length)
+                groupKey = groupKey + key.split("\\.")[i];
               else
-                groupKey = groupKey + key.split("//.")[i] + ".";
+                groupKey = groupKey + key.split("\\.")[i] + ".";
+              
+              System.out.println(groupKey);
             }
-            Element elm_ByID = this.findOrCreatByIDElement(predicates_Group_Elm, p.getContext(),
-                cpModel.getModel());
+            Element elm_ByID = this.findOrCreatByIDElement(predicates_Group_Elm, p.getContext(), cpModel.getModel());
+            System.out.println(groupKey);
+            
 
             String script = this.generateConditionScript(p, cpModel.getModel().getId());
             if(script != null) {
@@ -900,9 +907,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
    * @param conformanceProfile
    * @return
    */
-  private Element findOrCreatByIDElement(Element constraints_group_Elm, Path context,
+  private Element findOrCreatByIDElement(Element constraints_group_Elm, InstancePath context,
       ConformanceProfile conformanceProfile) {
-    Group group = this.findGroupByContext(context.getChild(), conformanceProfile.getChildren());
+    Group group = this.findGroupByContext(context, conformanceProfile.getChildren());
     Elements elements = constraints_group_Elm.getChildElements("ByID");
     if (elements != null && elements.size() > 0) {
       for (int i = 0; i < elements.size(); i++) {
@@ -940,12 +947,19 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
    * @param context
    * @return
    */
-  private int countContextChild(InstancePath instancePath, int result) {
-    if (instancePath.getChild() == null)
+  private int countContextChild(Path path, int result) {
+    if (path.getChild() == null)
       return result;
     else
-      return countContextChild(instancePath.getChild(), result + 1);
+      return countContextChild(path.getChild(), result + 1);
   }
+  
+  private int countContextChild(InstancePath path, int result) {
+	    if (path.getChild() == null)
+	      return result;
+	    else
+	      return countContextChild(path.getChild(), result + 1);
+	  }
 
   /**
    * @param key
@@ -1884,7 +1898,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
    * @return
    */
   private String generateAssertionScript(Assertion assertion, Level level, String targetId,
-      Path context) {
+		  InstancePath context) {
     if (assertion instanceof NotAssertion) {
       return "<NOT>" + this.generateAssertionScript(((NotAssertion) assertion).getChild(), level,
           targetId, context) + "</NOT>";
@@ -1959,7 +1973,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
    * @return
    */
   private String generateSingleAssertionScript(SingleAssertion assertion, Level level,
-      String targetId, Path context) {
+      String targetId, InstancePath context) {
     Complement complement = assertion.getComplement();
     ComplementKey key = complement.getComplementKey();
     boolean notAssertion = assertion.getVerbKey().contains("NOT");
@@ -2133,32 +2147,32 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
    * @param level
    * @return
    */
-  private String generatePath(Path path, String targetId, Level level, Path context) {
+  private String generatePath(InstancePath path, String targetId, Level level, InstancePath context) {
     List<String> result = new ArrayList<String>();
     if (level.equals(Level.DATATYPE)) {
       Datatype target = this.datatypeService.findById(targetId);
       if (target != null) {
-        if (path.getChild() != null)
-          this.visitComponent(target, path.getChild(), result);
+        if (path != null)
+          this.visitComponent(target, path, result);
       }
     } else if (level.equals(Level.SEGMENT)) {
       Segment target = this.segmentService.findById(targetId);
       if (target != null) {
-        if (path.getChild() != null)
-          this.visitField(target, path.getChild(), result);
+        if (path != null)
+          this.visitField(target, path, result);
       }
     } else if (level.equals(Level.GROUP)) {
       ConformanceProfile cp = this.conformanceProfileService.findById(targetId);
-      Group target = this.findGroupByContext(context.getChild(), cp.getChildren());
+      Group target = this.findGroupByContext(context, cp.getChildren());
       if (target != null) {
-        if (path.getChild() != null)
-          this.visitSegOrGroup(target.getChildren(), path.getChild(), result);
+        if (path != null)
+          this.visitSegOrGroup(target.getChildren(), path, result);
       }
     } else if (level.equals(Level.CONFORMANCEPROFILE)) {
       ConformanceProfile target = this.conformanceProfileService.findById(targetId);
       if (target != null) {
-        if (path.getChild() != null)
-          this.visitSegOrGroup(target.getChildren(), path.getChild(), result);
+        if (path != null)
+          this.visitSegOrGroup(target.getChildren(), path, result);
       }
     }
     return String.join(".", result);

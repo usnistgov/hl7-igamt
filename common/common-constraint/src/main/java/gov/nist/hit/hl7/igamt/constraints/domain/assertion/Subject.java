@@ -22,7 +22,7 @@ import gov.nist.diff.annotation.DeltaField;
 public class Subject {
 
   @DeltaField
-  private Path path;
+  private InstancePath path;
   @DeltaField
   private String occurenceType;
   @DeltaField
@@ -70,11 +70,11 @@ public class Subject {
     super();
   }
 
-  public Path getPath() {
+  public InstancePath getPath() {
     return path;
   }
 
-  public void setPath(Path path) {
+  public void setPath(InstancePath path) {
     this.path = path;
   }
 
