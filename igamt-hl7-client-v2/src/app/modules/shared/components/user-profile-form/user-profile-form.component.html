@@ -1,0 +1,12 @@
+<form [formGroup]="userProfileForm" novalidate>
+  <app-form-input formControlName="username" id="username" label="Username*" name="Username" [viewOnly]="true" placeholder="Enter Username" type="text"></app-form-input>
+  <app-form-input formControlName="fullName" id="fullName" label="Full Name*" name="Full name" placeholder="Enter Name" type="text"></app-form-input>
+  <app-form-input formControlName="email" id="email" label="E-mail" name="Email" placeholder="Enter Email" type="text"></app-form-input>
+  <app-form-input formControlName="organization" id="organization" label="Organization" name="organization" placeholder="Enter organization" type="text"></app-form-input>
+  <div class="p-grid p-col p-justify-end">
+    <button (click)="submit()" [disabled]="userProfileForm.invalid" class="btn btn-primary" type="submit">Submit
+      Application
+    </button>
+  </div>
+
+</form>

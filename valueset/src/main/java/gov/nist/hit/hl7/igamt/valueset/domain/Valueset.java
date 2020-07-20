@@ -41,6 +41,7 @@ public class Valueset extends Resource {
 	private String hl7Type; 
 	@org.springframework.data.annotation.Transient
 	private boolean includeCodes;
+	private boolean isFlavor;
 	
 	
 	public boolean isIncludeCodes() {
@@ -124,7 +125,7 @@ public class Valueset extends Resource {
 
 	@Override
 	public String getLabel() {
-		return this.getBindingIdentifier() + " - " + this.getName();
+		return this.getBindingIdentifier();
 	}
 
 	public SourceType getSourceType() {
@@ -184,6 +185,16 @@ public class Valueset extends Resource {
 
 	public void setHl7Type(String hl7Type) {
 		this.hl7Type = hl7Type;
+	}
+
+	public boolean isFlavor() {
+		return isFlavor;
+	}
+
+	public void setFlavor(boolean isFlavor) {
+		this.isFlavor = isFlavor;
 	};
+	
+	
 
 }

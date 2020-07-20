@@ -14,36 +14,66 @@ package gov.nist.hit.hl7.igamt.common.binding.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
+import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextConformanceStatement;
+
 
 /**
  * @author jungyubw
  *
  */
 public class ResourceBinding extends Binding {
+  /**
+	 * 
+	 */
+  private static final long serialVersionUID = 1L;
+  @Deprecated
   private Set<String> conformanceStatementIds;
+  private Set<ConformanceStatement> conformanceStatements;
 
   public ResourceBinding() {
     super();
   }
 
-  public ResourceBinding(String elementId, Set<StructureElementBinding> children, Set<String> conformanceStatementIds) {
+  public ResourceBinding(String elementId, Set<StructureElementBinding> children, Set<ConformanceStatement> conformanceStatements) {
     super(elementId, children);
-    this.conformanceStatementIds = conformanceStatementIds;
+    this.conformanceStatements = conformanceStatements;
   }
-  
+
+  @Deprecated
   public Set<String> getConformanceStatementIds() {
     return conformanceStatementIds;
   }
 
+  @Deprecated
   public void setConformanceStatementIds(Set<String> conformanceStatementIds) {
     this.conformanceStatementIds = conformanceStatementIds;
   }
 
-  public void addConformanceStatement(String conformanceStatementId) {
-    if (conformanceStatementIds == null) {
-      this.conformanceStatementIds = new HashSet<String>();
-    }
-    this.conformanceStatementIds.add(conformanceStatementId);
 
+  public void addConformanceStatement(ConformanceStatement cs) {
+    if (conformanceStatements == null) {
+      this.conformanceStatements = new HashSet<ConformanceStatement>();
+    }
+    if(cs.getType().equals(ConstraintType.FREE)){
+        this.conformanceStatements.add((FreeTextConformanceStatement)cs);    	
+    } else if(cs.getType().equals(ConstraintType.ASSERTION)){
+        this.conformanceStatements.add((AssertionConformanceStatement)cs);    	
+    } else {
+    	System.out.println("wrong!!!");
+    
+    }
+
+
+  }
+  
+  public Set<ConformanceStatement> getConformanceStatements() {
+	return conformanceStatements;
+  }
+  
+  public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
+	this.conformanceStatements = conformanceStatements;
   }
 }

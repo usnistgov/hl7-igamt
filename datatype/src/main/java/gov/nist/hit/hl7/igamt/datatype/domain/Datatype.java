@@ -14,6 +14,10 @@
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -30,7 +34,6 @@ public class Datatype extends Resource {
 
 
   private String ext;
-  private String purposeAndUse;
   private ResourceBinding binding;
 
 
@@ -53,14 +56,6 @@ public class Datatype extends Resource {
 
   public void setExt(String ext) {
     this.ext = ext;
-  }
-
-  public String getPurposeAndUse() {
-    return purposeAndUse;
-  }
-
-  public void setPurposeAndUse(String purposeAndUse) {
-    this.purposeAndUse = purposeAndUse;
   }
 
   /*
@@ -88,7 +83,6 @@ public class Datatype extends Resource {
   public void complete(Datatype elm) {
       super.complete(elm);
       elm.ext = ext;
-      elm.purposeAndUse = purposeAndUse;
       elm.binding = binding;
   }
 }

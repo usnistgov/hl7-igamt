@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 
 import java.util.List;
 
@@ -51,6 +53,15 @@ public class StructureDelta {
 
     public void setUsage(DeltaNode<Usage> usage) {
         data.setUsage(usage);
+    }
+
+    @JsonIgnore
+    public DeltaNode<CodeUsage> getCodeUsage() {
+        return data.getCodeUsage();
+    }
+
+    public void setCodeUsage(DeltaNode<CodeUsage> codeUsage) {
+        data.setCodeUsage(codeUsage);
     }
 
     @JsonIgnore
@@ -134,12 +145,40 @@ public class StructureDelta {
         data.setName(name);
     }
 
-    public DeltaValueSetBinding getValueSetBinding() {
-        return data.getValueSetBinding();
+    @JsonIgnore
+    public DeltaValuesetBinding getValueSetBinding() {
+        return data.getValuesetBinding();
     }
 
-    public void setValueSetBinding(DeltaValueSetBinding valueSetBinding) {
-        data.setValueSetBinding(valueSetBinding);
+    public void setValueSetBinding(DeltaValuesetBinding valueSetBinding) {
+        data.setValuesetBinding(valueSetBinding);
+    }
+
+    @JsonIgnore
+    public DeltaInternalSingleCode getInternalSingleCode() {
+        return data.getInternalSingleCode();
+    }
+
+    public void setPredicate(PredicateDelta predicate) {
+        data.setPredicate(predicate);
+    }
+
+    @JsonIgnore
+    public PredicateDelta getPredicate() {
+        return data.getPredicate();
+    }
+
+    public void setInternalSingleCode(DeltaInternalSingleCode deltaInternalSingleCode) {
+        data.setInternalSingleCode(deltaInternalSingleCode);
+    }
+
+    @JsonIgnore
+    public ConformanceStatementDelta getConformanceStatement() {
+        return data.getConformanceStatement();
+    }
+
+    public void setConformanceStatement(ConformanceStatementDelta conformanceStatement) {
+        data.setConformanceStatement(conformanceStatement);
     }
 
     public StructureDeltaData getData() {

@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 
 	@Override
 	public Element serializeBinding(Binding binding, Map<String, Set<ValuesetBindingDataModel>> valuesetMap,
-			String name) throws SerializationException {
+			String name, Map<String, Boolean> bindedPaths) throws SerializationException {
 		if (binding != null) {
 			// try {
 			Element bindingElement = new Element("Binding");
@@ -45,7 +46,11 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 				// valuesetMap.values().stream().flatMap((set) -> {
 				// return set.stream();
 				// }).collect(Collectors.toList());
-				Element structureElementBindingsElement = this.serializeStructureElementBindings(binding.getChildren(),
+			  
+			  Set<StructureElementBinding>  filtered = binding.getChildren().stream()               
+	                .filter(child ->  (bindedPaths.containsKey(child.getElementId()) && bindedPaths.get(child.getElementId()))). 
+	                collect(Collectors.toSet()); 
+				Element structureElementBindingsElement = this.serializeStructureElementBindings(null,filtered,
 						name, valuesetMap);
 				if (structureElementBindingsElement != null) {
 					bindingElement.appendChild(structureElementBindingsElement);
@@ -89,14 +94,14 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 		return null;
 	}
 
-	private Element serializeStructureElementBindings(Set<StructureElementBinding> structureElementBindings,
+	private Element serializeStructureElementBindings(String elementIdParent, Set<StructureElementBinding> structureElementBindings,
 			String name, Map<String, Set<ValuesetBindingDataModel>> valuesetMap) {
 		if (structureElementBindings != null) {
 			Element structureElementBindingsElement = new Element("StructureElementBindings");
 			for (StructureElementBinding structureElementBinding : structureElementBindings) {
 				if (structureElementBinding != null) {
 					Element structureElementBindingElement = this
-							.serializeStructureElementBinding(structureElementBinding, name, valuesetMap);
+							.serializeStructureElementBinding(elementIdParent, structureElementBinding, name, valuesetMap);
 					if (structureElementBindingElement != null) {
 						structureElementBindingsElement.appendChild(structureElementBindingElement);
 					}
@@ -108,7 +113,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 
 	}
 
-	private Element serializeStructureElementBinding(StructureElementBinding structureElementBinding, String name,
+	private Element serializeStructureElementBinding(String elementIdParent, StructureElementBinding structureElementBinding, String name,
 			Map<String, Set<ValuesetBindingDataModel>> valuesetMap) {
 		if (structureElementBinding != null) {
 			Element structureElementBindingElement = new Element("StructureElementBinding");
@@ -135,38 +140,56 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 																structureElementBinding.getLocationInfo().getPosition())
 												: ""));
 			}
+			if(elementIdParent != null) {
+				 elementIdParent = elementIdParent +"."+structureElementBinding.getElementId();
+				}
+				else {
+				 elementIdParent = structureElementBinding.getElementId();
+				}
 			if (structureElementBinding.getChildren() != null && structureElementBinding.getChildren().size() > 0) {
 				Element structureElementBindingsElement = this
-						.serializeStructureElementBindings(structureElementBinding.getChildren(), name, valuesetMap);
+						.serializeStructureElementBindings(elementIdParent, structureElementBinding.getChildren(), name, valuesetMap);
 				if (structureElementBindingsElement != null) {
 					structureElementBindingElement.appendChild(structureElementBindingsElement);
 				}
 			}
 			if (structureElementBinding.getValuesetBindings() != null) {
 				for (ValuesetBinding valuesetBinding : structureElementBinding.getValuesetBindings()) {
-					Element valuesetBindingElement = this.serializeValuesetBinding(valuesetBinding, valuesetMap, name);
+					Element valuesetBindingElement = this.serializeValuesetBinding(elementIdParent, valuesetBinding, valuesetMap, name);
 					if (valuesetBindingElement != null) {
 						structureElementBindingElement.appendChild(valuesetBindingElement);
 					}
 				}
 			}
 			if (structureElementBinding.getInternalSingleCode() != null) {
-				structureElementBindingElement.addAttribute(
-						new Attribute("singleCodeId", structureElementBinding.getInternalSingleCode().getCode()));
+				Element internalSingleCode = new Element("InternalSingleCode");
+				internalSingleCode.addAttribute(
+						new Attribute("internalSingleCodeId", structureElementBinding.getInternalSingleCode().getCode()));
+				 internalSingleCode.addAttribute(
+							new Attribute("internalSingleCodeSystem", structureElementBinding.getInternalSingleCode().getCodeSystem()));
+					 internalSingleCode.addAttribute(
+								new Attribute("internalSingleCodeVsId", structureElementBinding.getInternalSingleCode().getValueSetId()));
+					 internalSingleCode.addAttribute(
+								new Attribute("internalSingleCodeLocation", name + "."+elementIdParent));
+						 structureElementBindingElement.appendChild(internalSingleCode);
 			}
-			// if (structureElementBinding.getExternalSingleCode() != null) {
-			// Element externalSingleCodeElement =
-			// this.serializeExternalSingleCode(structureElementBinding.getExternalSingleCode());
-			// if (externalSingleCodeElement != null) {
-			// structureElementBindingElement.appendChild(externalSingleCodeElement);
-			// }
-			// }
+			 if (structureElementBinding.getExternalSingleCode() != null) {
+			 Element externalSingleCodeElement = new Element("externalSingleCode");
+//			 this.serializeExternalSingleCode(structureElementBinding.getExternalSingleCode());
+			 externalSingleCodeElement.addAttribute(
+						new Attribute("externalSingleCodeValue", structureElementBinding.getExternalSingleCode().getValue()));
+			 externalSingleCodeElement.addAttribute(
+						new Attribute("externalSingleCodeSystem", structureElementBinding.getExternalSingleCode().getCodeSystem()));
+			 if (externalSingleCodeElement != null) {
+			 structureElementBindingElement.appendChild(externalSingleCodeElement);
+			 }
+			 }
 			return structureElementBindingElement;
 		}
 		return null;
 	}
 
-	private Element serializeValuesetBinding(ValuesetBinding valuesetBinding,
+	private Element serializeValuesetBinding(String elementIdParent, ValuesetBinding valuesetBinding,
 			Map<String, Set<ValuesetBindingDataModel>> valuesetMap, String name) {
 		if (valuesetBinding != null && valuesetBinding.getValueSets() != null
 				&& !valuesetBinding.getValueSets().isEmpty()) {
@@ -188,8 +211,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 					valuesetBinding.getValueSets() != null
 							? location : ""));
 			valuesetBindingElement.addAttribute(new Attribute("Position2",
-					valuesetBinding.getValuesetLocations() != null
-							? location : ""));
+					elementIdParent != null ? name+"."+elementIdParent : ""));		
 			valuesetBindingElement.addAttribute(new Attribute("locations",
 					valuesetBinding.getValuesetLocations() != null
 							? convertValuesetLocationsToString(location, valuesetBinding.getValuesetLocations())
@@ -209,10 +231,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 
 	private String getBindingLocationFromMap(Map<String, Set<ValuesetBindingDataModel>> valuesetMap,
 			ValuesetBinding valuesetBinding, String name) {
-		List<ValuesetBindingDataModel> vsDataModel = valuesetMap.values().stream().flatMap((set) -> {
-			return set.stream();
-		}).collect(Collectors.toList());
-		String location = "Not found in MAP";
+	    String location = "";
 		for (Set<ValuesetBindingDataModel> set : valuesetMap.values()) {
 			for (ValuesetBindingDataModel valuesetBindingDataModel : set) {
 				if (valuesetBindingDataModel.getValuesetBinding().getValueSets()

@@ -5,10 +5,10 @@ import {Observable} from 'rxjs';
 import * as config from '../../../../root-store/config/config.reducer';
 import {CreateIg, LoadMessageEvents} from '../../../../root-store/create-ig/create-ig.actions';
 import * as fromCreateIg from '../../../../root-store/create-ig/create-ig.reducer';
+import {IDocumentCreationWrapper} from '../../../document/models/document/document-creation.interface';
+import {MessageEventTreeNode} from '../../../document/models/message-event/message-event.class';
 import {Scope} from '../../../shared/constants/scope.enum';
 import {IAddingInfo} from '../../../shared/models/adding-info';
-import {IDocumentCreationWrapper} from '../../models/ig/document-creation.interface';
-import { MessageEventTreeNode} from '../../models/message-event/message-event.class';
 
 @Component({
   selector: 'app-create-ig',
@@ -44,7 +44,7 @@ export class CreateIGComponent implements OnInit {
   submit() {
     const model: IDocumentCreationWrapper = {
       metadata: this.metaDataForm.getRawValue(), scope: Scope.USER,
-      msgEvts: this.selectedEvents,
+      selected: this.selectedEvents,
     };
     this.store.dispatch(new CreateIg(model));
   }

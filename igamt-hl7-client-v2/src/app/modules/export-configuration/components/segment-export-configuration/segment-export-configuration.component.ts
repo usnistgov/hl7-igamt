@@ -16,8 +16,17 @@ export class SegmentExportConfigurationComponent implements OnInit {
   @Input()
   viewOnly: boolean;
 
+  @Input()
+  derived: boolean;
+
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
+
+  @Input()
+  origin = null;
+
+  @Input()
+  delta: boolean;
 
   constructor() { }
 
@@ -36,4 +45,5 @@ export class SegmentExportConfigurationComponent implements OnInit {
 
   print() {
   }
+
 }

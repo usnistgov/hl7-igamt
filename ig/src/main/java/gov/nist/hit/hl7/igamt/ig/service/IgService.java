@@ -16,14 +16,17 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
-import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -39,7 +42,7 @@ public interface IgService {
 
   public Ig save(Ig ig);
 
-  public Ig clone(Ig ig, String username);
+  public Ig clone(Ig ig, String username, CopyInfo info);
 
   public List<Ig> findByUsername(String username);
 
@@ -51,7 +54,7 @@ public interface IgService {
 
   public List<Ig> findIgIdsForUser(String username);
 
-  public List<IgSummary> convertListToDisplayList(List<Ig> igdouments);
+  public List<DocumentSummary> convertListToDisplayList(List<Ig> igdouments);
 
   public Ig findIgContentById(String id);
 
@@ -64,8 +67,12 @@ public interface IgService {
   public List<Ig> findAllUsersIG();
 
   public List<Ig> findAllPreloadedIG();
+  
+  public List<Ig> findAllSharedIG(String username, Scope scope);
 
   public void delete(Ig ig);
+
+  Set<ConformanceStatement> conformanceStatementsSummary(Ig igdoument);
 
   public IgDocumentConformanceStatement convertDomainToConformanceStatement(Ig igdoument);
 
@@ -92,5 +99,7 @@ public interface IgService {
    * @return
    */
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass);
+
+  public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
 
 }

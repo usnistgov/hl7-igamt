@@ -13,14 +13,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { SelectItem } from 'primeng/api';
+import {IAddNewWrapper, IAddWrapper} from '../../../document/models/document/add-wrapper.class';
+import {IClickInfo} from '../../../document/models/toc/click-info.interface';
 import { Scope } from '../../../shared/constants/scope.enum';
 import { Type } from '../../../shared/constants/type.enum';
 import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { NodeHelperService } from '../../../shared/services/node-helper.service';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
-import { IAddNewWrapper, IAddWrapper } from '../../models/ig/add-wrapper.class';
-import { IClickInfo } from '../../models/toc/click-info.interface';
 
 @Component({
   selector: 'app-ig-toc',
@@ -45,6 +45,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   nodes: TreeNode[];
   @Input()
   delta: boolean;
+  @Input()
+  viewOnly: boolean;
 
   @Output()
   nodeState = new EventEmitter<IDisplayElement[]>();
@@ -63,9 +65,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   constructor(private nodeHelperService: NodeHelperService, private valueSetService: ValueSetService, private cd: ChangeDetectorRef, private router: Router, private activatedRoute: ActivatedRoute) {
     this.options = {
-      allowDrag: (node: TreeNode) => node.data.type === Type.TEXT ||
+      allowDrag: (node: TreeNode) => { return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
         node.data.type === Type.CONFORMANCEPROFILE ||
-        node.data.type === Type.PROFILE,
+        node.data.type === Type.PROFILE);
+      },
       actionMapping: {
         mouse: {
           drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
@@ -109,7 +112,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     const id = this.nodeHelperService.cloneNode(node);
     this.update();
     this.router.navigate(['./text', id], { relativeTo: this.activatedRoute });
-
   }
 
   deleteSection(section) {
@@ -144,7 +146,12 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   getElementUrl(elm): string {
     const type = elm.type.toLowerCase();
-    return './' + type + '/' + elm.id;
+    const path = './' + type + '/' + elm.id;
+    if (!this.delta || !elm.origin) {
+      return path;
+    } else {
+      return path + '/' + 'delta';
+    }
   }
   scroll(type: string) {
     if (type === 'messages') {

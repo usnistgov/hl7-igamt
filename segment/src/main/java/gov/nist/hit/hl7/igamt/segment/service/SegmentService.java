@@ -32,8 +32,8 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
@@ -111,7 +111,7 @@ public interface SegmentService extends ResourceService {
 	 */
 
 	public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId)
-			throws JsonProcessingException, IOException;
+            throws Exception;
 
 	/**
 	 * @param datatype
@@ -140,8 +140,6 @@ public interface SegmentService extends ResourceService {
 
 	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String segmentId,
 			String segmentName);
-
-	public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
 
 	public void collectResources(Segment seg, HashMap<String, Resource> used);
 

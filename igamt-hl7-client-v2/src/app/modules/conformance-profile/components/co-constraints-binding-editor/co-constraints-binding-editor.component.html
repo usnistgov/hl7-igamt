@@ -26,17 +26,17 @@
         <hr style="margin: 0 !important;">
       </div>
 
-
       <ng-container *ngIf="expansionPanelView[binding.context.pathId]" >
           <app-segment-co-constraint-binding
             *ngFor="let segment of binding.bindings; let j = index"
             [segments]="segments | async"
             [datatypes]="datatypes | async"
             [valueSets]="valueSets | async"
-            [igId]="igId | async"
+            [documentRef]="documentRef$ | async"
             [conformanceProfile]="conformanceProfile$"
             [context]="binding.context"
             (valueChange)="segmentBindingChange(binding.context.pathId, $event)"
+            (formValid)="formValid(binding.context.pathId, $event)"
             (delete)="deleteSegmentBinding(binding.bindings, segment, binding.context.pathId, j)"
             [value]="segment">
           </app-segment-co-constraint-binding>

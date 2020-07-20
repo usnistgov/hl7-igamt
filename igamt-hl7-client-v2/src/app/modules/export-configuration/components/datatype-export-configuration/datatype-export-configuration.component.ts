@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as _ from 'lodash';
+import {CardModule} from 'primeng/card';
+import {TabViewModule} from 'primeng/tabview';
 
 @Component({
   selector: 'app-datatype-export-configuration',
@@ -16,6 +18,15 @@ export class DatatypeExportConfigurationComponent implements OnInit {
 
   @Input()
   viewOnly: boolean;
+
+  @Input()
+  derived: boolean;
+
+  @Input()
+  origin = null;
+
+  @Input()
+  delta: boolean;
 
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();

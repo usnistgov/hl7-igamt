@@ -32,6 +32,11 @@
           <span> {{node.data.path}} {{node.data.variableName}}</span>
         </div>
       </ng-container>
+      <ng-container *ngSwitchCase="'DERIVEDDATATYPEREGISTRY'">
+        <div #dtLib>
+          <span> {{node.data.path}} {{node.data.variableName}}</span>
+        </div>
+      </ng-container>
 
       <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
         <div #vsLib>
@@ -48,14 +53,18 @@
       <ng-container *ngSwitchCase="'DATATYPE'">
         <div style="display: flex; flex-direction: row; align-items: center;" *ngIf="filter.datatypesFilterMap">
           <input type="checkbox" [(ngModel)]="filter.datatypesFilterMap[node.id]" style="margin-right: 5px;" [disabled] ="node.data.delta && node.data.delta ==='DELETED'">
-          <app-display-section [element]="node.data" [inline]="true"></app-display-section>
+          <app-display-section [element]="node.data" [inline]="true"  [ngClass]="{
+    'delta-changed':filter.changed[node.id],
+    'delta-added':  filter.added[node.id]}"></app-display-section>
         </div>
       </ng-container>
 
       <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
         <div style="display: flex; flex-direction: row; align-items: center;" *ngIf="filter.conformanceProfileFilterMap">
           <input type="checkbox" [(ngModel)]="filter.conformanceProfileFilterMap[node.id]" style="margin-right: 5px;" [disabled]="node.data.delta && node.data.delta === 'DELETED'">
-          <app-display-section [element]="node.data" [inline]="true"></app-display-section>
+          <app-display-section [element]="node.data" [inline]="true" [ngClass]="{
+    'delta-changed':filter.changed[node.id],
+    'delta-added':  filter.added[node.id]}"></app-display-section>
         </div>
       </ng-container>
 
@@ -63,14 +72,18 @@
       <ng-container *ngSwitchCase="'SEGMENT'">
         <div style="display: flex; flex-direction: row; align-items: center;" *ngIf="filter.segmentFilterMap">
           <input type="checkbox" [(ngModel)]="filter.segmentFilterMap[node.id]" style="margin-right: 5px;" [disabled]="node.data.delta && node.data.delta === 'DELETED'">
-          <app-display-section [element]="node.data" [inline]="true"></app-display-section>
+          <app-display-section [element]="node.data" [inline]="true" [ngClass]="{
+    'delta-changed':filter.changed[node.id],
+    'delta-added':  filter.added[node.id]}"></app-display-section>
         </div>
       </ng-container>
 
       <ng-container *ngSwitchCase="'VALUESET'">
         <div style="display: flex; flex-direction: row; align-items: center;" *ngIf="filter.valueSetFilterMap">
           <input type="checkbox" [(ngModel)]="filter.valueSetFilterMap[node.id]" style="margin-right: 5px;" [disabled]="node.data.delta && node.data.delta === 'DELETED'">
-          <app-display-section [element]="node.data" [inline]="true"></app-display-section>
+          <app-display-section [element]="node.data" [inline]="true" [ngClass]="{
+    'delta-changed':filter.changed[node.id],
+    'delta-added':  filter.added[node.id]}"></app-display-section>
         </div>
       </ng-container>
 

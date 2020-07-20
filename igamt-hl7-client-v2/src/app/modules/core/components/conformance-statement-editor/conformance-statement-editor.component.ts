@@ -3,24 +3,32 @@ import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { BehaviorSubject, combineLatest, concat, Observable, of, race, ReplaySubject, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
-import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { IConformanceStatementList, ICPConformanceStatementList } from '../../../shared/models/cs-list.interface';
-import { ConstraintType, IConformanceStatement } from '../../../shared/models/cs.interface';
+import { ConstraintType, IConformanceStatement, IPath } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IEditorMetadata } from '../../../shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
 import { ConformanceStatementService } from '../../../shared/services/conformance-statement.service';
+import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
-import { Message } from '../../models/message/message.class';
-import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
 export type ConformanceStatementPluck = (cs: IConformanceStatementList | ICPConformanceStatementList) => IConformanceStatementView;
+
+export interface IEditableConformanceStatementGroup {
+  context: IPath;
+  name: Observable<string>;
+  list: Array<IEditableListNode<IConformanceStatement>>;
+}
 
 export interface IConformanceStatementView {
   resourceConformanceStatement: IConformanceStatement[];
@@ -52,6 +60,8 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   available: BehaviorSubject<IConformanceStatement[]>;
   available$: Observable<IConformanceStatement[]>;
 
+  groupedCS$: Observable<IEditableConformanceStatementGroup[]>;
+
   changes: ReplaySubject<{
     [index: string]: IChange,
   }>;
@@ -64,9 +74,10 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     private messageService: MessageService,
     private dialog: MatDialog,
     private csService: ConformanceStatementService,
+    private treeService: Hl7V2TreeService,
     actions$: Actions,
     store: Store<any>,
-    editorMetadata: IEditorMetadata,
+    editorMetadata: IHL7EditorMetadata,
     plucker: ConformanceStatementPluck,
     protected resource$: MemoizedSelector<any, IResource>) {
     super(editorMetadata, actions$, store);
@@ -92,6 +103,38 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       }),
     ).subscribe();
 
+    this.groupedCS$ = this.editable$.pipe(
+      map((list) => {
+        if (list.length > 0) {
+          const grouped = _.groupBy(list, (elm) => {
+            return this.treeService.pathToString(elm.payload.context);
+          }) as {
+            [path: string]: Array<IEditableListNode<IConformanceStatement>>,
+          };
+
+          const groups = Object.keys(grouped).map((path) => {
+            return {
+              context: grouped[path][0].payload.context,
+              name: grouped[path][0].payload.context ? this.getName(grouped[path][0].payload.context) : of(''),
+              list: grouped[path],
+            };
+          }) as IEditableConformanceStatementGroup[];
+
+          return groups.sort((a, b) => {
+            return !a.context ? -1 : 1;
+          });
+        } else {
+          return [
+            {
+              context: undefined,
+              name: of(),
+              list: [],
+            },
+          ] as IEditableConformanceStatementGroup[];
+        }
+      }),
+    );
+
     this.s_view = this.conformanceStatementView$.pipe(
       map((view) => {
         return view.resourceConformanceStatement.map((cs) => {
@@ -112,6 +155,24 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       }),
     ).subscribe(this.available);
 
+  }
+
+  getName(path: IPath): Observable<string> {
+    if (!path) {
+      return of('');
+    }
+
+    return this.selectedResource$.pipe(
+      take(1),
+      flatMap((res) => {
+        return this.treeService.getPathName(res, this.repository, path.child).pipe(
+          take(1),
+          map((pathInfo) => {
+            return this.treeService.getNameFromPath(pathInfo);
+          }),
+        );
+      }),
+    );
   }
 
   getId(cs) {
@@ -202,6 +263,9 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
           this.change({
             ...node.changePrototype,
           }, node.persisted ? ChangeType.UPDATE : ChangeType.ADD);
+          this.editable.next([
+            ...this.editable.getValue(),
+          ]);
         }
       },
     );
@@ -278,15 +342,15 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     );
   }
 
-  onEditorSave(action: EditorSave): Observable<Action> {
-    return combineLatest(this.elementId$, this.ig$.pipe(take(1), map((ig) => ig.id)), this.changes.asObservable()).pipe(
+  onEditorSave(action: fromDam.EditorSave): Observable<Action> {
+    return combineLatest(this.elementId$, this.documentRef$, this.changes.asObservable()).pipe(
       take(1),
-      concatMap(([id, igId, changes]) => {
-        return this.saveChanges(id, igId, this.convert(changes)).pipe(
+      concatMap(([id, documentRef, changes]) => {
+        return this.saveChanges(id, documentRef, this.convert(changes)).pipe(
           mergeMap((message) => {
-            return this.getById(id, igId).pipe(
+            return this.getById(id, documentRef).pipe(
               flatMap((resource) => {
-                return [this.messageService.messageToAction(message), new EditorUpdate({ value: { changes: {}, resource }, updateDate: false })];
+                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false })];
               }),
             );
           }),
@@ -296,8 +360,8 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     );
   }
 
-  abstract saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message>;
-  abstract getById(id: string, igId: string): Observable<IConformanceStatementList>;
+  abstract saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message>;
+  abstract getById(id: string, documentRef: IDocumentRef): Observable<IConformanceStatementList>;
 
   convert(changes: {
     [index: string]: IChange,

@@ -25,6 +25,8 @@ export class ResourceDropdownComponent implements OnInit {
   @Input()
   filter: boolean;
   @Input()
+  required: boolean;
+  @Input()
   set filterBy(value: string) {
     this._filterValue = value;
     this.filterList();
@@ -49,6 +51,8 @@ export class ResourceDropdownComponent implements OnInit {
   @ViewChild(Dropdown)
   dropdown: Dropdown;
 
+  selectedResource: IDisplayElement;
+
   @Output()
   valueChange: EventEmitter<IDisplayElement> = new EventEmitter<IDisplayElement>();
 
@@ -68,7 +72,9 @@ export class ResourceDropdownComponent implements OnInit {
     return this._resources;
   }
 
-  selectedResource: IDisplayElement;
+  filterFn = (value, elms) => {
+    return elms.filter((elm) => elm.fixedName.includes(value) || elm.variableName.includes(value));
+  }
 
   change($event: IDisplayElement) {
     this._id = $event.id;

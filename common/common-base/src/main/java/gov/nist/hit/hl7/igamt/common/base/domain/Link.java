@@ -2,12 +2,14 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
 
-public class Link implements Serializable{
+public class Link implements Serializable, Comparable{
   private String id;
   private String origin;
   private int position;
   private DomainInfo domainInfo;
   private Type type;
+  private Type parentType;
+  private String parentId;
   private String username;
 
   public Link(String id, int position) {
@@ -123,6 +125,29 @@ public class Link implements Serializable{
   public boolean isUser(){
     return this.domainInfo.getScope() !=null &&  this.domainInfo.getScope().equals(Scope.USER);
   }
+  
+  public Type getParentType() {
+    return parentType;
+  }
+
+  public void setParentType(Type documentType) {
+    this.parentType = documentType;
+  }
+
+  public String getParentId() {
+    return parentId;
+  }
+
+  public void setParentId(String documentId) {
+    this.parentId = documentId;
+  }
+
+@Override
+public int compareTo(Object o) {
+	// TODO Auto-generated method stub
+		return this.position - ((Link) o).position;
+}	
+
 
 
 }

@@ -19,6 +19,7 @@ import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
@@ -33,11 +34,16 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
  *
  */
 public class SegmentDataModel implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8924767585140914700L;
+
 	private Segment model;
 
 	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
 	private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
-	private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
+	private Map<String, InternalSingleCode> singleCodeMap = new HashMap<String, InternalSingleCode>();
 	private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
 //	private CoConstraintTable coConstraintTable = new CoConstraintTable();
 
@@ -59,11 +65,11 @@ public class SegmentDataModel implements Serializable {
 		this.predicateMap = predicateMap;
 	}
 
-	public Map<String, ExternalSingleCode> getSingleCodeMap() {
+	public Map<String, InternalSingleCode> getSingleCodeMap() {
 		return singleCodeMap;
 	}
 
-	public void setSingleCodeMap(Map<String, ExternalSingleCode> singleCodeMap) {
+	public void setSingleCodeMap(Map<String, InternalSingleCode> singleCodeMap) {
 		this.singleCodeMap = singleCodeMap;
 	}
 
@@ -93,9 +99,9 @@ public class SegmentDataModel implements Serializable {
 		this.model = s;
 
 		if (s.getBinding() != null){
-			if(s.getBinding().getConformanceStatementIds() != null){
-				for(String csId: s.getBinding().getConformanceStatementIds()){
-					conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatements.add(cs));
+			if(s.getBinding().getConformanceStatements() != null){
+				for(ConformanceStatement cs: s.getBinding().getConformanceStatements()){
+					this.conformanceStatements.add(cs);
 				}
 			}
 			if (s.getBinding().getChildren() != null) {
@@ -142,15 +148,14 @@ public class SegmentDataModel implements Serializable {
 				localPath = readablePath + "." + seb.getLocationInfo().getPosition();
 			}
 
-			if(seb.getPredicateId() != null){
-				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> {
-				  cp.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
-				  this.predicateMap.put(key, cp); 
-				});
+			if(seb.getPredicate() != null){
+				Predicate p = seb.getPredicate();
+				p.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
+				this.predicateMap.put(key, p); 
 			}
 
-			if(seb.getExternalSingleCode() != null){
-				this.singleCodeMap.put(key, seb.getExternalSingleCode());
+			if(seb.getInternalSingleCode() != null){
+				this.singleCodeMap.put(key, seb.getInternalSingleCode());
 			}
 
 			if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){

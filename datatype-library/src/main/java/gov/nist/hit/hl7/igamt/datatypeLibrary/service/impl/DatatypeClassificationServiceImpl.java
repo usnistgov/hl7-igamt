@@ -11,12 +11,14 @@
  */
 package gov.nist.hit.hl7.igamt.datatypeLibrary.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeVersionGroup;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeClassificationRepository;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 
@@ -98,6 +100,27 @@ public class DatatypeClassificationServiceImpl implements DatatypeClassification
   public DatatypeClassification findByName(String name) {
     // TODO Auto-generated method stub
     return datatypeClassificationRepository.findByName(name);
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService#findCompatibility(java.lang.String, java.lang.String)
+   */
+  @Override
+  public List<String> findCompatibility(String name, String version) {
+    // TODO Auto-generated method stub
+    DatatypeClassification classification= findByName(name);
+    for(DatatypeVersionGroup group: classification.getClasses()) {
+      for(String v: group.getVersions()) {
+        if(v.equals(version)) {
+          return group.getVersions();
+        }
+      }
+    }
+    return new ArrayList<String>() { 
+      { 
+        add(version);
+      } 
+    }; 
   }
 
 

@@ -1,5 +1,5 @@
 
-import { SegmentEditActions, SegmentEditActionTypes } from './segment-edit.actions';
+import { SegmentEditActions } from './segment-edit.actions';
 
 export interface IState {
   placeholder: any;

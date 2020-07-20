@@ -31,6 +31,9 @@ public abstract class CoConstraintHeader {
     }
 
     public CoConstraintHeader cloneHeader() throws CloneNotSupportedException {
-        return (CoConstraintHeader) this.clone();
+      CoConstraintHeader clone =(CoConstraintHeader) this.clone();
+      clone.setKey(key);
+      clone.setType(type);
+      return clone;
     }
 }

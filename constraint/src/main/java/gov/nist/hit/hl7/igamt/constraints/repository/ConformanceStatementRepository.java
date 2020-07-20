@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 
+
 @Repository
 public interface ConformanceStatementRepository extends MongoRepository<ConformanceStatement, String> {
 

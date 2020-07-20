@@ -1,15 +1,15 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Actions} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {of} from 'rxjs';
+import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Actions } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
 import {
   AddDocument,
-  AddDocumentationState, AddDocumentSuccess, DeleteDocument,
-  DeleteDocumentationState, DocumentationActionTypes, UpdateDocumentationList,
+  AddDocumentSuccess, DeleteDocument,
+  DocumentationActionTypes, UpdateDocumentationList,
 } from '../../../../root-store/documentation/documentation.actions';
-import {RxjsStoreHelperService} from '../../../shared/services/rxjs-store-helper.service';
-import {DocumentationType, IDocumentation, IDocumentationWrapper} from '../../models/documentation.interface';
+import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
+import { DocumentationType, IDocumentation } from '../../models/documentation.interface';
 
 @Component({
   selector: 'app-documentation-side-bar',
@@ -18,9 +18,12 @@ import {DocumentationType, IDocumentation, IDocumentationWrapper} from '../../mo
 })
 export class DocumentationSideBarComponent implements OnInit {
 
-  constructor(private store: Store<any>, private router: Router,
-              private activeRoute: ActivatedRoute,
-              private actions: Actions) { }
+  constructor(
+    private store: Store<any>,
+    private router: Router,
+    private activeRoute: ActivatedRoute,
+    private actions: Actions) { }
+
   @Input()
   userguides: IDocumentation[];
   @Input()
@@ -33,6 +36,8 @@ export class DocumentationSideBarComponent implements OnInit {
   userNotes: IDocumentation[];
   @Input()
   admin: boolean;
+  @Input()
+  authenticated: boolean;
   @Input()
   glossary: IDocumentation[];
   ngOnInit() {
@@ -49,7 +54,7 @@ export class DocumentationSideBarComponent implements OnInit {
       },
     }).subscribe(() => {
     });
-    this.store.dispatch(new AddDocument($event.documentationType, $event.index ));
+    this.store.dispatch(new AddDocument($event.documentationType, $event.index));
 
   }
 
@@ -73,7 +78,7 @@ export class DocumentationSideBarComponent implements OnInit {
       case DocumentationType.USERNOTES:
         return './users-notes/' + section.id;
         break;
-      default :
+      default:
         return '';
         break;
     }

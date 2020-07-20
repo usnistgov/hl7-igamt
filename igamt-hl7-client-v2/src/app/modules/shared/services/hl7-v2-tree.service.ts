@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
+import * as _ from 'lodash';
 import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { filter, flatMap, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
 import { ICardinalityRange, IHL7v2TreeNode, ILengthRange, IResourceRef, IStringValue } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
+import { Usage } from '../constants/usage.enum';
 import { IStructureElementBinding, IStructureElementBindingProperties } from '../models/binding.interface';
 import { IComment } from '../models/comment.interface';
 import { IConformanceProfile, IGroup, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
@@ -84,7 +86,7 @@ export class Hl7V2TreeService {
     if (!path) {
       return '';
     } else {
-      return path.elementId + (path.instanceParameter ? ('[' + path.instanceParameter + ']') : '') + this.pathToString(path.child);
+      return path.elementId + '-' + this.pathToString(path.child);
     }
   }
 
@@ -159,6 +161,7 @@ export class Hl7V2TreeService {
         position: node.data.position,
         type: node.data.type,
         usage: cloneTextValue(node.data.usage),
+        oldUsage: node.data.oldUsage,
         text: cloneTextValue(node.data.text),
         cardinality: cloneRange(node.data.cardinality) as ICardinalityRange,
         length: cloneRange(node.data.length) as ILengthRange,
@@ -168,10 +171,12 @@ export class Hl7V2TreeService {
         changeable: node.data.changeable,
         viewOnly: node.data.viewOnly,
         confLength: node.data.confLength,
+        custom: node.data.custom,
         valueSetBindingsInfo: node.data.valueSetBindingsInfo,
         ref,
         bindings: node.data.bindings,
         level: node.data.level,
+        rootPath: node.data.rootPath,
       },
       leaf: node.leaf,
       $hl7V2TreeHelpers: {
@@ -185,31 +190,50 @@ export class Hl7V2TreeService {
     return node ? (node.parent && node.parent.data.type === Type.COMPONENT) ? Type.SUBCOMPONENT : node.data.type : undefined;
   }
 
-  concatPath(pre: IPath, post: IPath): IPath {
-    const path = pre ? {
-      elementId: pre.elementId,
-      instanceParameter: pre.instanceParameter,
-    } : post;
-    let writer = path;
-    let reader = pre;
-    while (reader) {
+  getLastChild(p: IPath): IPath {
+    if (p.child) {
+      return this.getLastChild(p.child);
+    } else {
+      return p;
+    }
+  }
 
-      if (reader.elementId === post.elementId) {
-        reader = post.child;
-      } else {
-        reader = reader.child;
-      }
-
-      if (reader) {
-        writer.child = {
-          elementId: reader.elementId,
-          instanceParameter: reader.instanceParameter,
-        };
-      }
-      writer = writer.child;
+  concatOverlapPath(pre: IPath, post: IPath): IPath {
+    // If there are no prefixes return postfix
+    if (!pre) {
+      return _.cloneDeep(post);
+    }
+    // If there are no postfixes return prefix
+    if (!post) {
+      return _.cloneDeep(pre);
     }
 
-    return path;
+    const resultPath = _.cloneDeep(pre);
+    const prefixLastChild = this.getLastChild(resultPath);
+
+    // check overlap
+    if (prefixLastChild.elementId === post.elementId) {
+      prefixLastChild.child = _.cloneDeep(post.child);
+      return resultPath;
+    } else {
+      throw new Error('Cannot concat paths');
+    }
+  }
+
+  straightConcatPath(pre: IPath, post: IPath): IPath {
+    // If there are no prefixes return postfix
+    if (!pre) {
+      return _.cloneDeep(post);
+    }
+    // If there are no postfixes return prefix
+    if (!post) {
+      return _.cloneDeep(pre);
+    }
+
+    const resultPath = _.cloneDeep(pre);
+    const prefixLastChild = this.getLastChild(resultPath);
+    prefixLastChild.child = _.cloneDeep(post);
+    return resultPath;
   }
 
   formatBindings(nodes: IBindingNode[]): IBindingMap {
@@ -553,7 +577,7 @@ export class Hl7V2TreeService {
   getBindingProperties(binding: IStructureElementBinding): IStructureElementBindingProperties {
     return {
       valuesetBindings: binding.valuesetBindings,
-      predicateId: binding.predicateId,
+      predicate: binding.predicate,
       externalSingleCode: binding.externalSingleCode,
       internalSingleCode: binding.internalSingleCode,
     };
@@ -576,7 +600,7 @@ export class Hl7V2TreeService {
 
     pick('valuesetBindings', (property) => property.valuesetBindings.length > 0);
     pick('internalSingleCode', (property) => true);
-    pick('predicateId', (property) => true);
+    pick('predicate', (property) => true);
     return values;
   }
 
@@ -599,6 +623,7 @@ export class Hl7V2TreeService {
     return repository.getRefData(segment.children.map((child) => child.ref.id), Type.DATATYPE).pipe(
       take(1),
       map((refsData) => {
+
         return segment.children.map((child) => {
           const reference = this.createReference(refsData, Type.DATATYPE, child.ref.id);
           const level = parent ? parent.data.level + 1 : 0;
@@ -612,6 +637,8 @@ export class Hl7V2TreeService {
               usage: {
                 value: child.usage,
               },
+              rootPath: this.straightConcatPath(parent ? parent.data.rootPath : { elementId: segment.id }, { elementId: child.id }),
+              oldUsage: child.oldUsage,
               cardinality: {
                 min: child.min,
                 max: child.max,
@@ -631,6 +658,7 @@ export class Hl7V2TreeService {
               constantValue: {
                 value: child.constantValue,
               },
+              custom: child.custom,
               valueSetBindingsInfo: this.bindingService.getBingdingInfo(refsData[child.ref.id].version, segment.name, refsData[child.ref.id].name, child.position, Type.SEGMENT),
               pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
               confLength: child.confLength,
@@ -682,6 +710,8 @@ export class Hl7V2TreeService {
               usage: {
                 value: child.usage,
               },
+              rootPath: this.straightConcatPath(parent ? parent.data.rootPath : { elementId: datatype.id }, { elementId: child.id }),
+              oldUsage: child.oldUsage,
               length: {
                 min: child.minLength,
                 max: child.maxLength,
@@ -733,6 +763,7 @@ export class Hl7V2TreeService {
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
+    console.log(confProfile);
     const segmentRefs = this.getAllSegmentRef(confProfile.children);
     return combineLatest(
       repository.getRefData(segmentRefs, Type.SEGMENT).pipe(
@@ -756,12 +787,13 @@ export class Hl7V2TreeService {
       )).pipe(
         take(1),
         map(([refsData, segments]) => {
-          return this.formatStructure(confProfile.binding ? confProfile.binding.children || [] : [], confProfile.children, segments, refsData, viewOnly, changeable, parent);
+          return this.formatStructure(confProfile.binding ? confProfile.binding.children || [] : [], confProfile.children, segments, refsData, viewOnly, changeable, confProfile, parent);
         }),
       );
   }
 
   // tslint:disable-next-line: cognitive-complexity
+  // tslint:disable-next-line: parameters-max-number
   formatStructure(
     bindings: IStructureElementBinding[],
     structure: IMsgStructElement[],
@@ -769,6 +801,7 @@ export class Hl7V2TreeService {
     refsData: IRefData,
     viewOnly: boolean,
     changeable: boolean,
+    cp: IConformanceProfile,
     parent?: IHL7v2TreeNode): IHL7v2TreeNode[] {
     return structure.map((child) => {
       const leaf = child.type === Type.SEGMENTREF ? refsData[(child as ISegmentRef).ref.id].leaf : !(child as IGroup).children || (child as IGroup).children.length === 0;
@@ -776,46 +809,95 @@ export class Hl7V2TreeService {
       const name = child.type === Type.GROUP ? child.name : segments[(child as ISegmentRef).ref.id].name;
       const level = parent ? parent.data.level + 1 : 0;
       const bds = this.mergeBindings(parent ? parent.data.bindings.children[child.id] || [] : [], child.id, { resource: Type.COMPOSITEPROFILE }, bindings, level);
-      let predicate;
-      if (bds.values.predicateId && bds.values.predicateId.length > 0) {
-        predicate = this.predicate.getPredicate('', bds.values.predicateId[0].value);
-      }
-      const childNode: IHL7v2TreeNode = {
-        data: {
-          id: child.id,
-          name,
-          position: child.position,
-          type: child.type === Type.SEGMENTREF ? Type.SEGMENT : child.type,
-          usage: {
-            value: child.usage,
-          },
-          cardinality: {
-            min: child.min,
-            max: child.max,
-          },
+      const childNode: IHL7v2TreeNode = this.makeMsgStructureElmNode(
+        name,
+        parent,
+        child,
+        {
           changeable,
           viewOnly,
-          level,
-          text: {
-            value: child.text,
-          },
-          comments: child.comments || [],
-          pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
-          ref: reference,
-          bindings: bds,
+          leaf,
         },
-        leaf,
-        parent,
-        $hl7V2TreeHelpers: {
-          predicate$: predicate,
-          ref$: child.type === Type.SEGMENTREF ? reference.asObservable() : undefined,
-          treeChildrenSubscription: undefined,
-        },
-      };
+        level,
+        reference,
+        bds,
+        cp,
+      );
       childNode.children = [
-        ...((!leaf && child.type === Type.GROUP) ? this.formatStructure([], (child as IGroup).children, segments, refsData, viewOnly, changeable, childNode) : []),
+        ...((!leaf && child.type === Type.GROUP) ? this.formatStructure([], (child as IGroup).children, segments, refsData, viewOnly, changeable, cp, childNode) : []),
       ];
       return childNode;
     }).sort((a, b) => a.data.position - b.data.position);
   }
+
+  nodeToSegmentRef(node: IHL7v2TreeNode): ISegmentRef {
+    return {
+      id: node.data.id,
+      name: node.data.name,
+      position: node.data.position,
+      usage: node.data.usage.value as Usage,
+      oldUsage: node.data.oldUsage,
+      type: Type.SEGMENTREF,
+      custom: node.data.custom,
+      min: node.data.cardinality.min,
+      max: node.data.cardinality.max,
+      comments: node.data.comments,
+      ref: {
+        id: node.data.ref.getValue().id,
+      },
+    };
+  }
+
+  // tslint:disable-next-line: parameters-max-number
+  makeMsgStructureElmNode(
+    name: string,
+    parent: IHL7v2TreeNode,
+    child: IMsgStructElement,
+    view: {
+      changeable: boolean,
+      viewOnly: boolean,
+      leaf: boolean,
+    },
+    level: number,
+    reference: BehaviorSubject<IResourceRef>,
+    bds: IElementBinding,
+    cp: IConformanceProfile,
+  ): IHL7v2TreeNode {
+    return {
+      data: {
+        id: child.id,
+        name,
+        position: child.position,
+        type: child.type === Type.SEGMENTREF ? Type.SEGMENT : child.type,
+        usage: {
+          value: child.usage,
+        },
+        rootPath: this.straightConcatPath(parent ? parent.data.rootPath : { elementId: cp.id }, { elementId: child.id }),
+        oldUsage: child.oldUsage,
+        cardinality: {
+          min: child.min,
+          max: child.max,
+        },
+        changeable: view.changeable,
+        viewOnly: view.viewOnly,
+        level,
+        text: {
+          value: child.text,
+        },
+        comments: child.comments || [],
+        pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
+        ref: reference,
+        bindings: bds,
+        custom: child.custom,
+      },
+      leaf: view.leaf,
+      parent,
+      $hl7V2TreeHelpers: {
+        ref$: child.type === Type.SEGMENTREF ? reference.asObservable() : undefined,
+        treeChildrenSubscription: undefined,
+      },
+      children: [],
+    };
+  }
+
 }

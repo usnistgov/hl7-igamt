@@ -1,20 +1,16 @@
-<div style="overflow: scroll; max-height: 300px">
-  <div style="display: flex; flex-direction: row; justify-content: flex-end">
-
-    <button class="btn-secondary btn-sm" (click)="addSection()" *ngIf="admin || documentationType==='USERNOTES'"><i class="fa fa-plus"></i></button>
-
-  </div>
+<div style="display: flex; flex-direction: row; justify-content: flex-end">
+  <button class="btn-secondary btn-sm" (click)="addSection()" *ngIf="admin || documentationType==='USERNOTES'"><i class="fa fa-plus"></i></button>
+</div>
+<div style="overflow: scroll; max-height: 300px; background: white">
   <div cdkDropList (cdkDropListDropped)="drop($event)" class="doc-list" [cdkDropListDisabled]="!admin && documentationType!=='USERNOTES'">
-
-  <li *ngFor="let l of list" [routerLink]="[getLinkByType(l)]" routerLinkActive="active" class="doc-link"  #rla="routerLinkActive" cdkDrag>
-    <a [contextMenu]="contextMenu" >{{l.label}}</a>
-    <context-menu #contextMenu>
-
-    <ng-template (execute)="deleteDocument(l)" contextMenuItem [enabled]="admin || documentationType==='USERNOTES'">
-      <i class="fa fa-remove"></i> Delete Section
-    </ng-template>
-    </context-menu>
-  </li>
+    <li *ngFor="let l of list" [routerLink]="[getLinkByType(l)]" routerLinkActive="active" class="doc-link"  #rla="routerLinkActive" cdkDrag>
+      <a [contextMenu]="contextMenu">{{l.label}}</a>
+      <context-menu #contextMenu>
+        <ng-template (execute)="deleteDocument(l)" contextMenuItem [enabled]="admin || documentationType==='USERNOTES'">
+          <i class="fa fa-remove"></i> Delete Section
+        </ng-template>
+      </context-menu>
+    </li>
   </div>
 </div>
 

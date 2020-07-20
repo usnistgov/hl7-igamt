@@ -15,10 +15,10 @@ import java.util.Set;
 import gov.nist.diff.annotation.DeltaField;
 import gov.nist.diff.annotation.DeltaIdentity;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;
 
 /**
  * @author jungyubw
@@ -43,6 +43,8 @@ public class BindingDisplay {
   private String constantValue;
   @DeltaField
   private Predicate predicate;
+  @DeltaField
+  private BindingType bindingType;
 
   public Set<Comment> getComments() {
     return comments;
@@ -56,8 +58,17 @@ public class BindingDisplay {
     return valuesetBindings;
   }
 
-  public void setValuesetBindings(Set<DisplayValuesetBinding> valuesetBindings) {
-    this.valuesetBindings = valuesetBindings;
+
+  public BindingType getBindingType() {
+    if(this.valuesetBindings != null && !this.valuesetBindings.isEmpty()) {
+      return BindingType.VS;
+    }else if (this.internalSingleCode !=null) {
+      return  BindingType.SC;
+    }else return BindingType.VS;
+  }
+
+  public void setBindingType(BindingType bindingType) {
+    this.bindingType = bindingType;
   }
 
   public InternalSingleCode getInternalSingleCode() {
@@ -115,4 +126,15 @@ public class BindingDisplay {
   public void setPriority(int priority) {
     this.priority = priority;
   }
+
+  /**
+   * @param covertDisplayVSBinding
+   */
+  public void setValuesetBindings(Set<DisplayValuesetBinding> list) {
+    // TODO Auto-generated method stub
+    this.valuesetBindings = list;
+    
+  }
+  
+
 }

@@ -1,9 +1,9 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Observable} from 'rxjs';
-import {debounceTime} from 'rxjs/operators';
-import {FroalaService} from '../../../shared/services/froala.service';
-import {DocumentationScope, DocumentationType, IDocumentation} from '../../models/documentation.interface';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
+import { FroalaService } from '../../../shared/services/froala.service';
+import { IDocumentation } from '../../models/documentation.interface';
 
 @Component({
   selector: 'app-documentation-editor',
@@ -19,10 +19,7 @@ export class DocumentationEditorComponent implements OnInit {
   viewOnly: boolean;
   @Input()
   set data(data: IDocumentation) {
-    console.log(data);
     this.sectionForm.patchValue(data, { emitEvent: false });
-    console.log(this.sectionForm);
-
   }
 
   constructor(private froalaService: FroalaService) {
@@ -46,7 +43,6 @@ export class DocumentationEditorComponent implements OnInit {
       .pipe(debounceTime(200))
       .subscribe(
         (change) => {
-          console.log('HAS CHANGED');
           this.form.emit(this.sectionForm);
         },
       );

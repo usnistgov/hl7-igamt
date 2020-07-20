@@ -2,9 +2,9 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoadConformanceProfile, OpenConformanceProfileDeltaEditor, OpenConformanceProfilePreDefEditor } from 'src/app/root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import { ConformanceProfileEditActionTypes, OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfilePostDefEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from '../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
+import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
+import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
+import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { CoConstraintsBindingEditorComponent } from './components/co-constraints-binding-editor/co-constraints-binding-editor.component';
@@ -25,7 +25,7 @@ const routes: Routes = [
       failureAction: ConformanceProfileEditActionTypes.LoadConformanceProfileFailure,
       redirectTo: ['ig', 'error'],
     },
-    canActivate: [DataLoaderResolverService],
+    canActivate: [DataLoaderGuard],
     children: [
       {
         path: '',
@@ -35,8 +35,8 @@ const routes: Routes = [
       {
         path: 'conformance-statement',
         component: CPConformanceStatementEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.CP_CS,
@@ -54,8 +54,8 @@ const routes: Routes = [
       {
         path: 'co-constraint',
         component: CoConstraintsBindingEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.CP_CC_BINDING,
@@ -73,8 +73,8 @@ const routes: Routes = [
       {
         path: 'pre-def',
         component: PredefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.PREDEF,
@@ -95,8 +95,8 @@ const routes: Routes = [
           {
             path: '',
             component: ConformanceProfileStructureEditorComponent,
-            canActivate: [IgEditorActivateGuard],
-            canDeactivate: [IgEditSaveDeactivateGuard],
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
             data: {
               editorMetadata: {
                 id: EditorID.CONFP_STRUCTURE,
@@ -111,32 +111,13 @@ const routes: Routes = [
               idKey: 'conformanceProfileId',
             },
           },
-          {
-            path: 'delta',
-            component: DeltaEditorComponent,
-            canActivate: [IgEditorActivateGuard],
-            canDeactivate: [IgEditSaveDeactivateGuard],
-            data: {
-              editorMetadata: {
-                id: EditorID.CONFP_DELTA,
-                title: 'Delta',
-                resourceType: Type.CONFORMANCEPROFILE,
-              },
-              onLeave: {
-                saveEditor: true,
-                saveTableOfContent: true,
-              },
-              action: OpenConformanceProfileDeltaEditor,
-              idKey: 'conformanceProfileId',
-            },
-          },
         ],
       },
       {
         path: 'post-def',
         component: PostdefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.POSTDEF,
@@ -154,8 +135,8 @@ const routes: Routes = [
       {
         path: 'metadata',
         component: MetadataEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.MESSAGE_METADATA,
@@ -167,6 +148,25 @@ const routes: Routes = [
             saveTableOfContent: true,
           },
           action: OpenConformanceProfileMetadataEditor,
+          idKey: 'conformanceProfileId',
+        },
+      },
+      {
+        path: 'delta',
+        component: DeltaEditorComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.CONFP_DELTA,
+            title: 'Delta',
+            resourceType: Type.CONFORMANCEPROFILE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenConformanceProfileDeltaEditor,
           idKey: 'conformanceProfileId',
         },
       },

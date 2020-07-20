@@ -16,6 +16,8 @@ export class UsageViewerComponent implements OnInit {
   refs: IUsages[] = [];
   @Input()
   igId: string;
+  @Input()
+  documentType: Type;
   types: SelectItem[];
   usages: SelectItem[];
 
@@ -28,6 +30,8 @@ export class UsageViewerComponent implements OnInit {
       { label: 'Data Type', value: Type.DATATYPE },
       { label: 'Segments', value: Type.SEGMENT },
       { label: 'Conformance Profile', value: Type.CONFORMANCEPROFILE },
+      { label: 'Co-Constraints Group', value: Type.COCONSTRAINTGROUP },
+
     ];
     this.usages = [
         { label: 'R', value:  'R'  },

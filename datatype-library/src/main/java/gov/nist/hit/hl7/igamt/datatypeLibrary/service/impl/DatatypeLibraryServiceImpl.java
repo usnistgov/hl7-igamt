@@ -20,8 +20,10 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,22 +47,53 @@ import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationEntry;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationResult;
+import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
+import gov.nist.hit.hl7.igamt.common.base.model.PublishedEntry;
+//import gov.nist.hit.hl7.igamt.common.base.model.PublicationEntry;
+//import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibraryDataModel;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.model.LibSummary;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeLibraryRepository;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.LibraryDisplayInfoService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.STATUS;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 /**
  * @author ena3
@@ -74,10 +107,31 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   DatatypeLibraryRepository datatypeLibraryRepository;
 
   @Autowired
+  LibraryDisplayInfoService display;
+
+  @Autowired
   MongoTemplate mongoTemplate;
 
   @Autowired
   DatatypeService datatypeService;
+  
+  @Autowired
+  ValuesetService valuesetService;
+  
+  @Autowired
+  PredicateRepository predicateRepository;
+  
+  @Autowired
+  ConformanceStatementRepository conformanceStatementRepository;
+
+  @Autowired
+  FhirHandlerService fhirHandlerService;
+  
+  @Autowired
+  ConfigService configService;
+
+
+
 
   @Override
   public DatatypeLibrary findById(String id) {
@@ -171,77 +225,128 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#addDatatypes(java.util.
    * Set, gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary)
    */
+
+
   @Override
-  public AddDatatypeResponseObject addDatatypes(Set<String> savedIds, DatatypeLibrary lib,
-      Scope scope) throws AddingException {
-    DatatypeRegistry reg = lib.getDatatypeRegistry();
+  public AddDatatypeResponseObject addDatatypes(Set<String> ids, DatatypeLibrary lib) throws AddingException {
+    // TODO Auto-generated method stub
     AddDatatypeResponseObject ret = new AddDatatypeResponseObject();
-    if (reg != null) {
-      if (reg.getChildren() != null) {
-        Set<String> existants = mapLinkToId(reg.getChildren());
-        savedIds.removeAll(existants);
-        for (String id : savedIds) {
+    if (lib.getDatatypeRegistry() != null) {
+      if (lib.getDatatypeRegistry().getChildren() != null) {
+        Set<String> existants = mapLinkToId(lib.getDatatypeRegistry().getChildren());
+        ids.removeAll(existants);
+        for (String id : ids) {
           Datatype datatype = datatypeService.findById(id);
           if (datatype != null) {
             if (datatype instanceof ComplexDatatype) {
               ComplexDatatype p = (ComplexDatatype) datatype;
+              if (p.getBinding() != null) {
+                Set<String> vauleSetBindingIds = processBinding(p.getBinding());
+                AddValueSetResponseObject valueSetAdded = addValueSets(vauleSetBindingIds, lib);
+                for (Valueset vs : valueSetAdded.getValueSets()) {
+                  if (!ret.getValueSets().contains(vs)) {
+                    ret.getValueSets().add(vs);
+                  }
+                }
+              }
               Set<String> datatypeIds = getDatatypeResourceDependenciesIds(p);
               addDatatypes(datatypeIds, lib, ret);
-
-
             }
-            if (datatype.getId()!= null) {
-              Link link = new Link(datatype.getId(), datatype.getDomainInfo(),
-                  reg.getChildren().size() + 1);
-              ret.getDatatypes().add(datatype);
-              reg.getChildren().add(link);
-            } else {
-              System.out.println(datatype.getName());
-              System.out.println(datatype.getDomainInfo().getVersion());
-              System.out.println(datatype.getDomainInfo().getScope());
-            }
+            Link link = new Link(datatype.getId(), datatype.getDomainInfo(),
+                lib.getDatatypeRegistry().getChildren().size() + 1);
+            link.setParentId(datatype.getParentId());
+            link.setParentType(datatype.getParentType());
+            ret.getDatatypes().add(datatype);
+            lib.getDatatypeRegistry().getChildren().add(link);
+
+          }else {
+            throw new AddingException("Could not find Datatype with id : "+id);
           }
         }
       }
     }
-    datatypeLibraryRepository.save(lib);
     return ret;
-
   }
-
   public void addDatatypes(Set<String> ids, DatatypeLibrary lib, AddDatatypeResponseObject ret)
       throws AddingException {
     // TODO Auto-generated method stub
-    DatatypeRegistry reg = lib.getDerivedRegistry();
+    if (lib.getDatatypeRegistry() != null) {
+      if (lib.getDatatypeRegistry().getChildren() != null) {
+        Set<String> existants = mapLinkToId(lib.getDatatypeRegistry().getChildren());
+        ids.removeAll(existants);
+        for (String id : ids) {
+          Datatype datatype = datatypeService.findById(id);
+          if (datatype != null) {
+            if (datatype.getBinding() != null) {
+              Set<String> vauleSetBindingIds = processBinding(datatype.getBinding());
+              AddValueSetResponseObject valueSetAdded = addValueSets(vauleSetBindingIds, lib);
+              for (Valueset vs : valueSetAdded.getValueSets()) {
+                if (!ret.getValueSets().contains(vs)) {
+                  ret.getValueSets().add(vs);
+                }
+              }
+            }
+            Link link =
+                new Link(datatype.getId(), datatype.getDomainInfo(), lib.getDatatypeRegistry().getChildren().size() + 1);
+            lib.getDatatypeRegistry().getChildren().add(link);
+            ret.getDatatypes().add(datatype);
+            link.setParentType(datatype.getParentType());
+            link.setParentId(datatype.getParentId());
+            if (datatype instanceof ComplexDatatype) {
+              ComplexDatatype p = (ComplexDatatype) datatype;
+              addDatatypes(getDatatypeResourceDependenciesIds(p), lib, ret);
+            }
+          } else {
+            throw new AddingException("Could not find Datata type  with id " + id);
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public AddValueSetResponseObject addValueSets(Set<String> ids, DatatypeLibrary lib) throws AddingException {
+    // TODO Auto-generated method stub
+    ValueSetRegistry reg = lib.getValueSetRegistry();
+    AddValueSetResponseObject ret = new AddValueSetResponseObject();
     if (reg != null) {
       if (reg.getChildren() != null) {
         Set<String> existants = mapLinkToId(reg.getChildren());
         ids.removeAll(existants);
         for (String id : ids) {
-          Datatype datatype = datatypeService.findById(id);
-          if (datatype != null) {
+          Valueset valueSet = valuesetService.findById(id);
+          if (valueSet != null) {
             Link link =
-                new Link(datatype.getId(), datatype.getDomainInfo(), reg.getChildren().size() + 1);
+                new Link(valueSet.getId(), valueSet.getDomainInfo(), reg.getChildren().size() + 1);
             reg.getChildren().add(link);
-            ret.getDatatypes().add(datatype);
-            if (datatype instanceof ComplexDatatype) {
-              ComplexDatatype p = (ComplexDatatype) datatype;
-              addDatatypes(getDatatypeResourceDependenciesIds(p), lib, ret);
-              System.out.println("putting In Library" + p.getId());
-              reg.getChildren().add(link);
-            }
+            ret.getValueSets().add(valueSet);
           } else {
-            throw new AddingException("Could not find Datata type  with id " + id);
-
+            throw new AddingException("Could not find Value Set  with id " + id);
           }
         }
       }
     }
-
-
-
+    return ret;
   }
 
+  private Set<String> processBinding(ResourceBinding binding) {
+    // TODO Auto-generated method stub
+    Set<String> vauleSetIds = new HashSet<String>();
+    if (binding.getChildren() != null) {
+      for (StructureElementBinding child : binding.getChildren()) {
+        if (child.getValuesetBindings() != null) {
+          for (ValuesetBinding vs : child.getValuesetBindings()) {
+            if(vs.getValueSets() !=null) {
+              for(String s: vs.getValueSets()) {
+                vauleSetIds.add(s);
+              }
+            }
+          }
+        }
+      }
+    }
+    return vauleSetIds;
+  }
   private Set<String> getDatatypeResourceDependenciesIds(ComplexDatatype datatype) {
     // TODO Auto-generated method stub
     Set<String> datatypeIds = new HashSet<String>();
@@ -270,25 +375,25 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   }
 
   @Override
-  public List<DatatypeLibrary> findLatestByUsername(String username) {
-    Criteria where = Criteria.where("username").is(username);
-
+  public List<DatatypeLibrary> findByUsername(String username, Scope scope) {
+    Criteria where = Criteria.where("username").is(username)
+        .andOperator(Criteria.where("domainInfo.scope").is(scope.toString()), Criteria.where("status").ne(Status.PUBLISHED));
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
     qry.fields().include("metadata");
-    qry.fields().include("publicationInfo");
     qry.fields().include("username");
-    qry.fields().include("conformanceProfileRegistry");
+    qry.fields().include("datatypeRegistry");
     qry.fields().include("creationDate");
     qry.fields().include("updateDate");
+    qry.fields().include("sharedUsers");
+    qry.fields().include("currentAuthor");
 
-    List<DatatypeLibrary> libs = mongoTemplate.find(qry, DatatypeLibrary.class);
-
-
-
-    return libs;
+    List<DatatypeLibrary> igs = mongoTemplate.find(qry, DatatypeLibrary.class);
+    return igs;
   }
+
+
 
   /*
    * (non-Javadoc)
@@ -298,14 +403,12 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * java.util.List)
    */
   @Override
-  public List<LibSummary> convertListToDisplayList(List<DatatypeLibrary> libs) {
+  public List<DocumentSummary> convertListToDisplayList(List<DatatypeLibrary> libs) {
     // TODO Auto-generated method stub
 
-    // TODO Auto-generated method stub
-
-    List<LibSummary> res = new ArrayList<LibSummary>();
+    List<DocumentSummary> list = new ArrayList<DocumentSummary>();
     for (DatatypeLibrary lib : libs) {
-      LibSummary element = new LibSummary();
+      DocumentSummary element = new DocumentSummary();
 
       element.setCoverpage(lib.getMetadata().getCoverPicture());
       element.setDateUpdated(lib.getUpdateDate());
@@ -314,10 +417,30 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       // element.setConfrmanceProfiles(confrmanceProfiles);
       element.setCoverpage(lib.getMetadata().getCoverPicture());
       element.setId(lib.getId());
+      element.setDerived(lib.isDerived());
       element.setUsername(lib.getUsername());
-      res.add(element);
+      element.setStatus(lib.getStatus());
+      element.setSharePermission(lib.getSharePermission());
+      element.setSharedUsers(lib.getSharedUsers());
+      element.setCurrentAuthor(lib.getCurrentAuthor());
+      List<String> datatypesNames = new ArrayList<String>();
+      DatatypeRegistry datatypeRegistry = lib.getDatatypeRegistry();
+      if (datatypeRegistry != null) {
+        if (datatypeRegistry.getChildren() != null) {
+          for (Link i : datatypeRegistry.getChildren()) {
+            Datatype datatype =
+                datatypeService.findById(i.getId());
+            if (datatype != null) {
+              datatypesNames
+              .add(datatype.getLabel());
+            }
+          }
+        }
+      }
+      element.setElements(datatypesNames);
+      list.add(element);
     }
-    return res;
+    return list;
   }
 
   /*
@@ -336,19 +459,238 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("publicationInfo");
-
     qry.fields().include("id");
     qry.fields().include("metadata");
     qry.fields().include("username");
-    qry.fields().include("conformanceProfileRegistry");
+    qry.fields().include("datatypeRegistry");
     qry.fields().include("creationDate");
     qry.fields().include("updateDate");
-
     List<DatatypeLibrary> libs = mongoTemplate.find(qry, DatatypeLibrary.class);
 
-
-
     return libs;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#addDatatypes(java.util.Set, gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary, gov.nist.hit.hl7.igamt.common.base.domain.Scope)
+   */
+  @Override
+  public AddDatatypeResponseObject addDatatypes(Set<String> savedIds, DatatypeLibrary lib,
+      Scope scope) throws AddingException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public TextSection findSectionById(Set<TextSection> content, String sectionId) {
+    // TODO Auto-generated method stub
+    for (TextSection s : content) {
+      TextSection ret = findSectionInside(s, sectionId);
+      if (ret != null) {
+        return ret;
+      }
+    }
+    return null;
+  }
+
+  private TextSection findSectionInside(TextSection s, String sectionId) {
+    // TODO Auto-generated method stub
+    if (s.getId().equals(sectionId)) {
+      return s;
+    }
+    if (s.getChildren() != null && s.getChildren().size() > 0) {
+      for (TextSection ss : s.getChildren()) {
+        TextSection ret = findSectionInside(ss, sectionId);
+        if (ret != null) {
+          return ret;
+        }
+      }
+      return null;
+    }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#getPublicationSummary()
+   */
+  @Override
+  public PublicationSummary getPublicationSummary(String id) {
+    // TODO Auto-generated method stub
+    PublicationSummary summary= new PublicationSummary();
+    summary.entries= new ArrayList<PublicationEntry>();
+    List<Datatype> toPublish = this.datatypeService.findByParentId(id);
+    System.out.println(toPublish.size());
+
+    for(Datatype d : toPublish) {
+      summary.entries.add(getPublicationEntry(d));
+    }
+    return summary;
+  }
+
+  /**
+   * @param d
+   * @return
+   */
+  private PublicationEntry getPublicationEntry(Datatype d) {
+    // TODO Auto-generated method stub
+    PublicationEntry entry = new PublicationEntry();
+    List<String> availableExtensions = new ArrayList<String>();
+
+    entry.display = display.convertDatatype(d);
+    entry.suggested = d.getExt();
+    Criteria where = Criteria.where("name").is(d.getName())
+        .andOperator(Criteria.where("domainInfo.scope").is(Scope.SDTF.toString()));
+    Query qry = Query.query(where);
+    List<String> used=  this.mongoTemplate.findDistinct(qry, "ext", "datatype", Datatype.class, String.class);
+    Map<String, Boolean> map = used.stream().collect(Collectors.toMap(x ->  x, x->true));
+    for(int i= 1; i<10; i++) {
+      if(!map.containsKey(String.valueOf("0"+i))) {
+        availableExtensions.add("0"+i);
+      }
+    }
+    for(int i=10; i<100; i++ ) {
+      if(!map.containsKey(String.valueOf(i))) {
+        availableExtensions.add(String.valueOf(i));
+      }
+    }
+    if(!map.containsKey(d.getExt())) {
+      entry.suggested= availableExtensions.get(0);
+    }
+    entry.availableExtensions = availableExtensions;
+    return entry;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#publishLibray(java.lang.String, gov.nist.hit.hl7.igamt.common.base.model.PublicationResult)
+   */
+  @Override
+  public String publishLibray(String id, PublicationResult publicationResult) {
+    // TODO Auto-generated method stub
+    DatatypeLibrary lib = this.findById(id);
+    PublicationInfo info = new PublicationInfo();
+    info.setPublicationDate(new Date());
+    info.setPublicationVersion(publicationResult.getVersion());
+    Map<String,PublishedEntry>  publsihed = publicationResult.getElements().stream().collect(Collectors.toMap(x-> x.getId(), x ->x));
+    if(lib.getDatatypeRegistry() !=null && lib.getDatatypeRegistry().getChildren() !=null) {
+      for(Link l : lib.getDatatypeRegistry().getChildren()) {
+        if(publsihed.containsKey(l.getId())) {
+          Datatype d= this.datatypeService.findById(l.getId());
+          d.getDomainInfo().setScope(publsihed.get(l.getId()).getScope());
+          d.setExt(publsihed.get(l.getId()).getExt());
+          d.setPublicationInfo(info);
+          d.setStatus(Status.PUBLISHED);
+          l.setDomainInfo(d.getDomainInfo());
+          datatypeService.save(d);
+        }
+      }
+    }
+    lib.setPublicationInfo(info);
+    this.save(lib);
+    return lib.getId();
+  }
+
+  @Override
+  public DatatypeLibraryDataModel generateDataModel(DatatypeLibrary dl) throws Exception {
+  	DatatypeLibraryDataModel datatypeLibraryDataModel = new DatatypeLibraryDataModel();
+  	datatypeLibraryDataModel.setModel(dl);
+
+  	    Set<DatatypeDataModel> datatypes = new HashSet<DatatypeDataModel>();
+  	    Set<SegmentDataModel> segments = new HashSet<SegmentDataModel>();
+  	    Set<ConformanceProfileDataModel> conformanceProfiles =
+  	        new HashSet<ConformanceProfileDataModel>();
+  	    Set<ValuesetDataModel> valuesets = new HashSet<ValuesetDataModel>();
+  	    Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap =
+  	        new HashMap<String, ValuesetBindingDataModel>();
+
+  	    for (Link link : dl.getValueSetRegistry().getChildren()) {
+  	      Valueset vs = this.getValueSetInIg(dl.getId(), link.getId());
+  	      if (vs != null) {
+  	        ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
+  	        valuesetDataModel.setModel(vs);
+  	        valuesetBindingDataModelMap.put(vs.getId(), new ValuesetBindingDataModel(vs));
+  	        valuesets.add(valuesetDataModel);
+  	      } else
+  	        throw new Exception("Valueset is missing.");
+  	    }
+
+  	    for (Link link : dl.getDatatypeRegistry().getChildren()) {
+  	      Datatype d = this.datatypeService.findById(link.getId());
+  	      if (d != null) {
+  	        DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
+  	        datatypeDataModel.putModel(d, this.datatypeService, valuesetBindingDataModelMap,
+  	            this.conformanceStatementRepository, this.predicateRepository);
+  	        datatypes.add(datatypeDataModel);
+  	      }
+  	      else throw new Exception("Datatype is missing.");
+  	    }
+
+//  	    for (Link link : dl.getSegmentRegistry().getChildren()) {
+//  	      Segment s = this.segmentService.findById(link.getId());
+//  	      if (s != null) {
+//  	        SegmentDataModel segmentDataModel = new SegmentDataModel();
+//  	        segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
+//  	        // CoConstraintTable coConstraintTable =
+//  	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
+//  	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
+//  	        segments.add(segmentDataModel);
+//  	      } else
+//  	        throw new Exception("Segment is missing.");
+//  	    }
+
+//  	    for (Link link : ig.getConformanceProfileRegistry().getChildren()) {
+//  	      ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
+//  	      if (cp != null) {
+//  	        ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
+//  	        conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap,
+//  	            this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
+//  	        conformanceProfiles.add(conformanceProfileDataModel);
+//  	      } else
+//  	        throw new Exception("ConformanceProfile is missing.");
+//  	    }
+
+  	    datatypeLibraryDataModel.setDatatypes(datatypes);
+//  	    igDataModel.setSegments(segments);
+//  	    igDataModel.setConformanceProfiles(conformanceProfiles);
+//  	    igDataModel.setValuesets(valuesets);
+
+
+  	    return datatypeLibraryDataModel;
+  	  }
+
+  @Override
+  public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
+  	DatatypeLibrary dl = this.findById(id);
+    if(dl == null ) {
+      throw new IGNotFoundException(id);
+    }
+    Valueset vs= valuesetService.findById(vsId);
+
+    if(vs == null) {
+      throw new ValuesetNotFoundException(vsId);
+    }
+    if(vs.getBindingIdentifier().equals("HL70396") && vs.getSourceType().equals(SourceType.EXTERNAL)) {
+      vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
+    }
+    if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
+      if(vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+        Config conf = this.configService.findOne();
+        if(conf !=null) {
+          vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
+        }
+      }
+    }
+    if(dl.getValueSetRegistry().getCodesPresence() != null ) {
+      if (dl.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
+        if (dl.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
+          vs.setIncludeCodes(true);
+        } else {
+          vs.setIncludeCodes(false);
+          vs.setCodes(new HashSet<Code>());
+        }
+      }else {
+        vs.setIncludeCodes(true);
+      }
+    }
+    return vs;
   }
 }
 

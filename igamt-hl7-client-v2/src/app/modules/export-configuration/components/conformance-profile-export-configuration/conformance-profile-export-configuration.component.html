@@ -9,8 +9,8 @@
         <li class="list-group-item"><p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.re"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="C(a/b)" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.cab"> </p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.c"> </p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.o" (onChange)="triggerChange()"></p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="X" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.x" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.o" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="X" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.x" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="B" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.b" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="W" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.w" (onChange)="triggerChange()"></p-checkbox></li>
       </ul>
@@ -69,7 +69,7 @@
       </div>
     </div>
 
-    <app-delta-export-configuration  [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
+    <app-delta-export-configuration *ngIf="derived && origin && delta" [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
 
   </div>
 </div>

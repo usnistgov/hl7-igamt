@@ -4,6 +4,7 @@ export interface IExportConfiguration {
   id: string;
   defaultConfig: boolean;
   original: boolean;
+  datatypeLibraryExportConfiguration: IDatatypeLibraryExportConfiguration;
   datatypeExportConfiguration: IDatatypeExportConfiguration;
   segmentExportConfiguration: ISegmentExportConfiguration;
   conformamceProfileExportConfiguration: IConformamceProfileExportConfiguration;
@@ -50,6 +51,8 @@ export interface IExportConfiguration {
   datatypeLibraryIncludeSummary: boolean;
   datatypeLibraryIncludeDerived: boolean;
   documentMetadataConfiguration?: any;
+  deltaMode?: boolean;
+  deltaConfig?: any;
 }
 
 export interface IMessageColumn {
@@ -108,6 +111,8 @@ export interface IValueSetExportConfiguration {
   extensibility: boolean;
   contentDefinition: boolean;
   uRL: boolean;
+  deltaMode?: boolean;
+  deltaConfig?: any;
 }
 
 export interface IValueSetMetadataConfig {
@@ -154,6 +159,8 @@ export interface IConformamceProfileExportConfiguration {
   columns: IColumn[];
   metadataConfig: IMetadataConfig;
   constraintExportConfiguration: IConstraintExportConfiguration;
+  deltaMode?: boolean;
+  deltaConfig?: any;
 }
 
 export interface ISegmentExportConfiguration {
@@ -185,6 +192,42 @@ export interface ISegmentExportConfiguration {
   fieldsExport: IUsageConfiguration;
   columns: IColumn[];
   metadataConfig: IMetadataConfig;
+  deltaMode?: boolean;
+  deltaConfig?: any;
+}
+
+export interface IDatatypeLibraryExportConfiguration {
+  datatypeName: boolean;
+  datatypeFlavor: boolean;
+  shortDescription: boolean;
+  hl7version: boolean;
+  publicationDate: boolean;
+  status: boolean;
+  creationDate: boolean;
+  updateDate: boolean;
+  name: boolean;
+  type: boolean;
+  origin: boolean;
+  publicationInfo: boolean;
+  domainInfo: boolean;
+  comment: boolean;
+  description: boolean;
+  createdFrom: boolean;
+  authorNotes: boolean;
+  usageNotes: boolean;
+  from: boolean;
+  version: boolean;
+  domainCompatibilityVersion: boolean;
+  preDef: boolean;
+  postDef: boolean;
+  purposeAndUse: boolean;
+  binding: boolean;
+  constraintExportConfiguration: IConstraintExportConfiguration;
+  includeDatatypeTable: boolean;
+  datatypesExport: IUsageConfiguration;
+  columns: IColumn[];
+  metadataConfig: IMetadataConfig;
+  includeVaries: boolean;
 }
 
 export interface IDatatypeExportConfiguration {
@@ -215,10 +258,16 @@ export interface IDatatypeExportConfiguration {
   columns: IColumn[];
   metadataConfig: IMetadataConfig;
   includeVaries: boolean;
+  deltaMode?: boolean;
+  deltaConfig?: any;
 }
 export interface IMetadataConfig {
+  datatypeName: boolean;
+  datatypeFlavor: boolean;
+  shortDescription: boolean;
   hl7version: boolean;
   publicationDate: boolean;
+  status: boolean;
   publicationVersion: boolean;
   scope: boolean;
   preDefinition: boolean;

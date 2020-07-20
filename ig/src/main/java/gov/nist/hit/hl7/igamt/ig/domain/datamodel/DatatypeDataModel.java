@@ -17,8 +17,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
@@ -32,12 +34,12 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
  * @author jungyubw
  *
  */
-public class DatatypeDataModel implements Serializable {
+public class DatatypeDataModel implements Serializable, Comparable {
 	private Datatype model;
 
 	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
 	private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
-	private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
+	private Map<String, InternalSingleCode> singleCodeMap = new HashMap<String, InternalSingleCode>();
 	private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
 	private Set<ComponentDataModel> componentDataModels = new HashSet<ComponentDataModel>();
 
@@ -57,11 +59,11 @@ public class DatatypeDataModel implements Serializable {
 		this.predicateMap = predicateMap;
 	}
 
-	public Map<String, ExternalSingleCode> getSingleCodeMap() {
+	public Map<String, InternalSingleCode> getSingleCodeMap() {
 		return singleCodeMap;
 	}
 
-	public void setSingleCodeMap(Map<String, ExternalSingleCode> singleCodeMap) {
+	public void setSingleCodeMap(Map<String, InternalSingleCode> singleCodeMap) {
 		this.singleCodeMap = singleCodeMap;
 	}
 
@@ -83,9 +85,9 @@ public class DatatypeDataModel implements Serializable {
 		this.model = d;
 
 		if (d.getBinding() != null){
-			if(d.getBinding().getConformanceStatementIds() != null){
-				for(String csId: d.getBinding().getConformanceStatementIds()){
-					conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatements.add(cs));
+			if(d.getBinding().getConformanceStatements() != null){
+				for(ConformanceStatement cs: d.getBinding().getConformanceStatements()){
+					this.conformanceStatements.add(cs);
 				}
 			}
 		}
@@ -132,15 +134,15 @@ public class DatatypeDataModel implements Serializable {
 				key = path + "." + seb.getLocationInfo().getPosition();
 			}
 
-			if(seb.getPredicateId() != null){
-				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> {
-				  cp.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
-				  this.predicateMap.put(key, cp);
-				});
+			if(seb.getPredicate() != null){
+				Predicate p = seb.getPredicate();
+				p.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
+				this.predicateMap.put(key, p);
+							
 			}
 
-			if(seb.getExternalSingleCode() != null){
-				this.singleCodeMap.put(key, seb.getExternalSingleCode());
+			if(seb.getInternalSingleCode() != null){
+				this.singleCodeMap.put(key, seb.getInternalSingleCode());
 			}
 
 			if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
@@ -190,4 +192,13 @@ public class DatatypeDataModel implements Serializable {
 		}
 		return null;
 	}
+
+	public int compareTo(Object u) {
+		// TODO Auto-generated method stub
+		if (getModel().getName() == null || ((DatatypeDataModel) u).getModel().getName() == null) {
+		      return 0;
+		    }
+		    return getModel().getName().compareTo(((DatatypeDataModel) u).getModel().getName());
+	}
+
 }

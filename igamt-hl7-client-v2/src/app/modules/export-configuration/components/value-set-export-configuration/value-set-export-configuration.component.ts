@@ -17,16 +17,32 @@ export class ValueSetExportConfigurationComponent implements OnInit {
   @Input()
   viewOnly: boolean;
 
+  @Input()
+  derived: boolean;
+
+  @Input()
+  origin = null;
+
+  @Input()
+  delta: boolean;
+
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
 
   constructor() { }
 
   ngOnInit() {
+    console.log(this.config);
   }
 
   triggerChange() {
     this.detectChange.emit(this.config);
+  }
+
+  applyChange(event: any) {
+    this.config.deltaMode = event.active;
+    this.config.deltaConfig = event.config;
+    this.triggerChange();
   }
 
   print() {

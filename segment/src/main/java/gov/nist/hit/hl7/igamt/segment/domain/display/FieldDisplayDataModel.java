@@ -16,8 +16,8 @@ import java.util.Set;
 import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
@@ -59,7 +59,7 @@ public class FieldDisplayDataModel extends Field {
   @DeltaField
   private DatatypeLabel datatypeLabel;
   @DeltaField
-  private Set<BindingDisplay> bindings;
+  private BindingDisplay binding;
 
   @DeltaField
   private ViewScope viewScope;
@@ -96,27 +96,19 @@ public class FieldDisplayDataModel extends Field {
     this.viewScope = viewScope;
   }
 
-  public Set<BindingDisplay> getBindings() {
-    return bindings;
+  public BindingDisplay getBinding() {
+    return binding;
   }
 
-  public void setBindings(Set<BindingDisplay> bindings) {
-    this.bindings = bindings;
+  public void setBinding(BindingDisplay binding) {
+    this.binding = binding;
   }
 
-  /**
-   * @param bindingDisplay
-   */
-  public void addBinding(BindingDisplay bindingDisplay) {
-    if (this.bindings == null)
-      this.bindings = new HashSet<BindingDisplay>();
-    this.bindings.add(bindingDisplay);
-  }
 
   @Override
   public String toString() {
     return "FieldDisplayDataModel [idPath=" + idPath + ", path=" + path + ", datatypeLabel="
-        + datatypeLabel + ", bindings=" + bindings + ", viewScope=" + viewScope + "]";
+        + datatypeLabel + ", bindings=" + binding + ", viewScope=" + viewScope + "]";
   }
 
   public Usage getTrueUsage() {

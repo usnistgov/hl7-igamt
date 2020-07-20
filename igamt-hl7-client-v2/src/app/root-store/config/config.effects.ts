@@ -1,16 +1,15 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {of} from 'rxjs';
-import {catchError, concatMap, map} from 'rxjs/operators';
-import {Message} from '../../modules/core/models/message/message.class';
-import {MessageService} from '../../modules/core/services/message.service';
-import {Hl7Config} from '../../modules/shared/models/config.class';
-import {ConfigService} from '../../modules/shared/services/config.service';
-import {RxjsStoreHelperService} from '../../modules/shared/services/rxjs-store-helper.service';
-import {TurnOnLoader} from '../loader/loader.actions';
-import {ConfigActions, ConfigActionTypes, LoadConfig, LoadConfigFailure, LoadConfigSuccess} from './config.actions';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import { catchError, concatMap, map } from 'rxjs/operators';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { Message } from '../../modules/dam-framework/models/messages/message.class';
+import { RxjsStoreHelperService } from '../../modules/dam-framework/services/rxjs-store-helper.service';
+import { Hl7Config } from '../../modules/shared/models/config.class';
+import { ConfigService } from '../../modules/shared/services/config.service';
+import { ConfigActions, ConfigActionTypes, LoadConfig, LoadConfigFailure, LoadConfigSuccess } from './config.actions';
 
 @Injectable()
 export class ConfigEffects {
@@ -18,7 +17,7 @@ export class ConfigEffects {
   loadConfig$ = this.actions$.pipe(
     ofType(ConfigActionTypes.LoadConfig),
     concatMap((action: LoadConfig) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: false,
       }));
       return this.configService.getConfig().pipe(
@@ -53,8 +52,12 @@ export class ConfigEffects {
     }),
   );
 
-  constructor(private actions$: Actions<ConfigActions>, private store: Store<any>, private configService: ConfigService,
-              private message: MessageService, private helper: RxjsStoreHelperService) {
+  constructor(
+    private actions$: Actions<ConfigActions>,
+    private store: Store<any>,
+    private configService: ConfigService,
+    private helper: RxjsStoreHelperService,
+  ) {
   }
 
 }

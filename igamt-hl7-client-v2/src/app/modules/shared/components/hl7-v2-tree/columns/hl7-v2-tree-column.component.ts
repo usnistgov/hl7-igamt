@@ -1,6 +1,7 @@
 import { EventEmitter, Input, Output } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Type } from '../../../constants/type.enum';
+import { IDocumentRef } from '../../../models/abstract-domain.interface';
 import { ChangeType, IChange, PropertyType } from '../../../models/save-change';
 
 export abstract class HL7v2TreeColumnComponent<T> {
@@ -10,7 +11,7 @@ export abstract class HL7v2TreeColumnComponent<T> {
   @Input()
   documentType: Type;
   @Input()
-  documentId: string;
+  documentRef: IDocumentRef;
   @Input()
   changeEvent: Observable<IChange>;
   @Input()

@@ -1,8 +1,8 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Action} from '@ngrx/store';
-import {Message} from '../../modules/core/models/message/message.class';
-import {IDocumentCreationWrapper} from '../../modules/ig/models/ig/document-creation.interface';
-import {MessageEventTreeNode} from '../../modules/ig/models/message-event/message-event.class';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Action } from '@ngrx/store';
+import { Message } from '../../modules/dam-framework/models/messages/message.class';
+import {IDocumentCreationWrapper} from '../../modules/document/models/document/document-creation.interface';
+import { MessageEventTreeNode } from '../../modules/document/models/message-event/message-event.class';
 
 export enum CreateIgActionTypes {
   LoadMessageEvents = '[Create IG Page] Load Message Events',

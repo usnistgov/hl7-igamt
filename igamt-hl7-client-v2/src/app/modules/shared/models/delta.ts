@@ -7,6 +7,8 @@ export interface IDelta {
   source: IDeltaInfo;
   target: IDeltaInfo;
   delta: IDeltaTreeNode[];
+  conformanceStatements?: Array<IDeltaNode<any>>;
+
 }
 
 export interface IDeltaTreeNode extends TreeNode {

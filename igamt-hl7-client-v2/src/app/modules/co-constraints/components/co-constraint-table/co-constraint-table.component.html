@@ -98,16 +98,18 @@
   <!-- REQUIREMENTS -->
   <ng-template #usage let-elm let-disabled="disabled" let-fieldId="fieldId" let-viewOnly="viewOnly" >
     <!-- {{usages | json}} -->
-    <p-dropdown
-      *ngIf="!viewOnly"
-      [options]="usages"
-      [style]="{'width': '60px', 'min-width': 'inherit'}"
-      [disabled]="disabled"
-      (ngModelChange)="usageChange($event, elm)"
-      [name]="fieldId + '-usage'"
-      required
-      [(ngModel)]="elm.usage" >
-    </p-dropdown>
+    <div style="width: 60px;">
+      <app-ngx-dropdown
+        *ngIf="!viewOnly"
+        [(ngModel)]="elm.usage"
+        [name]="fieldId + '-usage'"
+        [disabled]="disabled"
+        (ngModelChange)="usageChange($event, elm)"
+        [required]="true"
+        [values]="usages">
+      </app-ngx-dropdown>
+    </div>
+
     <strong *ngIf="viewOnly">{{elm.usage}}</strong>
   </ng-template>
 
@@ -156,9 +158,9 @@
         </td>
         <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: cc.requirement, disabled :  i === 0 && group, fieldId : fieldId + '-req-' + i, viewOnly : viewOnly }"></ng-container></td>
         <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: cc.requirement, fieldId : fieldId + '-req-' + i, viewOnly : viewOnly }"></ng-container></td>
-        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.selectors, fieldId : fieldId + '-if-' + i, viewOnly : viewOnly, excludeBindingStrength: true }"></ng-container>
-        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.constraints, fieldId : fieldId + '-then-' + i, viewOnly : viewOnly }"></ng-container>
-        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.narratives, fieldId : fieldId + '-nar-' + i, viewOnly : viewOnly }"></ng-container>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.selectors, fieldId : fieldId + '-if-' + i, viewOnly : viewOnly, excludeBindingStrength: true, column:'selectors'}"></ng-container>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.constraints, fieldId : fieldId + '-then-' + i, viewOnly : viewOnly, column:'constraints' }"></ng-container>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.narratives, fieldId : fieldId + '-nar-' + i, viewOnly : viewOnly, column:'narratives'}"></ng-container>
       </tr>
     </tbody>
   </ng-template>
@@ -176,7 +178,7 @@
         <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: group.requirement, fieldId : 'g-' + index  }"></ng-container></td>
         <td class="requirement-cell"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, fieldId : 'g-' + index  }"></ng-container></td>
         <td [attr.colspan]="numberOfColumns()" style="vertical-align: middle;">
-          <input class="form-control" type="text" [name]="'g-' + index + '-name'" [(ngModel)]="group.name" placeholder="Group Name">
+          <input class="form-control" type="text" [name]="'g-' + index + '-name'" [(ngModel)]="group.name" (ngModelChange)="emitChange()" placeholder="Group Name">
         </td>
       </tr>
     </tbody>
@@ -203,11 +205,11 @@
   </ng-template>
 
   <!-- CELLS -->
-  <ng-template #cellList let-excludeBindingStrength="excludeBindingStrength" let-headers="headers" let-cc let-fieldId="fieldId" let-viewOnly="viewOnly">
+  <ng-template #cellList let-excludeBindingStrength="excludeBindingStrength" let-headers="headers" let-cc let-fieldId="fieldId" let-viewOnly="viewOnly" let-column="column">
     <ng-container *ngIf="headers.length > 0; else emptyColumn">
       <ng-container *ngFor="let header of headers; let i = index">
         <td #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !header.cardinality, 'inside-border' : i !== (headers.length - 1) && !header.cardinality }" *ngIf="cc.cells[header.key]; else emptyColumn" >
-          <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor, excludeBindingStrength: excludeBindingStrength }"></ng-container>
+          <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor, excludeBindingStrength: excludeBindingStrength, column: column }"></ng-container>
         </td>
         <td *ngIf="header.cardinality" [ngClass]="{'column-border': i === (headers.length - 1), 'inside-border' :  i !== (headers.length - 1) }" style="vertical-align: middle; text-align: center;">
           <input *ngIf="!viewOnly" type="text" style="width: 100px;" [placeholder]="header.elementInfo.cardinality.max" [name]="fieldId + '-cardinality'" [(ngModel)]="cc.cells[header.key].cardinalityMax" (ngModelChange)="emitChange()" >
@@ -218,7 +220,7 @@
   </ng-template>
 
   <!-- CELLS -->
-  <ng-template #codeCell let-overrideBindingInfo="overrideBindingInfo" let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor">
+  <ng-template #codeCell let-overrideBindingInfo="overrideBindingInfo" let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor" let-column="column">
     <div style="width: 100%; display: flex; justify-content: space-between;" *ngIf="!viewOnly">
       <input
         type="text"
@@ -227,7 +229,7 @@
         (ngModelChange)="emitChange()"
         class="form-control"
         placeholder="Code"
-        required
+        [required]="column==='selectors'"
         style="width: 50%;">
       <input
         type="text"
@@ -235,7 +237,7 @@
         [(ngModel)]="cell.codeSystem"
         (ngModelChange)="emitChange()"
         class="form-control"
-        required
+        [required]="column==='selectors'"
         placeholder="Code System"
         style="width: 50%;">
     </div>
@@ -245,17 +247,15 @@
       <strong> Code System : </strong>
       <span> {{ cell.codeSystem }} </span>
     </div>
-    <p-dropdown
+    <app-ngx-dropdown
       *ngIf="!viewOnly"
       [(ngModel)]="cell.locations"
-      (ngModelChange)="emitChange()"
-      [appendTo]="anchor"
-      [autoDisplayFirst]="false"
-      [options]="overrideBindingInfo ? overrideBindingInfo.allowedBindingLocations : header?.elementInfo?.bindingInfo?.allowedBindingLocations"
+      placeholder="Binding Locations"
       [name]="fieldId + '-location'"
-      [style]="{ width : '100%', 'min-width': 'inherit'}"
-      defaultLabel="Choose locations">
-    </p-dropdown>
+      (ngModelChange)="emitChange()"
+      [required]="column==='selectors'"
+      [values]="overrideBindingInfo ? overrideBindingInfo.allowedBindingLocations : header?.elementInfo?.bindingInfo?.allowedBindingLocations">
+    </app-ngx-dropdown>
     <div *ngIf="viewOnly && cell.locations">
       <strong> Locations : </strong>
       <span> {{ cell.locations | json }} </span>
@@ -273,20 +273,17 @@
           <strong>Value</strong>
         </td>
         <td>
-          <div #val ></div>
-          <p-dropdown
-            *ngIf="!viewOnly"
-            [autoDisplayFirst]="false"
-            [options]="datatypeOptions"
-            [style]="{'width': '100%', 'min-width': 'inherit'}"
-            placeholder="Datatype"
-            [appendTo]="val"
-            [name]="fieldId + '-dtValue'"
-            [filter]="true"
-            required
-            (ngModelChange)="datatypeValueChange($event, cell, row)"
-            [(ngModel)]="cell.value" >
-          </p-dropdown>
+          <app-ngx-dropdown
+          *ngIf="!viewOnly"
+          [(ngModel)]="cell.value"
+          placeholder="Datatype"
+          [name]="fieldId + '-dtValue'"
+          (ngModelChange)="datatypeValueChange($event, cell, row)"
+          [filter]="true"
+          [required]="true"
+          [filterFn]="filterDatatypeValue"
+          [values]="datatypeOptions">
+          </app-ngx-dropdown>
           <span *ngIf="viewOnly"> {{ cell.value }} </span>
         </td>
       </tr>
@@ -302,6 +299,7 @@
             [name]="fieldId + '-dtFlavor'"
             [filter]="true"
             [filterBy]="cell.value"
+            [required]="true"
             [appendTo]="fl"
             [(id)]="cell.datatypeId"
             (valueChange)="datatypeChange($event, row)"
@@ -352,8 +350,8 @@
     </table>
   </ng-template>
 
-  <ng-template #valueCell let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" >
-    <input type="text" [(ngModel)]="cell.value" class="form-control" [name]="fieldId + '-value'" placeholder="Constant Value" (ngModelChange)="emitChange()" *ngIf="!viewOnly">
+  <ng-template #valueCell let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-column="column" >
+    <input type="text" [(ngModel)]="cell.value" class="form-control" [name]="fieldId + '-value'" placeholder="Constant Value" (ngModelChange)="emitChange()" *ngIf="!viewOnly" [required]="column==='selectors'">
     <div  *ngIf="viewOnly" style="text-align: center; width: 100%;">
       <span>{{cell.value}}</span>
     </div>

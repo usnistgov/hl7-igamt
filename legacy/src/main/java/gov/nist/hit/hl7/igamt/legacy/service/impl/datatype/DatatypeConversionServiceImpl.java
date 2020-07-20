@@ -187,12 +187,13 @@ public class DatatypeConversionServiceImpl implements ConversionService {
   protected DateTimeComponentDefinition convertDateTimeComponentDefinition(
       DTMComponentDefinition dtmComponentDefinition) {
     DTMPredicate dtmPredicate = dtmComponentDefinition.getDtmPredicate();
-    DateTimeComponentDefinition dateTimeComponentDefinition =
-        new DateTimeComponentDefinition(dtmComponentDefinition.getPosition().intValue(),
-            dtmComponentDefinition.getName(), dtmComponentDefinition.getDescription(),
-            ConversionUtil.convertUsage(dtmComponentDefinition.getUsage()),
-            convertDateTimePredicate(dtmPredicate));
-    return dateTimeComponentDefinition;
+//    DateTimeComponentDefinition dateTimeComponentDefinition =
+//        new DateTimeComponentDefinition(dtmComponentDefinition.getPosition().intValue(),
+//            dtmComponentDefinition.getName(), dtmComponentDefinition.getDescription(),
+//            ConversionUtil.convertUsage(dtmComponentDefinition.getUsage()),
+//            convertDateTimePredicate(dtmPredicate));
+//    return dateTimeComponentDefinition;
+        return null;
   }
 
   protected DateTimePredicate convertDateTimePredicate(DTMPredicate dtmPredicate) {

@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
@@ -7,6 +8,7 @@ import { Observable } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import {
   CoConstraintGroupBindingType,
   ICoConstraintBindingSegment,
@@ -33,6 +35,10 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   segment$: Observable<ISegment>;
   binding: ICoConstraintBindingSegment;
 
+  formMap: {
+    [id: number]: NgForm;
+  } = {};
+
   @Input()
   datatypes: IDisplayElement[];
   @Input()
@@ -44,9 +50,11 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   @Input()
   context: IStructureElementRef;
   @Input()
-  igId: string;
+  documentRef: IDocumentRef;
   @Output()
   valueChange: EventEmitter<ICoConstraintBindingSegment>;
+  @Output()
+  formValid: EventEmitter<boolean>;
   @ViewChildren(CoConstraintTableComponent)
   tableComponents: QueryList<CoConstraintTableComponent>;
   @Output()
@@ -70,6 +78,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     protected ccService: CoConstraintEntityService) {
     this.valueChange = new EventEmitter<ICoConstraintBindingSegment>();
     this.delete = new EventEmitter<boolean>();
+    this.formValid = new EventEmitter<boolean>();
   }
 
   exportAsExcel(table: ICoConstraintTable) {
@@ -104,7 +113,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
       const dialogRef = this.dialog.open(CoConstraintGroupSelectorComponent, {
         data: {
           segment: display,
-          igId: this.igId,
+          documentRef: this.documentRef,
         },
       });
 
@@ -176,6 +185,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
 
   tableChange(table: ICoConstraintTable, id: number) {
     if (id >= 0 && this.binding.tables.length > id) {
+      this.formValid.emit(this.isFormValid());
       this.valueChange.emit({
         ...this.binding,
         tables: [
@@ -194,8 +204,21 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     }
   }
 
+  formChange(form: NgForm, id: number) {
+    this.formMap[id] = form;
+  }
+
   triggerChange() {
     this.valueChange.emit(this.binding);
+  }
+
+  isFormValid(): boolean {
+    for (const key of Object.keys(this.formMap)) {
+      if (!this.formMap[key].valid) {
+        return false;
+      }
+    }
+    return true;
   }
 
   ngOnInit() {

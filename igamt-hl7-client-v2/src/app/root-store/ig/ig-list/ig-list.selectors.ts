@@ -1,7 +1,7 @@
 import {createSelector} from '@ngrx/store';
 import {ISortOptions} from 'src/app/modules/shared/models/sort.class';
 import {IgListLoad} from 'src/app/root-store/ig/ig-list/ig-list.actions';
-import {IgListItem} from './../../../modules/ig/models/ig/ig-list-item.class';
+import {IgListItem} from '../../../modules/document/models/document/ig-list-item.class';
 import {selectIgList} from './../ig.reducer';
 import {igListItemAdapter, IState} from './ig-list.reducer';
 

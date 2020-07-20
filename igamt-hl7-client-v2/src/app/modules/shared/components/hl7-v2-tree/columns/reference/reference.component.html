@@ -37,5 +37,5 @@
   </div>
 </ng-container>
 <ng-template #display let-selected >
-  <app-display-ref [documentId]="documentId" [element]="selected" [hideDescription]="true"></app-display-ref>
+  <app-display-ref [documentId]="documentRef.documentId" [documentType]="documentRef.type" [element]="selected" [hideDescription]="true"></app-display-ref>
 </ng-template>

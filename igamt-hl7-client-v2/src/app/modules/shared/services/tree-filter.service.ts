@@ -27,6 +27,7 @@ export enum RestrictionType {
   USAGE = 'USAGE',
   TYPE = 'TYPE',
   PATH = 'PATH',
+  PARENTS = 'PARENTS',
 }
 
 export interface IPathValue {
@@ -81,15 +82,14 @@ export class TreeFilterService {
     const combined = restrictions.filter((elm) => !elm.combine || elm.combine === RestrictionCombinator.ACCUMULATE);
     const enforced = restrictions.filter((elm) => elm.combine === RestrictionCombinator.ENFORCE);
 
-    const evaluate = (list: Array<ITreeRestriction<any>>): boolean => {
-      let keep = false;
+    const evaluate = (list: Array<ITreeRestriction<any>>, init: boolean, op: (a: boolean, b: boolean) => boolean): boolean => {
+      let keep = init;
       for (const restriction of list) {
-        keep = keep || this.allow(restriction.allow, this.pass(node, restriction));
+        keep = op(keep, this.allow(this.pass(node, restriction), restriction.allow));
       }
       return keep;
     };
-
-    return evaluate(combined) && (enforced.length === 0 || evaluate(enforced));
+    return (combined.length === 0 || evaluate(combined, false, (a, b) => a || b)) && (enforced.length === 0 || evaluate(enforced, true, (a, b) => a && b));
   }
 
   pathIsProhibited(path: string, list: IPathValue[]): boolean {
@@ -114,6 +114,8 @@ export class TreeFilterService {
         return this.type(node, restriction.value);
       case RestrictionType.PATH:
         return this.path(node, restriction.value);
+      case RestrictionType.PARENTS:
+        return this.parents(node, restriction.value);
     }
   }
 
@@ -131,6 +133,10 @@ export class TreeFilterService {
 
   path(node: IHL7v2TreeNode, payload: IPathValue[]): boolean {
     return this.pathIsProhibited(node.data.pathId, payload);
+  }
+
+  parents(node: IHL7v2TreeNode, payload: string): boolean {
+    return (payload.startsWith(node.data.pathId) && payload !== node.data.pathId) || (node.data.type === Type.CONFORMANCEPROFILE || node.data.type === Type.DATATYPE || node.data.type === Type.SEGMENT);
   }
 
   type(node: IHL7v2TreeNode, types: Type[]): boolean {

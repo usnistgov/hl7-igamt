@@ -48,6 +48,7 @@ public class DataElementHeader extends CoConstraintHeader {
         clone.setElementInfo(elementInfo.clone());
         clone.setName(name);
         clone.setType(type);
+        clone.setColumnType(columnType);
         return clone;
     }
 }

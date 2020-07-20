@@ -1,8 +1,23 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-
-import { EMPTY, of } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import { DeltaService } from 'src/app/modules/shared/services/delta.service';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
+import { OpenEditorService } from '../../modules/core/services/open-editor.service';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { SetValue } from '../../modules/dam-framework/store/data/dam.actions';
+import { Type } from '../../modules/shared/constants/type.enum';
+import { IUsages } from '../../modules/shared/models/cross-reference';
+import { IValueSet } from '../../modules/shared/models/value-set.interface';
+import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
+import { ValueSetService } from '../../modules/value-set/service/value-set.service';
+import { OpenValueSetDeltaEditor } from './value-set-edit.actions';
 import {
   LoadValueSet,
   LoadValueSetFailure,
@@ -10,27 +25,11 @@ import {
   OpenValueSetCrossRefEditor,
   OpenValueSetMetadataEditor,
   OpenValueSetPostDefEditor,
-  OpenValueSetPreDefEditor, OpenValueSetStructureEditor,
+  OpenValueSetPreDefEditor,
+  OpenValueSetStructureEditor,
   ValueSetEditActions,
   ValueSetEditActionTypes,
 } from './value-set-edit.actions';
-
-import { HttpErrorResponse } from '@angular/common/http';
-import { Store } from '@ngrx/store';
-import { MessageService } from '../../modules/core/services/message.service';
-import { OpenEditorService } from '../../modules/core/services/open-editor.service';
-import { IValueSet } from '../../modules/shared/models/value-set.interface';
-import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
-import { ValueSetService } from '../../modules/value-set/service/value-set.service';
-import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
-
-import { Type } from '../../modules/shared/constants/type.enum';
-import { IUsages } from '../../modules/shared/models/cross-reference';
-import { LoadSelectedResource } from '../ig/ig-edit/ig-edit.actions';
-import * as fromIgEdit from '../ig/ig-edit/ig-edit.index';
-import { selectedResourcePreDef } from '../ig/ig-edit/ig-edit.index';
-import { selectedResourceMetadata } from '../ig/ig-edit/ig-edit.index';
-import { selectedResourcePostDef } from '../ig/ig-edit/ig-edit.index';
 
 @Injectable()
 export class ValueSetEditEffects {
@@ -38,23 +37,23 @@ export class ValueSetEditEffects {
   loadValueSetEdits$ = this.actions$.pipe(
     ofType(ValueSetEditActionTypes.LoadValueSet),
     concatMap((action: LoadValueSet) => {
-      this.store.dispatch(new TurnOnLoader({
+      this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: true,
       }));
-      return this.store.select(fromIgEdit.selectIgId).pipe(
+      return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
         take(1),
-        mergeMap((x: string) => {
+        mergeMap((x) => {
           return this.valueSetService.getById(x, action.id).pipe(
             take(1),
             flatMap((valueSet: IValueSet) => {
               return [
-                new TurnOffLoader(),
+                new fromDAM.TurnOffLoader(),
                 new LoadValueSetSuccess(valueSet),
               ];
             }),
             catchError((error: HttpErrorResponse) => {
               return of(
-                new TurnOffLoader(),
+                new fromDAM.TurnOffLoader(),
                 new LoadValueSetFailure(error),
               );
             }),
@@ -66,8 +65,12 @@ export class ValueSetEditEffects {
   @Effect()
   loadValueSetSuccess = this.actions$.pipe(
     ofType(ValueSetEditActionTypes.LoadValueSetSuccess),
-    map((action: LoadValueSetSuccess) => {
-      return new LoadSelectedResource(action.valueSet);
+    flatMap((action: LoadValueSetSuccess) => {
+      return [
+        new SetValue({
+          selected: action.valueSet,
+        }),
+      ];
     }),
   );
 
@@ -83,25 +86,25 @@ export class ValueSetEditEffects {
   @Effect()
   openValueSetPreDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenValueSetPreDefEditor>(
     ValueSetEditActionTypes.OpenValueSetPreDefEditor,
-    fromIgEdit.selectValueSetById,
-    this.store.select(selectedResourcePreDef),
+    fromIgamtDisplaySelectors.selectValueSetById,
+    this.store.select(fromIgamtSelectedSelectors.selectedResourcePreDef),
     this.valueSetNotFound,
   );
 
   @Effect()
   openValueSetPostDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenValueSetPostDefEditor>(
     ValueSetEditActionTypes.OpenValueSetPostDefEditor,
-    fromIgEdit.selectValueSetById,
-    this.store.select(selectedResourcePostDef),
+    fromIgamtDisplaySelectors.selectValueSetById,
+    this.store.select(fromIgamtSelectedSelectors.selectedResourcePostDef),
     this.valueSetNotFound,
   );
   @Effect()
   openValueSetCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenValueSetCrossRefEditor>(
     ValueSetEditActionTypes.OpenValueSetCrossRefEditor,
-    fromIgEdit.selectValueSetById,
+    fromIgamtDisplaySelectors.selectValueSetById,
     Type.IGDOCUMENT,
     Type.VALUESET,
-    fromIgEdit.selectIgId,
+    fromIgamtSelectors.selectLoadedDocumentInfo,
     this.crossReferenceService.findUsagesDisplay,
     this.valueSetNotFound,
   );
@@ -109,24 +112,35 @@ export class ValueSetEditEffects {
   @Effect()
   openValueSetMetadataEditor$ = this.editorHelper.openMetadataEditor<OpenValueSetMetadataEditor>(
     ValueSetEditActionTypes.OpenValueSetMetadataEditor,
-    fromIgEdit.selectValueSetById,
-    this.store.select(selectedResourceMetadata),
+    fromIgamtDisplaySelectors.selectValueSetById,
+    this.store.select(fromIgamtSelectedSelectors.selectedResourceMetadata),
     this.valueSetNotFound,
   );
   @Effect()
   openValueSetStructureEditor$ = this.editorHelper.openStructureEditor<IValueSet, OpenValueSetStructureEditor>(
     ValueSetEditActionTypes.OpenValueSetStructureEditor,
     Type.VALUESET,
-    fromIgEdit.selectValueSetById,
-    this.store.select(fromIgEdit.selectedValueSet),
+    fromIgamtDisplaySelectors.selectValueSetById,
+    this.store.select(fromIgamtSelectedSelectors.selectedValueSet),
     this.valueSetNotFound,
   );
 
-  constructor(private actions$: Actions<ValueSetEditActions>,
-              private valueSetService: ValueSetService,
-              private store: Store<any>,
-              private message: MessageService,
-              private editorHelper: OpenEditorService,
-              private crossReferenceService: CrossReferencesService,
+  @Effect()
+  openDeltaEditor$ = this.editorHelper.openDeltaEditor<OpenValueSetDeltaEditor>(
+    ValueSetEditActionTypes.OpenValueSetDeltaEditor,
+    Type.VALUESET,
+    fromIgamtDisplaySelectors.selectValueSetById,
+    this.deltaService.getDeltaFromOrigin,
+    this.valueSetNotFound,
+  );
+
+  constructor(
+    private actions$: Actions<ValueSetEditActions>,
+    private valueSetService: ValueSetService,
+    private store: Store<any>,
+    private message: MessageService,
+    private editorHelper: OpenEditorService,
+    private crossReferenceService: CrossReferencesService,
+    private deltaService: DeltaService,
   ) { }
 }

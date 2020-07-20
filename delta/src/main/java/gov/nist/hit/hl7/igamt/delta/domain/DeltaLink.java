@@ -12,7 +12,7 @@
 package gov.nist.hit.hl7.igamt.delta.domain;
 
 import gov.nist.diff.domain.DeltaAction;
-import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 
 /**
  * @author Abdelghani El Ouakili

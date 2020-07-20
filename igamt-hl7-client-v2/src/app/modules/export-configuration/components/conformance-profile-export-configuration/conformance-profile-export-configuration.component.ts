@@ -18,7 +18,16 @@ export class ConformanceProfileExportConfigurationComponent implements OnInit {
   viewOnly: boolean;
 
   @Input()
+  derived: boolean;
+
+  @Input()
   displayColumns: boolean;
+
+  @Input()
+  origin = null;
+
+  @Input()
+  delta: boolean;
 
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
@@ -32,6 +41,7 @@ export class ConformanceProfileExportConfigurationComponent implements OnInit {
     this.detectChange.emit(this.config);
   }
   applyChange(event: any) {
+    console.log(event);
     this.config.deltaMode = event.active;
     this.config.deltaConfig = event.config;
     this.triggerChange();

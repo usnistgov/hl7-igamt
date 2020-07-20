@@ -175,6 +175,11 @@
         "label": "Value Sets",
         "type": "VALUESETREGISTRY",
         "position": 7
+      },
+      {
+        "label": "Conformance Statements",
+        "type": "CONFORMANCESTATEMENTSUMMARY",
+        "position": 8
       }
     ]
   }

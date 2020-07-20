@@ -14,7 +14,9 @@ package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 
@@ -27,7 +29,7 @@ public class FieldDataModel implements Serializable{
 
   private DatatypeBindingDataModel datatype;
   private Predicate predicate;
-  private ExternalSingleCode singleCode;
+  private InternalSingleCode singleCode;
   private Set<ValuesetBindingDataModel> valuesets = new HashSet<ValuesetBindingDataModel>();
 
   public FieldDataModel() {
@@ -35,7 +37,7 @@ public class FieldDataModel implements Serializable{
   }
 
   public FieldDataModel(Field f, Predicate predicate,
-      ExternalSingleCode singleCode, Set<ValuesetBindingDataModel> valuesets,
+		  InternalSingleCode singleCode, Set<ValuesetBindingDataModel> valuesets,
       DatatypeBindingDataModel datatype) {
     super();
     this.model = f;
@@ -69,11 +71,11 @@ public class FieldDataModel implements Serializable{
     this.predicate = predicate;
   }
   
-  public ExternalSingleCode getSingleCode() {
+  public InternalSingleCode getSingleCode() {
     return singleCode;
   }
 
-  public void setSingleCode(ExternalSingleCode singleCode) {
+  public void setSingleCode(InternalSingleCode singleCode) {
     this.singleCode = singleCode;
   }
 

@@ -4,7 +4,7 @@
  -->   
      <xsl:template name="ValueSetBindingList">
  
-         <xsl:if test="count(Binding/StructureElementBindings/StructureElementBinding/ValuesetBinding) &gt; 0">
+         <xsl:if test="count(Binding/StructureElementBindings/StructureElementBinding//ValuesetBinding) &gt; 0">
             <xsl:element name="br"/>
             <xsl:element name="span">
                 <xsl:element name="b">
@@ -19,6 +19,7 @@
                     <xsl:attribute name="width">
                         <xsl:text>16%</xsl:text>
                     </xsl:attribute>
+                    
                 </xsl:element>
                 <xsl:element name="col">
                     <xsl:attribute name="width">
@@ -82,14 +83,14 @@
                     <!-- <xsl:for-each select="Binding/StructureElementBindings/StructureElementBinding/ValuesetBinding"> -->
                                         <xsl:for-each select=".//ValuesetBinding">
                     
-                        <xsl:sort lang="langage-code" data-type="number" select="../@Position1"  order="ascending" />
+                         <xsl:sort lang="langage-code" data-type="number" select="../@Position1"  order="ascending" />
                     
                         <xsl:element name="tr">
                             <xsl:attribute name="class">
                                 <xsl:text>contentTr</xsl:text>
                             </xsl:attribute>
                             <xsl:element name="td">
-                                <xsl:value-of select="@bindingLocation"/>
+                                <xsl:value-of select="@Position2"/>
                             </xsl:element>
                             <xsl:element name="td">
                                 <xsl:value-of select="@name"/>

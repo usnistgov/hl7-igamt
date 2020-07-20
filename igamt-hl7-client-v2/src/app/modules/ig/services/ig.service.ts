@@ -1,21 +1,30 @@
 import { LocationStrategy } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
+import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { Message } from '../../dam-framework/models/messages/message.class';
+import {IDocumentCreationWrapper} from '../../document/models/document/document-creation.interface';
+import {MessageEventTreeNode} from '../../document/models/message-event/message-event.class';
+import {
+  IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse,
+  ICreateCoConstraintGroup,
+  ICreateCoConstraintGroupResponse,
+} from '../../document/models/toc/toc-operation.class';
+import { IgTOCNodeHelper } from '../../document/services/ig-toc-node-helper.service';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Type } from '../../shared/constants/type.enum';
 import { IConnectingInfo } from '../../shared/models/config.class';
 import { IContent } from '../../shared/models/content.interface';
+import { IConformanceStatement } from '../../shared/models/cs.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
+import { IRegistry } from '../../shared/models/registry.interface';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
-import { IDocumentCreationWrapper } from '../models/ig/document-creation.interface';
-import { IGDisplayInfo } from '../models/ig/ig-document.class';
+import { IDocumentDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
-import { MessageEventTreeNode } from '../models/message-event/message-event.class';
-import { IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse, ICreateCoConstraintGroup, ICreateCoConstraintGroupResponse } from '../models/toc/toc-operation.class';
-import { Message } from './../../core/models/message/message.class';
 import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 
 @Injectable({
@@ -28,6 +37,112 @@ export class IgService {
   readonly CONFIGURATION = '/configuration/';
 
   constructor(private http: HttpClient, private location: LocationStrategy) {
+  }
+
+  getRegistryAndCollectionByType(type: Type): { registry: string, collection: string } {
+    let registry: string;
+    let collection: string;
+
+    if (type === Type.VALUESET) {
+      registry = 'valueSetRegistry';
+      collection = 'valueSets';
+    } else if (type === Type.CONFORMANCEPROFILE) {
+      registry = 'conformanceProfileRegistry';
+      collection = 'messages';
+    } else if (type === Type.DATATYPE) {
+      registry = 'datatypeRegistry';
+      collection = 'datatypes';
+    } else if (type === Type.SEGMENT) {
+      registry = 'segmentRegistry';
+      collection = 'segments';
+    } else if (type === Type.COCONSTRAINTGROUP) {
+      registry = 'coConstraintGroupRegistry';
+      collection = 'coConstraintGroups';
+    }
+
+    return { registry, collection };
+  }
+
+  loadOrInsertRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, load: boolean, values?: string[]): fromDam.InsertResourcesInRepostory | fromDam.LoadResourcesInRepostory {
+    const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'sections'];
+    const collections = (values ? values : _default).map((key) => {
+      return {
+        key,
+        values: key === 'sections' ? IgTOCNodeHelper.getIDisplayFromSections(igInfo.ig.content, '') : igInfo[key],
+      };
+    });
+
+    return !load ? new fromDam.InsertResourcesInRepostory({
+      collections,
+    }) : new fromDam.LoadResourcesInRepostory({
+      collections,
+    });
+  }
+
+  loadRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, values?: string[]): Action {
+    return this.loadOrInsertRepositoryFromIgDisplayInfo(igInfo, true, values);
+  }
+
+  insertRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, values?: string[]): Action {
+    return this.loadOrInsertRepositoryFromIgDisplayInfo(igInfo, false, values);
+  }
+
+  insertRepositoryCopyResource(registryList: IRegistry, display: IDisplayElement, ig: IgDocument): Action[] {
+    const { registry, collection } = this.getRegistryAndCollectionByType(display.type);
+    return [
+      ...(registry ? [new fromDam.LoadPayloadData({
+        ...ig,
+        [registry]: registryList,
+      })] : []),
+      ...(collection ? [new fromDam.InsertResourcesInRepostory({
+        collections: [{
+          key: collection,
+          values: [display],
+        }],
+      })] : []),
+    ];
+  }
+
+  deleteOneFromRepository(display: IDisplayElement, ig: IgDocument): Action[] {
+    const { registry, collection } = this.getRegistryAndCollectionByType(display.type);
+    return [
+      ...(registry ? [new fromDam.LoadPayloadData({
+        ...ig,
+        [registry]: this.removeById(ig[registry], display.id),
+      })] : []),
+      ...(collection ? [new fromDam.DeleteResourcesFromRepostory({
+        collections: [{
+          key: collection,
+          values: [display.id],
+        }],
+      })] : []),
+    ];
+  }
+
+  updateSections(sections: IDisplayElement[], ig: IgDocument): Action[] {
+    const content: IContent[] = IgTOCNodeHelper.updateSections(sections);
+    const sectionList: IDisplayElement[] = IgTOCNodeHelper.getIDisplayFromSections(content, '');
+    return [
+      new fromDam.LoadPayloadData({
+        ...ig,
+        content,
+      }),
+      new fromDam.InsertResourcesInRepostory({
+        collections: [{
+          key: 'sections',
+          values: sectionList,
+        }],
+      }),
+      new fromDam.SetValue({
+        tableOfContentEdit: {
+          changed: true,
+        },
+      }),
+    ];
+  }
+
+  removeById(reg: IRegistry, id: string): IRegistry {
+    return { ...reg, children: reg.children.filter((elm) => elm.id !== id) };
   }
 
   igToIDisplayElement(ig: IgDocument): IDisplayElement {
@@ -52,6 +167,10 @@ export class IgService {
     return this.http.post<Message<string>>(this.IG_END_POINT + id + '/publish', {}).pipe();
   }
 
+  updateSharedUsers(sharedUsers: any, id: string): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/updateSharedUser', sharedUsers).pipe();
+  }
+
   getMessagesByVersion(hl7Version: string): Observable<Message<MessageEventTreeNode[]>> {
     return this.http.get<Message<MessageEventTreeNode[]>>(this.IG_END_POINT + 'findMessageEvents/' + hl7Version);
   }
@@ -60,12 +179,12 @@ export class IgService {
     return this.http.post<Message<string>>(this.IG_END_POINT + 'create/', wrapper);
   }
 
-  getIgInfo(id: string): Observable<IGDisplayInfo> {
-    return this.http.get<IGDisplayInfo>(this.IG_END_POINT + id + '/state');
+  getIgInfo(id: string): Observable<IDocumentDisplayInfo<IgDocument>> {
+    return this.http.get<IDocumentDisplayInfo<IgDocument>>(this.IG_END_POINT + id + '/state');
   }
 
-  addResource(wrapper: IAddNodes): Observable<Message<IGDisplayInfo>> {
-    return this.http.post<Message<IGDisplayInfo>>(this.buildAddingUrl(wrapper), wrapper);
+  addResource(wrapper: IAddNodes): Observable<Message<IDocumentDisplayInfo<IgDocument>>> {
+    return this.http.post<Message<IDocumentDisplayInfo<IgDocument>>>(this.buildAddingUrl(wrapper), wrapper);
   }
 
   createCoConstraintGroup(request: ICreateCoConstraintGroup): Observable<Message<ICreateCoConstraintGroupResponse>> {
@@ -230,8 +349,12 @@ export class IgService {
     return this.location.prepareExternalUrl('api/export/igdocuments/' + igId + '/export/' + type).replace('#', '');
   }
 
-  getExportFirstDecision(igId: string, configId: string): Observable<IExportConfigurationGlobal> {
-    return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + igId + this.CONFIGURATION + configId + '/getFilteredDocument');
+  getExportFirstDecision = (igId: string, configId: string): Observable<IExportConfigurationGlobal> => {
+    return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + igId + this.CONFIGURATION + configId + '/getFilteredDocument');
+  }
+
+  getLastUserConfiguration = (igId: string): Observable<IExportConfigurationGlobal> => {
+    return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + igId +   '/getLastUserConfiguration');
   }
 
   importFromFile(documentId, resourceType: Type, targetType: Type, file: any) {
@@ -242,9 +365,13 @@ export class IgService {
 
   getDisplay(id: string, delta: boolean) {
     if (delta) {
-      return this.http.get<IGDisplayInfo>('api/delta/display/' + id);
+      return this.http.get<IDocumentDisplayInfo<IgDocument>>('api/delta/display/' + id);
     } else {
       return this.getIgInfo(id);
     }
+  }
+
+  getConformanceStatementSummary(id: string): Observable<IConformanceStatement[]> {
+    return this.http.get<IConformanceStatement[]>('api/igdocuments/' + id + '/conformancestatement/summary');
   }
 }

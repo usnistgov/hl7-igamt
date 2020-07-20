@@ -327,6 +327,10 @@ body .ui-panel .ui-panel-titlebar .ui-panel-titlebar-icon {
   color: black;
 }
 
+.disabled-tree-item {
+  color: lightgray;
+}
+
 .configuration-dialog-container .mat-dialog-container {
   padding: 0px !important;
 }
@@ -395,4 +399,20 @@ body .ui-dropdown-panel {
 
 .doc-accordion  .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a .ui-accordion-toggle-icon {
   color: black !important;
+}
+
+.delta-unchanged {
+  background-color: #f4f4f4;
+}
+
+.delta-added {
+  background-color: lightgreen !important;
+}
+
+.delta-deleted {
+  background-color: lightpink !important;
+}
+
+.delta-updated {
+  padding: 0 !important;
 }

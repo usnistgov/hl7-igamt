@@ -1,5 +1,5 @@
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
-import {UserManagementHeaderComponent} from '../user-management-header/user-management-header.component';
+import {UserManagementHeaderComponent} from '../../../dam-framework/components/authentication/user-management-header/user-management-header.component';
 import {HeaderComponent} from './header.component';
 
 describe('HeaderComponent', () => {

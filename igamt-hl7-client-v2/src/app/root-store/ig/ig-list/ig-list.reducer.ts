@@ -1,6 +1,6 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { IgListItem } from 'src/app/modules/ig/models/ig/ig-list-item.class';
 import { ISortOptions } from 'src/app/modules/shared/models/sort.class';
+import {IgListItem} from '../../../modules/document/models/document/ig-list-item.class';
 import { IgListActions, IgListActionTypes, IgListLoad } from './ig-list.actions';
 
 export interface IState extends EntityState<IgListItem> {
@@ -31,9 +31,10 @@ export function reducer(state = initialState, action: IgListActions): IState {
         },
       };
     case IgListActionTypes.UpdateIgList:
-      return igListItemAdapter.upsertMany(action.payload, state);
-
-    case IgListActionTypes.DeleteIgListItemSuccess:
+    {
+      return igListItemAdapter.addAll(action.payload, state);
+    }
+      case IgListActionTypes.DeleteIgListItemSuccess:
       return igListItemAdapter.removeOne(action.id, state);
 
     case IgListActionTypes.SelectIgListViewType:

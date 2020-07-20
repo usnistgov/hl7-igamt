@@ -69,7 +69,7 @@ public class ConversionUtil {
       } else if (usage.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.W)) {
         return Usage.W;
       } else if (usage.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.CE)) {
-        return Usage.CE;
+        return Usage.C;
       }
     }
 

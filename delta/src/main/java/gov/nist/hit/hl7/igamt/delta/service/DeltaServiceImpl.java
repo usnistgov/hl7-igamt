@@ -1,11 +1,11 @@
 package gov.nist.hit.hl7.igamt.delta.service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
 import gov.nist.hit.hl7.igamt.delta.exception.IGDeltaException;
-import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
@@ -20,7 +20,9 @@ import gov.nist.diff.service.DeltaProcessor;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
@@ -30,6 +32,7 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -64,18 +67,25 @@ public class DeltaServiceImpl implements DeltaService {
 
     if(type.equals(Type.DATATYPE)) {
 
+    
       Datatype target = this.datatypeService.findById(entityId);
       Datatype source = this.datatypeService.findById(target.getOrigin());
-
-      DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
-      DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
-
       DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), source.getExt(), source.getDescription(), source.getId());
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), target.getExt(), target.getDescription(), target.getId());
+      
+      DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
+      DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
-      List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+      if (target instanceof DateTimeDatatype && source instanceof DateTimeDatatype) {
+        
+        List<StructureDelta> structure = entityDeltaService.compareDateAndTimeDatatypes((DateTimeDatatype) source,(DateTimeDatatype) target);
+        return new Delta(sourceInfo, targetInfo, structure,conformanceStatements);
+      } else {
+        List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+        return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
+      } 
 
-      return new Delta(sourceInfo, targetInfo, structure);
 
     } else if(type.equals(Type.SEGMENT)) {
 
@@ -89,8 +99,9 @@ public class DeltaServiceImpl implements DeltaService {
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), target.getExt(), target.getDescription(), target.getId());
 
       List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
-      return new Delta(sourceInfo, targetInfo, structure);
+      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
 
     } else if(type.equals(Type.CONFORMANCEPROFILE)) {
 
@@ -105,9 +116,21 @@ public class DeltaServiceImpl implements DeltaService {
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), null, target.getDescription(), target.getId());
 
       List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
-      return new Delta(sourceInfo, targetInfo, structure);
+      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
 
+    } else if(type.equals(Type.VALUESET)) {
+
+      Valueset target = this.valuesetService.findById(entityId);
+      Valueset source = this.valuesetService.findById(target.getOrigin());
+
+      DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), null, source.getDescription(), source.getId());
+      DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), null, target.getDescription(), target.getId());
+
+      ValuesetDelta valuesetDelta = entityDeltaService.valueset(source, target);
+
+      return new Delta(sourceInfo, targetInfo, valuesetDelta);
     }
 
     return null;
@@ -250,9 +273,7 @@ public class DeltaServiceImpl implements DeltaService {
       ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
 
       List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
-
       return structure;
-
     }
     return null;
   }
@@ -261,15 +282,20 @@ public class DeltaServiceImpl implements DeltaService {
    * @see gov.nist.hit.hl7.igamt.delta.service.DeltaService#hasChanged(java.util.List)
    */
   @Override
-  public DeltaAction summarize(List<StructureDelta> deltaStructure) {
+  public DeltaAction summarize(List<StructureDelta> deltaStructure, List<ConformanceStatementDelta> cfs) {
     // TODO Auto-generated method stub
     DeltaAction ret = DeltaAction.UNCHANGED;
     if(deltaStructure !=null)
-      for(StructureDelta child:deltaStructure ) {
+      for(StructureDelta child: deltaStructure ) {
         if(child.getData() !=null && child.getData().getAction() != DeltaAction.UNCHANGED) {
           return DeltaAction.UPDATED;
         }
       }
+    for(ConformanceStatementDelta child: cfs ) {
+      if( child.getAction() != DeltaAction.UNCHANGED) {
+        return DeltaAction.UPDATED;
+      }
+    }
     return ret;
   }
 
@@ -307,7 +333,6 @@ public class DeltaServiceImpl implements DeltaService {
           result.add(createDeltaDisplay(registryType, l, DeltaAction.DELETED));
         }
       }
-
     }
     return result;
 
@@ -327,10 +352,11 @@ public class DeltaServiceImpl implements DeltaService {
 
         ConformanceProfileStructureDisplay sourceDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(source, true);
         ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
+        List<ConformanceStatementDelta> cfs = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
         List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
         DisplayElement elm= this.displayInfoService.convertConformanceProfile(target,l.getPosition());
-        elm.setDelta(summarize(structure));
+        elm.setDelta(summarize(structure,cfs));
         return elm;
         
       }
@@ -340,9 +366,15 @@ public class DeltaServiceImpl implements DeltaService {
 
         DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
         DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
-        List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+        List<StructureDelta> structure = new ArrayList<StructureDelta>();
+        if (target instanceof DateTimeDatatype && source instanceof DateTimeDatatype) {
+           structure = entityDeltaService.compareDateAndTimeDatatypes((DateTimeDatatype) source,(DateTimeDatatype) target);
+        }else {
+           structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+        }
+        List<ConformanceStatementDelta> cfs = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
         DisplayElement elm= this.displayInfoService.convertDatatype(target);
-        elm.setDelta(summarize(structure));
+        elm.setDelta(summarize(structure, cfs));
         return elm;
       }
       case SEGMENTREGISTRY : {
@@ -355,12 +387,25 @@ public class DeltaServiceImpl implements DeltaService {
         SegmentStructureDisplay targetDisplay = this.segmentService.convertDomainToDisplayStructure(target, true);
         List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
         DisplayElement elm= this.displayInfoService.convertSegment(target);
-        elm.setDelta(summarize(structure));
+        List<ConformanceStatementDelta> cfs = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+        elm.setDelta(summarize(structure,cfs));
         return elm;
       }
       case VALUESETREGISTRY: {
         
-        DisplayElement elm=createDeltaDisplay(Type.VALUESETREGISTRY, l, DeltaAction.UNCHANGED);
+        Valueset target = this.valuesetService.findById(l.getId());
+        Valueset source = this.valuesetService.findById(target.getOrigin());
+        
+        DisplayElement elm= this.displayInfoService.convertValueSet(target);
+        
+        
+        ValuesetDelta valuesetDelta = entityDeltaService.compareValuesetMetadata(source, target);
+        
+        if(valuesetDelta.getAction() !=null && !valuesetDelta.getAction().equals(DeltaAction.UPDATED)) {
+          List<CodeDelta> codeDeltas = entityDeltaService.compareCodes(source.getCodes(), target.getCodes());
+          valuesetDelta.setCodes(codeDeltas);
+        }
+        elm.setDelta(valuesetDelta.getAction());
         return elm;
       }
       default:  return null;
@@ -446,6 +491,22 @@ public class DeltaServiceImpl implements DeltaService {
     }
     return null;
   }
+
+@Override
+public ValuesetDelta valuesetDelta(Valueset valueset) {
+	Valueset source = this.valuesetService.findById(valueset.getOrigin());
+	ValuesetDelta vsDelta = entityDeltaService.valueset(source, valueset);
+	return vsDelta;
+}
+  
+Map<RealKey, Boolean> getChangedElement(Ig ig){
+  Map<RealKey, Boolean> ret = new HashMap<RealKey, Boolean>();
+  
+  
+  return null;
+  
+}
+
 
 
 }

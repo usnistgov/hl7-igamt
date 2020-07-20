@@ -118,7 +118,9 @@ public class DocumentationController {
 		ret.addAll(documentationRepo.findByType(DocumentationType.RELEASENOTE));
 		ret.addAll(documentationRepo.findByType(DocumentationType.USERGUIDE));
 		ret.addAll(documentationRepo.findByType(DocumentationType.FAQ));
+		if(authentication !=null && authentication.isAuthenticated()) {
 		ret.addAll(documentationRepo.findByTypeAndAuthors(DocumentationType.USERNOTES, authentication.getPrincipal().toString()));
+		}
 		return ret;
 
 	}

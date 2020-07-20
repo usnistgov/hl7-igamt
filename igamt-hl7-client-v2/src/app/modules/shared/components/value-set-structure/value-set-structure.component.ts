@@ -109,6 +109,8 @@ export class ValueSetStructureComponent implements OnInit {
       codeSystem: null,
       usage: null,
       comments: null,
+      pattern: null,
+      hasPattern: false,
     });
     this.changes.emit({
       location: 'ROOT',

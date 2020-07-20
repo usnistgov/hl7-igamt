@@ -1,18 +1,20 @@
-import { Component, ElementRef, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
-import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { TreeNode } from 'angular-tree-component';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
 import { map, take, withLatestFrom } from 'rxjs/operators';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { ToggleDelta } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
-  selectAllDatatypes, selectAllMessages, selectAllSegments, selectAllValueSets,
   selectDelta,
   selectDerived,
-  selectIgId, selectValueSets, selectValueSetsNodes,
+  selectIgId,
 } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { IgService } from '../../../ig/services/ig.service';
+import { LibraryService } from '../../../library/services/library.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IExportConfigurationGlobal } from '../../models/config.interface';
@@ -26,6 +28,7 @@ import { ConfigurationTocComponent } from '../configuration-toc/configuration-to
 export class ExportConfigurationDialogComponent implements OnInit {
   selected: IDisplayElement;
   type: Type;
+  docType: Type;
   @ViewChild(ConfigurationTocComponent) toc;
   initialConfig: IExportConfigurationGlobal;
   filter: any;
@@ -38,19 +41,25 @@ export class ExportConfigurationDialogComponent implements OnInit {
   delta: any;
   selectedDeltaValues = [];
   configurationName: string;
+  documentId: string;
 
   constructor(
     public dialogRef: MatDialogRef<ExportConfigurationDialogComponent>,
+    private libraryService: LibraryService,
+    private igService: IgService,
+
     @Inject(MAT_DIALOG_DATA) public data: any, private store: Store<any>) {
     this.initialConfig = data.decision;
     this.nodes = data.toc;
     this.configurationName = data.configurationName;
     this.deltaMode$ = this.store.select(selectDelta);
-    this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.filter = this.initialConfig.exportFilterDecision;
-    console.log(this.filter);
     this.defaultConfig = _.cloneDeep(data.decision.exportConfiguration);
+    this.type = data.type;
+    this.docType = data.type;
+    this.delta = data.delta;
+    this.documentId = data.documentId;
   }
   select(node) {
     this.loading = true;
@@ -58,18 +67,21 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.type = node.type;
     switch (this.type) {
       case Type.SEGMENT: {
+        console.log('Type in TOC is S:' + this.type);
         if (this.filter.overiddedSegmentMap[node.id]) {
           this.current = this.filter.overiddedSegmentMap[node.id];
         } else {
           this.current = _.cloneDeep(this.defaultConfig.segmentExportConfiguration);
         }
+
         this.loading = false;
         break;
       }
       case Type.DATATYPE: {
-        console.log('datatype');
+        console.log('Type in TOC is D:' + this.type);
         if (this.filter.overiddedDatatypesMap[node.id]) {
           this.current = this.filter.overiddedDatatypesMap[node.id];
+
         } else {
           this.current = _.cloneDeep(this.defaultConfig.datatypeExportConfiguration);
         }
@@ -77,6 +89,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
         break;
       }
       case Type.CONFORMANCEPROFILE: {
+        console.log('toc', node, this.filter);
         if (this.filter.overiddedConformanceProfileMap[node.id]) {
           this.current = this.filter.overiddedConformanceProfileMap[node.id];
         } else {
@@ -122,9 +135,34 @@ export class ExportConfigurationDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('DOCTYPE IS :' + this.docType);
   }
 
+  applyLastUserConfiguration() {
+    if (this.docType === Type.IGDOCUMENT) {
+      this.igService.getLastUserConfiguration(this.documentId).subscribe(
+        (lastConfig) => {
+          this.initialConfig = lastConfig;
+          this.filter = this.initialConfig.exportFilterDecision;
+
+        },
+        // lastConfig =>     console.log(" lastConfig is : ",lastConfig),
+
+      );
+    } else {
+      if (this.docType === Type.DATATYPELIBRARY) {
+        this.libraryService.getLastUserConfiguration(this.documentId).subscribe(
+          (lastConfig) => {
+            this.initialConfig = lastConfig;
+            this.filter = this.initialConfig.exportFilterDecision;
+
+          },
+              );
+    }
+  }
+  }
   submit() {
+    console.log('new initalConfig is : ', this.initialConfig);
     this.dialogRef.close(this.filter);
   }
   cancel() {
@@ -148,7 +186,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
     ).subscribe();
   }
   filterByDelta($event: string[]) {
-    let subscription = this.store.select(selectAllDatatypes).pipe(
+    let subscription = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes).pipe(
       map((value: IDisplayElement[], number: any) => {
         for (const display of value) {
           this.filter.datatypesFilterMap[display.id] = $event.indexOf(display.delta) > -1;
@@ -156,14 +194,14 @@ export class ExportConfigurationDialogComponent implements OnInit {
       })).subscribe();
 
     subscription.unsubscribe();
-    subscription = this.store.select(selectAllSegments).pipe(
+    subscription = this.store.select(fromIgamtDisplaySelectors.selectAllSegments).pipe(
       map((value: IDisplayElement[], number: any) => {
         for (const display of value) {
           this.filter.segmentFilterMap[display.id] = $event.indexOf(display.delta) > -1;
         }
       })).subscribe();
     subscription.unsubscribe();
-    subscription = this.store.select(selectAllValueSets).pipe(
+    subscription = this.store.select(fromIgamtDisplaySelectors.selectAllValueSets).pipe(
       map((value: IDisplayElement[], number: any) => {
         for (const display of value) {
           this.filter.valueSetFilterMap[display.id] = $event.indexOf(display.delta) > -1;
@@ -171,7 +209,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
       })).subscribe();
     subscription.unsubscribe();
 
-    subscription = this.store.select(selectAllMessages).pipe(
+    subscription = this.store.select(fromIgamtDisplaySelectors.selectAllMessages).pipe(
       map((value: IDisplayElement[], number: any) => {
         for (const display of value) {
           this.filter.conformanceProfileFilterMap[display.id] = $event.indexOf(display.delta) > -1;

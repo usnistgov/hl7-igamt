@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.delta.domain;
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 
 public class StructureDeltaData {
 
@@ -10,6 +11,7 @@ public class StructureDeltaData {
     private Integer position;
     private Type type;
     private DeltaNode<Usage> usage;
+    private DeltaNode<CodeUsage> codeUsage;
     private DeltaNode<String> constantValue;
     private DeltaNode<String> minLength;
     private DeltaNode<String> maxLength;
@@ -17,9 +19,23 @@ public class StructureDeltaData {
     private DeltaNode<String> maxCardinality;
     private DeltaNode<String> confLength;
     private DeltaNode<String> definition;
-    private DeltaValueSetBinding valueSetBinding;
+    private DeltaValuesetBinding valuesetBinding;
+    private DeltaInternalSingleCode internalSingleCode;
+    private PredicateDelta predicate;
     private ReferenceDelta reference;
     private DeltaNode<String> name;
+    private DeltaNode<String> format;
+
+
+    public DeltaNode<String> getFormat() {
+      return format;
+    }
+
+    public void setFormat(DeltaNode<String> format) {
+      this.crunchAction(format.getAction());
+      this.format = format;
+    }
+    private ConformanceStatementDelta conformanceStatement;
 
     public StructureDeltaData() {
         this.action = DeltaAction.UNCHANGED;
@@ -56,6 +72,15 @@ public class StructureDeltaData {
     public void setUsage(DeltaNode<Usage> usage) {
         this.crunchAction(usage.getAction());
         this.usage = usage;
+    }
+
+    public DeltaNode<CodeUsage> getCodeUsage() {
+        return codeUsage;
+    }
+
+    public void setCodeUsage(DeltaNode<CodeUsage> codeUsage) {
+        this.crunchAction(codeUsage.getAction());
+        this.codeUsage = codeUsage;
     }
 
     public DeltaNode<String> getConstantValue() {
@@ -134,25 +159,45 @@ public class StructureDeltaData {
         return name;
     }
 
-    public DeltaValueSetBinding getValueSetBinding() {
-        return valueSetBinding;
+    public DeltaValuesetBinding getValuesetBinding() {
+        return valuesetBinding;
     }
 
-    public void setValueSetBinding(DeltaValueSetBinding valueSetBinding) {
-        boolean hasChange =
-                valueSetBinding.getAdded().size() > 0 ||
-                valueSetBinding.getRemoved().size() > 0 ||
-                valueSetBinding.getUpdated().size() > 0;
-
-        if(hasChange) {
-            this.setAction(DeltaAction.UPDATED);
-        }
-        this.valueSetBinding = valueSetBinding;
+    public void setValuesetBinding(DeltaValuesetBinding valuesetBinding) {
+        this.crunchAction(valuesetBinding.getAction());
+        this.valuesetBinding = valuesetBinding;
     }
 
     public void setName(DeltaNode<String> name) {
         this.crunchAction(name.getAction());
         this.name = name;
+    }
+
+    public DeltaInternalSingleCode getInternalSingleCode() {
+        return internalSingleCode;
+    }
+
+    public void setInternalSingleCode(DeltaInternalSingleCode internalSingleCode) {
+        this.crunchAction(internalSingleCode.getAction());
+        this.internalSingleCode = internalSingleCode;
+    }
+
+    public PredicateDelta getPredicate() {
+        return predicate;
+    }
+
+    public void setPredicate(PredicateDelta predicate) {
+        this.crunchAction(predicate.getAction());
+        this.predicate = predicate;
+    }
+
+    public ConformanceStatementDelta getConformanceStatement() {
+        return conformanceStatement;
+    }
+
+    public void setConformanceStatement(ConformanceStatementDelta conformanceStatement) {
+        this.crunchAction(conformanceStatement.getAction());
+        this.conformanceStatement = conformanceStatement;
     }
 
     public void crunchAction(DeltaAction a) {

@@ -10,7 +10,10 @@ export interface ICodes {
   id: string;
   description: string;
   codeSystem: string;
-  usage: CodeUsage;
+  hasPattern?: boolean;
+  usage?: CodeUsage;
+  pattern: string;
+  codeSystemOid?: string;
   comments: string;
 }
 
@@ -26,4 +29,5 @@ export interface IValueSet extends IResource {
   extensibility: Extensibility;
   contentDefinition: ContentDefinition;
   intensionalComment?: string;
+  oid?: string;
 }

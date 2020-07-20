@@ -1,10 +1,13 @@
 import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
+import { IUsageConfiguration } from '../../../../../export-configuration/models/default-export-configuration.interface';
 import { Type } from '../../../../constants/type.enum';
-import { UsageOptions } from '../../../../constants/usage.enum';
+import { Usage } from '../../../../constants/usage.enum';
+import { IDocumentRef } from '../../../../models/abstract-domain.interface';
+import { Hl7Config } from '../../../../models/config.class';
 import { IPredicate } from '../../../../models/predicate.interface';
 import { IResource } from '../../../../models/resource.interface';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
@@ -15,6 +18,11 @@ import { CsDialogComponent } from '../../../cs-dialog/cs-dialog.component';
 import { IStringValue } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
 
+export interface IUsageOption {
+  label: string;
+  value: Usage;
+}
+
 @Component({
   selector: 'app-usage',
   templateUrl: './usage.component.html',
@@ -22,7 +30,7 @@ import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
 })
 export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> implements OnInit {
 
-  options = UsageOptions;
+  options: IUsageOption[];
 
   usage: IStringValue;
   @Input()
@@ -39,36 +47,37 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   context: Type;
 
   @Input()
-  set predicate({ igId, predicates }: { igId: string, predicates: Array<IBinding<string>> }) {
+  set usages({ original, config }: { original: Usage, config: Hl7Config }) {
+    const includeW = original === 'W';
+    const includeB = original === 'B';
+
+    this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB);
+  }
+
+  @Input()
+  set predicate({ documentRef, predicates }: { documentRef: IDocumentRef, predicates: Array<IBinding<IPredicate>> }) {
     if (predicates && predicates.length > 0) {
       predicates.sort((a, b) => {
         return a.level - b.level;
       });
 
       const top = predicates[0];
-      let display: IBinding<string> = predicates.length > 1 ? predicates[1] : undefined;
+      let display: IBinding<IPredicate> = predicates.length > 1 ? predicates[1] : undefined;
 
       if (top.level === 1) {
-        this.predicateService.getPredicate(igId, top.value).pipe(
-          tap((p: IPredicate) => {
-            this.initial = p;
-            this.editablePredicate.next({ value: p });
-          }),
-        ).subscribe();
+        this.initial = top.value;
+        this.editablePredicate.next({ value: top.value });
+
       } else {
         display = top;
       }
 
       if (display) {
-        this.freezePredicate$ = this.predicateService.getPredicate(igId, display.value).pipe(
-          map((p: IPredicate) => {
-            return {
-              level: display.level,
-              context: display.context,
-              value: p,
-            };
-          }),
-        );
+        this.freezePredicate$ = of({
+          level: display.level,
+          context: display.context,
+          value: display.value,
+        });
       }
     } else {
       this.editablePredicate.next({ value: undefined });
@@ -163,6 +172,10 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   }
 
   modelChange(event: any): void {
+    if (event.value !== 'CAB') {
+      this.clear();
+    }
+
     this.onChange<string>(this.getInputValue().value, event.value, PropertyType.USAGE, ChangeType.UPDATE);
   }
 

@@ -17,17 +17,21 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializationException;
@@ -38,6 +42,7 @@ import nu.xom.Attribute;
 import nu.xom.Element;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,13 +67,45 @@ CoConstraintService coConstraintService;
 @Autowired
 private FroalaSerializationUtil frolaCleaning;
 
+@Autowired 
+BindingSerializationService bindingSerializationService;
+
 	@Override
 	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level,  int position,
-			ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) throws ResourceSerializationException {
+			ConformanceProfileExportConfiguration conformanceProfileExportConfiguration, Boolean deltaMode) throws ResourceSerializationException {
 	    ConformanceProfile conformanceProfile = conformanceProfileDataModel.getModel();
 	    if (conformanceProfile != null) {
 	      try {
 			Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, position, conformanceProfileExportConfiguration);
+
+			  // Calculate conformanceProfile delta if the conformanceProfile has an origin
+
+			  if(deltaMode && conformanceProfile.getOrigin() != null && conformanceProfileExportConfiguration.isDeltaMode()) {
+				  List<StructureDelta> structureDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
+				  if(structureDelta != null){
+					  List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+					  if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
+						  Element changesElement = new Element("Changes");
+						  changesElement.addAttribute(new Attribute("mode", conformanceProfileExportConfiguration.getDeltaConfig().getMode().name()));
+						  changesElement.addAttribute(new Attribute("updatedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.UPDATED)));
+						  changesElement.addAttribute(new Attribute("addedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.ADDED)));
+						  changesElement.addAttribute(new Attribute("deletedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.DELETED)));
+						  List<Element> deltaElements = this.serializeDelta(structureDeltaChanged, conformanceProfileExportConfiguration.getDeltaConfig());
+						  if (deltaElements != null) {
+							  for (Element el : deltaElements){
+								  changesElement.appendChild(el);
+							  }
+							  conformanceProfileElement.appendChild(changesElement);
+
+						  }
+					  } else {
+					  	return  null;
+					  }
+				  } else {
+					  return  null;
+				  }
+
+			  }
 			if(conformanceProfileExportConfiguration.getIdentifier()) {
 	        conformanceProfileElement.addAttribute(new Attribute("identifier",
 	            conformanceProfile.getIdentifier() != null ? conformanceProfile.getIdentifier() : ""));
@@ -101,10 +138,42 @@ private FroalaSerializationUtil frolaCleaning;
 	        	conformanceProfileElement.appendChild(constraints);
         }
 	        }
+	        
+		      if (conformanceProfile.getBinding() != null) {
+			        Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), new HashMap<String, Boolean>());
+			        if (bindingElement != null) {
+			        	conformanceProfileElement.appendChild(bindingElement);
+			        }
+			      }
 	
 	        
 	        if (conformanceProfile.getChildren() != null
 		            && conformanceProfile.getChildren().size() > 0) {
+		    	  Element commentsElement = new Element("Comments"); 
+		    	  Element definitionTextsElement = new Element("DefinitionTexts");
+		    	  for(SegmentRefOrGroup segmentRefOrGroup : conformanceProfile.getChildren()) {
+		    		  if(segmentRefOrGroup.getComments() != null) {
+		    			  for(Comment comment : segmentRefOrGroup.getComments()) {
+			    			  Element commentElement = new Element("Comment");
+			    			  commentElement.addAttribute(new Attribute("name",segmentRefOrGroup.getName()));
+		    				  commentElement.addAttribute(new Attribute("description",comment.getDescription()));
+			    			  commentsElement.appendChild(commentElement);
+		    			  }
+		    			  
+		    		  }
+		    		  if(segmentRefOrGroup.getText() != null) {
+		    			  Element definitionText = new Element("DefinitionText");
+		    			  definitionText
+	    	              .addAttribute(new Attribute("text", segmentRefOrGroup.getText()));
+		    			  definitionText.addAttribute(new Attribute("name",segmentRefOrGroup.getName()));
+		    			  definitionTextsElement.appendChild(definitionText);
+		    		  }
+		    	  }
+		    	  
+		    	  conformanceProfileElement.appendChild(commentsElement);
+		    	  conformanceProfileElement.appendChild(definitionTextsElement);
+
+
 	        	
 		        	List<MsgStructElement> msgStructElementList = conformanceProfile.getChildren().stream().sorted((e1, e2) -> 
 		        	e1.getPosition() - e2.getPosition()).collect(Collectors.toList());
@@ -123,58 +192,41 @@ private FroalaSerializationUtil frolaCleaning;
 		          }
 		        }
 
-	        // Calculate conformanceProfile delta if the conformanceProfile has an origin
-		    if(conformanceProfile.getOrigin() != null) {
-				List<StructureDelta> structureDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
-			  	if(structureDelta != null){
-					List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-					if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
-						Element changesElement = new Element("Changes");
-						changesElement.addAttribute(new Attribute("mode", conformanceProfileExportConfiguration.getDeltaConfig().getMode().name()));
-
-//		      if(deltaConfiguration.getMode().equals(DeltaExportConfigMode.HIGHLIGHT)) {
-						changesElement.addAttribute(new Attribute("updatedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.UPDATED)));
-						changesElement.addAttribute(new Attribute("addedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.ADDED)));
-						changesElement.addAttribute(new Attribute("deletedColor", conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(DeltaAction.DELETED)));
-						List<Element> deltaElements = this.serializeDelta(structureDeltaChanged, conformanceProfileExportConfiguration.getDeltaConfig());
-						if (deltaElements != null) {
-							for (Element el : deltaElements){
-								changesElement.appendChild(el);
-							}
-							conformanceProfileElement.appendChild(changesElement);
-
-						}
-					}
-				}
-
-		    }
 		    
 		    if (conformanceProfile.getCoConstraintsBindings() != null) {
+				Element coConstraintsElement = new Element("coConstraintsElement");
 		    		for(CoConstraintBinding coConstraintBinding : conformanceProfile.getCoConstraintsBindings()) {
 		    			if(coConstraintBinding != null) {
+		    				if(coConstraintBinding.getContext() != null) {
+    							Element coConstraintContext = new Element("coConstraintContext");
+    							coConstraintContext.appendChild(coConstraintBinding.getContext().getName());
+	    						coConstraintsElement.appendChild(coConstraintContext);
+    							}
 		    				if(coConstraintBinding.getBindings() != null) {
 		    		    			for(CoConstraintBindingSegment coConstraintBindingSegment : coConstraintBinding.getBindings() ) {
 		    		    				if(coConstraintBindingSegment != null) {
+		    	    							Element coConstraintSegmentName = new Element("coConstraintSegmentName");
+		    	    							coConstraintSegmentName.appendChild(coConstraintBindingSegment.getSegment().getName());
+		    		    						coConstraintsElement.appendChild(coConstraintSegmentName);
 		    		    					for(CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {
-		    		    						Element coConstraintsElement = new Element("coConstraintsElement");
 		    		    						CoConstraintTable mergedCoConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableConditionalBinding.getValue());
-
-		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("COMPACT")) {
-		    		    							if(coConstraintTableConditionalBinding.getCondition() != null) {
+		    		    						if(coConstraintTableConditionalBinding.getCondition() != null) {
 		    		    							Element coConstraintCondition = new Element("coConstraintCondition");
 		    		    							coConstraintCondition.appendChild(coConstraintTableConditionalBinding.getCondition().getDescription());
 			    		    						coConstraintsElement.appendChild(coConstraintCondition);
 		    		    							}
+		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("COMPACT")) {
+		    		    							
 			    		    						Element coConstraintsTable = new Element("coConstraintsTable");
 			    		    						coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintCompact(mergedCoConstraintTable));
 			    		    						coConstraintsElement.appendChild(coConstraintsTable);
 		    		    						}
 		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("VERBOSE")) {
-		    		    							if(coConstraintTableConditionalBinding.getCondition() != null) {
-			    		    						 Element coConstraintCondition = new Element("coConstraintCondition");
-			    		    							coConstraintCondition.appendChild(coConstraintTableConditionalBinding.getCondition().getDescription());
-				    		    						coConstraintsElement.appendChild(coConstraintCondition);
-		    		    							}
+//		    		    							if(coConstraintTableConditionalBinding.getCondition() != null) {
+//			    		    						 Element coConstraintCondition = new Element("coConstraintCondition");
+//			    		    							coConstraintCondition.appendChild(coConstraintTableConditionalBinding.getCondition().getDescription());
+//				    		    						coConstraintsElement.appendChild(coConstraintCondition);
+//		    		    							}
 				    		    						Element coConstraintsTable = new Element("coConstraintsTable");
 				    		    						coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintVerbose(mergedCoConstraintTable));
 				    		    						coConstraintsElement.appendChild(coConstraintsTable);
@@ -355,7 +407,35 @@ private FroalaSerializationUtil frolaCleaning;
 	private List<Element> setChangedElements(StructureDelta structureDelta, DeltaConfiguration deltaConfiguration) {
 		List<Element> changedElements = new ArrayList<>();
 		if(structureDelta != null) {
+			if(structureDelta.getAction().equals(DeltaAction.DELETED) || structureDelta.getAction().equals(DeltaAction.ADDED)) {
+				Element addedUsage = new Element("Change");
+				addedUsage.addAttribute(new Attribute("type", Type.SEGMENTREF.getValue()));
+				addedUsage.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				addedUsage.addAttribute(new Attribute("action", structureDelta.getAction().name()));
+				addedUsage.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
+				changedElements.add(addedUsage);
 
+
+				Element addedMinC = new Element("Change");
+				addedMinC.addAttribute(new Attribute("type", Type.SEGMENTREF.getValue()));
+				addedMinC.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				addedMinC.addAttribute(new Attribute("action", structureDelta.getAction().name()));
+				addedMinC.addAttribute(new Attribute("property", PropertyType.CARDINALITYMIN.name()));
+				changedElements.add(addedMinC);
+
+				Element addedMaxC = new Element("Change");
+				addedMaxC.addAttribute(new Attribute("type", Type.SEGMENTREF.getValue()));
+				addedMaxC.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				addedMaxC.addAttribute(new Attribute("action", structureDelta.getAction().name()));
+				addedMaxC.addAttribute(new Attribute("property", PropertyType.CARDINALITYMAX.name()));
+				changedElements.add(addedMaxC);
+
+				Element addedSeg = new Element("Change");
+				addedSeg.addAttribute(new Attribute("type", Type.SEGMENTREF.getValue()));
+				addedSeg.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				addedSeg.addAttribute(new Attribute("action", structureDelta.getReference().getAction().name()));
+				addedSeg.addAttribute(new Attribute("property", PropertyType.SEGMENTREF.name()));
+			} else {
 				if(structureDelta.getUsage() != null && !structureDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
 					Element changedElement = new Element("Change");
 					changedElement.addAttribute(new Attribute("name",structureDelta.getName().getCurrent()));
@@ -363,6 +443,8 @@ private FroalaSerializationUtil frolaCleaning;
 					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
 					changedElement.addAttribute(new Attribute("action", structureDelta.getUsage().getAction().name()));
 					changedElement.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
+					changedElement.addAttribute(new Attribute("oldValue", structureDelta.getUsage().getPrevious().name()));
+
 					changedElements.add(changedElement);
 				}
 				if(structureDelta.getMinCardinality() != null && !structureDelta.getMinCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
@@ -371,6 +453,8 @@ private FroalaSerializationUtil frolaCleaning;
 					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
 					changedElement.addAttribute(new Attribute("action", structureDelta.getMinCardinality().getAction().name()));
 					changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMIN.name()));
+					changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMinCardinality().getPrevious().toString()));
+
 					changedElements.add(changedElement);
 				}
 				if(structureDelta.getMaxCardinality() != null && !structureDelta.getMaxCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
@@ -379,6 +463,8 @@ private FroalaSerializationUtil frolaCleaning;
 					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
 					changedElement.addAttribute(new Attribute("action", structureDelta.getMaxCardinality().getAction().name()));
 					changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMAX.name()));
+					changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMaxCardinality().getPrevious()));
+
 					changedElements.add(changedElement);
 				}
 				if(structureDelta.getReference() != null && !structureDelta.getReference().getAction().equals(DeltaAction.UNCHANGED)) {
@@ -387,10 +473,11 @@ private FroalaSerializationUtil frolaCleaning;
 					changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
 					changedElement.addAttribute(new Attribute("action", structureDelta.getReference().getAction().name()));
 					changedElement.addAttribute(new Attribute("property", PropertyType.SEGMENTREF.name()));
+					changedElement.addAttribute(new Attribute("oldValue", structureDelta.getReference().getLabel().getPrevious()));
+
 					changedElements.add(changedElement);
 				}
-
-
+			}
 			if(structureDelta.getChildren().size()>0  && structureDelta.getType().equals(Type.GROUP)){
 				List<StructureDelta> childrenDelta = structureDelta.getChildren().stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
 				if(childrenDelta != null){

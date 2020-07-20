@@ -9,10 +9,30 @@ import org.apache.commons.lang3.SerializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.diff.domain.DeltaAction;
 import gov.nist.diff.domain.DeltaMode;
+import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBindingContained;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBindingRef;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.DatatypeCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.ValueSetCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.VariesCell;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -23,6 +43,10 @@ import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
+import gov.nist.hit.hl7.igamt.delta.exception.IGDeltaException;
+import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
+import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
@@ -54,6 +78,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	IgService igService;
 	@Autowired
 	FroalaSerializationUtil cleaner;
+	@Autowired
+	DeltaService deltaService;
 
 	@Autowired
 	ExportConfigurationService exportConfigurationService;
@@ -80,8 +106,12 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 	@Autowired
 	ExportConfigurationFilterService exportConfigurationFilterService;
+	
+	@Autowired
+	CoConstraintService coConstraintService;
 
 	private static final String IG_XSLT_PATH = "/IGDocumentExport.xsl";
+	
 
 	@Override
 	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId)
@@ -89,6 +119,20 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		Ig igDocument = igService.findById(igDocumentId);
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
+//			if(deltaMode != null){
+//				exportConfiguration.setDeltaMode(true);
+//				exportConfiguration.getSegmentExportConfiguration().setDeltaMode(true);
+//				exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(true);
+//				exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(true);
+//				exportConfiguration.getValueSetExportConfiguration().setDeltaMode(true);
+//
+//			} else {
+//				exportConfiguration.setDeltaMode(false);
+//				exportConfiguration.getSegmentExportConfiguration().setDeltaMode(false);
+//				exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(false);
+//				exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(false);
+//				exportConfiguration.getValueSetExportConfiguration().setDeltaMode(false);
+//			}
 			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration);
 			return htmlFile;
 		}
@@ -102,24 +146,25 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 //			ExportConfiguration exportConfiguration =
 //					exportConfigurationService.getExportConfiguration(username);
 			
-			DeltaConfiguration deltaConfig = new DeltaConfiguration();
-			deltaConfig.setColors(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getColors());
-			deltaConfig.setMode(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getMode());
-			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
-			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
-			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
-			
+//			DeltaConfiguration deltaConfig = new DeltaConfiguration();
+//			deltaConfig.setColors(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getColors());
+//			deltaConfig.setMode(exportConfiguration.getSegmentExportConfiguration().getDeltaConfig().getMode());
+//			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
+//			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
+//			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
+
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
+			DocumentStructureDataModel documentStructureDataModel = new DocumentStructureDataModel();
 			String xmlContent =
-					igDataModelSerializationService.serializeIgDocument(igDataModel, exportConfiguration,decision).toXML();
+					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,decision).toXML();
 					      System.out.println("XML_EXPORT : " + xmlContent);
-			//		      System.out.println("XmlContent in IgExportService is : " + xmlContent);
+//					      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
 					igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
-					exportFontConfiguration, "2.0_beta");
+					exportFontConfiguration, "2.0_beta",igDocument.getType());
 			InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH,
 					exportParameters);
 			ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(),
@@ -136,9 +181,10 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	@Override
-	public ExportFilterDecision getExportFilterDecision(Ig ig, ExportConfiguration config) {
+	public ExportFilterDecision getExportFilterDecision(DocumentStructure documentStructure, ExportConfiguration config) throws CoConstraintGroupNotFoundException, IGDeltaException {
 		ExportFilterDecision decision = new ExportFilterDecision();
-
+		if(documentStructure instanceof Ig) {
+			Ig ig = (Ig) documentStructure;
 		for (Link l : ig.getConformanceProfileRegistry().getChildren()) {
 			decision.getConformanceProfileFilterMap().put(l.getId(), true);
 		}
@@ -151,11 +197,99 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		for (Link l : ig.getValueSetRegistry().getChildren()) {
 			decision.getValueSetFilterMap().put(l.getId(), false);
 		}
-		processConformanceProfiles(ig, decision, config);
+		if(documentStructure.getOrigin() !=null && config.isDeltaMode()) {
+		  calculateDeltaAndDecide(ig, decision);
+		} else {
+		  processConformanceProfiles(ig, decision, config); 
+		}
+		
 		return decision;
+		}else if(documentStructure instanceof DatatypeLibrary) {
+			DatatypeLibrary datatypeLibrary = (DatatypeLibrary) documentStructure;
+			for (Link l : datatypeLibrary.getDatatypeRegistry().getChildren()) {
+				Datatype dt = datatypeService.findById(l.getId());
+//				System.out.println("link id :" + l.getId() + " link parent id : " + l.getParentId() + " datatype parent id : " + dt.getParentId());
+				if(!l.getId().startsWith("HL7") && dt.getParentId().equals(datatypeLibrary.getId())) {
+					System.out.println("found one");
+				decision.getDatatypesFilterMap().put(l.getId(), true);
+			} else {
+				decision.getDatatypesFilterMap().put(l.getId(), false);
+			}
+			}
+			return decision;
+
+		}
+		return null;
 	}
 
-	private void processConformanceProfiles(Ig ig, ExportFilterDecision decision, ExportConfiguration config) {
+	/**
+   * @param ig
+	 * @throws IGDeltaException 
+   */
+  private void calculateDeltaAndDecide(Ig ig, ExportFilterDecision decision ) throws IGDeltaException {
+    // TODO Auto-generated method stub
+    Ig origin = igService.findById(ig.getOrigin());
+    decision.setDelta(true);
+    if(origin != null) {
+      IGDisplayInfo info =  this.deltaService.delta(ig, origin);
+      for(DisplayElement elm: info.getMessages()) {
+        if(elm.getDelta() ==null ||elm.getDelta().equals(DeltaAction.UNCHANGED) ){
+          decision.getConformanceProfileFilterMap().put(elm.getId(), false);
+        }else {
+          if(elm.getDelta().equals(DeltaAction.ADDED)) {
+            decision.getAdded().put(elm.getId(), true);     
+          }
+          if(elm.getDelta().equals(DeltaAction.UPDATED)) {
+            decision.getChanged().put(elm.getId(), true);
+          }
+          decision.getConformanceProfileFilterMap().put(elm.getId(), true);
+        }
+      }
+      
+      for(DisplayElement elm: info.getDatatypes()) {
+        if(elm.getDelta() ==null ||elm.getDelta().equals(DeltaAction.UNCHANGED) ){
+          decision.getDatatypesFilterMap().put(elm.getId(), false);
+        }else {
+          if(elm.getDelta().equals(DeltaAction.ADDED)) {
+            decision.getAdded().put(elm.getId(), true);     
+          }
+          if(elm.getDelta().equals(DeltaAction.UPDATED)) {
+            decision.getChanged().put(elm.getId(), true);
+          }
+          decision.getDatatypesFilterMap().put(elm.getId(), true);
+        }
+      }
+      for(DisplayElement elm: info.getSegments()) {
+        if(elm.getDelta() ==null ||elm.getDelta().equals(DeltaAction.UNCHANGED) ){
+          decision.getSegmentFilterMap().put(elm.getId(), false);
+        }else {
+          if(elm.getDelta().equals(DeltaAction.ADDED)) {
+            decision.getAdded().put(elm.getId(), true);     
+          }
+          if(elm.getDelta().equals(DeltaAction.UPDATED)) {
+            decision.getChanged().put(elm.getId(), true);
+          }
+          decision.getSegmentFilterMap().put(elm.getId(), true);
+          
+        }
+      }
+      for(DisplayElement elm: info.getValueSets()) {
+        if(elm.getDelta() ==null ||elm.getDelta().equals(DeltaAction.UNCHANGED) ){
+          decision.getValueSetFilterMap().put(elm.getId(), false);
+        }else {
+          if(elm.getDelta().equals(DeltaAction.ADDED)) {
+            decision.getAdded().put(elm.getId(), true);     
+          }
+          if(elm.getDelta().equals(DeltaAction.UPDATED)) {
+            decision.getChanged().put(elm.getId(), true);
+          }
+          decision.getValueSetFilterMap().put(elm.getId(), true);
+        }
+      }
+    }
+  }
+
+  private void processConformanceProfiles(Ig ig, ExportFilterDecision decision, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
 		Set<String> segmentIds = new HashSet<String>();
 		Set<String> datatypesIds = new HashSet<String>();
 		List<ConformanceProfile> profiles = conformanceProfileService
@@ -222,7 +356,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	private Set<String> processConformanceProfile(ConformanceProfile cp, ExportFilterDecision decision,
-			ExportConfiguration config) {
+			ExportConfiguration config) throws CoConstraintGroupNotFoundException {
 		// TODO Auto-generated method stub
 		Set<String> segmentsIds = new HashSet<String>();
 		HashMap<String, Boolean> bindedPaths = new HashMap<String, Boolean>();
@@ -242,6 +376,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			}
 		}
 		this.processBinding(cp.getBinding(), bindedPaths, decision);
+		if(cp.getCoConstraintsBindings() !=null) {
+		  this.processCoConstraintsBinding(decision, config, cp.getCoConstraintsBindings());
+		}
 		return segmentsIds;
 	}
 
@@ -319,5 +456,100 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		return null;
 	}
 
-	
+	// Co Constraints
+
+
+	  public void processCoConstraintsBinding(ExportFilterDecision decision, ExportConfiguration config,
+	      List<CoConstraintBinding> coConstraintsBindings) throws CoConstraintGroupNotFoundException {
+	    // TODO Auto-generated method stub
+	    for(CoConstraintBinding binding:coConstraintsBindings) {
+	      if(binding.getBindings()!=null) {
+	        for(CoConstraintBindingSegment segBinding: binding.getBindings()) {
+	          decision.getSegmentFilterMap().put(segBinding.getFlavorId(), true);
+	          for( CoConstraintTableConditionalBinding CoConstraintTableConditionalBinding : segBinding.getTables()) {
+	            if(CoConstraintTableConditionalBinding.getValue() !=null) {
+	              this.processCoConstraintTable(CoConstraintTableConditionalBinding.getValue(), decision, config);
+	            }
+	          }
+	        }
+	      }
+	    }     
+	  }
+
+	  /**
+	   * @param parent
+	   * @param value
+	   * @return
+	   * @throws CoConstraintGroupNotFoundException 
+	   */
+	  private void processCoConstraintTable(CoConstraintTable value, ExportFilterDecision decision, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
+	    // TODO Auto-generated method stub
+	    if(value.getGroups() !=null) {
+	      for(CoConstraintGroupBinding groupBinding : value.getGroups()) {
+
+	        if(groupBinding instanceof CoConstraintGroupBindingContained) {
+	          CoConstraintGroupBindingContained  coConstraintGroupBindingContained = (CoConstraintGroupBindingContained)(groupBinding);
+	          if( coConstraintGroupBindingContained.getCoConstraints() !=null) {
+	            for(CoConstraint cc: coConstraintGroupBindingContained.getCoConstraints() ) {
+	              processCoConstraint(cc, decision,  config);
+	            }
+	          }
+	          }else if(groupBinding instanceof CoConstraintGroupBindingRef) {
+	            CoConstraintGroupBindingRef ref = (CoConstraintGroupBindingRef)groupBinding;
+	            CoConstraintGroup group = coConstraintService.findById(ref.getRefId());
+	            if(group.getCoConstraints() !=null) {
+	              for(CoConstraint cc: group.getCoConstraints() ) {
+	                processCoConstraint(cc, decision,  config);  
+	              }
+	            }
+	          }
+	        }
+	      }
+	    if(value.getCoConstraints() !=null) {
+	      for(CoConstraint cc: value.getCoConstraints() ) {
+	        processCoConstraint(cc, decision,  config);  
+	      } 
+	    }
+	  }
+	  
+	  
+	  /**
+	   * @param cc
+	   * @param decision
+	   * @param config
+	   */
+	  private void processCoConstraint(CoConstraint cc, ExportFilterDecision decision,
+	      ExportConfiguration config) {
+	    // TODO Auto-generated method stub
+	    if(cc.getCells() !=null && cc.getCells().values() !=null) {
+	      for(CoConstraintCell cell: cc.getCells().values()) {
+	        processCoConstraintCell(cell, decision, config);
+	      }
+	    }    
+	  }
+
+	  private void processCoConstraintCell( CoConstraintCell cell, ExportFilterDecision decision, ExportConfiguration config) {
+	    // TODO Auto-generated method stub
+	    if(cell instanceof ValueSetCell) {
+	      ValueSetCell vsCell= (ValueSetCell)cell;
+	      if(vsCell.getBindings() !=null) {
+	        for(ValuesetBinding vsb : vsCell.getBindings()) {
+	          if(vsb.getValueSets() !=null ) {
+	            for(String vs : vsb.getValueSets()) {
+	              decision.getValueSetFilterMap().put(vs, true);
+	            }
+	          }
+	        }
+	      }
+	    }else if(cell instanceof DatatypeCell ) {
+	      DatatypeCell dtCell= (DatatypeCell)cell; 
+	      decision.getDatatypesFilterMap().put(dtCell.getDatatypeId(), true);
+	    }else if(cell instanceof VariesCell) {
+	      VariesCell vrCell= (VariesCell)cell;
+	      if(vrCell.getCellValue() !=null) {
+	        processCoConstraintCell(vrCell.getCellValue(), decision, config);
+	      }
+	    }
+	  }
+
 }

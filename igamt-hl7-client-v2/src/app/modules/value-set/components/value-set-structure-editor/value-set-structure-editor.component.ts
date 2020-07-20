@@ -2,14 +2,18 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { SelectItem } from 'primeng/api';
-import { Observable, of } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
+import { combineLatest, Observable, of } from 'rxjs';
+import { map, mergeMap, take } from 'rxjs/operators';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { LoadValueSet } from 'src/app/root-store/value-set-edit/value-set-edit.actions';
-import { selectIgId, selectValueSetById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
-import { Message } from '../../../core/models/message/message.class';
-import { MessageService } from '../../../core/services/message.service';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
+import { Scope } from '../../../shared/constants/scope.enum';
 import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { SourceType } from '../../../shared/models/adding-info';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
@@ -30,7 +34,10 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
   @Input()
   viewOnly: boolean;
   codeSystemOptions: any[];
-
+  hasOrigin$: Observable<boolean>;
+  get viewOnly$() {
+    return this._viewOnly$;
+  }
   constructor(
     readonly repository: StoreResourceRepositoryService,
     private valueSetService: ValueSetService,
@@ -48,13 +55,28 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
         resourceType: Type.VALUESET,
       },
       LoadValueSet,
-      [
-      ],
-      [
-      ]);
+      [],
+      [],
+    );
+    this._viewOnly$ = combineLatest(
+      this.store.select(fromIgamtSelectors.selectViewOnly),
+      this.store.select(fromIgamtSelectors.selectDelta),
+      this.store.select(fromIgamtSelectors.selectWorkspaceActive).pipe(
+        map((active) => {
+          return active.display.domainInfo && !(active.display.domainInfo.scope === Scope.USER || (active.display.domainInfo.scope === Scope.PHINVADS && active.display.flavor));
+        }),
+      ),
+    ).pipe(
+      map(([vOnly, delta, notUser]) => {
+        return vOnly || notUser || delta;
+      }),
+    );
+
+    this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
     this.resource$.subscribe((resource: IValueSet) => {
       this.cols = [];
       this.cols.push({ field: 'value', header: 'Value' });
+      this.cols.push({ field: 'pattern', header: 'Pattern' });
       this.cols.push({ field: 'description', header: 'Description' });
       this.cols.push({ field: 'codeSystem', header: 'Code System' });
       if (resource.sourceType !== SourceType.EXTERNAL) {
@@ -65,6 +87,7 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
       this.codeSystemOptions = this.getCodeSystemOptions(resource);
     });
   }
+
   getCodeSystemOptions(resource: IValueSet): SelectItem[] {
     if (resource.codeSystems && resource.codeSystems.length > 0) {
       return resource.codeSystems.map((codeSystem: string) => {
@@ -73,21 +96,23 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
     } else {
       return [];
     }
+  }
 
+  saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {
+    return this.valueSetService.saveChanges(id, documentRef, changes);
   }
-  saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message<any>> {
-    return this.valueSetService.saveChanges(id, igId, changes);
-  }
+
   getById(id: string): Observable<IValueSet> {
-    return this.store.select(selectIgId).pipe(
+    return this.documentRef$.pipe(
       take(1),
       mergeMap((x) => {
         return this.valueSetService.getById(x, id);
       }),
     );
   }
+
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
-    return selectValueSetById;
+    return fromIgamtDisplaySelectors.selectValueSetById;
   }
 
   isDTM(): Observable<boolean> {

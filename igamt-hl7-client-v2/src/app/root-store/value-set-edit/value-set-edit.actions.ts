@@ -1,7 +1,7 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
-import {IEditorMetadata} from '../../modules/shared/models/editor.enum';
-import {IValueSet} from '../../modules/shared/models/value-set.interface';
+import { IHL7EditorMetadata } from '../../modules/shared/models/editor.enum';
+import { IValueSet } from '../../modules/shared/models/value-set.interface';
 
 export enum ValueSetEditActionTypes {
   LoadValueSet = '[ValueSet Edit] Load Value Set',
@@ -12,6 +12,7 @@ export enum ValueSetEditActionTypes {
   OpenValueSetStructureEditor = '[ValueSet Edit] Open Value Set Structure Editor',
   OpenValueSetCrossRefEditor = '[ValueSet Edit]Open Value Set Cross References Editor',
   OpenValueSetMetadataEditor = '[ValueSet Edit] Open Value Set Metadata Editor',
+  OpenValueSetDeltaEditor = '[ValueSet Edit] Open Value Set Delta Editor',
 }
 
 export class LoadValueSet implements Action {
@@ -35,7 +36,7 @@ export class OpenValueSetMetadataEditor implements Action {
   readonly type = ValueSetEditActionTypes.OpenValueSetMetadataEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 
 }
@@ -44,7 +45,7 @@ export class OpenValueSetStructureEditor implements Action {
   readonly type = ValueSetEditActionTypes.OpenValueSetStructureEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 
@@ -52,7 +53,7 @@ export class OpenValueSetPreDefEditor implements Action {
   readonly type = ValueSetEditActionTypes.OpenValueSetPreDefEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 
@@ -60,7 +61,7 @@ export class OpenValueSetPostDefEditor implements Action {
   readonly type = ValueSetEditActionTypes.OpenValueSetPostDefEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 
@@ -68,8 +69,24 @@ export class OpenValueSetCrossRefEditor implements Action {
   readonly type = ValueSetEditActionTypes.OpenValueSetCrossRefEditor;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) { }
 }
 
-export type ValueSetEditActions = LoadValueSet | LoadValueSetSuccess | LoadValueSetFailure | OpenValueSetPreDefEditor |OpenValueSetMetadataEditor | OpenValueSetStructureEditor | OpenValueSetPostDefEditor | OpenValueSetCrossRefEditor;
+export class OpenValueSetDeltaEditor implements Action {
+  readonly type = ValueSetEditActionTypes.OpenValueSetDeltaEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) { }
+}
+
+export type ValueSetEditActions = LoadValueSet
+  | LoadValueSetSuccess
+  | LoadValueSetFailure
+  | OpenValueSetPreDefEditor
+  | OpenValueSetMetadataEditor
+  | OpenValueSetStructureEditor
+  | OpenValueSetPostDefEditor
+  | OpenValueSetCrossRefEditor
+  | OpenValueSetDeltaEditor;

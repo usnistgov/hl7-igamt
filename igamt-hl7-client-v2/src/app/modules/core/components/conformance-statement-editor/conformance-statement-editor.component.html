@@ -6,13 +6,13 @@
 
 
 <!-- RESOURCE CS -->
-<ng-container *ngIf="editable$ | async as editableCs">
+<ng-container *ngIf="groupedCS$ | async as groupCs">
   <div class="header-title">
     <h5>List of conformance statements</h5>
     <div></div>
   </div>
   <div class="panel-body">
-    <ng-container *ngTemplateOutlet="csList; context: { $implicit: editableCs, tmpl: editable }"></ng-container>
+    <ng-container *ngTemplateOutlet="group; context: { $implicit: groupCs }"></ng-container>
   </div>
 </ng-container>
 
@@ -86,6 +86,22 @@
       </ng-container>
     </tr>
   </table>
+</ng-template>
+
+<ng-template #group let-csGroup let-header="header">
+  <ng-container *ngFor="let item of csGroup" >
+    <div *ngIf="item.context" style="display: flex; align-items: center; margin-bottom: 10px;">
+      <app-entity-bagde style="display: flex;" [type]="'GROUP'"></app-entity-bagde>
+      <span style="margin-left: 5px;"> {{ item.name | async }} </span>
+    </div>
+    <div *ngIf="!item.context && item.list && item.list.length > 0" style="display: flex; align-items: center; margin-bottom: 10px;">
+      <ng-container *ngIf="(selectedResource$ | async) as cp">
+        <app-entity-bagde style="display: flex;" [type]="cp.type"></app-entity-bagde>
+        <span style="margin-left: 5px;"> {{ cp.name }} </span>
+      </ng-container>
+    </div>
+    <ng-container *ngTemplateOutlet="csList; context: { $implicit: item.list, tmpl: editable }"></ng-container>
+  </ng-container>
 </ng-template>
 
 <ng-template #editable let-cs>

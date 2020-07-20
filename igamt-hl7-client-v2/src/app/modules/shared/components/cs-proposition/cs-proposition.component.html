@@ -5,16 +5,16 @@
     <th *ngIf="csType === _csType.PROPOSITION"></th>
 
     <!-- Occurrence -->
-    <th *ngIf="(assertion.subject && assertion.subject.occurenceType) || subjectRepeatMax > 0" >Target Occurrence Declarative Statement <strong class="asteriks">*</strong></th>
+    <th style="white-space: nowrap;" *ngIf="(assertion.subject && assertion.subject.occurenceType) || subjectRepeatMax > 0" >Target Occurrence Declarative Statement <strong class="asteriks">*</strong></th>
 
     <!-- Location -->
-    <th>Target Node Location  <strong class="asteriks">*</strong></th>
+    <th style="white-space: nowrap;">Target Node Location  <strong class="asteriks">*</strong></th>
 
     <!-- Verb -->
-    <th *ngIf="csType === _csType.STATEMENT" >Verb  <strong class="asteriks">*</strong></th>
+    <th *ngIf="csType === _csType.STATEMENT" style="white-space: nowrap;" >Verb  <strong class="asteriks">*</strong></th>
 
     <!-- Statement -->
-    <th [attr.colspan]="csType === _csType.PROPOSITION ? 2 : 1">
+    <th style="white-space: nowrap;" [attr.colspan]="csType === _csType.PROPOSITION ? 2 : 1">
       <div style="justify-content: start; display: flex; align-items: start; flex-direction: row; flex-wrap: wrap;">
         <span>Content Declarative Statement  <strong class="asteriks">*</strong></span>
         <ng-container *ngIf="csType !== _csType.PROPOSITION">
@@ -29,10 +29,10 @@
     </th>
 
     <!-- Comparison Occurrence -->
-    <th *ngIf="(assertion.complement && assertion.complement.occurenceType) || complementRepeatMax > 0" >Comparison Occurrence Declarative Statement  <strong class="asteriks">*</strong></th>
+    <th style="white-space: nowrap;" *ngIf="(assertion.complement && assertion.complement.occurenceType) || complementRepeatMax > 0" >Comparison Occurrence Declarative Statement  <strong class="asteriks">*</strong></th>
 
     <!-- Comparative Node -->
-    <th *ngIf="statementType === _statementType.COMPARATIVE" >Comparison Node Location  <strong class="asteriks">*</strong></th>
+    <th style="white-space: nowrap;" *ngIf="statementType === _statementType.COMPARATIVE" >Comparison Node Location  <strong class="asteriks">*</strong></th>
 
   </tr>
   <tr class="values-row">
@@ -47,7 +47,7 @@
     <th *ngIf="csType === _csType.PROPOSITION"> If </th>
 
     <!-- Occurrence -->
-    <td *ngIf="(assertion.subject && assertion.subject.occurenceType) || subjectRepeatMax > 0" [ngClass]="{'invalid': !targetOccurenceValid()}">
+    <td style="white-space: nowrap;" *ngIf="(assertion.subject && assertion.subject.occurenceType) || subjectRepeatMax > 0" [ngClass]="{'invalid': !targetOccurenceValid()}">
       <span class="value" *ngIf="!assertion.subject.occurenceType"> SELECT </span>
       <form #targetOccurenceValues="ngForm">
         <ng-container [ngSwitch]="assertion.subject.occurenceType">
@@ -81,13 +81,13 @@
     </td>
 
     <!-- Location -->
-    <td [ngClass]="{'invalid': !targetNodeValid()}">
+    <td style="white-space: nowrap;" [ngClass]="{'invalid': !targetNodeValid()}">
       <span class="value" *ngIf="!assertion.subject.path"> SELECT </span>
-      <span *ngIf="assertion.subject.path"> {{ subjectName }} </span>
+      <span *ngIf="assertion.subject.path"> {{ subject.name }} </span>
     </td>
 
     <!-- Verb -->
-    <td *ngIf="csType === _csType.STATEMENT" [ngClass]="{'invalid': !verbValid()}">
+    <td style="white-space: nowrap;" *ngIf="csType === _csType.STATEMENT" [ngClass]="{'invalid': !verbValid()}">
       <span class="value" *ngIf="!assertion.verbKey"> SELECT </span>
       {{ labelsMap[assertion.verbKey] }}
     </td>
@@ -160,7 +160,7 @@
             <span style="margin-right: 5px;"> [ </span>
             <div *ngFor="let str of list; let i = index; trackBy: trackByFn" style="margin-right: 5px;" >
               <div class="input-group">
-                <input class="form-control" [name]="'str' + i" [id]="'str' + i" type="text" [(ngModel)]="list[i]" required placeholder="value" (change)="change()" style="width: 100px;" >
+                <input class="form-control" [name]="'str' + i" [id]="'str' + i" type="text" [(ngModel)]="list[i]" required placeholder="value" (change)="change()" style="width: 120px !important;" >
                 <div class="input-group-append">
                   <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="removeStr(list, i)">
                     <i class="fa fa-minus" style="color: red;"></i>
@@ -181,8 +181,8 @@
             <span style="margin-right: 5px;"> [ </span>
             <div *ngFor="let str of list; let i = index; trackBy: trackByFn" style="margin-right: 5px;">
               <div class="input-group">
-                <input class="form-control" [name]="'str' + i" [id]="'str' + i" type="text" [(ngModel)]="list[i]" required placeholder="value" style="width: 100px;"  (change)="change()">
-                <input class="form-control" [name]="'desc' + i" [id]="'desc' + i" type="text" [(ngModel)]="descs[i]" required placeholder="description" style="width: 100px;" (change)="change()">
+                <input class="form-control" [name]="'str' + i" [id]="'str' + i" type="text" [(ngModel)]="list[i]" required placeholder="value" style="width: 120px !important;"  (change)="change()">
+                <input class="form-control" [name]="'desc' + i" [id]="'desc' + i" type="text" [(ngModel)]="descs[i]" required placeholder="description" style="width: 120px !important;" (change)="change()">
                 <div class="input-group-append">
                   <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="removeStrDesc(list, descs, i)">
                     <i class="fa fa-minus" style="color: red;"></i>
@@ -202,7 +202,7 @@
     </td>
 
     <!-- Occurrence -->
-    <td *ngIf="(assertion.complement && assertion.complement.occurenceType) || complementRepeatMax > 0" [ngClass]="{'invalid': !comparisonOccurenceValid()}">
+    <td style="white-space: nowrap;" *ngIf="(assertion.complement && assertion.complement.occurenceType) || complementRepeatMax > 0" [ngClass]="{'invalid': !comparisonOccurenceValid()}">
       <span class="value" *ngIf="!assertion.complement.occurenceType"> SELECT </span>
       <form #compOccurenceValues="ngForm">
         <ng-container [ngSwitch]="assertion.complement.occurenceType">
@@ -236,9 +236,9 @@
     </td>
 
     <!-- Comparative Node -->
-    <td *ngIf="statementType === _statementType.COMPARATIVE" [ngClass]="{'invalid': !comparisonNodeValid()}">
+    <td style="white-space: nowrap;" *ngIf="statementType === _statementType.COMPARATIVE" [ngClass]="{'invalid': !comparisonNodeValid()}">
       <span class="value" *ngIf="!assertion.complement.path"> SELECT </span>
-      <span *ngIf="assertion.complement.path"> {{ compareName }} </span>
+      <span *ngIf="assertion.complement.path"> {{ compare.name }} </span>
     </td>
 
     <th *ngIf="csType === _csType.PROPOSITION && !predicateMode"> then </th>
@@ -271,7 +271,7 @@
     </td>
 
     <!-- Verb -->
-    <td *ngIf="csType === _csType.STATEMENT" class="table-font">
+    <td style="white-space: nowrap;" *ngIf="csType === _csType.STATEMENT" class="table-font">
       <ng-container *ngFor="let verb of verbs">
         <input type="radio" [name]="id + 'verbs'" [value]="verb.value" [(ngModel)]="assertion.verbKey" (ngModelChange)="change()"/> {{ verb.label }}<br>
       </ng-container>

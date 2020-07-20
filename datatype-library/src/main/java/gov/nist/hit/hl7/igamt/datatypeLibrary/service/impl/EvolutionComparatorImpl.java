@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -110,6 +111,14 @@ public class EvolutionComparatorImpl implements EvolutionComparatorService {
       }
 
     }
+    
+    if (criterias.containsKey(EvolutionPropertie.CPUSAGE)
+        && criterias.get((EvolutionPropertie.CPUSAGE))) {
+      if (!c1.getUsage().equals(c2.getUsage())) {
+        return false;
+      }
+
+    }
 
     if (criterias.containsKey(EvolutionPropertie.CONFLENGTH)
         && criterias.get((EvolutionPropertie.CONFLENGTH))) {
@@ -175,9 +184,12 @@ public class EvolutionComparatorImpl implements EvolutionComparatorService {
   public DeltaTreeNode getDatatypesDelta(Datatype d1, Datatype d2,
       HashMap<EvolutionPropertie, Boolean> criterias) throws DatatypeNotFoundException {
     DeltaTreeNode deltaNode = new DeltaTreeNode();
+    
     DeltaRowData data = new DeltaRowData();
+   
     if (!d1.getName().toLowerCase().equals(d2.getName().toLowerCase())) {
       data.addCell(EvolutionPropertie.CPDATATYPENAME, new DeltaCell(d1.getName(), d2.getName()));
+      data.setAction(DeltaAction.CHANGED);
     }
     if (d1 instanceof ComplexDatatype && d2 instanceof ComplexDatatype) {
 
@@ -219,11 +231,11 @@ public class EvolutionComparatorImpl implements EvolutionComparatorService {
       }
       if (cps1.size() > min) {
         for (int i = min; i < cps1.size(); i++) {
-          AddNewComponent(cps1.get(i), criterias, deltaNode);
+          addNewComponent(cps1.get(i), criterias, deltaNode, "left");
         }
       } else {
         for (int i = min; i < cps2.size(); i++) {
-          AddNewComponent(cps2.get(i), criterias, deltaNode);
+          addNewComponent(cps2.get(i), criterias, deltaNode, "right");
         }
       }
     } else {
@@ -238,67 +250,43 @@ public class EvolutionComparatorImpl implements EvolutionComparatorService {
    * @param component
    * @param criterias
    * @param deltaNode
+   * @param string 
    * @throws DatatypeNotFoundException
    */
-  private void AddNewComponent(Component c1, HashMap<EvolutionPropertie, Boolean> criterias,
-      DeltaTreeNode deltaNode) throws DatatypeNotFoundException {
+  private void addNewComponent(Component c1, HashMap<EvolutionPropertie, Boolean> criterias,
+      DeltaTreeNode deltaNode, String location) throws DatatypeNotFoundException {
 
     // TODO Auto-generated method stub
 
     DeltaTreeNode child = new DeltaTreeNode();
     DeltaRowData childData = new DeltaRowData();
+    childData.setAction(DeltaAction.ADDED);
     child.setPosition(c1.getPosition());
     childData.setPosition(c1.getPosition());
-    if (criterias.containsKey(EvolutionPropertie.CPNAME)
-        && criterias.get((EvolutionPropertie.CPNAME))) {
-      childData.addCell(EvolutionPropertie.CPNAME, new DeltaCell(c1.getName(), ""));
-
-    }
-
-    if (criterias.containsKey(EvolutionPropertie.CONFLENGTH)
-        && criterias.get((EvolutionPropertie.CONFLENGTH))) {
-      childData.addCell(EvolutionPropertie.CONFLENGTH, new DeltaCell(c1.getConfLength(), ""));
-
-    }
-
-    if (criterias.containsKey(EvolutionPropertie.MINLENGTH)
-        && criterias.get((EvolutionPropertie.MINLENGTH))) {
-      childData.addCell(EvolutionPropertie.MINLENGTH, new DeltaCell(c1.getMinLength(), ""));
-
-    }
-
-    if (criterias.containsKey(EvolutionPropertie.MAXLENGTH)
-        && criterias.get((EvolutionPropertie.MAXLENGTH))) {
-      childData.addCell(EvolutionPropertie.MAXLENGTH, new DeltaCell(c1.getMaxLength(), ""));
-
-    }
-
-
-    if (criterias.containsKey(EvolutionPropertie.CPDATATYPE)
-        && criterias.get((EvolutionPropertie.CPDATATYPE))) {
-      Datatype d1 = null;
-      if (c1.getRef() != null && c1.getRef().getId() != null) {
-        d1 = datatypeService.findById(c1.getRef().getId());
-        if (d1 == null) {
-          throw new DatatypeNotFoundException(c1.getRef().getId());
-        }
-
+    Datatype d1 = null;
+    if (c1.getRef() != null && c1.getRef().getId() != null) {
+      d1 = datatypeService.findById(c1.getRef().getId());
+      if (d1 == null) {
+        throw new DatatypeNotFoundException(c1.getRef().getId());
       }
-
-
+    }
+    if(location.equals("left")){
+      childData.addCell(EvolutionPropertie.CPNAME, new DeltaCell(c1.getName(), ""));
+      childData.addCell(EvolutionPropertie.PRESENCE, new DeltaCell("True", "False"));
       childData.addCell(EvolutionPropertie.CPDATATYPENAME, new DeltaCell(d1.getName(), ""));
       childData.addCell(EvolutionPropertie.CPDATATYPE, new DeltaCell(d1.getName(), ""));
+      childData.addCell(EvolutionPropertie.CPUSAGE, new DeltaCell(c1.getUsage().toString(), ""));
 
-
-
+    }else if(location.equals("right")){
+      childData.addCell(EvolutionPropertie.CPNAME, new DeltaCell("", c1.getName()));
+      childData.addCell(EvolutionPropertie.PRESENCE, new DeltaCell("False", "True"));
+      childData.addCell(EvolutionPropertie.CPDATATYPENAME, new DeltaCell("",d1.getName()));
+      childData.addCell(EvolutionPropertie.CPDATATYPE, new DeltaCell("",d1.getName()));
+      childData.addCell(EvolutionPropertie.CPUSAGE, new DeltaCell("",c1.getUsage().toString()));
     }
-
+    
     child.setData(childData);
-
     deltaNode.getChildren().add(child);
-
-
-
     // TODO Auto-generated method stub
 
   }
@@ -324,6 +312,13 @@ public class EvolutionComparatorImpl implements EvolutionComparatorService {
         && criterias.get((EvolutionPropertie.CPNAME))) {
       if (!c1.getName().equalsIgnoreCase(c2.getName())) {
         childData.addCell(EvolutionPropertie.CPNAME, new DeltaCell(c1.getName(), c2.getName()));
+      }
+    }
+    
+    if (criterias.containsKey(EvolutionPropertie.CPUSAGE)
+        && criterias.get((EvolutionPropertie.CPUSAGE))) {
+      if (!c1.getUsage().equals(c2.getUsage())) {
+        childData.addCell(EvolutionPropertie.CPUSAGE, new DeltaCell(c1.getUsage().toString(), c2.getUsage().toString()));
       }
 
     }

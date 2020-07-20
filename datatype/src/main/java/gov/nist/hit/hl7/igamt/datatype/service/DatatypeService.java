@@ -20,6 +20,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -30,9 +31,8 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.Level;
-import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
@@ -122,10 +122,10 @@ public interface DatatypeService {
 
 	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String datatypeId,
 			String datatypeName);
-
-	public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
-
+	
 	public void collectResources(Datatype d, HashMap<String, Resource> used);
 
 	public Set<Resource> getDependencies(Datatype datatype);
+
+    List<Datatype> findByParentId(String id);
 }

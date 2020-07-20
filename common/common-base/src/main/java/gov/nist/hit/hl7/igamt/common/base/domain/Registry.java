@@ -51,5 +51,11 @@ public class Registry implements Serializable{
             Collectors.toMap(x -> x.getId(), x -> x));
     return ret;
 }
+  public Link getLinkById(String id) {
+	  for(Link l : this.children) {
+		  if(l.getId().equals(id)) return l;
+	  }
+	  return null;
+  }
 
 }

@@ -1,8 +1,8 @@
-<ng-template #headerControls let-router="router" *ngIf="hasOrigin$ | async">
-    <button class="btn btn-sm btn-default toggle-btn" style="margin-left: 10px; border: 1px solid black;" [routerLink]="'../delta'">
-      <span style="font-weight: bold;" ><span style="font-size: 1em;" >Δ</span> delta</span>
-    </button>
-</ng-template>
+<!--<ng-template #headerControls let-router="router" *ngIf="hasOrigin$ | async">-->
+<!--    <button class="btn btn-sm btn-default toggle-btn" style="margin-left: 10px; border: 1px solid black;" [routerLink]="'../../delta'">-->
+<!--      <span style="font-weight: bold;" ><span style="font-size: 1em;" >Δ</span> delta</span>-->
+<!--    </button>-->
+<!--</ng-template>-->
 
 <ng-container [ngSwitch]="isDTM() | async">
   <ng-container *ngSwitchCase="false">
@@ -16,7 +16,7 @@
 
     <app-hl7-v2-tree
     [columns]="columns"
-    [igId]="igId | async"
+    [documentRef]="documentRef$ | async"
     [datatypes]="datatypes | async"
     [segments]="segments | async"
     [valueSets]="valueSets | async"
@@ -24,6 +24,7 @@
     [viewOnly]="viewOnly$ | async"
     (changes)="change($event)"
     [resource]="resource$ | async"
+    [config]="config | async"
     [bindingConfig]= "bindingConfig | async"
     [username]="username | async">
     </app-hl7-v2-tree>

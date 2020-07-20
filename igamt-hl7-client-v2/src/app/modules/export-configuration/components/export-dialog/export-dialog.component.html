@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Export Document</h2>
+  <h2 mat-dialog-title>Export Document</h2>
 <mat-dialog-content>
 
   <div>
@@ -9,17 +9,15 @@
       [style]="{'width': '100%', 'min-width': 'inherit'}"
       [appendTo]="anchor"
       [(ngModel)]="selectedConfig"
-      (ngModelChange)="change($event)"
       optionLabel="configName"></p-dropdown>
   </div>
 
   <div style="margin-top: 10px;" *ngIf="selectedConfig" >
     <label style="font-weight: bold;" >Would you like to override the configuration ?</label><br>
     <div style="display: flex; justify-content: center;">
-      <button (click)="customize()" class="btn btn-sn btn-primary" style="margin-right:5px;" *ngIf="overrides$ | async">
+      <button (click)="customize()" class="btn btn-sn btn-primary" style="margin-right:5px;">
         <i class="fa fa-cog"></i>
         Customize
-        <span style="color: lightgray;" *ngIf="customized"> (Overrides Made) </span>
       </button>
     </div>
   </div>

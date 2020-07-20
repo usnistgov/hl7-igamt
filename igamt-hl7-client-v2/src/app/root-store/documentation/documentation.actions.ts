@@ -1,12 +1,12 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import {
   DocumentationScope,
   DocumentationType,
   IDocumentation,
 } from '../../modules/documentation/models/documentation.interface';
-import {IEditorMetadata} from '../../modules/shared/models/editor.enum';
-import {IgEditActionTypes} from '../ig/ig-edit/ig-edit.actions';
+import { IHL7EditorMetadata } from '../../modules/shared/models/editor.enum';
+import { IgEditActionTypes } from '../ig/ig-edit/ig-edit.actions';
 
 export enum DocumentationActionTypes {
   LoadDocumentations = '[Documentation] Load Documentations',
@@ -70,7 +70,7 @@ export class OpenDocumentationSection implements Action {
   readonly type = DocumentationActionTypes.OpenDocumentationSection;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) {
   }
 }
@@ -79,7 +79,7 @@ export class OpenDocumentationSectionSuccess implements Action {
   readonly type = DocumentationActionTypes.OpenDocumentationSectionSuccess;
   constructor(readonly payload: {
     id: string,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
   }) {
   }
 }
@@ -109,7 +109,7 @@ export class OpenDocumentationEditor implements Action {
   constructor(readonly payload: {
     id: string,
     element: IDocumentation,
-    editor: IEditorMetadata,
+    editor: IHL7EditorMetadata,
     initial: any,
   }) {
   }
@@ -182,21 +182,21 @@ export class DeleteDocumentFailure implements Action {
 
 export class AddDocument implements Action {
   readonly type = DocumentationActionTypes.AddDocument;
-  constructor( readonly documentationType: DocumentationType, readonly index: number) {
+  constructor(readonly documentationType: DocumentationType, readonly index: number) {
   }
 }
 export class AddDocumentSuccess implements Action {
   readonly type = DocumentationActionTypes.AddDocumentSuccess;
-  constructor( readonly documentation: IDocumentation) {
+  constructor(readonly documentation: IDocumentation) {
   }
 }
 export class AddDocumentFailure implements Action {
   readonly type = DocumentationActionTypes.AddDocumentFailure;
 }
 
-export type DocumentationsActions = LoadDocumentations| LoadDocumentationsSuccess |LoadDocumentationsFailure |
-  OpenDocumentationSection  |OpenDocumentationSectionSuccess | OpenDocumentationSectionFailure |
-  OpenDocumentationEditor | DocumentationEditorChange |DocumentationToolBarSave | DocumentationEditorSaveSuccess |
-  DocumentationEditorReset | UpdateDocumentationState| DeleteDocumentationState | AddDocumentationState |
-  ToggleEditMode | DocumentationEditorSaveFailure | UpdateDocumentationList |UpdateDocumentationListSuccess | UpdateDocumentationListFailure
-  |DeleteDocument | DeleteDocumentSuccess | DeleteDocumentFailure;
+export type DocumentationsActions = LoadDocumentations | LoadDocumentationsSuccess | LoadDocumentationsFailure |
+  OpenDocumentationSection | OpenDocumentationSectionSuccess | OpenDocumentationSectionFailure |
+  OpenDocumentationEditor | DocumentationEditorChange | DocumentationToolBarSave | DocumentationEditorSaveSuccess |
+  DocumentationEditorReset | UpdateDocumentationState | DeleteDocumentationState | AddDocumentationState |
+  ToggleEditMode | DocumentationEditorSaveFailure | UpdateDocumentationList | UpdateDocumentationListSuccess | UpdateDocumentationListFailure
+  | DeleteDocument | DeleteDocumentSuccess | DeleteDocumentFailure;

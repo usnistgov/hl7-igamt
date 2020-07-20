@@ -26,6 +26,7 @@
           <p-dropdown
           [style]="{'min-width': '70px'}"
           [options]="options"
+          [autoDisplayFirst]="false"
           name="trueUsage"
           [(ngModel)]="cs.trueUsage"
           [appendTo]="anchor" ></p-dropdown>
@@ -34,6 +35,7 @@
           <p-dropdown
           [style]="{'min-width': '70px'}"
           [options]="options"
+          [autoDisplayFirst]="false"
           name="falseUsage"
           [(ngModel)]="cs.falseUsage"
           [appendTo]="anchor" ></p-dropdown>
@@ -42,11 +44,8 @@
     </table>
     <div class="form-group" *ngIf="resourceType === 'CONFORMANCEPROFILE' && !assertionMode">
       <label for="free" class="form-label-lg"> Context </label>
-      <span *ngIf="cs?.context" >
-        <span style="margin-left: 5px;" ><app-entity-bagde [type]='structure[0].data.type' ></app-entity-bagde> {{ contextName }}</span>
-      </span>
-      <span *ngIf="!cs?.context" >
-          <span style="margin-left: 5px;" ><app-entity-bagde [type]='structure[0].data.type' ></app-entity-bagde> {{ structure[0].data.name }}</span>
+      <span>
+          <span style="margin-left: 5px;" ><app-entity-bagde [type]="contextType" ></app-entity-bagde> {{ contextName }}</span>
         </span>
       <button class="btn btn-primary" (click)="showContext = true;" style="margin-left: 10px;" *ngIf="!showContext">
         <i class="fa fa-pencil"></i>
@@ -169,6 +168,22 @@
           </table>
         </ng-container>
       </mat-dialog-content>
+    </div>
+    <div *ngIf="statementsValid()" class="form-group">
+      <div *ngIf="xmlExpression | async as xml" style="padding: 10px; background-color: #f7f7f7; border: 1px solid #e7e7e7; border-radius: 3px; display: flex; flex-direction: column; align-items: center;">
+        <div style="display: flex; width: 100%;">
+          <button style="margin-right: 5px;" class="btn btn-sm btn-success" *ngIf="!xmlVisible && xml.isSet" (click)="xmlVisible = true;">
+            <i class="fa fa-eye"></i>
+          </button>
+          <button style="margin-right: 5px;" class="btn btn-sm btn-danger" *ngIf="xmlVisible && xml.isSet" (click)="xmlVisible = false;">
+            <i class="fa fa-eye-slash"></i>
+          </button>
+          <button style="flex: 1;" class="btn btn-sm btn-primary" (click)="generateXMLExpression()">
+            <i class="fa fa-refresh"></i> Generate XML Assertion
+          </button>
+        </div>
+        <pre style="margin-top: 5px; margin-bottom: 0;" *ngIf="xml.isSet && xmlVisible" lang="xml">{{xml.value}}</pre>
+      </div>
     </div>
   </ng-container>
 

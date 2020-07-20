@@ -1,28 +1,33 @@
 import { OnInit } from '@angular/core';
-import {FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import { FormGroup, Validators } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import {catchError, concatMap, flatMap, map, mergeMap, take, withLatestFrom} from 'rxjs/operators';
-import { EditorSave, EditorSaveFailure, IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import {selectIgId, selectSelectedResource} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { catchError, concatMap, flatMap, map, take, withLatestFrom } from 'rxjs/operators';
+import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
+import {selectIsAdmin} from '../../../dam-framework/store/authentication';
 import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
-import {validateConvention} from '../../../shared/functions/convention-factory';
-import {validateUnity} from '../../../shared/functions/unicity-factory';
+import { validateConvention } from '../../../shared/functions/convention-factory';
+import { validateUnity } from '../../../shared/functions/unicity-factory';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IEditorMetadata } from '../../../shared/models/editor.enum';
+import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
+import { IResource } from '../../../shared/models/resource.interface';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
 import { FroalaService } from '../../../shared/services/froala.service';
-import { Message } from '../../models/message/message.class';
-import { MessageService } from '../../services/message.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
 export abstract class ResourceMetadataEditorComponent extends AbstractEditorComponent implements OnInit {
 
   metadataFormInput$: Observable<IMetadataFormInput<IResourceMetadata>>;
   froalaConfig$: Observable<any>;
+  selectedResource$: Observable<IResource>;
+  admin$: Observable<boolean>;
   constructor(
-    readonly editor: IEditorMetadata,
+    readonly editor: IHL7EditorMetadata,
     protected actions$: Actions,
     private messageService: MessageService,
     protected store: Store<any>, protected froalaService: FroalaService) {
@@ -30,23 +35,23 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
     this.froalaConfig$ = froalaService.getConfig();
     const authorNotes = 'Author Notes';
     const usageNotes = 'Usage Notes';
-    const selectedResource$ = this.store.select(selectSelectedResource);
-    const name$ = this.store.select(selectSelectedResource).pipe(
+    this.admin$ = this.store.select(selectIsAdmin);
+    this.selectedResource$ = this.store.select(fromIgamtSelectedSelectors.selectSelectedResource);
+    const name$ = this.selectedResource$.pipe(
       map((resource) => {
         return resource.name;
       }),
     );
-
-    this.metadataFormInput$ = combineLatest(selectedResource$, name$, this.getOthers()).pipe(
+    this.metadataFormInput$ = combineLatest(this.selectedResource$, name$, this.getOthers(), this.documentRef$, this.admin$).pipe(
       take(1),
-      map(([ selectedResource, name, existing]) => {
-       return {
+      map(([selectedResource, name, existing, ref, admin]) => {
+        return {
           viewOnly: this.viewOnly$,
           data: this.currentSynchronized$,
           model: {
             name: {
-              label: 'Name',
-              placeholder: 'Name',
+              label: 'Identifier',
+              placeholder: 'identifier',
               validators: [],
               type: FieldType.TEXT,
               id: 'name',
@@ -56,28 +61,27 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
             ext: {
               label: 'Extension',
               placeholder: 'Extension',
-              validators: [validateUnity(existing, name, selectedResource.domainInfo), validateConvention(selectedResource.domainInfo.scope, selectedResource.type), Validators.required],
+              validators: [validateUnity(existing, name, selectedResource.domainInfo), validateConvention(selectedResource.domainInfo.scope, selectedResource.type, ref.type, admin), Validators.required],
               type: FieldType.TEXT,
               id: 'extension',
               name: 'extension',
             },
             description: {
-              label: 'Description',
-              placeholder: 'Description',
+              label: 'Name',
+              placeholder: 'name',
               validators: [],
               type: FieldType.TEXT,
               id: 'description',
               disabled: true,
               name: 'Description',
             },
-            authorNotes: {
-              label: authorNotes,
-              placeholder: authorNotes,
+            shortDescription: {
+              label: 'Short Description',
+              placeholder: 'Short Description',
               validators: [],
-              enum: [],
-              type: FieldType.RICH,
-              id: 'authornotes',
-              name: authorNotes,
+              type: FieldType.TEXT,
+              id: 'shortDescription',
+              name: 'shortDescription',
             },
             usageNotes: {
               label: usageNotes,
@@ -88,9 +92,18 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
               id: 'usagenotes',
               name: usageNotes,
             },
+            authorNotes: {
+              label: authorNotes,
+              placeholder: authorNotes,
+              validators: [],
+              enum: [],
+              type: FieldType.RICH,
+              id: 'authornotes',
+              name: authorNotes,
+            },
           },
         };
-    }),
+      }),
     );
   }
 
@@ -98,9 +111,9 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
   getOthers(): Observable<IDisplayElement[]> {
     return this.getExistingList().pipe(
       take(1),
-      withLatestFrom(this.store.select(selectSelectedResource)),
-      map(([exiting, selected ]) => {
-        return exiting.filter((x) => x.id !== selected.id) ;
+      withLatestFrom(this.selectedResource$),
+      map(([exiting, selected]) => {
+        return exiting.filter((x) => x.id !== selected.id);
       }),
     );
   }
@@ -121,7 +134,16 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
         changeType: ChangeType.UPDATE,
       });
     }
-
+    if (current.name !== old.name) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.name,
+        propertyValue: current.name,
+        propertyType: PropertyType.NAME,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
     if (current.description !== old.description) {
       changes.push({
         location: elementId,
@@ -165,19 +187,30 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
         changeType: ChangeType.UPDATE,
       });
     }
+    if (current.shortDescription !== old.shortDescription) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.shortDescription,
+        propertyValue: current.shortDescription,
+        propertyType: PropertyType.SHORTDESCRIPTION,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
 
     return changes;
   }
 
   abstract reloadResource(resourceId: string): Action;
 
-  onEditorSave(action: EditorSave): Observable<Action> {
-    return combineLatest(this.elementId$, this.initial$, this.current$, this.store.select(selectIgId)).pipe(
+  onEditorSave(action: fromDAM.EditorSave): Observable<Action> {
+    return combineLatest(this.elementId$, this.initial$, this.current$, this.documentRef$).pipe(
       take(1),
-      concatMap(([id, old, current, igId]) => {
+      concatMap(([id, old, current, documentRef]) => {
         return this.save(this.getChanges(id, current.data, old)).pipe(
-          flatMap((message) => [this.messageService.messageToAction(message), this.reloadResource(id), new IgEditResolverLoad(igId)]),
-          catchError((error) => of(this.messageService.actionFromError(error), new EditorSaveFailure())),
+          /// TODO Treat Library Case
+          flatMap((message) => [this.messageService.messageToAction(message), this.reloadResource(id), new IgEditResolverLoad(documentRef.documentId)]),
+          catchError((error) => of(this.messageService.actionFromError(error), new fromDAM.EditorSaveFailure())),
         );
       }),
     );
@@ -202,4 +235,7 @@ export interface IResourceMetadata {
   description?: string;
   authorNotes?: string;
   usageNotes?: string;
+  compatibilityVersions?: [];
+  username?: string;
+  shortDescription: string;
 }

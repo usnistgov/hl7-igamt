@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.auth.service;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
@@ -20,6 +21,7 @@ import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
+import gov.nist.hit.hl7.auth.util.requests.UserListResponse;
 import gov.nist.hit.hl7.auth.util.requests.UserResponse;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 
@@ -43,5 +45,11 @@ public interface AuthenticationService {
       ChangePasswordConfirmRequest requestObject) throws AuthenticationException;
 
   public UserResponse getAuthentication(Authentication authentiction);
+  
+  public UserListResponse getAllUsers(HttpServletRequest req);
+  public UserResponse getCurrentUser(String username, HttpServletRequest req);
+
+  public ConnectionResponseMessage<UserResponse> update(RegistrationRequest user, HttpServletRequest req)
+      throws AuthenticationException;
 
 }

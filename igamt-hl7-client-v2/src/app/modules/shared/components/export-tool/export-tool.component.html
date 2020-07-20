@@ -2,10 +2,10 @@
 
 <mat-dialog-content style="min-width: 500px; min-height: 200px">
   <form #loginForm='ngForm'>
-    <ng-container *ngIf="!hasDomains">
+    <ng-container *ngIf="step === 0">
     <p-dropdown [options]="data.tools" [(ngModel)]="tool" optionLabel="label" placeholder="Select tool" required name="tool" id="tool" [style]="{'minWidth':'100%', 'margin-bottom': '20px'}"></p-dropdown>
     <div class="alerts">
-      <app-alerts-container></app-alerts-container>
+      <app-dam-alerts-container></app-dam-alerts-container>
     </div>
     <div class="form-group">
       <div class="input-group">
@@ -26,7 +26,7 @@
     </ng-container>
    </form>
 
-  <ng-container *ngIf="hasDomains">
+  <ng-container *ngIf="step === 1">
 
     <p-dropdown [options]="domains" required (onChange)="selectDomain($event)" optionLabel="name" placeholder="select tool scopes" [style]="{'minWidth':'100%'}"></p-dropdown>
 
@@ -35,13 +35,407 @@
         <app-select-resource-ids [conformanceProfiles]="data.conformanceProfiles" (selected)="matchId($event)">
         </app-select-resource-ids>
       </p-accordionTab>
-<!--      <p-accordionTab header="Composite profiles" [selected]="true">-->
-<!--        Coming soon-->
-<!--      </p-accordionTab>-->
+    </p-accordion>
+  </ng-container>
+
+  <ng-container *ngIf="step === 2">
+    <div *ngIf="!reports">
+      <p-progressBar mode="indeterminate" *ngIf="!reports"></p-progressBar>
+    </div>
+    <div *ngIf="reports">
+      <label> <strong> Verification Reports </strong> </label>
+      <div><label><span class="badge error-FATAL">FATAL</span>: IGAMT cannot generate the XML profile; Downstream tools would not be able to process XML</label></div>
+      <div><label><span class="badge error-ERROR">ERROR</span>: IGAMT can generate the XML, user should fix in the profile before exporting XML and using downstream tools</label></div>
+      <div><label><span class="badge error-WARNING">WARNING</span>: User should consider providing correct values not necessary for downstream tools process.</label></div>
+      <div><label><span class="badge error-INFO">INFORMATIONAL</span>: User should consider changing the value.</label></div>
+
+      <p-accordion *ngIf="errorCounts">
+        <p-accordionTab>
+          <p-header>
+            IG Document Verification Results <span class="badge error-FATAL">{{errorCounts[4][0]}}</span><span class="badge error-ERROR">{{errorCounts[4][1]}}</span><span class="badge error-WARNING">{{errorCounts[4][2]}}</span><span class="badge error-INFO">{{errorCounts[4][3]}}</span>
+          </p-header>
+          <ul *ngIf="reports.igVerificationResult">
+            <li *ngFor="let error of reports.igVerificationResult.errors">
+              <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
+              <span class="badge error-code">{{error.code}}</span>&nbsp;
+              <span>{{error.description}}</span>
+            </li>
+          </ul>
+        </p-accordionTab>
+        <p-accordionTab>
+          <p-header>
+            Conformance Profiles Verification Results <span class="badge error-FATAL">{{errorCounts[3][0]}}</span><span class="badge error-ERROR">{{errorCounts[3][1]}}</span><span class="badge error-WARNING">{{errorCounts[3][2]}}</span><span class="badge error-INFO">{{errorCounts[3][3]}}</span>
+          </p-header>
+
+          <p-tabView>
+            <p-tabPanel header="User">
+              <p-table #dt *ngIf="reports.conformanceProfileVerificationResults" [value]="cpVerificationResultTableForUser" [paginator]="true" [rows]="10">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 15em" [pSortableColumn]="'severity'">Severity
+                      <p-sortIcon [field]="'severity'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
+                      <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
+                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th>Description</th>
+                  </tr>
+                  <tr>
+                    <th>
+                      <p-dropdown [options]="severities" [style]="{'width':'100%;'}" (onChange)="dt.filter($event.value, 'severity', 'equals')"></p-dropdown>
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
+                    </th>
+                    <th></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-error>
+                  <tr>
+                    <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
+                    <td><span class="badge error-code">{{error.code}}</span></td>
+                    <td>
+                      <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
+                      <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
+                    </td>
+                    <td>{{error.description}}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabPanel>
+            <p-tabPanel header="Internal">
+              <p-table #dt *ngIf="reports.conformanceProfileVerificationResults" [value]="cpVerificationResultTable" [paginator]="true" [rows]="10">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 15em" [pSortableColumn]="'severity'">Severity
+                      <p-sortIcon [field]="'severity'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
+                      <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
+                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th>Description</th>
+                  </tr>
+                  <tr>
+                    <th>
+                      <p-dropdown [options]="severities" [style]="{'width':'100%;'}" (onChange)="dt.filter($event.value, 'severity', 'equals')"></p-dropdown>
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
+                    </th>
+                    <th></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-error>
+                  <tr>
+                    <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
+                    <td><span class="badge error-code">{{error.code}}</span></td>
+                    <td>
+                      <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
+                      <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
+                    </td>
+                    <td>{{error.description}}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabPanel>
+          </p-tabView>
+        </p-accordionTab>
+        <p-accordionTab>
+          <p-header>
+            Segments Verification Results <span class="badge error-FATAL">{{errorCounts[2][0]}}</span><span class="badge error-ERROR">{{errorCounts[2][1]}}</span><span class="badge error-WARNING">{{errorCounts[2][2]}}</span><span class="badge error-INFO">{{errorCounts[2][3]}}</span>
+          </p-header>
+
+          <p-tabView>
+            <p-tabPanel header="User">
+              <p-table #dt *ngIf="reports.segmentVerificationResults" [value]="segVerificationResultTableForUser" [paginator]="true" [rows]="10">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 15em" [pSortableColumn]="'severity'">Severity
+                      <p-sortIcon [field]="'severity'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
+                      <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
+                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th>Description</th>
+                  </tr>
+                  <tr>
+                    <th>
+                      <p-dropdown [options]="severities" [style]="{'width':'100%;'}" (onChange)="dt.filter($event.value, 'severity', 'equals')"></p-dropdown>
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
+                    </th>
+                    <th></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-error>
+                  <tr>
+                    <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
+                    <td><span class="badge error-code">{{error.code}}</span></td>
+                    <td>
+                      <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
+                      <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
+                    </td>
+                    <td>{{error.description}}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabPanel>
+            <p-tabPanel header="Internal">
+              <p-table #dt *ngIf="reports.segmentVerificationResults" [value]="segVerificationResultTable" [paginator]="true" [rows]="10">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 15em" [pSortableColumn]="'severity'">Severity
+                      <p-sortIcon [field]="'severity'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
+                      <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
+                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th>Description</th>
+                  </tr>
+                  <tr>
+                    <th>
+                      <p-dropdown [options]="severities" [style]="{'width':'100%;'}" (onChange)="dt.filter($event.value, 'severity', 'equals')"></p-dropdown>
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
+                    </th>
+                    <th></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-error>
+                  <tr>
+                    <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
+                    <td><span class="badge error-code">{{error.code}}</span></td>
+                    <td>
+                      <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
+                      <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
+                    </td>
+                    <td>{{error.description}}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabPanel>
+          </p-tabView>
+        </p-accordionTab>
+        <p-accordionTab>
+          <p-header>
+            Datatypes Verification Results <span class="badge error-FATAL">{{errorCounts[1][0]}}</span><span class="badge error-ERROR">{{errorCounts[1][1]}}</span><span class="badge error-WARNING">{{errorCounts[1][2]}}</span><span class="badge error-INFO">{{errorCounts[1][3]}}</span>
+          </p-header>
+
+          <p-tabView>
+            <p-tabPanel header="User">
+              <p-table #dt *ngIf="reports.datatypeVerificationResults" [value]="dtVerificationResultTableForUser" [paginator]="true" [rows]="10">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 15em" [pSortableColumn]="'severity'">Severity
+                      <p-sortIcon [field]="'severity'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
+                      <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
+                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th>Description</th>
+                  </tr>
+                  <tr>
+                    <th>
+                      <p-dropdown [options]="severities" [style]="{'width':'100%;'}" (onChange)="dt.filter($event.value, 'severity', 'equals')"></p-dropdown>
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
+                    </th>
+                    <th></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-error>
+                  <tr>
+                    <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
+                    <td><span class="badge error-code">{{error.code}}</span></td>
+                    <td>
+                      <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
+                      <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
+                    </td>
+                    <td>{{error.description}}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabPanel>
+            <p-tabPanel header="Internal">
+              <p-table #dt *ngIf="reports.datatypeVerificationResults" [value]="dtVerificationResultTable" [paginator]="true" [rows]="10">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 15em" [pSortableColumn]="'severity'">Severity
+                      <p-sortIcon [field]="'severity'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
+                      <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
+                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th>Description</th>
+                  </tr>
+                  <tr>
+                    <th>
+                      <p-dropdown [options]="severities" [style]="{'width':'100%;'}" (onChange)="dt.filter($event.value, 'severity', 'equals')"></p-dropdown>
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
+                    </th>
+                    <th></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-error>
+                  <tr>
+                    <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
+                    <td><span class="badge error-code">{{error.code}}</span></td>
+                    <td>
+                      <app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
+                      <span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>
+                    </td>
+                    <td>{{error.description}}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabPanel>
+          </p-tabView>
+        </p-accordionTab>
+        <p-accordionTab>
+          <p-header>
+            Valuesets Verification Results <span class="badge error-FATAL">{{errorCounts[0][0]}}</span><span class="badge error-ERROR">{{errorCounts[0][1]}}</span><span class="badge error-WARNING">{{errorCounts[0][2]}}</span><span class="badge error-INFO">{{errorCounts[0][3]}}</span>
+          </p-header>
+
+          <p-tabView>
+            <p-tabPanel header="User">
+              <p-table #dt *ngIf="reports.valuesetVerificationResults" [value]="vsVerificationResultTableForUser" [paginator]="true" [rows]="10">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 15em" [pSortableColumn]="'severity'">Severity
+                      <p-sortIcon [field]="'severity'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
+                      <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
+                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th>Description</th>
+                  </tr>
+                  <tr>
+                    <th>
+                      <p-dropdown [options]="severities" [style]="{'width':'100%;'}" (onChange)="dt.filter($event.value, 'severity', 'equals')"></p-dropdown>
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
+                    </th>
+                    <th></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-error>
+                  <tr>
+                    <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
+                    <td><span class="badge error-code">{{error.code}}</span></td>
+                    <td>
+                      <app-scope-badge *ngIf="error.targetMeta && error.targetMeta.domainInfo" [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
+                      <span> {{error.targetMeta.bindingIdentifier}}<ng-container *ngIf="error.targetMeta.name">{{'-' + error.targetMeta.name}}</ng-container></span>
+                      <!--<app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>-->
+                      <!--<span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>-->
+                    </td>
+                    <td>{{error.description}}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabPanel>
+            <p-tabPanel header="Internal">
+              <p-table #dt *ngIf="reports.valuesetVerificationResults" [value]="vsVerificationResultTable" [paginator]="true" [rows]="10">
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th style="width: 15em" [pSortableColumn]="'severity'">Severity
+                      <p-sortIcon [field]="'severity'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 15em" [pSortableColumn]="'code'" >Error Code
+                      <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th style="width: 30em" [pSortableColumn]="'targetMeta.name'">Location
+                      <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                    </th>
+                    <th>Description</th>
+                  </tr>
+                  <tr>
+                    <th>
+                      <p-dropdown [options]="severities" [style]="{'width':'100%;'}" (onChange)="dt.filter($event.value, 'severity', 'equals')"></p-dropdown>
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
+                    </th>
+                    <th>
+                      <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
+                    </th>
+                    <th></th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-error>
+                  <tr>
+                    <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
+                    <td><span class="badge error-code">{{error.code}}</span></td>
+                    <td>
+                      <app-scope-badge *ngIf="error.targetMeta && error.targetMeta.domainInfo" [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>
+                      <span> {{error.targetMeta.bindingIdentifier}}<ng-container *ngIf="error.targetMeta.name">{{'-' + error.targetMeta.name}}</ng-container></span>
+                      <!--<app-scope-badge [scope]="error.targetMeta.domainInfo.scope" [version]="error.targetMeta.domainInfo.version"></app-scope-badge>-->
+                      <!--<span> {{error.targetMeta.name}}<ng-container *ngIf="error.targetMeta.extension">{{'-' + error.targetMeta.extension}}</ng-container></span>-->
+                    </td>
+                    <td>{{error.description}}</td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </p-tabPanel>
+          </p-tabView>
+        </p-accordionTab>
+      </p-accordion>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="step === 3">
+    <p-accordion [multiple]="true">
       <p-accordionTab header="Result" *ngIf="redirectUrl" [selected]="true">
-       <div class="alert alert alert-info">
-         Profile successfully pushed to <a [href]="redirectUrl">{{redirectUrl}}</a>
-       </div>
+        <div class="alert alert alert-info">
+          Profile successfully pushed to <a [href]="redirectUrl">{{redirectUrl}}</a>
+        </div>
       </p-accordionTab>
       <p-accordionTab header="Result" *ngIf="errors" [selected]="true">
         <div [innerHTML]="errors"></div>
@@ -52,11 +446,10 @@
 
 
 <mat-dialog-actions style="justify-content: flex-end;">
-  <button (click)="hasDomains=false" *ngIf="hasDomains" class="btn btn-sm btn-info" style="margin-right: 5px;">back</button>
-
-  <button (click)="loadDomain()" *ngIf="!hasDomains" [disabled]="!loginForm.valid" class="btn btn-sm btn-success" type="submit">
-    Login
-  </button>
-  <button *ngIf="hasDomains && selectedDomain" (click)="submit()" [disabled]="!isSelected()" class="btn btn-sm btn-success">Submit</button>
-
+  <button (click)="hasDomains=false; step = step - 1;" *ngIf="step !== 0" class="btn btn-sm btn-info" style="margin-right: 5px;">Back</button>
+  <button (click)="loadDomain()" *ngIf="step === 0" [disabled]="!loginForm.valid" class="btn btn-sm btn-success" type="submit">Login</button>
+  <button *ngIf="step === 1" (click)="verify()" [disabled]="!isSelected()" class="btn btn-sm btn-success">Next</button>
+  <button *ngIf="step === 2 && isProcessable()" (click)="submit()" [disabled]="!isSelected()" class="btn btn-sm btn-success">Next</button>
+  <button *ngIf="step === 2 && !isProcessable()" (click)="submit()" [disabled]="!isSelected()" class="btn btn-sm btn-success">Proceed anyway</button>
+  <button *ngIf="step === 3" (click)="cancel()" class="btn btn-sm btn-success">Close</button>
 </mat-dialog-actions>

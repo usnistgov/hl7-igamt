@@ -2,20 +2,22 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import {
-  LoadValueSet, OpenValueSetCrossRefEditor, OpenValueSetMetadataEditor, OpenValueSetPostDefEditor,
-  OpenValueSetPreDefEditor, OpenValueSetStructureEditor,
+  LoadValueSet, OpenValueSetCrossRefEditor, OpenValueSetDeltaEditor, OpenValueSetMetadataEditor,
+  OpenValueSetPostDefEditor, OpenValueSetPreDefEditor,
+  OpenValueSetStructureEditor,
   ValueSetEditActionTypes,
 } from '../../root-store/value-set-edit/value-set-edit.actions';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
+import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
+import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
+import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
-import {ValueSetCrossRefsComponent} from './components/value-set-cross-refs/value-set-cross-refs.component';
-import {ValueSetMetadataEditorComponent} from './components/value-set-metadata-editor/value-set-metadata-editor.component';
-import {ValueSetPostdefEditorComponent} from './components/value-set-postdef-editor/value-set-postdef-editor.component';
-import {ValueSetPredefEditorComponent} from './components/value-set-predef-editor/value-set-predef-editor.component';
-import {ValueSetStructureEditorComponent} from './components/value-set-structure-editor/value-set-structure-editor.component';
+import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
+import { ValueSetCrossRefsComponent } from './components/value-set-cross-refs/value-set-cross-refs.component';
+import { ValueSetMetadataEditorComponent } from './components/value-set-metadata-editor/value-set-metadata-editor.component';
+import { ValueSetPostdefEditorComponent } from './components/value-set-postdef-editor/value-set-postdef-editor.component';
+import { ValueSetPredefEditorComponent } from './components/value-set-predef-editor/value-set-predef-editor.component';
+import { ValueSetStructureEditorComponent } from './components/value-set-structure-editor/value-set-structure-editor.component';
 
 const routes: Routes = [
   {
@@ -27,7 +29,7 @@ const routes: Routes = [
       failureAction: ValueSetEditActionTypes.LoadValueSetFailure,
       redirectTo: ['ig', 'error'],
     },
-    canActivate: [DataLoaderResolverService],
+    canActivate: [DataLoaderGuard],
     children: [
       {
         path: '',
@@ -37,8 +39,8 @@ const routes: Routes = [
       {
         path: 'pre-def',
         component: ValueSetPredefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.PREDEF,
@@ -56,8 +58,8 @@ const routes: Routes = [
       {
         path: 'post-def',
         component: ValueSetPostdefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.POSTDEF,
@@ -75,8 +77,8 @@ const routes: Routes = [
       {
         path: 'structure',
         component: ValueSetStructureEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.VALUESET_STRUCTURE,
@@ -94,8 +96,8 @@ const routes: Routes = [
       {
         path: 'metadata',
         component: ValueSetMetadataEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.VALUESET_METADATA,
@@ -114,7 +116,7 @@ const routes: Routes = [
       {
         path: 'cross-references',
         component: ValueSetCrossRefsComponent,
-        canActivate: [IgEditorActivateGuard],
+        canActivate: [EditorActivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.CROSSREF,
@@ -125,6 +127,25 @@ const routes: Routes = [
           idKey: 'valuesetId',
           resourceType: Type.VALUESET,
           action: OpenValueSetCrossRefEditor,
+        },
+      },
+      {
+        path: 'delta',
+        component: DeltaEditorComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.VALUESET_DELTA,
+            title: 'Delta',
+            resourceType: Type.VALUESET,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenValueSetDeltaEditor,
+          idKey: 'valuesetId',
         },
       },
     ],

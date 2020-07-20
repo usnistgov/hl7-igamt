@@ -1,9 +1,8 @@
 <div style="display: flex; justify-content: space-between;">
   <div>
     <ng-container *ngIf="editable$ | async as edit">
-      <ng-container [ngSwitch]="!!edit.value">
+      <ng-container [ngSwitch]="!!edit.value && (edit.type === 'SINGLECODE' || edit.value.length > 0)">
         <ng-container *ngSwitchCase="true">
-
             <ng-container [ngSwitch]="edit.type">
               <ng-container *ngSwitchCase="'VALUESET'">
 
@@ -64,7 +63,7 @@
     <tr *ngFor="let item of vsBinding.valueSets">
       <td colspan="3">
         <div [pTooltip]="item?.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
-           <app-display-ref [documentId]="documentId" [element]="item" [hideDescription]="true"></app-display-ref>
+           <app-display-ref [documentId]="documentRef.documentId" [documentType]="documentRef.type" [element]="item" [hideDescription]="true"></app-display-ref>
         </div>
       </td>
     </tr>
@@ -89,7 +88,7 @@
     <tr>
       <td colspan="3">
         <div [pTooltip]="singleCode.valueSet?.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
-          <app-display-ref [documentId]="documentId" [element]="singleCode.valueSet" [hideDescription]="true"></app-display-ref>
+          <app-display-ref [documentId]="documentRef.documentId" [documentType]="documentRef.type" [element]="singleCode.valueSet" [hideDescription]="true"></app-display-ref>
         </div>
       </td>
     </tr>

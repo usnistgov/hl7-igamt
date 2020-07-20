@@ -10,15 +10,16 @@ import {
   OpenDatatypeStructureEditor,
 } from '../../root-store/datatype-edit/datatype-edit.actions';
 import { OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from '../../root-store/datatype-edit/datatype-edit.actions';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
+import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
+import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
+import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { DatatypeConformanceStatementEditorComponent } from './components/conformance-statement-editor/datatype-conformance-statement-editor.component';
 import { DatatypeCrossRefsComponent } from './components/datatype-cross-refs/datatype-cross-refs.component';
 import { DatatypeStructureEditorComponent } from './components/datatype-structure-editor/datatype-structure-editor.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
+import {DtmDeltaEditorComponent} from './components/dtm-delta-editor/dtm-delta-editor.component';
 import { MetadataEditComponent } from './components/metadata-edit/metadata-edit.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -33,7 +34,7 @@ const routes: Routes = [
       failureAction: DatatypeEditActionTypes.LoadDatatypeFailure,
       redirectTo: ['ig', 'error'],
     },
-    canActivate: [DataLoaderResolverService],
+    canActivate: [DataLoaderGuard],
     children: [
       {
         path: '',
@@ -43,7 +44,7 @@ const routes: Routes = [
       {
         path: 'metadata',
         component: MetadataEditComponent,
-        canActivate: [IgEditorActivateGuard],
+        canActivate: [EditorActivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.DATATYPE_METADATA,
@@ -57,13 +58,13 @@ const routes: Routes = [
           action: OpenDatatypeMetadataEditorNode,
           idKey: 'datatypeId',
         },
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
       },
       {
         path: 'pre-def',
         component: PredefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.PREDEF,
@@ -81,8 +82,8 @@ const routes: Routes = [
       {
         path: 'post-def',
         component: PostdefEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.POSTDEF,
@@ -100,7 +101,7 @@ const routes: Routes = [
       {
         path: 'cross-references',
         component: DatatypeCrossRefsComponent,
-        canActivate: [IgEditorActivateGuard],
+        canActivate: [EditorActivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.CROSSREF,
@@ -115,8 +116,8 @@ const routes: Routes = [
       {
         path: 'conformance-statement',
         component: DatatypeConformanceStatementEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
         data: {
           editorMetadata: {
             id: EditorID.DATATYPE_CS,
@@ -137,8 +138,8 @@ const routes: Routes = [
           {
             path: '',
             component: DatatypeStructureEditorComponent,
-            canActivate: [IgEditorActivateGuard],
-            canDeactivate: [IgEditSaveDeactivateGuard],
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
             data: {
               editorMetadata: {
                 id: EditorID.DATATYPE_STRUCTURE,
@@ -153,26 +154,45 @@ const routes: Routes = [
               idKey: 'datatypeId',
             },
           },
-          {
-            path: 'delta',
-            component: DeltaEditorComponent,
-            canActivate: [IgEditorActivateGuard],
-            canDeactivate: [IgEditSaveDeactivateGuard],
-            data: {
-              editorMetadata: {
-                id: EditorID.DATATYPE_DELTA,
-                title: 'Delta',
-                resourceType: Type.DATATYPE,
-              },
-              onLeave: {
-                saveEditor: true,
-                saveTableOfContent: true,
-              },
-              action: OpenDatatypeDeltaEditor,
-              idKey: 'datatypeId',
-            },
-          },
         ],
+      },
+      {
+        path: 'delta',
+        component: DeltaEditorComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.DATATYPE_DELTA,
+            title: 'Delta',
+            resourceType: Type.DATATYPE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenDatatypeDeltaEditor,
+          idKey: 'datatypeId',
+        },
+      },
+      {
+        path: 'dtm-delta',
+        component: DtmDeltaEditorComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.DATATYPE_DELTA,
+            title: 'Delta',
+            resourceType: Type.DATATYPE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenDatatypeDeltaEditor,
+          idKey: 'datatypeId',
+        },
       },
 
     ],

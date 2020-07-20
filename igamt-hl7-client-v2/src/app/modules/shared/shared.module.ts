@@ -3,34 +3,32 @@ import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { ExtendedModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatRadioModule } from '@angular/material';
+import { MatFormFieldModule, MatRadioModule, MatSelectModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
-import { NgbAlert, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
 import { ToastyModule } from 'ng2-toasty';
 import { ContextMenuModule } from 'ngx-contextmenu';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
-import {
-  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
-} from 'primeng/primeng';
+import {ListboxModule, OverlayPanelModule} from 'primeng/primeng';
+import { AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TabViewModule, TooltipModule, TreeTableModule } from 'primeng/primeng';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
-import { AlertsContainerComponent } from '../core/components/alerts-container/alerts-container.component';
-import { MessageService } from '../core/services/message.service';
+import { DamComponentsModule, DamLoaderModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { AddCoConstraintGroupComponent } from './components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
-import { AlertsComponent } from './components/alerts/alerts.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
 import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
-import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
+import { CsListComponent } from './components/cs-list/cs-list.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
@@ -42,6 +40,7 @@ import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-ma
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
+import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
 import { CardinalityComponent } from './components/hl7-v2-tree/columns/cardinality/cardinality.component';
@@ -50,6 +49,7 @@ import { ConformanceLengthComponent } from './components/hl7-v2-tree/columns/con
 import { ConstantValueComponent } from './components/hl7-v2-tree/columns/constant-value/constant-value.component';
 import { DatatypeComponent } from './components/hl7-v2-tree/columns/datatype/datatype.component';
 import { LengthComponent } from './components/hl7-v2-tree/columns/length/length.component';
+import { NameComponent } from './components/hl7-v2-tree/columns/name/name.component';
 import { PredicateComponent } from './components/hl7-v2-tree/columns/predicate/predicate.component';
 import { SegmentComponent } from './components/hl7-v2-tree/columns/segment/segment.component';
 import { TextComponent } from './components/hl7-v2-tree/columns/text/text.component';
@@ -57,16 +57,17 @@ import { UsageComponent } from './components/hl7-v2-tree/columns/usage/usage.com
 import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/valueset.component';
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
-import { LoginFormComponent } from './components/login-form/login-form.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
+import { NgxDropdownComponent } from './components/ngx-dropdown/ngx-dropdown.component';
 import { PatternDialogComponent } from './components/pattern-dialog/pattern-dialog.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
 import { ResourceDropdownComponent } from './components/resource-dropdown/resource-dropdown.component';
 import { ResourcePickerComponent } from './components/resource-picker/resource-picker.component';
 import { ScopeBadgeComponent } from './components/scope-badge/scope-badge.component';
+import { SegmentAddDialogComponent } from './components/segment-add-dialog/segment-add-dialog.component';
 import { SelectDatatypesComponent } from './components/select-datatypes/select-datatypes.component';
 import { SelectMessagesComponent } from './components/select-messages/select-messages.component';
 import { SelectNameComponent } from './components/select-name/select-name.component';
@@ -74,31 +75,31 @@ import { SelectResourceIdsComponent } from './components/select-resource-ids/sel
 import { SelectSegmentsComponent } from './components/select-segments/select-segments.component';
 import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
+import { SharingDialogComponent } from './components/sharing-dialog/sharing-dialog.component';
 import { StructureTreeComponent } from './components/structure-tree/structure-tree.component';
 import { TextEditorDialogComponent } from './components/text-editor-dialog/text-editor-dialog.component';
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
 import { UsageDialogComponent } from './components/usage-dialog/usage-dialog.component';
 import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.component';
+import { UserProfileFormComponent } from './components/user-profile-form/user-profile-form.component';
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
+import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
 import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
-import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
 
 @NgModule({
   declarations: [
-    LoginFormComponent,
+    UserProfileFormComponent,
     RegisterFormComponent,
-    AlertsComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
     ScopeBadgeComponent,
-    ConfirmDialogComponent,
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
     FormInputComponent,
@@ -132,6 +133,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     BindingBadgeComponent,
     CommentsComponent,
     UsageDialogComponent,
+    SharingDialogComponent,
     UsageViewerComponent,
     ConstantValueComponent,
     PredicateComponent,
@@ -149,79 +151,95 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DeltaColumnComponent,
     BindingSelectorComponent,
     ExportToolComponent,
-    AlertsContainerComponent,
     DynamicMappingComponent,
     DeriveDialogComponent,
     AddCoConstraintGroupComponent,
     ResourceDropdownComponent,
     ImportCsvValuesetComponent,
+    ValuesetDeltaComponent,
     DisplayRefComponent,
+    NgxDropdownComponent,
+    CsListComponent,
+    SelectDatatypesComponent,
+    SegmentAddDialogComponent,
+    FieldAddDialogComponent,
+    NameComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
   ],
-  imports: [
-    CommonModule,
-    RouterModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgbModule,
-    TooltipModule,
-    TreeModule,
-    CardModule,
-    CheckboxModule,
-    ReactiveFormsModule,
-    MatRadioModule,
-    MatDialogModule,
-    FileUploadModule,
-    pTreeModule,
-    DropdownModule,
-    ToastyModule.forRoot(),
-    TreeModule,
-    TreeTableModule,
-    TableModule,
-    SelectButtonModule,
-    ColorPickerModule,
-    ContextMenuModule.forRoot({
-      useBootstrap4: true,
-    }),
-    RadioButtonModule,
-    AccordionModule,
-    InputSwitchModule,
-    TableModule,
-    SelectButtonModule,
-    ExtendedModule,
-    FroalaEditorModule.forRoot(),
-    FroalaViewModule.forRoot(),
-    ChipsModule,
-    MultiSelectModule,
-    OrganizationChartModule,
-    PanelModule,
-    AutoCompleteModule,
-    PrimeNgDragDrop,
-    DragDropModule,
-  ],
+    imports: [
+        CommonModule,
+        RouterModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NgbModule,
+        TooltipModule,
+        TreeModule,
+        CardModule,
+        CheckboxModule,
+        ReactiveFormsModule,
+        MatRadioModule,
+        MatDialogModule,
+        FileUploadModule,
+        pTreeModule,
+        DropdownModule,
+        ToastyModule.forRoot(),
+        TreeModule,
+        TreeTableModule,
+        TableModule,
+        SelectButtonModule,
+        ColorPickerModule,
+        ContextMenuModule.forRoot({
+            useBootstrap4: true,
+        }),
+        DamMessagesModule,
+        DamLoaderModule,
+        DamComponentsModule,
+        RadioButtonModule,
+        AccordionModule,
+        ListboxModule,
+        InputSwitchModule,
+        TableModule,
+        SelectButtonModule,
+        ExtendedModule,
+        FroalaEditorModule.forRoot(),
+        FroalaViewModule.forRoot(),
+        ChipsModule,
+        MultiSelectModule,
+        OrganizationChartModule,
+        PanelModule,
+        AutoCompleteModule,
+        PrimeNgDragDrop,
+        DragDropModule,
+        MatSelectModule,
+        MatFormFieldModule,
+        NgxMatSelectSearchModule,
+        TabViewModule,
+        OverlayPanelModule,
+    ],
   exports: [
     CommonModule,
     RouterModule,
-    LoginFormComponent,
     FormsModule,
     FileUploadModule,
     ReactiveFormsModule,
+    UserProfileFormComponent,
     RegisterFormComponent,
     TooltipModule,
     NgbModule,
     InputSwitchModule,
-    NgbAlert,
     CardModule,
     AccordionModule,
+    ListboxModule,
     CheckboxModule,
+    DamMessagesModule,
+    DamComponentsModule,
     PrimeNgDragDrop,
     ReactiveFormsModule,
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
     FileSelectInputComponent,
-    AlertsComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
     ScopeBadgeComponent,
@@ -233,16 +251,17 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MatDialogModule,
     MatRadioModule,
     DropdownModule,
-    ConfirmDialogComponent,
     FormInputComponent,
     SelectVersionsComponent,
     SelectMessagesComponent,
+    SelectDatatypesComponent,
     DisplaySectionComponent,
     TocSubMenuComponent,
     FroalaEditorModule,
     FroalaViewModule,
     MetadataFormComponent,
     ChipsModule,
+    NgxDropdownComponent,
     ResourcePickerComponent,
     CopyResourceComponent,
     NamingDuplicationDirective,
@@ -281,29 +300,45 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MaxNumberDirective,
     DeltaTreeComponent,
     DeltaColumnComponent,
+    CsListComponent,
     BindingSelectorComponent,
     ExportToolComponent,
-    AlertsContainerComponent,
     DynamicMappingComponent,
     AddCoConstraintGroupComponent,
     ResourceDropdownComponent,
+    ValuesetDeltaComponent,
     DisplayRefComponent,
+    SelectDatatypesComponent,
+    SegmentAddDialogComponent,
+    FieldAddDialogComponent,
+    NameComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, ExportToolComponent, BindingSelectorComponent, DeriveDialogComponent, AddCoConstraintGroupComponent, ImportCsvValuesetComponent, VerifyIgDialogComponent],
+  entryComponents: [
+    ResourcePickerComponent,
+    CopyResourceComponent,
+    TextEditorDialogComponent,
+    UsageDialogComponent,
+    SharingDialogComponent,
+    CsDialogComponent,
+    PatternDialogComponent,
+    AddResourceComponent,
+    ExportXmlDialogComponent,
+    ExportToolComponent,
+    BindingSelectorComponent,
+    DeriveDialogComponent,
+    AddCoConstraintGroupComponent,
+    ImportCsvValuesetComponent,
+    VerifyIgDialogComponent,
+    SegmentAddDialogComponent,
+    FieldAddDialogComponent,
+  ],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {
     return {
       ngModule: SharedModule,
       providers: [
-        MessageService, ConfigService,
-        {
-          provide: DEFAULT_MESSAGE_OPTION,
-          useValue: {
-            closable: true,
-            timeout: 2000,
-          },
-        },
+        ConfigService,
       ],
     };
   }

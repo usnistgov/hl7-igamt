@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Message } from '../../core/models/message/message.class';
+import { Message } from '../../dam-framework/models/messages/message.class';
 import { IExportConfiguration } from '../../export-configuration/models/default-export-configuration.interface';
+import { Type } from '../../shared/constants/type.enum';
 import { IExportConfigurationItemList } from '../models/exportConfigurationForFrontEnd.interface';
 
 @Injectable()
@@ -16,8 +17,8 @@ export class ExportConfigurationService {
     return this.http.get<IExportConfiguration>(this.URL + '/' + id);
   }
 
-  createExportConfiguration(): Observable<IExportConfiguration> {
-    return this.http.get<IExportConfiguration>(this.URL + '/create');
+  createExportConfiguration(type: Type): Observable<IExportConfiguration> {
+    return this.http.get<IExportConfiguration>(this.URL + '/create/' + type);
   }
 
   saveExportConfiguration(exportConfiguration: IExportConfiguration): Observable<Message<any>> {
@@ -32,8 +33,8 @@ export class ExportConfigurationService {
     return this.http.post<Message<any>>(this.URL + '/delete', exportConfiguration);
   }
 
-  getAllExportConfigurations(): Observable<IExportConfigurationItemList[]> {
-    return this.http.get<IExportConfigurationItemList[]>(this.URL + '/generalConfigurations');
+  getAllExportConfigurations(type: Type): Observable<IExportConfigurationItemList[]> {
+    return this.http.get<IExportConfigurationItemList[]>(this.URL + '/generalConfigurations/' + type);
   }
 
 }
