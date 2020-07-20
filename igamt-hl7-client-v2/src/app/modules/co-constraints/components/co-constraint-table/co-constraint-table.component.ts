@@ -64,7 +64,13 @@ interface ICoConstraintGroupMap {
 export class CoConstraintTableComponent implements OnInit {
 
   @Input()
+  delta: boolean;
+
+  @Input()
   id: number;
+
+  @Input()
+  vOnly: boolean;
 
   @Input()
   set segment(seg: ISegment) {

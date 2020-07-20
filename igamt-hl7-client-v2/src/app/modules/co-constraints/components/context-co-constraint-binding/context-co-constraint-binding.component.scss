@@ -1,0 +1,13 @@
+@import '../../../../../assets/variables';
+
+.context-added {
+  background-color: $delta_added_light;
+}
+
+.context-removed {
+  background-color: $delta_deleted_light;
+}
+
+.context-changed {
+  background-color: $delta_changed_light;
+}

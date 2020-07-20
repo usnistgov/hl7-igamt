@@ -9,6 +9,7 @@ export enum CoConstraintGroupEditActionTypes {
   LoadCoConstraintGroupSuccess = '[CoConstraintGroupEdit] Load CoConstraints Group Success',
   LoadCoConstraintGroupFailure = '[CoConstraintGroupEdit] Load CoConstraints Group Failure',
   OpenCoConstraintGroupEditor = '[CoConstraintGroupEdit] Open CoConstraints Group Editor',
+  OpenCoConstraintGroupDeltaEditor = '[CoConstraintGroupEdit] Open CoConstraints Group Delta Editor',
   OpenCoConstraintGroupCrossRefEditor = '[OpenCoConstraintGroupCrossRefEditor] OpenCoConstraint Group CrossRef Editor',
 }
 
@@ -35,6 +36,15 @@ export class OpenCoConstraintGroupCrossRefEditor extends OpenEditorBase implemen
     super();
   }
 }
+export class OpenCoConstraintGroupDeltaEditor extends OpenEditorBase implements Action {
+  readonly type = CoConstraintGroupEditActionTypes.OpenCoConstraintGroupDeltaEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) {
+    super();
+  }
+}
 export class OpenCoConstraintGroupEditor extends OpenEditorBase implements Action {
   readonly type = CoConstraintGroupEditActionTypes.OpenCoConstraintGroupEditor;
   constructor(readonly payload: {
@@ -50,4 +60,5 @@ export type CoConstraintGroupEditActions =
   | LoadCoConstraintGroupSuccess
   | LoadCoConstraintGroupFailure
   | OpenCoConstraintGroupEditor
-  | OpenCoConstraintGroupCrossRefEditor;
+  | OpenCoConstraintGroupCrossRefEditor
+  | OpenCoConstraintGroupDeltaEditor;

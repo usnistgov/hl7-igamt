@@ -6,12 +6,14 @@ import {
   OpenCoConstraintGroupCrossRefEditor,
   OpenCoConstraintGroupEditor,
 } from '../../root-store/co-constraint-group-edit/co-constraint-group-edit.actions';
+import { OpenCoConstraintGroupDeltaEditor } from '../../root-store/co-constraint-group-edit/co-constraint-group-edit.actions';
 import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { CoConstraintCrossRefComponent } from './components/co-constraint-cross-ref/co-constraint-cross-ref.component';
+import { CoConstraintGroupDeltaEditorComponent } from './components/co-constraint-group-delta-editor/co-constraint-group-delta-editor.component';
 import { CoConstraintGroupEditorComponent } from './components/co-constraint-group-editor/co-constraint-group-editor.component';
 
 const routes: Routes = [
@@ -47,6 +49,25 @@ const routes: Routes = [
             saveTableOfContent: true,
           },
           action: OpenCoConstraintGroupEditor,
+          idKey: 'ccGroupId',
+        },
+      },
+      {
+        path: 'delta',
+        component: CoConstraintGroupDeltaEditorComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.CC_GROUP_DELTA,
+            title: 'Delta',
+            resourceType: Type.COCONSTRAINTGROUP,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenCoConstraintGroupDeltaEditor,
           idKey: 'ccGroupId',
         },
       },

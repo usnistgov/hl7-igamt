@@ -16,6 +16,7 @@
   [segment]="segment$ | async"
   [value]="group$ | async"
   [mode]="'GROUP'"
+  [vOnly]="viewOnly$ | async"
   [datatypes]="datatypes | async"
   [valueSets]="valueSets | async"
   (valueChange)="change($event)"

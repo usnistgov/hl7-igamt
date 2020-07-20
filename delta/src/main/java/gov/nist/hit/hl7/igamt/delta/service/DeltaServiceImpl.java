@@ -1,5 +1,10 @@
 package gov.nist.hit.hl7.igamt.delta.service;
 
+import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.coconstraints.service.impl.CoConstraintDeltaService;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
@@ -46,6 +51,8 @@ public class DeltaServiceImpl implements DeltaService {
   @Autowired
   public ConformanceProfileService conformanceProfileService;
   @Autowired
+  public CoConstraintService coConstraintService;
+  @Autowired
   public SegmentService segmentService;
   @Autowired
   public DatatypeService datatypeService;
@@ -57,11 +64,12 @@ public class DeltaServiceImpl implements DeltaService {
   public EntityDeltaServiceImpl entityDeltaService;
   @Autowired
   DisplayInfoService displayInfoService;
-  
   @Autowired
   ValuesetService valuesetService;
+  @Autowired
+  CoConstraintDeltaService coConstraintDeltaService;
 
-  public Delta delta(Type type, String documentId, String entityId) {
+  public Delta delta(Type type, String documentId, String entityId) throws CoConstraintGroupNotFoundException {
     Ig targetIg = this.igService.findById(documentId);
     Ig sourceIg = this.igService.findById(targetIg.getFrom());
 
@@ -103,6 +111,16 @@ public class DeltaServiceImpl implements DeltaService {
 
       return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
 
+    } else if(type.equals(Type.COCONSTRAINTGROUP)) {
+
+
+      CoConstraintGroup target = this.coConstraintService.findById(entityId);
+      CoConstraintGroup source = this.coConstraintService.findById(target.getOrigin());
+
+      DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), null, source.getDescription(), source.getId());
+      DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), null, target.getDescription(), target.getId());
+
+      return new Delta<>(sourceInfo, targetInfo, this.coConstraintDeltaService.deltaGroup(source, target));
     } else if(type.equals(Type.CONFORMANCEPROFILE)) {
 
 
@@ -118,7 +136,23 @@ public class DeltaServiceImpl implements DeltaService {
       List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
       List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
-      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
+      this.coConstraintDeltaService.preProcess(source.getCoConstraintsBindings());
+      this.coConstraintDeltaService.preProcess(target.getCoConstraintsBindings());
+
+      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements, this.coConstraintDeltaService.delta(source.getCoConstraintsBindings(), target.getCoConstraintsBindings()));
+
+    } else if(type.equals(Type.COCONSTRAINTBINDINGS)) {
+
+      ConformanceProfile target = this.conformanceProfileService.findById(entityId);
+      ConformanceProfile source = this.conformanceProfileService.findById(target.getOrigin());
+
+      DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), null, source.getDescription(), source.getId());
+      DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), null, target.getDescription(), target.getId());
+
+      this.coConstraintDeltaService.preProcess(source.getCoConstraintsBindings());
+      this.coConstraintDeltaService.preProcess(target.getCoConstraintsBindings());
+
+      return new Delta(sourceInfo, targetInfo, this.coConstraintDeltaService.delta(source.getCoConstraintsBindings(), target.getCoConstraintsBindings()));
 
     } else if(type.equals(Type.VALUESET)) {
 

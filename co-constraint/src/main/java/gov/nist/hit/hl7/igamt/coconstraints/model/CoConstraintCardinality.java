@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.coconstraints.model;
 
+import java.util.Objects;
+
 public class CoConstraintCardinality {
 
 	private int min;
@@ -25,4 +27,17 @@ public class CoConstraintCardinality {
 		return clone;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		CoConstraintCardinality that = (CoConstraintCardinality) o;
+		return min == that.min &&
+				Objects.equals(max, that.max);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(min, max);
+	}
 }

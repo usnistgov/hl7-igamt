@@ -7,7 +7,9 @@ import java.util.List;
 
 @JsonTypeName("CONTAINED")
 public class CoConstraintGroupBindingContained extends  CoConstraintGroupBinding {
+
     protected String name;
+    protected DeltaField<String> nameDelta;
     protected List<CoConstraint> coConstraints;
     
     public CoConstraintGroupBindingContained() {
@@ -35,7 +37,17 @@ public class CoConstraintGroupBindingContained extends  CoConstraintGroupBinding
         clone.setName(name);
         clone.setRequirement(requirement.clone());
         clone.setType(type);
+        clone.setId(id);
         clone.setCoConstraints(new ArrayList<>(coConstraints));
         return clone;
     }
+
+    public DeltaField<String> getNameDelta() {
+        return nameDelta;
+    }
+
+    public void setNameDelta(DeltaField<String> nameDelta) {
+        this.nameDelta = nameDelta;
+    }
+
 }

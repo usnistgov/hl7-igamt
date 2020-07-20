@@ -11,7 +11,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = CoConstraintGroupBindingContained.class, name = "CONTAINED"),
         @JsonSubTypes.Type(value = CoConstraintGroupBindingRef.class, name = "REF"),
 })
-public abstract class CoConstraintGroupBinding {
+public abstract class CoConstraintGroupBinding extends WithDelta {
+    protected String id;
     protected CoConstraintRequirement requirement;
     protected GroupBindingType type;
 
@@ -33,5 +34,13 @@ public abstract class CoConstraintGroupBinding {
 
     public CoConstraintGroupBinding cloneGroup() throws CloneNotSupportedException {
         return (CoConstraintGroupBinding) this.clone();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

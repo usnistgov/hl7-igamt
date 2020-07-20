@@ -10,7 +10,7 @@ import {
   LoadResourceReferencesFailure,
   LoadResourceReferencesSuccess,
 } from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
-import {selectLoadedDocumentInfo} from '../../../root-store/dam-igamt/igamt.selectors';
+import { selectLoadedDocumentInfo } from '../../../root-store/dam-igamt/igamt.selectors';
 import { MessageType, UserMessage } from '../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../dam-framework/services/message.service';
 import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
@@ -144,10 +144,10 @@ export class OpenEditorService {
     _action: string,
     type: Type,
     displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
-    resource$: (type: Type, elementId: string, igId: string) => Observable<IDelta>,
+    resource$: (type: Type, elementId: string, igId: string) => Observable<IDelta<any>>,
     notFoundMessage: string,
   ): Observable<Action> {
-    return this.openEditor<IDelta, A>(
+    return this.openEditor<IDelta<any>, A>(
       _action,
       displayElement$,
       (a: OpenEditorBase) => {
@@ -158,7 +158,7 @@ export class OpenEditorService {
         );
       },
       notFoundMessage,
-      this.openEditorProvider<A, IDelta>(),
+      this.openEditorProvider<A, IDelta<any>>(type, true),
     );
   }
 
@@ -216,16 +216,35 @@ export class OpenEditorService {
     );
   }
 
-  openEditorProvider<A extends OpenEditorBase, T>() {
+  openEditorProvider<A extends OpenEditorBase, T>(type?: Type, loadResourceReference: boolean = false) {
     return (action: A, resource: T, display: IDisplayElement) => {
-      return of(new OpenEditor({
+      const openEditor = new OpenEditor({
         id: action.payload.id,
         display,
         editor: action.payload.editor,
         initial: {
           value: resource,
         },
-      }));
+      });
+
+      if (loadResourceReference && type) {
+        this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
+        return RxjsStoreHelperService.listenAndReact(this.actions$, {
+          [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
+            do: (loadSuccess: LoadResourceReferencesSuccess) => {
+              return of(openEditor);
+            },
+          },
+          [IgamtLoadedResourcesActionTypes.LoadResourceReferencesFailure]: {
+            do: (loadFailure: LoadResourceReferencesFailure) => {
+              return of(new OpenEditorFailure({ id: action.payload.id }));
+            },
+          },
+        });
+      } else {
+        return of(openEditor);
+      }
+
     };
   }
 

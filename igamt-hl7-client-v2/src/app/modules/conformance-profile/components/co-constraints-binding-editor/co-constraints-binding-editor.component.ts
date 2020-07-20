@@ -25,10 +25,6 @@ import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { ConformanceProfileService } from '../../services/conformance-profile.service';
 
-export interface IExpansionPanelView {
-  [key: string]: boolean;
-}
-
 export enum ChangeLevel {
   CONTEXT,
   SEGMENT,
@@ -70,10 +66,10 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
   public valueSets: Observable<IDisplayElement[]>;
 
   ccTableBinding: ICoConstraintBindingContext[];
-  expansionPanelView: IExpansionPanelView;
   s_workspace: Subscription;
   s_changes: Subscription;
   s_tree: Subscription;
+  openPanelId: string;
 
   constructor(
     protected actions$: Actions,
@@ -93,10 +89,9 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
       store,
     );
 
-    this.expansionPanelView = {};
-    this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes).pipe(tap(() => console.log('D')));
-    this.segments = this.store.select(fromIgamtDisplaySelectors.selectAllSegments).pipe(tap(() => console.log('S')));
-    this.valueSets = this.store.select(selectValueSetsNodes).pipe(tap(() => console.log('V')));
+    this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);
+    this.segments = this.store.select(fromIgamtDisplaySelectors.selectAllSegments);
+    this.valueSets = this.store.select(selectValueSetsNodes);
 
     this.conformanceProfile = new ReplaySubject<IConformanceProfile>(1);
     this.conformanceProfile$ = this.conformanceProfile.asObservable();
@@ -153,21 +148,6 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
         this.bindingsSync.next(_.cloneDeep(data.value) || []);
       }),
     ).subscribe();
-  }
-
-  openPanel(id: string) {
-    for (const key of Object.keys(this.expansionPanelView)) {
-      this.expansionPanelView[key] = false;
-    }
-    this.expansionPanelView[id] = true;
-  }
-
-  togglePanel(id: string) {
-    if (this.expansionPanelView[id]) {
-      this.expansionPanelView[id] = false;
-    } else {
-      this.openPanel(id);
-    }
   }
 
   deleteSegmentBinding(segments: ICoConstraintBindingSegment[], segment: ICoConstraintBindingSegment, contextId: string, i: number) {
@@ -264,6 +244,10 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
           }
         }
       });
+  }
+
+  openPanel(id: string) {
+    this.openPanelId = id;
   }
 
   segmentBindingChange(contextId: string, value: ICoConstraintBindingSegment) {
@@ -423,7 +407,7 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
           mergeMap((message) => {
             return this.conformanceProfileService.getById(id).pipe(
               flatMap((resource) => {
-                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { value: resource.coConstraintsBindings, resource }, updateDate: false })];
+                return [this.messageService.messageToAction(message), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { value: resource.coConstraintsBindings, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
               }),
             );
           }),

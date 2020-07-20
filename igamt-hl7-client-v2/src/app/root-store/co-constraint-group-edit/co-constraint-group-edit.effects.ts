@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { of } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import { catchError, concatMap, filter, flatMap, map, take } from 'rxjs/operators';
 import * as fromDamActions from 'src/app/modules/dam-framework/store/data/dam.actions';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
@@ -19,7 +19,10 @@ import { Type } from '../../modules/shared/constants/type.enum';
 import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.interface';
 import { IUsages } from '../../modules/shared/models/cross-reference';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
-import {IgamtLoadedResourcesActionTypes, LoadResourceReferences} from '../dam-igamt/igamt.loaded-resources.actions';
+import { DeltaService } from '../../modules/shared/services/delta.service';
+import { IgamtLoadedResourcesActionTypes, LoadResourceReferences } from '../dam-igamt/igamt.loaded-resources.actions';
+import { selectLoadedDocumentInfo } from '../dam-igamt/igamt.selectors';
+import { OpenCoConstraintGroupDeltaEditor } from './co-constraint-group-edit.actions';
 import {
   CoConstraintGroupEditActions,
   CoConstraintGroupEditActionTypes,
@@ -119,6 +122,50 @@ export class CoConstraintGroupEditEffects {
   );
 
   @Effect()
+  openCoConstraintGroupDeltaEditor$ = this.actions$.pipe(
+    ofType(CoConstraintGroupEditActionTypes.OpenCoConstraintGroupDeltaEditor),
+    flatMap((action: OpenCoConstraintGroupDeltaEditor) => {
+      return combineLatest(
+        this.store.select(fromIgamtSelectedSelectors.selectedCoConstraintGroup),
+        this.store.select(selectLoadedDocumentInfo),
+      ).pipe(
+        filter(([elm, info]) => elm !== undefined && info !== undefined),
+        take(1),
+        flatMap(([ccGroup, info]) => {
+          return combineLatest(
+            this.segmentService.getById(ccGroup.baseSegment),
+            this.deltaService.getDeltaFromOrigin(Type.COCONSTRAINTGROUP, ccGroup.id, info.documentId),
+          ).pipe(
+            flatMap(([segment, value]) => {
+              return this.store.select(fromIgamtDisplaySelectors.selectCoConstraintGroupsById, { id: ccGroup.id }).pipe(
+                take(1),
+                flatMap((display) => {
+                  this.store.dispatch(new LoadResourceReferences({ resourceType: Type.SEGMENT, id: ccGroup.baseSegment }));
+                  return RxjsStoreHelperService.listenAndReact(this.actions$, {
+                    [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
+                      do: (resourceRefSuccess: Action) => {
+                        return of(new fromDamActions.OpenEditor({
+                          id: action.payload.id,
+                          display,
+                          editor: action.payload.editor,
+                          initial: {
+                            segment,
+                            value,
+                          },
+                        }));
+                      },
+                    },
+                  });
+                }),
+              );
+            }),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
   OpenCoConstraintGroupCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenCoConstraintGroupCrossRefEditor>(
     CoConstraintGroupEditActionTypes.OpenCoConstraintGroupCrossRefEditor,
     fromIgamtDisplaySelectors.selectCoConstraintGroupsById,
@@ -133,6 +180,7 @@ export class CoConstraintGroupEditEffects {
     private actions$: Actions<CoConstraintGroupEditActions>,
     private store: Store<any>,
     private message: MessageService,
+    private deltaService: DeltaService,
     private segmentService: SegmentService,
     private ccService: CoConstraintGroupService,
     private editorHelper: OpenEditorService,

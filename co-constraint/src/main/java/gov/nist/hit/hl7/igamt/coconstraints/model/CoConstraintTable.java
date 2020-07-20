@@ -23,7 +23,16 @@ public class CoConstraintTable extends CoConstraintCollection {
         CoConstraintTable clone = new CoConstraintTable();
         clone.setBaseSegment(baseSegment);
         clone.setHeaders(headers.clone());
-        clone.setCoConstraints(new ArrayList<>(this.coConstraints));
+
+        clone.setCoConstraints(this.coConstraints.stream().map(cc -> {
+            try {
+                return cc.clone();
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }).filter(Objects::nonNull).collect(Collectors.toList()));
+
         clone.groups = groups.stream().map(group -> {
             try {
                 return group.cloneGroup();

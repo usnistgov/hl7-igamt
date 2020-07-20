@@ -1,4 +1,10 @@
-<div style="background-color: #f7f7f7; padding: 5px;" *ngIf="segment$ | async as segment">
+<div style="background-color: #f7f7f7; padding: 5px;" *ngIf="segment$ | async as segment"
+  [ngClass]="{
+    'segment-added': delta && binding.delta === 'ADDED',
+    'segment-deleted': delta && binding.delta === 'DELETED',
+    'segment-changed': delta && binding.delta === 'CHANGED'
+  }"
+>
 
   <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
     <div>
@@ -6,6 +12,7 @@
         <strong style="margin-right: 10px !important;"> Co-Constraint Tables for Segment </strong>
         <app-entity-bagde [type]="'SEGMENT'" ></app-entity-bagde>
         <h6 class="title-text" style="margin-left: 10px !important;" > {{ binding.segment.name }} </h6>
+        <span *ngIf="delta" style="margin-left: 20px;"> ( {{ binding.delta }} )</span>
       </div>
       <div style="display: flex; align-items: center; justify-content: flex-start;">
         <strong style="margin-right: 10px !important;"> Flavor </strong>
@@ -15,54 +22,84 @@
       </div>
     </div>
     <div>
-      <button class="btn btn-sm btn-primary" style="margin-right: 10px;" (click)="createTable(binding, segment)" >
+      <button *ngIf="!viewOnly" class="btn btn-sm btn-primary" style="margin-right: 10px;" (click)="createTable(binding, segment)" >
         <i class="fa fa-plus"></i>
         Co-Constraint Table
       </button>
-      <button class="btn btn-sm btn-danger" (click)="triggerRemove()" >
+      <button *ngIf="!viewOnly" class="btn btn-sm btn-danger" (click)="triggerRemove()" >
         <i class="fa fa-trash"></i>
         Delete Segment
       </button>
     </div>
   </div>
   <label style="font-weight: bold;">Name</label>
-  <input type="text" class="form-control" [(ngModel)]="binding.name" (ngModelChange)="triggerChange()" placeholder="Name">
-
-  <div style="padding: 10px; border: 1px solid lightgray; background-color: white; margin-top: 10px;" *ngFor="let table of binding.tables; let i = index">
-    <div style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-      <button class="btn btn-sm entity-badge-co-constraint-group margin-right" style="color: white;" (click)="importCoConstraintGroup(binding, i)" >
-        <i class="fa fa-arrow-down"></i>
-        Import Co-Constraint Group
-      </button>
-      <button class="btn btn-sm btn-primary margin-right" (click)="addCoConstraintGroup(i)">
-        <i class="fa fa-plus"></i>
-        Co-Constraint Group
-      </button>
-      <button class="btn btn-sm btn-danger margin-right" (click)="deleteTable(binding, i)" >
-        <i class="fa fa-trash"></i>
-        Delete Table
-      </button>
-      <button class="btn btn-sm btn-success margin-right" (click)="exportAsExcel(table.value)" >
-        <i class="fa fa-download"></i>
-        Export As Excel
-      </button>
+  <input *ngIf="!delta || !binding.nameDelta" [disabled]="viewOnly" type="text" class="form-control" [(ngModel)]="binding.name" (ngModelChange)="triggerChange()" placeholder="Name">
+  <app-delta-column
+    *ngIf="delta && !!binding.nameDelta"
+    [currentValue]="binding.nameDelta.current"
+    [previousValue]="binding.nameDelta.previous"
+    [action]="binding.nameDelta.delta">
+    <ng-template #default let-value>
+      {{value}}
+    </ng-template>
+  </app-delta-column>
+  <div style="padding: 10px; border: 1px solid lightgray; background-color: white; margin-top: 10px;"
+      [ngClass]="{
+        'segment-added': delta && table.delta === 'ADDED',
+        'segment-deleted': delta && table.delta === 'DELETED',
+        'segment-changed': delta && table.delta === 'CHANGED'
+      }"
+      *ngFor="let table of binding.tables; let i = index">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+      <div>
+        <span *ngIf="delta"> ( {{ table.delta }} )</span>
+      </div>
+      <div>
+        <button *ngIf="!viewOnly" class="btn btn-sm entity-badge-co-constraint-group margin-right" style="color: white;" (click)="importCoConstraintGroup(binding, i)" >
+          <i class="fa fa-arrow-down"></i>
+          Import Co-Constraint Group
+        </button>
+        <button *ngIf="!viewOnly" class="btn btn-sm btn-primary margin-right" (click)="addCoConstraintGroup(i)">
+          <i class="fa fa-plus"></i>
+          Co-Constraint Group
+        </button>
+        <button *ngIf="!viewOnly" class="btn btn-sm btn-danger margin-right" (click)="deleteTable(binding, i)" >
+          <i class="fa fa-trash"></i>
+          Delete Table
+        </button>
+        <button class="btn btn-sm btn-success margin-right" (click)="exportAsExcel(table.value)" *ngIf="!delta" >
+          <i class="fa fa-download"></i>
+          Export As Excel
+        </button>
+      </div>
     </div>
     <div>
       <div style="margin-bottom: 10px;">
         <strong>Condition : </strong>
-        <span> {{ table.condition?.description }} </span>
-        <button class="btn btn-sm btn-primary" style="margin-left: 10px;" (click)="openConditionDialog(context, table)">
+        <span *ngIf="!delta || !table.conditionDelta"> {{ table.condition?.description }} </span>
+        <app-delta-column
+            *ngIf="delta && !!table.conditionDelta"
+            [currentValue]="table.conditionDelta.current"
+            [previousValue]="table.conditionDelta.previous"
+            [action]="table.conditionDelta.delta">
+          <ng-template #default let-value>
+            {{value}}
+          </ng-template>
+        </app-delta-column>
+        <button *ngIf="!viewOnly" class="btn btn-sm btn-primary" style="margin-left: 10px;" (click)="openConditionDialog(context, table)">
           <i class="fa fa-pencil"></i>
         </button>
-        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="clearCondition(table)" *ngIf="table.condition">
+        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="clearCondition(table)" *ngIf="table.condition && !viewOnly">
           <i class="fa fa-trash"></i>
         </button>
       </div>
       <div style="overflow: scroll;">
         <app-co-constraint-table
           [id]="i"
+          [vOnly]="viewOnly"
           [segment]="segment"
           [value]="table.value"
+          [delta]="delta"
           [mode]="'TABLE'"
           [datatypes]="datatypes"
           [valueSets]="valueSets"

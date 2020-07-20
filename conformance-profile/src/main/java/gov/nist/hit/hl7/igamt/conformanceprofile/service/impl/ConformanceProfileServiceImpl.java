@@ -432,7 +432,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     Link newLink = l.clone(key);
     newLink.setDomainInfo(elm.getDomainInfo());
     newLink.setOrigin(l.getId());
-    updateDependencies(elm, newKeys);
+    updateDependencies(elm, newKeys, newLink.getId(), l.getId());
     elm.setId(newLink.getId());
     elm.setUsername(username);
     this.save(elm);
@@ -460,7 +460,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             if(segBinding.getTables()  !=null ) {
               for( CoConstraintTableConditionalBinding ccBinding: segBinding.getTables()) {
                 if(ccBinding.getValue() !=null) {
-                  this.coConstraintService.updateDepenedencies(ccBinding.getValue() , newKeys);
+                  this.coConstraintService.updateDepenedencies(ccBinding.getValue(), newKeys, true);
                 }
               }
             }

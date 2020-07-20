@@ -8,17 +8,17 @@
 <div class="delta-filter" *ngIf="derived">
 
   <div>
-    <div class="custom-control custom-switch">
+    <div class="custom-control custom-switch diff-view">
       <input [(ngModel)]="delta" class="custom-control-input" id="deltaSwitch" type="checkbox" (ngModelChange)="toggleDelta()">
       <label class="custom-control-label" for="deltaSwitch">Differential view </label>
     </div>
   </div>
 
   <div *ngIf="delta" style="display: flex; flex-direction: row">
-      <span class="badge delta-badge delta-changed"> <p-checkbox name="delta-display" value="UPDATED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> updated</span>
-      <span class="badge delta-badge delta-deleted">   <p-checkbox name="delta-display" value="DELETED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> deleted</span>
-      <span class="badge delta-badge delta-added"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> added </span>
-      <span class="badge delta-badge badge-default">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"> </p-checkbox> unchanged</span>
+      <span class="badge delta-badge-changed delta-badge"> <p-checkbox name="delta-display" value="UPDATED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> updated</span>
+      <span class="badge delta-badge-deleted delta-badge">   <p-checkbox name="delta-display" value="DELETED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> deleted</span>
+      <span class="badge delta-badge-added delta-badge"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> added </span>
+      <span class="badge delta-badge">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"> </p-checkbox> unchanged</span>
   </div>
 
 </div>

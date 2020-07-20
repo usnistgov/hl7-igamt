@@ -6,42 +6,19 @@
   </ng-template>
 
   <div style="overflow: scroll; height: 100%;">
-    <ng-container *ngFor="let binding of bindings; let i = index">
-      <div style="height: 45px;
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;">
-        <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; flex-grow: 1;" (click)="togglePanel(binding.context.pathId)" >
-          <div style="display: flex; align-items: center;">
-            <i class="fa fa-chevron-down" style="margin-right: 10px;" *ngIf="expansionPanelView[binding.context.pathId]"></i>
-            <i class="fa fa-chevron-right" style="margin-right: 10px;" *ngIf="!expansionPanelView[binding.context.pathId]"></i>
-            <app-entity-bagde [type]="binding.context.type" ></app-entity-bagde>
-            <h6 class="title-text" style="margin-left: 10px !important;" >{{ binding.context.name }}</h6>
-          </div>
-          <button class="btn btn-sm btn-danger margin-right" (click)="deleteContextBinding(bindings, binding, binding.context.pathId, i)" >
-            <i class="fa fa-trash"></i>
-            Delete Context
-          </button>
-        </div>
-        <hr style="margin: 0 !important;">
-      </div>
-
-      <ng-container *ngIf="expansionPanelView[binding.context.pathId]" >
-          <app-segment-co-constraint-binding
-            *ngFor="let segment of binding.bindings; let j = index"
-            [segments]="segments | async"
-            [datatypes]="datatypes | async"
-            [valueSets]="valueSets | async"
-            [documentRef]="documentRef$ | async"
-            [conformanceProfile]="conformanceProfile$"
-            [context]="binding.context"
-            (valueChange)="segmentBindingChange(binding.context.pathId, $event)"
-            (formValid)="formValid(binding.context.pathId, $event)"
-            (delete)="deleteSegmentBinding(binding.bindings, segment, binding.context.pathId, j)"
-            [value]="segment">
-          </app-segment-co-constraint-binding>
-      </ng-container>
-
-    </ng-container>
+    <app-context-co-constraint-binding
+      [viewOnly]="viewOnly$ | async"
+      [bindings]="bindings"
+      [segments]="segments | async"
+      [datatypes]="datatypes | async"
+      [valueSets]="valueSets | async"
+      [documentRef]="documentRef$ | async"
+      [conformanceProfile]="conformanceProfile"
+      [open]="openPanelId"
+      (segmentBindingChangeEvent)="segmentBindingChange($event.contextId, $event.value)"
+      (formValidEvent)="formValid($event.path, $event.validity)"
+      (deleteSegmentBindingEvent)="deleteSegmentBinding($event.segments. $event.segment, $event.contextId, $event.i)"
+      (deleteContextBindingEvent)="deleteContextBinding($event.contexts. $event.context, $event.contextId, $event.i)">
+    </app-context-co-constraint-binding>
   </div>
 </ng-container>

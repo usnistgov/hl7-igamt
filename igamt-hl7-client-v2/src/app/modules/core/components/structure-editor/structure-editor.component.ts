@@ -152,7 +152,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
             return this.getById(id).pipe(
               flatMap((resource) => {
                 this.changes.next({});
-                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
+                return [this.messageService.messageToAction(message), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
               }),
             );
           }),

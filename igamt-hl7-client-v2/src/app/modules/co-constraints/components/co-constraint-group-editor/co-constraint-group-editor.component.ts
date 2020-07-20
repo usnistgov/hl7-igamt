@@ -76,7 +76,7 @@ export class CoConstraintGroupEditorComponent extends AbstractEditorComponent im
             return this.ccService.getById(id).pipe(
               flatMap((resource) => {
                 /// TODO handle library case
-                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { ccGroup: resource, segment }, updateDate: true }), new IgEditResolverLoad(documentRef.documentId)];
+                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { ccGroup: resource, segment }, updateDate: true }), new fromDam.SetValue({ selected: resource }), new IgEditResolverLoad(documentRef.documentId)];
               }),
             );
           }),
