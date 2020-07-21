@@ -23,6 +23,7 @@ import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
 import gov.nist.hit.hl7.auth.util.requests.UserListResponse;
 import gov.nist.hit.hl7.auth.util.requests.UserResponse;
+import gov.nist.hit.hl7.auth.util.requests.AccountLogRequest;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 
 /**
@@ -49,7 +50,7 @@ public interface AuthenticationService {
   public UserListResponse getAllUsers(HttpServletRequest req);
   public UserResponse getCurrentUser(String username, HttpServletRequest req);
 
-  public ConnectionResponseMessage<UserResponse> update(RegistrationRequest user, HttpServletRequest req)
-      throws AuthenticationException;
+  public ConnectionResponseMessage<UserResponse> update(RegistrationRequest user, HttpServletRequest req) throws AuthenticationException;
 
+  public ConnectionResponseMessage<UserResponse> accountlog(AccountLogRequest user, HttpServletRequest req);
 }

@@ -25,6 +25,7 @@ import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
 import gov.nist.hit.hl7.auth.util.requests.UserListResponse;
 import gov.nist.hit.hl7.auth.util.requests.UserResponse;
+import gov.nist.hit.hl7.auth.util.requests.AccountLogRequest;
 import gov.nist.hit.hl7.auth.util.service.AuthenticationConverterService;
 import gov.nist.hit.hl7.igamt.auth.emails.service.AccountManagmenEmailService;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
@@ -88,8 +89,13 @@ public class AuthenticationController {
 
   @RequestMapping(value = "api/authentication", method = RequestMethod.GET)
   @ResponseBody
-  public UserResponse getCurrentUser(HttpServletResponse res, Authentication authentication)
+  public UserResponse getCurrentUser(HttpServletRequest req, HttpServletResponse res, Authentication authentication)
       throws IOException {
+
+    AccountLogRequest user = new AccountLogRequest();
+    user.setUsername(authentication.getName());
+    user.setFrom("IGAMT-2");
+    ConnectionResponseMessage<UserResponse> response = authService.accountlog(user, req);
 
     return auth.getAuthentication(authentication);
   }
