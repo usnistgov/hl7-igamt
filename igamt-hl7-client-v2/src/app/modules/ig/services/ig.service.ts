@@ -299,9 +299,8 @@ export class IgService {
     form.submit();
   }
 
-  exportAsHtml(igId: string, decision: any, configurationId: string, deltaMode = null) {
-    const deltaParam = deltaMode ? `?deltamode=true` : '';
-    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/html' + deltaParam);
+  exportAsHtml(igId: string, decision: any, configurationId: string) {
+    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/html');
   }
 
   exportAsHtmlQuick(igId: string) {
@@ -353,6 +352,10 @@ export class IgService {
 
   getExportFirstDecision = (igId: string, configId: string): Observable<IExportConfigurationGlobal> => {
     return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + igId + this.CONFIGURATION + configId + '/getFilteredDocument');
+  }
+
+  getLastUserConfiguration = (igId: string): Observable<IExportConfigurationGlobal> => {
+    return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + igId +   '/getLastUserConfiguration');
   }
 
   importFromFile(documentId, resourceType: Type, targetType: Type, file: any) {

@@ -56,7 +56,7 @@
 							</xsl:element>
 						</xsl:when>
 
-						<xsl:when test="$changeClass/@property = 'CODESYSTEM' and $changeClass/@action = 'UPDATED' and ($mode != 'HIGHLIGHT_WITH_OLD_VALUES' and $mode != 'HIDE_WITH_OLD_VALUES')">
+						<xsl:when test="$changeClass/@property = 'CODESYSTEM' and $changeClass/@action = 'UPDATED' and (($mode != 'HIGHLIGHT_WITH_OLD_VALUES' and $mode != 'HIDE_WITH_OLD_VALUES') or $mode = 'HIDE_WITH_CHANGED_ONLY')">
 							<xsl:attribute name="style">
 								<xsl:value-of select="concat('background-color:' , $updatedColor)"/>
 							</xsl:attribute>
@@ -75,7 +75,9 @@
 							<xsl:value-of select="@codeSystem" />
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:value-of select="@codeSystem" />
+							<xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+								<xsl:value-of select="@codeSystem" />
+							</xsl:if>
 						</xsl:otherwise>
 					</xsl:choose>
 				</xsl:element>
@@ -105,7 +107,7 @@
                                     </xsl:element>
                                 </xsl:when>
 
-                                <xsl:when test="$changeClass[@property='USAGE']/@action = 'UPDATED' and ($mode != 'HIGHLIGHT_WITH_OLD_VALUES' and $mode != 'HIDE_WITH_OLD_VALUES')">
+                                <xsl:when test="$changeClass[@property='USAGE']/@action = 'UPDATED' and (($mode != 'HIGHLIGHT_WITH_OLD_VALUES' and $mode != 'HIDE_WITH_OLD_VALUES') or $mode = 'HIDE_WITH_CHANGED_ONLY')">
                                     <xsl:attribute name="style">
                                         <xsl:value-of select="concat('background-color:' , $updatedColor)"/>
                                     </xsl:attribute>
@@ -126,7 +128,9 @@
                             </xsl:choose>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:value-of select="@usage" />
+							<xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+								<xsl:value-of select="@usage" />
+							</xsl:if>
                         </xsl:otherwise>
                     </xsl:choose>
 				</xsl:element>
@@ -154,7 +158,7 @@
 							</xsl:element>
 						</xsl:when>
 
-						<xsl:when test="$changeClass/@property = 'DESCRIPTION' and $changeClass/@action = 'UPDATED' and ($mode != 'HIGHLIGHT_WITH_OLD_VALUES' and $mode != 'HIDE_WITH_OLD_VALUES')">
+						<xsl:when test="$changeClass/@property = 'DESCRIPTION' and $changeClass/@action = 'UPDATED' and (($mode != 'HIGHLIGHT_WITH_OLD_VALUES' and $mode != 'HIDE_WITH_OLD_VALUES') or $mode = 'HIDE_WITH_CHANGED_ONLY')">
 							<xsl:attribute name="style">
 								<xsl:value-of select="concat('background-color:' , $updatedColor)"/>
 							</xsl:attribute>
@@ -173,7 +177,9 @@
 							<xsl:value-of select="@description" />
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:value-of select="@description" />
+							<xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+								<xsl:value-of select="@description" />
+							</xsl:if>
 						</xsl:otherwise>
 					</xsl:choose>
 
@@ -201,7 +207,7 @@
 							</xsl:element>
 						</xsl:when>
 
-						<xsl:when test="$changeClass/@property = 'COMMENT' and $changeClass/@action = 'UPDATED' and ($mode != 'HIGHLIGHT_WITH_OLD_VALUES' and $mode != 'HIDE_WITH_OLD_VALUES')">
+						<xsl:when test="$changeClass/@property = 'COMMENT' and $changeClass/@action = 'UPDATED' and (($mode != 'HIGHLIGHT_WITH_OLD_VALUES' and $mode != 'HIDE_WITH_OLD_VALUES') or $mode = 'HIDE_WITH_CHANGED_ONLY')">
 							<xsl:attribute name="style">
 								<xsl:value-of select="concat('background-color:' , $updatedColor)"/>
 							</xsl:attribute>
@@ -220,7 +226,9 @@
 							<xsl:value-of select="@comment" />
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:value-of select="@comment" />
+							<xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+								<xsl:value-of select="@comment" />
+							</xsl:if>
 						</xsl:otherwise>
 					</xsl:choose>
 
