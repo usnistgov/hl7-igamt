@@ -13,6 +13,8 @@ import {
   selectDerived,
   selectIgId,
 } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { IgService } from '../../../ig/services/ig.service';
+import { LibraryService } from '../../../library/services/library.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IExportConfigurationGlobal } from '../../models/config.interface';
@@ -39,9 +41,13 @@ export class ExportConfigurationDialogComponent implements OnInit {
   delta: any;
   selectedDeltaValues = [];
   configurationName: string;
+  documentId: string;
 
   constructor(
     public dialogRef: MatDialogRef<ExportConfigurationDialogComponent>,
+    private libraryService: LibraryService,
+    private igService: IgService,
+
     @Inject(MAT_DIALOG_DATA) public data: any, private store: Store<any>) {
     this.initialConfig = data.decision;
     this.nodes = data.toc;
@@ -53,6 +59,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.type = data.type;
     this.docType = data.type;
     this.delta = data.delta;
+    this.documentId = data.documentId;
   }
   select(node) {
     this.loading = true;
@@ -82,6 +89,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
         break;
       }
       case Type.CONFORMANCEPROFILE: {
+        console.log('toc', node, this.filter);
         if (this.filter.overiddedConformanceProfileMap[node.id]) {
           this.current = this.filter.overiddedConformanceProfileMap[node.id];
         } else {
@@ -127,9 +135,34 @@ export class ExportConfigurationDialogComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log('DOCTYPE IS :' + this.docType);
   }
 
+  applyLastUserConfiguration() {
+    if (this.docType === Type.IGDOCUMENT) {
+      this.igService.getLastUserConfiguration(this.documentId).subscribe(
+        (lastConfig) => {
+          this.initialConfig = lastConfig;
+          this.filter = this.initialConfig.exportFilterDecision;
+
+        },
+        // lastConfig =>     console.log(" lastConfig is : ",lastConfig),
+
+      );
+    } else {
+      if (this.docType === Type.DATATYPELIBRARY) {
+        this.libraryService.getLastUserConfiguration(this.documentId).subscribe(
+          (lastConfig) => {
+            this.initialConfig = lastConfig;
+            this.filter = this.initialConfig.exportFilterDecision;
+
+          },
+              );
+    }
+  }
+  }
   submit() {
+    console.log('new initalConfig is : ', this.initialConfig);
     this.dialogRef.close(this.filter);
   }
   cancel() {
