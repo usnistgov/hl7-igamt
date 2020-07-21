@@ -73,3 +73,6 @@
 .dropdown-column{
   width: 100%;
 }
+.pattern-row {
+  background-color: orange !important;
+}

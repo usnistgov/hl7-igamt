@@ -132,7 +132,7 @@
             </tr>
           </ng-template>
           <ng-template let-columns="columns" let-index="rowIndex" let-rowData pTemplate="body">
-            <tr #anchor *ngIf="!viewOnly" [pSelectableRow]="rowData">
+            <tr #anchor *ngIf="!viewOnly" [pSelectableRow]="rowData"  [ngClass]="{'pattern-row': rowData.hasPattern}">
               <td *ngIf="!viewOnly" style="width: 3em">
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
               </td>
@@ -146,16 +146,7 @@
 
                 <div #anchor *ngSwitchCase="'pattern'" style="display: flex; flex-direction: row; justify-content: space-between">
 
-                  <div style="margin: 10px;">
-                    <p-checkbox [(ngModel)]="rowData.hasPattern" [name]="'hasPattern'+rowData.id" [name]="'hasPattern'+rowData.id" [binary]="true"></p-checkbox>
-                  </div>
-                  <div>
-                    <input  (ngModelChange)="changeCodes()" *ngIf="!viewOnly&&rowData.hasPattern" [(ngModel)]="rowData.pattern"
-                            [id]="'pattern'+rowData.id"
-                            [name]="'pattern'+rowData.id" class="form-control"
-                            placeholder="regex"
-                            type="text">
-                  </div>
+                 {{rowData.pattern}}
                 </div>
                 <div #anchor *ngSwitchCase="'codeSystem'">
                   <div *ngIf="!editMap[rowData.id]" class="input-group" class="code-system-column">
@@ -207,7 +198,7 @@
               </td>
             </tr>
 
-            <tr *ngIf="viewOnly" [pSelectableRow]="rowData">
+            <tr *ngIf="viewOnly" [pSelectableRow]="rowData" [ngClass]="{'pattern-row': rowData.hasPattern}" >
               <td *ngIf="!viewOnly" style="width: 3em">
                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
               </td>
