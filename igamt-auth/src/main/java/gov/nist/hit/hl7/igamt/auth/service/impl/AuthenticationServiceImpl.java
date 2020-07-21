@@ -51,6 +51,7 @@ import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
 import gov.nist.hit.hl7.auth.util.requests.UserListResponse;
 import gov.nist.hit.hl7.auth.util.requests.UserResponse;
+import gov.nist.hit.hl7.auth.util.requests.AccountLogRequest;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 import gov.nist.hit.hl7.igamt.auth.service.AuthenticationService;
 
@@ -432,4 +433,32 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
   }
 
+  @Override
+  public ConnectionResponseMessage<UserResponse> accountlog(AccountLogRequest user, HttpServletRequest req) {
+
+      Cookie cookies[] = req.getCookies();
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.add("Content-type", "application/json");
+
+      if (cookies != null) {
+          for (Cookie cookie : cookies) {
+              if (cookie.getName().equals("authCookie")) {
+                  headers.add("Cookie", "authCookie=" + cookie.getValue());
+              }
+          }
+      }
+
+      RestTemplate restTemplate = new RestTemplate();
+      HttpEntity<AccountLogRequest> request = new HttpEntity<>(user);
+
+      ResponseEntity<ConnectionResponseMessage<UserResponse>> response =
+          restTemplate.exchange(
+              env.getProperty(AUTH_URL) + "/api/tool/accountlog",
+              HttpMethod.POST,
+              request,
+              new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {});
+
+      return response.getBody();
+  }
 }
