@@ -20,6 +20,8 @@ export class ContextCoConstraintBindingComponent implements OnInit {
   @Input()
   delta: boolean;
   @Input()
+  derived: boolean;
+  @Input()
   bindings: ICoConstraintBindingContext[];
   @Input()
   segments: IDisplayElement[];

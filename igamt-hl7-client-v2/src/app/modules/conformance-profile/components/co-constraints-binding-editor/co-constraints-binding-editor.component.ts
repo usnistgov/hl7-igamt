@@ -11,7 +11,7 @@ import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadResourceReferences } from '../../../../root-store/dam-igamt/igamt.loaded-resources.actions';
 import { LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectDerived, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { CoConstraintBindingDialogComponent, IBindingDialogResult } from '../../../co-constraints/components/co-constraint-binding-dialog/co-constraint-binding-dialog.component';
 import { CoConstraintEntityService } from '../../../co-constraints/services/co-constraint-entity.service';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
@@ -53,6 +53,8 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
 
   bindingsSync$: Observable<ICoConstraintBindingContext[]>;
   bindingsSync: ReplaySubject<ICoConstraintBindingContext[]>;
+
+  derived$: Observable<boolean>;
 
   changes: Subject<IChange>;
 
@@ -102,6 +104,8 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
     this.bindingsSync = new ReplaySubject<ICoConstraintBindingContext[]>(1);
     this.bindingsSync$ = this.bindingsSync.asObservable();
 
+    this.derived$ = this.store.select(selectDerived);
+
     this.changes = new Subject<IChange>();
     this.s_changes = this.changes.pipe(
       concatMap((change) => {
@@ -150,23 +154,23 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
     ).subscribe();
   }
 
-  deleteSegmentBinding(segments: ICoConstraintBindingSegment[], segment: ICoConstraintBindingSegment, contextId: string, i: number) {
-    segments.splice(i, 1);
+  deleteSegmentBinding(event: any) {
+    event.segments.splice(event.i, 1);
     this.registerChange({
       type: ChangeType.DELETE,
       level: ChangeLevel.SEGMENT,
-      contextId,
-      segment,
+      contextId: event.contextId,
+      segment: event.segment,
     });
   }
 
-  deleteContextBinding(contexts: ICoConstraintBindingContext[], context: ICoConstraintBindingContext, contextId: string, i: number) {
-    contexts.splice(i, 1);
+  deleteContextBinding(event: any) {
+    event.contexts.splice(event.i, 1);
     this.registerChange({
       type: ChangeType.DELETE,
       level: ChangeLevel.CONTEXT,
-      contextId,
-      context,
+      contextId: event.contextId,
+      context: event.context,
     });
   }
 
@@ -182,9 +186,12 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
       (result: IBindingDialogResult) => {
         if (result) {
 
+          const contextId = this.treeService.pathToString(result.context.path);
+          const segmentId = this.treeService.pathToString(result.segment.path);
+
           const contextNode = {
             context: {
-              pathId: result.context.node.data.pathId,
+              pathId: contextId,
               path: result.context.path,
               name: result.context.name,
               type: result.context.node.data.type,
@@ -194,7 +201,7 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
 
           const segmentNode = {
             segment: {
-              pathId: result.segment.node.data.pathId,
+              pathId: segmentId,
               path: result.segment.path,
               name: result.segment.name,
             },
@@ -203,16 +210,16 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
             tables: [],
           };
 
-          const context = contexts.find((b) => b.context.pathId === result.context.node.data.pathId);
+          const context = contexts.find((b) => b.context.pathId === contextId);
           if (context) {
-            const segment = context.bindings.find((b) => b.segment.pathId === result.segment.node.data.pathId);
+            const segment = context.bindings.find((b) => b.segment.pathId === segmentId);
             if (!segment) {
               context.bindings.push(segmentNode);
 
               this.registerChange({
                 type: ChangeType.ADD,
                 level: ChangeLevel.SEGMENT,
-                contextId: result.context.node.data.pathId,
+                contextId,
                 segment: segmentNode,
               });
 
@@ -238,7 +245,7 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
             this.registerChange({
               type: ChangeType.ADD,
               level: ChangeLevel.SEGMENT,
-              contextId: result.context.node.data.pathId,
+              contextId,
               segment: segmentNode,
             });
           }
@@ -250,17 +257,17 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
     this.openPanelId = id;
   }
 
-  segmentBindingChange(contextId: string, value: ICoConstraintBindingSegment) {
+  segmentBindingChange(event: any) {
     this.registerChange({
       type: ChangeType.UPDATE,
       level: ChangeLevel.SEGMENT,
-      contextId,
-      segment: value,
+      contextId: event.contextId,
+      segment: event.value,
     });
   }
 
-  formValid(path: string, validity: boolean) {
-    this.formMap[path] = validity;
+  formValid(event: any) {
+    this.formMap[event.path] = event.validity;
   }
 
   isFormValid(): boolean {

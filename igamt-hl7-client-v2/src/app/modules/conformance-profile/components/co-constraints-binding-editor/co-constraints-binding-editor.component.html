@@ -9,16 +9,17 @@
     <app-context-co-constraint-binding
       [viewOnly]="viewOnly$ | async"
       [bindings]="bindings"
+      [derived]="derived$ | async"
       [segments]="segments | async"
       [datatypes]="datatypes | async"
       [valueSets]="valueSets | async"
       [documentRef]="documentRef$ | async"
       [conformanceProfile]="conformanceProfile"
       [open]="openPanelId"
-      (segmentBindingChangeEvent)="segmentBindingChange($event.contextId, $event.value)"
-      (formValidEvent)="formValid($event.path, $event.validity)"
-      (deleteSegmentBindingEvent)="deleteSegmentBinding($event.segments. $event.segment, $event.contextId, $event.i)"
-      (deleteContextBindingEvent)="deleteContextBinding($event.contexts. $event.context, $event.contextId, $event.i)">
+      (segmentBindingChangeEvent)="segmentBindingChange($event)"
+      (formValidEvent)="formValid($event)"
+      (deleteSegmentBindingEvent)="deleteSegmentBinding($event)"
+      (deleteContextBindingEvent)="deleteContextBinding($event)">
     </app-context-co-constraint-binding>
   </div>
 </ng-container>

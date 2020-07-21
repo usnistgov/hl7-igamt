@@ -42,6 +42,8 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   @Input()
   delta: boolean;
   @Input()
+  derived: boolean;
+  @Input()
   viewOnly: boolean;
   @Input()
   datatypes: IDisplayElement[];

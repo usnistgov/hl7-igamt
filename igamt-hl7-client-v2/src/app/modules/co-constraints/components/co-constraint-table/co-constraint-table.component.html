@@ -201,7 +201,7 @@
             <tr *ngIf="i === 0 && group" class="table-primary">
               <td> PRIMARY </td>
             </tr>
-            <tr *ngIf="cc.cloned" class="table-info">
+            <tr *ngIf="cc.cloned && derived" class="table-info">
               <td> DERIVED </td>
             </tr>
             <tr>
@@ -211,9 +211,9 @@
         </td>
         <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: cc.requirement, usageDelta: cc.requirement.usageDelta, disabled :  i === 0 && group, fieldId : fieldId + '-req-' + i, viewOnly : viewOnly || vOnly }"></ng-container></td>
         <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: cc.requirement, cardinalityDelta: cc.requirement.cardinalityDelta, fieldId : fieldId + '-req-' + i, viewOnly : viewOnly || vOnly }"></ng-container></td>
-        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.selectors, fieldId : fieldId + '-if-' + i, viewOnly : viewOnly || vOnly || cc.cloned, excludeBindingStrength: true, column:'selectors'}"></ng-container>
-        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.constraints, fieldId : fieldId + '-then-' + i, viewOnly : viewOnly || vOnly || cc.cloned, column:'constraints' }"></ng-container>
-        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.narratives, fieldId : fieldId + '-nar-' + i, viewOnly : viewOnly || vOnly || cc.cloned, column:'narratives'}"></ng-container>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.selectors, fieldId : fieldId + '-if-' + i, viewOnly : viewOnly || vOnly || (cc.cloned && derived), excludeBindingStrength: true, column:'selectors'}"></ng-container>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.constraints, fieldId : fieldId + '-then-' + i, viewOnly : viewOnly || vOnly || (cc.cloned && derived), column:'constraints' }"></ng-container>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.narratives, fieldId : fieldId + '-nar-' + i, viewOnly : viewOnly || vOnly || (cc.cloned && derived), column:'narratives'}"></ng-container>
       </tr>
     </tbody>
   </ng-template>

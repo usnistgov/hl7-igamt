@@ -67,6 +67,9 @@ export class CoConstraintTableComponent implements OnInit {
   delta: boolean;
 
   @Input()
+  derived: boolean;
+
+  @Input()
   id: number;
 
   @Input()

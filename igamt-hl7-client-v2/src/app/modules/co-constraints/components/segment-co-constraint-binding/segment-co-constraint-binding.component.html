@@ -12,7 +12,7 @@
         <strong style="margin-right: 10px !important;"> Co-Constraint Tables for Segment </strong>
         <app-entity-bagde [type]="'SEGMENT'" ></app-entity-bagde>
         <h6 class="title-text" style="margin-left: 10px !important;" > {{ binding.segment.name }} </h6>
-        <span *ngIf="delta" style="margin-left: 20px;"> ( {{ binding.delta }} )</span>
+        <span *ngIf="delta && binding.delta" style="margin-left: 20px;"> ( {{ binding.delta }} )</span>
       </div>
       <div style="display: flex; align-items: center; justify-content: flex-start;">
         <strong style="margin-right: 10px !important;"> Flavor </strong>
@@ -52,7 +52,7 @@
       *ngFor="let table of binding.tables; let i = index">
     <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
       <div>
-        <span *ngIf="delta"> ( {{ table.delta }} )</span>
+        <span *ngIf="delta && table.delta"> ( {{ table.delta }} )</span>
       </div>
       <div>
         <button *ngIf="!viewOnly" class="btn btn-sm entity-badge-co-constraint-group margin-right" style="color: white;" (click)="importCoConstraintGroup(binding, i)" >
@@ -97,6 +97,7 @@
         <app-co-constraint-table
           [id]="i"
           [vOnly]="viewOnly"
+          [derived]="derived"
           [segment]="segment"
           [value]="table.value"
           [delta]="delta"
