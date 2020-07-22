@@ -1245,6 +1245,7 @@ public class IGDocumentController extends BaseController {
 					}
 					valueset.setUsername(username);
 					valueset.setBindingIdentifier(elm.getName());
+                    valueset.setName(elm.getDescription());
 					valueset.setUrl(elm.getUrl());
 					valueset.setOid(elm.getOid());
 					valueset.setFlavor(true);
@@ -1276,6 +1277,7 @@ public class IGDocumentController extends BaseController {
 		} else {
 			if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
               Valueset valueset = valuesetService.findExternalPhinvadsByOid(elm.getOid());
+
               if(valueset == null) {
                 Valueset newValueset = new Valueset();
                 DomainInfo info = new DomainInfo();
@@ -1294,6 +1296,9 @@ public class IGDocumentController extends BaseController {
                 Valueset saved = valuesetService.save(newValueset);
                 ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
                 savedIds.add(saved.getId());
+              } else {
+                ig.getValueSetRegistry().getCodesPresence().put(valueset.getId(), elm.isIncludeChildren());
+                savedIds.add(valueset.getId());
               }
 
 			} else {
