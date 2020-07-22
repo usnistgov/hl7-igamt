@@ -54,10 +54,25 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	private FroalaSerializationUtil frolaCleaning;
 
 	@Override
-	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type, String deltaMode) throws SerializationException {
+	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type, Boolean deltaMode) throws SerializationException {
 		//	    try {
 		Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
 		Datatype datatype = datatypeDataModel.getModel();
+
+		// Calculate datatype delta if the datatype has an origin
+		if(deltaMode && datatype.getOrigin() != null && datatypeExportConfiguration.isDeltaMode()) {
+			List<StructureDelta> structureDelta = deltaService.delta(Type.DATATYPE, datatype);
+			List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+			if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
+				Element deltaElement = this.serializeDelta(structureDeltaChanged, datatypeExportConfiguration.getDeltaConfig());
+				if (deltaElement != null) {
+					datatypeElement.appendChild(deltaElement);
+				}
+			} else {
+				return  null;
+			}
+		}
+
 		datatypeElement
 		.addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
 		if(datatypeExportConfiguration.getPurposeAndUse()) {
@@ -88,12 +103,12 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 				.addAttribute(new Attribute("publicationDate", datatype.getPublicationInfo().getPublicationDate()!= null ? datatype.getPublicationInfo().getPublicationDate().toString(): ""));}
 		}
 
-		//	      if (datatype.getBinding() != null) {
-		//	        Element bindingElement =  
-		//	            super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap);
-		//	        if (bindingElement != null) {
-		//	          datatypeElement.appendChild(bindingElement);
-		//	        }
+//			      if (datatype.getBinding() != null) {
+//			        Element bindingElement =  
+//			            super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap);
+//			        if (bindingElement != null) {
+//			          datatypeElement.appendChild(bindingElement);
+//			        }
 		//	        for (int i = 0; i < bindingElement.getChildElements().size(); i++) {
 		//	          Element structureElementBindings = bindingElement.getChildElements().get(i);
 		//	          for (int j = 0; j < structureElementBindings.getChildElements().size(); j++) {
@@ -124,17 +139,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 			}
 		}
 
-		// Calculate datatype delta if the datatype has an origin
-		if(deltaMode != null && datatype.getOrigin() != null && datatypeExportConfiguration.isDeltaMode()) {
-			List<StructureDelta> structureDelta = deltaService.delta(Type.DATATYPE, datatype);
-			List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-			if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
-				Element deltaElement = this.serializeDelta(structureDeltaChanged, datatypeExportConfiguration.getDeltaConfig());
-				if (deltaElement != null) {
-					datatypeElement.appendChild(deltaElement);
-				}
-			}
-		}
+
 		return igDataModelSerializationService.getSectionElement(datatypeElement, datatypeDataModel.getModel(), level, datatypeExportConfiguration);
 
 		//	    } catch (Exception exception) {
@@ -174,6 +179,8 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 					componentElement
 					.addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
 					Element comments = new Element("Comments");
+			    	  Element definitionTextsElement = new Element("DefinitionTexts");
+			    	  datatypeElement.appendChild(definitionTextsElement);
 					datatypeElement.appendChild(comments);
 					if(component.getComments() != null) {
 						for(Comment comment : component.getComments()) {
@@ -189,6 +196,19 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 							.addAttribute(new Attribute("description", comment.getDescription()));
 							comments.appendChild(commentElement);
 						}
+						
+			    		  if(component.getText() != null) {
+			    			  Element definitionText = new Element("DefinitionText");
+			    			  definitionText
+		    	              .addAttribute(new Attribute("text", component.getText()));
+								if(complexDatatype.getExt() != null) {
+									definitionText
+									.addAttribute(new Attribute("name", complexDatatype.getName()+"_"+complexDatatype.getExt() + "." + component.getPosition()));
+								} else {
+									definitionText
+									.addAttribute(new Attribute("name", complexDatatype.getName() + "." + component.getPosition()));
+								} 			    			  definitionTextsElement.appendChild(definitionText);
+			    		  }
 					}
 					if(type.equals(Type.IGDOCUMENT)) {
 						if (datatypeDataModel != null && datatypeDataModel.getValuesetMap() != null && datatypeDataModel.getValuesetMap().containsKey(component.getPosition() + "")) {

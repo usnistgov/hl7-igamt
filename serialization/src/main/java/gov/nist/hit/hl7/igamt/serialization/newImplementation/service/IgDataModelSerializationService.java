@@ -19,7 +19,7 @@ import nu.xom.Element;
 
 public interface IgDataModelSerializationService {
 
-	public Element serializeDocument(DocumentStructureDataModel documentStructureDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision, String deltaMode)
+	public Element serializeDocument(DocumentStructureDataModel documentStructureDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
 		      throws SerializationException;
 	
 	public Element serializeAbstractDomain(AbstractDomain abstractDomain, Type type, int position, String title, AbstractDomainExportConfiguration abstractDomainExportConfiguration);

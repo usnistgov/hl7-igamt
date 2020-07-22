@@ -537,7 +537,14 @@ public ValuesetDelta valuesetDelta(Valueset valueset) {
 	return vsDelta;
 }
   
+Map<RealKey, Boolean> getChangedElement(Ig ig){
+  Map<RealKey, Boolean> ret = new HashMap<RealKey, Boolean>();
   
+  
+  return null;
+  
+}
+
 
 
 }

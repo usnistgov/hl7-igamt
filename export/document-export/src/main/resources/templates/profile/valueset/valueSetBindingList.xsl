@@ -4,7 +4,7 @@
  -->   
      <xsl:template name="ValueSetBindingList">
  
-         <xsl:if test="count(Binding/StructureElementBindings/StructureElementBinding/ValuesetBinding) &gt; 0">
+         <xsl:if test="count(Binding/StructureElementBindings/StructureElementBinding//ValuesetBinding) &gt; 0">
             <xsl:element name="br"/>
             <xsl:element name="span">
                 <xsl:element name="b">

@@ -9,6 +9,10 @@ export class DeltaExportConfigurationComponent implements OnInit {
 
   modeOptions = [
     {
+      label: 'Only modified Elements and modified Attributes',
+      value: 'HIDE_WITH_CHANGED_ONLY',
+    },
+    {
       label: 'Highlight changes (Show only new values)',
       value: 'HIGHLIGHT',
     },

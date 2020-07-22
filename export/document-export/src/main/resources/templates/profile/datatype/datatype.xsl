@@ -19,6 +19,8 @@
 	<xsl:import href="/templates/profile/datatype/DateTimeDatatype.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
 	<xsl:import href="/templates/profile/commentList.xsl" />
+	 	<xsl:import href="/templates/profile/definitionText2.xsl" />
+
 	<xsl:import href="/templates/profile/metadata.xsl" />
 	<xsl:template match="Datatype">
 		<xsl:call-template name="VersionDisplay" />
@@ -286,6 +288,7 @@
 				</xsl:element>
 			</xsl:element>
 			<xsl:call-template name="CommentList" />
+ 		<xsl:call-template name="DefinitionText2" />
 
 			<xsl:call-template name="ValueSetBindingList" />
 			<xsl:call-template name="InternalSingleCode" />

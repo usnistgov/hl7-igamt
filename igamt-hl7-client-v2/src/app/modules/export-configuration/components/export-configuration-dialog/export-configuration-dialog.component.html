@@ -14,7 +14,11 @@
           type="text">
       </div>
       <div class="sidebar-controls">
-        <div></div>
+        <div>
+          <button  class="btn btn-sm btn-primary" (click)="applyLastUserConfiguration()" type="button">
+            Apply Last User Configuration
+          </button>
+        </div>
         <div *ngIf="type === 'IGDOCUMENT'" class="btn-group mr-2" role="group">
           <button class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
             CP

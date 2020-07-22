@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
@@ -33,7 +34,7 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
  * @author jungyubw
  *
  */
-public class DatatypeDataModel implements Serializable {
+public class DatatypeDataModel implements Serializable, Comparable {
 	private Datatype model;
 
 	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
@@ -191,4 +192,13 @@ public class DatatypeDataModel implements Serializable {
 		}
 		return null;
 	}
+
+	public int compareTo(Object u) {
+		// TODO Auto-generated method stub
+		if (getModel().getName() == null || ((DatatypeDataModel) u).getModel().getName() == null) {
+		      return 0;
+		    }
+		    return getModel().getName().compareTo(((DatatypeDataModel) u).getModel().getName());
+	}
+
 }
