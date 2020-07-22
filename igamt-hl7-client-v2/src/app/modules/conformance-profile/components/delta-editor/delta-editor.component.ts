@@ -10,7 +10,7 @@ import { EditorID } from '../../../shared/models/editor.enum';
 
 @Component({
   selector: 'app-delta-editor',
-  templateUrl: '../../../core/components/entity-delta-editor/entity-delta-editor.component.html',
+  templateUrl: 'entity-delta-editor.component.html',
   styleUrls: ['../../../core/components/entity-delta-editor/entity-delta-editor.component.scss'],
 })
 export class DeltaEditorComponent extends EntityDeltaEditorComponent implements OnInit {
