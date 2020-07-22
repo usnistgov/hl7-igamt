@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import { ContextMenuModule, RadioButtonModule } from 'primeng/primeng';
+import {ContextMenuModule, PanelModule, RadioButtonModule} from 'primeng/primeng';
 import { StepsModule } from 'primeng/steps';
 import { TableModule } from 'primeng/table';
 import { TabViewModule } from 'primeng/tabview';
@@ -16,6 +16,7 @@ import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
 import { ConformanceStatementsSummaryEditorComponent } from './components/conformance-statements-summary-editor/conformance-statements-summary-editor.component';
 import { CreateIGComponent } from './components/create-ig/create-ig.component';
+import {DeriveDialogComponent} from './components/derive-dialog/derive-dialog.component';
 import { ExportGvtComponent } from './components/export-gvt/export-gvt.component';
 import { IgEditActiveTitlebarComponent } from './components/ig-edit-active-titlebar/ig-edit-active-titlebar.component';
 import { IgEditContainerComponent } from './components/ig-edit-container/ig-edit-container.component';
@@ -48,6 +49,7 @@ import { IgService } from './services/ig.service';
     IgMetadataEditorComponent,
     ExportGvtComponent,
     ConformanceStatementsSummaryEditorComponent,
+    DeriveDialogComponent,
   ],
   imports: [
     DamFrameworkModule.forRoot(),
@@ -63,9 +65,10 @@ import { IgService } from './services/ig.service';
     ColorPickerModule,
     ContextMenuModule,
     ExportConfigurationModule,
+    PanelModule,
   ],
   entryComponents: [
-    IgEditContainerComponent,
+    IgEditContainerComponent, DeriveDialogComponent,
   ],
   providers: [
     IgListService,

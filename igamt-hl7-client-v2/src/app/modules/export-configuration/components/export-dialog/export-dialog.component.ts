@@ -1,7 +1,10 @@
+import {HttpErrorResponse} from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { filter, map, take } from 'rxjs/operators';
+import {Store} from '@ngrx/store';
+import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {catchError, filter, map, take} from 'rxjs/operators';
+import {TurnOffLoader, TurnOnLoader} from '../../../dam-framework/store/loader';
 import { IgService } from '../../../ig/services/ig.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IExportConfigurationGlobal } from '../../models/config.interface';
@@ -23,11 +26,12 @@ export class ExportDialogComponent implements OnInit {
   toc: any;
   type: Type;
   customized: boolean;
-  getExportFirstDecision: (documentId: string, configId: string) => Observable<IExportConfigurationGlobal>;
-
+  delta: boolean;
   constructor(
     public dialogRef: MatDialogRef<ExportDialogComponent>,
     private dialog: MatDialog,
+    private igService: IgService,
+    private store: Store<any>,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.overrides = new BehaviorSubject<any>(undefined);
@@ -36,7 +40,7 @@ export class ExportDialogComponent implements OnInit {
     this.toc = data.toc;
     this.type = data.type;
     this.configlist = data.configurations;
-    this.getExportFirstDecision = data.getExportFirstDecision;
+    this.delta = data.delta;
     console.log('selected config : ', this.selectedConfig);
     this.selectedConfig = this.configlist.find( (x) => {
         return x.defaultConfig;
@@ -48,19 +52,16 @@ export class ExportDialogComponent implements OnInit {
         },
       );
     }
-    if (this.selectedConfig) {
-      this.change(this.selectedConfig);
-    }
-
   }
 
   customize() {
-    this.overrides.asObservable().pipe(
-      filter((value) => !!value),
+    this.store.dispatch(new TurnOnLoader({blockUI: true}));
+    this.igService.getExportFirstDecision(this.igId, this.selectedConfig.id).pipe(
       take(1),
       map((decision) => {
         console.log('decision : ' , decision);
         console.log('selectedConfig : ' + this.selectedConfig.configName);
+        this.store.dispatch(new TurnOffLoader());
 
         const tocDialog = this.dialog.open(ExportConfigurationDialogComponent, {
           maxWidth: '95vw',
@@ -73,31 +74,21 @@ export class ExportDialogComponent implements OnInit {
             toc: this.toc,
             type: this.type,
             decision,
-            documentId : this.igId,
+            delta: this.delta,
           },
         });
         tocDialog.afterClosed().subscribe((result) => {
           if (result) {
-            this.customized = true;
-            console.log(result);
-            this.overrides.next({
-              ...decision,
-              exportFilterDecision: result,
+            this.dialogRef.close({
+              configurationId: this.selectedConfig.id,
+              decision: result,
             });
           }
         });
       }),
-    ).subscribe();
-    console.log('customize clicked');
-
-  }
-
-  change(configuration) {
-    this.getExportFirstDecision(this.igId, configuration.id).pipe(
-      map((decision) => {
-        console.log(decision);
-        this.overrides.next(decision);
-        this.customized = false;
+      catchError((error: HttpErrorResponse) => {
+        this.store.dispatch(new TurnOffLoader() );
+        return of(error);
       }),
     ).subscribe();
   }
@@ -105,10 +96,9 @@ export class ExportDialogComponent implements OnInit {
   export() {
     this.dialogRef.close({
       configurationId: this.selectedConfig.id,
-      decision: this.overrides.getValue() ? this.overrides.getValue().exportFilterDecision : undefined,
+      decision: this.overrides.getValue() ? this.overrides.getValue().exportFilterDecision : null,
     });
   }
-
   ngOnInit() {
   }
 

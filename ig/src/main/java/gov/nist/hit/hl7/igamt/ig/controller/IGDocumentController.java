@@ -96,6 +96,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
+import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.ComplianceReport;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
@@ -114,6 +115,7 @@ import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
+import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -187,6 +189,9 @@ public class IGDocumentController extends BaseController {
   
   @Autowired
   private FhirHandlerService fhirHandlerService;
+  
+  @Autowired
+  private IgTemplateRepository igTemplateRepository;
 
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
@@ -1801,4 +1806,13 @@ public class IGDocumentController extends BaseController {
 		  }
 	  });
   }
+  
+  @RequestMapping(value = "/api/igdocuments/igTemplates", method = RequestMethod.GET, produces = { "application/json" })
+  public @ResponseBody  List<IgTemplate> igTemplates( Authentication authentication) throws Exception {      
+    
+    List<IgTemplate> templates = this.igTemplateRepository.findAll();
+
+    return templates;
+  }
+
 }

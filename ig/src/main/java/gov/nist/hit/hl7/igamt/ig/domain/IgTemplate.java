@@ -9,47 +9,54 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.display.model;
+package gov.nist.hit.hl7.igamt.ig.domain;
 
-import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public class CopyInfo {
+@Document
+public class IgTemplate {
 
-  private CloneMode mode; 
-  private IgTemplate template;
-  private boolean inherit;
- 
-
-  public CopyInfo() {
-    super();
-    // TODO Auto-generated constructor stub
+  @Id
+  private String id;
+  private String name;
+  private String domain;
+  private List<SectionTemplate> children;
+  
+  public String getId() {
+    return id;
+  }
+  public void setId(String id) {
+    this.id = id;
   }
   
-  public CloneMode getMode() {
-    return mode;
+  public String getName() {
+    return name;
   }
-  public void setMode(CloneMode mode) {
-    this.mode = mode;
+  public void setName(String name) {
+    this.name = name;
   }
-
-  public IgTemplate getTemplate() {
-    return template;
+  public String getDomain() {
+    return domain;
   }
-
-  public void setTemplate(IgTemplate template) {
-    this.template = template;
+  public void setDomain(String domain) {
+    this.domain = domain;
   }
-  public boolean isInherit() {
-    return inherit;
+  public List<SectionTemplate> getChildren() {
+    return children;
   }
-
-  public void setInherit(boolean inherit) {
-    this.inherit = inherit;
+  public void setChildren(List<SectionTemplate> children) {
+    this.children = children;
   }
-
+  
   
 }

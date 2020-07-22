@@ -36,12 +36,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class EntityDeltaServiceImpl {
-  
+
 
   @Autowired
   ValuesetService valueSetService;
-  
-  
+
+
   public List<StructureDelta> datatype(DatatypeStructureDisplay source, DatatypeStructureDisplay target) {
     List<StructureDelta> result = new ArrayList<>();
     result.addAll(this.compareComponents(source.getStructure(), target.getStructure()));
@@ -50,36 +50,6 @@ public class EntityDeltaServiceImpl {
 
   }
 
-//  public  List<ConformanceStatementDelta> conformanceStatements(Set<ConformanceStatement> source, Set<ConformanceStatement> target) {
-//    List<ConformanceStatementDelta> deltas = new ArrayList<>();
-//    Map<String, List<ConformanceStatement>> sourceChildren = (source != null ? source : new HashSet<ConformanceStatement>()).stream()
-//        .collect(Collectors.groupingBy((e) -> e.getIdentifier()));
-//    Map<String, List<ConformanceStatement>> targetChildren = (target != null ? target : new HashSet<ConformanceStatement>()).stream()
-//        .collect(Collectors.groupingBy((e) -> e.getIdentifier()));
-//
-//    for(Map.Entry<String, List<ConformanceStatement>> entry: sourceChildren.entrySet()) {
-//      ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
-//      if(targetChildren.containsKey(entry.getKey())) {
-//        this.compare(structureDelta, entry.getValue().get(0), targetChildren.get(entry.getKey()).get(0));
-//        targetChildren.remove(entry.getKey());
-//      } else {
-//        this.compare(structureDelta, entry.getValue().get(0), entry.getValue().get(0));
-//        structureDelta.setAction(DeltaAction.DELETED);
-//      }
-//
-//      deltas.add(structureDelta);
-//    }
-//
-//    for(Map.Entry<String, List<ConformanceStatement>> entry: targetChildren.entrySet()) {
-//      ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
-//      this.compare(structureDelta, entry.getValue().get(0), entry.getValue().get(0));
-//      structureDelta.setAction(DeltaAction.ADDED);
-//      deltas.add(structureDelta);
-//    }
-//
-//    return deltas;
-//
-//  }
   public  List<ConformanceStatementDelta> conformanceStatements(Set<ConformanceStatement> source, Set<ConformanceStatement> target) {
     List<ConformanceStatementDelta> deltas = new ArrayList<>();
     Map<String, ConformanceStatement> sourceMap = new HashMap<String, ConformanceStatement>();
@@ -91,40 +61,41 @@ public class EntityDeltaServiceImpl {
         }
       }
     }
-    if(target !=null&& source !=null && !source.isEmpty()) {
+    if(target !=null && !target.isEmpty()) {
       for(ConformanceStatement s : target) {
         if(s.getIdentifier() !=null) {
           targetMap.put(s.getIdentifier(), s);
         }
       }
     }
-    if(source !=null)
-    for(ConformanceStatement st: source) {
-      ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
+    if(source !=null) {
+      for(ConformanceStatement st: source) {
+        ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
 
-      if(targetMap.containsKey(st.getIdentifier())) {
-        this.compare(structureDelta, st, targetMap.get(st.getIdentifier()));
-      }else {
-        structureDelta.setDescription(new DeltaNode<String>(st.generateDescription(), null, DeltaAction.DELETED));
-        structureDelta.setIdentifier(new DeltaNode<String>(st.getIdentifier(), null, DeltaAction.DELETED));
-        structureDelta.setAction(DeltaAction.DELETED);
-        deltas.add(structureDelta);
+        if(targetMap.containsKey(st.getIdentifier())) {
+          this.compare(structureDelta, st, targetMap.get(st.getIdentifier()));
+        }else {
+          structureDelta.setDescription(new DeltaNode<String>(st.generateDescription(), null, DeltaAction.DELETED));
+          structureDelta.setIdentifier(new DeltaNode<String>(st.getIdentifier(), null, DeltaAction.DELETED));
+          structureDelta.setAction(DeltaAction.DELETED);
+          deltas.add(structureDelta);
+        }
       }
     }
-    if(target !=null)
-    for(ConformanceStatement st: target) {
-      ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
 
-      if(!sourceMap.containsKey(st.getIdentifier())) {
-        structureDelta.setDescription(new DeltaNode<String>( null,st.generateDescription(), DeltaAction.ADDED));
-        structureDelta.setIdentifier(new DeltaNode<String>( null,st.getIdentifier(), DeltaAction.ADDED));
-        structureDelta.setAction(DeltaAction.ADDED);
+    if(target !=null) {
+      for(ConformanceStatement st: target) {
+        ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
 
-        deltas.add(structureDelta);
-      }      
+        if(!sourceMap.containsKey(st.getIdentifier())) {
+          structureDelta.setDescription(new DeltaNode<String>( null,st.generateDescription(), DeltaAction.ADDED));
+          structureDelta.setIdentifier(new DeltaNode<String>( null,st.getIdentifier(), DeltaAction.ADDED));
+          structureDelta.setAction(DeltaAction.ADDED);
+          deltas.add(structureDelta);
+        }      
 
+      }
     }
-
     return deltas;
 
   }
@@ -205,37 +176,37 @@ public class EntityDeltaServiceImpl {
 
     return deltas;
   }
-//
-//  private  List<StructureDelta> compareConformanceStatements(Set<ConformanceStatement> source, Set<ConformanceStatement> target) {
-//    List<StructureDelta> deltas = new ArrayList<>();
-//    Map<String, List<ConformanceStatement>> sourceChildren = (source != null ? source : new HashSet<ConformanceStatement>()).stream()
-//        .collect(Collectors.groupingBy((e) -> e.getIdentifier()));
-//    Map<String, List<ConformanceStatement>> targetChildren = (target != null ? target : new HashSet<ConformanceStatement>()).stream()
-//        .collect(Collectors.groupingBy((e) -> e.getIdentifier()));
-//
-//    for(Map.Entry<String, List<ConformanceStatement>> entry: sourceChildren.entrySet()) {
-//      StructureDelta structureDelta = new StructureDelta();
-//      if(targetChildren.containsKey(entry.getKey())) {
-//        this.compare(structureDelta, entry.getValue().get(0), targetChildren.get(entry.getKey()).get(0));
-//        targetChildren.remove(entry.getKey());
-//      } else {
-//        this.compare(structureDelta, entry.getValue().get(0), entry.getValue().get(0));
-//        structureDelta.setAction(DeltaAction.DELETED);
-//      }
-//
-//      deltas.add(structureDelta);
-//    }
-//
-//    for(Map.Entry<String, List<ConformanceStatement>> entry: targetChildren.entrySet()) {
-//      StructureDelta structureDelta = new StructureDelta();
-//      this.compare(structureDelta, new ConformanceStatement(), entry.getValue().get(0));
-//      structureDelta.setAction(DeltaAction.ADDED);
-//      deltas.add(structureDelta);
-//    }
-//
-//    return deltas;
-//
-//  }
+  //
+  //  private  List<StructureDelta> compareConformanceStatements(Set<ConformanceStatement> source, Set<ConformanceStatement> target) {
+  //    List<StructureDelta> deltas = new ArrayList<>();
+  //    Map<String, List<ConformanceStatement>> sourceChildren = (source != null ? source : new HashSet<ConformanceStatement>()).stream()
+  //        .collect(Collectors.groupingBy((e) -> e.getIdentifier()));
+  //    Map<String, List<ConformanceStatement>> targetChildren = (target != null ? target : new HashSet<ConformanceStatement>()).stream()
+  //        .collect(Collectors.groupingBy((e) -> e.getIdentifier()));
+  //
+  //    for(Map.Entry<String, List<ConformanceStatement>> entry: sourceChildren.entrySet()) {
+  //      StructureDelta structureDelta = new StructureDelta();
+  //      if(targetChildren.containsKey(entry.getKey())) {
+  //        this.compare(structureDelta, entry.getValue().get(0), targetChildren.get(entry.getKey()).get(0));
+  //        targetChildren.remove(entry.getKey());
+  //      } else {
+  //        this.compare(structureDelta, entry.getValue().get(0), entry.getValue().get(0));
+  //        structureDelta.setAction(DeltaAction.DELETED);
+  //      }
+  //
+  //      deltas.add(structureDelta);
+  //    }
+  //
+  //    for(Map.Entry<String, List<ConformanceStatement>> entry: targetChildren.entrySet()) {
+  //      StructureDelta structureDelta = new StructureDelta();
+  //      this.compare(structureDelta, new ConformanceStatement(), entry.getValue().get(0));
+  //      structureDelta.setAction(DeltaAction.ADDED);
+  //      deltas.add(structureDelta);
+  //    }
+  //
+  //    return deltas;
+  //
+  //  }
 
   private List<StructureDelta> compareFields(Set<FieldStructureTreeModel> source, Set<FieldStructureTreeModel> target) {
     List<StructureDelta> deltas = new ArrayList<>();
@@ -406,20 +377,20 @@ public class EntityDeltaServiceImpl {
     structure.setChildren(this.compareComponents(source.getChildren(), target.getChildren()));
   }
 
-//  private void compare(StructureDelta structure, ConformanceStatement source, ConformanceStatement target) {
-//    structure.setType(Type.CONFORMANCESTATEMENT);
-//
-//    ConformanceStatementDelta delta = new ConformanceStatementDelta();
-//    delta.setAction(DeltaAction.UNCHANGED);
-//    delta.setDescription(this.compare(source.generateDescription(), target.generateDescription()));
-//    delta.setIdentifier(this.compare(source.getIdentifier(), target.getIdentifier()));
-//    System.out.println(source.getIdentifier());
-//    System.out.println(target.getIdentifier());
-//    structure.setConformanceStatement(delta);
-//    List<StructureDelta> deltas = new ArrayList<>();
-//    structure.setChildren(deltas);
-//
-//  }
+  //  private void compare(StructureDelta structure, ConformanceStatement source, ConformanceStatement target) {
+  //    structure.setType(Type.CONFORMANCESTATEMENT);
+  //
+  //    ConformanceStatementDelta delta = new ConformanceStatementDelta();
+  //    delta.setAction(DeltaAction.UNCHANGED);
+  //    delta.setDescription(this.compare(source.generateDescription(), target.generateDescription()));
+  //    delta.setIdentifier(this.compare(source.getIdentifier(), target.getIdentifier()));
+  //    System.out.println(source.getIdentifier());
+  //    System.out.println(target.getIdentifier());
+  //    structure.setConformanceStatement(delta);
+  //    List<StructureDelta> deltas = new ArrayList<>();
+  //    structure.setChildren(deltas);
+  //
+  //  }
 
   private void compare(ConformanceStatementDelta delta, ConformanceStatement source, ConformanceStatement target) {
 
@@ -584,7 +555,7 @@ public class EntityDeltaServiceImpl {
   }
 
   private void compareBindings(StructureDelta structure, BindingDisplay source, BindingDisplay target) {
-    
+
     compareValueSetBinding(structure,  source,  target);
     if(source != null) {
       if(target != null) {
@@ -662,23 +633,23 @@ public class EntityDeltaServiceImpl {
     PredicateDelta delta = new PredicateDelta();
     delta.setAction(DeltaAction.UNCHANGED);
 
-      DeltaNode<Usage> trueUsage = this.compare(source.getTrueUsage(), target.getTrueUsage());
-      delta.setTrueUsage(trueUsage);
+    DeltaNode<Usage> trueUsage = this.compare(source.getTrueUsage(), target.getTrueUsage());
+    delta.setTrueUsage(trueUsage);
 
-      DeltaNode<Usage> falseUsage = this.compare(source.getFalseUsage(), target.getFalseUsage());
-      delta.setFalseUsage(falseUsage);
+    DeltaNode<Usage> falseUsage = this.compare(source.getFalseUsage(), target.getFalseUsage());
+    delta.setFalseUsage(falseUsage);
 
-      DeltaNode<String> description = this.compare(source.generateDescription(), target.generateDescription());
+    DeltaNode<String> description = this.compare(source.generateDescription(), target.generateDescription());
 
-      delta.setDescription(description);
-    
+    delta.setDescription(description);
+
     return  delta;
 
   }
-  
-  
 
-  
+
+
+
   public DeltaInternalSingleCode compareInternalSingleCodes(InternalSingleCode source, InternalSingleCode target) {
 
 
@@ -696,19 +667,19 @@ public class EntityDeltaServiceImpl {
           vsSourceDisplay.setId(vs.getId());
           vsSourceDisplay.setDomainInfo(vs.getDomainInfo());
         }
-       }
-       if(target.getValueSetId() !=null) {
-         Valueset vs =  this.valueSetService.findById(target.getValueSetId());
-         if(vs !=null) {
-           vsTargetDisplay = new DisplayElement();
-           vsTargetDisplay.setVariableName(vs.getBindingIdentifier());
-           vsTargetDisplay.setId(vs.getId());
-           vsTargetDisplay.setDomainInfo(vs.getDomainInfo());        
-         }
+      }
+      if(target.getValueSetId() !=null) {
+        Valueset vs =  this.valueSetService.findById(target.getValueSetId());
+        if(vs !=null) {
+          vsTargetDisplay = new DisplayElement();
+          vsTargetDisplay.setVariableName(vs.getBindingIdentifier());
+          vsTargetDisplay.setId(vs.getId());
+          vsTargetDisplay.setDomainInfo(vs.getDomainInfo());        
         }
-      
+      }
+
       DeltaNode<DisplayElement> valueSetDisplay = this.compare(vsSourceDisplay, vsTargetDisplay);
-    
+
       delta.setValueSetDisplay(valueSetDisplay);
 
       DeltaNode<String> code = this.compare(source.getCode(), target.getCode());
@@ -730,7 +701,7 @@ public class EntityDeltaServiceImpl {
       DisplayElement vsTargetDisplay) {
     // TODO Auto-generated method stub
     return this.compare(vsSourceDisplay, vsTargetDisplay, (s, t) -> {
-      
+
       return  vsSourceDisplay.getVariableName().equals(vsTargetDisplay.getVariableName());
     });
   }
@@ -755,35 +726,35 @@ public class EntityDeltaServiceImpl {
         delta.setValueSets(valueSets);
       }else if (targetBindingDisplay ==null) {
         if(sourceBindingDisplay !=null) {
- 
-        delta.setAction(DeltaAction.UPDATED);
-        DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<List<DisplayElement>>();
-        valueSets.setAction(DeltaAction.UPDATED);
-        valueSets.setPrevious(sourceBindingDisplay.getValueSetsDisplay());
-        delta.setAction(DeltaAction.UPDATED);
-        delta.setValueSets(valueSets);
-        DeltaNode<ValuesetStrength> strength = this.compare(sourceBindingDisplay.getStrength(), null);
-        delta.setStrength(strength);
 
-        DeltaNode<Set<Integer>> valuesetLocations = this.compare(sourceBindingDisplay.getValuesetLocations(), null);
-        delta.setValuesetLocations(valuesetLocations);
+          delta.setAction(DeltaAction.UPDATED);
+          DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<List<DisplayElement>>();
+          valueSets.setAction(DeltaAction.UPDATED);
+          valueSets.setPrevious(sourceBindingDisplay.getValueSetsDisplay());
+          delta.setAction(DeltaAction.UPDATED);
+          delta.setValueSets(valueSets);
+          DeltaNode<ValuesetStrength> strength = this.compare(sourceBindingDisplay.getStrength(), null);
+          delta.setStrength(strength);
+
+          DeltaNode<Set<Integer>> valuesetLocations = this.compare(sourceBindingDisplay.getValuesetLocations(), null);
+          delta.setValuesetLocations(valuesetLocations);
         }
 
       } else if (sourceBindingDisplay ==null) {
         if(targetBindingDisplay !=null) {
-        DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<List<DisplayElement>>();
-        valueSets.setCurrent(targetBindingDisplay.getValueSetsDisplay());
-        valueSets.setAction(DeltaAction.UPDATED);
-        delta.setAction(DeltaAction.UPDATED);
-        delta.setValueSets(valueSets);
-        DeltaNode<ValuesetStrength> strength = this.compare(null, targetBindingDisplay.getStrength());
-        delta.setStrength(strength);
+          DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<List<DisplayElement>>();
+          valueSets.setCurrent(targetBindingDisplay.getValueSetsDisplay());
+          valueSets.setAction(DeltaAction.UPDATED);
+          delta.setAction(DeltaAction.UPDATED);
+          delta.setValueSets(valueSets);
+          DeltaNode<ValuesetStrength> strength = this.compare(null, targetBindingDisplay.getStrength());
+          delta.setStrength(strength);
 
-        DeltaNode<Set<Integer>> valuesetLocations = this.compare(null, targetBindingDisplay.getValuesetLocations());
-        delta.setValuesetLocations(valuesetLocations);
+          DeltaNode<Set<Integer>> valuesetLocations = this.compare(null, targetBindingDisplay.getValuesetLocations());
+          delta.setValuesetLocations(valuesetLocations);
         }
       }
-   
+
 
     }
 

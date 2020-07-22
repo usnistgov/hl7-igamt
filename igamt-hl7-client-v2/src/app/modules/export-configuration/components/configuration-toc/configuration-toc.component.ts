@@ -43,7 +43,6 @@ export class ConfigurationTocComponent implements OnInit {
       },
     };
   }
-
   check($event, elm, type) {
   }
 

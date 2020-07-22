@@ -253,6 +253,7 @@ public class IgServiceImpl implements IgService {
     emptyIg.setContent(content);
     return emptyIg;
   }
+  
 
   private TextSection createSectionContent(SectionTemplate template) {
     // TODO Auto-generated method stub
@@ -450,7 +451,6 @@ public class IgServiceImpl implements IgService {
     newIg.setFrom(ig.getId());
     newIg.setOrigin(ig.getId());
     newIg.setMetadata(ig.getMetadata().clone());
-    newIg.setContent(ig.getContent());
     newIg.setUsername(username);
     newIg.setDomainInfo(ig.getDomainInfo());
     newIg.getDomainInfo().setScope(Scope.USER);
@@ -469,14 +469,30 @@ public class IgServiceImpl implements IgService {
     newIg.setCoConstraintGroupRegistry(
         copyCoConstraintGRoupRegistry(ig.getCoConstraintGroupRegistry(), newKeys, username, newIg.getId())
     );
-    
-    
     newIg.getDomainInfo().setScope(Scope.USER);
     if(info.getMode().equals(CloneMode.CLONE)) {
       newIg.getMetadata().setTitle(newIg.getMetadata().getTitle() + "[clone]");
+      newIg.setContent(ig.getContent());
+
     }else if(info.getMode().equals(CloneMode.DERIVE)){
       newIg.getMetadata().setTitle(newIg.getMetadata().getTitle() + "[derived]");
       newIg.setDerived(true); 
+      if(info.isInherit()) {
+        newIg.setContent(ig.getContent());
+      }else {
+        Set<TextSection> content = new HashSet<TextSection>();
+        if(info.getTemplate() !=null && info.getTemplate().getChildren() !=null) {
+        for (SectionTemplate template : info.getTemplate().getChildren()) {
+         
+          content.add(createSectionContent(template));
+        }
+        newIg.setContent(content);
+        }else {
+          newIg.setContent(ig.getContent());
+
+        }
+      }
+      
     }
     newIg.setCreationDate(new Date());
 
@@ -1335,4 +1351,5 @@ public class IgServiceImpl implements IgService {
       this.save(ig);
     }
   }
+	
 }
