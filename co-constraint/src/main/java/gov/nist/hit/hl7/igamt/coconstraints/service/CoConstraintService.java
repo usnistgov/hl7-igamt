@@ -33,7 +33,6 @@ public interface CoConstraintService {
     public Link clone(String string, HashMap<RealKey, String> newKeys, Link l, String username,
         Scope user, String documentTarget);
     void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys,
-        String username);
-    void updateDepenedencies(CoConstraintTable value, HashMap<RealKey, String> newKeys);
-
+        String username, boolean cloned);
+    void updateDepenedencies(CoConstraintTable value, HashMap<RealKey, String> newKeys, boolean cloned);
 }

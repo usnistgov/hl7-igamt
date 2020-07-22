@@ -1,3 +1,17 @@
+@import '../../../../../assets/variables';
+
 .margin-right {
   margin-right: 5px;
+}
+
+.segment-added {
+  background-color: $delta_added_light !important;
+}
+
+.segment-removed {
+  background-color: $delta_deleted_light !important;
+}
+
+.segment-changed {
+  background-color: $delta_changed_light !important;
 }

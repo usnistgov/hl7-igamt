@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.delta.domain;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+
 import java.util.List;
 
 public class Delta<T> {
@@ -8,6 +10,7 @@ public class Delta<T> {
     private DeltaInfo target;
     private T delta;
     private List<ConformanceStatementDelta> conformanceStatements;
+    private List<CoConstraintBinding> coConstraintBindings;
 
 
     public Delta(DeltaInfo source, DeltaInfo target, T delta) {
@@ -21,6 +24,14 @@ public class Delta<T> {
         this.target = target;
         this.delta = delta;
         this.conformanceStatements = conformanceStatements;
+    }
+
+    public Delta(DeltaInfo source, DeltaInfo target, T delta, List<ConformanceStatementDelta> conformanceStatements, List<CoConstraintBinding> coConstraintBindings) {
+        this.source = source;
+        this.target = target;
+        this.delta = delta;
+        this.conformanceStatements = conformanceStatements;
+        this.coConstraintBindings = coConstraintBindings;
     }
 
     public DeltaInfo getSource() {
@@ -55,4 +66,11 @@ public class Delta<T> {
         this.conformanceStatements = conformanceStatements;
     }
 
+    public List<CoConstraintBinding> getCoConstraintBindings() {
+        return coConstraintBindings;
+    }
+
+    public void setCoConstraintBindings(List<CoConstraintBinding> coConstraintBindings) {
+        this.coConstraintBindings = coConstraintBindings;
+    }
 }

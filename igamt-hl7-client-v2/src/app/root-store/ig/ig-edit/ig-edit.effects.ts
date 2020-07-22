@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import {catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap} from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
@@ -468,7 +468,6 @@ export class IgEditEffects extends DamWidgetEffect {
         this.store.select(selectIgDocument).pipe(take(1))).pipe(
           take(1),
           flatMap(([response, ig]) => {
-            console.log('HE HE HERE');
             return [
               new fromDAM.TurnOffLoader(),
               ...this.igService.insertRepositoryCopyResource(response.data.registry, response.data.display, ig),

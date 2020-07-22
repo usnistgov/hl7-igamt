@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import {OverlayPanel} from 'primeng/overlaypanel';
+import { OverlayPanel } from 'primeng/overlaypanel';
 import { Type } from '../../constants/type.enum';
-import { DeltaAction, IDelta, IDeltaNode, IDeltaReference } from '../../models/delta';
+import { DeltaAction, IDelta, IDeltaNode, IDeltaReference, IDeltaTreeNode } from '../../models/delta';
 import { ColumnOptions, HL7v2TreeColumnType, IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 
 @Component({
@@ -14,7 +14,7 @@ export class DeltaTreeComponent implements OnInit {
   columnTypes = HL7v2TreeColumnType;
   selectedPredicate: any;
   @Input()
-  compare: IDelta;
+  compare: IDelta<IDeltaTreeNode[]>;
   cols: ColumnOptions;
   selectedColumns: ColumnOptions;
   styleClasses = {

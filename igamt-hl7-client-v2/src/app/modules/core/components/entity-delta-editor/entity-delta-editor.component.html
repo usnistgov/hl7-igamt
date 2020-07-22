@@ -1,41 +1,91 @@
 <ng-template #headerControls>
 </ng-template>
 <ng-container *ngIf="delta$ | async as delta">
-  <ng-template #headerTitle let-active let-defaultTemplate="defaultTemplate">
+  <table class="table table-sm table-bordered table-striped">
+    <tr>
+      <td>Source Document</td>
+      <td>
+        <h6 class="title-text"  [routerLink]="['/', 'ig', delta.source.document.id ]">
+          <app-scope-badge *ngIf="delta.source?.document" [scope]="delta.source?.document?.scope"></app-scope-badge>
+          <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
+          {{ delta.source?.document?.name }}
+        </h6>
+      </td>
+    </tr>
+    <tr>
+      <td>Source Resource</td>
+      <td>
+        <h6 class="title-text" style="cursor: pointer; display: inline;" [routerLink]="['/', 'ig',  delta.source.document.id, url(), delta.source.id ]">
+          <app-scope-badge *ngIf="delta.source?.domainInfo" [scope]="delta.source?.domainInfo.scope" [version]="delta.source?.domainInfo.version"></app-scope-badge>
+          <app-entity-bagde [type]="type"></app-entity-bagde>
+          {{ delta.source?.name }}
+        </h6>
+      </td>
+    </tr>
+  </table>
 
-    <ng-container *ngTemplateOutlet="defaultTemplate; context: {
-      $implicit: active,
-      options: {
-        excludeTitle: true
-      }
-    }"></ng-container>
+  <ul class="nav nav-pills">
+    <li style="cursor: pointer;" class="nav-item" *ngFor="let item of deltaTabs">
+      <span  class="nav-link active" [ngClass]="{ 'active': item === activeTab }" (click)="activeTab = item">{{ item }}</span>
+    </li>
+  </ul>
 
-    &nbsp;&nbsp;
-    <h6 class="title-text">compare to</h6>
-    &nbsp;&nbsp;
-    <div style="cursor: pointer;" [routerLink]="['/', 'ig',  delta.source.document.id, url(), delta.source.id ]">
-      <h6 class="title-text">
-        <app-scope-badge *ngIf="delta.source?.domainInfo" [scope]="delta.source?.domainInfo.scope" [version]="delta.source?.domainInfo.version"></app-scope-badge>
-        <app-entity-bagde [type]="type"></app-entity-bagde>
-        {{ delta.source?.name }}
-      </h6>
+  <div [ngSwitch]="activeTab" style="margin-top: 10px;">
+    <div *ngSwitchCase="TABS.STRUCTURE">
+      <ng-container *ngIf="delta.delta?.length > 0; else noChanges" >
+        <app-delta-tree  [compare]="delta" [columns]="columns"></app-delta-tree>
+      </ng-container>
     </div>
-    &nbsp;
-    <h6 class="title-text"> from </h6>
-    &nbsp;
-    <div style="cursor: pointer;" [routerLink]="['/', 'ig', delta.source.document.id ]">
-      <h6 class="title-text">
-        <app-scope-badge *ngIf="delta.source?.document" [scope]="delta.source?.document?.scope"></app-scope-badge>
-        <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
-        {{ delta.source?.document?.name }}
-      </h6>
+    <div *ngSwitchCase="TABS.CONFORMANCE_STATEMENTS">
+      <ng-container *ngIf="delta.conformanceStatements?.length > 0; else noChanges" >
+        <p-table [value]="delta.conformanceStatements">
+          <ng-template pTemplate="header">
+            <tr>
+              <th>ID</th>
+              <th>Description</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-cf>
+            <tr [ngClass]="{'delta-added': cf.action === 'ADDED', 'delta-deleted': cf.action === 'DELETED'}">
+              <td>
+                <app-delta-column [action]="cf.identifier.action" [currentValue]="cf.identifier.current" [previousValue]="cf.identifier.previous" styleClassCurrent="delta-current" styleClassPrevious="delta-current">
+                  <ng-template #default let-value>
+                    {{value}}
+                  </ng-template>
+                </app-delta-column>
+              </td>
+              <td>
+                <app-delta-column [action]="cf.description.action" [currentValue]="cf.description.current" [previousValue]="cf.description.previous" styleClassCurrent="delta-current" styleClassPrevious="delta-previous">
+                  <ng-template #default let-value>
+                    {{value}}
+                  </ng-template>
+                </app-delta-column>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </ng-container>
     </div>
-
-  </ng-template>
-
-  <app-delta-tree *ngIf="delta.delta.length > 0 || delta.conformanceStatements?.length>0" [compare]="delta" [columns]="columns"></app-delta-tree>
-  <div style="padding: 50px; text-align: center;">
-    <span style="color: gray;" *ngIf="delta.delta.length === 0 && !(delta.conformanceStatements?.length>0)">No changes were detected</span>
+    <div *ngSwitchCase="TABS.COCONSTRAINTS">
+      <ng-container *ngIf="delta.coConstraintBindings?.length > 0; else noChanges" >
+        <div style="overflow: scroll; height: 100%;">
+          <app-context-co-constraint-binding
+            [delta]="true"
+            [viewOnly]="true"
+            [bindings]="delta.coConstraintBindings"
+            [segments]="segments | async"
+            [datatypes]="datatypes | async"
+            [valueSets]="valueSets | async"
+            [documentRef]="documentRef$ | async" >
+          </app-context-co-constraint-binding>
+        </div>
+      </ng-container>
+    </div>
   </div>
 </ng-container>
 
+<ng-template #noChanges>
+  <div style="padding: 50px; text-align: center;">
+    <span style="color: gray;">No changes were detected</span>
+  </div>
+</ng-template>

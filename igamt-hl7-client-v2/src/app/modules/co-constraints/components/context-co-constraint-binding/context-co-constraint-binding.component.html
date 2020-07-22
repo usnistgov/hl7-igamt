@@ -1,3 +1,48 @@
-<p>
-  context-co-constraint-binding works!
-</p>
+<ng-container *ngFor="let binding of bindings; let i = index">
+  <div
+      style="height: 45px;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;"
+      [ngClass]="{
+        'context-added': delta && binding.delta === 'ADDED',
+        'context-removed': delta && binding.delta === 'DELETED',
+        'context-changed': delta && binding.delta === 'CHANGED'
+      }">
+
+    <div style="display: flex; align-items: center; justify-content: space-between; cursor: pointer; flex-grow: 1; padding-left: 10px;" (click)="togglePanel(binding.context.pathId)" >
+      <div style="display: flex; align-items: center;">
+        <i class="fa fa-chevron-down" style="margin-right: 10px;" *ngIf="expansionPanelView[binding.context.pathId]"></i>
+        <i class="fa fa-chevron-right" style="margin-right: 10px;" *ngIf="!expansionPanelView[binding.context.pathId]"></i>
+        <app-entity-bagde [type]="binding.context.type" ></app-entity-bagde>
+        <h6 class="title-text" style="margin-left: 10px !important;" >{{ binding.context.name }}</h6>
+        <span *ngIf="delta && binding.delta" style="margin-left: 20px;"> ( {{ binding.delta }} )</span>
+      </div>
+      <button *ngIf="!viewOnly" class="btn btn-sm btn-danger margin-right" (click)="deleteContextBinding(bindings, binding, binding.context.pathId, i)" >
+        <i class="fa fa-trash"></i>
+        Delete Context
+      </button>
+    </div>
+    <hr style="margin: 0 !important;">
+  </div>
+
+  <ng-container *ngIf="expansionPanelView[binding.context.pathId]" >
+      <app-segment-co-constraint-binding
+        *ngFor="let segment of binding.bindings; let j = index"
+        [delta]="delta"
+        [derived]="derived"
+        [segments]="segments"
+        [datatypes]="datatypes"
+        [valueSets]="valueSets"
+        [viewOnly]="viewOnly"
+        [documentRef]="documentRef"
+        [conformanceProfile]="conformanceProfile"
+        [context]="binding.context"
+        (valueChange)="segmentBindingChange(binding.context.pathId, $event)"
+        (formValid)="formValid(binding.context.pathId, $event)"
+        (delete)="deleteSegmentBinding(binding.bindings, segment, binding.context.pathId, j)"
+        [value]="segment">
+      </app-segment-co-constraint-binding>
+  </ng-container>
+
+</ng-container>

@@ -3,6 +3,7 @@ import { ICardinalityRange } from '../components/hl7-v2-tree/hl7-v2-tree.compone
 import { Type } from '../constants/type.enum';
 import { IValuesetBinding } from './binding.interface';
 import { IAssertion, IPath } from './cs.interface';
+import { DeltaAction } from './delta';
 import { IResource } from './resource.interface';
 
 export interface IStructureElementRef {
@@ -15,6 +16,7 @@ export interface IStructureElementRef {
 export interface ICoConstraintBindingContext {
   context: IStructureElementRef;
   bindings: ICoConstraintBindingSegment[];
+  delta?: DeltaAction;
 }
 
 export interface ICoConstraintBindingSegment {
@@ -22,11 +24,13 @@ export interface ICoConstraintBindingSegment {
   flavorId: string;
   name: string;
   tables: ICoConstraintTableConditionalBinding[];
+  delta?: DeltaAction;
 }
 
 export interface ICoConstraintTableConditionalBinding {
   condition: IAssertion;
   value: ICoConstraintTable;
+  delta?: DeltaAction;
 }
 
 export interface ICoConstraintTable {
@@ -36,6 +40,7 @@ export interface ICoConstraintTable {
   headers: ICoConstraintHeaders;
   coConstraints: ICoConstraint[];
   groups: ICoConstraintGroupBinding[];
+  delta?: DeltaAction;
 }
 
 export interface ICoConstraintGroup extends IResource {
@@ -47,8 +52,10 @@ export interface ICoConstraintGroup extends IResource {
 }
 
 export interface ICoConstraintGroupBinding {
+  id: string;
   requirement: ICoConstraintRequirement;
   type: CoConstraintGroupBindingType;
+  delta?: DeltaAction;
 }
 
 export interface ICoConstraintGroupBindingRef extends ICoConstraintGroupBinding {
@@ -96,7 +103,9 @@ export interface INarrativeHeader extends ICoConstraintHeader {
 export interface ICoConstraint {
   id: string;
   requirement: ICoConstraintRequirement;
+  cloned?: boolean;
   cells: ICoConstraintCells;
+  delta?: DeltaAction;
 }
 
 export interface ICoConstraintCells {

@@ -278,6 +278,13 @@ export class CsPropositionComponent implements OnInit {
     ).subscribe();
   }
 
+  getNameFullPath(pre: IPath, post: IPath): Observable<{
+    name: string;
+    nodeInfo: IPathInfo;
+  }> {
+    return this.getName(this.treeService.straightConcatPath(pre, post));
+  }
+
   setSubject(context: IPath, assertion: ISimpleAssertion, node?: IHL7v2TreeNode) {
     this.subject = {
       name: '',
@@ -286,7 +293,7 @@ export class CsPropositionComponent implements OnInit {
     };
 
     try {
-      this.getName(this.treeService.concatOverlapPath(context, assertion.subject.path)).pipe(
+      this.getNameFullPath(context, assertion.subject.path).pipe(
         take(1),
         map((info) => {
           this.subject = {
@@ -313,7 +320,7 @@ export class CsPropositionComponent implements OnInit {
 
     if (assertion.complement.path) {
       try {
-        this.getName(this.treeService.concatOverlapPath(context, assertion.complement.path)).pipe(
+        this.getNameFullPath(context, assertion.subject.path).pipe(
           take(1),
           map((info) => {
             this.compare = {
@@ -355,8 +362,8 @@ export class CsPropositionComponent implements OnInit {
 
   change() {
     combineLatest(
-      this.getName(this.treeService.concatOverlapPath(this.context, this.assertion.subject.path)),
-      this.getName(this.treeService.concatOverlapPath(this.context, this.assertion.complement.path)),
+      this.getNameFullPath(this.context, this.assertion.subject.path),
+      this.getNameFullPath(this.context, this.assertion.complement.path),
     ).pipe(
       take(1),
       map(([node, compNode]) => {
@@ -580,7 +587,7 @@ export class CsPropositionComponent implements OnInit {
   }
 
   changeElement(event, elm: ISubject | IComplement) {
-    elm.path = event.path;
+    elm.path = this.treeService.trimPathRoot(event.path);
     elm.occurenceIdPath = event.node.data.id;
     elm.occurenceValue = undefined;
     elm.occurenceType = undefined;
@@ -598,7 +605,7 @@ export class CsPropositionComponent implements OnInit {
       return of({ name: '', nodeInfo: undefined });
     }
 
-    return this.treeService.getPathName(this.res, this.repository, path.child).pipe(
+    return this.treeService.getPathName(this.res, this.repository, path).pipe(
       take(1),
       map((pathInfo) => {
         const name = this.treeService.getNameFromPath(pathInfo);

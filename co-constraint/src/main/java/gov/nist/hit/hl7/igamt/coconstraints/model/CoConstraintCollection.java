@@ -14,7 +14,7 @@ import java.util.List;
         @JsonSubTypes.Type(value = CoConstraintGroup.class, name = "GROUP"),
         @JsonSubTypes.Type(value = CoConstraintTable.class, name = "TABLE"),
 })
-public abstract class CoConstraintCollection {
+public abstract class CoConstraintCollection extends WithDelta {
     protected String id;
     protected CollectionType tableType;
     protected String baseSegment;

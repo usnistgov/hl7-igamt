@@ -14,7 +14,7 @@ export class DeltaService {
   constructor(private http: HttpClient) {
   }
 
-  getDeltaFromOrigin = (type: Type, id: string, documentId: string): Observable<IDelta> => {
-    return this.http.get<IDelta>(this.URL + [type, documentId, id].join('/'));
+  getDeltaFromOrigin = (type: Type, id: string, documentId: string): Observable<IDelta<any>> => {
+    return this.http.get<IDelta<any>>(this.URL + [type, documentId, id].join('/'));
   }
 }

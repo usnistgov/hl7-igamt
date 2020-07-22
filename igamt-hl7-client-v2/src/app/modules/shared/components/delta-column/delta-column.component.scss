@@ -1,10 +1,12 @@
+@import '../../../../../assets/variables';
+
 .delta-current {
-  background-color: lightgreen;
+  background-color: $delta_added;
   width: 100%;
 }
 
 .delta-previous {
-  background-color: lightpink;
+  background-color: $delta_deleted;
   width: 100%;
 }
 

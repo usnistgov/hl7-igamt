@@ -83,6 +83,7 @@ export class CoConstraintEntityService {
 
   createCoConstraintGroupBinding(id: string): ICoConstraintGroupBindingRef {
     return {
+      id: Guid.create().toString(),
       requirement: this.createEmptyRequirements(),
       type: CoConstraintGroupBindingType.REF,
       refId: id,
@@ -330,6 +331,7 @@ export class CoConstraintEntityService {
 
   createEmptyContainedGroupBinding(): ICoConstraintGroupBindingContained {
     return {
+      id: Guid.create().toString(),
       type: CoConstraintGroupBindingType.CONTAINED,
       requirement: this.createEmptyRequirements(),
       name: '',

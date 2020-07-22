@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 
 /**
  * @author jungyubw
@@ -44,7 +44,7 @@ public class Predicate implements Serializable{
   protected ConstraintType type;
   protected Usage trueUsage;
   protected Usage falseUsage;
-  private Path context;
+  private InstancePath context;
   private Level level;
   
   @Deprecated
@@ -92,11 +92,11 @@ public class Predicate implements Serializable{
     this.id = id;
   }
   
-  public Path getContext() {
+  public InstancePath getContext() {
 	return context;
   }
 
-  public void setContext(Path context) {
+  public void setContext(InstancePath context) {
     this.context = context;
   }
 

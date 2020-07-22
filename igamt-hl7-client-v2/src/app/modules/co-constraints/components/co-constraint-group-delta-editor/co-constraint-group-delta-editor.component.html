@@ -1,0 +1,37 @@
+<ng-template #headerControls>
+</ng-template>
+<ng-container *ngIf="delta$ | async as delta">
+  <table class="table table-sm table-bordered table-striped">
+    <tr>
+      <td>Source Document</td>
+      <td>
+        <h6 class="title-text"  [routerLink]="['/', 'ig', delta.source.document.id ]">
+          <app-scope-badge *ngIf="delta.source?.document" [scope]="delta.source?.document?.scope"></app-scope-badge>
+          <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
+          {{ delta.source?.document?.name }}
+        </h6>
+      </td>
+    </tr>
+    <tr>
+      <td>Source Resource</td>
+      <td>
+        <h6 class="title-text" style="cursor: pointer; display: inline;" [routerLink]="['/', 'ig',  delta.source.document.id, url(), delta.source.id ]">
+          <app-scope-badge *ngIf="delta.source?.domainInfo" [scope]="delta.source?.domainInfo.scope" [version]="delta.source?.domainInfo.version"></app-scope-badge>
+          <app-entity-bagde [type]="type"></app-entity-bagde>
+          {{ delta.source?.name }}
+        </h6>
+      </td>
+    </tr>
+  </table>
+
+  <app-co-constraint-table
+    [vOnly]="true"
+    [segment]="segment$ | async"
+    [value]="delta.delta"
+    [delta]="true"
+    [mode]="'GROUP'"
+    [datatypes]="datatypes | async"
+    [valueSets]="valueSets | async"
+    [documentRef]="documentRef$ | async" >
+  </app-co-constraint-table>
+</ng-container>

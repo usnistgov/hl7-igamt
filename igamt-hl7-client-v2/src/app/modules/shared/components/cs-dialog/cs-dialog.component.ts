@@ -159,7 +159,7 @@ export class CsDialogComponent implements OnDestroy {
       return of('');
     }
 
-    return this.treeService.getPathName(this.resource, this.repository, path.child).pipe(
+    return this.treeService.getPathName(this.resource, this.repository, path).pipe(
       take(1),
       map((pathInfo) => {
         return this.treeService.getNameFromPath(pathInfo);
@@ -174,7 +174,7 @@ export class CsDialogComponent implements OnDestroy {
       this.structure = [
         node,
       ];
-      this.getName(path).pipe(
+      this.getName(this.cs.context).pipe(
         take(1),
         map((value) => {
           this.contextName = value;
@@ -194,13 +194,13 @@ export class CsDialogComponent implements OnDestroy {
   }
 
   selectContextNode(node) {
-    this.selectContext(node.node, node.path);
+    this.selectContext(node.node, this.treeService.trimPathRoot(node.path));
     this.showContext = false;
   }
 
   setContext(path: IPath) {
     if (path) {
-      const node = this.getNode(this.context, path);
+      const node = this.getNode(this.structure[0].children, path);
       this.selectContext(node, path);
     } else {
       this.selectContext(this.structure[0], path);

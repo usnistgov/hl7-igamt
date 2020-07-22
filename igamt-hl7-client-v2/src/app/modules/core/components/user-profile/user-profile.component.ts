@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ClearAll } from 'src/app/modules/dam-framework/store/messages/messages.actions';
-import {UserProfileRequest} from '../../../../root-store/user-profile/user-profile.actions';
-import {IUserProfile} from '../../../dam-framework/models/authentication/user-profile.class';
+import { UserProfileRequest } from '../../../../root-store/user-profile/user-profile.actions';
+import { IUserProfile } from '../../../dam-framework/models/authentication/user-profile.class';
 
 @Component({
   selector: 'app-userprofile',
@@ -19,7 +19,6 @@ export class UserProfileComponent implements OnInit {
   }
 
   onSubmitApplication($event: IUserProfile) {
-    console.log($event);
     this.store.dispatch(new UserProfileRequest($event));
   }
 }

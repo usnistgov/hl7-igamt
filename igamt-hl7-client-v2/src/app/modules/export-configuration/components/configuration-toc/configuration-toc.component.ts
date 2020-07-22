@@ -1,7 +1,7 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { TREE_ACTIONS, TreeComponent, TreeNode } from 'angular-tree-component';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
-import {DeltaAction} from '../../../shared/models/delta';
+import { DeltaAction } from '../../../shared/models/delta';
 import { NodeHelperService } from '../../../shared/services/node-helper.service';
 
 @Component({
@@ -34,7 +34,7 @@ export class ConfigurationTocComponent implements OnInit {
       actionMapping: {
         mouse: {
           click: (tree, node, event) => {
-            if ( node.data && node.data.delta !== DeltaAction.DELETED) {
+            if (node.data && node.data.delta !== DeltaAction.DELETED) {
               TREE_ACTIONS.TOGGLE_SELECTED(tree, node, event);
               this.onSelect(node.data);
             }
@@ -45,9 +45,6 @@ export class ConfigurationTocComponent implements OnInit {
   }
 
   check($event, elm, type) {
-    console.log($event);
-    console.log(elm);
-    console.log(type);
   }
 
   onSelect(node) {

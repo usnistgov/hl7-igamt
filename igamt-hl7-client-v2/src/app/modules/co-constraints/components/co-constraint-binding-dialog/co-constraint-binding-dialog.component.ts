@@ -77,7 +77,11 @@ export class CoConstraintBindingDialogComponent implements OnInit {
   }
 
   selectContext($event) {
-    this.selectedContextNode = $event;
+    this.selectedContextNode = {
+      node: $event.node,
+      path: $event.node.data.type === Type.CONFORMANCEPROFILE ? undefined : this.treeService.trimPathRoot($event.path),
+    };
+
     this.selectedContextNodeName = this.treeService.getNodeName(this.selectedContextNode.node, true);
     this.segmentTree = [
       {
@@ -88,7 +92,10 @@ export class CoConstraintBindingDialogComponent implements OnInit {
   }
 
   selectSegment($event) {
-    this.selectedSegmentNode = $event;
+    this.selectedSegmentNode = {
+      node: $event.node,
+      path: this.treeService.trimPathRoot($event.path),
+    };
     this.popRoot(this.selectedSegmentNode.node);
     this.selectedSegmentNodeName = this.treeService.getNodeName(this.selectedSegmentNode.node, true);
   }

@@ -132,7 +132,6 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
       take(1),
       map(([changes, resource]) => {
         changes = this.mergeStructChange(change, changes);
-        console.log(changes);
         this.changes.next(changes);
         this.editorChange({ changes, resource }, true);
       }),
@@ -152,7 +151,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
             return this.getById(id).pipe(
               flatMap((resource) => {
                 this.changes.next({});
-                return [this.messageService.messageToAction(message), new LoadSelectedResource(resource), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
+                return [this.messageService.messageToAction(message), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
               }),
             );
           }),

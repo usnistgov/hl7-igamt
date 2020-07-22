@@ -1,42 +1,26 @@
-<!--<ng-template #headerControls>-->
-<!--  <button [class]="'btn btn-sm btn-default toggle-btn toggled-delta'"-->
-<!--    style="margin-left: 10px; border: 1px solid black;" [routerLink]="'../'">-->
-<!--    <span style="font-weight: bold;"><span style="font-size: 1em;">Δ</span> delta</span>-->
-<!--  </button>-->
-<!--</ng-template>-->
 <ng-container *ngIf="delta$ | async as delta">
-  <ng-template #headerTitle let-active let-defaultTemplate="defaultTemplate">
-
-    <ng-container *ngTemplateOutlet="defaultTemplate; context: {
-      $implicit: active,
-      options: {
-        excludeTitle: true
-      }
-    }"></ng-container>
-
-    &nbsp;&nbsp;
-    <h6 class="title-text">compare to</h6>
-    &nbsp;&nbsp;
-    <div style="cursor: pointer;" [routerLink]="['/', 'ig',  delta.source.document.id, url(), delta.source.id ]">
-      <h6 class="title-text">
-        <app-scope-badge *ngIf="delta.source?.domainInfo" [scope]="delta.source?.domainInfo.scope"
-          [version]="delta.source?.domainInfo.version"></app-scope-badge>
-        <app-entity-bagde [type]="type"></app-entity-bagde>
-        {{ delta.source?.name }}
-      </h6>
-    </div>
-    &nbsp;
-    <h6 class="title-text"> from </h6>
-    &nbsp;
-    <div style="cursor: pointer;" [routerLink]="['/', 'ig', delta.source.document.id ]">
-      <h6 class="title-text">
-        <app-scope-badge *ngIf="delta.source?.document" [scope]="delta.source?.document?.scope"></app-scope-badge>
-        <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
-        {{ delta.source?.document?.name }}
-      </h6>
-    </div>
-
-  </ng-template>
+  <table class="table table-sm table-bordered table-striped">
+    <tr>
+      <td>Source Document</td>
+      <td>
+        <h6 class="title-text"  [routerLink]="['/', 'ig', delta.source.document.id ]">
+          <app-scope-badge *ngIf="delta.source?.document" [scope]="delta.source?.document?.scope"></app-scope-badge>
+          <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
+          {{ delta.source?.document?.name }}
+        </h6>
+      </td>
+    </tr>
+    <tr>
+      <td>Source Resource</td>
+      <td>
+        <h6 class="title-text" style="cursor: pointer; display: inline;" [routerLink]="['/', 'ig',  delta.source.document.id, url(), delta.source.id ]">
+          <app-scope-badge *ngIf="delta.source?.domainInfo" [scope]="delta.source?.domainInfo.scope" [version]="delta.source?.domainInfo.version"></app-scope-badge>
+          <app-entity-bagde [type]="type"></app-entity-bagde>
+          {{ delta.source?.name }}
+        </h6>
+      </td>
+    </tr>
+  </table>
   <app-valueset-delta *ngIf="delta.delta && delta.delta.action !== 'UNCHANGED'; else noChanges" [compare]="delta"
     [columns]="columns"></app-valueset-delta>
   <ng-template #noChanges>
