@@ -271,10 +271,10 @@ public class BootstrapApplication implements CommandLineRunner {
     }
   }
 
-  @PostConstruct
-  void fixPaths() {
-      this.pathFixes.fix();
-  }
+//  @PostConstruct
+//  void fixPaths() {
+//      this.pathFixes.fix();
+//  }
   
   
 
