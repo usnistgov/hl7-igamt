@@ -40,7 +40,6 @@ export class BindingSelectorComponent<T> implements OnInit {
     this.selectedSingleCode = this.data.selectedSingleCode;
     this.selectedValueSets = this.data.selectedValueSetBinding;
     this.locationInfo = this.data.locationInfo;
-    console.log(this.data.locationInfo);
   }
 
   submit() {

@@ -59,13 +59,9 @@
       </div>
       <div class="delta-filter">
         <div *ngIf="derived">
-          <div>
-            <label><strong>Select only:</strong> </label>
-          </div>
-
           <div *ngIf="delta" style="display: flex; flex-direction: row">
-            <span class="badge delta-badge delta-changed"> <p-checkbox name="delta-display" value="UPDATED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> updated</span>
-            <span class="badge delta-badge delta-added"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> added </span>
+            <span class="badge delta-badge delta-badge-changed"> <p-checkbox name="delta-display" value="UPDATED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> updated</span>
+            <span class="badge delta-badge delta-badge-added"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> added </span>
             <span class="badge delta-badge badge-default">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"> </p-checkbox> unchanged</span>
           </div>
         </div>

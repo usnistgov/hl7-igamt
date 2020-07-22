@@ -17,6 +17,7 @@ public class CoConstraintGroupBindingRef extends CoConstraintGroupBinding {
     public CoConstraintGroupBindingRef clone() {
         CoConstraintGroupBindingRef clone = new CoConstraintGroupBindingRef();
         clone.setRefId(refId);
+        clone.setId(id);
         clone.setRequirement(requirement.clone());
         clone.setType(type);
         return clone;

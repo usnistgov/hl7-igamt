@@ -1,14 +1,15 @@
 import { TreeNode } from 'primeng/api';
 import { Type } from '../constants/type.enum';
+import { ICoConstraintBindingContext } from './co-constraint.interface';
 import { IDomainInfo } from './domain-info.interface';
 
-export interface IDelta {
+export interface IDelta<T> {
   type: Type;
   source: IDeltaInfo;
   target: IDeltaInfo;
-  delta: IDeltaTreeNode[];
+  delta: T;
   conformanceStatements?: Array<IDeltaNode<any>>;
-
+  coConstraintBindings?: ICoConstraintBindingContext[];
 }
 
 export interface IDeltaTreeNode extends TreeNode {

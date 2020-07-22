@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.coconstraints.model;
 
+import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,8 +11,10 @@ import java.util.List;
 public class CoConstraintGroup extends Resource {
     protected String baseSegment;
     protected String documentId;
+    protected DeltaField<String> nameDelta;
     protected CoConstraintHeaders headers;
     protected List<CoConstraint> coConstraints;
+    protected DeltaAction delta;
 
     public CoConstraintGroup() {
         this.headers = new CoConstraintHeaders();
@@ -30,6 +33,22 @@ public class CoConstraintGroup extends Resource {
         clone.setHeaders(headers.clone());
         clone.setCoConstraints(new ArrayList<>(this.coConstraints));
         return clone;
+    }
+
+    public DeltaField<String> getNameDelta() {
+        return nameDelta;
+    }
+
+    public void setNameDelta(DeltaField<String> nameDelta) {
+        this.nameDelta = nameDelta;
+    }
+
+    public DeltaAction getDelta() {
+        return delta;
+    }
+
+    public void setDelta(DeltaAction delta) {
+        this.delta = delta;
     }
 
     public String getDocumentId() {

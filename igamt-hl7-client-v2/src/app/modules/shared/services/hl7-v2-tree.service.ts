@@ -86,7 +86,15 @@ export class Hl7V2TreeService {
     if (!path) {
       return '';
     } else {
-      return path.elementId + '-' + this.pathToString(path.child);
+      return path.elementId + (path.child ? '-' + this.pathToString(path.child) : '');
+    }
+  }
+
+  trimPathRoot(path: IPath): IPath {
+    if (path && path.child) {
+      return path.child;
+    } else {
+      return path;
     }
   }
 
@@ -763,7 +771,6 @@ export class Hl7V2TreeService {
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
-    console.log(confProfile);
     const segmentRefs = this.getAllSegmentRef(confProfile.children);
     return combineLatest(
       repository.getRefData(segmentRefs, Type.SEGMENT).pipe(

@@ -22,16 +22,7 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -76,6 +67,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
         try {
           CoConstraintGroup group = this.findById(((CoConstraintGroupBindingRef) binding).getRefId());
           contained.setName(group.getName());
+          contained.setId(binding.getId());
           contained.setCoConstraints(group.getCoConstraints());
           this.mergeHeaders(headers, group.getHeaders());
 
@@ -109,9 +101,9 @@ public class SimpleCoConstraintService implements CoConstraintService {
 
   public void mergeHeader(List<CoConstraintHeader> origin, List<CoConstraintHeader>  target) {
     target.forEach((header) -> {
-      boolean exists = origin.stream().filter((elm) -> {
+      boolean exists = origin.stream().anyMatch((elm) -> {
         return elm.getKey().equals(header.getKey());
-      }).findAny().isPresent();
+      });
 
       if(!exists) {
         origin.add(header);
@@ -384,22 +376,22 @@ public class SimpleCoConstraintService implements CoConstraintService {
   public Link clone(String id, HashMap<RealKey, String> newKeys, Link l, String username,
       Scope scope, String targetId) {
     // TODO Auto-generated method stub
-    CoConstraintGroup obj = this.coConstraintGroupRepository.findById(l.getId()).get();
-    if(obj  !=null ) {
-    CoConstraintGroup elm = obj.clone();
-    elm.setDocumentId(targetId);
-    elm.getDomainInfo().setScope(scope);
-    elm.setOrigin(l.getId());
-    Link newLink = l.clone(id);
-    newLink.setOrigin(l.getId());
-    elm.setId(newLink.getId());
-    newLink.setDomainInfo(elm.getDomainInfo());
-    updateDependencies(elm, newKeys, username);
-    this.coConstraintGroupRepository.save(elm);
-    return newLink;
+    Optional<CoConstraintGroup> group = this.coConstraintGroupRepository.findById(l.getId());
+    if(group.isPresent()) {
+      CoConstraintGroup elm = group.get().clone();
+      elm.setDocumentId(targetId);
+      elm.getDomainInfo().setScope(scope);
+      elm.setOrigin(l.getId());
+      Link newLink = l.clone(id);
+      newLink.setOrigin(l.getId());
+      elm.setId(newLink.getId());
+      newLink.setDomainInfo(elm.getDomainInfo());
+      updateDependencies(elm, newKeys, username, true);
+      this.coConstraintGroupRepository.save(elm);
+      return newLink;
+    } else {
+      return null;
     }
-    else return null;
-
   }
 
   /**
@@ -409,13 +401,14 @@ public class SimpleCoConstraintService implements CoConstraintService {
    */
   @Override
   public void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys,
-      String username) {
+      String username, boolean cloned) {
     RealKey segmentKey= new RealKey(elm.getBaseSegment(), Type.SEGMENT);
     if(elm.getBaseSegment() !=null && newKeys.containsKey(segmentKey)) {
       elm.setBaseSegment(newKeys.get(segmentKey));
     }
     if(elm.getCoConstraints() !=null) {
       for(CoConstraint cc: elm.getCoConstraints() ) {
+        cc.setCloned(cloned || cc.isCloned());
         updateDependencies(cc, newKeys);
       }
     }
@@ -467,7 +460,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
   }
   @Override
   public void updateDepenedencies(
-      CoConstraintTable value, HashMap<RealKey, String> newKeys) {
+      CoConstraintTable value, HashMap<RealKey, String> newKeys, boolean cloned) {
     // TODO Auto-generated method stub
     if(value.getGroups() !=null) {
       for(CoConstraintGroupBinding groupBinding : value.getGroups()) {
@@ -475,6 +468,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
           CoConstraintGroupBindingContained  contained = (CoConstraintGroupBindingContained)(groupBinding);
           if(contained.getCoConstraints() !=null) {
             contained.getCoConstraints().stream().forEach( cc -> {
+              cc.setCloned(cloned || cc.isCloned());
               this.updateDependencies(cc, newKeys);
             });
           }
@@ -489,10 +483,12 @@ public class SimpleCoConstraintService implements CoConstraintService {
     };
     if(value.getCoConstraints() !=null) {
       value.getCoConstraints().stream().forEach( cc -> {
+        cc.setCloned(cloned || cc.isCloned());
         this.updateDependencies(cc, newKeys);
       });
     }
   }
 
-  
+
+
 }

@@ -11,7 +11,7 @@ import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectIgId, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectDerived, selectIgId, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -28,6 +28,7 @@ export class CoConstraintGroupEditorComponent extends AbstractEditorComponent im
   segment$: Observable<ISegment>;
   group$: Observable<ICoConstraintGroup>;
   segmentSubject: ReplaySubject<ISegment>;
+  derived$: Observable<boolean>;
   groupSubject: ReplaySubject<ICoConstraintGroup>;
   nameSubject: ReplaySubject<ICoConstraintGroup>;
   public datatypes: Observable<IDisplayElement[]>;
@@ -55,6 +56,8 @@ export class CoConstraintGroupEditorComponent extends AbstractEditorComponent im
     this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);
     this.valueSets = this.store.select(selectValueSetsNodes);
 
+    this.derived$ = this.store.select(selectDerived);
+
     this.s_workspace = this.currentSynchronized$.pipe(
       tap((current) => {
         this.groupSubject.next(_.cloneDeep(current.ccGroup));
@@ -76,7 +79,7 @@ export class CoConstraintGroupEditorComponent extends AbstractEditorComponent im
             return this.ccService.getById(id).pipe(
               flatMap((resource) => {
                 /// TODO handle library case
-                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { ccGroup: resource, segment }, updateDate: true }), new IgEditResolverLoad(documentRef.documentId)];
+                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { ccGroup: resource, segment }, updateDate: true }), new fromDam.SetValue({ selected: resource }), new IgEditResolverLoad(documentRef.documentId)];
               }),
             );
           }),

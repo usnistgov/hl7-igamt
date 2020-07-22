@@ -15,7 +15,9 @@
 <app-co-constraint-table
   [segment]="segment$ | async"
   [value]="group$ | async"
+  [derived]="derived$ | async"
   [mode]="'GROUP'"
+  [vOnly]="viewOnly$ | async"
   [datatypes]="datatypes | async"
   [valueSets]="valueSets | async"
   (valueChange)="change($event)"

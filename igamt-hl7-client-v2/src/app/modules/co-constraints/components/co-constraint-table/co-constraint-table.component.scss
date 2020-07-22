@@ -1,3 +1,5 @@
+@import '../../../../../assets/variables';
+
 .requirement-cell {
   width: 80px;
   vertical-align: middle;
@@ -61,3 +63,16 @@ input.ng-invalid {
 // .stick-top-pad {
 //   top: 40px;
 // }
+
+
+.row-added {
+  background-color: $delta_added_light !important;
+}
+
+.row-deleted {
+  background-color: $delta_deleted_light !important;
+}
+
+.row-changed {
+  background-color: $delta_changed_light !important;
+}

@@ -263,21 +263,18 @@ body .ui-panel .ui-panel-titlebar .ui-panel-titlebar-icon {
 }
 
 .delta-added{
-  background-color: lightgreen;
+  background-color: $delta_added;
   font-style: italic;
 }
 .delta-deleted {
 
-  background-color: red;
+  background-color: $delta_deleted;
   text-decoration: line-through;
   font-style: italic;
 }
 .delta-changed {
-  background-color: yellow;
+  background-color: $delta_changed;
   font-style: italic;
-}
-.delta-badge{
-  padding: 0px;
 }
 
 .pcard{
@@ -415,4 +412,24 @@ body .ui-dropdown-panel {
 
 .delta-updated {
   padding: 0 !important;
+}
+
+.delta-badge {
+  border-top: 1px solid lightgray;
+  border-bottom: 1px solid lightgray;
+  border-right: 1px solid lightgray;
+  border-radius: 0 !important;
+  flex-grow: 1;
+}
+
+.delta-badge-changed {
+  background-color: $delta_changed_light;
+}
+
+.delta-badge-added {
+  background-color: $delta_added_light;
+}
+
+.delta-badge-deleted {
+  background-color: $delta_deleted_light;
 }

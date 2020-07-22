@@ -109,8 +109,8 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
           const grouped = _.groupBy(list, (elm) => {
             return this.treeService.pathToString(elm.payload.context);
           }) as {
-            [path: string]: Array<IEditableListNode<IConformanceStatement>>,
-          };
+              [path: string]: Array<IEditableListNode<IConformanceStatement>>,
+            };
 
           const groups = Object.keys(grouped).map((path) => {
             return {
@@ -165,7 +165,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     return this.selectedResource$.pipe(
       take(1),
       flatMap((res) => {
-        return this.treeService.getPathName(res, this.repository, path.child).pipe(
+        return this.treeService.getPathName(res, this.repository, path).pipe(
           take(1),
           map((pathInfo) => {
             return this.treeService.getNameFromPath(pathInfo);

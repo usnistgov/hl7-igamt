@@ -51,7 +51,6 @@ export class DatatypeConformanceStatementEditorComponent extends ConformanceStat
       },
       (dtCsList: IConformanceStatementList) => {
         const DTCSMap = {};
-        console.log(dtCsList);
         Object.keys(dtCsList.associatedConformanceStatementMap).forEach((key) => {
           DTCSMap[key] = [
             ...DTCSMap[key],

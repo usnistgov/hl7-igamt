@@ -13,6 +13,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import gov.nist.hit.hl7.igamt.ig.data.fix.PathFixes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -106,6 +107,10 @@ public class BootstrapApplication implements CommandLineRunner {
 //
 //  @Autowired
 //  DataFixer dataFixer;
+
+  @Autowired
+  private PathFixes pathFixes;
+
   @Autowired
   private ExportConfigurationRepository exportConfigurationRepository;
 
@@ -278,6 +283,11 @@ public class BootstrapApplication implements CommandLineRunner {
       }
     }
   }
+
+//  @PostConstruct
+//  void fixPaths() {
+//      this.pathFixes.fix();
+//  }
   
   
 
@@ -740,7 +750,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
     			seg.getBinding().setConformanceStatementIds(null);
     			try {
 					this.segmentService.save(seg);
-				} catch (ValidationException e) {
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}

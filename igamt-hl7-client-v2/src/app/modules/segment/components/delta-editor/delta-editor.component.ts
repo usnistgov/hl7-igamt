@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
-import { EntityDeltaEditorComponent } from '../../../core/components/entity-delta-editor/entity-delta-editor.component';
+import { EntityDeltaEditorComponent, EntityDeltaNavigationPills } from '../../../core/components/entity-delta-editor/entity-delta-editor.component';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -26,6 +26,10 @@ export class DeltaEditorComponent extends EntityDeltaEditorComponent implements 
       },
       actions$,
       store,
+      [
+        EntityDeltaNavigationPills.STRUCTURE,
+        EntityDeltaNavigationPills.CONFORMANCE_STATEMENTS,
+      ],
       [
         HL7v2TreeColumnType.NAME,
         HL7v2TreeColumnType.DATATYPE,

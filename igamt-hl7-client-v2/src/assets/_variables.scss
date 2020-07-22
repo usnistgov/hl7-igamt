@@ -46,6 +46,14 @@ $phinvads_scope_color: gray;
 $vs_binding_color: rgb(127, 255, 212);
 $single_code_binding_color: rgb(138, 43, 226);
 
+// Delta Color
+$delta_added: lightgreen;
+$delta_deleted: lightpink;
+$delta_changed: #ffeec9;
+
+$delta_deleted_light: #fff1f3;
+$delta_added_light: #edffed;
+$delta_changed_light: #fff7e7;
 
 .entity-badge-ig {
   background-color: $ig_color !important;
