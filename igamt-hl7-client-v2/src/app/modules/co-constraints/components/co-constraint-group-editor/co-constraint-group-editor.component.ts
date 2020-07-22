@@ -11,7 +11,7 @@ import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectIgId, selectValueSetsNodes, selectDerived } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectDerived, selectIgId, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';

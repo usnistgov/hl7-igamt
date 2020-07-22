@@ -2,18 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { Observable, of, Subscription } from 'rxjs';
-import { concatMap, pluck, map } from 'rxjs/operators';
+import { concatMap, map, pluck } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
+import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectCoConstraintGroupsById } from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
+import { selectValueSetsNodes } from '../../../../root-store/library/library-edit/library-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { Type } from '../../../shared/constants/type.enum';
+import { ICoConstraint, ICoConstraintGroup } from '../../../shared/models/co-constraint.interface';
 import { IDelta } from '../../../shared/models/delta';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { ISegment } from '../../../shared/models/segment.interface';
-import { ICoConstraint, ICoConstraintGroup } from '../../../shared/models/co-constraint.interface';
-import { selectValueSetsNodes } from '../../../../root-store/library/library-edit/library-edit.selectors';
-import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 
 @Component({
   selector: 'app-co-constraint-group-delta-editor',
@@ -44,11 +44,10 @@ export class CoConstraintGroupDeltaEditorComponent extends AbstractEditorCompone
       pluck('value'),
       map((delta: IDelta<ICoConstraintGroup>) => {
         if (delta) {
-          const abc = {
+          return {
             ...delta,
             delta: this.prepare(delta.delta),
           };
-          return abc;
         }
       }),
     );
