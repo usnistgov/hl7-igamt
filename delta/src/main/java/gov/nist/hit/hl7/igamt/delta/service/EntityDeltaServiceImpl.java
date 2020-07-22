@@ -91,7 +91,7 @@ public class EntityDeltaServiceImpl {
         }
       }
     }
-    if(target !=null&& !source.isEmpty()) {
+    if(target !=null&& source !=null && !source.isEmpty()) {
       for(ConformanceStatement s : target) {
         if(s.getIdentifier() !=null) {
           targetMap.put(s.getIdentifier(), s);

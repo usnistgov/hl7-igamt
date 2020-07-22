@@ -66,6 +66,21 @@
         </p-table>
       </ng-container>
     </div>
+    <div *ngSwitchCase="TABS.COCONSTRAINTS">
+      <ng-container *ngIf="delta.coConstraintBindings?.length > 0; else noChanges" >
+        <div style="overflow: scroll; height: 100%;">
+          <app-context-co-constraint-binding
+            [delta]="true"
+            [viewOnly]="true"
+            [bindings]="delta.coConstraintBindings"
+            [segments]="segments | async"
+            [datatypes]="datatypes | async"
+            [valueSets]="valueSets | async"
+            [documentRef]="documentRef$ | async" >
+          </app-context-co-constraint-binding>
+        </div>
+      </ng-container>
+    </div>
   </div>
 </ng-container>
 
