@@ -55,7 +55,7 @@ public interface SegmentService extends ResourceService {
 
 	public Segment create(Segment segment);
 
-	public Segment save(Segment segment) throws ValidationException;
+	public Segment save(Segment segment);
 
 	public List<Segment> findAll();
 

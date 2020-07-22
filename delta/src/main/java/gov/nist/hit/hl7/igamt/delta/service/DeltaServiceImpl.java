@@ -136,10 +136,14 @@ public class DeltaServiceImpl implements DeltaService {
       List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
       List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
-      this.coConstraintDeltaService.preProcess(source.getCoConstraintsBindings());
-      this.coConstraintDeltaService.preProcess(target.getCoConstraintsBindings());
+      List<CoConstraintBinding> sourceBindings = source.getCoConstraintsBindings() != null ? source.getCoConstraintsBindings() : new ArrayList<>();
+      List<CoConstraintBinding> targetBindings = target.getCoConstraintsBindings() != null ? target.getCoConstraintsBindings() : new ArrayList<>();
 
-      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements, this.coConstraintDeltaService.delta(source.getCoConstraintsBindings(), target.getCoConstraintsBindings()));
+      this.coConstraintDeltaService.preProcess(sourceBindings);
+      this.coConstraintDeltaService.preProcess(targetBindings);
+
+
+      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements, this.coConstraintDeltaService.delta(sourceBindings, targetBindings));
 
     } else if(type.equals(Type.COCONSTRAINTBINDINGS)) {
 
