@@ -32,7 +32,20 @@ export class DeriveDialogComponent implements OnInit, AfterViewInit {
       inherit: this.inherit, template: this.selectedTemplate,
     });
   }
+  getPath(node) {
+    if (this.isOrphan(node)) {
+      return node.data.position;
+    } else {
+     return this.getPath(node.parent) + '.' + node.data.position ;
+    }
+  }
 
+  isOrphan(node: any) {
+    return node && node.parent && !node.parent.parent;
+  }
+  close() {
+    this.dialogRef.close();
+  }
 }
 
 export interface IDeriveDialogData {

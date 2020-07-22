@@ -75,51 +75,83 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     return of();
   }
 
+  // exportHTML() {
+  //   combineLatest(
+  //     this.getIgId(),
+  //     this.exportConfigurationService.getAllExportConfigurations(this.type)).pipe(
+  //       take(1),
+  //       map(([igId, configurations]) => {
+  //         console.log(igId);
+  //         const dialogRef = this.dialog.open(ExportDialogComponent, {
+  //           data: {
+  //             toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
+  //             igId,
+  //             configurations,
+  //             type: Type.IGDOCUMENT,
+  //             getExportFirstDecision: this.igService.getExportFirstDecision,
+  //            // getExportFirstDecision: this.igService.getExportFirstDecision,
+  //             delta: this.delta,
+  //
+  //           },
+  //         });
+  //         dialogRef.afterClosed().pipe(
+  //           filter((y) => y !== undefined),
+  //           map((result) => {
+  //             this.igService.exportAsHtml(igId, result.decision, result.configurationId);
+  //           }),
+  //         ).subscribe();
+  //       }),
+  //     ).subscribe();
+  // }
+  //
+  // exportQuickHTML() {
+  //   this.getIgId().pipe(
+  //     take(1),
+  //     map((id) => this.igService.exportAsHtmlQuick(id)),
+  //   ).subscribe();
+  //
+  // }
+  //
+  // exportQuickWORD() {
+  //   this.getIgId().pipe(
+  //     take(1),
+  //     map((id) => this.igService.exportAsWordQuick(id)),
+  //   ).subscribe();
+  //
+  // }
   exportHTML() {
     combineLatest(
       this.getIgId(),
       this.exportConfigurationService.getAllExportConfigurations(this.type)).pipe(
-        take(1),
-        map(([igId, configurations]) => {
-          console.log(igId);
-          const dialogRef = this.dialog.open(ExportDialogComponent, {
-            data: {
-              toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
-              igId,
-              configurations,
-              type: Type.IGDOCUMENT,
-              getExportFirstDecision: this.igService.getExportFirstDecision,
-             // getExportFirstDecision: this.igService.getExportFirstDecision,
-              delta: this.delta,
+      map(([igId, configurations]) => {
+        console.log(igId);
+        const dialogRef = this.dialog.open(ExportDialogComponent, {
+          data: {
+            toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
+            igId,
+            configurations,
+            type: Type.IGDOCUMENT,
+            delta: this.delta,
 
-            },
-          });
-          dialogRef.afterClosed().pipe(
-            filter((y) => y !== undefined),
-            map((result) => {
-              this.igService.exportAsHtml(igId, result.decision, result.configurationId);
-            }),
-          ).subscribe();
-        }),
-      ).subscribe();
+          },
+        });
+        dialogRef.afterClosed().pipe(
+          filter((y) => y !== undefined),
+          map((result) => {
+            this.igService.exportAsHtml(igId, result.decision, result.configurationId);
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
   }
 
   exportQuickHTML() {
-    this.getIgId().pipe(
-      take(1),
-      map((id) => this.igService.exportAsHtmlQuick(id)),
-    ).subscribe();
-
+    this.getIgId().subscribe((id) => this.igService.exportAsHtmlQuick(id));
   }
 
   exportQuickWORD() {
-    this.getIgId().pipe(
-      take(1),
-      map((id) => this.igService.exportAsWordQuick(id)),
-    ).subscribe();
-
+    this.getIgId().subscribe((id) => this.igService.exportAsWordQuick(id));
   }
-
   verifyIG(type: string) {
     if (type || type === 'Verification' || type === 'Compliance') {
       this.getIgId().subscribe((igId) => {

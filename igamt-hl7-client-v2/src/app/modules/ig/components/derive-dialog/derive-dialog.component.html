@@ -16,7 +16,7 @@
      Available Narrative Templates
    </th>
    <th>
-     Overview
+     Template overview
    </th>
    </thead>
    <tbody>
@@ -33,7 +33,7 @@
      <td>
        <tree-root #treeroot [nodes]="selectedTemplate?.children">
          <ng-template #treeNodeTemplate let-index="index" let-node>
-           <span> {{node.data.label}}</span>
+           <span >{{getPath(node)}}.{{node.data.label}}</span>
          </ng-template>
        </tree-root>
      </td>
@@ -71,7 +71,7 @@
 
 </mat-dialog-content>
 <mat-dialog-actions style="justify-content: flex-end;">
-  <button class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="close()">Cancel</button>
   <button class="btn btn-sm btn-success" [disabled]="!selectedTemplate && !inherit" (click)="submit()">Submit</button>
 </mat-dialog-actions>
 </form>
