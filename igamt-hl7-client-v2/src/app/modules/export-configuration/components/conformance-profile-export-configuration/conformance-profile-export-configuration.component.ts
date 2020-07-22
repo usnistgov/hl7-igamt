@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import {CardModule} from 'primeng/card';
-import {TabViewModule} from 'primeng/tabview';
+import { CardModule } from 'primeng/card';
+import { TabViewModule } from 'primeng/tabview';
 
 import * as _ from 'lodash';
 
@@ -41,7 +41,6 @@ export class ConformanceProfileExportConfigurationComponent implements OnInit {
     this.detectChange.emit(this.config);
   }
   applyChange(event: any) {
-    console.log(event);
     this.config.deltaMode = event.active;
     this.config.deltaConfig = event.config;
     this.triggerChange();

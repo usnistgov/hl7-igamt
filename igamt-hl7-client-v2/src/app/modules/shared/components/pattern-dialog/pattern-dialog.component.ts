@@ -150,11 +150,9 @@ export class PatternDialogComponent implements OnInit {
 
   removeLeafs(pattern: Pattern, node: Operator) {
     const rmLeafs = this.getLeafs(node);
-    console.log(rmLeafs);
     for (const leaf of rmLeafs) {
       const i = pattern.leafs.indexOf(leaf);
       if (i !== -1) {
-        console.log(i);
         pattern.leafs.splice(i);
       }
     }

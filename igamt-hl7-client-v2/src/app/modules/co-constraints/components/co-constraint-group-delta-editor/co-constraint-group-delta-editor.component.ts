@@ -48,7 +48,6 @@ export class CoConstraintGroupDeltaEditorComponent extends AbstractEditorCompone
             ...delta,
             delta: this.prepare(delta.delta),
           };
-          console.log(abc);
           return abc;
         }
       }),

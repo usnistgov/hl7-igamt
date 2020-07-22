@@ -771,7 +771,6 @@ export class Hl7V2TreeService {
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
-    console.log(confProfile);
     const segmentRefs = this.getAllSegmentRef(confProfile.children);
     return combineLatest(
       repository.getRefData(segmentRefs, Type.SEGMENT).pipe(

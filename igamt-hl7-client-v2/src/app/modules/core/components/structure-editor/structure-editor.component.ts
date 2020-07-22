@@ -132,7 +132,6 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
       take(1),
       map(([changes, resource]) => {
         changes = this.mergeStructChange(change, changes);
-        console.log(changes);
         this.changes.next(changes);
         this.editorChange({ changes, resource }, true);
       }),
