@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
 import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -143,7 +144,7 @@ public class PathFixes {
         }).collect(Collectors.toList());
     }
 
-    List<CoConstraintBindingSegment> fixSegmentBinding(List<CoConstraintBindingSegment> coConstraintBindings, Path context, Type resourceType, String resourceId) {
+    List<CoConstraintBindingSegment> fixSegmentBinding(List<CoConstraintBindingSegment> coConstraintBindings, InstancePath context, Type resourceType, String resourceId) {
         if(coConstraintBindings == null) {
             return null;
         }
@@ -255,12 +256,17 @@ public class PathFixes {
         return predicate;
     }
 
-    ConformanceStatement fixConformanceStatement(ConformanceStatement cs, Function<Path, Path> fix) {
+    ConformanceStatement fixConformanceStatement(ConformanceStatement cs, Function<InstancePath, InstancePath> fix) {
         if(cs == null) {
             return null;
         }
 
         System.out.println("Fixing Conformance Statements "+cs.getIdentifier() + cs.getType());
+
+        if(cs.getContext() != null && !cs.getLevel().equals(Level.GROUP)) {
+            System.out.println("Fixing CS Level");
+            cs.setLevel(Level.GROUP);
+        }
 
         if(cs.getType().equals(ConstraintType.FREE)) {
             return cs;
@@ -271,7 +277,7 @@ public class PathFixes {
         }
     }
 
-    Predicate fixPredicate(Predicate p, Function<Path, Path> fix) {
+    Predicate fixPredicate(Predicate p, Function<InstancePath, InstancePath> fix) {
         if(p == null) {
             return null;
         }
@@ -285,7 +291,7 @@ public class PathFixes {
         }
     }
 
-    Assertion fixAssertion(Assertion assertion, Function<Path, Path> fix) {
+    Assertion fixAssertion(Assertion assertion, Function<InstancePath, InstancePath> fix) {
         if(assertion == null) {
             return null;
         }
@@ -319,21 +325,21 @@ public class PathFixes {
         return assertion;
     }
 
-    Complement fixComplement(Complement complement, Function<Path, Path> fix) {
+    Complement fixComplement(Complement complement, Function<InstancePath, InstancePath> fix) {
         if(complement != null && complement.getPath() != null) {
             complement.setPath(fix.apply(complement.getPath()));
         }
         return complement;
     }
 
-    Subject fixSubject(Subject subject, Function<Path, Path> fix) {
+    Subject fixSubject(Subject subject, Function<InstancePath, InstancePath> fix) {
         if(subject != null && subject.getPath() != null) {
             subject.setPath(fix.apply(subject.getPath()));
         }
         return subject;
     }
 
-    Path fixPath(Path path, Type resourceType, String resourceId) {
+    InstancePath fixPath(InstancePath path, Type resourceType, String resourceId) {
         System.out.println("Fixing Path");
 
         if(path != null && !Strings.isNullOrEmpty(path.getElementId()) && (path.getElementId().equals(resourceId) || ObjectId.isValid(path.getElementId()))) {
@@ -344,7 +350,7 @@ public class PathFixes {
         }
     }
 
-    String getPathId(Path path) {
+    String getPathId(InstancePath path) {
         if(path == null) {
             return "";
         }
@@ -356,7 +362,7 @@ public class PathFixes {
         }
     }
 
-    Path subPath(Path context, Path path) {
+    InstancePath subPath(InstancePath context, InstancePath path) {
         System.out.println("Sub Path");
         if(context != null &&
                 path != null &&
