@@ -50,36 +50,6 @@ public class EntityDeltaServiceImpl {
 
   }
 
-  //  public  List<ConformanceStatementDelta> conformanceStatements(Set<ConformanceStatement> source, Set<ConformanceStatement> target) {
-  //    List<ConformanceStatementDelta> deltas = new ArrayList<>();
-  //    Map<String, List<ConformanceStatement>> sourceChildren = (source != null ? source : new HashSet<ConformanceStatement>()).stream()
-  //        .collect(Collectors.groupingBy((e) -> e.getIdentifier()));
-  //    Map<String, List<ConformanceStatement>> targetChildren = (target != null ? target : new HashSet<ConformanceStatement>()).stream()
-  //        .collect(Collectors.groupingBy((e) -> e.getIdentifier()));
-  //
-  //    for(Map.Entry<String, List<ConformanceStatement>> entry: sourceChildren.entrySet()) {
-  //      ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
-  //      if(targetChildren.containsKey(entry.getKey())) {
-  //        this.compare(structureDelta, entry.getValue().get(0), targetChildren.get(entry.getKey()).get(0));
-  //        targetChildren.remove(entry.getKey());
-  //      } else {
-  //        this.compare(structureDelta, entry.getValue().get(0), entry.getValue().get(0));
-  //        structureDelta.setAction(DeltaAction.DELETED);
-  //      }
-  //
-  //      deltas.add(structureDelta);
-  //    }
-  //
-  //    for(Map.Entry<String, List<ConformanceStatement>> entry: targetChildren.entrySet()) {
-  //      ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
-  //      this.compare(structureDelta, entry.getValue().get(0), entry.getValue().get(0));
-  //      structureDelta.setAction(DeltaAction.ADDED);
-  //      deltas.add(structureDelta);
-  //    }
-  //
-  //    return deltas;
-  //
-  //  }
   public  List<ConformanceStatementDelta> conformanceStatements(Set<ConformanceStatement> source, Set<ConformanceStatement> target) {
     List<ConformanceStatementDelta> deltas = new ArrayList<>();
     Map<String, ConformanceStatement> sourceMap = new HashMap<String, ConformanceStatement>();
@@ -98,7 +68,7 @@ public class EntityDeltaServiceImpl {
         }
       }
     }
-    if(source !=null)
+    if(source !=null) {
       for(ConformanceStatement st: source) {
         ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
 
@@ -111,7 +81,9 @@ public class EntityDeltaServiceImpl {
           deltas.add(structureDelta);
         }
       }
-    if(target !=null)
+    }
+
+    if(target !=null) {
       for(ConformanceStatement st: target) {
         ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
 
@@ -119,12 +91,11 @@ public class EntityDeltaServiceImpl {
           structureDelta.setDescription(new DeltaNode<String>( null,st.generateDescription(), DeltaAction.ADDED));
           structureDelta.setIdentifier(new DeltaNode<String>( null,st.getIdentifier(), DeltaAction.ADDED));
           structureDelta.setAction(DeltaAction.ADDED);
-
           deltas.add(structureDelta);
         }      
 
       }
-
+    }
     return deltas;
 
   }
