@@ -836,7 +836,6 @@ public class IgServiceImpl implements IgService {
 
     Set<ConformanceStatement> allIGCSs = this.conformanceStatementRepository.findByIgDocumentId(igdoument.getId());
     for(ConformanceStatement cs : allIGCSs) {
-      System.out.println(cs);
       if(cs.getLevel().equals(Level.DATATYPE)) {
         if(cs.getSourceIds() != null && cs.getSourceIds().size() > 0) {
           for(String dtId : cs.getSourceIds()) {
@@ -1145,7 +1144,7 @@ public class IgServiceImpl implements IgService {
     String profileXMLStr = this.xmlSerializeService.serializeProfileToDoc(igModel).toXML();
     String constraintXMLStr = this.xmlSerializeService.serializeConstraintsXML(igModel).toXML();
     
-    this.addValuesetsFromConstraints(constraintXMLStr, igModel, -1);
+    constraintXMLStr = this.addValuesetsFromConstraints(constraintXMLStr, igModel, 0);
     
     String valueSetXMLStr = this.xmlSerializeService.serializeValueSetXML(igModel).toXML();
 
@@ -1158,7 +1157,7 @@ public class IgServiceImpl implements IgService {
     return new ByteArrayInputStream(bytes);
   }
 
-  private void addValuesetsFromConstraints(String constraintXMLStr, IgDataModel igModel, int fromIndex) {
+  private String addValuesetsFromConstraints(String constraintXMLStr, IgDataModel igModel, int fromIndex) {
 	  int beginIndex = constraintXMLStr.indexOf("ValueSetID=\"", fromIndex);
 	  int endIndex = constraintXMLStr.indexOf( "\"" , beginIndex + "ValueSetID=\"".length());
 	  if(beginIndex < 0 || endIndex < 0 || endIndex < beginIndex) {
@@ -1173,17 +1172,65 @@ public class IgServiceImpl implements IgService {
 			  Valueset found = this.findVSFromIGByBid(ig, bId);
 			  if(found != null) {
 				  System.out.println("###### MissingValueSet Found :: " + bId);
-				  
-				  
-			        ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
-			        valuesetDataModel.setModel(found);
-			        igModel.getValuesets().add(valuesetDataModel);
+			      ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
+			      valuesetDataModel.setModel(found);
+			      igModel.getValuesets().add(valuesetDataModel);
+			      String defaultHL7Version = this.findDefaultHL7Version(igModel);
+			      String modifiedBId;
+			      if (defaultHL7Version != null && found.getDomainInfo() != null && found.getDomainInfo().getVersion() != null && !found.getBindingIdentifier().equals("HL70396")) {
+		              if (defaultHL7Version
+		                  .equals(found.getDomainInfo().getVersion())) {
+		            	  modifiedBId = this.str(found.getBindingIdentifier());
+		              } else {
+		            	  modifiedBId = this.str(found.getBindingIdentifier() + "_" + found.getDomainInfo().getVersion().replaceAll("\\.", "-"));
+		              }
+		            } else {
+		            	modifiedBId = this.str(found.getBindingIdentifier());
+		            }
+			      
+			      return addValuesetsFromConstraints(constraintXMLStr.substring(0, beginIndex) + " ValueSetID=\"" + modifiedBId  + constraintXMLStr.substring(endIndex), igModel, endIndex);
 			  }
+		  } else {
+			  String defaultHL7Version = this.findDefaultHL7Version(igModel);
+		      String modifiedBId;
+		      if (defaultHL7Version != null && vdm.getModel().getDomainInfo() != null && vdm.getModel().getDomainInfo().getVersion() != null && !vdm.getModel().getBindingIdentifier().equals("HL70396")) {
+	              if (defaultHL7Version
+	                  .equals(vdm.getModel().getDomainInfo().getVersion())) {
+	            	  modifiedBId = this.str(vdm.getModel().getBindingIdentifier());
+	              } else {
+	            	  modifiedBId = this.str(vdm.getModel().getBindingIdentifier() + "_" + vdm.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-"));
+	              }
+	            } else {
+	            	modifiedBId = this.str(vdm.getModel().getBindingIdentifier());
+	            }
+		      
+		      return addValuesetsFromConstraints(constraintXMLStr.substring(0, beginIndex) + " ValueSetID=\"" + modifiedBId  + constraintXMLStr.substring(endIndex), igModel, endIndex);
 		  }
-		  
-		  this.addValuesetsFromConstraints(constraintXMLStr, igModel, endIndex);  
 	  }
-	
+	  return constraintXMLStr;
+  }
+  
+  private String str(String value) {
+	    return value != null ? value : "";
+	  }
+  
+  private String findDefaultHL7Version(IgDataModel igModel) {
+	  if(igModel.getModel().getMetadata() != null &&
+  			igModel.getModel().getMetadata().getHl7Versions() != null && 
+  			igModel.getModel().getMetadata().getHl7Versions().size() > 0) {
+  		return igModel.getModel().getMetadata().getHl7Versions().get(0);
+  	}
+	  
+	  
+	  if(igModel.getModel().getConformanceProfileRegistry() != null && 
+			  igModel.getModel().getConformanceProfileRegistry().getChildren()	!= null &&
+			  igModel.getModel().getConformanceProfileRegistry().getChildren().size() > 0) {
+		  for(Link l : igModel.getModel().getConformanceProfileRegistry().getChildren()) {
+			  if(l.getDomainInfo() != null && l.getDomainInfo().getVersion() != null)
+				  return l.getDomainInfo().getVersion();
+		  }
+	  }
+	return "NOTFOUND";
   }
 
   private Valueset findVSFromIGByBid(Ig ig, String bId) {
