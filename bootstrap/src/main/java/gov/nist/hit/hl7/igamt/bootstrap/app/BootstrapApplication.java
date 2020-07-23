@@ -305,7 +305,6 @@ public class BootstrapApplication implements CommandLineRunner {
         ret=true;
       }
     }
-
     return ret;
   }
 
