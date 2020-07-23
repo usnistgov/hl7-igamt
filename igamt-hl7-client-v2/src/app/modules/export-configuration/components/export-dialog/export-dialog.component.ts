@@ -2,10 +2,11 @@ import {HttpErrorResponse} from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import {Store} from '@ngrx/store';
-import {BehaviorSubject, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, Observable, of, Subject, throwError} from 'rxjs';
 import {catchError, filter, map, take} from 'rxjs/operators';
 import {TurnOffLoader, TurnOnLoader} from '../../../dam-framework/store/loader';
 import { IgService } from '../../../ig/services/ig.service';
+import { LibraryService } from '../../../library/services/library.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IExportConfigurationGlobal } from '../../models/config.interface';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
@@ -31,6 +32,7 @@ export class ExportDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<ExportDialogComponent>,
     private dialog: MatDialog,
     private igService: IgService,
+    private libraryService: LibraryService,
     private store: Store<any>,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
@@ -54,9 +56,18 @@ export class ExportDialogComponent implements OnInit {
     }
   }
 
+  getFiltredDocumentByType(type: Type): Observable<any> {
+    if (this.type && this.type === Type.DATATYPELIBRARY) {
+      return this.libraryService.getExportFirstDecision(this.igId, this.selectedConfig.id);
+    } else {
+        return this.igService.getExportFirstDecision(this.igId, this.selectedConfig.id);
+      }
+}
+
   customize() {
     this.store.dispatch(new TurnOnLoader({blockUI: true}));
-    this.igService.getExportFirstDecision(this.igId, this.selectedConfig.id).pipe(
+
+    this.getFiltredDocumentByType(this.type).pipe(
       take(1),
       map((decision) => {
         console.log('decision : ' , decision);
@@ -75,6 +86,7 @@ export class ExportDialogComponent implements OnInit {
             type: this.type,
             decision,
             delta: this.delta,
+            documentId: this.igId,
           },
         });
         tocDialog.afterClosed().subscribe((result) => {
@@ -91,6 +103,7 @@ export class ExportDialogComponent implements OnInit {
         return of(error);
       }),
     ).subscribe();
+
   }
 
   export() {

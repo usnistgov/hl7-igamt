@@ -123,6 +123,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     combineLatest(
       this.getIgId(),
       this.exportConfigurationService.getAllExportConfigurations(this.type)).pipe(
+        take(1),
       map(([igId, configurations]) => {
         console.log(igId);
         const dialogRef = this.dialog.open(ExportDialogComponent, {
@@ -146,11 +147,18 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   exportQuickHTML() {
-    this.getIgId().subscribe((id) => this.igService.exportAsHtmlQuick(id));
+    this.getIgId().pipe(
+      take(1),
+      map((id) => this.igService.exportAsHtmlQuick(id)),
+    ).subscribe();
+
   }
 
   exportQuickWORD() {
-    this.getIgId().subscribe((id) => this.igService.exportAsWordQuick(id));
+    this.getIgId().pipe(
+      take(1),
+      map((id) => this.igService.exportAsWordQuick(id)),
+    ).subscribe();
   }
   verifyIG(type: string) {
     if (type || type === 'Verification' || type === 'Compliance') {
