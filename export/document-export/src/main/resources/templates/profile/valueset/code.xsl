@@ -75,7 +75,7 @@
 							<xsl:value-of select="@codeSystem" />
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+							<xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
 								<xsl:value-of select="@codeSystem" />
 							</xsl:if>
 						</xsl:otherwise>
@@ -128,7 +128,7 @@
                             </xsl:choose>
                         </xsl:when>
                         <xsl:otherwise>
-							<xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+							<xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
 								<xsl:value-of select="@usage" />
 							</xsl:if>
                         </xsl:otherwise>
@@ -177,7 +177,7 @@
 							<xsl:value-of select="@description" />
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+							<xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
 								<xsl:value-of select="@description" />
 							</xsl:if>
 						</xsl:otherwise>
@@ -226,7 +226,7 @@
 							<xsl:value-of select="@comment" />
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+							<xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
 								<xsl:value-of select="@comment" />
 							</xsl:if>
 						</xsl:otherwise>
