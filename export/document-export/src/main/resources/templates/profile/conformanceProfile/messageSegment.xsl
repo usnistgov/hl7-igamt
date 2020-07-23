@@ -77,7 +77,7 @@
 							</xsl:choose>
 						</xsl:when>
 						<xsl:otherwise>
-							<xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+							<xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
 								<xsl:value-of select="@label" />
 							</xsl:if>
 						</xsl:otherwise>
@@ -139,7 +139,7 @@
 										</xsl:choose>
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+										<xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
 											<xsl:value-of select="@usage" />
 										</xsl:if>
 									</xsl:otherwise>
@@ -206,7 +206,7 @@
 												</xsl:choose>
 											</xsl:when>
 											<xsl:otherwise>
-												<xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+												<xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
 													<xsl:value-of select="concat('[',@min,'..',@max,']')"/>
 												</xsl:if>
 											</xsl:otherwise>
