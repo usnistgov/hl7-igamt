@@ -45,7 +45,7 @@
       <div class="edit" >
         <div *ngIf="currentConfiguration">
           <label class="form-label-lg"> Configuration name  </label>
-          <input type="text"  class="form-control" style="margin-bottom: 10px;" [(ngModel)]="currentConfiguration.configName" (ngModelChange)="change($event)">
+          <input  type="text"  class="form-control" style="margin-bottom: 10px;" [(ngModel)]="currentConfiguration.configName" (ngModelChange)="change($event)">
 
           <p-tabView *ngIf="type === 'IGDOCUMENT'" [styleClass]="'configuration-tab-view'" >
             <p-tabPanel header="Conformance Profile" [selected]="true">
