@@ -140,6 +140,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
 
   applyLastUserConfiguration() {
     if (this.docType === Type.IGDOCUMENT) {
+      console.log(this.documentId);
       this.igService.getLastUserConfiguration(this.documentId).subscribe(
         (lastConfig) => {
           this.filter = {... lastConfig.exportFilterDecision, changed: this.initialConfig.exportFilterDecision.changed};

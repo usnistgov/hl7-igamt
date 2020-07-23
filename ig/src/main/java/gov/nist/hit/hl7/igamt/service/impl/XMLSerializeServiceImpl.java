@@ -53,9 +53,8 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.IfThenAssertion;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.NotAssertion;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.OperatorAssertion;
-import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
-import gov.nist.hit.hl7.igamt.constraints.domain.assertion.SingleAssertion;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.OperatorAssertion.Operator;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.SingleAssertion;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement.Complement;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement.ComplementKey;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -93,6 +92,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import nu.xom.Attribute;
 import nu.xom.Builder;
 import nu.xom.Document;
@@ -115,6 +115,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
   @Autowired
   SegmentService segmentService;
+  
+  @Autowired
+  ValuesetService valuesetService;
 
   @Autowired
   ConformanceProfileService conformanceProfileService;
@@ -941,17 +944,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       }
     }
     return null;
-  }
-
-  /**
-   * @param context
-   * @return
-   */
-  private int countContextChild(Path path, int result) {
-    if (path.getChild() == null)
-      return result;
-    else
-      return countContextChild(path.getChild(), result + 1);
   }
   
   private int countContextChild(InstancePath path, int result) {
@@ -1862,8 +1854,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   public String generateConditionScript(Predicate p, String targetId) {
     if (p instanceof FreeTextPredicate) {
       FreeTextPredicate cp = (FreeTextPredicate) p;
-      if(cp.getAssertionScript() !=null)
-      return cp.getAssertionScript().replace("\n", "").replace("\r", "");
+      if(cp.getAssertionScript() !=null) {	  
+          return cp.getAssertionScript().replace("\n", "").replace("\r", "");  
+      }
+
     } else if (p instanceof AssertionPredicate) {
       AssertionPredicate cp = (AssertionPredicate) p;
       if (cp.getAssertion() != null)
@@ -1877,8 +1871,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   public String generateAssertionScript(ConformanceStatement c, String targetId) {
     if (c instanceof FreeTextConformanceStatement) {
       FreeTextConformanceStatement cs = (FreeTextConformanceStatement) c;
-      if(cs.getAssertionScript() !=null)
-      return cs.getAssertionScript().replace("\n", "").replace("\r", "");
+      if(cs.getAssertionScript() !=null) {
+          return cs.getAssertionScript().replace("\n", "").replace("\r", "");
+      }
     } else if (c instanceof AssertionConformanceStatement) {
       AssertionConformanceStatement cs = (AssertionConformanceStatement) c;
       if (cs.getAssertion() != null)
@@ -1889,14 +1884,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     return null;
   }
 
-  /**
-   * @param assertion
-   * @param path
-   * @param targetId
-   * @param level
-   * @param igModel
-   * @return
-   */
   private String generateAssertionScript(Assertion assertion, Level level, String targetId,
 		  InstancePath context) {
     if (assertion instanceof NotAssertion) {
