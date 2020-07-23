@@ -157,7 +157,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-success',
                 icon: 'fa-plus',
                 action: (item: IgListItem) => {
-                  this.ig.cloneIg(item.id, CloneModeEnum.CLONE, null).subscribe(
+                  this.ig.cloneIg(item.id, CloneModeEnum.CLONE,  {mode: CloneModeEnum.CLONE }).subscribe(
                     (response: Message<string>) => {
                       this.store.dispatch(this.message.messageToAction(response));
                       this.router.navigate(['ig', response.data]);
