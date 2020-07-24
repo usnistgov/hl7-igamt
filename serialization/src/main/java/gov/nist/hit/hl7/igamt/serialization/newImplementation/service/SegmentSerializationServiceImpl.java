@@ -8,7 +8,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.serialization.util.SerializationTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +61,9 @@ private FroalaSerializationUtil frolaCleaning;
 
 @Autowired
 private DeltaService deltaService;
+
+@Autowired
+private SerializationTools serializationTools;
 
 	@Override
 	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision, Boolean deltaMode) throws SerializationException {
@@ -286,6 +291,13 @@ private DeltaService deltaService;
 				  addedUsage.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
 				  element.appendChild(addedUsage);
 
+				  Element addedVs = new Element("Change");
+				  addedVs.addAttribute(new Attribute("type", Type.FIELD.getValue()));
+				  addedVs.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+				  addedVs.addAttribute(new Attribute("action", structureDelta.getAction().name()));
+				  addedVs.addAttribute(new Attribute("property", PropertyType.VALUESET.name()));
+				  element.appendChild(addedVs);
+
 				  Element addedCte = new Element("Change");
 				  addedCte.addAttribute(new Attribute("type", Type.FIELD.getValue()));
 				  addedCte.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
@@ -335,6 +347,8 @@ private DeltaService deltaService;
 				  addedDt.addAttribute(new Attribute("property", PropertyType.DATATYPE.name()));
 				  element.appendChild(addedDt);
 
+
+
 			  } else {
 				  if(structureDelta.getUsage() != null && !structureDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
 					  Element changedElement = new Element("Change");
@@ -345,6 +359,99 @@ private DeltaService deltaService;
 					  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getUsage().getPrevious().name()));
 					  element.appendChild(changedElement);
 				  }
+				  if(structureDelta.getValueSetBinding() != null ){
+					  if(structureDelta.getValueSetBinding().getAction().equals(DeltaAction.DELETED) || structureDelta.getValueSetBinding().getAction().equals(DeltaAction.ADDED)) {
+						  Element addedVs = new Element("Change");
+						  addedVs.addAttribute(new Attribute("type", Type.FIELD.getValue()));
+						  addedVs.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+						  addedVs.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
+						  addedVs.addAttribute(new Attribute("property", PropertyType.VALUESET.name()));
+						  if(structureDelta.getValueSetBinding().getAction().equals(DeltaAction.DELETED) && structureDelta.getValueSetBinding().getValueSets() != null && structureDelta.getValueSetBinding().getValueSets().getPrevious() != null){
+							  addedVs.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
+						  }
+						  element.appendChild(addedVs);
+
+						  Element addedVsB = new Element("Change");
+						  addedVsB.addAttribute(new Attribute("type", "ValuesetBinding"));
+						  addedVsB.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+						  addedVsB.addAttribute(new Attribute("action",  structureDelta.getValueSetBinding().getAction().name()));
+						  addedVsB.addAttribute(new Attribute("property", "name"));
+						  element.appendChild(addedVsB);
+
+						  Element addedVsS = new Element("Change");
+						  addedVsS.addAttribute(new Attribute("type", "ValuesetBinding"));
+						  addedVsS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+						  addedVsS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
+						  addedVsS.addAttribute(new Attribute("property", "strength"));
+						  element.appendChild(addedVsS);
+
+						  Element addedVsL = new Element("Change");
+						  addedVsL.addAttribute(new Attribute("type", "ValuesetBinding"));
+						  addedVsL.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+						  addedVsL.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
+						  addedVsL.addAttribute(new Attribute("property", "locations"));
+						  element.appendChild(addedVsL);
+					  } else {
+						  if(structureDelta.getValueSetBinding().getValueSets() != null && !structureDelta.getValueSetBinding().getValueSets().getAction().equals(DeltaAction.UNCHANGED)){
+							  Element changedElement = new Element("Change");
+							  changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
+							  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+							  changedElement.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getValueSets().getAction().name()));
+							  changedElement.addAttribute(new Attribute("property", PropertyType.VALUESET.name()));
+							  changedElement.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
+							  element.appendChild(changedElement);
+
+							  Element changedElementV = new Element("Change");
+							  changedElementV.addAttribute(new Attribute("type", "ValuesetBinding"));
+							  changedElementV.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+							  changedElementV.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getValueSets().getAction().name()));
+							  changedElementV.addAttribute(new Attribute("property", "name"));
+							  changedElementV.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
+							  element.appendChild(changedElementV);
+						  }
+						  if(structureDelta.getValueSetBinding().getStrength() != null) {
+							  if( structureDelta.getValueSetBinding().getStrength().getAction().equals(DeltaAction.DELETED) || structureDelta.getValueSetBinding().getStrength().getAction().equals(DeltaAction.ADDED)) {
+								  Element addedS = new Element("Change");
+								  addedS.addAttribute(new Attribute("type", "ValuesetBinding"));
+								  addedS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+								  addedS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getStrength().getAction().name()));
+								  addedS.addAttribute(new Attribute("property", "strength"));
+								  element.appendChild(addedS);
+							  }
+							  if( structureDelta.getValueSetBinding().getStrength().getAction().equals(DeltaAction.UPDATED)){
+								  Element changedElementS = new Element("Change");
+								  changedElementS.addAttribute(new Attribute("type", "ValuesetBinding"));
+								  changedElementS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+								  changedElementS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getStrength().getAction().name()));
+								  changedElementS.addAttribute(new Attribute("property", "strength"));
+								  changedElementS.addAttribute(new Attribute("oldValue", structureDelta.getValueSetBinding().getStrength().getPrevious().value));
+								  element.appendChild(changedElementS);
+							  }
+						  }
+
+						  if(structureDelta.getValueSetBinding().getValuesetLocations() != null) {
+							  if( structureDelta.getValueSetBinding().getValuesetLocations().getAction().equals(DeltaAction.DELETED) || structureDelta.getValueSetBinding().getValuesetLocations().getAction().equals(DeltaAction.ADDED)) {
+								  Element addedS = new Element("Change");
+								  addedS.addAttribute(new Attribute("type", "ValuesetBinding"));
+								  addedS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+								  addedS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getValuesetLocations().getAction().name()));
+								  addedS.addAttribute(new Attribute("property", "locations"));
+								  element.appendChild(addedS);
+							  }
+							  if( structureDelta.getValueSetBinding().getValuesetLocations().getAction().equals(DeltaAction.UPDATED)){
+								  Element changedElementS = new Element("Change");
+								  changedElementS.addAttribute(new Attribute("type", "ValuesetBinding"));
+								  changedElementS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+								  changedElementS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getValuesetLocations().getAction().name()));
+								  changedElementS.addAttribute(new Attribute("property", "locations"));
+								  changedElementS.addAttribute(new Attribute("oldValue", serializationTools.extractLocations(structureDelta.getValueSetBinding().getValuesetLocations().getPrevious()) ));
+								  element.appendChild(changedElementS);
+							  }
+						  }
+					  }
+				  }
+
+
 				  if(structureDelta.getConstantValue() != null && !structureDelta.getConstantValue().getAction().equals(DeltaAction.UNCHANGED)) {
 					  Element changedElement = new Element("Change");
 					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
@@ -420,6 +527,8 @@ private DeltaService deltaService;
 
 		  }
 	  }
+
+
 
 
 //		  @Override

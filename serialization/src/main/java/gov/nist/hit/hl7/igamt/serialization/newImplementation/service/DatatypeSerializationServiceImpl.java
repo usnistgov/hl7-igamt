@@ -10,6 +10,7 @@ import gov.nist.hit.hl7.igamt.delta.domain.Delta;
 import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
 import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
+import gov.nist.hit.hl7.igamt.serialization.util.SerializationTools;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +53,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
 	@Autowired
 	private FroalaSerializationUtil frolaCleaning;
+
+	@Autowired
+	private SerializationTools serializationTools;
 
 	@Override
 	public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type, Boolean deltaMode) throws SerializationException {
@@ -374,6 +378,70 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
 					element.appendChild(changedElement);
 				}
+				if(structureDelta.getValueSetBinding() != null ){
+					if(structureDelta.getValueSetBinding().getAction().equals(DeltaAction.DELETED) || structureDelta.getValueSetBinding().getAction().equals(DeltaAction.ADDED)) {
+
+					} else {
+						if(structureDelta.getValueSetBinding().getValueSets() != null && !structureDelta.getValueSetBinding().getValueSets().getAction().equals(DeltaAction.UNCHANGED)){
+							Element changedElement = new Element("Change");
+							changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
+							changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+							changedElement.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
+							changedElement.addAttribute(new Attribute("property", PropertyType.VALUESET.name()));
+							changedElement.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
+							element.appendChild(changedElement);
+
+							Element changedElementV = new Element("Change");
+							changedElementV.addAttribute(new Attribute("type", "ValuesetBinding"));
+							changedElementV.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+							changedElementV.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
+							changedElementV.addAttribute(new Attribute("property", "name"));
+							changedElementV.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
+							element.appendChild(changedElementV);
+						}
+						if(structureDelta.getValueSetBinding().getStrength() != null) {
+							if( structureDelta.getValueSetBinding().getStrength().getAction().equals(DeltaAction.DELETED) || structureDelta.getValueSetBinding().getStrength().getAction().equals(DeltaAction.ADDED)) {
+								Element addedS = new Element("Change");
+								addedS.addAttribute(new Attribute("type", "ValuesetBinding"));
+								addedS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+								addedS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
+								addedS.addAttribute(new Attribute("property", "strength"));
+								element.appendChild(addedS);
+							}
+							if( structureDelta.getValueSetBinding().getStrength().getAction().equals(DeltaAction.UPDATED)){
+								Element changedElementS = new Element("Change");
+								changedElementS.addAttribute(new Attribute("type", "ValuesetBinding"));
+								changedElementS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+								changedElementS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
+								changedElementS.addAttribute(new Attribute("property", "strength"));
+								changedElementS.addAttribute(new Attribute("oldValue", structureDelta.getValueSetBinding().getStrength().getPrevious().value));
+								element.appendChild(changedElementS);
+							}
+						}
+
+						if(structureDelta.getValueSetBinding().getValuesetLocations() != null) {
+							if( structureDelta.getValueSetBinding().getValuesetLocations().getAction().equals(DeltaAction.DELETED) || structureDelta.getValueSetBinding().getValuesetLocations().getAction().equals(DeltaAction.ADDED)) {
+								Element addedS = new Element("Change");
+								addedS.addAttribute(new Attribute("type", "ValuesetBinding"));
+								addedS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+								addedS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getValuesetLocations().getAction().name()));
+								addedS.addAttribute(new Attribute("property", "locations"));
+								element.appendChild(addedS);
+							}
+							if( structureDelta.getValueSetBinding().getValuesetLocations().getAction().equals(DeltaAction.UPDATED)){
+								Element changedElementS = new Element("Change");
+								changedElementS.addAttribute(new Attribute("type", "ValuesetBinding"));
+								changedElementS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+								changedElementS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getValuesetLocations().getAction().name()));
+								changedElementS.addAttribute(new Attribute("property", "locations"));
+								changedElementS.addAttribute(new Attribute("oldValue", serializationTools.extractLocations(structureDelta.getValueSetBinding().getValuesetLocations().getPrevious()) ));
+								element.appendChild(changedElementS);
+							}
+						}
+					}
+				}
+
+
 				if(structureDelta.getConstantValue() != null && !structureDelta.getConstantValue().getAction().equals(DeltaAction.UNCHANGED)) {
 					Element changedElement = new Element("Change");
 					changedElement.addAttribute(new Attribute("type", structureDelta.getType().toString()));
