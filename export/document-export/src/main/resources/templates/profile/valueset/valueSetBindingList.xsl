@@ -83,6 +83,7 @@
                 </xsl:element>
                 <xsl:element name="tbody">
                     <!-- <xsl:for-each select="Binding/StructureElementBindings/StructureElementBinding/ValuesetBinding"> -->
+                    <xsl:value-of select="../../../@name"/>
                     <xsl:for-each select=".//ValuesetBinding">
 
                         <xsl:sort lang="langage-code" data-type="number" select="../@Position1" order="ascending"/>
@@ -100,7 +101,7 @@
 
                             </xsl:when>
                             <xsl:otherwise>
-                                <xsl:if test="../../../../Changes/Change[@position=$changedPosition]">
+                                <xsl:if test="../../../../Changes/Change[@elementId=$changedPosition]">
                                     <xsl:call-template name="ValueSetBindingRow">
                                         <xsl:with-param name="changeClass" select="../../../../Changes/Change[@elementId=$changedPosition]"  />
                                         <xsl:with-param name="updatedColor" select="../../../../Changes/@updatedColor" />
@@ -169,6 +170,39 @@
 <!--                             &ndash;&gt;-->
 <!--                        </xsl:element>-->
 <!--                    -->
+                    </xsl:for-each>
+                    <xsl:for-each select="Changes/Change[@type='ValuesetBinding' and @property='VALUESETBINDING']">
+                        <xsl:sort lang="langage-code" data-type="number" select="./@elementId" order="ascending"/>
+                        <xsl:variable name="changedPosition" select="./@elementId"/>
+
+
+                        <xsl:choose>
+                            <xsl:when test="not(../../Changes/@mode) or ../../Changes/@mode = 'HIGHLIGHT' or ../../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
+                                <xsl:call-template name="ValueSetBindingRow">
+                                    <xsl:with-param name="changeClass" select="../../Changes/Change[@elementId=$changedPosition]"  />
+                                    <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
+                                    <xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
+                                    <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+                                    <xsl:with-param name="mode" select="../../Changes/@mode" />
+
+                                </xsl:call-template>
+
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:if test="../../Changes/Change[@elementId=$changedPosition]">
+                                    <xsl:call-template name="ValueSetBindingRow">
+                                        <xsl:with-param name="changeClass" select="../../Changes/Change[@elementId=$changedPosition]"  />
+                                        <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
+                                        <xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
+                                        <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+                                        <xsl:with-param name="mode" select="../../Changes/@mode" />
+
+                                    </xsl:call-template>
+                                </xsl:if>
+                            </xsl:otherwise>
+                        </xsl:choose>
+
+
                     </xsl:for-each>
                 </xsl:element>
             </xsl:element>

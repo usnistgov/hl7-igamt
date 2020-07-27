@@ -384,7 +384,8 @@
                                     <xsl:attribute name="style">
                                         <xsl:value-of select="concat('background-color:' , $deletedColor)"/>
                                     </xsl:attribute>
-                                    <xsl:value-of disable-output-escaping="yes" select="@valueset" />
+                                    <xsl:value-of select="$changeClass[@property='VALUESET']/@oldValue" />
+
                                 </xsl:when>
                             </xsl:choose>
                         </xsl:when>

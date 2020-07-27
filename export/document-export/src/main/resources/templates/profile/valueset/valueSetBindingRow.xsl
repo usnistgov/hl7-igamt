@@ -14,7 +14,59 @@
                 <xsl:text>contentTr</xsl:text>
             </xsl:attribute>
             <xsl:element name="td">
-                <xsl:value-of select="@Position2"/>
+<!--                <xsl:value-of select="@Position2"/>-->
+                <xsl:choose>
+                    <xsl:when test="$changeClass[@property='name']">
+                        <xsl:choose>
+                            <xsl:when test="$changeClass[@property='Position2']/@action = 'UPDATED' and ($mode = 'HIGHLIGHT_WITH_OLD_VALUES' or $mode = 'HIDE_WITH_OLD_VALUES')">
+                                <xsl:element name="div">
+                                    <xsl:attribute name="style">
+                                        <xsl:value-of select="'display: flex;padding: 0;'"/>
+                                    </xsl:attribute>
+                                    <xsl:element name="div">
+                                        <xsl:attribute name="style">
+                                            <xsl:value-of select="concat('width: 50%;background-color:' , $deletedColor) "/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="$changeClass[@property='Position2']/@oldValue" />
+                                    </xsl:element>
+                                    <xsl:element name="div">
+                                        <xsl:attribute name="style">
+                                            <xsl:value-of select="concat('width: 50%;background-color:' , $addedColor) "/>
+                                        </xsl:attribute>
+                                        <xsl:value-of select="@Position2" />
+                                    </xsl:element>
+                                </xsl:element>
+                            </xsl:when>
+
+                            <xsl:when test="$changeClass[@property='Position2']/@action = 'UPDATED' and (($mode != 'HIGHLIGHT_WITH_OLD_VALUES' and $mode != 'HIDE_WITH_OLD_VALUES') or $mode = 'HIDE_WITH_CHANGED_ONLY')">
+                                <xsl:attribute name="style">
+                                    <xsl:value-of select="concat('background-color:' , $updatedColor)"/>
+                                </xsl:attribute>
+                                <xsl:value-of select="@Position2" />
+                            </xsl:when>
+                            <xsl:when test="$changeClass[@property='Position2']/@action = 'ADDED'">
+                                <xsl:attribute name="style">
+                                    <xsl:value-of select="concat('background-color:' , $addedColor)"/>
+                                </xsl:attribute>
+                                <xsl:value-of select="@Position2" />
+                            </xsl:when>
+                            <xsl:when test="$changeClass[@property='Position2']/@action = 'DELETED'">
+                                <xsl:attribute name="style">
+                                    <xsl:value-of select="concat('background-color:' , $deletedColor)"/>
+                                </xsl:attribute>
+                                <xsl:value-of select="$changeClass[@property='Position2']/@oldValue" />
+                            </xsl:when>
+                            <xsl:otherwise>
+                                    <xsl:value-of select="@Position2" />
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
+                            <xsl:value-of select="@Position2" />
+                        </xsl:if>
+                    </xsl:otherwise>
+                </xsl:choose>
             </xsl:element>
             <xsl:element name="td">
 <!--                <xsl:value-of select="@name"/>-->
@@ -57,7 +109,7 @@
                                 <xsl:attribute name="style">
                                     <xsl:value-of select="concat('background-color:' , $deletedColor)"/>
                                 </xsl:attribute>
-                                <xsl:value-of select="@name" />
+                                <xsl:value-of select="$changeClass[@property='name']/@oldValue" />
                             </xsl:when>
                         </xsl:choose>
                     </xsl:when>
@@ -109,7 +161,7 @@
                                 <xsl:attribute name="style">
                                     <xsl:value-of select="concat('background-color:' , $deletedColor)"/>
                                 </xsl:attribute>
-                                <xsl:value-of select="@strength" />
+                                <xsl:value-of select="$changeClass[@property='strength']/@oldValue" />
                             </xsl:when>
                         </xsl:choose>
                     </xsl:when>
@@ -188,13 +240,13 @@
                                     <xsl:value-of select="concat('background-color:' , $deletedColor)"/>
                                 </xsl:attribute>
                                 <xsl:choose>
-                                    <xsl:when test="normalize-space(@locations) = ''">
+                                    <xsl:when test="normalize-space($changeClass[@property='locations']/@oldValue) = ''">
                                         <xsl:attribute name="class">
                                             <xsl:text>greyCell</xsl:text>
                                         </xsl:attribute>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:value-of select="@locations"/>
+                                        <xsl:value-of select="concat(@Position2, $changeClass[@property='locations']/@oldValue)" />
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:when>
