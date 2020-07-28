@@ -113,7 +113,7 @@
               <i class="fa fa-remove"></i> Delete
             </ng-template>
           </context-menu>
-          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
+          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
@@ -127,7 +127,7 @@
               <i class="fa fa-remove"></i> Delete
             </ng-template>
           </context-menu>
-          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
+          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
@@ -145,7 +145,7 @@
               <i class="fa fa-remove"></i> Delete
             </ng-template>
           </context-menu>
-          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
+          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'VALUESET'">
@@ -162,7 +162,7 @@
               <i class="fa fa-remove"></i> Delete
             </ng-template>
           </context-menu>
-          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
+          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'COCONSTRAINTGROUP'">
@@ -172,7 +172,7 @@
               <i class="fa fa-remove"></i> Delete
             </ng-template>
           </context-menu>
-          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
+          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
