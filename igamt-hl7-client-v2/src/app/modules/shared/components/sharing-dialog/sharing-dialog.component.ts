@@ -20,6 +20,7 @@ export class SharingDialogComponent implements OnInit {
   title = 'Shared Users for ';
 
   sharedUsers: SelectItem[] = [];
+  private changed = false;
 
   constructor(public dialogRef: MatDialogRef<SharingDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IShareDialogData,
@@ -67,6 +68,9 @@ export class SharingDialogComponent implements OnInit {
         if (user.username.toLowerCase().indexOf(query.toLowerCase()) === 0) {
           filtered.push(user);
         }
+        if (user.username.toLowerCase() === query.toLowerCase()) {
+          this.newSharedUser = user;
+        }
       }
     }
     return filtered;
@@ -75,6 +79,7 @@ export class SharingDialogComponent implements OnInit {
   addUser() {
     if (!this.checkUser()) {
       this.sharedUsers.push({label: this.newSharedUser.username, value: this.newSharedUser.username});
+      this.changed = true;
     }
   }
 
@@ -85,6 +90,7 @@ export class SharingDialogComponent implements OnInit {
   }
 
   removeUser(user) {
+    this.changed = true;
     this.sharedUsers.forEach( (item, index) => {
       if (item === user) {
         this.sharedUsers.splice(index, 1);
