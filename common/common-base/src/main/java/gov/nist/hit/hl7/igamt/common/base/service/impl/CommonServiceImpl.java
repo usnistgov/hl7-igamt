@@ -29,45 +29,35 @@ public class CommonServiceImpl implements CommonService {
 
 
 
-@Override
-public void checkAuthority(Authentication auth, String role)  throws ForbiddenOperationException {
-	// TODO Auto-generated method stub
-	if(auth.getAuthorities().contains(new SimpleGrantedAuthority(role))) {
-		
-	throw  new ForbiddenOperationException("The User must have the" +role+ "authority"+"to perform this operation");
-	}
-}
+  @Override
+  public void checkAuthority(Authentication auth, String role)  throws ForbiddenOperationException {
+    // TODO Auto-generated method stub
+    if(auth.getAuthorities().contains(new SimpleGrantedAuthority(role))) {
 
-@Override
-public void checkOwnerShip(Authentication auth, AbstractDomain obj) throws ForbiddenOperationException {
-	// TODO Auto-generated method stub
-	if(obj.getUsername()==null&&!auth.getName().equals(obj.getUsername())) {
-		throw  new ForbiddenOperationException("The User must be the owner of this resource to perform this operation");
-	}
-}
+      throw  new ForbiddenOperationException("The User must have the" +role+ "authority"+"to perform this operation");
+    }
+  }
 
-/* (non-Javadoc)
- * @see gov.nist.hit.hl7.igamt.common.base.service.CommonService#checkRight(org.springframework.security.core.Authentication, java.lang.String)
- */
-@Override
-public void checkRight(Authentication auth, String resourceUsername)
-    throws ForbiddenOperationException {
-  // TODO Auto-generated method stub
-  if(resourceUsername==null) {
-    throw  new ForbiddenOperationException("Resource change not allowed");
-  } else if(!auth.getName().equals(resourceUsername) && !auth.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN")))  {
-    throw  new ForbiddenOperationException("The User must be the owner or an admin of this resource to perform this operation");
-}
-  
-  
-}
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.common.base.service.CommonService#checkRight(org.springframework.security.core.Authentication, java.lang.String)
+   */
+  @Override
+  public void checkRight(Authentication auth, String author, String username)
+      throws ForbiddenOperationException {
+    // TODO Auto-generated method stub
+    if(username==null) {
+      throw  new ForbiddenOperationException("Resource change not allowed");
+    } 
+    //if(!auth.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
+      boolean allowed = author !=null? auth.getName().equals(author): auth.getName().equals(username);
+      if(!allowed) {
+       throw new ForbiddenOperationException("The User must be the current author or an admin of this resource to perform this operation");
+      }
+   // }
+  }
 
-  
-  
-  
-  
-  
-  
-  
 
 }
+
+
+

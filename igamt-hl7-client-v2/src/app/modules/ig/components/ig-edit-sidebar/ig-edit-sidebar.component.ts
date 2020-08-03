@@ -8,10 +8,11 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
+
 import {
   IgEditActionTypes,
   ImportResourceFromFile,
-  ImportResourceFromFileSuccess, selectViewOnly,
+  ImportResourceFromFileSuccess,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   CopyResource, CopyResourceSuccess,
@@ -83,7 +84,7 @@ export class IgEditSidebarComponent implements OnInit {
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
-    this.viewOnly$ = this.store.select(selectViewOnly);
+    this.viewOnly$ =  this.store.select(fromIgamtSelectors.selectViewOnly);
   }
 
   getNodes() {

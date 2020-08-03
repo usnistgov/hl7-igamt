@@ -177,7 +177,7 @@ public class ConformanceProfileController extends BaseController {
                                            Authentication authentication) throws Exception {
       
         ConformanceProfile cp = this.conformanceProfileService.findById(id);
-        commonService.checkOwnerShip(authentication, cp);
+        commonService.checkRight(authentication, cp.getCurrentAuthor(), cp.getUsername());
         validateSaveOperation(cp);
         this.conformanceProfileService.applyChanges(cp, cItems, documentId);
         EntityChangeDomain entityChangeDomain = new EntityChangeDomain();

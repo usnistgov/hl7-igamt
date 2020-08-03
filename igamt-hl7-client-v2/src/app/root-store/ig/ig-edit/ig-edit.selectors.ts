@@ -61,13 +61,6 @@ export const selectTitleBar = createSelector(
   },
 );
 
-export const selectViewOnly = createSelector(
-  selectIgDocument,
-  (document: IgDocument): boolean => {
-    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED || (document.sharePermission && document.sharePermission === SharePermission.READ);
-  },
-);
-
 export const selectDatatypeRegistry = createSelector(
   selectIgDocument,
   (state: IgDocument) => {
