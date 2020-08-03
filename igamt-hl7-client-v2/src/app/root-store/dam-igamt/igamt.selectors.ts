@@ -7,7 +7,7 @@ import {
   IAbstractDomain,
   IDocumentRef,
   SharePermission,
-  Status
+  Status,
 } from '../../modules/shared/models/abstract-domain.interface';
 import { IHL7WorkspaceActive } from '../../modules/shared/models/editor.class';
 import {selectIgDocument} from '../ig/ig-edit/ig-edit.selectors';
