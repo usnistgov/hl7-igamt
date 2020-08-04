@@ -2,10 +2,10 @@
 <form #from="ngForm">
 <mat-dialog-content>
   <div style=" display: flex; justify-content: flex-start; padding: 10px">
-    <p-radioButton name="gr" [value]="true" label="Keep Original template" [(ngModel)]="inherit"></p-radioButton>
+    <p-radioButton name="gr" [value]="true" label="Keep Original IG Outline and Content" [(ngModel)]="inherit"></p-radioButton>
 
 
-    <p-radioButton name="gr" [value]="false" label="Different Templates" [(ngModel)]="inherit" [style]="{'margin-left': '10px'}" ></p-radioButton>
+    <p-radioButton name="gr" [value]="false" label="Use Local IG Templates" [(ngModel)]="inherit" [style]="{'margin-left': '10px'}" ></p-radioButton>
 
   </div>
   <div *ngIf="!inherit">

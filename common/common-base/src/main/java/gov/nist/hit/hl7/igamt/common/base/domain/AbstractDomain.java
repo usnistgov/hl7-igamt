@@ -35,7 +35,6 @@ public abstract class AbstractDomain implements Serializable{
 	private Status status;
 	private String from;
 	private boolean derived;
-	
 	private List<String> sharedUsers;
 	private String currentAuthor;
 	

@@ -17,7 +17,7 @@ export class SharingDialogComponent implements OnInit {
   users: any[];
   currentAuthor: string;
   selectedUser: string;
-  title = 'Shared Users for ';
+  title = 'Sharing Info for ';
 
   sharedUsers: SelectItem[] = [];
   private changed = false;
@@ -81,6 +81,7 @@ export class SharingDialogComponent implements OnInit {
       this.sharedUsers.push({label: this.newSharedUser.username, value: this.newSharedUser.username});
       this.changed = true;
     }
+    this.newSharedUser = {};
   }
 
   tableListBoxSelectEvent(event) {
@@ -136,6 +137,10 @@ export class SharingDialogComponent implements OnInit {
       }
     }
     return out;
+  }
+
+  print($event: any) {
+    console.log($event);
   }
 }
 

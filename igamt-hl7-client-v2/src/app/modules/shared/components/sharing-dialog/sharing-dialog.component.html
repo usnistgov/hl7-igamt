@@ -1,22 +1,58 @@
 <h5 mat-dialog-title> {{title}} </h5>
 <mat-dialog-content>
-  <p-listbox #List [options]="sharedUsers" [(ngModel)]="selectedUser" (onClick)="tableListBoxSelectEvent($event)" [style]="{'width':'100%','max-height':'500px'}" [listStyle]="{'max-height':'250px'}">
-    <p-header>
-      <p-autoComplete [(ngModel)]="newSharedUser" [suggestions]="filteredUsersSingle" (completeMethod)="filterUsersSingle($event)" field="username" [size]="30"
-                      placeholder="Type Username" [minLength]="1" checkbox="true" [appendTo]="List"></p-autoComplete>
-      <p-button icon="pi pi-plus" (click)="addUser()" [disabled]="checkUser()" label="Add" [style]="{position: 'relative'}"></p-button>
-    </p-header>
-    <ng-template let-user pTemplate="item">
-      <div class="ui-helper-clearfix">
-        <span>{{user.value}}</span>
-        <span *ngIf="user.label.indexOf('#Owner') > 0" style="color:red"> #Owner</span>
-        <span *ngIf="user.value === currentAuthor" style="color:blue"> #CurrentAuthor</span>
-        <span style="float:right;margin:0 0 0 0"><i *ngIf="user.label.indexOf('#Owner') < 0" (click)="removeUser(user)" class="fa fa-times"></i></span>
-      </div>
-    </ng-template>
-  </p-listbox>
+
+  <div style="display: flex; flex-direction: column">
+
+    <p-autoComplete [(ngModel)]="newSharedUser" [suggestions]="filteredUsersSingle" (completeMethod)="filterUsersSingle($event)" (onSelect)="addUser()" field="username"  size="100%" [style]="{'width':'100%','margin-bottom': '10px'}" [inputStyle]="{'width':'100%'}"
+                  placeholder="Search Users by Username" [minLength]="1" checkbox="true" [appendTo]="List">
+      <ng-template let-value pTemplate="item">
+        <div class="user-info-avatar">
+          <ngx-avatar [name]="value.username"></ngx-avatar>
+          <span style="margin-top:auto; margin-bottom: auto; margin-left: 5px"> <strong>{{value.username}}</strong> </span>
+        </div>
+      </ng-template>
+    </p-autoComplete>
+
+    <table  class="table table-bordered table-striped" #List>
+      <thead>
+      <tr>
+        <th>
+          Participant
+        </th>
+        <th>
+          Privileges
+        </th>
+        <th>
+          Actions
+        </th>
+      </tr>
+      </thead>
+      <tbody>
+     <tr *ngFor="let user of sharedUsers">
+      <td>
+        <div class="user-info-avatar">
+          <ngx-avatar [name]="user.value"></ngx-avatar> <span style="margin:auto"> <strong>{{user.value}}</strong></span>
+        </div>
+      </td>
+       <td>
+         <span *ngIf="user.label.indexOf('#Owner')>-1" class="badge badge-warning" style="margin-right: 2px"> Owner</span>
+
+         <span *ngIf="user.value === currentAuthor" class="badge badge-primary" style="margin-right: 2px">  <i class="fa fa-edit"></i> Edit</span>
+         <span class="badge badge-secondary" style="margin-right: 2px">  <i class="fa fa-eye"></i> View</span>
+         <span class="badge badge-success" style="margin-right: 2px">  <i class="fa fa-copy"></i> Copy</span>
 
 
+         <!--         <span *ngIf="user.value === currentAuthor" class="badge badge-success"> CurrentAuthor</span>-->
+
+       </td>
+       <td>
+         <button class="btn btn-sm btn-danger"  [disabled]="user.label.indexOf('#Owner') >-1" (click)="removeUser(user)" style="margin-right: 2px"><i class="fa fa-remove"></i> Unshare</button>
+         <button class="btn btn-sm btn-primary"   (click)="tableListBoxSelectEvent(user)" *ngIf="user.value !== currentAuthor"> <i class="fa fa-edit"></i> Allow editing</button>
+       </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </mat-dialog-content>
 <mat-dialog-actions style="justify-content: flex-end;">
   <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
