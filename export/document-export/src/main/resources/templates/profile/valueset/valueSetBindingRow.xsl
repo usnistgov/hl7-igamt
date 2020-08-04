@@ -62,9 +62,9 @@
                         </xsl:choose>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
+<!--                        <xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">-->
                             <xsl:value-of select="@Position2" />
-                        </xsl:if>
+<!--                        </xsl:if>-->
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:element>

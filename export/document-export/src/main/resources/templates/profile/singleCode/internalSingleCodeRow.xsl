@@ -59,9 +59,9 @@
                         </xsl:choose>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
+<!--                        <xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">-->
                             <xsl:value-of select="@internalSingleCodeLocation" />
-                        </xsl:if>
+<!--                        </xsl:if>-->
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:element>

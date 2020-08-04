@@ -353,243 +353,198 @@ private SerializationTools serializationTools;
 		}
 	}
 	  private void setChangedElements(String segmentName, Element element, StructureDelta structureDelta) {
-		  if(structureDelta != null) {
-			  if(structureDelta.getAction().equals(DeltaAction.DELETED) || structureDelta.getAction().equals(DeltaAction.ADDED)) {
-
-				  Element addedUsage = new Element("Change");
-				  addedUsage.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-				  addedUsage.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				  addedUsage.addAttribute(new Attribute("action", structureDelta.getAction().name()));
-				  addedUsage.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
-				  element.appendChild(addedUsage);
-
-				  Element addedVs = new Element("Change");
-				  addedVs.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-				  addedVs.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				  addedVs.addAttribute(new Attribute("action", structureDelta.getAction().name()));
-				  addedVs.addAttribute(new Attribute("property", PropertyType.VALUESET.name()));
-				  element.appendChild(addedVs);
-
-				  Element addedCte = new Element("Change");
-				  addedCte.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-				  addedCte.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				  addedCte.addAttribute(new Attribute("action", structureDelta.getAction().name()));
-				  addedUsage.addAttribute(new Attribute("property", PropertyType.CONSTANTVALUE.name()));
-				  element.appendChild(addedCte);
-
-				  Element addedMinL = new Element("Change");
-				  addedMinL.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-				  addedMinL.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				  addedMinL.addAttribute(new Attribute("action", structureDelta.getAction().name()));
-				  addedMinL.addAttribute(new Attribute("property", PropertyType.LENGTHMIN.name()));
-				  element.appendChild(addedMinL);
-
-				  Element addedMaxL = new Element("Change");
-				  addedMaxL.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-				  addedMaxL.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				  addedMaxL.addAttribute(new Attribute("action", structureDelta.getAction().name()));
-				  addedMaxL.addAttribute(new Attribute("property", PropertyType.LENGTHMAX.name()));
-				  element.appendChild(addedMaxL);
-
-				  Element addedMinC = new Element("Change");
-				  addedMinC.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-				  addedMinC.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				  addedMinC.addAttribute(new Attribute("action", structureDelta.getAction().name()));
-				  addedMinC.addAttribute(new Attribute("property", PropertyType.CARDINALITYMIN.name()));
-				  element.appendChild(addedMinC);
-
-				  Element addedMaxC = new Element("Change");
-				  addedMaxC.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-				  addedMaxC.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				  addedMaxC.addAttribute(new Attribute("action", structureDelta.getAction().name()));
-				  addedMaxC.addAttribute(new Attribute("property", PropertyType.CARDINALITYMAX.name()));
-				  element.appendChild(addedMaxC);
-
-				  Element addedConfL = new Element("Change");
-				  addedConfL.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-				  addedConfL.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				  addedConfL.addAttribute(new Attribute("action", structureDelta.getAction().name()));
-				  addedConfL.addAttribute(new Attribute("property", PropertyType.CONFLENGTH.name()));
-				  element.appendChild(addedConfL);
-
-				  Element addedDt = new Element("Change");
-				  addedDt.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-				  addedDt.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-				  addedDt.addAttribute(new Attribute("action", structureDelta.getAction().name()));
-				  addedDt.addAttribute(new Attribute("property", PropertyType.DATATYPE.name()));
-				  element.appendChild(addedDt);
-
-				  if(structureDelta.getPredicate() != null && !structureDelta.getPredicate().getAction().equals(DeltaAction.UNCHANGED)) {
-					  if(structureDelta.getPredicate().getFalseUsage() != null && !structureDelta.getPredicate().getFalseUsage().getAction().equals(DeltaAction.UNCHANGED)){
-						  Element changedElement = new Element("Change");
-						  changedElement.addAttribute(new Attribute("type", Type.PREDICATE.getValue()));
-						  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-						  changedElement.addAttribute(new Attribute("action", structureDelta.getPredicate().getFalseUsage().getAction().name()));
-						  changedElement.addAttribute(new Attribute("property", PropertyType.FALSEUSAGE.name()));
-						  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getPredicate().getFalseUsage().getPrevious().name()));
-						  element.appendChild(changedElement);
-					  }
-
-					  if(structureDelta.getPredicate().getTrueUsage() != null && !structureDelta.getPredicate().getTrueUsage().getAction().equals(DeltaAction.UNCHANGED)){
-						  Element changedElement = new Element("Change");
-						  changedElement.addAttribute(new Attribute("type", Type.PREDICATE.getValue()));
-						  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-						  changedElement.addAttribute(new Attribute("action", structureDelta.getPredicate().getTrueUsage().getAction().name()));
-						  changedElement.addAttribute(new Attribute("property", PropertyType.TRUEUSAGE.name()));
-						  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getPredicate().getTrueUsage().getPrevious().name()));
-						  element.appendChild(changedElement);
-					  }
-
-					  if(structureDelta.getPredicate().getDescription() != null && !structureDelta.getPredicate().getDescription().getAction().equals(DeltaAction.UNCHANGED)){
-						  Element changedElement = new Element("Change");
-						  changedElement.addAttribute(new Attribute("type", Type.PREDICATE.getValue()));
-						  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-						  changedElement.addAttribute(new Attribute("action", structureDelta.getPredicate().getDescription().getAction().name()));
-						  changedElement.addAttribute(new Attribute("property", PropertyType.DESCRIPTION.name()));
-						  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getPredicate().getDescription().getPrevious()));
-						  element.appendChild(changedElement);
-					  }
-
-				  }
-
-
-
-			  }
-			  else {
-				  if(structureDelta.getUsage() != null && !structureDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
+		  if (structureDelta != null) {
+			  if (!structureDelta.getAction().equals(DeltaAction.UNCHANGED)) {
+				  //Usage
+				  if (structureDelta.getUsage() != null && !structureDelta.getUsage().getAction().equals(DeltaAction.UNCHANGED)) {
 					  Element changedElement = new Element("Change");
 					  changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
 					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
 					  changedElement.addAttribute(new Attribute("action", structureDelta.getUsage().getAction().name()));
 					  changedElement.addAttribute(new Attribute("property", PropertyType.USAGE.name()));
-					  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getUsage().getPrevious().name()));
+					  if (structureDelta.getUsage().getPrevious() != null) {
+						  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getUsage().getPrevious().name()));
+					  }
+					  element.appendChild(changedElement);
+				  }
+				  // Cte value
+				  if (structureDelta.getConstantValue() != null && !structureDelta.getConstantValue().getAction().equals(DeltaAction.UNCHANGED)) {
+					  Element changedElement = new Element("Change");
+					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
+					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					  changedElement.addAttribute(new Attribute("action", structureDelta.getConstantValue().getAction().name()));
+					  changedElement.addAttribute(new Attribute("property", PropertyType.CONSTANTVALUE.name()));
+					  if (structureDelta.getConstantValue().getPrevious() != null) {
+						  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getConstantValue().getPrevious()));
+					  }
 					  element.appendChild(changedElement);
 				  }
 
-				  if(structureDelta.getPredicate() != null && !structureDelta.getPredicate().getAction().equals(DeltaAction.UNCHANGED)) {
-				  		if(structureDelta.getPredicate().getAction().equals(DeltaAction.DELETED)){
-							Element changedElement = new Element("Change");
-							changedElement.addAttribute(new Attribute("type", Type.PREDICATE.getValue()));
-							changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-							changedElement.addAttribute(new Attribute("action", structureDelta.getPredicate().getAction().name()));
-							changedElement.addAttribute(new Attribute("property", Type.PREDICATE.getValue()));
-							element.appendChild(changedElement);
+				  // Min Length
+				  if (structureDelta.getMinLength() != null && !structureDelta.getMinLength().getAction().equals(DeltaAction.UNCHANGED)) {
+					  Element changedElement = new Element("Change");
+					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
+					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					  changedElement.addAttribute(new Attribute("action", structureDelta.getMinLength().getAction().name()));
+					  changedElement.addAttribute(new Attribute("property", PropertyType.LENGTHMIN.name()));
+					  if (structureDelta.getMinLength().getPrevious() != null) {
+						  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMinLength().getPrevious()));
+					  }
+					  element.appendChild(changedElement);
+				  }
 
-							Element changedLoc = new Element("Change");
-							changedLoc.addAttribute(new Attribute("type", Type.PREDICATE.getValue()));
-							changedLoc.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-							changedLoc.addAttribute(new Attribute("action", structureDelta.getPredicate().getAction().name()));
-							changedLoc.addAttribute(new Attribute("property", "location"));
-							changedLoc.addAttribute(new Attribute("oldValue", segmentName + "-" + structureDelta.getPosition().toString()));
+				  //Max Length
+				  if (structureDelta.getMaxLength() != null && !structureDelta.getMaxLength().getAction().equals(DeltaAction.UNCHANGED)) {
+					  Element changedElement = new Element("Change");
+					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
+					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					  changedElement.addAttribute(new Attribute("action", structureDelta.getMaxLength().getAction().name()));
+					  changedElement.addAttribute(new Attribute("property", PropertyType.LENGTHMAX.name()));
+					  if (structureDelta.getMaxLength().getPrevious() != null) {
+						  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMaxLength().getPrevious()));
+					  }
+					  element.appendChild(changedElement);
+				  }
 
-							element.appendChild(changedLoc);
-						}
-				  		if(structureDelta.getPredicate().getFalseUsage() != null && !structureDelta.getPredicate().getFalseUsage().getAction().equals(DeltaAction.UNCHANGED)){
-							Element changedElement = new Element("Change");
-							changedElement.addAttribute(new Attribute("type", Type.PREDICATE.getValue()));
-							changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-							changedElement.addAttribute(new Attribute("action", structureDelta.getPredicate().getFalseUsage().getAction().name()));
-							changedElement.addAttribute(new Attribute("property", PropertyType.FALSEUSAGE.name()));
-							if(structureDelta.getPredicate().getFalseUsage().getPrevious() != null){
-								changedElement.addAttribute(new Attribute("oldValue", structureDelta.getPredicate().getFalseUsage().getPrevious().name()));
-							}
-							element.appendChild(changedElement);
-						}
+				  //Min Card
+				  if (structureDelta.getMinCardinality() != null && !structureDelta.getMinCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
+					  Element changedElement = new Element("Change");
+					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
+					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					  changedElement.addAttribute(new Attribute("action", structureDelta.getMinCardinality().getAction().name()));
+					  changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMIN.name()));
+					  if (structureDelta.getMinCardinality().getPrevious() != null) {
+						  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMinCardinality().getPrevious().toString()));
 
-					  if(structureDelta.getPredicate().getTrueUsage() != null && !structureDelta.getPredicate().getTrueUsage().getAction().equals(DeltaAction.UNCHANGED)){
+					  }
+					  element.appendChild(changedElement);
+				  }
+
+				  //Max Card
+				  if (structureDelta.getMaxCardinality() != null && !structureDelta.getMaxCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
+					  Element changedElement = new Element("Change");
+					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
+					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					  changedElement.addAttribute(new Attribute("action", structureDelta.getMaxCardinality().getAction().name()));
+					  changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMAX.name()));
+					  if (structureDelta.getMaxCardinality().getPrevious() != null) {
+						  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMaxCardinality().getPrevious()));
+					  }
+					  element.appendChild(changedElement);
+				  }
+
+				  // Conf Length
+				  if (structureDelta.getConfLength() != null && !structureDelta.getConfLength().getAction().equals(DeltaAction.UNCHANGED)) {
+					  Element changedElement = new Element("Change");
+					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
+					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					  changedElement.addAttribute(new Attribute("action", structureDelta.getConfLength().getAction().name()));
+					  changedElement.addAttribute(new Attribute("property", PropertyType.CONFLENGTH.name()));
+					  if (structureDelta.getConfLength().getPrevious() != null) {
+						  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getConfLength().getPrevious()));
+					  }
+					  element.appendChild(changedElement);
+				  }
+
+				  //Ref
+				  if (structureDelta.getReference() != null && !structureDelta.getReference().getAction().equals(DeltaAction.UNCHANGED)) {
+					  Element changedElement = new Element("Change");
+					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
+					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+					  changedElement.addAttribute(new Attribute("action", structureDelta.getReference().getAction().name()));
+					  changedElement.addAttribute(new Attribute("property", PropertyType.DATATYPE.name()));
+					  if (structureDelta.getReference().getLabel() != null && structureDelta.getReference().getLabel().getPrevious() != null) {
+						  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getReference().getLabel().getPrevious()));
+					  }
+
+					  element.appendChild(changedElement);
+				  }
+
+				  //Predicates
+				  if (structureDelta.getPredicate() != null && !structureDelta.getPredicate().getAction().equals(DeltaAction.UNCHANGED)) {
+					  if (structureDelta.getPredicate().getAction().equals(DeltaAction.DELETED)) {
+						  Element changedElement = new Element("Change");
+						  changedElement.addAttribute(new Attribute("type", Type.PREDICATE.getValue()));
+						  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+						  changedElement.addAttribute(new Attribute("action", structureDelta.getPredicate().getAction().name()));
+						  changedElement.addAttribute(new Attribute("property", Type.PREDICATE.getValue()));
+						  element.appendChild(changedElement);
+
+						  Element changedLoc = new Element("Change");
+						  changedLoc.addAttribute(new Attribute("type", Type.PREDICATE.getValue()));
+						  changedLoc.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+						  changedLoc.addAttribute(new Attribute("action", structureDelta.getPredicate().getAction().name()));
+						  changedLoc.addAttribute(new Attribute("property", "location"));
+						  changedLoc.addAttribute(new Attribute("oldValue", segmentName + "-" + structureDelta.getPosition().toString()));
+
+						  element.appendChild(changedLoc);
+					  }
+					  if (structureDelta.getPredicate().getFalseUsage() != null && !structureDelta.getPredicate().getFalseUsage().getAction().equals(DeltaAction.UNCHANGED)) {
+						  Element changedElement = new Element("Change");
+						  changedElement.addAttribute(new Attribute("type", Type.PREDICATE.getValue()));
+						  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
+						  changedElement.addAttribute(new Attribute("action", structureDelta.getPredicate().getFalseUsage().getAction().name()));
+						  changedElement.addAttribute(new Attribute("property", PropertyType.FALSEUSAGE.name()));
+						  if (structureDelta.getPredicate().getFalseUsage().getPrevious() != null) {
+							  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getPredicate().getFalseUsage().getPrevious().name()));
+						  }
+						  element.appendChild(changedElement);
+					  }
+
+					  if (structureDelta.getPredicate().getTrueUsage() != null && !structureDelta.getPredicate().getTrueUsage().getAction().equals(DeltaAction.UNCHANGED)) {
 						  Element changedElement = new Element("Change");
 						  changedElement.addAttribute(new Attribute("type", Type.PREDICATE.getValue()));
 						  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
 						  changedElement.addAttribute(new Attribute("action", structureDelta.getPredicate().getTrueUsage().getAction().name()));
 						  changedElement.addAttribute(new Attribute("property", PropertyType.TRUEUSAGE.name()));
-						  if(structureDelta.getPredicate().getTrueUsage().getPrevious() !=null){
+						  if (structureDelta.getPredicate().getTrueUsage().getPrevious() != null) {
 							  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getPredicate().getTrueUsage().getPrevious().name()));
 						  }
 						  element.appendChild(changedElement);
 					  }
 
-					  if(structureDelta.getPredicate().getDescription() != null && !structureDelta.getPredicate().getDescription().getAction().equals(DeltaAction.UNCHANGED)){
+					  if (structureDelta.getPredicate().getDescription() != null && !structureDelta.getPredicate().getDescription().getAction().equals(DeltaAction.UNCHANGED)) {
 						  Element changedElement = new Element("Change");
 						  changedElement.addAttribute(new Attribute("type", Type.PREDICATE.getValue()));
 						  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
 						  changedElement.addAttribute(new Attribute("action", structureDelta.getPredicate().getDescription().getAction().name()));
 						  changedElement.addAttribute(new Attribute("property", PropertyType.DESCRIPTION.name()));
-						  if(structureDelta.getPredicate().getDescription().getPrevious() != null){
+						  if (structureDelta.getPredicate().getDescription().getPrevious() != null) {
 							  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getPredicate().getDescription().getPrevious()));
 						  }
 						  element.appendChild(changedElement);
 					  }
 
 				  }
-				  if(structureDelta.getValueSetBinding() != null ){
-					  if(structureDelta.getValueSetBinding().getAction().equals(DeltaAction.DELETED) || structureDelta.getValueSetBinding().getAction().equals(DeltaAction.ADDED)) {
 
-					  	if(structureDelta.getValueSetBinding().getAction().equals(DeltaAction.DELETED) ){
-							Element addedBinding = new Element("Change");
-							addedBinding.addAttribute(new Attribute("type", "ValuesetBinding"));
-							addedBinding.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-							addedBinding.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
-							addedBinding.addAttribute(new Attribute("property", "VALUESETBINDING"));
+				  // Valueset bindings
+				  if (structureDelta.getValueSetBinding() != null && !structureDelta.getValueSetBinding().getAction().equals(DeltaAction.UNCHANGED)) {
+					  if (structureDelta.getValueSetBinding().getAction().equals(DeltaAction.DELETED)) {
+						  Element addedBinding = new Element("Change");
+						  addedBinding.addAttribute(new Attribute("type", "ValuesetBinding"));
+						  addedBinding.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+						  addedBinding.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
+						  addedBinding.addAttribute(new Attribute("property", "VALUESETBINDING"));
+						  element.appendChild(addedBinding);
 
-							element.appendChild(addedBinding);
-
-							Element addedPos2 = new Element("Change");
-							addedPos2.addAttribute(new Attribute("type", "ValuesetBinding"));
-							addedPos2.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-							addedPos2.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
-							addedPos2.addAttribute(new Attribute("property", "Position2"));
-							addedPos2.addAttribute(new Attribute("oldValue", segmentName + "."+ structureDelta.getPosition().toString()));
-
-							element.appendChild(addedPos2);
-						}
-
-					  	Element addedVs = new Element("Change");
-						  addedVs.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-						  addedVs.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-						  addedVs.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
-						  addedVs.addAttribute(new Attribute("property", PropertyType.VALUESET.name()));
-						  if(structureDelta.getValueSetBinding().getAction().equals(DeltaAction.DELETED) && structureDelta.getValueSetBinding().getValueSets() != null && structureDelta.getValueSetBinding().getValueSets().getPrevious() != null){
-							  addedVs.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
-						  }
-						  element.appendChild(addedVs);
-
-						  Element addedVsB = new Element("Change");
-						  addedVsB.addAttribute(new Attribute("type", "ValuesetBinding"));
-						  addedVsB.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-						  addedVsB.addAttribute(new Attribute("action",  structureDelta.getValueSetBinding().getAction().name()));
-						  addedVsB.addAttribute(new Attribute("property", "name"));
-						  if(structureDelta.getValueSetBinding().getAction().equals(DeltaAction.DELETED) && structureDelta.getValueSetBinding().getValueSets() != null && structureDelta.getValueSetBinding().getValueSets().getPrevious() != null){
-							  addedVsB.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
-						  }
-						  element.appendChild(addedVsB);
-
-						  Element addedVsS = new Element("Change");
-						  addedVsS.addAttribute(new Attribute("type", "ValuesetBinding"));
-						  addedVsS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-						  addedVsS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
-						  addedVsS.addAttribute(new Attribute("property", "strength"));
-						  if(structureDelta.getValueSetBinding().getAction().equals(DeltaAction.DELETED) && structureDelta.getValueSetBinding().getStrength() != null && structureDelta.getValueSetBinding().getStrength().getPrevious() != null){
-							  addedVsS.addAttribute(new Attribute("oldValue", structureDelta.getValueSetBinding().getStrength().getPrevious().value));
-						  }
-						  element.appendChild(addedVsS);
-
-						  Element addedVsL = new Element("Change");
-						  addedVsL.addAttribute(new Attribute("type", "ValuesetBinding"));
-						  addedVsL.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-						  addedVsL.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
-						  addedVsL.addAttribute(new Attribute("property", "locations"));
-						  if(structureDelta.getValueSetBinding().getAction().equals(DeltaAction.DELETED) && structureDelta.getValueSetBinding().getValuesetLocations() != null && structureDelta.getValueSetBinding().getValuesetLocations().getPrevious() != null){
-							  addedVsL.addAttribute(new Attribute("oldValue", serializationTools.extractLocations(structureDelta.getValueSetBinding().getValuesetLocations().getPrevious())));
-						  }
-						  element.appendChild(addedVsL);
-					  } else {
-						  if(structureDelta.getValueSetBinding().getValueSets() != null && !structureDelta.getValueSetBinding().getValueSets().getAction().equals(DeltaAction.UNCHANGED)){
+						  Element addedPos2 = new Element("Change");
+						  addedPos2.addAttribute(new Attribute("type", "ValuesetBinding"));
+						  addedPos2.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+						  addedPos2.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
+						  addedPos2.addAttribute(new Attribute("property", "Position2"));
+						  addedPos2.addAttribute(new Attribute("oldValue", segmentName + "." + structureDelta.getPosition().toString()));
+						  element.appendChild(addedPos2);
+					  }
+						  //VS bindings
+						  if (structureDelta.getValueSetBinding().getValueSets() != null && !structureDelta.getValueSetBinding().getValueSets().getAction().equals(DeltaAction.UNCHANGED)) {
 							  Element changedElement = new Element("Change");
 							  changedElement.addAttribute(new Attribute("type", structureDelta.getType().getValue()));
 							  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
 							  changedElement.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getValueSets().getAction().name()));
 							  changedElement.addAttribute(new Attribute("property", PropertyType.VALUESET.name()));
-							  changedElement.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
+							  if (structureDelta.getValueSetBinding().getValueSets().getPrevious() != null) {
+								  changedElement.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
+							  }
 							  element.appendChild(changedElement);
 
 							  Element changedElementV = new Element("Change");
@@ -597,224 +552,75 @@ private SerializationTools serializationTools;
 							  changedElementV.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
 							  changedElementV.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getValueSets().getAction().name()));
 							  changedElementV.addAttribute(new Attribute("property", "name"));
-							  changedElementV.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
-
+							  if (structureDelta.getValueSetBinding().getValueSets().getPrevious() != null) {
+								  changedElementV.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
+							  }
 							  element.appendChild(changedElementV);
 						  }
-						  if(structureDelta.getValueSetBinding().getStrength() != null) {
-							  if( structureDelta.getValueSetBinding().getStrength().getAction().equals(DeltaAction.DELETED) || structureDelta.getValueSetBinding().getStrength().getAction().equals(DeltaAction.ADDED)) {
-								  Element addedS = new Element("Change");
-								  addedS.addAttribute(new Attribute("type", "ValuesetBinding"));
-								  addedS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-								  addedS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getStrength().getAction().name()));
-								  addedS.addAttribute(new Attribute("property", "strength"));
-								  if(structureDelta.getValueSetBinding().getStrength().getPrevious() != null){
-									  addedS.addAttribute(new Attribute("oldValue", structureDelta.getValueSetBinding().getStrength().getPrevious().value));
 
-								  }
-								  element.appendChild(addedS);
+						  //Strength
+						  if (structureDelta.getValueSetBinding().getStrength() != null && !structureDelta.getValueSetBinding().getStrength().getAction().equals(DeltaAction.UNCHANGED)) {
+							  Element addedS = new Element("Change");
+							  addedS.addAttribute(new Attribute("type", "ValuesetBinding"));
+							  addedS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+							  addedS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getStrength().getAction().name()));
+							  addedS.addAttribute(new Attribute("property", "strength"));
+							  if (structureDelta.getValueSetBinding().getStrength().getPrevious() != null) {
+								  addedS.addAttribute(new Attribute("oldValue", structureDelta.getValueSetBinding().getStrength().getPrevious().value));
 							  }
-							  if( structureDelta.getValueSetBinding().getStrength().getAction().equals(DeltaAction.UPDATED)){
-								  Element changedElementS = new Element("Change");
-								  changedElementS.addAttribute(new Attribute("type", "ValuesetBinding"));
-								  changedElementS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-								  changedElementS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getStrength().getAction().name()));
-								  changedElementS.addAttribute(new Attribute("property", "strength"));
-								  changedElementS.addAttribute(new Attribute("oldValue", structureDelta.getValueSetBinding().getStrength().getPrevious().value));
-								  element.appendChild(changedElementS);
-							  }
+							  element.appendChild(addedS);
 						  }
 
-						  if(structureDelta.getValueSetBinding().getValuesetLocations() != null) {
-							  if( structureDelta.getValueSetBinding().getValuesetLocations().getAction().equals(DeltaAction.DELETED) || structureDelta.getValueSetBinding().getValuesetLocations().getAction().equals(DeltaAction.ADDED)) {
-								  Element addedS = new Element("Change");
-								  addedS.addAttribute(new Attribute("type", "ValuesetBinding"));
-								  addedS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-								  addedS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getValuesetLocations().getAction().name()));
-								  addedS.addAttribute(new Attribute("property", "locations"));
-								  if(structureDelta.getValueSetBinding().getValuesetLocations().getPrevious() != null){
-									  addedS.addAttribute(new Attribute("oldValue", serializationTools.extractLocations(structureDelta.getValueSetBinding().getValuesetLocations().getPrevious())));
+						  // Locations
+						  if (structureDelta.getValueSetBinding().getValuesetLocations() != null && !structureDelta.getValueSetBinding().getValuesetLocations().getAction().equals(DeltaAction.UNCHANGED)) {
+							  Element addedS = new Element("Change");
+							  addedS.addAttribute(new Attribute("type", "ValuesetBinding"));
+							  addedS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+							  addedS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getValuesetLocations().getAction().name()));
+							  addedS.addAttribute(new Attribute("property", "locations"));
+							  if (structureDelta.getValueSetBinding().getValuesetLocations().getPrevious() != null) {
+								  addedS.addAttribute(new Attribute("oldValue", serializationTools.extractLocations(structureDelta.getValueSetBinding().getValuesetLocations().getPrevious())));
 
-								  }
-								  element.appendChild(addedS);
 							  }
-							  if( structureDelta.getValueSetBinding().getValuesetLocations().getAction().equals(DeltaAction.UPDATED)){
-								  Element changedElementS = new Element("Change");
-								  changedElementS.addAttribute(new Attribute("type", "ValuesetBinding"));
-								  changedElementS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-								  changedElementS.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getValuesetLocations().getAction().name()));
-								  changedElementS.addAttribute(new Attribute("property", "locations"));
-								  changedElementS.addAttribute(new Attribute("oldValue", serializationTools.extractLocations(structureDelta.getValueSetBinding().getValuesetLocations().getPrevious()) ));
-								  element.appendChild(changedElementS);
-							  }
+							  element.appendChild(addedS);
 						  }
+
+
+				  }
+
+				  //Internal codes
+				  if (structureDelta.getInternalSingleCode() != null && !structureDelta.getInternalSingleCode().getAction().equals(DeltaAction.UNCHANGED)) {
+
+					  //Code
+					  if (structureDelta.getInternalSingleCode().getCode() != null && !structureDelta.getInternalSingleCode().getCode().getAction().equals(DeltaAction.UNCHANGED)) {
+						  Element changedElementS = new Element("Change");
+						  changedElementS.addAttribute(new Attribute("type", "InternalSingleCode"));
+						  changedElementS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+						  changedElementS.addAttribute(new Attribute("action", structureDelta.getInternalSingleCode().getCode().getAction().name()));
+						  changedElementS.addAttribute(new Attribute("property", "internalSingleCodeId"));
+						  if (structureDelta.getInternalSingleCode().getCode().getPrevious() != null) {
+							  changedElementS.addAttribute(new Attribute("oldValue", structureDelta.getInternalSingleCode().getCode().getPrevious()));
+						  }
+						  element.appendChild(changedElementS);
 					  }
-				  }
 
-				  if(structureDelta.getInternalSingleCode() != null ){
-					  if(structureDelta.getInternalSingleCode().getAction().equals(DeltaAction.DELETED) || structureDelta.getInternalSingleCode().getAction().equals(DeltaAction.ADDED)) {
-//						  Element addedVs = new Element("Change");
-//						  addedVs.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-//						  addedVs.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-//						  addedVs.addAttribute(new Attribute("action", structureDelta.getValueSetBinding().getAction().name()));
-//						  addedVs.addAttribute(new Attribute("property", PropertyType.VALUESET.name()));
-//						  if(structureDelta.getValueSetBinding().getAction().equals(DeltaAction.DELETED) && structureDelta.getValueSetBinding().getValueSets() != null && structureDelta.getValueSetBinding().getValueSets().getPrevious() != null){
-//							  addedVs.addAttribute(new Attribute("oldValue", serializationTools.extractVs(structureDelta.getValueSetBinding().getValueSets().getPrevious())));
-//						  }
-//						  element.appendChild(addedVs);
-
-
-						  Element addedVsP = new Element("Change");
-						  addedVsP.addAttribute(new Attribute("type", "InternalSingleCode"));
-						  addedVsP.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-						  addedVsP.addAttribute(new Attribute("action",  structureDelta.getInternalSingleCode().getAction().name()));
-						  element.appendChild(addedVsP);
-
-						  Element addedVsB = new Element("Change");
-						  addedVsB.addAttribute(new Attribute("type", "InternalSingleCode"));
-						  addedVsB.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-						  addedVsB.addAttribute(new Attribute("action",  structureDelta.getInternalSingleCode().getAction().name()));
-						  addedVsB.addAttribute(new Attribute("property", "internalSingleCodeId"));
-						  element.appendChild(addedVsB);
-
-						  Element addedVsS = new Element("Change");
-						  addedVsS.addAttribute(new Attribute("type", "InternalSingleCode"));
-						  addedVsS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-						  addedVsS.addAttribute(new Attribute("action", structureDelta.getInternalSingleCode().getAction().name()));
-						  addedVsS.addAttribute(new Attribute("property", "internalSingleCodeSystem"));
-						  element.appendChild(addedVsS);
-
-
-						  Element addedVsL = new Element("Change");
-						  addedVsL.addAttribute(new Attribute("type", "InternalSingleCode"));
-						  addedVsL.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-						  addedVsL.addAttribute(new Attribute("action", structureDelta.getInternalSingleCode().getAction().name()));
-						  addedVsL.addAttribute(new Attribute("property", "internalSingleCodeLocation"));
-						  element.appendChild(addedVsL);
-
-
-					  } else {
-
-						  if(structureDelta.getInternalSingleCode().getCode() != null) {
-							  if( structureDelta.getInternalSingleCode().getCode().getAction().equals(DeltaAction.DELETED) || structureDelta.getInternalSingleCode().getCode().getAction().equals(DeltaAction.ADDED)) {
-								  Element addedS = new Element("Change");
-								  addedS.addAttribute(new Attribute("type", "InternalSingleCode"));
-								  addedS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-								  addedS.addAttribute(new Attribute("action", structureDelta.getInternalSingleCode().getCode().getAction().name()));
-								  addedS.addAttribute(new Attribute("property", "internalSingleCodeId"));
-								  element.appendChild(addedS);
-							  }
-							  if( structureDelta.getInternalSingleCode().getCode().getAction().equals(DeltaAction.UPDATED)){
-								  Element changedElementS = new Element("Change");
-								  changedElementS.addAttribute(new Attribute("type", "InternalSingleCode"));
-								  changedElementS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-								  changedElementS.addAttribute(new Attribute("action", structureDelta.getInternalSingleCode().getCode().getAction().name()));
-								  changedElementS.addAttribute(new Attribute("property", "internalSingleCodeId"));
-								  changedElementS.addAttribute(new Attribute("oldValue", structureDelta.getInternalSingleCode().getCode().getPrevious()));
-								  element.appendChild(changedElementS);
-							  }
+					  //Code System
+					  if (structureDelta.getInternalSingleCode().getCodeSystem() != null && !structureDelta.getInternalSingleCode().getCodeSystem().getAction().equals(DeltaAction.UNCHANGED)) {
+						  Element changedElementS = new Element("Change");
+						  changedElementS.addAttribute(new Attribute("type", "InternalSingleCode"));
+						  changedElementS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
+						  changedElementS.addAttribute(new Attribute("action", structureDelta.getInternalSingleCode().getCodeSystem().getAction().name()));
+						  changedElementS.addAttribute(new Attribute("property", "internalSingleCodeSystem"));
+						  if (structureDelta.getInternalSingleCode().getCodeSystem().getPrevious() != null) {
+							  changedElementS.addAttribute(new Attribute("oldValue", structureDelta.getInternalSingleCode().getCodeSystem().getPrevious()));
 						  }
-
-						  if(structureDelta.getInternalSingleCode().getCodeSystem() != null) {
-							  if( structureDelta.getInternalSingleCode().getCodeSystem().getAction().equals(DeltaAction.DELETED) || structureDelta.getInternalSingleCode().getCodeSystem().getAction().equals(DeltaAction.ADDED)) {
-								  Element addedS = new Element("Change");
-								  addedS.addAttribute(new Attribute("type", "InternalSingleCode"));
-								  addedS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-								  addedS.addAttribute(new Attribute("action", structureDelta.getInternalSingleCode().getCodeSystem().getAction().name()));
-								  addedS.addAttribute(new Attribute("property", "internalSingleCodeId"));
-								  element.appendChild(addedS);
-							  }
-							  if( structureDelta.getInternalSingleCode().getCodeSystem().getAction().equals(DeltaAction.UPDATED)){
-								  Element changedElementS = new Element("Change");
-								  changedElementS.addAttribute(new Attribute("type", "InternalSingleCode"));
-								  changedElementS.addAttribute(new Attribute("elementId", structureDelta.getPosition().toString()));
-								  changedElementS.addAttribute(new Attribute("action", structureDelta.getInternalSingleCode().getCodeSystem().getAction().name()));
-								  changedElementS.addAttribute(new Attribute("property", "internalSingleCodeId"));
-								  changedElementS.addAttribute(new Attribute("oldValue", structureDelta.getInternalSingleCode().getCodeSystem().getPrevious()));
-								  element.appendChild(changedElementS);
-							  }
-						  }
-
+						  element.appendChild(changedElementS);
 					  }
-				  }
-
-
-				  if(structureDelta.getConstantValue() != null && !structureDelta.getConstantValue().getAction().equals(DeltaAction.UNCHANGED)) {
-					  Element changedElement = new Element("Change");
-					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-					  changedElement.addAttribute(new Attribute("action", structureDelta.getConstantValue().getAction().name()));
-					  changedElement.addAttribute(new Attribute("property", PropertyType.CONSTANTVALUE.name()));
-					  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getConstantValue().getPrevious()));
-					  element.appendChild(changedElement);
-				  }
-				  if(structureDelta.getMinLength() != null && !structureDelta.getMinLength().getAction().equals(DeltaAction.UNCHANGED)) {
-					  Element changedElement = new Element("Change");
-					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-					  changedElement.addAttribute(new Attribute("action", structureDelta.getMinLength().getAction().name()));
-					  changedElement.addAttribute(new Attribute("property", PropertyType.LENGTHMIN.name()));
-					  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMinLength().getPrevious()));
-
-					  element.appendChild(changedElement);
-				  }
-				  if(structureDelta.getMaxLength() != null && !structureDelta.getMaxLength().getAction().equals(DeltaAction.UNCHANGED)) {
-					  Element changedElement = new Element("Change");
-					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-					  changedElement.addAttribute(new Attribute("action", structureDelta.getMaxLength().getAction().name()));
-					  changedElement.addAttribute(new Attribute("property", PropertyType.LENGTHMAX.name()));
-					  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMaxLength().getPrevious()));
-
-					  element.appendChild(changedElement);
-				  }
-				  if(structureDelta.getMinCardinality() != null && !structureDelta.getMinCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
-					  Element changedElement = new Element("Change");
-					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-					  changedElement.addAttribute(new Attribute("action", structureDelta.getMinCardinality().getAction().name()));
-					  changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMIN.name()));
-					  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMinCardinality().getPrevious().toString()));
-
-					  element.appendChild(changedElement);
-				  }
-				  if(structureDelta.getMaxCardinality() != null && !structureDelta.getMaxCardinality().getAction().equals(DeltaAction.UNCHANGED)) {
-					  Element changedElement = new Element("Change");
-					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-					  changedElement.addAttribute(new Attribute("action", structureDelta.getMaxCardinality().getAction().name()));
-					  changedElement.addAttribute(new Attribute("property", PropertyType.CARDINALITYMAX.name()));
-					  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getMaxCardinality().getPrevious()));
-
-					  element.appendChild(changedElement);
-				  }
-				  if(structureDelta.getConfLength() != null && !structureDelta.getConfLength().getAction().equals(DeltaAction.UNCHANGED)) {
-					  Element changedElement = new Element("Change");
-					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-					  changedElement.addAttribute(new Attribute("action", structureDelta.getConfLength().getAction().name()));
-					  changedElement.addAttribute(new Attribute("property", PropertyType.CONFLENGTH.name()));
-					  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getConfLength().getPrevious()));
-
-					  element.appendChild(changedElement);
-				  }
-				  if(structureDelta.getReference() != null && !structureDelta.getReference().getAction().equals(DeltaAction.UNCHANGED)) {
-					  Element changedElement = new Element("Change");
-					  changedElement.addAttribute(new Attribute("type", Type.FIELD.getValue()));
-					  changedElement.addAttribute(new Attribute("position", structureDelta.getPosition().toString()));
-					  changedElement.addAttribute(new Attribute("action", structureDelta.getReference().getAction().name()));
-					  changedElement.addAttribute(new Attribute("property", PropertyType.DATATYPE.name()));
-					  changedElement.addAttribute(new Attribute("oldValue", structureDelta.getReference().getLabel().getPrevious()));
-
-					  element.appendChild(changedElement);
 				  }
 			  }
 
-
-
 		  }
 	  }
-
 
 
 

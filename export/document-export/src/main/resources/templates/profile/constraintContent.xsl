@@ -102,9 +102,9 @@
                                 </xsl:when>
                                 <xsl:otherwise>
 
-                                    <xsl:if test="not($deltaMode) or $deltaMode != 'HIDE_WITH_CHANGED_ONLY'">
+<!--                                    <xsl:if test="not($deltaMode) or $deltaMode != 'HIDE_WITH_CHANGED_ONLY'">-->
                                         <xsl:value-of select="@identifier" />
-                                    </xsl:if>
+<!--                                    </xsl:if>-->
                                 </xsl:otherwise>
                             </xsl:choose>
                         </xsl:element>                    
@@ -157,9 +157,9 @@
                                 </xsl:when>
                                 <xsl:otherwise>
 
-                                    <xsl:if test="not($deltaMode) or $deltaMode != 'HIDE_WITH_CHANGED_ONLY'">
+<!--                                    <xsl:if test="not($deltaMode) or $deltaMode != 'HIDE_WITH_CHANGED_ONLY'">-->
                                         <xsl:value-of select="@location" />
-                                    </xsl:if>
+<!--                                    </xsl:if>-->
                                 </xsl:otherwise>
                             </xsl:choose>
                         </xsl:element>

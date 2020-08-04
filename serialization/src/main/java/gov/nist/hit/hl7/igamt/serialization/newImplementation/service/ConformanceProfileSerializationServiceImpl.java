@@ -87,7 +87,6 @@ BindingSerializationService bindingSerializationService;
 				  if(resourceDelta != null){
 					  List<StructureDelta> structureDelta = resourceDelta.getStructureDelta();
 
-					  if(structureDelta != null){
 						  List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
 						  List<ConformanceStatementDelta> confStDeltaChanged = resourceDelta.getConformanceStatementDelta().stream().filter(d -> !d.getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
 
@@ -123,9 +122,7 @@ BindingSerializationService bindingSerializationService;
 						  } else {
 							  return  null;
 						  }
-					  } else {
-						  return  null;
-					  }
+
 				  } else {
 				  	return null;
 				  }
