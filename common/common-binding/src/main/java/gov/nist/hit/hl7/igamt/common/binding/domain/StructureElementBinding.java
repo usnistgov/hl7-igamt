@@ -79,4 +79,16 @@ public class StructureElementBinding extends Binding {
   public void setPredicateId(String predicateId) {
 	this.predicateId = predicateId;
   }
+
+@Override
+public String toString() {
+	return "StructureElementBinding [valuesetBindings=" + valuesetBindings + ", internalSingleCode="
+			+ internalSingleCode + ", externalSingleCode=" + externalSingleCode + ", predicate=" + predicate
+			+ ", predicateId=" + predicateId + ", elementId=" + elementId + ", locationInfo=" + locationInfo
+			+ ", children=" + children + "]";
+}
+
+
+  
+  
 }

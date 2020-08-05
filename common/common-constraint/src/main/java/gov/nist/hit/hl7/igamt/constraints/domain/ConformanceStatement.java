@@ -148,4 +148,12 @@ public class ConformanceStatement implements Serializable{
       this.sourceIds.remove(sourceId);
     }
   }
+
+@Override
+public String toString() {
+	return "ConformanceStatement [id=" + id + ", type=" + type + ", identifier=" + identifier + ", context=" + context
+			+ ", level=" + level + ", structureId=" + structureId + ", sourceIds=" + sourceIds + ", igDocumentId="
+			+ igDocumentId + "]";
+}
+  
 }
