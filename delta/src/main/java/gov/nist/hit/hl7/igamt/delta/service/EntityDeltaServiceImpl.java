@@ -707,57 +707,44 @@ public class EntityDeltaServiceImpl {
   }
 
   public DeltaValuesetBinding compareValueSetBinding(Set<DisplayValuesetBinding> source, Set<DisplayValuesetBinding> target) {
-
-
     DeltaValuesetBinding delta = new DeltaValuesetBinding();
     delta.setAction(DeltaAction.UNCHANGED);
-
     if(source != null && target != null) {
-
       DisplayValuesetBinding sourceBindingDisplay = source.stream().findFirst().orElse(null);
       DisplayValuesetBinding targetBindingDisplay = target.stream().findFirst().orElse(null);
       if(sourceBindingDisplay != null && targetBindingDisplay != null ){
         DeltaNode<List<DisplayElement>> valueSets = this.compareDisplay(sourceBindingDisplay.getValueSetsDisplay(), targetBindingDisplay.getValueSetsDisplay());
         DeltaNode<ValuesetStrength> strength = this.compare(sourceBindingDisplay.getStrength(), targetBindingDisplay.getStrength());
         delta.setStrength(strength);
-
         DeltaNode<Set<Integer>> valuesetLocations = this.compare(sourceBindingDisplay.getValuesetLocations(), targetBindingDisplay.getValuesetLocations());
         delta.setValuesetLocations(valuesetLocations);
         delta.setValueSets(valueSets);
       }else if (targetBindingDisplay ==null) {
         if(sourceBindingDisplay !=null) {
-
-          delta.setAction(DeltaAction.UPDATED);
           DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<List<DisplayElement>>();
-          valueSets.setAction(DeltaAction.UPDATED);
+          valueSets.setAction(DeltaAction.DELETED);
           valueSets.setPrevious(sourceBindingDisplay.getValueSetsDisplay());
-          delta.setAction(DeltaAction.UPDATED);
+          delta.setAction(DeltaAction.DELETED);
           delta.setValueSets(valueSets);
           DeltaNode<ValuesetStrength> strength = this.compare(sourceBindingDisplay.getStrength(), null);
           delta.setStrength(strength);
-
           DeltaNode<Set<Integer>> valuesetLocations = this.compare(sourceBindingDisplay.getValuesetLocations(), null);
           delta.setValuesetLocations(valuesetLocations);
         }
-
       } else if (sourceBindingDisplay ==null) {
         if(targetBindingDisplay !=null) {
           DeltaNode<List<DisplayElement>> valueSets = new DeltaNode<List<DisplayElement>>();
           valueSets.setCurrent(targetBindingDisplay.getValueSetsDisplay());
-          valueSets.setAction(DeltaAction.UPDATED);
-          delta.setAction(DeltaAction.UPDATED);
+          valueSets.setAction(DeltaAction.ADDED);
+          delta.setAction(DeltaAction.ADDED);
           delta.setValueSets(valueSets);
           DeltaNode<ValuesetStrength> strength = this.compare(null, targetBindingDisplay.getStrength());
           delta.setStrength(strength);
-
           DeltaNode<Set<Integer>> valuesetLocations = this.compare(null, targetBindingDisplay.getValuesetLocations());
           delta.setValuesetLocations(valuesetLocations);
         }
       }
-
-
     }
-
     return  delta;
   }
 

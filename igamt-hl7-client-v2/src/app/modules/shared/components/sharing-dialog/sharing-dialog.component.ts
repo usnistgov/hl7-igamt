@@ -20,7 +20,7 @@ export class SharingDialogComponent implements OnInit {
   title = 'Sharing Info for ';
 
   sharedUsers: SelectItem[] = [];
-  private changed = false;
+   changed = false;
 
   constructor(public dialogRef: MatDialogRef<SharingDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IShareDialogData,
