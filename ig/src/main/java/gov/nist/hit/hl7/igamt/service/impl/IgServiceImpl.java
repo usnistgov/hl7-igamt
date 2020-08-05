@@ -49,6 +49,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
@@ -156,6 +157,10 @@ public class IgServiceImpl implements IgService {
 
   @Autowired
   FhirHandlerService fhirHandlerService;
+ 
+
+  @Autowired
+  CommonService commonService;
 
   @Override
   public Ig findById(String id) {
@@ -1335,12 +1340,9 @@ public class IgServiceImpl implements IgService {
    * @see gov.nist.hit.hl7.igamt.ig.service.IgService#publishIG()
    */
   @Override
-  public void publishIG(String id)  throws IGNotFoundException, IGUpdateException{
+  public void publishIG(Ig ig)  throws IGNotFoundException, IGUpdateException{
     // TODO Auto-generated method stub
-    Ig ig= this.findById(id);
-    if (ig == null) {
-      throw new IGNotFoundException("IG with id: "+ id + "Not found");
-    }
+
     for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
       if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
         UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, ConformanceProfile.class);
@@ -1374,8 +1376,17 @@ public class IgServiceImpl implements IgService {
         }
       }
     }
+    
+    for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Valueset.class);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not publish Value set:" +l.getId());
+        }
+      }
+    }
 
-    UpdateResult updateResult = this.updateAttribute(id, "status", Status.PUBLISHED, Ig.class);
+    UpdateResult updateResult = this.updateAttribute(ig.getId(), "status", Status.PUBLISHED, Ig.class);
     if(! updateResult.wasAcknowledged()) {
       throw new IGUpdateException("Could not publish Ig:" +ig.getId());
     }
