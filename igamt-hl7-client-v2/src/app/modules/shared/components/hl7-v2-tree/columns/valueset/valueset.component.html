@@ -1,4 +1,5 @@
 <div style="display: flex; justify-content: space-between;">
+ <app-change-log-info style="margin-right: 5px;" [sections]="changeDisplaySections" ></app-change-log-info>
   <div>
     <ng-container *ngIf="editable$ | async as edit">
       <ng-container [ngSwitch]="!!edit.value && (edit.type === 'SINGLECODE' || edit.value.length > 0)">
@@ -43,7 +44,6 @@
     <button class="btn btn-sm btn-primary"  (click)="editBinding()"><i class="fa fa-pencil"></i></button>
   </div>
 </div>
-
 
 <ng-template #displayVsBinding let-vsBinding let-ctx="context">
   <table class="table table-striped table-sm table-bordered" style="text-align: center; margin-bottom: 0;">
@@ -93,4 +93,19 @@
       </td>
     </tr>
   </table>
+</ng-template>
+
+
+<!-- FOR CHANGE REASON -->
+
+<ng-template #displayVsBindingList let-data>
+  <ng-container *ngFor="let item of data.value">
+    <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : data.context }"></ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #displayScBinding let-data>
+  <ng-container *ngIf="data.value">
+    <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: data.value, context : data.context }"></ng-container>
+  </ng-container>
 </ng-template>

@@ -1,0 +1,24 @@
+<ng-container *ngIf="sections && sections.length > 0" >
+  <span [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="mouseenter:mouseleave" placement="bottom" class="badge" style="background: transparent !important; border: 1px solid blue !important; cursor: help;">
+    <i class="fa fa-info" style="color: blue; font-size: 1.5em;"></i>
+  </span>
+
+  <ng-template #popContent>
+    <table class="table table-sm table-striped table-bordered">
+      <tbody *ngFor="let item of sections" >
+        <tr>
+          <th>
+            Change {{ item.property }} ( {{ item.date | date }})
+          </th>
+        </tr>
+        <tr>
+          <td> {{ item.reason }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
+  <ng-template #popTitle>
+    Change Log
+  </ng-template>
+
+</ng-container>

@@ -8,7 +8,8 @@ import { Type } from '../../constants/type.enum';
 import { ComparativeType, ConformanceStatementType, DeclarativeType, OccurrenceType, PropositionType, StatementType, VerbType } from '../../models/conformance-statements.domain';
 import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
-import { Hl7V2TreeService, IPathInfo } from '../../services/hl7-v2-tree.service';
+import { ElementNamingService, IPathInfo } from '../../services/element-naming.service';
+import { PathService } from '../../services/path.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { ICardinalityRange, IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
@@ -249,7 +250,10 @@ export class CsPropositionComponent implements OnInit {
   labelsMap = {};
   id: string;
 
-  constructor(private treeService: Hl7V2TreeService) {
+  constructor(
+    private elementNamingService: ElementNamingService,
+    private pathService: PathService,
+  ) {
     this.csType = ConformanceStatementType.PROPOSITION;
     this.valueChange = new EventEmitter<ISimpleAssertion>();
     this.id = Guid.create().toString();
@@ -282,7 +286,7 @@ export class CsPropositionComponent implements OnInit {
     name: string;
     nodeInfo: IPathInfo;
   }> {
-    return this.getName(this.treeService.straightConcatPath(pre, post));
+    return this.getName(this.pathService.straightConcatPath(pre, post));
   }
 
   setSubject(context: IPath, assertion: ISimpleAssertion, node?: IHL7v2TreeNode) {
@@ -495,8 +499,8 @@ export class CsPropositionComponent implements OnInit {
   }
 
   pathValid(context: IPath, path: IPath) {
-    const ctx = this.treeService.pathToString(context);
-    const elm = this.treeService.pathToString(path);
+    const ctx = this.pathService.pathToString(context);
+    const elm = this.pathService.pathToString(path);
     return elm.startsWith(ctx);
   }
 
@@ -587,7 +591,7 @@ export class CsPropositionComponent implements OnInit {
   }
 
   changeElement(event, elm: ISubject | IComplement) {
-    elm.path = this.treeService.trimPathRoot(event.path);
+    elm.path = this.pathService.trimPathRoot(event.path);
     elm.occurenceIdPath = event.node.data.id;
     elm.occurenceValue = undefined;
     elm.occurenceType = undefined;
@@ -605,10 +609,10 @@ export class CsPropositionComponent implements OnInit {
       return of({ name: '', nodeInfo: undefined });
     }
 
-    return this.treeService.getPathName(this.res, this.repository, path).pipe(
+    return this.elementNamingService.getPathInfoFromPath(this.res, this.repository, path).pipe(
       take(1),
       map((pathInfo) => {
-        const name = this.treeService.getNameFromPath(pathInfo);
+        const name = this.elementNamingService.getStringNameFromPathInfo(pathInfo);
         const nodeInfo = this.getLeaf(pathInfo);
         return {
           name,

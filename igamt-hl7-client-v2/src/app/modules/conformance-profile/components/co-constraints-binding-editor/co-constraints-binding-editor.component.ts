@@ -10,7 +10,6 @@ import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadResourceReferences } from '../../../../root-store/dam-igamt/igamt.loaded-resources.actions';
-import { LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectDerived, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { CoConstraintBindingDialogComponent, IBindingDialogResult } from '../../../co-constraints/components/co-constraint-binding-dialog/co-constraint-binding-dialog.component';
 import { CoConstraintEntityService } from '../../../co-constraints/services/co-constraint-entity.service';
@@ -22,6 +21,7 @@ import { IConformanceProfile } from '../../../shared/models/conformance-profile.
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { ChangeType, PropertyType } from '../../../shared/models/save-change';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
+import { PathService } from '../../../shared/services/path.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { ConformanceProfileService } from '../../services/conformance-profile.service';
 
@@ -81,6 +81,7 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
     private conformanceProfileService: ConformanceProfileService,
     private messageService: MessageService,
     private treeService: Hl7V2TreeService,
+    private pathService: PathService,
     protected ccService: CoConstraintEntityService) {
     super({
       id: EditorID.CP_CC_BINDING,
@@ -186,8 +187,8 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
       (result: IBindingDialogResult) => {
         if (result) {
 
-          const contextId = this.treeService.pathToString(result.context.path);
-          const segmentId = this.treeService.pathToString(result.segment.path);
+          const contextId = this.pathService.pathToString(result.context.path);
+          const segmentId = this.pathService.pathToString(result.segment.path);
 
           const contextNode = {
             context: {

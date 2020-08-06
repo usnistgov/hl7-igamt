@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,17 +38,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.base.domain.LengthType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
@@ -853,6 +843,30 @@ public class DatatypeServiceImpl implements DatatypeService {
 		return label;
 	}
 
+	public void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem) {
+		if(structureElement.getChangeLog() == null) {
+			structureElement.setChangeLog(new HashMap<>());
+		}
+
+		if(changeItem.getChangeReason() != null) {
+			structureElement.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
+		} else {
+			structureElement.getChangeLog().remove(changeItem.getPropertyType());
+		}
+	}
+
+	public void logChangeBinding(StructureElementBinding binding, ChangeItemDomain changeItem) {
+		if(binding.getChangeLog() == null) {
+			binding.setChangeLog(new HashMap<>());
+		}
+
+		if(changeItem.getChangeReason() != null) {
+			binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
+		} else {
+			binding.getChangeLog().remove(changeItem.getPropertyType());
+		}
+	}
+
 	@Override
 	public void applyChanges(Datatype d, List<ChangeItemDomain> cItems, String documentId)
 			throws JsonProcessingException, IOException {
@@ -926,6 +940,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 				if (c != null) {
 					item.setOldPropertyValue(c.getUsage());
 					c.setUsage(Usage.valueOf((String) item.getPropertyValue()));
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.LENGTHMIN)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -936,7 +951,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setMinLength((String) item.getPropertyValue());
 					}
-
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.LENGTHMAX)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -947,6 +962,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setMaxLength((String) item.getPropertyValue());
 					}
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.CONFLENGTH)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -957,6 +973,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setConfLength((String) item.getPropertyValue());
 					}
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.LENGTHTYPE)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -967,6 +984,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setLengthType(LengthType.valueOf((String) item.getPropertyValue()));
 					}
+					this.logChangeStructureElement(c, item);
 				}
 			}
 		    else if (item.getPropertyType().equals(PropertyType.DATATYPE)) {
@@ -976,6 +994,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					ObjectMapper mapper = new ObjectMapper();
 					String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 					c.setRef(mapper.readValue(jsonInString, Ref.class));
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
 				ObjectMapper mapper = new ObjectMapper();
@@ -984,12 +1003,14 @@ public class DatatypeServiceImpl implements DatatypeService {
 				item.setOldPropertyValue(seb.getValuesetBindings());
 				seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
 						Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
+				this.logChangeBinding(seb, item);
 			} else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
 				item.setOldPropertyValue(seb.getInternalSingleCode());
 				seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
+				this.logChangeBinding(seb, item);
 			} else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
 				Component c = this.findComponentById(d, item.getLocation());
 				if (c != null) {
@@ -999,6 +1020,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setConstantValue((String) item.getPropertyValue());
 					}
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
 				Component f = this.findComponentById(d, item.getLocation());
@@ -1068,6 +1090,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					cp.setIgDocumentId(documentId);
 					seb.setPredicate(cp);
 				}
+				this.logChangeBinding(seb, item);
 			}
 		}
 		d.setBinding(this.makeLocationInfo(d));

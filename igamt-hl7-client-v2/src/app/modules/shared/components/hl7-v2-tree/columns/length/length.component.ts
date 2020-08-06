@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { ChangeType, PropertyType } from 'src/app/modules/shared/models/save-change';
+import { MatDialog } from '@angular/material';
+import { ChangeType, IChange, PropertyType } from 'src/app/modules/shared/models/save-change';
 import { LengthType } from '../../../../constants/length-type.enum';
 import { ILengthRange } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
@@ -18,14 +19,17 @@ export class LengthComponent extends HL7v2TreeColumnComponent<ILengthAndConfLeng
   onInitValue(value: ILengthAndConfLength): void {
     this.val = {
       ...value,
+      length: value && value.length ? {
+        ...value.length,
+      } : undefined,
     };
   }
 
-  constructor() {
-    super([PropertyType.LENGTHMIN, PropertyType.LENGTHMAX, PropertyType.LENGTHTYPE]);
+  constructor(protected dialog: MatDialog) {
+    super([PropertyType.LENGTHMIN, PropertyType.LENGTHMAX, PropertyType.LENGTHTYPE], dialog);
     this.updateLengthType = new EventEmitter();
     this.value$.subscribe((live) => {
-      this.val = live;
+      this.onInitValue(live);
     });
   }
 
@@ -40,6 +44,10 @@ export class LengthComponent extends HL7v2TreeColumnComponent<ILengthAndConfLeng
   clear() {
     this.onChange<string>(this.getInputValue().lengthType, LengthType.ConfLength, PropertyType.LENGTHTYPE, ChangeType.UPDATE);
     this.updateLengthType.emit(LengthType.ConfLength);
+  }
+
+  isActualChange<X>(change: IChange<X>): boolean {
+    return change.propertyValue !== change.oldPropertyValue;
   }
 
   active() {

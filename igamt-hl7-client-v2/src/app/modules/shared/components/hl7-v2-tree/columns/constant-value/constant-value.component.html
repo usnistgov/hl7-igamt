@@ -1,7 +1,8 @@
 <div class="tt-cell">
-  <strong *ngIf="!edit">{{constant?.value}}</strong>
+  <app-change-log-info  *ngIf="!edit" style="margin-right: 5px;" [sections]="changeDisplaySections" ></app-change-log-info>
+  <strong style="text-align: center; flex-grow: 1;" *ngIf="!edit">{{constant?.value}}</strong>
   <div class="input-group" *ngIf="edit">
-    <input type="text" class="form-control" placeholder="value" aria-describedby="button-addon2" [(ngModel)]="tmp">
+    <input type="text" class="form-control" placeholder="value" aria-describedby="button-addon2" [(ngModel)]="tmp" [ngModelOptions]="{updateOn: 'blur'}">
     <div class="input-group-append">
       <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="toggleEdit()"><i class="fa fa-check" style="color: green;"></i></button>
     </div>

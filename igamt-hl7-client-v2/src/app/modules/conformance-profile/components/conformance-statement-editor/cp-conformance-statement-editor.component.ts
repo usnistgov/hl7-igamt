@@ -15,8 +15,8 @@ import { IConformanceStatement } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
-import { ConformanceStatementService } from '../../../shared/services/conformance-statement.service';
-import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
+import { ElementNamingService } from '../../../shared/services/element-naming.service';
+import { PathService } from '../../../shared/services/path.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { ConformanceProfileService } from '../../services/conformance-profile.service';
 
@@ -30,9 +30,9 @@ export class CPConformanceStatementEditorComponent extends ConformanceStatementE
   constructor(
     readonly repository: StoreResourceRepositoryService,
     private cpService: ConformanceProfileService,
-    csService: ConformanceStatementService,
-    treeService: Hl7V2TreeService,
     dialog: MatDialog,
+    pathService: PathService,
+    elementNamingService: ElementNamingService,
     messageService: MessageService,
     actions$: Actions,
     store: Store<any>) {
@@ -40,8 +40,8 @@ export class CPConformanceStatementEditorComponent extends ConformanceStatementE
       repository,
       messageService,
       dialog,
-      csService,
-      treeService,
+      pathService,
+      elementNamingService,
       actions$,
       store,
       {

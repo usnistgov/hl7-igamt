@@ -1,6 +1,7 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { IComment } from 'src/app/modules/shared/models/comment.interface';
+import { IChange } from 'src/app/modules/shared/models/save-change';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
 import { TextEditorDialogComponent } from '../../../text-editor-dialog/text-editor-dialog.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
@@ -17,7 +18,7 @@ export class CommentsComponent extends HL7v2TreeColumnComponent<IComment[]> impl
 
   constructor(
     public dialog: MatDialog) {
-    super([PropertyType.COMMENT]);
+    super([PropertyType.COMMENT], dialog);
     this.value$.subscribe(
       (value) => {
         if (value) {
@@ -60,6 +61,10 @@ export class CommentsComponent extends HL7v2TreeColumnComponent<IComment[]> impl
         this.registerChange();
       }
     });
+  }
+
+  isActualChange<X>(change: IChange<X>): boolean {
+    return true;
   }
 
   registerChange() {

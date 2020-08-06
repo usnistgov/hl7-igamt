@@ -4,7 +4,17 @@ export interface IChange<T = any> {
   propertyValue: T;
   oldPropertyValue?: T;
   position?: number;
+  changeReason?: IChangeReason;
   changeType: ChangeType;
+}
+
+export interface IChangeReason {
+  reason: string;
+  date: Date;
+}
+
+export interface IChangeLog {
+  [type: string]: IChangeReason;
 }
 
 export enum ChangeType {

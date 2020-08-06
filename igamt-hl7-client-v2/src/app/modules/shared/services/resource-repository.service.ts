@@ -3,7 +3,7 @@ import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
 import * as fromIgamtResourcesSelectors from 'src/app/root-store/dam-igamt/igamt.loaded-resources.selectors';
-import {LoadResourceReferences} from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
+import { LoadResourceReferences } from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
 import {
   selectCoConstraintGroupsById,
   selectDatatypesById,
@@ -16,12 +16,14 @@ import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';
 
+export interface IRefDataInfo {
+  leaf: boolean;
+  version: string;
+  name: string;
+}
+
 export interface IRefData {
-  [id: string]: {
-    leaf: boolean,
-    version: string,
-    name: string,
-  };
+  [id: string]: IRefDataInfo;
 }
 
 export abstract class AResourceRepositoryService {

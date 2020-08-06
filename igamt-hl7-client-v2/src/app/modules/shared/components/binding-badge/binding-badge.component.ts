@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Type } from '../../constants/type.enum';
-import { IBindingContext } from '../../services/hl7-v2-tree.service';
+import { IBindingContext } from '../../services/structure-element-binding.service';
 
 export enum BindingLevel {
   MESSAGE,

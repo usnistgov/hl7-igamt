@@ -15,11 +15,12 @@ import { IPath } from '../../models/cs.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
-import { ChangeType, IChange, PropertyType } from '../../models/save-change';
+import { ChangeType, IChange, IChangeLog, PropertyType } from '../../models/save-change';
 import { IField, ISegment } from '../../models/segment.interface';
-import { Hl7V2TreeService, IBindingContext, IElementBinding } from '../../services/hl7-v2-tree.service';
+import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { IStructCreateDialogResult } from '../../services/struct-create-dialog.abstract';
+import { IBindingContext, IElementBinding } from '../../services/structure-element-binding.service';
 import { IBindingLocationInfo } from '../binding-selector/binding-selector.component';
 import { FieldAddDialogComponent } from '../field-add-dialog/field-add-dialog.component';
 import { SegmentAddDialogComponent } from '../segment-add-dialog/segment-add-dialog.component';
@@ -65,31 +66,34 @@ export interface IStringValue {
   value: string;
 }
 
+export interface IHL7v2TreeNodeData {
+  id: string;
+  name: string;
+  position: number;
+  type: Type;
+  usage?: IStringValue;
+  oldUsage?: Usage;
+  text?: IStringValue;
+  cardinality?: ICardinalityRange;
+  length?: ILengthRange;
+  comments?: IComment[];
+  constantValue?: IStringValue;
+  lengthType?: LengthType;
+  pathId: string;
+  changeable?: boolean;
+  viewOnly?: boolean;
+  confLength?: string;
+  valueSetBindingsInfo?: Observable<IBindingLocationInfo>;
+  ref?: BehaviorSubject<IResourceRef>;
+  bindings?: IElementBinding;
+  level?: number;
+  custom?: boolean;
+  changeLog?: IChangeLog;
+  rootPath: IPath;
+}
+
 export interface IHL7v2TreeNode extends TreeNode {
-  data: {
-    id: string,
-    name: string,
-    position: number,
-    type: Type,
-    usage?: IStringValue,
-    oldUsage?: Usage,
-    text?: IStringValue,
-    cardinality?: ICardinalityRange,
-    length?: ILengthRange,
-    comments?: IComment[],
-    constantValue?: IStringValue,
-    lengthType?: LengthType,
-    pathId: string,
-    changeable?: boolean,
-    viewOnly?: boolean,
-    confLength?: string,
-    valueSetBindingsInfo?: Observable<IBindingLocationInfo>,
-    ref?: BehaviorSubject<IResourceRef>,
-    bindings?: IElementBinding,
-    level?: number,
-    custom?: boolean,
-    rootPath: IPath,
-  };
+  data: IHL7v2TreeNodeData;
   parent?: IHL7v2TreeNode;
   children?: IHL7v2TreeNode[];
   $hl7V2TreeHelpers?: {
@@ -117,6 +121,8 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   documentRef: IDocumentRef;
   @Input()
   viewOnly: boolean;
+  @Input()
+  derived: boolean;
   @Input()
   datatypes: IDisplayElement[];
   @Input()
