@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,6 +28,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
@@ -62,8 +69,12 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
+import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
+import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
+import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -91,9 +102,11 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   ConfigService sharedConstantService;
-//
-//  @Autowired
-//  DataFixer dataFixer;
+  @Autowired
+  IgTemplateRepository igTemplateRepository;
+  //
+  //  @Autowired
+  //  DataFixer dataFixer;
 
   @Autowired
   private PathFixes pathFixes;
@@ -109,13 +122,13 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   private ExportConfigurationService exportConfigurationService;
-  
+
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
 
   @Autowired
   private PredicateRepository predicateRepository;
-  
+
   //  @Autowired
   //  RelationShipService testCache;
 
@@ -135,13 +148,13 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   SegmentService segmentService;
-  
+
   @Autowired
   ValuesetService valuesetService;
 
   @Autowired
   ConformanceProfileService messageService;
-  
+
   @Autowired
   BindingCollector bindingCollector;
   @Autowired
@@ -150,8 +163,8 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   TablesFixes tableFixes;
 
-  
- 
+
+
   @Bean
   public JavaMailSenderImpl mailSender() {
     JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -179,7 +192,7 @@ public class BootstrapApplication implements CommandLineRunner {
   public FhirContext fhirR4Context() {
     return FhirContext.forR4();
   }
-  
+
 
   //
   //   @Bean(name = "multipartResolver")
@@ -271,12 +284,12 @@ public class BootstrapApplication implements CommandLineRunner {
     }
   }
 
-//  @PostConstruct
-//  void fixPaths() {
-//      this.pathFixes.fix();
-//  }
-  
-  
+  //@PostConstruct
+  void fixPaths() {
+    this.pathFixes.fix();
+  }
+
+
 
 
   /**
@@ -292,7 +305,6 @@ public class BootstrapApplication implements CommandLineRunner {
         ret=true;
       }
     }
-
     return ret;
   }
 
@@ -302,13 +314,13 @@ public class BootstrapApplication implements CommandLineRunner {
    * @throws ValidationException 
    */
 
-  
-//@PostConstruct
-void fixSegmentduplicatedBinding() throws ValidationException {
-  tableFixes.removeSegmentsDuplicatedBinding();
-}
 
- // @PostConstruct
+  //@PostConstruct
+  void fixSegmentduplicatedBinding() throws ValidationException {
+    tableFixes.removeSegmentsDuplicatedBinding();
+  }
+
+//   @PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
@@ -327,7 +339,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
       basicExportConfiguration.setDefaultType(false);
       basicExportConfiguration.setDefaultConfig(false);
       exportConfigurationRepository.save(basicExportConfiguration);
-      
+
     }
   }
   //  
@@ -563,7 +575,7 @@ void fixSegmentduplicatedBinding() throws ValidationException {
     return ret;
   }
 
-  
+
   //@PostConstruct
   void classifyDatatypes() throws DatatypeNotFoundException {
     datatypeClassificationService.deleteAll();
@@ -579,366 +591,379 @@ void fixSegmentduplicatedBinding() throws ValidationException {
   }
 
 
-    //   }
-    //  
-    //@PostConstruct
-    //void testCache() {
-    //	testCache.deleteAll();
-    //
-    //  ResourceInfo info = new ResourceInfo();
-    //  info.setId("user");
-    //  info.setDomainInfo(null);
-    //  info.setType(null);
-    //  
-    //  ResourceInfo info1 = new ResourceInfo();
-    //  info1.setId("user1");
-    //  info1.setDomainInfo(null);
-    //  info1.setType(null);
-    //  
-    //  
-    //  RelationShip r1 = new RelationShip(info, info1, ReferenceType.STRUCTURE, "test");
-    //  RelationShip r2 = new RelationShip(info1, info, ReferenceType.STRUCTURE, "test");
-    //
-    //  
-    //  testCache.save(r1);
-    //  testCache.save(r2);
-    //  
-    //  System.out.println(testCache.findAll().size());
-    //  
-    //  List<RelationShip> dep =testCache.findAllDependencies("user");
-    //  List<RelationShip>  refs=testCache.findCrossReferences("user");
-    //  
-    //  List<RelationShip>  byType=testCache.findByPath("test");
-    //  List<RelationShip>  all=testCache.findAll();
-    //  
-    //  for( RelationShip r :all) {
-    //	  System.out.println(r.getId());
-    //  }
-    //  System.out.println(dep);
-    //  System.out.println(refs);
-    //
-    //}
+  //   }
+  //  
+  //@PostConstruct
+  //void testCache() {
+  //	testCache.deleteAll();
+  //
+  //  ResourceInfo info = new ResourceInfo();
+  //  info.setId("user");
+  //  info.setDomainInfo(null);
+  //  info.setType(null);
+  //  
+  //  ResourceInfo info1 = new ResourceInfo();
+  //  info1.setId("user1");
+  //  info1.setDomainInfo(null);
+  //  info1.setType(null);
+  //  
+  //  
+  //  RelationShip r1 = new RelationShip(info, info1, ReferenceType.STRUCTURE, "test");
+  //  RelationShip r2 = new RelationShip(info1, info, ReferenceType.STRUCTURE, "test");
+  //
+  //  
+  //  testCache.save(r1);
+  //  testCache.save(r2);
+  //  
+  //  System.out.println(testCache.findAll().size());
+  //  
+  //  List<RelationShip> dep =testCache.findAllDependencies("user");
+  //  List<RelationShip>  refs=testCache.findCrossReferences("user");
+  //  
+  //  List<RelationShip>  byType=testCache.findByPath("test");
+  //  List<RelationShip>  all=testCache.findAll();
+  //  
+  //  for( RelationShip r :all) {
+  //	  System.out.println(r.getId());
+  //  }
+  //  System.out.println(dep);
+  //  System.out.println(refs);
+  //
+  //}
 
 
 
-    public void fixMessages(Scope scope) {
-      List<ConformanceProfile> resources = messageService.findByDomainInfoScope(scope.getValue()); 
-      for(ConformanceProfile r : resources) {
-        if(r.getBinding() !=null) {
-          fixBinding(r.getBinding());
-          messageService.save(r);
-        }
+  public void fixMessages(Scope scope) {
+    List<ConformanceProfile> resources = messageService.findByDomainInfoScope(scope.getValue()); 
+    for(ConformanceProfile r : resources) {
+      if(r.getBinding() !=null) {
+        fixBinding(r.getBinding());
+        messageService.save(r);
       }
     }
-    public void fixDatatypes(Scope scope) {
-      List<Datatype> resources = this.dataypeService.findByDomainInfoScope(scope.getValue()); 
-      for(Datatype r : resources) {
-        if(r.getBinding() !=null) {
-          fixBinding(r.getBinding());
-          dataypeService.save(r);
-        }
-      }	
-    }
-    public void fixSegment(Scope scope) throws ValidationException {
-      List<Segment> resources = this.segmentService.findByDomainInfoScope(scope.getValue()); 
-      for(Segment r : resources) {
-        if(r.getBinding() !=null) {
-          fixBinding(r.getBinding());
-          segmentService.save(r);
-        }
-      }
-    }
-
-    public void fixBinding(ResourceBinding binding) {
-      //		if(binding.getChildren() !=null && !binding.getChildren().isEmpty()) {
-      //			for(StructureElementBinding elm: binding.getChildren()) {	
-      //				if(elm.getValuesetBindings() != null) {
-      //					for(ValuesetBinding vs: elm.getValuesetBindings()) {
-      //						if(vs.getValuesetId() !=null) {
-      //							List<String> list = new ArrayList<String>();
-      //							list.add(vs.getValuesetId());
-      //							vs.setValueSets(list);
-      //						}
-      //					}
-      //				}
-      //			}
-      //		}	
-    }
-
-    //    @PostConstruct
-    public void generateBindings() throws FileNotFoundException{
-      this.bindingCollector.collect();
-    };
-
-
-    //@PostConstruct
-//    public void fixBinding() throws ValidationException {
-//      this.dataFixer.readCsv();
-//    }
-
-    //@PostConstruct
-    public void fix0396() throws ValidationException{
-      tableFixes.fix0396();
-    }
-    //@PostConstruct
-    public void fixPHINValuesets() {
-    	this.valuesetService.findByDomainInfoScope("PHINVADS").forEach(v -> {
-    		if(v.getName() == null) {
-    			v.setName(v.getBindingIdentifier());
-    		}
-    		if(v.getCodes() != null) {
-    			v.getCodes().forEach(c -> {
-    				if(c.getUsage() == null) {
-    					c.setUsage(CodeUsage.R);
-    				}
-    			});
-    		}
-			this.valuesetService.save(v);
-    	});
-    }
-    
-    
-    @SuppressWarnings("deprecation")
-    //@PostConstruct
-    public void recoveryConstraints() {
-    	this.dataypeService.findAll().forEach(dt -> {
-    		if(dt.getBinding() != null) {
-    			if(dt.getBinding().getConformanceStatementIds() != null) {
-    				dt.getBinding().getConformanceStatementIds().forEach(csId -> {
-    					this.conformanceStatementRepository.findById(csId).ifPresent(cs -> {
-    						this.updateConformanceStatementForResourceBinding(dt.getBinding(), cs);
-    					});	
-    				});
-    			}
-    			
-    			if(dt.getBinding().getChildren() != null) {
-    				this.visitBindingForPredicateUpdate(dt.getBinding());	
-    			}
-    			dt.getBinding().setConformanceStatementIds(null);
-    			
-    			this.dataypeService.save(dt);
-    		}
-    	});
-    	
-    	this.segmentService.findAll().forEach(seg -> {
-    		if(seg.getBinding() != null) {
-    			if(seg.getBinding().getConformanceStatementIds() != null) {
-    				seg.getBinding().getConformanceStatementIds().forEach(csId -> {
-    					this.conformanceStatementRepository.findById(csId).ifPresent(cs -> {
-    						this.updateConformanceStatementForResourceBinding(seg.getBinding(), cs);
-    					});
-    					
-    				});
-    			}
-    			
-    			if(seg.getBinding().getChildren() != null) {
-    				this.visitBindingForPredicateUpdate(seg.getBinding());	
-    			}
-    			seg.getBinding().setConformanceStatementIds(null);
-    			try {
-					this.segmentService.save(seg);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-    		}
-    	});
-    	
-    	this.messageService.findAll().forEach(m -> {
-    		if(m.getBinding() != null) {
-    			if(m.getBinding().getConformanceStatementIds() != null) {
-    				m.getBinding().getConformanceStatementIds().forEach(csId -> {
-    					this.conformanceStatementRepository.findById(csId).ifPresent(cs -> {
-    						this.updateConformanceStatementForResourceBinding(m.getBinding(), cs);
-    					});
-    					
-    				});
-    			}
-    			
-    			if(m.getBinding().getChildren() != null) {
-    				this.visitBindingForPredicateUpdate(m.getBinding());	
-    			}
-    			m.getBinding().setConformanceStatementIds(null);
-    			this.messageService.save(m);
-    		}
-    	});
-    	
-    	
-    	
-//    	this.conformanceStatementRepository.findAll().forEach(cs -> {
-//    		if(cs.getLevel() != null) {
-//        		if(cs.getLevel().equals(Level.DATATYPE)) {
-//        			if(cs.getSourceIds() != null) {
-//        				cs.getSourceIds().forEach(sId -> {
-//                			Datatype dt = this.dataypeService.findById(sId);
-//                			if(dt != null) {
-//                				this.updateConformanceStatementForResourceBinding(dt.getBinding(), cs);
-//                    			this.dataypeService.save(dt);
-//                			}
-//        				});
-//        			}
-//        		} else if(cs.getLevel().equals(Level.SEGMENT)) {
-//        			if(cs.getSourceIds() != null) {
-//        				cs.getSourceIds().forEach(sId -> {
-//                			Segment s = this.segmentService.findById(sId);
-//                			if(s != null) {
-//                				System.out.println(s.getLabel());
-//                				this.updateConformanceStatementForResourceBinding(s.getBinding(), cs);
-//                				try {
-//    								this.segmentService.save(s);
-//    							} catch (ValidationException e) {
-//    								e.printStackTrace();
-//    							}
-//                			}
-//        				});
-//        			}
-//        		} else if(cs.getLevel().equals(Level.CONFORMANCEPROFILE)) {
-//        			if(cs.getSourceIds() != null) {
-//        				cs.getSourceIds().forEach(sId -> {
-//                			ConformanceProfile cp = this.messageService.findById(sId);
-//                			if(cp != null) {
-//                				this.updateConformanceStatementForResourceBinding(cp.getBinding(), cs);
-//                				this.messageService.save(cp);
-//                			}
-//        				});
-//        			}
-//        		}  			
-//    		}
-//    	});
-//
-//    	this.predicateRepository.findAll().forEach(cp -> {
-//    		if(cp.getLevel() != null) {
-//        		if(cp.getLevel().equals(Level.DATATYPE)) {
-//        			if(cp.getSourceIds() != null) {
-//        				cp.getSourceIds().forEach(sId -> {
-//                			Datatype dt = this.dataypeService.findById(sId);
-//                			if(dt != null) {
-//                				this.visitBindingForPredicateUpdate(dt.getBinding(), cp);
-//                    			this.dataypeService.save(dt);
-//                			}
-//        				});
-//        			}
-//        		} else if(cp.getLevel().equals(Level.SEGMENT)) {
-//        			if(cp.getSourceIds() != null) {
-//        				cp.getSourceIds().forEach(sId -> {
-//                			Segment s = this.segmentService.findById(sId);
-//                			if(s != null) {
-//                				this.visitBindingForPredicateUpdate(s.getBinding(), cp);
-//                				try {
-//    								this.segmentService.save(s);
-//    							} catch (ValidationException e) {
-//    								e.printStackTrace();
-//    							}
-//                			}
-//                			
-//        				});
-//        			}
-//        		} else if(cp.getLevel().equals(Level.CONFORMANCEPROFILE)) {
-//        			if(cp.getSourceIds() != null) {
-//        				cp.getSourceIds().forEach(sId -> {
-//        					ConformanceProfile m = this.messageService.findById(sId);
-//        					if(m != null) {
-//        						this.visitBindingForPredicateUpdate(m.getBinding(), cp);
-//                    			this.messageService.save(m);
-//        					}
-//        				});
-//        			}
-//        		}  			
-//    		}
-//    	});
-    }
-
-	private void updateConformanceStatementForResourceBinding(ResourceBinding binding, ConformanceStatement cs) {
-		if(binding != null && binding.getConformanceStatementIds() != null && binding.getConformanceStatementIds().contains(cs.getId())) {
-			if(!this.isExistingCS(binding, cs)) binding.addConformanceStatement(cs);
-		}
-	}
-
-	private void visitBindingForPredicateUpdate(ResourceBinding binding) {
-		if(binding != null && binding.getChildren() != null) {
-			this.visitSBindingForPredicateUpdate(binding.getChildren());
-		}
-	}
-
-	private void visitSBindingForPredicateUpdate(Set<StructureElementBinding> sebs) {
-		if(sebs != null) {
-			sebs.forEach(seb -> {
-				if(seb.getPredicateId() != null) {
-					this.predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> {
-						if(cp instanceof FreeTextPredicate) {
-							seb.setPredicate((FreeTextPredicate)cp);
-							seb.setPredicateId(null);
-						}else if (cp instanceof AssertionPredicate) {
-							seb.setPredicate((AssertionPredicate)cp);		
-							seb.setPredicateId(null);
-							
-						}	
-					});
-					
-				}
-				if(seb.getChildren() != null) this.visitSBindingForPredicateUpdate(seb.getChildren());
-			});
-		}
-	}
-
-
-
-	private boolean isExistingCS(ResourceBinding binding, ConformanceStatement targetCS) {
-		if(binding != null && binding.getConformanceStatements() != null) {
-			for(ConformanceStatement cs :binding.getConformanceStatements()) {
-				if(cs.getId() != null && cs.getId().equals(targetCS.getId())) return true;
-			}	
-		}
-		
-		return false;
-	}
-
-    //   @PostConstruct
-    //   void classifyDatatypes() throws DatatypeNotFoundException {
-    //   datatypeClassificationService.deleteAll();
-    //   System.out.println("Classifying dts");
-    //   datatypeClassifier.classify();
-    //   System.out.println("ENd of Classifying dts");
-    //  
-    //   }
-    //  
-    //@PostConstruct
-    //void testCache() {
-    //	testCache.deleteAll();
-    //
-    //  ResourceInfo info = new ResourceInfo();
-    //  info.setId("user");
-    //  info.setDomainInfo(null);
-    //  info.setType(null);
-    //  
-    //  ResourceInfo info1 = new ResourceInfo();
-    //  info1.setId("user1");
-    //  info1.setDomainInfo(null);
-    //  info1.setType(null);
-    //  
-    //  
-    //  RelationShip r1 = new RelationShip(info, info1, ReferenceType.STRUCTURE, "test");
-    //  RelationShip r2 = new RelationShip(info1, info, ReferenceType.STRUCTURE, "test");
-    //
-    //  
-    //  testCache.save(r1);
-    //  testCache.save(r2);
-    //  
-    //  System.out.println(testCache.findAll().size());
-    //  
-    //  List<RelationShip> dep =testCache.findAllDependencies("user");
-    //  List<RelationShip>  refs=testCache.findCrossReferences("user");
-    //  
-    //  List<RelationShip>  byType=testCache.findByPath("test");
-    //  List<RelationShip>  all=testCache.findAll();
-    //  
-    //  for( RelationShip r :all) {
-    //	  System.out.println(r.getId());
-    //  }
-    //  System.out.println(dep);
-    //  System.out.println(refs);
-    //
-    //}
-    
-
   }
+  public void fixDatatypes(Scope scope) {
+    List<Datatype> resources = this.dataypeService.findByDomainInfoScope(scope.getValue()); 
+    for(Datatype r : resources) {
+      if(r.getBinding() !=null) {
+        fixBinding(r.getBinding());
+        dataypeService.save(r);
+      }
+    }	
+  }
+  public void fixSegment(Scope scope) throws ValidationException {
+    List<Segment> resources = this.segmentService.findByDomainInfoScope(scope.getValue()); 
+    for(Segment r : resources) {
+      if(r.getBinding() !=null) {
+        fixBinding(r.getBinding());
+        segmentService.save(r);
+      }
+    }
+  }
+
+  public void fixBinding(ResourceBinding binding) {
+    //		if(binding.getChildren() !=null && !binding.getChildren().isEmpty()) {
+    //			for(StructureElementBinding elm: binding.getChildren()) {	
+    //				if(elm.getValuesetBindings() != null) {
+    //					for(ValuesetBinding vs: elm.getValuesetBindings()) {
+    //						if(vs.getValuesetId() !=null) {
+    //							List<String> list = new ArrayList<String>();
+    //							list.add(vs.getValuesetId());
+    //							vs.setValueSets(list);
+    //						}
+    //					}
+    //				}
+    //			}
+    //		}	
+  }
+
+  //    @PostConstruct
+  public void generateBindings() throws FileNotFoundException{
+    this.bindingCollector.collect();
+  };
+
+
+  //@PostConstruct
+  //    public void fixBinding() throws ValidationException {
+  //      this.dataFixer.readCsv();
+  //    }
+
+  //@PostConstruct
+  public void fix0396() throws ValidationException{
+    tableFixes.fix0396();
+  }
+  //@PostConstruct
+  public void fixPHINValuesets() {
+    this.valuesetService.findByDomainInfoScope("PHINVADS").forEach(v -> {
+      if(v.getName() == null) {
+        v.setName(v.getBindingIdentifier());
+      }
+      if(v.getCodes() != null) {
+        v.getCodes().forEach(c -> {
+          if(c.getUsage() == null) {
+            c.setUsage(CodeUsage.R);
+          }
+        });
+      }
+      this.valuesetService.save(v);
+    });
+  }
+
+
+  @SuppressWarnings("deprecation")
+  //@PostConstruct
+  public void recoveryConstraints() {
+    this.dataypeService.findAll().forEach(dt -> {
+      if(dt.getBinding() != null) {
+        if(dt.getBinding().getConformanceStatementIds() != null) {
+          dt.getBinding().getConformanceStatementIds().forEach(csId -> {
+            this.conformanceStatementRepository.findById(csId).ifPresent(cs -> {
+              this.updateConformanceStatementForResourceBinding(dt.getBinding(), cs);
+            });	
+          });
+        }
+
+        if(dt.getBinding().getChildren() != null) {
+          this.visitBindingForPredicateUpdate(dt.getBinding());	
+        }
+        dt.getBinding().setConformanceStatementIds(null);
+
+        this.dataypeService.save(dt);
+      }
+    });
+
+    this.segmentService.findAll().forEach(seg -> {
+      if(seg.getBinding() != null) {
+        if(seg.getBinding().getConformanceStatementIds() != null) {
+          seg.getBinding().getConformanceStatementIds().forEach(csId -> {
+            this.conformanceStatementRepository.findById(csId).ifPresent(cs -> {
+              this.updateConformanceStatementForResourceBinding(seg.getBinding(), cs);
+            });
+
+          });
+        }
+
+        if(seg.getBinding().getChildren() != null) {
+          this.visitBindingForPredicateUpdate(seg.getBinding());	
+        }
+        seg.getBinding().setConformanceStatementIds(null);
+        try {
+          this.segmentService.save(seg);
+        } catch (Exception e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+      }
+    });
+
+    this.messageService.findAll().forEach(m -> {
+      if(m.getBinding() != null) {
+        if(m.getBinding().getConformanceStatementIds() != null) {
+          m.getBinding().getConformanceStatementIds().forEach(csId -> {
+            this.conformanceStatementRepository.findById(csId).ifPresent(cs -> {
+              this.updateConformanceStatementForResourceBinding(m.getBinding(), cs);
+            });
+
+          });
+        }
+
+        if(m.getBinding().getChildren() != null) {
+          this.visitBindingForPredicateUpdate(m.getBinding());	
+        }
+        m.getBinding().setConformanceStatementIds(null);
+        this.messageService.save(m);
+      }
+    });
+
+
+
+    //    	this.conformanceStatementRepository.findAll().forEach(cs -> {
+    //    		if(cs.getLevel() != null) {
+    //        		if(cs.getLevel().equals(Level.DATATYPE)) {
+    //        			if(cs.getSourceIds() != null) {
+    //        				cs.getSourceIds().forEach(sId -> {
+    //                			Datatype dt = this.dataypeService.findById(sId);
+    //                			if(dt != null) {
+    //                				this.updateConformanceStatementForResourceBinding(dt.getBinding(), cs);
+    //                    			this.dataypeService.save(dt);
+    //                			}
+    //        				});
+    //        			}
+    //        		} else if(cs.getLevel().equals(Level.SEGMENT)) {
+    //        			if(cs.getSourceIds() != null) {
+    //        				cs.getSourceIds().forEach(sId -> {
+    //                			Segment s = this.segmentService.findById(sId);
+    //                			if(s != null) {
+    //                				System.out.println(s.getLabel());
+    //                				this.updateConformanceStatementForResourceBinding(s.getBinding(), cs);
+    //                				try {
+    //    								this.segmentService.save(s);
+    //    							} catch (ValidationException e) {
+    //    								e.printStackTrace();
+    //    							}
+    //                			}
+    //        				});
+    //        			}
+    //        		} else if(cs.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+    //        			if(cs.getSourceIds() != null) {
+    //        				cs.getSourceIds().forEach(sId -> {
+    //                			ConformanceProfile cp = this.messageService.findById(sId);
+    //                			if(cp != null) {
+    //                				this.updateConformanceStatementForResourceBinding(cp.getBinding(), cs);
+    //                				this.messageService.save(cp);
+    //                			}
+    //        				});
+    //        			}
+    //        		}  			
+    //    		}
+    //    	});
+    //
+    //    	this.predicateRepository.findAll().forEach(cp -> {
+    //    		if(cp.getLevel() != null) {
+    //        		if(cp.getLevel().equals(Level.DATATYPE)) {
+    //        			if(cp.getSourceIds() != null) {
+    //        				cp.getSourceIds().forEach(sId -> {
+    //                			Datatype dt = this.dataypeService.findById(sId);
+    //                			if(dt != null) {
+    //                				this.visitBindingForPredicateUpdate(dt.getBinding(), cp);
+    //                    			this.dataypeService.save(dt);
+    //                			}
+    //        				});
+    //        			}
+    //        		} else if(cp.getLevel().equals(Level.SEGMENT)) {
+    //        			if(cp.getSourceIds() != null) {
+    //        				cp.getSourceIds().forEach(sId -> {
+    //                			Segment s = this.segmentService.findById(sId);
+    //                			if(s != null) {
+    //                				this.visitBindingForPredicateUpdate(s.getBinding(), cp);
+    //                				try {
+    //    								this.segmentService.save(s);
+    //    							} catch (ValidationException e) {
+    //    								e.printStackTrace();
+    //    							}
+    //                			}
+    //                			
+    //        				});
+    //        			}
+    //        		} else if(cp.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+    //        			if(cp.getSourceIds() != null) {
+    //        				cp.getSourceIds().forEach(sId -> {
+    //        					ConformanceProfile m = this.messageService.findById(sId);
+    //        					if(m != null) {
+    //        						this.visitBindingForPredicateUpdate(m.getBinding(), cp);
+    //                    			this.messageService.save(m);
+    //        					}
+    //        				});
+    //        			}
+    //        		}  			
+    //    		}
+    //    	});
+  }
+
+  private void updateConformanceStatementForResourceBinding(ResourceBinding binding, ConformanceStatement cs) {
+    if(binding != null && binding.getConformanceStatementIds() != null && binding.getConformanceStatementIds().contains(cs.getId())) {
+      if(!this.isExistingCS(binding, cs)) binding.addConformanceStatement(cs);
+    }
+  }
+
+  private void visitBindingForPredicateUpdate(ResourceBinding binding) {
+    if(binding != null && binding.getChildren() != null) {
+      this.visitSBindingForPredicateUpdate(binding.getChildren());
+    }
+  }
+
+  private void visitSBindingForPredicateUpdate(Set<StructureElementBinding> sebs) {
+    if(sebs != null) {
+      sebs.forEach(seb -> {
+        if(seb.getPredicateId() != null) {
+          this.predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> {
+            if(cp instanceof FreeTextPredicate) {
+              seb.setPredicate((FreeTextPredicate)cp);
+              seb.setPredicateId(null);
+            }else if (cp instanceof AssertionPredicate) {
+              seb.setPredicate((AssertionPredicate)cp);
+              seb.setPredicateId(null);
+            }
+          });
+
+        }
+        if(seb.getChildren() != null) this.visitSBindingForPredicateUpdate(seb.getChildren());
+      });
+    }
+  }
+
+
+
+  private boolean isExistingCS(ResourceBinding binding, ConformanceStatement targetCS) {
+    if(binding != null && binding.getConformanceStatements() != null) {
+      for(ConformanceStatement cs :binding.getConformanceStatements()) {
+        if(cs.getId() != null && cs.getId().equals(targetCS.getId())) return true;
+      }
+    }
+
+    return false;
+  }
+
+  //   @PostConstruct
+  //   void classifyDatatypes() throws DatatypeNotFoundException {
+  //   datatypeClassificationService.deleteAll();
+  //   System.out.println("Classifying dts");
+  //   datatypeClassifier.classify();
+  //   System.out.println("ENd of Classifying dts");
+  //  
+  //   }
+  //  
+  //@PostConstruct
+  //void testCache() {
+  //	testCache.deleteAll();
+  //
+  //  ResourceInfo info = new ResourceInfo();
+  //  info.setId("user");
+  //  info.setDomainInfo(null);
+  //  info.setType(null);
+  //  
+  //  ResourceInfo info1 = new ResourceInfo();
+  //  info1.setId("user1");
+  //  info1.setDomainInfo(null);
+  //  info1.setType(null);
+  //  
+  //  
+  //  RelationShip r1 = new RelationShip(info, info1, ReferenceType.STRUCTURE, "test");
+  //  RelationShip r2 = new RelationShip(info1, info, ReferenceType.STRUCTURE, "test");
+  //
+  //  
+  //  testCache.save(r1);
+  //  testCache.save(r2);
+  //  
+  //  System.out.println(testCache.findAll().size());
+  //  
+  //  List<RelationShip> dep =testCache.findAllDependencies("user");
+  //  List<RelationShip>  refs=testCache.findCrossReferences("user");
+  //  
+  //  List<RelationShip>  byType=testCache.findByPath("test");
+  //  List<RelationShip>  all=testCache.findAll();
+  //  
+  //  for( RelationShip r :all) {
+  //	  System.out.println(r.getId());
+  //  }
+  //  System.out.println(dep);
+  //  System.out.println(refs);
+  //
+  //}
+
+  //@PostConstruct
+  private void createIgTemplate() throws JsonParseException, JsonMappingException, IOException {
+
+    ObjectMapper objectMapper = new ObjectMapper();
+    objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    List<SectionTemplate> sections =
+        objectMapper.readValue(IgServiceImpl.class.getResourceAsStream("/IgTemplate.json"),
+            new TypeReference<List<SectionTemplate>>() {});
+    IgTemplate template = new IgTemplate();
+    template.setChildren(sections);
+    template.setDomain("Default");
+    template.setName("Default");
+    this.igTemplateRepository.insert(template);
+  }
+
+}

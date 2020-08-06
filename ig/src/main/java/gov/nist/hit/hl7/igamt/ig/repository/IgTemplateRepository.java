@@ -9,7 +9,10 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.display.model;
+package gov.nist.hit.hl7.igamt.ig.repository;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
 
@@ -17,39 +20,8 @@ import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
  * @author Abdelghani El Ouakili
  *
  */
-public class CopyInfo {
 
-  private CloneMode mode; 
-  private IgTemplate template;
-  private boolean inherit;
- 
+@Repository("igTemplateRepository")
+public interface IgTemplateRepository extends MongoRepository<IgTemplate, String> {
 
-  public CopyInfo() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
-  
-  public CloneMode getMode() {
-    return mode;
-  }
-  public void setMode(CloneMode mode) {
-    this.mode = mode;
-  }
-
-  public IgTemplate getTemplate() {
-    return template;
-  }
-
-  public void setTemplate(IgTemplate template) {
-    this.template = template;
-  }
-  public boolean isInherit() {
-    return inherit;
-  }
-
-  public void setInherit(boolean inherit) {
-    this.inherit = inherit;
-  }
-
-  
 }

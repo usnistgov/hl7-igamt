@@ -52,12 +52,14 @@ import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
@@ -96,6 +98,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
+import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.ComplianceReport;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
@@ -114,9 +117,11 @@ import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
+import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.ig.service.SharingService;
 import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -187,7 +192,15 @@ public class IGDocumentController extends BaseController {
   
   @Autowired
   private FhirHandlerService fhirHandlerService;
+  
+  @Autowired
+  private IgTemplateRepository igTemplateRepository;
+  
+  @Autowired
+  SharingService sharingService;
 
+  @Autowired
+  CommonService commonService;
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
@@ -445,13 +458,16 @@ public class IGDocumentController extends BaseController {
    * @return
    * @throws IGNotFoundException
    * @throws IGUpdateException
+   * @throws ForbiddenOperationException 
    */
   @RequestMapping(value = "/api/igdocuments/{id}/section", method = RequestMethod.POST, produces = {
   "application/json" })
 
   public @ResponseBody ResponseMessage<Object> updateIg(@PathVariable("id") String id, @RequestBody Section section,
-      Authentication authentication) throws IGNotFoundException, IGUpdateException {
+      Authentication authentication) throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     if (!ig.getUsername().equals(authentication.getPrincipal().toString())) {
       return new ResponseMessage<Object>(Status.FAILED, TABLE_OF_CONTENT_UPDATED, ig.getId(), new Date());
     } else {
@@ -1343,19 +1359,21 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/updateSharedUser", method = RequestMethod.POST, produces = {
   "application/json" })
   public @ResponseBody ResponseMessage<String> updateSharedUser(@PathVariable("id") String id, @RequestBody SharedUsersInfo sharedUsersInfo, Authentication authentication)
-      throws IGNotFoundException, IGUpdateException {
+      throws IGNotFoundException, IGUpdateException, ResourceNotFoundException {
     String username = authentication.getPrincipal().toString();
 
-    this.igService.updateSharedUser(id, sharedUsersInfo);
+    this.sharingService.shareIg(id, sharedUsersInfo);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Shared Users Successfully Updated", id, false,
         new Date(), id);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.DELETE, produces = { "application/json" })
   public @ResponseBody ResponseMessage<String> archive(@PathVariable("id") String id, Authentication authentication)
-      throws IGNotFoundException {
+      throws IGNotFoundException, ForbiddenOperationException {
 
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     igService.delete(ig);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig deleted Successfully", ig.getId(), false,
         ig.getUpdateDate(), ig.getId());
@@ -1801,4 +1819,13 @@ public class IGDocumentController extends BaseController {
 		  }
 	  });
   }
+  
+  @RequestMapping(value = "/api/igdocuments/igTemplates", method = RequestMethod.GET, produces = { "application/json" })
+  public @ResponseBody  List<IgTemplate> igTemplates( Authentication authentication) throws Exception {      
+    
+    List<IgTemplate> templates = this.igTemplateRepository.findAll();
+
+    return templates;
+  }
+
 }

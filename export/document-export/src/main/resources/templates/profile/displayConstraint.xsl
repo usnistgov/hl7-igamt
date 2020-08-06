@@ -25,14 +25,97 @@
                         <xsl:call-template name="conformanceStatementHeader"/>
                         <xsl:element name="tbody">
                             <xsl:for-each select="Constraints/ConformanceStatement">
-                                <xsl:sort select="@identifier" data-type="text" order="ascending" />
-                                <xsl:call-template name="ConstraintContent">
-                                    <xsl:with-param name="mode" select="$constraintMode"/>
-                                    <xsl:with-param name="type" select="$type"/>
-                                    <xsl:with-param name="displayPeriod">
-                                        <xsl:text>true</xsl:text>
-                                    </xsl:with-param>
-                                </xsl:call-template>
+                                <xsl:sort select="@identifier" data-type="text" order="ascending"/>
+                                <xsl:variable name="changedIdentifier" select="@identifier" />
+                                <xsl:choose>
+                                    <xsl:when
+                                            test="not(../../Changes/@mode) or Changes/@mode = 'HIGHLIGHT' or ../../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
+                                        <xsl:call-template name="ConstraintContent">
+
+                                            <xsl:with-param name="changeClass"
+                                                            select="../../Changes/Change[@identifier=$changedIdentifier]"/>
+                                            <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor"/>
+                                            <xsl:with-param name="addedColor" select="../../Changes/@addedColor"/>
+                                            <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor"/>
+                                            <xsl:with-param name="deltaMode" select="../../Changes/@mode"/>
+
+                                            <xsl:with-param name="mode" select="$constraintMode"/>
+                                            <xsl:with-param name="type" select="$type"/>
+                                            <xsl:with-param name="displayPeriod">
+                                                <xsl:text>true</xsl:text>
+                                            </xsl:with-param>
+
+                                        </xsl:call-template>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:if test="../../Changes/Change[@identifier=$changedIdentifier]">
+                                            <xsl:call-template name="ConstraintContent">
+
+                                                <xsl:with-param name="changeClass"
+                                                                select="../../Changes/Change[@identifier=$changedIdentifier]"/>
+                                                <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor"/>
+                                                <xsl:with-param name="addedColor" select="../../Changes/@addedColor"/>
+                                                <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor"/>
+                                                <xsl:with-param name="deltaMode" select="../../Changes/@mode"/>
+
+                                                <xsl:with-param name="mode" select="$constraintMode"/>
+                                                <xsl:with-param name="type" select="$type"/>
+                                                <xsl:with-param name="displayPeriod">
+                                                    <xsl:text>true</xsl:text>
+                                                </xsl:with-param>
+
+                                            </xsl:call-template>
+                                        </xsl:if>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+
+                            </xsl:for-each>
+                            <xsl:for-each select="Changes/Change[@type='CONFORMANCESTATEMENT' and @property='CONFORMANCESTATEMENT']">
+                                <xsl:sort select="./@identifier" data-type="text" order="ascending"/>
+                                <xsl:variable name="changedPosition" select="./@identifier"/>
+
+
+                                <xsl:choose>
+                                    <xsl:when test="not(../../Changes/@mode) or ../../Changes/@mode = 'HIGHLIGHT' or ../../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
+                                        <xsl:call-template name="ConstraintContent">
+                                            <xsl:with-param name="changeClass" select="../../Changes/Change[@identifier=$changedPosition]"  />
+                                            <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
+                                            <xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
+                                            <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+                                            <xsl:with-param name="deltaMode" select="../../Changes/@mode" />
+
+                                            <xsl:with-param name="mode" select="$constraintMode"/>
+                                            <xsl:with-param name="type" select="$type"/>
+                                            <xsl:with-param name="displayPeriod">
+                                                <xsl:text>true</xsl:text>
+                                            </xsl:with-param>
+
+
+                                        </xsl:call-template>
+
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:if test="../../Changes/Change[@identifier=$changedPosition]">
+                                            <xsl:call-template name="ConstraintContent">
+                                                <xsl:with-param name="changeClass" select="../../Changes/Change[@identifier=$changedPosition]"  />
+                                                <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
+                                                <xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
+                                                <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+                                                <xsl:with-param name="deltaMode" select="../../Changes/@mode" />
+
+                                                <xsl:with-param name="mode" select="$constraintMode"/>
+                                                <xsl:with-param name="type" select="$type"/>
+                                                <xsl:with-param name="displayPeriod">
+                                                    <xsl:text>true</xsl:text>
+                                                </xsl:with-param>
+
+
+                                            </xsl:call-template>
+                                        </xsl:if>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+
+
                             </xsl:for-each>
                         </xsl:element>
                     </xsl:when>
@@ -40,14 +123,96 @@
                         <xsl:call-template name="predicateHeader"/>
                         <xsl:element name="tbody">
                             <xsl:for-each select="Constraints/Predicate">
-                                <xsl:sort select="@identifier" data-type="text" order="ascending" />
-                                <xsl:call-template name="ConstraintContent">
-                                    <xsl:with-param name="mode" select="$constraintMode"/>
-                                    <xsl:with-param name="type" select="$type"/>
-                                    <xsl:with-param name="displayPeriod">
-                                        <xsl:text>true</xsl:text>
-                                    </xsl:with-param>
-                                </xsl:call-template>
+                                <xsl:sort select="@position" data-type="text" order="ascending"/>
+                                <xsl:variable name="changedPosition" select="@position" />
+                                <xsl:choose>
+                                    <xsl:when
+                                            test="not(../../Changes/@mode) or Changes/@mode = 'HIGHLIGHT' or ../../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
+                                        <xsl:call-template name="ConstraintContent">
+
+                                            <xsl:with-param name="changeClass"
+                                                            select="../../Changes/Change[@position=$changedPosition and @type = 'PREDICATE']"/>
+                                            <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor"/>
+                                            <xsl:with-param name="addedColor" select="../../Changes/@addedColor"/>
+                                            <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor"/>
+                                            <xsl:with-param name="deltaMode" select="../../Changes/@mode"/>
+
+                                            <xsl:with-param name="mode" select="$constraintMode"/>
+                                            <xsl:with-param name="type" select="$type"/>
+                                            <xsl:with-param name="displayPeriod">
+                                                <xsl:text>true</xsl:text>
+                                            </xsl:with-param>
+
+                                        </xsl:call-template>
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:if test="../../Changes/Change[@position=$changedPosition and @type = 'PREDICATE']">
+                                            <xsl:call-template name="ConstraintContent">
+
+                                                <xsl:with-param name="changeClass"
+                                                                select="../../Changes/Change[@position=$changedPosition and @type = 'PREDICATE']"/>
+                                                <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor"/>
+                                                <xsl:with-param name="addedColor" select="../../Changes/@addedColor"/>
+                                                <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor"/>
+                                                <xsl:with-param name="deltaMode" select="../../Changes/@mode"/>
+
+                                                <xsl:with-param name="mode" select="$constraintMode"/>
+                                                <xsl:with-param name="type" select="$type"/>
+                                                <xsl:with-param name="displayPeriod">
+                                                    <xsl:text>true</xsl:text>
+                                                </xsl:with-param>
+
+                                            </xsl:call-template>
+                                        </xsl:if>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+                            </xsl:for-each>
+                            <xsl:for-each select="Changes/Change[@type='PREDICATE' and @property='PREDICATE']">
+                                <xsl:sort select="./@position" data-type="text" order="ascending"/>
+                                <xsl:variable name="changedPosition" select="./@position"/>
+
+
+                                <xsl:choose>
+                                    <xsl:when test="not(../../Changes/@mode) or ../../Changes/@mode = 'HIGHLIGHT' or ../../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
+                                        <xsl:call-template name="ConstraintContent">
+                                            <xsl:with-param name="changeClass" select="../../Changes/Change[@position=$changedPosition]"  />
+                                            <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
+                                            <xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
+                                            <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+                                            <xsl:with-param name="deltaMode" select="../../Changes/@mode" />
+
+                                            <xsl:with-param name="mode" select="$constraintMode"/>
+                                            <xsl:with-param name="type" select="$type"/>
+                                            <xsl:with-param name="displayPeriod">
+                                                <xsl:text>true</xsl:text>
+                                            </xsl:with-param>
+
+
+                                        </xsl:call-template>
+
+                                    </xsl:when>
+                                    <xsl:otherwise>
+                                        <xsl:if test="../../Changes/Change[@position=$changedPosition]">
+                                            <xsl:call-template name="ConstraintContent">
+                                                <xsl:with-param name="changeClass" select="../../Changes/Change[@position=$changedPosition]"  />
+                                                <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
+                                                <xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
+                                                <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
+                                                <xsl:with-param name="deltaMode" select="../../Changes/@mode" />
+
+                                                <xsl:with-param name="mode" select="$constraintMode"/>
+                                                <xsl:with-param name="type" select="$type"/>
+                                                <xsl:with-param name="displayPeriod">
+                                                    <xsl:text>true</xsl:text>
+                                                </xsl:with-param>
+
+
+                                            </xsl:call-template>
+                                        </xsl:if>
+                                    </xsl:otherwise>
+                                </xsl:choose>
+
+
                             </xsl:for-each>
                         </xsl:element>
                     </xsl:when>

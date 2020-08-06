@@ -22,6 +22,7 @@ import { IConformanceStatement } from '../../shared/models/cs.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
+import {IgTemplate} from '../components/derive-dialog/derive-dialog.component';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
 import { IDocumentDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
@@ -160,7 +161,7 @@ export class IgService {
   }
 
   cloneIg(id: string, mode: CloneModeEnum, data: any): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/clone', { mode, data }).pipe();
+    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/clone',   data).pipe();
   }
 
   publish(id: string): Observable<Message<string>> {
@@ -373,5 +374,9 @@ export class IgService {
 
   getConformanceStatementSummary(id: string): Observable<IConformanceStatement[]> {
     return this.http.get<IConformanceStatement[]>('api/igdocuments/' + id + '/conformancestatement/summary');
+  }
+
+  loadTemplate(): Observable<IgTemplate[]> {
+    return this.http.get<IgTemplate[]>('api/igdocuments/igTemplates');
   }
 }

@@ -103,7 +103,7 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 		System.out.println(restTemplate);
 		ResponseEntity<String> response = restTemplate.exchange(
 				"https://hit-dev.nist.gov:8095/vocabulary-service/phinvads/ValueSet/"+oid+"/$expand", HttpMethod.GET, entity,
-				String.class);
+				String.class);		
 
 		if (response != null) {
 			IParser parser = fhirR4Context.newJsonParser();
@@ -118,6 +118,8 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 	public Set<Code> convertExpansionToCodes(ValueSetExpansionComponent expansion) {
 		Set<Code> codes = new HashSet<Code>();
 		for (ValueSetExpansionContainsComponent contain : expansion.getContains()) {
+			String exclude= contain.getExtensionString("exclude");
+			if(exclude ==null || !exclude.equals("true")) {
 			Code code = new Code();
 			code.setValue(contain.getCode());
 			code.setCodeSystem(contain.getSystem());
@@ -128,9 +130,9 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 				code.setHasPattern(true);
 			}else {
 				code.setHasPattern(false);
-
 			}
-			codes.add(code);
+				codes.add(code);
+			}
 		}
 		return codes;
 	}
@@ -146,6 +148,9 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 				"https://hit-dev.nist.gov:8095/vocabulary-service/hl7/ValueSet/HL70396/$expand", HttpMethod.GET, entity,
 				String.class);
 
+		ResponseEntity<String> responseHL7nnn = restTemplate.exchange(
+				"https://hit-dev.nist.gov:8095/vocabulary-service/hl7/ValueSet/HL7nnnn/$expand", HttpMethod.GET, entity,
+				String.class);
 		if (response != null) {
 			IParser parser = fhirR4Context.newJsonParser();
 			org.hl7.fhir.r4.model.ValueSet vs = (org.hl7.fhir.r4.model.ValueSet) parser.parseResource(response.getBody());
@@ -153,6 +158,14 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 				codes = convertExpansionToCodes(vs.getExpansion());
 			}
 		}
+		if (responseHL7nnn != null) {
+			IParser parser = fhirR4Context.newJsonParser();
+			org.hl7.fhir.r4.model.ValueSet vsHl7nnn = (org.hl7.fhir.r4.model.ValueSet) parser.parseResource(responseHL7nnn.getBody());
+			if (vsHl7nnn != null) {
+				codes.addAll(convertExpansionToCodes(vsHl7nnn.getExpansion()));
+			}
+		}
+			
 		return codes;
 	}
 

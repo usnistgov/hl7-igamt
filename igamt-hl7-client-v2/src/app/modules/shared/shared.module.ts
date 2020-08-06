@@ -10,6 +10,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
 import { ToastyModule } from 'ng2-toasty';
+import {AvatarModule} from 'ngx-avatar';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { CardModule } from 'primeng/card';
@@ -220,6 +221,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     NgxMatSelectSearchModule,
     TabViewModule,
     OverlayPanelModule,
+    AvatarModule,
   ],
   exports: [
     CommonModule,

@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {map, take} from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import {
   DeleteIgListItemRequest,
@@ -15,13 +15,19 @@ import {
 import * as fromIgList from 'src/app/root-store/ig/ig-list/ig-list.index';
 import * as fromRoot from 'src/app/root-store/index';
 import { ClearIgList } from '../../../../root-store/ig/ig-list/ig-list.actions';
+import {LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';
+import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { ClearAll } from '../../../dam-framework/store/messages/messages.actions';
 import {IgListItem} from '../../../document/models/document/ig-list-item.class';
+import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
 import { CloneModeEnum } from '../../../shared/constants/clone-mode.enum';
+import {Type} from '../../../shared/constants/type.enum';
+import {IResourcePickerData} from '../../../shared/models/resource-picker-data.interface';
 import { IgService } from '../../services/ig.service';
+import {DeriveDialogComponent, IDeriveDialogData, IgTemplate} from '../derive-dialog/derive-dialog.component';
 import { SharingDialogComponent } from './../../../shared/components/sharing-dialog/sharing-dialog.component';
 import { IgListItemControl } from './../ig-list-item-card/ig-list-item-card.component';
 
@@ -93,6 +99,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
     ];
   }
 
+  // tslint:disable-next-line:cognitive-complexity
   igListItemControls() {
     this.controls = combineLatest(this.isAdmin, this.username)
       .pipe(
@@ -150,7 +157,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-success',
                 icon: 'fa-plus',
                 action: (item: IgListItem) => {
-                  this.ig.cloneIg(item.id, CloneModeEnum.CLONE, null).subscribe(
+                  this.ig.cloneIg(item.id, CloneModeEnum.CLONE,  {mode: CloneModeEnum.CLONE }).subscribe(
                     (response: Message<string>) => {
                       this.store.dispatch(this.message.messageToAction(response));
                       this.router.navigate(['ig', response.data]);
@@ -183,16 +190,35 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-secondary',
                 icon: 'fa fa-map-marker',
                 action: (item: IgListItem) => {
-                  this.ig.cloneIg(item.id, CloneModeEnum.DERIVE, null).subscribe(
-                    (response: Message<string>) => {
-                      this.store.dispatch(this.message.messageToAction(response));
-                      this.router.navigate(['ig', response.data]);
-                    },
-                    (error) => {
-                      this.store.dispatch(this.message.actionFromError(error));
-                    },
-                  );
-                },
+
+                 this.ig.loadTemplate().pipe(
+                    take(1),
+                    map((templates) => {
+                      const dialogData: IDeriveDialogData = {
+                        origin: item.title,
+                        templates,
+                      };
+                      const dialogRef = this.dialog.open(DeriveDialogComponent, {
+                        data: dialogData,
+                      });
+
+                      dialogRef.afterClosed().subscribe((result) => {
+                        if (result) {
+                          console.log(result);
+                          this.ig.cloneIg(item.id, CloneModeEnum.DERIVE, {inherit: result['inherit'], mode: CloneModeEnum.DERIVE, template: result.template }).subscribe(
+                            (response: Message<string>) => {
+                              this.store.dispatch(this.message.messageToAction(response));
+                              this.router.navigate(['ig', response.data]);
+                            },
+                            (error) => {
+                              this.store.dispatch(this.message.actionFromError(error));
+                            },
+                          );
+                        }
+                      });
+                    }),
+                  ).subscribe();
+                 },
                 disabled: (item: IgListItem): boolean => {
                   return false;
                 },

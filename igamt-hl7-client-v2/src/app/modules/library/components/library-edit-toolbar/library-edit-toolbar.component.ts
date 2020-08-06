@@ -58,6 +58,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
               configurations,
               type: Type.DATATYPELIBRARY,
               getExportFirstDecision: this.libraryService.getExportFirstDecision,
+              getLastUsercConfiguration: this.libraryService.getLastUserConfiguration,
             },
           });
           dialogRef.afterClosed().pipe(

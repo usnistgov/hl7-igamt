@@ -192,7 +192,7 @@ public class DatatypeController extends BaseController {
             Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException {
         Datatype dt = this.datatypeService.findById(id);
         validateSaveOperation(dt);
-        commonService.checkRight(authentication, dt.getUsername());
+        commonService.checkRight(authentication, dt.getCurrentAuthor(), dt.getUsername());
         this.datatypeService.applyChanges(dt, cItems, documentId);
         EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
         entityChangeDomain.setDocumentId(documentId);

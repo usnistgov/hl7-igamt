@@ -67,7 +67,7 @@
                             </xsl:choose>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+                            <xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
                                 <xsl:value-of select="@datatype" />
                             </xsl:if>
                         </xsl:otherwise>
@@ -123,7 +123,7 @@
                         </xsl:when>
                         <xsl:otherwise>
 
-                            <xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+                            <xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
                                 <xsl:value-of select="@usage" />
                             </xsl:if>
                         </xsl:otherwise>
@@ -189,7 +189,7 @@
                                         </xsl:choose>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+                                        <xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
                                             <xsl:value-of select="concat('[',@min,'..',@max,']')"/>
                                         </xsl:if>
                                     </xsl:otherwise>
@@ -258,7 +258,7 @@
                                         </xsl:choose>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+                                        <xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
                                             <xsl:value-of select="concat('[',@minLength,'..',@maxLength,']')"/>
                                         </xsl:if>
                                     </xsl:otherwise>
@@ -330,7 +330,7 @@
                                         </xsl:choose>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:if test="$mode != 'HIDE_WITH_CHANGED_ONLY'">
+                                        <xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
                                             <xsl:if test="normalize-space(@confLength)!='' and normalize-space(@confLength)!='0' and @complex = 'false'">
                                                 <xsl:value-of select="@confLength" />
                                             </xsl:if>
@@ -345,7 +345,57 @@
             </xsl:if>
             <xsl:if test="$columnDisplay.segment.valueSet = 'true'">
                 <xsl:element name="td">
-                    <xsl:value-of disable-output-escaping="yes" select="@valueset" />
+                    <xsl:choose>
+                        <xsl:when test="$changeClass[@property='VALUESET']">
+                            <xsl:choose>
+                                <xsl:when test="$changeClass[@property='VALUESET']/@action = 'UPDATED' and ($mode = 'HIGHLIGHT_WITH_OLD_VALUES' or $mode = 'HIDE_WITH_OLD_VALUES')">
+                                    <xsl:element name="div">
+                                        <xsl:attribute name="style">
+                                            <xsl:value-of select="'display: flex;padding: 0;'"/>
+                                        </xsl:attribute>
+                                        <xsl:element name="div">
+                                            <xsl:attribute name="style">
+                                                <xsl:value-of select="concat('width: 50%;background-color:' , $deletedColor) "/>
+                                            </xsl:attribute>
+                                            <xsl:value-of select="$changeClass[@property='VALUESET']/@oldValue" />
+                                        </xsl:element>
+                                        <xsl:element name="div">
+                                            <xsl:attribute name="style">
+                                                <xsl:value-of select="concat('width: 50%;background-color:' , $addedColor) "/>
+                                            </xsl:attribute>
+                                            <xsl:value-of disable-output-escaping="yes" select="@valueset" />
+                                        </xsl:element>
+                                    </xsl:element>
+                                </xsl:when>
+
+                                <xsl:when test="$changeClass[@property='VALUESET']/@action = 'UPDATED' and (($mode != 'HIGHLIGHT_WITH_OLD_VALUES' and $mode != 'HIDE_WITH_OLD_VALUES') or $mode = 'HIDE_WITH_CHANGED_ONLY')">
+                                    <xsl:attribute name="style">
+                                        <xsl:value-of select="concat('background-color:' , $updatedColor)"/>
+                                    </xsl:attribute>
+                                    <xsl:value-of disable-output-escaping="yes" select="@valueset" />
+                                </xsl:when>
+                                <xsl:when test="$changeClass[@property='VALUESET']/@action = 'ADDED'">
+                                    <xsl:attribute name="style">
+                                        <xsl:value-of select="concat('background-color:' , $addedColor)"/>
+                                    </xsl:attribute>
+                                    <xsl:value-of disable-output-escaping="yes" select="@valueset" />
+                                </xsl:when>
+                                <xsl:when test="$changeClass[@property='VALUESET']/@action = 'DELETED'">
+                                    <xsl:attribute name="style">
+                                        <xsl:value-of select="concat('background-color:' , $deletedColor)"/>
+                                    </xsl:attribute>
+                                    <xsl:value-of select="$changeClass[@property='VALUESET']/@oldValue" />
+
+                                </xsl:when>
+                            </xsl:choose>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:if test="not($mode) or $mode != 'HIDE_WITH_CHANGED_ONLY'">
+                                <xsl:value-of disable-output-escaping="yes" select="@valueset" />
+                            </xsl:if>
+                        </xsl:otherwise>
+                    </xsl:choose>
+
                 </xsl:element>
             </xsl:if>
         </xsl:element>
