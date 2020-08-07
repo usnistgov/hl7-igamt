@@ -27,9 +27,8 @@ public interface CommonService {
 
 void checkAuthority(Authentication auth, String role) throws ForbiddenOperationException;
 
-void checkOwnerShip(Authentication auth, AbstractDomain obj) throws ForbiddenOperationException;
 
-void checkRight(Authentication auth, String resourceUsername) throws ForbiddenOperationException;
+void checkRight(Authentication auth, String author, String username) throws ForbiddenOperationException;
 
   
 

@@ -496,7 +496,7 @@ public class DeltaServiceImpl implements DeltaService {
    * @see gov.nist.hit.hl7.igamt.delta.service.DeltaService#delta(gov.nist.hit.hl7.igamt.common.base.domain.Type, gov.nist.hit.hl7.igamt.common.base.domain.Resource)
    */
   @Override
-  public List<StructureDelta> delta(Type type, Resource resource){
+  public ResourceDelta delta(Type type, Resource resource){
     // TODO Auto-generated method stub
     if(type.equals(Type.DATATYPE)) {
       Datatype target = (Datatype) resource;
@@ -504,7 +504,11 @@ public class DeltaServiceImpl implements DeltaService {
       DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
       DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
       List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
-      return structure;
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+      ResourceDelta rd = new ResourceDelta();
+      rd.setStructureDelta(structure);
+      rd.setConformanceStatementDelta(conformanceStatements);
+      return rd;
 
     } else if(type.equals(Type.SEGMENT)) {
       Segment target = (Segment) resource;
@@ -513,7 +517,12 @@ public class DeltaServiceImpl implements DeltaService {
       SegmentStructureDisplay targetDisplay = this.segmentService.convertDomainToDisplayStructure(target, true);
       List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
 
-      return structure;
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+
+      ResourceDelta rd = new ResourceDelta();
+      rd.setStructureDelta(structure);
+      rd.setConformanceStatementDelta(conformanceStatements);
+      return rd;
 
     } else if(type.equals(Type.CONFORMANCEPROFILE)) {
       ConformanceProfile target = (ConformanceProfile) resource;
@@ -523,8 +532,12 @@ public class DeltaServiceImpl implements DeltaService {
       ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
 
       List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
-      return structure;
+      ResourceDelta rd = new ResourceDelta();
+      rd.setStructureDelta(structure);
+      rd.setConformanceStatementDelta(conformanceStatements);
+      return rd;
 
     }
     return null;

@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { filter, map, take, withLatestFrom } from 'rxjs/operators';
-import { selectDelta } from 'src/app/root-store/dam-igamt/igamt.selectors';
+import {selectDelta, selectViewOnly} from 'src/app/root-store/dam-igamt/igamt.selectors';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { selectExternalTools } from '../../../../root-store/config/config.reducer';
 import { ExportDialogComponent } from '../../../export-configuration/components/export-dialog/export-dialog.component';
@@ -36,7 +36,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     private exportConfigurationService: ExportConfigurationService,
     private igService: IgService,
     private dialog: MatDialog) {
-    this.subscription = this.store.select(fromIgDocumentEdit.selectViewOnly).subscribe(
+    this.subscription = this.store.select(selectViewOnly).subscribe(
       (value) => this.viewOnly = value,
     );
     this.toolConfig = this.store.select(selectExternalTools);
@@ -51,7 +51,6 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       this.exportConfigurationService.getAllExportConfigurations(this.type)).pipe(
         take(1),
         map(([igId, configurations]) => {
-          console.log(igId);
           const dialogRef = this.dialog.open(ExportDialogComponent, {
             data: {
               toc: this.store.select(fromIgDocumentEdit.selectProfileTree),

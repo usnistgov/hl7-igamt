@@ -31,9 +31,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
@@ -53,6 +55,8 @@ public class ValuesetController extends BaseController {
 	ValuesetService valuesetService;
 	@Autowired
 	EntityChangeService entityChangeService;
+	@Autowired
+	CommonService commonService;
 
 	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
 	private static final String PREDEF_SAVED = "PREDEF_SAVED";
@@ -120,8 +124,10 @@ public class ValuesetController extends BaseController {
 	@ResponseBody
 	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id,
 			@RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
-			Authentication authentication) throws ValuesetException, IOException {
+			Authentication authentication) throws ValuesetException, IOException, ForbiddenOperationException {
 		Valueset s = this.valuesetService.findById(id);
+        commonService.checkRight(authentication,s.getCurrentAuthor(), s.getUsername());
+
 		this.valuesetService.applyChanges(s, cItems, documentId);
 		EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
 		entityChangeDomain.setDocumentId(documentId);

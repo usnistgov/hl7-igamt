@@ -236,7 +236,7 @@ public class SegmentController extends BaseController {
 			Authentication authentication) throws Exception {
 		try {
 			Segment s = this.segmentService.findById(id);
-		    commonService.checkRight(authentication, s.getUsername());
+		    commonService.checkRight(authentication, s.getCurrentAuthor(), s.getUsername());
 
 			validateSaveOperation(s);
 			this.segmentService.applyChanges(s, cItems, documentId);

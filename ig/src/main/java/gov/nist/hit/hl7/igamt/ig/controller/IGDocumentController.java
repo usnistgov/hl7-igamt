@@ -52,12 +52,14 @@ import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
@@ -119,6 +121,7 @@ import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.ig.service.SharingService;
 import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -186,13 +189,18 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   XMLSerializeServiceImpl serializeService;
-  
+
   @Autowired
   private FhirHandlerService fhirHandlerService;
-  
+
   @Autowired
   private IgTemplateRepository igTemplateRepository;
 
+  @Autowired
+  SharingService sharingService;
+
+  @Autowired
+  CommonService commonService;
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
@@ -250,9 +258,9 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/predicate/assertion", method = RequestMethod.POST, produces = {
-          "application/text" })
+  "application/text" })
   public @ResponseBody String getAssertionPD(@PathVariable("id") String id, @RequestBody Predicate p, Authentication authentication)
-          throws IGNotFoundException, IGUpdateException {
+      throws IGNotFoundException, IGUpdateException {
     return this.serializeService.generateConditionScript(p, id);
   }
 
@@ -287,12 +295,12 @@ public class IGDocumentController extends BaseController {
   }
 
 
-//  /**
-//   *
-//   * @param id
-//   * @param response
-//   * @throws ExportException
-//   */
+  //  /**
+  //   *
+  //   * @param id
+  //   * @param response
+  //   * @throws ExportException
+  //   */
   //	@RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
   //	public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id, HttpServletResponse response)
   //			throws ExportException {
@@ -386,9 +394,9 @@ public class IGDocumentController extends BaseController {
         igdouments = igService.findAllUsersIG();
 
       } else if (type.equals(AccessType.SHARED)) {
-    	  
+
         igdouments = igService.findAllSharedIG(username, Scope.USER);
-      
+
       } else {
         igdouments = igService.findByUsername(username, Scope.USER);
 
@@ -441,7 +449,7 @@ public class IGDocumentController extends BaseController {
 
   public @ResponseBody Ig getIg(@PathVariable("id") String id, Authentication authentication)
       throws IGNotFoundException {
-      return findIgById(id);
+    return findIgById(id);
   }
 
   /**
@@ -450,13 +458,16 @@ public class IGDocumentController extends BaseController {
    * @return
    * @throws IGNotFoundException
    * @throws IGUpdateException
+   * @throws ForbiddenOperationException 
    */
   @RequestMapping(value = "/api/igdocuments/{id}/section", method = RequestMethod.POST, produces = {
   "application/json" })
 
   public @ResponseBody ResponseMessage<Object> updateIg(@PathVariable("id") String id, @RequestBody Section section,
-      Authentication authentication) throws IGNotFoundException, IGUpdateException {
+      Authentication authentication) throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     if (!ig.getUsername().equals(authentication.getPrincipal().toString())) {
       return new ResponseMessage<Object>(Status.FAILED, TABLE_OF_CONTENT_UPDATED, ig.getId(), new Date());
     } else {
@@ -598,9 +609,9 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/findMessageEvents/{version:.+}", method = RequestMethod.GET, produces = {
-          "application/json" })
+  "application/json" })
   public @ResponseBody ResponseMessage<List<MessageEventTreeNode>> getMessageEvents(
-          @PathVariable("version") String version, Authentication authentication) {
+      @PathVariable("version") String version, Authentication authentication) {
     try {
       List<MessageStructure>  structures= new ArrayList<MessageStructure>();
       if(!version.toLowerCase().equals("custom")) {
@@ -804,13 +815,15 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
   public ResponseMessage deleteDatatype(@PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
-      Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException {
+      Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
     // Map<String, List<CrossRefsNode>> xreferences = findDatatypeCrossRef(id,
     // datatypeId, authentication);
     // if (xreferences != null && !xreferences.isEmpty()) {
     // throw new XReferenceFoundException(datatypeId, xreferences);
     // }
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     Link found = findLinkById(datatypeId, ig.getDatatypeRegistry().getChildren());
     if (found != null) {
       ig.getDatatypeRegistry().getChildren().remove(found);
@@ -834,17 +847,20 @@ public class IGDocumentController extends BaseController {
    * @throws IGNotFoundException
    * @throws XReferenceFoundException
    * @throws XReferenceException
+   * @throws ForbiddenOperationException 
    */
   @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
   public ResponseMessage deleteSegment(@PathVariable("id") String id, @PathVariable("segmentId") String segmentId,
-      Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException {
+      Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
     // Map<String, List<CrossRefsNode>> xreferences = findSegmentCrossRef(id,
     // segmentId, authentication);
     // if (xreferences != null && !xreferences.isEmpty()) {
     // throw new XReferenceFoundException(segmentId, xreferences);
     // }
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     Link found = findLinkById(segmentId, ig.getSegmentRegistry().getChildren());
     if (found != null) {
       ig.getSegmentRegistry().getChildren().remove(found);
@@ -903,14 +919,17 @@ public class IGDocumentController extends BaseController {
    * @throws IGNotFoundException
    * @throws XReferenceFoundException
    * @throws XReferenceException
+   * @throws ForbiddenOperationException 
    */
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceprofileId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
   public ResponseMessage deleteConformanceProfile(@PathVariable("id") String id,
       @PathVariable("conformanceprofileId") String conformanceProfileId, Authentication authentication)
-          throws IGNotFoundException, XReferenceFoundException, XReferenceException {
+          throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
 
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     Link found = findLinkById(conformanceProfileId, ig.getConformanceProfileRegistry().getChildren());
     if (found != null) {
       ig.getConformanceProfileRegistry().getChildren().remove(found);
@@ -928,8 +947,9 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
   public ResponseMessage<AddResourceResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("conformanceProfileId") String conformanceProfileId,
-      Authentication authentication) throws CloneException, IGNotFoundException {
+      Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException {
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     String username = authentication.getName();
     ConformanceProfile profile = conformanceProfileService.findById(wrapper.getSelected().getOriginalId());
     if (profile == null) {
@@ -958,8 +978,10 @@ public class IGDocumentController extends BaseController {
   "application/json" })
   public ResponseMessage<AddResourceResponse> cloneSegment(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("segmentId") String segmentId, Authentication authentication)
-          throws IGNotFoundException, ValidationException, CloneException {
+          throws IGNotFoundException, ValidationException, CloneException, ForbiddenOperationException {
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     String username = authentication.getPrincipal().toString();
     Segment segment = segmentService.findById(segmentId);
     if (segment == null) {
@@ -989,8 +1011,10 @@ public class IGDocumentController extends BaseController {
   "application/json" })
   public ResponseMessage<AddResourceResponse> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("datatypeId") String datatypeId, Authentication authentication)
-          throws IGNotFoundException, CloneException {
+          throws IGNotFoundException, CloneException, ForbiddenOperationException {
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     String username = authentication.getPrincipal().toString();
     Datatype datatype = datatypeService.findById(datatypeId);
     if (datatype == null) {
@@ -1020,8 +1044,9 @@ public class IGDocumentController extends BaseController {
 
   public ResponseMessage<AddResourceResponse> cloneValueSet(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("valuesetId") String valuesetId, Authentication authentication)
-          throws CloneException, IGNotFoundException {
+          throws CloneException, IGNotFoundException, ForbiddenOperationException {
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     String username = authentication.getPrincipal().toString();
     Valueset valueset = valuesetService.findById(valuesetId);
     if (valueset == null) {
@@ -1055,9 +1080,11 @@ public class IGDocumentController extends BaseController {
   "application/json" })
   public ResponseMessage<IGDisplayInfo> addConforanceProfile(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
-          throws IGNotFoundException, AddingException {
+          throws IGNotFoundException, AddingException, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     Set<String> savedIds = new HashSet<String>();
     for (AddingInfo ev : wrapper.getSelected()) {
       MessageStructure profile = messageStructureRepository.findOneById(ev.getOriginalId());
@@ -1125,9 +1152,11 @@ public class IGDocumentController extends BaseController {
   public ResponseMessage<CoConstraintGroupCreateResponse> createCoConstraint(
       @PathVariable("id") String id,
       @RequestBody CoConstraintGroupCreateWrapper coConstraintGroupCreateWrapper,
-      Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, SegmentNotFoundException {
+      Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, SegmentNotFoundException, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     CoConstraintGroup group = this.coConstraintService.createCoConstraintGroupPrototype(coConstraintGroupCreateWrapper.getBaseSegment());
     group.setUsername(username);
     group.setType(Type.COCONSTRAINTGROUP);
@@ -1158,9 +1187,11 @@ public class IGDocumentController extends BaseController {
   "application/json" })
   public ResponseMessage<IGDisplayInfo> addDatatypes(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
-          throws IGNotFoundException, AddingException {
+          throws IGNotFoundException, AddingException, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     Set<String> savedIds = new HashSet<String>();
     for (AddingInfo elm : wrapper.getSelected()) {
       if (elm.isFlavor()) {
@@ -1190,138 +1221,140 @@ public class IGDocumentController extends BaseController {
         ig.getUpdateDate(), info);
   }
 
-	@RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST, produces = {
-	"application/json" })
-	public ResponseMessage<IGDisplayInfo> addValueSets(@PathVariable("id") String id,
-		@RequestBody AddingWrapper wrapper, Authentication authentication)
-		throws IGNotFoundException, AddingException {
-	String username = authentication.getPrincipal().toString();
-	Ig ig = findIgById(id);
-	Set<String> savedIds = new HashSet<String>();
-	for (AddingInfo elm : wrapper.getSelected()) {
-		if (elm.isFlavor()) {
-			if (elm.getOriginalId() != null) {
-				Valueset valueset = valuesetService.findById(elm.getOriginalId());
-				if (valueset != null) {
-					Valueset clone = valueset.clone();
-					clone.getDomainInfo().setScope(Scope.USER);
-					if (!elm.isIncludeChildren()) {
-						clone.setSourceType(SourceType.EXTERNAL);
-						clone.setCodes(new HashSet<Code>());
-					}
-					if(valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
-					  clone.setSourceType(SourceType.INTERNAL);
-					  clone.setOrigin(valueset.getId());
-                      Set<Code> vsCodes = fhirHandlerService.getValusetCodeForDynamicTable();
-                      clone.setCodes(vsCodes);
-					}
-					clone.setUsername(username);
-					clone.setBindingIdentifier(elm.getName());
-					clone.setSourceType(elm.getSourceType());
-					clone = valuesetService.save(clone);
-					ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
-					savedIds.add(clone.getId());
-				}
-			} else {
-				if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-					// Import phinvads as flavor
-					Valueset valueset = new Valueset();
-					DomainInfo info = new DomainInfo();
-					info.setScope(Scope.PHINVADS);
-					info.setVersion(elm.getDomainInfo().getVersion());
-					valueset.setDomainInfo(info);
-					if (!elm.isIncludeChildren()) {
-						valueset.setSourceType(SourceType.EXTERNAL);
-						valueset.setCodes(new HashSet<Code>());
-						valueset.setExtensibility(Extensibility.Closed);
-						valueset.setStability(Stability.Dynamic);
-						valueset.setContentDefinition(ContentDefinition.Extensional);
-					} else {
-						valueset.setSourceType(SourceType.INTERNAL);
-						valueset.setExtensibility(Extensibility.Open);
-						valueset.setStability(Stability.Static);
-						valueset.setContentDefinition(ContentDefinition.Extensional);
-						// Get codes from vocab service
-						if (elm.getOid() != null) {
-							Set<Code> vsCodes = fhirHandlerService.getValusetCodes(elm.getOid());
-							valueset.setCodes(vsCodes);
-							valueset.setCodeSystems(valuesetService.extractCodeSystemsFromCodes(vsCodes));
-						}
-					}
-					valueset.setUsername(username);
-					valueset.setBindingIdentifier(elm.getName());
-                    valueset.setName(elm.getDescription());
-					valueset.setUrl(elm.getUrl());
-					valueset.setOid(elm.getOid());
-					valueset.setFlavor(true);
-					
-					Valueset saved = valuesetService.save(valueset);
-					ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
-					savedIds.add(saved.getId());
-				} else {
-					// Create new valueset
-					Valueset valueset = new Valueset();
-					DomainInfo info = new DomainInfo();
-					info.setScope(Scope.USER);
-					info.setVersion(null);
-					valueset.setDomainInfo(info);
-					if (!elm.isIncludeChildren()) {
-						valueset.setSourceType(SourceType.EXTERNAL);
-						valueset.setCodes(new HashSet<Code>());
-					} else {
-						valueset.setSourceType(SourceType.INTERNAL);
-					}
-					valueset.setUsername(username);
-					valueset.setBindingIdentifier(elm.getName());
-					valueset.setUrl(elm.getUrl());
-					Valueset saved = valuesetService.save(valueset);
-					ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
-					savedIds.add(saved.getId());
-				}
-			}
-		} else {
-			if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-              Valueset valueset = valuesetService.findExternalPhinvadsByOid(elm.getOid());
+  @RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST, produces = {
+  "application/json" })
+  public ResponseMessage<IGDisplayInfo> addValueSets(@PathVariable("id") String id,
+      @RequestBody AddingWrapper wrapper, Authentication authentication)
+          throws IGNotFoundException, AddingException, ForbiddenOperationException {
+    String username = authentication.getPrincipal().toString();
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
-              if(valueset == null) {
-                Valueset newValueset = new Valueset();
-                DomainInfo info = new DomainInfo();
-                info.setScope(Scope.PHINVADS);
-                info.setVersion(elm.getDomainInfo().getVersion());
-                newValueset.setDomainInfo(info);
-                newValueset.setSourceType(SourceType.EXTERNAL);
-                newValueset.setUsername(username);
-                newValueset.setBindingIdentifier(elm.getName());
-                newValueset.setUrl(elm.getUrl());
-                newValueset.setOid(elm.getOid());
-                newValueset.setFlavor(false);
-                newValueset.setExtensibility(Extensibility.Closed);
-                newValueset.setStability(Stability.Dynamic);
-                newValueset.setContentDefinition(ContentDefinition.Extensional);
-                Valueset saved = valuesetService.save(newValueset);
-                ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
-                savedIds.add(saved.getId());
-              } else {
-                ig.getValueSetRegistry().getCodesPresence().put(valueset.getId(), elm.isIncludeChildren());
-                savedIds.add(valueset.getId());
+    Set<String> savedIds = new HashSet<String>();
+    for (AddingInfo elm : wrapper.getSelected()) {
+      if (elm.isFlavor()) {
+        if (elm.getOriginalId() != null) {
+          Valueset valueset = valuesetService.findById(elm.getOriginalId());
+          if (valueset != null) {
+            Valueset clone = valueset.clone();
+            clone.getDomainInfo().setScope(Scope.USER);
+            if (!elm.isIncludeChildren()) {
+              clone.setSourceType(SourceType.EXTERNAL);
+              clone.setCodes(new HashSet<Code>());
+            }
+            if(valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
+              clone.setSourceType(SourceType.INTERNAL);
+              clone.setOrigin(valueset.getId());
+              Set<Code> vsCodes = fhirHandlerService.getValusetCodeForDynamicTable();
+              clone.setCodes(vsCodes);
+            }
+            clone.setUsername(username);
+            clone.setBindingIdentifier(elm.getName());
+            clone.setSourceType(elm.getSourceType());
+            clone = valuesetService.save(clone);
+            ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
+            savedIds.add(clone.getId());
+          }
+        } else {
+          if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+            // Import phinvads as flavor
+            Valueset valueset = new Valueset();
+            DomainInfo info = new DomainInfo();
+            info.setScope(Scope.PHINVADS);
+            info.setVersion(elm.getDomainInfo().getVersion());
+            valueset.setDomainInfo(info);
+            if (!elm.isIncludeChildren()) {
+              valueset.setSourceType(SourceType.EXTERNAL);
+              valueset.setCodes(new HashSet<Code>());
+              valueset.setExtensibility(Extensibility.Closed);
+              valueset.setStability(Stability.Dynamic);
+              valueset.setContentDefinition(ContentDefinition.Extensional);
+            } else {
+              valueset.setSourceType(SourceType.INTERNAL);
+              valueset.setExtensibility(Extensibility.Open);
+              valueset.setStability(Stability.Static);
+              valueset.setContentDefinition(ContentDefinition.Extensional);
+              // Get codes from vocab service
+              if (elm.getOid() != null) {
+                Set<Code> vsCodes = fhirHandlerService.getValusetCodes(elm.getOid());
+                valueset.setCodes(vsCodes);
+                valueset.setCodeSystems(valuesetService.extractCodeSystemsFromCodes(vsCodes));
               }
+            }
+            valueset.setUsername(username);
+            valueset.setBindingIdentifier(elm.getName());
+            valueset.setName(elm.getDescription());
+            valueset.setUrl(elm.getUrl());
+            valueset.setOid(elm.getOid());
+            valueset.setFlavor(true);
 
-			} else {
-				ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
-				savedIds.add(elm.getId());
-			}
+            Valueset saved = valuesetService.save(valueset);
+            ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+            savedIds.add(saved.getId());
+          } else {
+            // Create new valueset
+            Valueset valueset = new Valueset();
+            DomainInfo info = new DomainInfo();
+            info.setScope(Scope.USER);
+            info.setVersion(null);
+            valueset.setDomainInfo(info);
+            if (!elm.isIncludeChildren()) {
+              valueset.setSourceType(SourceType.EXTERNAL);
+              valueset.setCodes(new HashSet<Code>());
+            } else {
+              valueset.setSourceType(SourceType.INTERNAL);
+            }
+            valueset.setUsername(username);
+            valueset.setBindingIdentifier(elm.getName());
+            valueset.setUrl(elm.getUrl());
+            Valueset saved = valuesetService.save(valueset);
+            ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+            savedIds.add(saved.getId());
+          }
+        }
+      } else {
+        if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+          Valueset valueset = valuesetService.findExternalPhinvadsByOid(elm.getOid());
 
-		}
-	}
-	AddValueSetResponseObject objects = crudService.addValueSets(savedIds, ig);
-	igService.save(ig);
-	IGDisplayInfo info = new IGDisplayInfo();
-	info.setIg(ig);
-	info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
-	
-	return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "", "Value Sets Added Succesfully", ig.getId(), false,
-			ig.getUpdateDate(), info);
-}
+          if(valueset == null) {
+            Valueset newValueset = new Valueset();
+            DomainInfo info = new DomainInfo();
+            info.setScope(Scope.PHINVADS);
+            info.setVersion(elm.getDomainInfo().getVersion());
+            newValueset.setDomainInfo(info);
+            newValueset.setSourceType(SourceType.EXTERNAL);
+            newValueset.setUsername(username);
+            newValueset.setBindingIdentifier(elm.getName());
+            newValueset.setUrl(elm.getUrl());
+            newValueset.setOid(elm.getOid());
+            newValueset.setFlavor(false);
+            newValueset.setExtensibility(Extensibility.Closed);
+            newValueset.setStability(Stability.Dynamic);
+            newValueset.setContentDefinition(ContentDefinition.Extensional);
+            Valueset saved = valuesetService.save(newValueset);
+            ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+            savedIds.add(saved.getId());
+          } else {
+            ig.getValueSetRegistry().getCodesPresence().put(valueset.getId(), elm.isIncludeChildren());
+            savedIds.add(valueset.getId());
+          }
+
+        } else {
+          ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
+          savedIds.add(elm.getId());
+        }
+
+      }
+    }
+    AddValueSetResponseObject objects = crudService.addValueSets(savedIds, ig);
+    igService.save(ig);
+    IGDisplayInfo info = new IGDisplayInfo();
+    info.setIg(ig);
+    info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
+
+    return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "", "Value Sets Added Succesfully", ig.getId(), false,
+        ig.getUpdateDate(), info);
+  }
 
   @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
@@ -1337,30 +1370,32 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/publish", method = RequestMethod.POST, produces = {
   "application/json" })
   public @ResponseBody ResponseMessage<String> publish(@PathVariable("id") String id, Authentication authentication)
-      throws IGNotFoundException, IGUpdateException {
-    String username = authentication.getPrincipal().toString();
-
-    this.igService.publishIG(id);
+      throws IGNotFoundException, IGUpdateException, ForbiddenOperationException {
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+    this.igService.publishIG(ig);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig published Successfully", id, false,
         new Date(), id);
   }
-  
+
   @RequestMapping(value = "/api/igdocuments/{id}/updateSharedUser", method = RequestMethod.POST, produces = {
   "application/json" })
   public @ResponseBody ResponseMessage<String> updateSharedUser(@PathVariable("id") String id, @RequestBody SharedUsersInfo sharedUsersInfo, Authentication authentication)
-      throws IGNotFoundException, IGUpdateException {
-    String username = authentication.getPrincipal().toString();
-
-    this.igService.updateSharedUser(id, sharedUsersInfo);
+      throws IGNotFoundException, IGUpdateException, ResourceNotFoundException, ForbiddenOperationException {
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+    this.sharingService.shareIg(id, sharedUsersInfo);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Shared Users Successfully Updated", id, false,
         new Date(), id);
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.DELETE, produces = { "application/json" })
   public @ResponseBody ResponseMessage<String> archive(@PathVariable("id") String id, Authentication authentication)
-      throws IGNotFoundException {
+      throws IGNotFoundException, ForbiddenOperationException {
 
     Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     igService.delete(ig);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig deleted Successfully", ig.getId(), false,
         ig.getUpdateDate(), ig.getId());
@@ -1369,16 +1404,31 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/state", method = RequestMethod.GET, produces = {
   "application/json" })
   public @ResponseBody IGDisplayInfo getState(@PathVariable("id") String id, Authentication authentication)
-      throws IGNotFoundException {
+      throws IGNotFoundException, ForbiddenOperationException {
 
     Ig ig = findIgById(id);
     String cUser = authentication.getPrincipal().toString();
-    if(ig.getUsername() != null && !ig.getUsername().equals(cUser)) {
-    	if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(cUser)) ig.setSharePermission(SharePermission.WRITE);
-    	else ig.setSharePermission(SharePermission.READ);    	
+    if(ig.getUsername() != null) {
+      
+    
+    if(!ig.getUsername().equals(cUser)) {
+      if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(cUser)) {
+        ig.setSharePermission(SharePermission.WRITE);
+      }else {
+        if(ig.getSharedUsers() !=null && ig.getSharedUsers().contains(cUser)) {
+          ig.setSharePermission(SharePermission.READ);
+
+        }else {
+          throw new ForbiddenOperationException("Access denied");
+        }
+      
+      }    	
     }
-    if(ig.getUsername() != null && ig.getUsername().equals(cUser) && ig.getCurrentAuthor() != null) {
-    	ig.setSharePermission(SharePermission.READ);  
+    if(ig.getUsername().equals(cUser) && ig.getCurrentAuthor() != null) {
+      ig.setSharePermission(SharePermission.READ);  
+    }
+    } else {
+      ig.setSharePermission(SharePermission.READ);  
     }
     return displayInfoService.covertIgToDisplay(ig);
   }
@@ -1475,8 +1525,11 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/uploadCSVFile",
       method = RequestMethod.POST)
   public ResponseMessage<AddResourceResponse> addValuesetFromCSV(@PathVariable("id") String id,
-      @RequestParam("file") MultipartFile csvFile) throws ImportValueSetException {
+      @RequestParam("file") MultipartFile csvFile, Authentication authentication) throws ImportValueSetException, IGNotFoundException, ForbiddenOperationException {
     CSVReader reader = null;
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
     if (!csvFile.isEmpty()) {
       try {
         reader = new CSVReader(new FileReader(this.multipartToFile(csvFile, "CSVFile")));
@@ -1541,7 +1594,6 @@ public class IGDocumentController extends BaseController {
         }
 
         reader.close();
-        Ig ig = findIgById(id);
         newVS = this.valuesetService.save(newVS);
         newVS.getDomainInfo().setScope(Scope.USER);
         newVS.setUsername(ig.getUsername());
@@ -1598,14 +1650,14 @@ public class IGDocumentController extends BaseController {
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
     Ig ig = findIgById(id);
-	  if (ig != null)  {
-		  Ig selectedIg = this.makeSelectedIg(ig, reqIds);
-		  IgDataModel igModel = this.igService.generateDataModel(selectedIg);	
-		    InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
-		    response.setContentType("application/zip");
-		    response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
-		    FileCopyUtils.copy(content, response.getOutputStream());
-	  }
+    if (ig != null)  {
+      Ig selectedIg = this.makeSelectedIg(ig, reqIds);
+      IgDataModel igModel = this.igService.generateDataModel(selectedIg);	
+      InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
+      response.setContentType("application/zip");
+      response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
+      FileCopyUtils.copy(content, response.getOutputStream());
+    }
   }
 
   @RequestMapping(value = "/api/igdocuments/{ig}/predicate/{id}", method = RequestMethod.GET,
@@ -1684,132 +1736,132 @@ public class IGDocumentController extends BaseController {
     if (ig != null) return this.verificationService.verifyIg(igid, true);
     return null;
   }
-  
+
   @RequestMapping(value = "/api/igdocuments/{igid}/compliance", method = RequestMethod.GET, produces = {"application/json"})
   public @ResponseBody ComplianceReport complianceIGById(@PathVariable("igid") String igid, Authentication authentication) {
     Ig ig = this.igService.findById(igid);
     if (ig != null) return this.verificationService.verifyIgForCompliance(igid);
     return null;
   }
-  
+
   @RequestMapping(value = "/api/igdocuments/{igid}/preverification", method = RequestMethod.POST, produces = { "application/json" })
   public @ResponseBody VerificationReport preVerification(@PathVariable("igid") String igid, @RequestBody ReqId reqIds, Authentication authentication) throws Exception {	    
-	    System.out.println(reqIds);  
-	  Ig ig = this.igService.findById(igid);
-	  if (ig != null)  {
-		  Ig selectedIg = this.makeSelectedIg(ig, reqIds);
-		  return this.verificationService.verifyIg(selectedIg, false);		  
-	  }
-	  return null;
+    System.out.println(reqIds);  
+    Ig ig = this.igService.findById(igid);
+    if (ig != null)  {
+      Ig selectedIg = this.makeSelectedIg(ig, reqIds);
+      return this.verificationService.verifyIg(selectedIg, false);		  
+    }
+    return null;
   }
 
   private Ig makeSelectedIg(Ig ig, ReqId reqIds) {
-	  Ig selectedIg = new Ig();
-	  selectedIg.setId(ig.getId());
-	  selectedIg.setDomainInfo(ig.getDomainInfo());
-	  selectedIg.setMetadata(ig.getMetadata());
-	  selectedIg.setConformanceProfileRegistry(new ConformanceProfileRegistry());
-	  selectedIg.setSegmentRegistry(new SegmentRegistry());
-	  selectedIg.setDatatypeRegistry(new DatatypeRegistry());
-	  selectedIg.setValueSetRegistry(new ValueSetRegistry());
+    Ig selectedIg = new Ig();
+    selectedIg.setId(ig.getId());
+    selectedIg.setDomainInfo(ig.getDomainInfo());
+    selectedIg.setMetadata(ig.getMetadata());
+    selectedIg.setConformanceProfileRegistry(new ConformanceProfileRegistry());
+    selectedIg.setSegmentRegistry(new SegmentRegistry());
+    selectedIg.setDatatypeRegistry(new DatatypeRegistry());
+    selectedIg.setValueSetRegistry(new ValueSetRegistry());
 
-	  for(String id : reqIds.getConformanceProfilesId()) {
-		  Link l = ig.getConformanceProfileRegistry().getLinkById(id);
-		  
-		  if(l != null) {
-			  selectedIg.getConformanceProfileRegistry().getChildren().add(l);
-			  
-			  this.visitSegmentRefOrGroup(this.conformanceProfileService.findById(l.getId()).getChildren(), selectedIg, ig);
-		  }
-	  }
-	  
-	  return selectedIg;
-}
+    for(String id : reqIds.getConformanceProfilesId()) {
+      Link l = ig.getConformanceProfileRegistry().getLinkById(id);
+
+      if(l != null) {
+        selectedIg.getConformanceProfileRegistry().getChildren().add(l);
+
+        this.visitSegmentRefOrGroup(this.conformanceProfileService.findById(l.getId()).getChildren(), selectedIg, ig);
+      }
+    }
+
+    return selectedIg;
+  }
 
   private void visitSegmentRefOrGroup(Set<SegmentRefOrGroup> srgs, Ig selectedIg, Ig all) {
-	  srgs.forEach(srg -> {
-		  if(srg instanceof Group) {
-			  Group g = (Group)srg;
-			  if(g.getChildren() != null) this.visitSegmentRefOrGroup(g.getChildren(), selectedIg, all);
-		  } else if (srg instanceof SegmentRef) {
-			  SegmentRef sr = (SegmentRef)srg;
-			  
-			  if(sr != null && sr.getId() != null && sr.getRef() != null) {
-				  Link l = all.getSegmentRegistry().getLinkById(sr.getRef().getId());
-				  if(l != null) {
-					  selectedIg.getSegmentRegistry().getChildren().add(l);
-					  Segment s = this.segmentService.findById(l.getId());
-					  if (s != null && s.getChildren() != null) {
-						  this.visitSegment(s.getChildren(), selectedIg, all);
-						  if(s.getBinding() != null && s.getBinding().getChildren() != null) this.collectVS(s.getBinding().getChildren(), selectedIg, all);
-					  }
-				  }
-			  }
-		  }
-	  });
-		
+    srgs.forEach(srg -> {
+      if(srg instanceof Group) {
+        Group g = (Group)srg;
+        if(g.getChildren() != null) this.visitSegmentRefOrGroup(g.getChildren(), selectedIg, all);
+      } else if (srg instanceof SegmentRef) {
+        SegmentRef sr = (SegmentRef)srg;
+
+        if(sr != null && sr.getId() != null && sr.getRef() != null) {
+          Link l = all.getSegmentRegistry().getLinkById(sr.getRef().getId());
+          if(l != null) {
+            selectedIg.getSegmentRegistry().getChildren().add(l);
+            Segment s = this.segmentService.findById(l.getId());
+            if (s != null && s.getChildren() != null) {
+              this.visitSegment(s.getChildren(), selectedIg, all);
+              if(s.getBinding() != null && s.getBinding().getChildren() != null) this.collectVS(s.getBinding().getChildren(), selectedIg, all);
+            }
+          }
+        }
+      }
+    });
+
   }
-  
+
   private void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all) {
-	  sebs.forEach(seb -> {
-		  if(seb.getValuesetBindings() != null) {
-			  seb.getValuesetBindings().forEach(b -> {
-				  if(b.getValueSets() != null) {
-					  b.getValueSets().forEach(id -> {
-						  Link l = all.getValueSetRegistry().getLinkById(id);
-						  if(l != null) {
-							  selectedIg.getValueSetRegistry().getChildren().add(l);
-						  }
-					  });
-				  }
-			  });
-		  }
-	  });
-	
+    sebs.forEach(seb -> {
+      if(seb.getValuesetBindings() != null) {
+        seb.getValuesetBindings().forEach(b -> {
+          if(b.getValueSets() != null) {
+            b.getValueSets().forEach(id -> {
+              Link l = all.getValueSetRegistry().getLinkById(id);
+              if(l != null) {
+                selectedIg.getValueSetRegistry().getChildren().add(l);
+              }
+            });
+          }
+        });
+      }
+    });
+
   }
 
   private void visitSegment(Set<Field> fields, Ig selectedIg, Ig all) {
-	  fields.forEach(f -> {
-		  if(f.getRef() != null && f.getRef().getId() != null) {
-			  Link l = all.getDatatypeRegistry().getLinkById(f.getRef().getId());
-			  if(l != null) {
-				  selectedIg.getDatatypeRegistry().getChildren().add(l);
-				  Datatype dt = this.datatypeService.findById(l.getId());
-				  if (dt != null && dt instanceof ComplexDatatype) {
-					  ComplexDatatype cdt = (ComplexDatatype)dt;
-					  if(cdt.getComponents() != null) {
-						  this.visitDatatype(cdt.getComponents(), selectedIg, all);
-						  if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-					  }
-				  }
-			  }
-		  }
-	  });
-		
+    fields.forEach(f -> {
+      if(f.getRef() != null && f.getRef().getId() != null) {
+        Link l = all.getDatatypeRegistry().getLinkById(f.getRef().getId());
+        if(l != null) {
+          selectedIg.getDatatypeRegistry().getChildren().add(l);
+          Datatype dt = this.datatypeService.findById(l.getId());
+          if (dt != null && dt instanceof ComplexDatatype) {
+            ComplexDatatype cdt = (ComplexDatatype)dt;
+            if(cdt.getComponents() != null) {
+              this.visitDatatype(cdt.getComponents(), selectedIg, all);
+              if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+            }
+          }
+        }
+      }
+    });
+
   }
-  
+
   private void visitDatatype(Set<Component> components, Ig selectedIg, Ig all) {
-	  components.forEach(c -> {
-		  if(c.getRef() != null && c.getRef().getId() != null) {
-			  Link l = all.getDatatypeRegistry().getLinkById(c.getRef().getId());
-			  if(l != null) {
-				  selectedIg.getDatatypeRegistry().getChildren().add(l);
-				  Datatype dt = this.datatypeService.findById(l.getId());
-				  if (dt != null && dt instanceof ComplexDatatype) {
-					  ComplexDatatype cdt = (ComplexDatatype)dt;
-					  if(cdt.getComponents() != null) {
-						  this.visitDatatype(cdt.getComponents(), selectedIg, all);
-						  if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-					  }
-				  }
-			  }
-		  }
-	  });
+    components.forEach(c -> {
+      if(c.getRef() != null && c.getRef().getId() != null) {
+        Link l = all.getDatatypeRegistry().getLinkById(c.getRef().getId());
+        if(l != null) {
+          selectedIg.getDatatypeRegistry().getChildren().add(l);
+          Datatype dt = this.datatypeService.findById(l.getId());
+          if (dt != null && dt instanceof ComplexDatatype) {
+            ComplexDatatype cdt = (ComplexDatatype)dt;
+            if(cdt.getComponents() != null) {
+              this.visitDatatype(cdt.getComponents(), selectedIg, all);
+              if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+            }
+          }
+        }
+      }
+    });
   }
-  
+
   @RequestMapping(value = "/api/igdocuments/igTemplates", method = RequestMethod.GET, produces = { "application/json" })
   public @ResponseBody  List<IgTemplate> igTemplates( Authentication authentication) throws Exception {      
-    
+
     List<IgTemplate> templates = this.igTemplateRepository.findAll();
 
     return templates;

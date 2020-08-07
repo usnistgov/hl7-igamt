@@ -1,9 +1,16 @@
 import { createSelector } from '@ngrx/store';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IWorkspace } from '../../modules/dam-framework/models/data/workspace';
+import {IgDocument} from '../../modules/ig/models/ig/ig-document.class';
 import { Scope } from '../../modules/shared/constants/scope.enum';
-import { IAbstractDomain, IDocumentRef, Status } from '../../modules/shared/models/abstract-domain.interface';
+import {
+  IAbstractDomain,
+  IDocumentRef,
+  SharePermission,
+  Status,
+} from '../../modules/shared/models/abstract-domain.interface';
 import { IHL7WorkspaceActive } from '../../modules/shared/models/editor.class';
+import {selectIgDocument} from '../ig/ig-edit/ig-edit.selectors';
 
 export const selectWorkspaceActive = createSelector(
   fromDAM.selectWorkspace,
@@ -30,9 +37,9 @@ export const selectLoadedDocumentInfo = createSelector(
 );
 
 export const selectViewOnly = createSelector(
-  selectDocument,
-  (document: IAbstractDomain): boolean => {
-    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED;
+  selectIgDocument,
+  (document: IgDocument): boolean => {
+    return document.domainInfo.scope !== Scope.USER || document.status === Status.PUBLISHED || (document.sharePermission && document.sharePermission === SharePermission.READ);
   },
 );
 
