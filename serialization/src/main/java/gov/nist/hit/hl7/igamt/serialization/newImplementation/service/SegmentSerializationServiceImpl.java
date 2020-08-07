@@ -151,16 +151,7 @@ private DeltaService deltaService;
 	          segmentElement.appendChild(constraints);
 	        }
 	          }
-//	      if (coConstraintService.getCoConstraintForSegment(segment.getId()) != null && segment != null) { 
-//	      CoConstraintTable coConstraintsTable = coConstraintService.getCoConstraintForSegment(segment.getId()); 
-////	      if (coConstraintsTable.getHeaders() != null){
-//	      	  SerializableCoConstraints serializableCoConstraints = new SerializableCoConstraints(coConstraintsTable, segment.getName(), datatypesMap, exportConfiguration);
-//	        Element coConstraintsElement = serializableCoConstraints.serialize();
-//	        System.out.println("Coconstraint XML :" + coConstraintsElement.toXML());
-//	        if (coConstraintsElement != null) {
-//	          segmentElement.appendChild(coConstraintsElement);
-//	        }
-//	      }
+
 	      
 
 	        
@@ -422,17 +413,5 @@ private DeltaService deltaService;
 	  }
 
 
-//		  @Override
-//		  public Map<String, String> getIdPathMap() {
-//		    Map<String, String> idPathMap = new HashMap<String, String>();
-//		    Segment segment = (Segment) this.getAbstractDomain();
-//		    for (Field field : segment.getChildren()) {
-//		      if (!idPathMap.containsKey(field.getId())) {
-//		        String path = segment.getLabel() + FIELD_PATH_SEPARATOR + field.getPosition();
-//		        idPathMap.put(field.getId(), path);
-//		      }
-//		    }
-//		    return idPathMap;
-//		  
-//}
+
 }

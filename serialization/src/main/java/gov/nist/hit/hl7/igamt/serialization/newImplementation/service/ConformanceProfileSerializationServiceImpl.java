@@ -194,32 +194,40 @@ BindingSerializationService bindingSerializationService;
 
 		    
 		    if (conformanceProfile.getCoConstraintsBindings() != null) {
-				Element coConstraintsElement = new Element("coConstraintsElement");
+				Element coConstraintsBindingsElement = new Element("coConstraintsBindingsElement");
+                conformanceProfileElement.appendChild(coConstraintsBindingsElement);
+
 		    		for(CoConstraintBinding coConstraintBinding : conformanceProfile.getCoConstraintsBindings()) {
+						Element coConstraintBindingElement = new Element("coConstraintBindingElement");
+						coConstraintsBindingsElement.appendChild(coConstraintBindingElement);
 		    			if(coConstraintBinding != null) {
 		    				if(coConstraintBinding.getContext() != null) {
     							Element coConstraintContext = new Element("coConstraintContext");
     							coConstraintContext.appendChild(coConstraintBinding.getContext().getName());
-	    						coConstraintsElement.appendChild(coConstraintContext);
+    							coConstraintBindingElement.appendChild(coConstraintContext);
     							}
 		    				if(coConstraintBinding.getBindings() != null) {
 		    		    			for(CoConstraintBindingSegment coConstraintBindingSegment : coConstraintBinding.getBindings() ) {
 		    		    				if(coConstraintBindingSegment != null) {
+		    								Element coConstraintBindingSegmentElement = new Element("coConstraintBindingSegmentElement");
+		    								coConstraintBindingElement.appendChild(coConstraintBindingSegmentElement);
+//		    								coConstraintBindingSegmentElement.appendChild(coConstraintContext);
 		    	    							Element coConstraintSegmentName = new Element("coConstraintSegmentName");
 		    	    							coConstraintSegmentName.appendChild(coConstraintBindingSegment.getSegment().getName());
-		    		    						coConstraintsElement.appendChild(coConstraintSegmentName);
-		    		    					for(CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {
+		    	    							coConstraintBindingSegmentElement.appendChild(coConstraintSegmentName);
+		    		    					for(CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {	
 		    		    						CoConstraintTable mergedCoConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableConditionalBinding.getValue());
+	    		    							Element coConstraintTableConditionalBindingElement = new Element("coConstraintTableConditionalBindingElement");
+	    		    							coConstraintBindingSegmentElement.appendChild(coConstraintTableConditionalBindingElement);
 		    		    						if(coConstraintTableConditionalBinding.getCondition() != null) {
 		    		    							Element coConstraintCondition = new Element("coConstraintCondition");
 		    		    							coConstraintCondition.appendChild(coConstraintTableConditionalBinding.getCondition().getDescription());
-			    		    						coConstraintsElement.appendChild(coConstraintCondition);
+		    		    							coConstraintTableConditionalBindingElement.appendChild(coConstraintCondition);
 		    		    							}
-		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("COMPACT")) {
-		    		    							
+		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("COMPACT")) {	    							
 			    		    						Element coConstraintsTable = new Element("coConstraintsTable");
 			    		    						coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintCompact(mergedCoConstraintTable));
-			    		    						coConstraintsElement.appendChild(coConstraintsTable);
+			    		    						coConstraintTableConditionalBindingElement.appendChild(coConstraintsTable);
 		    		    						}
 		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("VERBOSE")) {
 //		    		    							if(coConstraintTableConditionalBinding.getCondition() != null) {
@@ -229,21 +237,23 @@ BindingSerializationService bindingSerializationService;
 //		    		    							}
 				    		    						Element coConstraintsTable = new Element("coConstraintsTable");
 				    		    						coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintVerbose(mergedCoConstraintTable));
-				    		    						coConstraintsElement.appendChild(coConstraintsTable);
+				    		    						coConstraintTableConditionalBindingElement.appendChild(coConstraintsTable);
 		    		    						}
 //		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("NOEXPORT")) {
 //			    		    						 coConstraintsElement = new Element("");
 //		    		    						}
 //		    		    						System.out.println("Coconstraint XML :" + coConstraintsElement.toXML());
-		    		    		    	        if (coConstraintsElement != null) {
-		    		    		    	        	conformanceProfileElement.appendChild(coConstraintsElement);
-		    		    		    	        }
+//		    		    		    	        if (coConstraintsElement != null) {
+//		    		    		    	        	getCoConstraintsBindingsElement.appendChild(coConstraintsElement);
+//		    		    		    	        }
 		    		    					}
 		    		    				}
 		    				}
 		    			}
 		    			
 		    		}
+//		    			conformanceProfileElement.appendChild(getCoConstraintsBindingsElement);
+
 		    }
 
 		    }
