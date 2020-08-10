@@ -271,7 +271,7 @@
 
 	</xsl:template>
 
-	<xsl:template match="coconstraints">
+	<!-- <xsl:template match="coconstraints">
 		<xsl:element name="br" />
 		<xsl:element name="span">
 			<xsl:element name="b">
@@ -279,6 +279,62 @@
 			</xsl:element>
 		</xsl:element>
 		<xsl:copy-of select="table" />
+	</xsl:template> -->
+
+<xsl:template match="coConstraintsBindingsElement">
+	
+		<xsl:element name="br" />
+			<xsl:element name="span">
+				<xsl:element name="b">
+					<xsl:text>Co-Constraints</xsl:text>
+				</xsl:element>
+			</xsl:element>
+
+		<xsl:for-each select="./coConstraintBindingElement">
+
+		
+			<xsl:element name="br" />
+			<xsl:element name="br" />
+			<xsl:element name="span">
+
+				<xsl:element name="span">
+					<xsl:text>CoConstraint Context : </xsl:text>
+					<xsl:value-of select="./coConstraintContext" />
+					<xsl:element name="br" />
+				</xsl:element>
+
+				
+				<xsl:element name="span">
+					<xsl:text>CoConstraint Segment Name : </xsl:text>
+					<xsl:value-of
+						select="./coConstraintBindingSegmentElement/coConstraintSegmentName" />
+					<xsl:element name="br" />
+								<xsl:element name="br" />
+					
+				</xsl:element>
+
+			</xsl:element>
+			
+			
+					<xsl:for-each select="./coConstraintBindingSegmentElement/coConstraintTableConditionalBindingElement">
+			
+					<xsl:if test="normalize-space(./coConstraintCondition)!=''">
+			
+			<xsl:element name="span">
+				<xsl:text>CoConstraint Condition : </xsl:text>
+				<xsl:value-of
+					select="./coConstraintCondition" />
+			</xsl:element>
+		</xsl:if>
+
+
+			<xsl:element name="br" />
+			<xsl:copy-of
+				select="./coConstraintsTable/coconstraints/table" />
+			<xsl:element name="br" />
+		</xsl:for-each>
+
+		</xsl:for-each>
 	</xsl:template>
 
 </xsl:stylesheet>

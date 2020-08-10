@@ -368,26 +368,7 @@ public class ExportController {
 		}
 	}
 
-	//	 @RequestMapping(value = "/api/export/ig/{igId}/quickHtml", method = RequestMethod.POST)
-	//	  public @ResponseBody void exportCoConstraintsToExcel(@PathVariable("igId") String id,
-	//	  		HttpServletResponse response) throws ExportException {
-	//		 System.out.println("We inside EXCEL");
-	//	  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	//	  	if (authentication != null) {
-	//	  		String username = authentication.getPrincipal().toString();
-	//	  		ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(null);
-	//	  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-	//	  		response.setHeader("Content-disposition",
-	//	  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
-	//	  		try {
-	//	  			response.getOutputStream().write(excelFile.toByteArray());
-	//	  		} catch (IOException e) {
-	//	  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
-	//	  		}
-	//	  	} else {
-	//	  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-	//	  	}
-	//	  }
+
 
 	@RequestMapping(value = "/api/export/{document}/{id}/configuration/{configId}/getFilteredDocument", method = RequestMethod.GET)
 	public @ResponseBody ExportConfigurationGlobal getFilteredDocument(

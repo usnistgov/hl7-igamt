@@ -224,7 +224,7 @@ public class SerializeCoconstraintTableToExcel {
 			if(userCell.getColumnIndex() - thenCell.getColumnIndex() != 1){
 						sheet.addMergedRegion(new CellRangeAddress(0,0,thenCell.getColumnIndex(),userCell.getColumnIndex()-1));
 			}
-						if(headers.getNarratives().size() >= 1 ) {
+						if(headers.getNarratives().size() > 1 ) {
 						sheet.addMergedRegion(new CellRangeAddress(0,0,userCell.getColumnIndex(),userCell.getColumnIndex()+headers.getNarratives().size()-1));
 						}
 						System.out.println("Here6 :" + userCell.getColumnIndex());
