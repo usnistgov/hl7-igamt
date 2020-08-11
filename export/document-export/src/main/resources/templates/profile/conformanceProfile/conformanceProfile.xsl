@@ -12,7 +12,7 @@
 	<xsl:import href="/templates/profile/resource/author.xsl" />
 	<xsl:import href="/templates/profile/resource/role.xsl" />
 	<xsl:import href="/templates/profile/resource/type.xsl" />
-		 	<xsl:import href="/templates/profile/definitionText2.xsl" />
+	<xsl:import href="/templates/profile/definitionText2.xsl" />
 	<xsl:include href="/templates/profile/conformanceProfile/messageSegment.xsl" />
 	<xsl:include href="/templates/profile/messageConstraint.xsl" />
 	<xsl:include
@@ -136,7 +136,7 @@
 			</xsl:with-param>
 		</xsl:call-template>
 		<xsl:call-template name="CommentList" />
- 		<xsl:call-template name="DefinitionText2" />
+		<xsl:call-template name="DefinitionText2" />
 
 		<!-- <xsl:apply-templates select="./Binding/ValueSetBindingList" /> -->
 		<xsl:call-template name="ValueSetBindingList" />
@@ -198,40 +198,67 @@
 					select="Text[@Type='UsageNote']" />
 			</xsl:element>
 		</xsl:if>
-		<xsl:apply-templates select="coConstraintsElement" />
+
+		<xsl:apply-templates select="coConstraintsBindingsElement" />
 
 
 	</xsl:template>
 
 
-
-	<xsl:template match="coConstraintsElement">
+	<xsl:template match="coConstraintsBindingsElement">
+	
 		<xsl:element name="br" />
-		<xsl:element name="span">
-			<xsl:element name="b">
-				<xsl:text>Co-Constraints</xsl:text>
+			<xsl:element name="span">
+				<xsl:element name="b">
+					<xsl:text>Co-Constraints</xsl:text>
+				</xsl:element>
 			</xsl:element>
-		</xsl:element>
-		<xsl:element name="br" />
-		<xsl:element name="br" />
-		<xsl:element name="span">
-			<xsl:text>CoConstraint Condition : </xsl:text>
-			<xsl:value-of select="./coConstraintCondition" />
+
+		<xsl:for-each select="./coConstraintBindingElement">
+
+		
+			<xsl:element name="br" />
 			<xsl:element name="br" />
 			<xsl:element name="span">
-				<xsl:text>CoConstraint Context : </xsl:text>
-				<xsl:value-of select="./coConstraintContext" />
-				<xsl:element name="br" />
-			</xsl:element>
-			<xsl:element name="span">
-				<xsl:text>CoConstraint Segment Name : </xsl:text>
-				<xsl:value-of select="./coConstraintSegmentName" />
-				<xsl:element name="br" />
-			</xsl:element>
 
-		</xsl:element>
-		<xsl:element name="br" />
-		<xsl:copy-of select="./coConstraintsTable/coconstraints/table" />
+				<xsl:element name="span">
+					<xsl:text>CoConstraint Context : </xsl:text>
+					<xsl:value-of select="./coConstraintContext" />
+					<xsl:element name="br" />
+				</xsl:element>
+
+				
+				<xsl:element name="span">
+					<xsl:text>CoConstraint Segment Name : </xsl:text>
+					<xsl:value-of
+						select="./coConstraintBindingSegmentElement/coConstraintSegmentName" />
+					<xsl:element name="br" />
+								<xsl:element name="br" />
+					
+				</xsl:element>
+
+			</xsl:element>
+			
+			
+					<xsl:for-each select="./coConstraintBindingSegmentElement/coConstraintTableConditionalBindingElement">
+			
+					<xsl:if test="normalize-space(./coConstraintCondition)!=''">
+			
+			<xsl:element name="span">
+				<xsl:text>CoConstraint Condition : </xsl:text>
+				<xsl:value-of
+					select="./coConstraintCondition" />
+			</xsl:element>
+		</xsl:if>
+
+
+			<xsl:element name="br" />
+			<xsl:copy-of
+				select="./coConstraintsTable/coconstraints/table" />
+			<xsl:element name="br" />
+		</xsl:for-each>
+
+		</xsl:for-each>
 	</xsl:template>
 
 
