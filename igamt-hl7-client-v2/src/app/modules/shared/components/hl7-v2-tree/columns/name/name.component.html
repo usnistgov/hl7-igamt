@@ -5,7 +5,7 @@
 
     <!-- EDIT FIELD -->
     <div class="input-group" *ngIf="editMode">
-      <input type="text" class="form-control" placeholder="value" [(ngModel)]="tmp">
+      <input [ngModelOptions]="{updateOn: 'blur'}" type="text" class="form-control" placeholder="value" [(ngModel)]="tmp">
       <div class="input-group-append">
         <button class="btn btn-outline-secondary" type="button" (click)="setValue()"><i class="fa fa-check" style="color: green;"></i></button>
         <button class="btn btn-outline-secondary" type="button" (click)="toggleEdit()"><i class="fa fa-times" style="color: red;"></i></button>

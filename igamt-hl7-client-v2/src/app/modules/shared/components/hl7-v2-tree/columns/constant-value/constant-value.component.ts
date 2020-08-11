@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { IChange } from 'src/app/modules/shared/models/save-change';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
 import { IStringValue } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
@@ -14,8 +16,8 @@ export class ConstantValueComponent extends HL7v2TreeColumnComponent<IStringValu
   edit: boolean;
   tmp: string;
 
-  constructor() {
-    super([PropertyType.CONSTANTVALUE]);
+  constructor(protected dialog: MatDialog) {
+    super([PropertyType.CONSTANTVALUE], dialog);
     this.value$.subscribe(
       (value) => {
         this.constant = {
@@ -23,6 +25,10 @@ export class ConstantValueComponent extends HL7v2TreeColumnComponent<IStringValu
         };
       },
     );
+  }
+
+  isActualChange<X>(change: IChange<X>): boolean {
+    return change.propertyValue !== change.oldPropertyValue;
   }
 
   toggleEdit() {

@@ -1,9 +1,12 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import gov.nist.diff.annotation.DeltaField;
 import gov.nist.diff.annotation.DeltaIdentity;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 public class StructureElement implements Serializable {
 
@@ -16,11 +19,12 @@ public class StructureElement implements Serializable {
   private Usage usage;
   @DeltaField
   private Usage oldUsage;
-  
   @DeltaField
   private Type type;
   @DeltaField
   private String text;
+  private Map<PropertyType, ChangeReason> changeLog;
+
   private boolean custom = false;
 
   public StructureElement() {
@@ -39,6 +43,13 @@ public class StructureElement implements Serializable {
     this.custom = custom;
   }
 
+  public Map<PropertyType, ChangeReason> getChangeLog() {
+    return changeLog;
+  }
+
+  public void setChangeLog(Map<PropertyType, ChangeReason> changeLog) {
+    this.changeLog = changeLog;
+  }
 
   public int getPosition() {
     return position;

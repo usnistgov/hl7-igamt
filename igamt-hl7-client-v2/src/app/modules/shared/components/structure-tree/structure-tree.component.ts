@@ -6,6 +6,7 @@ import { IPath } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
+import { TreeCloneService } from '../../services/tree-clone.service';
 import { IHL7v2TreeFilter, TreeFilterService } from '../../services/tree-filter.service';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 
@@ -77,7 +78,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
 
   @Input()
   set tree(str: TreeNode[]) {
-    const clone = this.treeService.cloneViewTree(str);
+    const clone = this.treeCloneService.cloneViewTree(str);
     this.doFilter(clone as IHL7v2TreeNode[]);
   }
 
@@ -95,6 +96,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
 
   constructor(
     private treeService: Hl7V2TreeService,
+    private treeCloneService: TreeCloneService,
     private treeFilterService: TreeFilterService) {
     this.configuration = {
       cardinality: true,

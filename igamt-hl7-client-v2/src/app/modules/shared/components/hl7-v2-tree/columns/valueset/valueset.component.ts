@@ -1,22 +1,25 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { filter, map, take, takeWhile, tap } from 'rxjs/operators';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
+import { IChange } from 'src/app/modules/shared/models/save-change';
 import { Type } from '../../../../constants/type.enum';
 import { IBindingType, InternalSingleCode, IValuesetBinding } from '../../../../models/binding.interface';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
 import { BindingService } from '../../../../services/binding.service';
-import { IBinding, IBindingContext } from '../../../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../../../services/resource-repository.service';
+import { IBinding, IBindingContext, StructureElementBindingService } from '../../../../services/structure-element-binding.service';
 import {
   BindingSelectorComponent,
   IBindingLocationInfo,
   ISingleCodeDisplay,
 } from '../../../binding-selector/binding-selector.component';
 import { IValueSetBindingDisplay } from '../../../binding-selector/binding-selector.component';
+import { IChangeReasonDialogDisplay } from '../../../change-reason-dialog/change-reason-dialog.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
+
 export interface IValueSetOrSingleCodeBindings {
   valueSetBindings: Array<IBinding<IValuesetBinding[]>>;
   singleCodeBindings: Array<IBinding<InternalSingleCode>>;
@@ -55,12 +58,20 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
   repository: AResourceRepositoryService;
   @Input()
   context: Type;
+
+  @ViewChild('displayVsBindingList', { read: TemplateRef })
+  displayVsBindingListTemplate: TemplateRef<any>;
+  @ViewChild('displayScBinding', { read: TemplateRef })
+  displaySingleCodeTemplate: TemplateRef<any>;
+
   alive: boolean;
 
   constructor(
-    private dialog: MatDialog,
-    private bindingService: BindingService) {
-    super([PropertyType.VALUESET, PropertyType.SINGLECODE]);
+    dialog: MatDialog,
+    private structureElementBindingService: StructureElementBindingService,
+    private bindingService: BindingService,
+  ) {
+    super([PropertyType.VALUESET, PropertyType.SINGLECODE], dialog);
     this.editable = new BehaviorSubject<IValueSetOrSingleCodeDisplay>({ type: IBindingType.VALUESET, value: undefined });
     this.editable$ = this.editable.asObservable();
   }
@@ -157,7 +168,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
     ).subscribe();
   }
 
-  vsBindingsChange(change: IValueSetBindingDisplay[]) {
+  vsBindingsChange(change: IValueSetBindingDisplay[], skipReason: boolean = false) {
     this.onChange(
       this.initialValue ? this.initialValue.type === IBindingType.VALUESET ? this.initialValue.value : undefined : undefined,
       change.map(
@@ -165,14 +176,19 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
       ),
       PropertyType.VALUESET,
       ChangeType.UPDATE,
+      skipReason,
     );
 
     if (change && change.length > 0) {
-      this.singleCodeChange(undefined);
+      this.singleCodeChange(undefined, true);
     }
   }
 
-  singleCodeChange(change: ISingleCodeDisplay) {
+  isActualChange(change: IChange<any>): boolean {
+    return true;
+  }
+
+  singleCodeChange(change: ISingleCodeDisplay, skipReason: boolean = false) {
     this.onChange(
       this.initialValue ? this.initialValue.type === IBindingType.SINGLECODE ? this.initialValue.value : undefined : undefined,
       change ? {
@@ -182,9 +198,10 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
       } : undefined,
       PropertyType.SINGLECODE,
       ChangeType.UPDATE,
+      skipReason,
     );
     if (change) {
-      this.vsBindingsChange([]);
+      this.vsBindingsChange([], true);
     }
   }
 
@@ -200,11 +217,91 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
     this.alive = false;
   }
 
-  emitIValueSetDisplay() {
+  getDisplayFromBinding(binding: IBinding<IValueSetOrSingleCode>): Observable<IValueSetOrSingleCodeDisplay> {
+    switch (binding.value.type) {
 
+      case IBindingType.VALUESET:
+        return this.bindingService.getValueSetBindingDisplay(binding.value.value as IValuesetBinding[], this.repository).pipe(
+          take(1),
+          map((bindings) => {
+            return {
+              type: IBindingType.VALUESET,
+              value: bindings,
+            };
+          }),
+        );
+
+      case IBindingType.SINGLECODE:
+        return this.bindingService.getSingleCodeBindingDisplay(binding.value.value as InternalSingleCode, this.repository).pipe(
+          take(1),
+          map((sg) => {
+            return {
+              type: IBindingType.SINGLECODE,
+              value: sg,
+            };
+          }),
+        );
+    }
   }
 
-  // tslint:disable-next-line: cognitive-complexity
+  getDisplayTemplateForProperty(change: IChange): Observable<IChangeReasonDialogDisplay> {
+    const context = { resource: this.context };
+    console.log(change);
+    switch (change.propertyType) {
+      case PropertyType.SINGLECODE:
+        return combineLatest(
+          change.oldPropertyValue ? this.bindingService.getSingleCodeBindingDisplay(change.oldPropertyValue, this.repository) : of(undefined),
+          change.propertyValue ? this.bindingService.getSingleCodeBindingDisplay(change.propertyValue, this.repository) : of(undefined),
+        ).pipe(
+          take(1),
+          map(([previous, current]) => {
+            return {
+              current: {
+                context: {
+                  context,
+                  value: current,
+                },
+                template: this.displaySingleCodeTemplate,
+              },
+              previous: {
+                context: {
+                  context,
+                  value: previous,
+                },
+                template: this.displaySingleCodeTemplate,
+              },
+            };
+          }),
+        );
+      case PropertyType.VALUESET:
+        return combineLatest(
+          change.oldPropertyValue ? this.bindingService.getValueSetBindingDisplay(change.oldPropertyValue, this.repository) : of(undefined),
+          change.propertyValue ? this.bindingService.getValueSetBindingDisplay(change.propertyValue, this.repository) : of(undefined),
+        ).pipe(
+          take(1),
+          map(([previous, current]) => {
+            return {
+              current: {
+                context: {
+                  context,
+                  value: current || [],
+                },
+                template: this.displayVsBindingListTemplate,
+              },
+              previous: {
+                context: {
+                  context,
+                  value: previous || [],
+                },
+                template: this.displayVsBindingListTemplate,
+              },
+            };
+          }),
+        );
+    }
+    return null;
+  }
+
   ngOnInit() {
     this.alive = true;
     this.value$.pipe(
@@ -212,100 +309,32 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
     ).subscribe(
       (vsOrSingleCode) => {
         const value = this.mergeBindings(vsOrSingleCode);
+        const bindings = this.structureElementBindingService.getActiveAndFrozenBindings(value, { resource: this.context });
 
-        if (value && value.length > 0) {
-          value.sort((a, b) => {
-            return a.level - b.level;
-          });
-
-          const topBindings = value[0];
-          let display: IBinding<IValueSetOrSingleCode> = value.length > 1 ? value[1] : undefined;
-
-          // Editable List
-          if (topBindings.level === 1) {
-            this.initialValue = topBindings.value;
-            switch (topBindings.value.type) {
-
-              case IBindingType.VALUESET:
-                this.bindingService.getValueSetBindingDisplay(topBindings.value.value as IValuesetBinding[], this.repository).pipe(
-                  take(1),
-                  tap((bindings) => {
-                    this.editable.next({
-                      type: IBindingType.VALUESET,
-                      value: bindings,
-                    });
-                  }),
-                ).subscribe();
-                break;
-
-              case IBindingType.SINGLECODE:
-                const internalSg = (topBindings.value.value as InternalSingleCode);
-                this.getValueSetById(internalSg.valueSetId).pipe(
-                  take(1),
-                  tap((vs) => {
-                    this.editable.next({
-                      type: IBindingType.SINGLECODE,
-                      value: {
-                        valueSet: vs,
-                        code: internalSg.code,
-                        codeSystem: internalSg.codeSystem,
-                      },
-                    });
-                  }),
-                ).subscribe();
-                break;
-            }
-          } else {
-            this.editable.next({ type: IBindingType.VALUESET, value: undefined });
-            display = topBindings;
-          }
-
-          // Display List
-          if (display) {
-            switch (display.value.type) {
-
-              case IBindingType.VALUESET:
-                this.freeze$ = this.bindingService.getValueSetBindingDisplay(display.value.value as IValuesetBinding[], this.repository).pipe(
-                  takeWhile(() => this.alive),
-                  map((bindings) => {
-                    return {
-                      context: display.context,
-                      binding: {
-                        type: IBindingType.VALUESET,
-                        value: bindings,
-                      },
-                    };
-                  }),
-                );
-                break;
-
-              case IBindingType.SINGLECODE:
-                const internalSg = (display.value.value as InternalSingleCode);
-                this.freeze$ = this.getValueSetById(internalSg.valueSetId).pipe(
-                  takeWhile(() => this.alive),
-                  map((vs) => {
-                    return {
-                      context: display.context,
-                      binding: {
-                        type: IBindingType.SINGLECODE,
-                        value: {
-                          valueSet: vs,
-                          code: internalSg.code,
-                          codeSystem: internalSg.codeSystem,
-                        },
-                      },
-                    };
-                  }),
-                );
-                break;
-            }
-          } else {
-            this.freeze$ = of();
-          }
+        if (bindings.active) {
+          this.getDisplayFromBinding(bindings.active).pipe(
+            take(1),
+            tap((v) => this.editable.next(v)),
+          ).subscribe();
         } else {
           this.editable.next({ type: IBindingType.VALUESET, value: undefined });
+        }
+
+        if (bindings.frozen) {
+          this.freeze$ = this.getDisplayFromBinding(bindings.frozen).pipe(
+            map((display) => {
+              return {
+                context: bindings.frozen.context,
+                binding: display,
+              };
+            }),
+          );
+        } else {
           this.freeze$ = of();
         }
+
+        const top = bindings.active || bindings.frozen;
+        this.initialValue = top ? top.value : undefined;
       },
     );
   }

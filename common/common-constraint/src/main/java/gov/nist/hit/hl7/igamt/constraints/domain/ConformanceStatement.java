@@ -13,7 +13,10 @@ package gov.nist.hit.hl7.igamt.constraints.domain;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Map;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -50,6 +53,8 @@ public class ConformanceStatement implements Serializable{
   private HashSet<String> sourceIds;
   @Deprecated
   private String igDocumentId;
+
+  private Map<PropertyType, ChangeReason> changeLog;
 
   public ConformanceStatement() {
     super();
@@ -96,6 +101,14 @@ public class ConformanceStatement implements Serializable{
       if(cs.getAssertion() != null) return cs.getAssertion().getDescription();
     }
     return null;
+  }
+
+  public Map<PropertyType, ChangeReason> getChangeLog() {
+    return changeLog;
+  }
+
+  public void setChangeLog(Map<PropertyType, ChangeReason> changeLog) {
+    this.changeLog = changeLog;
   }
 
   public Level getLevel() {

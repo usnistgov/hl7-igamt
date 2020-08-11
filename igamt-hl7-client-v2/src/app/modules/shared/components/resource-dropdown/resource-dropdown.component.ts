@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { Dropdown } from 'primeng/primeng';
 import { IDisplayElement } from '../../models/display-element.interface';
 
@@ -73,7 +73,8 @@ export class ResourceDropdownComponent implements OnInit {
   }
 
   filterFn = (value, elms) => {
-    return elms.filter((elm) => elm.fixedName.includes(value) || elm.variableName.includes(value));
+    value = value.toLowerCase();
+    return elms.filter((elm) => (elm.fixedName === value || (elm.fixedName && elm.fixedName.toLowerCase().includes(value))) || (elm.variableName === value || (elm.variableName && elm.variableName.toLowerCase().includes(value))));
   }
 
   change($event: IDisplayElement) {

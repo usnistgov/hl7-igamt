@@ -1,8 +1,11 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.util.Map;
 import java.util.Set;
 
 import gov.nist.diff.annotation.DeltaField;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 // @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 // @JsonSubTypes({@JsonSubTypes.Type(value = Group.class, name = "GROUP"),
@@ -27,6 +30,7 @@ public class MsgStructElement extends StructureElement {
     this.max = max;
     this.comments = comments;
   }
+
 
   public int getMin() {
     return min;

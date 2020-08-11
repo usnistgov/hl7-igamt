@@ -1,19 +1,23 @@
-<ng-container *ngIf="val && val.confLength" [ngSwitch]="viewOnly">
-  <ng-container *ngSwitchCase="false" [ngSwitch]="active()">
-    <div class="tt-cell" *ngSwitchCase="true">
-      <input style="width: 100%;" class="range-input" type="text" [name]="location + 'conf-length'" [id]="location + 'conf-length'" placeholder="Conf Length" [(ngModel)]="val.confLength" (ngModelChange)="confLengthChange($event)">
-      <button class="btn btn-sm btn-danger" (click)="clear()" style="margin-left: 5px;">
-        <i class="fa fa-times"></i>
-      </button>
-    </div>
-    <div *ngSwitchCase="false">
-      <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: false }"></ng-container>
-    </div>
+<div class="tt-cell" style="display: flex; align-items: center;">
+  <app-change-log-info  style="margin-right: 5px;" [sections]="changeDisplaySections" ></app-change-log-info>
+  <ng-container *ngIf="val && val.confLength" [ngSwitch]="viewOnly">
+    <ng-container *ngSwitchCase="false" [ngSwitch]="active()">
+      <ng-container *ngSwitchCase="true">
+        <input style="width: 100%;" class="range-input" type="text" [name]="location + 'conf-length'" [id]="location + 'conf-length'" placeholder="Conf Length" [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="val.confLength" (ngModelChange)="confLengthChange($event)">
+        <button class="btn btn-sm btn-danger" (click)="clear()" style="margin-left: 5px;">
+          <i class="fa fa-times"></i>
+        </button>
+      </ng-container>
+      <div *ngSwitchCase="false">
+        <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: false }"></ng-container>
+      </div>
+    </ng-container>
+    <ng-container *ngSwitchCase="true">
+      <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: active() }"></ng-container>
+    </ng-container>
   </ng-container>
-  <ng-container *ngSwitchCase="true">
-    <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: active() }"></ng-container>
-  </ng-container>
-</ng-container>
-<ng-template #display let-val let-active="active">
-  <strong [ngClass]="{ 'treetable-light': !active }" >{{val.confLength}}</strong>
-</ng-template>
+  <ng-template #display let-val let-active="active">
+    <strong [ngClass]="{ 'treetable-light': !active }" >{{val.confLength}}</strong>
+  </ng-template>
+
+</div>

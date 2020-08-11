@@ -20,10 +20,10 @@
         <ng-container *ngIf="csType !== _csType.PROPOSITION">
           <span style="display: flex;
           flex-direction: row;
-          align-items: center;"> <input type="radio" (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" style="margin-right: 5px; margin-left: 5px;" class="radio-inline" [value]="_statementType.DECLARATIVE"/> Declaration </span>
+          align-items: center;"> <input [name]="id + 'dec-comp'" type="radio" (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" style="margin-right: 5px; margin-left: 5px;" class="radio-inline" [value]="_statementType.DECLARATIVE"/> Declaration </span>
           <span style="display: flex;
           flex-direction: row;
-          align-items: center;"> <input type="radio" (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" style="margin-right: 5px; margin-left: 5px;" class="radio-inline" [value]="_statementType.COMPARATIVE"/> Comparison </span>
+          align-items: center;"> <input [name]="id + 'dec-comp'" type="radio" (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" style="margin-right: 5px; margin-left: 5px;" class="radio-inline" [value]="_statementType.COMPARATIVE"/> Comparison </span>
         </ng-container>
       </div>
     </th>

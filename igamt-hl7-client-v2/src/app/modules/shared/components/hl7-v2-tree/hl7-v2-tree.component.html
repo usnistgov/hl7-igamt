@@ -24,7 +24,7 @@
                 <th *ngSwitchCase="columnTypes.NAME" style="width: 380px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
-                <th *ngSwitchCase="columnTypes.USAGE" style="width: 270px;" ttReorderableColumn ttResizableColumn>
+                <th *ngSwitchCase="columnTypes.USAGE" style="width: 300px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
                 <th *ngSwitchCase="columnTypes.DATATYPE" style="width: 240px;" ttReorderableColumn ttResizableColumn>
@@ -42,13 +42,13 @@
                 <th *ngSwitchCase="columnTypes.CONSTANTVALUE" style="width: 180px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
-                <th *ngSwitchCase="columnTypes.CARDINALITY" style="width: 150px;" ttReorderableColumn ttResizableColumn>
+                <th *ngSwitchCase="columnTypes.CARDINALITY" style="width: 170px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
-                <th *ngSwitchCase="columnTypes.LENGTH" style="width: 180px;" ttReorderableColumn ttResizableColumn>
+                <th *ngSwitchCase="columnTypes.LENGTH" style="width: 190px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
-                <th *ngSwitchCase="columnTypes.CONFLENGTH" style="width: 180px;" ttReorderableColumn ttResizableColumn>
+                <th *ngSwitchCase="columnTypes.CONFLENGTH" style="width: 185px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
                 </th>
                 <th *ngSwitchCase="columnTypes.COMMENT" style="width: 340px;" ttReorderableColumn ttResizableColumn>
@@ -76,6 +76,8 @@
                         <app-name
                           [viewOnly]="viewOnly || !rowData.changeable || !rowData.custom"
                           [globalViewOnly]="viewOnly"
+                          [enforceChangeReason]="derived"
+                          [changeLog]="rowData.changeLog"
                           [type]="rowData.type"
                           [location]="rowData.pathId"
                           [position]="rowData.position"
@@ -100,6 +102,8 @@
                     [changeEvent]="changes$"
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [globalViewOnly]="viewOnly"
+                    [enforceChangeReason]="derived"
+                    [changeLog]="rowData.changeLog"
                     [type]="rowData.type"
                     [name]="rowData.name"
                     [resource]="resource$"
@@ -126,6 +130,8 @@
                     [changeEvent]="changes$"
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [globalViewOnly]="viewOnly"
+                    [enforceChangeReason]="derived"
+                    [changeLog]="rowData.changeLog"
                     [location]="rowData.pathId"
                     [usage]="rowData.usage.value"
                     [type]="rowData.type"
@@ -141,6 +147,8 @@
                     *ngIf="rowNode.node.leaf"
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [globalViewOnly]="viewOnly"
+                    [enforceChangeReason]="derived"
+                    [changeLog]="rowData.changeLog"
                     [type]="rowData.type"
                     [location]="rowData.pathId"
                     [level]="rowData.level"
@@ -160,6 +168,8 @@
                     *ngIf="rowNode.node.leaf"
                     [globalViewOnly]="viewOnly"
                     [viewOnly]="viewOnly || !rowData.changeable"
+                    [enforceChangeReason]="derived"
+                    [changeLog]="rowData.changeLog"
                     [location]="rowData.pathId"
                     [type]="rowData.type"
                     [position]="rowData.position"
@@ -181,6 +191,8 @@
                       [globalViewOnly]="viewOnly"
                       [type]="rowData.type"
                       [viewOnly]="viewOnly || !rowData.changeable"
+                      [enforceChangeReason]="derived"
+                      [changeLog]="rowData.changeLog"
                       [location]="rowData.pathId"
                       [position]="rowData.position"
                       [value]="reference"
@@ -201,6 +213,8 @@
                         [viewOnly]="viewOnly || !rowData.changeable"
                         [type]="rowData.type"
                         [globalViewOnly]="viewOnly"
+                        [enforceChangeReason]="derived"
+                        [changeLog]="rowData.changeLog"
                         [location]="rowData.pathId"
                         [position]="rowData.position"
                         [value]="reference"
@@ -231,6 +245,8 @@
                     [changeEvent]="changes$"
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [globalViewOnly]="viewOnly || documentRef.type =='DATATYPELIBRARY'"
+                    [enforceChangeReason]="derived"
+                    [changeLog]="rowData.changeLog"
                     [context]="type"
                     [type]="rowData.type"
                     [location]="rowData.pathId"
@@ -268,6 +284,8 @@
                     [changeEvent]="changes$"
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [globalViewOnly]="viewOnly"
+                    [enforceChangeReason]="derived"
+                    [changeLog]="rowData.changeLog"
                     [type]="rowData.type"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
