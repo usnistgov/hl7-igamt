@@ -1,0 +1,93 @@
+<div id="toc-container" class="toc-container">
+  <tree-root #treeroot [nodes]="nodes" [options]="options">
+    <ng-template #treeNodeTemplate let-index="index" let-node>
+      <ng-container [ngSwitch]="node.data.type">
+
+        <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
+          <div #segLib>
+            <span [contextMenu]="segmentsContextMenu"> Custom Message Structures </span>
+            <context-menu #segmentsContextMenu>
+
+            </context-menu>
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
+          <app-display-section
+            [contextMenu]="conformanceProfileContextMenu"
+            [element]="node.data"
+            #rla="routerLinkActive"
+            [routerLink]="getElementUrl(node.data)"
+            routerLinkActive [inline]="true" >
+          </app-display-section>
+
+          <context-menu #conformanceProfileContextMenu>
+          </context-menu>
+
+          <ng-container *ngIf="rla.isActive" >
+            <ng-container *ngTemplateOutlet="subMenu; context: { $implicit : node.data }"></ng-container>
+          </ng-container>
+
+
+        </ng-container>
+
+
+
+        <ng-container *ngSwitchCase="'SEGMENTREGISTRY'">
+          <div #segLib>
+            <span [contextMenu]="segmentsContextMenu"> Custom Segment Structures </span>
+            <context-menu #segmentsContextMenu>
+
+            </context-menu>
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'SEGMENT'">
+          <app-display-section
+            [contextMenu]='segmentContextMenu'
+            [element]="node.data"
+            #rla="routerLinkActive"
+            [routerLink]="getElementUrl(node.data)"
+            routerLinkActive
+            [inline]="true" >
+          </app-display-section>
+
+          <context-menu #segmentContextMenu>
+          </context-menu>
+
+          <ng-container *ngIf="rla.isActive" >
+            <ng-container *ngTemplateOutlet="subMenu; context: { $implicit : node.data }"></ng-container>
+          </ng-container>
+
+
+        </ng-container>
+
+
+
+      </ng-container>
+    </ng-template>
+
+  </tree-root>
+</div>
+
+<ng-template #subMenu let-element>
+  <div class="custom-menu">
+    <ul style="list-style-type: none; margin-bottom: 0px;">
+      <li [routerLink]="getElementUrl(element) + '/metadata'" routerLinkActive="active-node">
+        <span>
+          <i class="fa fa-edit"></i><a> Metadata </a>
+        </span>
+      </li>
+      <li [routerLink]="getElementUrl(element) + '/structure'" routerLinkActive="active-node">
+        <span>
+          <i class="fa fa-table"></i><a> Structure </a>
+        </span>
+      </li>
+      <li [routerLink]="getElementUrl(element) + '/dependencies'" routerLinkActive="active-node">
+        <span>
+          <i class="fa fa-list"></i><a> Dependencies </a>
+        </span>
+      </li>
+    </ul>
+  </div>
+</ng-template>
