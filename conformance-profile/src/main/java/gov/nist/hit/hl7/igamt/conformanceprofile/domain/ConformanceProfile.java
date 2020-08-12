@@ -175,4 +175,14 @@ public class ConformanceProfile extends Resource {
   public void setCoConstraintsBindings(List<CoConstraintBinding> coConstraintsBindings) {
     this.coConstraintsBindings = coConstraintsBindings;
   }
+
+@Override
+public String toString() {
+	return "ConformanceProfile [identifier=" + identifier + ", messageType=" + messageType + ", event=" + event
+			+ ", structID=" + structID + ", profileType=" + profileType + ", role=" + role + ", profileIdentifier="
+			+ profileIdentifier + ", children=" + children + ", coConstraintsBindings=" + coConstraintsBindings
+			+ ", binding=" + binding + "]";
+}
+  
+  
 }
