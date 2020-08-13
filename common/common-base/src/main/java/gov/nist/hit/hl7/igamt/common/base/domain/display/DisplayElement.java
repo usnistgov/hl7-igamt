@@ -156,4 +156,14 @@ public class DisplayElement {
     this.publicationInfo = publicationInfo;
   }
 
+@Override
+public String toString() {
+	return "DisplayElement [id=" + id + ", fixedName=" + fixedName + ", variableName=" + variableName + ", description="
+			+ description + ", domainInfo=" + domainInfo + ", type=" + type + ", leaf=" + leaf + ", position="
+			+ position + ", differantial=" + differantial + ", delta=" + delta + ", origin=" + origin + ", isFlavor="
+			+ isFlavor + ", status=" + status + ", publicationInfo=" + publicationInfo + ", parentType=" + parentType
+			+ ", parentId=" + parentId + "]";
+}
+  
+
 }

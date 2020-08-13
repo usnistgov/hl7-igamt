@@ -69,7 +69,15 @@ public class ResourceBinding extends Binding {
 
   }
   
-  public Set<ConformanceStatement> getConformanceStatements() {
+  
+@Override
+public String toString() {
+	return "ResourceBinding [conformanceStatementIds=" + conformanceStatementIds + ", conformanceStatements="
+			+ conformanceStatements + ", elementId=" + elementId + ", locationInfo=" + locationInfo + ", children="
+			+ children + "]";
+}
+
+public Set<ConformanceStatement> getConformanceStatements() {
 	return conformanceStatements;
   }
   

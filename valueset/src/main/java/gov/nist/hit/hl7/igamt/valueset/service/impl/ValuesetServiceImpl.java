@@ -295,6 +295,10 @@ public class ValuesetServiceImpl implements ValuesetService {
                 item.setOldPropertyValue(s.getIntensionalComment());
                 s.setContentDefinition(ContentDefinition.fromValue((String) item.getPropertyValue()));
             }
+            else if (item.getPropertyType().equals(PropertyType.NAME)) {
+                item.setOldPropertyValue(s.getName());
+                s.setName((String) item.getPropertyValue());
+            }
 
         }
         this.save(s);

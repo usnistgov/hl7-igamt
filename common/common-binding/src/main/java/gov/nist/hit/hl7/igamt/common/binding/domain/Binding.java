@@ -76,4 +76,11 @@ public abstract class Binding implements Serializable{
   public void setLocationInfo(LocationInfo locationInfo) {
     this.locationInfo = locationInfo;
   }
+
+@Override
+public String toString() {
+	return "Binding [elementId=" + elementId + ", locationInfo=" + locationInfo + ", children=" + children + "]";
+}
+  
+  
 }
