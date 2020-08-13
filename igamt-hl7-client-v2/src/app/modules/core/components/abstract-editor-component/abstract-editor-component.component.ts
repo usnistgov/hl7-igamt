@@ -40,7 +40,7 @@ export abstract class AbstractEditorComponent extends DamAbstractEditorComponent
       this.store.select(fromIgamtSelectors.selectDelta),
       this.active$.pipe(
         map((active) => {
-          return active.display.domainInfo && active.display.domainInfo.scope !== Scope.USER;
+          return active.display.domainInfo && !(active.display.domainInfo.scope === Scope.USER || (active.display.domainInfo.scope === Scope.PHINVADS && active.display.flavor));
         }),
       )).pipe(
         map(([vOnly, delta, notUser]) => {
