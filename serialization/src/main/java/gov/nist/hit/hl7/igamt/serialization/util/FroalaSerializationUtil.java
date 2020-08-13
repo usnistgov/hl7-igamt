@@ -50,11 +50,13 @@ public class FroalaSerializationUtil {
 
 
   public String cleanFroalaInput(String input) {
-    input = input.replace("<br>", "<br />");
     if (input.contains("<pre>")) {
-      input = input.replace("\n", "<br />");
+      input = input.replace("\n", "<br/>");
     }
     input = input.replace("<p style=\"\"><br></p>", "");
+    input = input.replace("<p><br></p>", "");
+    input = input.replace("<br><br><p>", "<p>");
+
     input = input.replace("<p ", "<div ");
     input = input.replace("<p>", "<div>");
     input = input.replace("</p>", "</div>");
@@ -142,7 +144,7 @@ public class FroalaSerializationUtil {
     // Renaming strong to work as html4
     doc.select("strong").tagName("b");
     String html = doc.body().html();
-    html = html.replace("<br>", "<br />");
+    html = html.replace("<br>", "<br/>");
     return "<div class=\"fr-view\">" + html + "</div>";
   }
 

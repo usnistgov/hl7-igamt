@@ -376,6 +376,7 @@
 
 	<xsl:template match="Datatype" mode="toc">
 		<xsl:element name="a">
+		
 			<xsl:attribute name="href">
 	        	<xsl:value-of select="concat('#', @id)"></xsl:value-of>
         	</xsl:attribute>

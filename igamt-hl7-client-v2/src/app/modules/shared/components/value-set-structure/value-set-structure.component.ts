@@ -13,7 +13,6 @@ export class ValueSetStructureComponent implements OnInit {
 
   constructor() {
   }
-
   @Input()
   valueSet: IValueSet;
   selectedCodes: ICodes[] = [];

@@ -55,12 +55,6 @@ public class ValuesetBinding implements Serializable{
 		this.valuesetLocations.add(location);
 	}
 
-	@Override
-	public String toString() {
-		return "ValuesetBinding [valuesetId=" + valueSets.toString() + ", strength=" + strength
-				+ ", valuesetLocations=" + valuesetLocations + "]";
-	}
-
 	public List<String> getValueSets() {
 		return valueSets;
 	}
@@ -77,4 +71,11 @@ public class ValuesetBinding implements Serializable{
 		return clone;
 	}
 
+	@Override
+	public String toString() {
+		return "ValuesetBinding [valueSets=" + valueSets + ", strength=" + strength + ", valuesetLocations="
+				+ valuesetLocations + "]";
+	}
+
+	
 }
