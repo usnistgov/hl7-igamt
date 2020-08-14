@@ -1,10 +1,14 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import {parseSelectorToR3Selector} from '@angular/compiler/src/core';
 import { Injectable } from '@angular/core';
+import {getValue} from '@angular/core/src/render3/styling/class_and_style_bindings';
+import {ActivatedRoute, Router} from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
+import {catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import {CleanWorkspace, EditorReset} from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
@@ -21,6 +25,8 @@ import {
   LoadResourceReferencesFailure,
   LoadResourceReferencesSuccess,
 } from '../../dam-igamt/igamt.loaded-resources.actions';
+import {selectSelectedResource} from '../../dam-igamt/igamt.selected-resource.selectors';
+import {selectLoadedDocumentInfo} from '../../dam-igamt/igamt.selectors';
 import {
   CreateCoConstraintGroup,
   CreateCoConstraintGroupFailure,
@@ -322,12 +328,22 @@ export class IgEditEffects extends DamWidgetEffect {
       return this.message.actionFromError(action.error);
     }),
   );
-
   @Effect()
   deleteResourceSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteResourceSuccess),
-    map((action: DeleteResourceSuccess) => {
-      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Success', null));
+    concatMap((action) => {
+      return combineLatest(
+        this.store.select(selectLoadedDocumentInfo),
+        this.store.select(selectSelectedResource),
+      ).pipe(
+        take(1),
+        map(([igInfo, selected]) => {
+          if (selected && selected.id === (action as DeleteResourceSuccess).payload.id) {
+            this.router.navigate(['/' + 'ig/' + igInfo.documentId] );
+          }
+          return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Success', null));
+        }),
+      );
     }),
   );
 
@@ -342,29 +358,29 @@ export class IgEditEffects extends DamWidgetEffect {
         combineLatest(
           this.igService.addResource(action.payload),
           this.store.select(selectIgDocument).pipe(take(1))).pipe(
-            flatMap(([response, ig]) => {
-              return [
-                new fromDAM.TurnOffLoader(),
-                new LoadPayloadData({
-                  ...ig,
-                  conformanceProfileRegistry: response.data.ig.conformanceProfileRegistry,
-                  datatypeRegistry: response.data.ig.datatypeRegistry,
-                  segmentRegistry: response.data.ig.segmentRegistry,
-                  valueSetRegistry: response.data.ig.valueSetRegistry,
-                  coConstraintGroupRegistry: response.data.ig.coConstraintGroupRegistry,
-                  content: ig.content,
-                }),
-                this.igService.insertRepositoryFromIgDisplayInfo(response.data, ['datatypes', 'segments', 'valueSets', 'messages', 'coConstraintGroups']),
-                new AddResourceSuccess(response.data),
-              ];
-            }),
-            catchError((error: HttpErrorResponse) => {
-              return of(
-                new fromDAM.TurnOffLoader(),
-                new AddResourceFailure(error),
-              );
-            }),
-          );
+          flatMap(([response, ig]) => {
+            return [
+              new fromDAM.TurnOffLoader(),
+              new LoadPayloadData({
+                ...ig,
+                conformanceProfileRegistry: response.data.ig.conformanceProfileRegistry,
+                datatypeRegistry: response.data.ig.datatypeRegistry,
+                segmentRegistry: response.data.ig.segmentRegistry,
+                valueSetRegistry: response.data.ig.valueSetRegistry,
+                coConstraintGroupRegistry: response.data.ig.coConstraintGroupRegistry,
+                content: ig.content,
+              }),
+              this.igService.insertRepositoryFromIgDisplayInfo(response.data, ['datatypes', 'segments', 'valueSets', 'messages', 'coConstraintGroups']),
+              new AddResourceSuccess(response.data),
+            ];
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return of(
+              new fromDAM.TurnOffLoader(),
+              new AddResourceFailure(error),
+            );
+          }),
+        );
       return this.finalizeAdd(doAdd);
     }),
   );
@@ -410,20 +426,20 @@ export class IgEditEffects extends DamWidgetEffect {
         combineLatest(
           this.igService.copyResource(action.payload),
           this.store.select(selectIgDocument).pipe(take(1))).pipe(
-            flatMap(([response, ig]) => {
-              return [
-                new fromDAM.TurnOffLoader(),
-                ...this.igService.insertRepositoryCopyResource(response.data.reg, response.data.display, ig),
-                new CopyResourceSuccess(response.data),
-              ];
-            }),
-            catchError((error: HttpErrorResponse) => {
-              return of(
-                new fromDAM.TurnOffLoader(),
-                new CopyResourceFailure(error),
-              );
-            }),
-          );
+          flatMap(([response, ig]) => {
+            return [
+              new fromDAM.TurnOffLoader(),
+              ...this.igService.insertRepositoryCopyResource(response.data.reg, response.data.display, ig),
+              new CopyResourceSuccess(response.data),
+            ];
+          }),
+          catchError((error: HttpErrorResponse) => {
+            return of(
+              new fromDAM.TurnOffLoader(),
+              new CopyResourceFailure(error),
+            );
+          }),
+        );
       return this.finalizeAdd(doAdd);
     }),
   );
@@ -436,23 +452,33 @@ export class IgEditEffects extends DamWidgetEffect {
         blockUI: true,
       }));
       return combineLatest(
-        this.igService.deleteResource(action.payload.documentId, action.payload.element),
+        this.igService.deleteResource(action.payload.documentId,  action.payload.element),
+        this.store.select(selectSelectedResource),
         this.store.select(selectIgDocument).pipe(take(1))).pipe(
-          take(1),
-          flatMap(([response, ig]) => {
+        take(1),
+        flatMap(([response, selected, ig]) => {
+          if (selected && selected.id === action.payload.element.id) {
+            return [
+              new EditorReset(),
+              new fromDAM.TurnOffLoader(),
+              ...this.igService.deleteOneFromRepository(action.payload.element, ig),
+              new DeleteResourceSuccess(action.payload.element),
+            ];
+          } else {
             return [
               new fromDAM.TurnOffLoader(),
               ...this.igService.deleteOneFromRepository(action.payload.element, ig),
               new DeleteResourceSuccess(action.payload.element),
             ];
-          }),
-          catchError((error: HttpErrorResponse) => {
-            return of(
-              new fromDAM.TurnOffLoader(),
-              new DeleteResourceFailure(error),
-            );
-          }),
-        );
+          }
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new DeleteResourceFailure(error),
+          );
+        }),
+      );
     }),
   );
 
@@ -466,21 +492,21 @@ export class IgEditEffects extends DamWidgetEffect {
       return combineLatest(
         this.igService.createCoConstraintGroup(action.payload),
         this.store.select(selectIgDocument).pipe(take(1))).pipe(
-          take(1),
-          flatMap(([response, ig]) => {
-            return [
-              new fromDAM.TurnOffLoader(),
-              ...this.igService.insertRepositoryCopyResource(response.data.registry, response.data.display, ig),
-              new CreateCoConstraintGroupSuccess(response.data),
-            ];
-          }),
-          catchError((error: HttpErrorResponse) => {
-            return of(
-              new fromDAM.TurnOffLoader(),
-              new CreateCoConstraintGroupFailure(error),
-            );
-          }),
-        );
+        take(1),
+        flatMap(([response, ig]) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            ...this.igService.insertRepositoryCopyResource(response.data.registry, response.data.display, ig),
+            new CreateCoConstraintGroupSuccess(response.data),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new CreateCoConstraintGroupFailure(error),
+          );
+        }),
+      );
     }),
   );
 
@@ -532,40 +558,40 @@ export class IgEditEffects extends DamWidgetEffect {
     return combineLatest(
       this.store.select(selectTableOfContentChanged),
       this.store.select(selectIgDocument)).pipe(
-        take(1),
-        mergeMap(([changed, ig]) => {
-          if (changed) {
-            this.store.dispatch(new TableOfContentSave({
-              sections: ig.content,
-              id: ig.id,
-            }));
+      take(1),
+      mergeMap(([changed, ig]) => {
+        if (changed) {
+          this.store.dispatch(new TableOfContentSave({
+            sections: ig.content,
+            id: ig.id,
+          }));
 
-            return RxjsStoreHelperService.listenAndReact(this.actions$, {
-              [IgEditActionTypes.TableOfContentSaveSuccess]: {
-                do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
-                  return toDoo;
-                },
-                filter: (tocSaveSuccess: TableOfContentSaveSuccess) => {
-                  return tocSaveSuccess.igId === ig.id;
-                },
+          return RxjsStoreHelperService.listenAndReact(this.actions$, {
+            [IgEditActionTypes.TableOfContentSaveSuccess]: {
+              do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                return toDoo;
               },
-              [IgEditActionTypes.TableOfContentSaveFailure]: {
-                do: (tocSaveFailure: TableOfContentSaveFailure) => {
-                  return of(
-                    new fromDAM.TurnOffLoader(),
-                    this.message.userMessageToAction(new UserMessage(MessageType.FAILED, 'Could not add resources due to failure to save table of content')),
-                  );
-                },
-                filter: (tocSaveSuccess: TableOfContentSaveFailure) => {
-                  return tocSaveSuccess.igId === ig.id;
-                },
+              filter: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                return tocSaveSuccess.igId === ig.id;
               },
-            });
-          } else {
-            return toDoo;
-          }
-        }),
-      );
+            },
+            [IgEditActionTypes.TableOfContentSaveFailure]: {
+              do: (tocSaveFailure: TableOfContentSaveFailure) => {
+                return of(
+                  new fromDAM.TurnOffLoader(),
+                  this.message.userMessageToAction(new UserMessage(MessageType.FAILED, 'Could not add resources due to failure to save table of content')),
+                );
+              },
+              filter: (tocSaveSuccess: TableOfContentSaveFailure) => {
+                return tocSaveSuccess.igId === ig.id;
+              },
+            },
+          });
+        } else {
+          return toDoo;
+        }
+      }),
+    );
   }
 
   constructor(
@@ -573,6 +599,8 @@ export class IgEditEffects extends DamWidgetEffect {
     private igService: IgService,
     private store: Store<any>,
     private message: MessageService,
+    private router: Router,
+    private activeRoute: ActivatedRoute,
   ) {
     super(IG_EDIT_WIDGET_ID, actions$);
   }

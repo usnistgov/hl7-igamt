@@ -1,10 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {Router} from '@angular/router';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import {catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap} from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import {EditorReset} from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { Message, MessageType, UserMessage } from '../../../modules/dam-framework/models/messages/message.class';
@@ -15,8 +17,10 @@ import { IDocumentDisplayInfo } from '../../../modules/ig/models/ig/ig-document.
 import {LIBRARY_EDIT_WIDGET_ID} from '../../../modules/library/components/library-edit-container/library-edit-container.component';
 import {ILibrary} from '../../../modules/library/models/library.class';
 import {LibraryService} from '../../../modules/library/services/library.service';
-import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
+import {selectSelectedResource} from '../../dam-igamt/igamt.selected-resource.selectors';
+import {selectLoadedDocumentInfo} from '../../dam-igamt/igamt.selectors';
+import {IgEditActionTypes} from '../../ig/ig-edit/ig-edit.actions';
 import {
   LibOpenNarrativeEditorNode, PublishLibrary, PublishLibraryFailure,
   UpdateSections,
@@ -36,16 +40,10 @@ import {
   LibraryEditResolverLoadFailure,
   LibraryEditResolverLoadSuccess,
   LibraryEditTocAddResource,
-  LoadResourceReferences,
-  LoadResourceReferencesFailure,
-  LoadResourceReferencesSuccess,
   OpenLibraryMetadataEditorNode,
   TableOfContentSave,
   TableOfContentSaveFailure,
   TableOfContentSaveSuccess,
-  ToggleDelta,
-  ToggleDeltaFailure,
-  ToggleDeltaSuccess,
 } from './library-edit.actions';
 import {
   selectLibrary, selectLibraryId,
@@ -318,8 +316,19 @@ export class LibraryEditEffects extends DamWidgetEffect {
   @Effect()
   deleteResourceSuccess$ = this.actions$.pipe(
     ofType(LibraryEditActionTypes.DeleteResourceSuccess),
-    map((action: DeleteResourceSuccess) => {
-      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Success', null));
+    concatMap((action: DeleteResourceSuccess) => {
+      return combineLatest(
+        this.store.select(selectLoadedDocumentInfo),
+        this.store.select(selectSelectedResource),
+      ).pipe(
+        take(1),
+        map(([libInfo, selected]) => {
+          if (selected && selected.id === (action as DeleteResourceSuccess).payload.id) {
+            this.router.navigate(['/' + 'datatype-library/' + libInfo.documentId] );
+          }
+          return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Success', null));
+        }),
+      );
     }),
   );
 
@@ -385,7 +394,6 @@ export class LibraryEditEffects extends DamWidgetEffect {
       return this.finalizeAdd(doAdd);
     }),
   );
-
   @Effect()
   libDeleteResource = this.actions$.pipe(
     ofType(LibraryEditActionTypes.DeleteResource),
@@ -395,14 +403,24 @@ export class LibraryEditEffects extends DamWidgetEffect {
       }));
       return combineLatest(
         this.libraryService.deleteResource(action.payload.documentId, action.payload.element),
+        this.store.select(selectSelectedResource),
         this.store.select(selectLibrary).pipe(take(1))).pipe(
         take(1),
-        flatMap(([response, ig]) => {
-          return [
-            new fromDAM.TurnOffLoader(),
-            ...this.libraryService.deleteOneFromRepository(action.payload.element, ig),
-            new DeleteResourceSuccess(action.payload.element),
-          ];
+        flatMap(([response, selected , lib]) => {
+            if (selected && selected.id === action.payload.element.id) {
+              return [
+                new EditorReset(),
+                new fromDAM.TurnOffLoader(),
+                ...this.libraryService.deleteOneFromRepository(action.payload.element, lib),
+                new DeleteResourceSuccess(action.payload.element),
+              ];
+            } else {
+              return [
+                new fromDAM.TurnOffLoader(),
+                ...this.libraryService.deleteOneFromRepository(action.payload.element, lib),
+                new DeleteResourceSuccess(action.payload.element),
+              ];
+            }
         }),
         catchError((error: HttpErrorResponse) => {
           return of(
@@ -413,34 +431,6 @@ export class LibraryEditEffects extends DamWidgetEffect {
       );
     }),
   );
-  // @Effect()
-  // displayDelta$ = this.actions$.pipe(
-  //   ofType(LibraryEditActionTypes.ToggleDelta),
-  //   switchMap((action: ToggleDelta) => {
-  //     this.store.dispatch(new fromDAM.TurnOnLoader({
-  //       blockUI: true,
-  //     }));
-  //     return this.libraryService.getDisplay(action.igId, action.delta).pipe(
-  //       flatMap((igInfo: IDocumentDisplayInfo<ILibrary>) => {
-  //         return [
-  //           this.libraryService.loadRepositoryFromDisplayInfo(igInfo),
-  //           new fromDAM.SetValue({
-  //             delta: action.delta,
-  //           }),
-  //           new ToggleDeltaSuccess(igInfo, action.delta),
-  //           new fromDAM.TurnOffLoader(),
-  //         ];
-  //       }),
-  //       catchError((error: HttpErrorResponse) => {
-  //         return of(
-  //           new fromDAM.TurnOffLoader(),
-  //           new ToggleDeltaFailure(error),
-  //         );
-  //       }),
-  //     );
-  //   }),
-  // );
-
   finalizeAdd(toDoo: Observable<Action>) {
     return combineLatest(
       this.store.select(selectTableOfContentChanged),
@@ -486,6 +476,7 @@ export class LibraryEditEffects extends DamWidgetEffect {
     private libraryService: LibraryService,
     private store: Store<any>,
     private message: MessageService,
+    private router: Router,
     private resourceService: ResourceService,
   ) {
     super(LIBRARY_EDIT_WIDGET_ID, actions$);

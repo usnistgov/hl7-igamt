@@ -27,6 +27,7 @@ import * as fromResource from '../../../../root-store/resource-loader/resource-l
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
 import {selectIsAdmin} from '../../../dam-framework/store/authentication';
+import {EditorReset, selectWorkspaceActive} from '../../../dam-framework/store/data';
 import {IAddWrapper} from '../../../document/models/document/add-wrapper.class';
 import {IDocumentDisplayInfo} from '../../../ig/models/ig/ig-document.class';
 import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
@@ -269,6 +270,17 @@ export class LibraryEditSidebarComponent implements OnInit {
       withLatestFrom(this.deltaMode$),
       map(([id, delta]) => {
         this.store.dispatch(new ToggleDelta(id, !delta));
+      }),
+    ).subscribe();
+  }
+  checkDeleteNarrative($event: string) {
+    this.store.select(selectWorkspaceActive).pipe(
+      take(1),
+      map((x) => {
+        if (x.display && x.display.id && x.display.id === $event) {
+          this.store.dispatch(new EditorReset());
+          this.router.navigate(['./' + 'metadata'], { relativeTo: this.activeRoute });
+        }
       }),
     ).subscribe();
   }
