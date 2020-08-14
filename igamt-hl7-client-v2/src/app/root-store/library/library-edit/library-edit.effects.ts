@@ -323,7 +323,7 @@ export class LibraryEditEffects extends DamWidgetEffect {
       ).pipe(
         take(1),
         map(([libInfo, selected]) => {
-          if (selected && selected.id === (action as DeleteResourceSuccess).payload.id) {
+          if (selected && selected.id === action.payload.id) {
             this.router.navigate(['/' + 'datatype-library/' + libInfo.documentId] );
           }
           return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Success', null));

@@ -331,14 +331,14 @@ export class IgEditEffects extends DamWidgetEffect {
   @Effect()
   deleteResourceSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteResourceSuccess),
-    concatMap((action) => {
+    concatMap((action: DeleteResourceSuccess) => {
       return combineLatest(
         this.store.select(selectLoadedDocumentInfo),
         this.store.select(selectSelectedResource),
       ).pipe(
         take(1),
         map(([igInfo, selected]) => {
-          if (selected && selected.id === (action as DeleteResourceSuccess).payload.id) {
+          if (selected && selected.id === action.payload.id) {
             this.router.navigate(['/' + 'ig/' + igInfo.documentId] );
           }
           return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Success', null));

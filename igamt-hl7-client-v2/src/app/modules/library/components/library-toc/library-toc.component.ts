@@ -191,7 +191,6 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
     this.addChild.emit({ node, type });
   }
 
-
   filterByDelta($event: string[]) {
     this.tree.treeModel.filterNodes((node) => node.data.delta != null && $event.indexOf(node.data.delta) > -1 && node.data.Type !== Type.TEXT);
   }
