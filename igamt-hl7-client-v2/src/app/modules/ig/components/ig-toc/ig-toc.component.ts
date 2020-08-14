@@ -55,6 +55,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   delete = new EventEmitter<IDisplayElement>();
   @Output()
+  deleteNarrative = new EventEmitter<string>();
+  @Output()
   addChildren = new EventEmitter<IAddWrapper>();
   @Output()
   addChild = new EventEmitter<IAddNewWrapper>();
@@ -117,6 +119,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   deleteSection(section) {
     this.nodeHelperService.deleteSection(section.id, this.tree.treeModel);
     this.update();
+    this.deleteNarrative.emit(section.id);
   }
 
   import(node, type: Type, scope: Scope) {
