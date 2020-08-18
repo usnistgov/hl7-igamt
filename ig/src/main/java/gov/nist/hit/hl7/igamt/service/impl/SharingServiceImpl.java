@@ -79,7 +79,7 @@ public class SharingServiceImpl implements SharingService {
     }
     updateSharingInfo(ig, sharedUsersInfo);
 
-    for(Link l: ig.getProfileComponentRegistry().getChildren()) {
+    for(Link l: ig.getConformanceProfileRegistry().getChildren()) {
       if(l.isUser()) {
         this.shareConformanceProfile(l.getId(), sharedUsersInfo);
       }

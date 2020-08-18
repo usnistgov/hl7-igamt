@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.StandardKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -39,7 +40,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SCOPE;
 import gov.nist.hit.hl7.igamt.valueset.repository.ValuesetRepository;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -66,7 +66,7 @@ public class TablesFixes {
   public static String HL70396Id="HL70396V2-x";
 
   public Valueset createTable0396() {
-    List<Valueset> vslist=  valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(SCOPE.HL7STANDARD.toString(), "2.8.2", "HL70396");
+    List<Valueset> vslist=  valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(Scope.HL7STANDARD.toString(), "2.8.2", "HL70396");
     Valueset vs = vslist.get(0);
     vs.setId(HL70396Id);
     vs.setVersion((long) 0);
@@ -141,7 +141,7 @@ public class TablesFixes {
   public  HashMap<String, String> collectIds() {
     HashMap<String, String> ids= new HashMap<String, String>();
 
-    List<Valueset> dynamicTables= valueSetService.findByDomainInfoScopeAndBindingIdentifier(SCOPE.HL7STANDARD.toString(), "HL70396");
+    List<Valueset> dynamicTables= valueSetService.findByDomainInfoScopeAndBindingIdentifier(Scope.HL7STANDARD.toString(), "HL70396");
     for(Valueset s: dynamicTables) {
       ids.put(s.getId(), HL70396Id);
     }
@@ -208,7 +208,7 @@ public class TablesFixes {
     vsDtMap.put("HL70537", "DIN");
     vsDtMap.put("HL79999", "");
         
-    List<Segment> segments = segmentService.findByDomainInfoScope(SCOPE.HL7STANDARD.toString());
+    List<Segment> segments = segmentService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
     for(Segment s: segments) {
       removeIf(s, vsDtMap);
       segmentService.save(s);

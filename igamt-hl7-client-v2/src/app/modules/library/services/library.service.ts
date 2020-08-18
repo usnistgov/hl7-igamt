@@ -147,7 +147,7 @@ export class LibraryService {
       variableName: library.metadata.subTitle,
       description: library.metadata.implementationNotes,
       domainInfo: library.domainInfo,
-      type: Type.IGDOCUMENT,
+      type: Type.DATATYPELIBRARY,
       leaf: true,
       differential: !!library.origin,
       isExpanded: true,

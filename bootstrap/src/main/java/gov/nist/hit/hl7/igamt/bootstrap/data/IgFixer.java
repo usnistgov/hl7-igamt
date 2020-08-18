@@ -11,12 +11,172 @@
  */
 package gov.nist.hit.hl7.igamt.bootstrap.data;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public class IgFixer {
-  
- 
 
+@Service
+public class IgFixer {
+
+  @Autowired
+  ConformanceProfileService conformanceProfileService;
+
+  @Autowired
+  SegmentService segmentService;
+
+  @Autowired
+  DatatypeService datatypeService;
+
+  @Autowired
+  ValuesetService valuesetService;
+
+  @Autowired
+  IgService igService;
+  @Autowired
+  private CoConstraintService coConstraintService;
+
+  public void deleteArived() {
+    
+  }
+  
+  
+  public void fixIgComponents() throws CoConstraintGroupNotFoundException {
+    List<Ig> igs=  igService.findAll();
+    for(Ig ig: igs) {
+      if(ig.getDomainInfo().getScope() != Scope.ARCHIVED) {
+      if(ig.getStatus()!=null && ig.getStatus().equals(Status.PUBLISHED)) {
+        ig.setUsername(null);
+      }
+      for(Link l: ig.getConformanceProfileRegistry().getChildren()) {
+        if(l.isUser()) {
+          l.setUsername(ig.getUsername());
+          this.fixConformanceProfile(l.getId(), ig.getUsername());
+        }
+      } 
+      for(Link l: ig.getSegmentRegistry().getChildren()) {
+        if(l.isUser()) {
+          l.setUsername(ig.getUsername());
+          this.fixSegment(l.getId(), ig.getUsername());
+        }
+      } 
+      for(Link l: ig.getDatatypeRegistry().getChildren()) {
+        if(l.isUser()) {
+          l.setUsername(ig.getUsername());
+          this.fixDatatype(l.getId(), ig.getUsername());
+        }
+      } 
+      for(Link l: ig.getValueSetRegistry().getChildren()) {
+        if(l.isUser()) {
+          l.setUsername(ig.getUsername());
+          this.fixValueset(l.getId(), ig.getUsername());
+        }
+      } 
+      for(Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
+        l.setUsername(ig.getUsername());
+        if(l.getId() ==null) {
+          System.out.println(l);
+        }
+        this.fixCoConstraintGroup(l.getId(), ig.getUsername());
+      }
+    
+      igService.save(ig);
+      }
+    }      
+}
+
+  /**
+   * @param id
+   * @param username
+   * @throws CoConstraintGroupNotFoundException 
+   */
+  private void fixCoConstraintGroup(String id, String username) throws CoConstraintGroupNotFoundException {
+    // TODO Auto-generated method stub
+    CoConstraintGroup c= coConstraintService.findById(id);
+    if(c != null) {
+      c.setUsername(username);
+      this.coConstraintService.saveCoConstraintGroup(c);
+    }
+  }
+
+
+  /**
+   * @param id
+   * @param username
+   */
+  private void fixValueset(String id, String username) {
+    // TODO Auto-generated method stub
+    Valueset vs = this.valuesetService.findById(id);
+    if(vs !=null) {
+      vs.setUsername(username);
+      this.valuesetService.save(vs);
+    }
+    
+  }
+
+
+  /**
+   * @param id
+   * @param username
+   */
+  private void fixDatatype(String id, String username) {
+    // TODO Auto-generated method stub
+    Datatype dt = this.datatypeService.findById(id);
+    if(dt !=null) {
+      dt.setUsername(username);
+      this.datatypeService.save(dt);
+    }
+    
+  }
+
+
+  /**
+   * @param id
+   * @param username
+   */
+  private void fixSegment(String id, String username) {
+    // TODO Auto-generated method stub
+    Segment segment = this.segmentService.findById(id);
+    if(segment !=null) {
+      segment.setUsername(username);
+      this.segmentService.save(segment);
+    }
+    
+  }
+
+  /**
+   * @param id
+   * @param username
+   */
+  private void fixConformanceProfile(String id, String username) {
+    // TODO Auto-generated method stub
+    ConformanceProfile conformanceProfile = this.conformanceProfileService.findById(id);
+    if(conformanceProfile !=null) {
+      conformanceProfile.setUsername(username);
+      this.conformanceProfileService.save(conformanceProfile);
+    }
+    
+  }
 }

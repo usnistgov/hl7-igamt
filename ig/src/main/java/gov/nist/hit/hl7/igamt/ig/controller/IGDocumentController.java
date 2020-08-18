@@ -429,11 +429,6 @@ public class IGDocumentController extends BaseController {
 
     IGDisplay ret = displayConverter.convertDomainToModel(igdoument, igData);
 
-    //		igService.buildDependencies(igData);
-
-    // List<RelationShip> relationShip=relationShipService.findAll();
-    // System.out.println(relationShip);
-    //
     return ret;
   }
 
@@ -520,6 +515,7 @@ public class IGDocumentController extends BaseController {
       @RequestBody Set<TextSection> content, Authentication authentication)
           throws Exception {
     Ig ig = this.findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     updateAndClean(content, ig);
     igService.save(ig);
     return new ResponseMessage<Object>(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
