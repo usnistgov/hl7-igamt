@@ -42,15 +42,6 @@ export class MetadataEditComponent extends ResourceMetadataEditorComponent imple
       store,
       froalaService,
     );
-    // this.metadataFormInput$ = combineLatest(this.metadataFormInput$, store.select(selectLoadedDocumentInfo)).pipe(
-    //   take(1),
-    //   map(([form, info]) => {
-    //     // tslint:disable-next-line:no-all-duplicated-branches
-    //     if (info.type === Type.DATATYPELIBRARY) {
-    //       return form;
-    //     } else { return form; }
-    //   }),
-    // );
   }
   save(changes: IChange[]): Observable<Message<any>> {
     return combineLatest(this.elementId$, this.documentRef$).pipe(
