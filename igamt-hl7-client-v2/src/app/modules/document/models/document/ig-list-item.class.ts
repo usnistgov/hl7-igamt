@@ -8,7 +8,7 @@ export class IgListItem {
   id: string;
   username: any;
   participants?: any;
-  conformanceProfiles: string[];
+  elements?: string[];
   status: any;
   sharePermission?: string;
   sharedUsers?: string[];

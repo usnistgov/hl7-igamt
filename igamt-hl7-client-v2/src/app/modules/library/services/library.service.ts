@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import {TableOfContentSave} from '../../../root-store/library/library-edit/library-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import {IDocumentCreationWrapper} from '../../document/models/document/document-creation.interface';
 import {IDocument} from '../../document/models/document/IDocument.interface';
@@ -129,10 +130,8 @@ export class LibraryService {
           values: sectionList,
         }],
       }),
-      new fromDam.SetValue({
-        tableOfContentEdit: {
-          changed: true,
-        },
+      new TableOfContentSave({
+        sections: content, id: library.id,
       }),
     ];
   }
@@ -148,7 +147,7 @@ export class LibraryService {
       variableName: library.metadata.subTitle,
       description: library.metadata.implementationNotes,
       domainInfo: library.domainInfo,
-      type: Type.IGDOCUMENT,
+      type: Type.DATATYPELIBRARY,
       leaf: true,
       differential: !!library.origin,
       isExpanded: true,

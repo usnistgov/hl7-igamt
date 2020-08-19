@@ -77,27 +77,8 @@ public class Constant {
 
   public final static int CODESIZELIMIT = 3000;
 
-  public enum SCOPE {
-    HL7STANDARD, MASTER, USER, PRELOADED, PHINVADS, INTERMASTER, ARCHIVED
-  };
-  public enum QUANTUM {
-    BREVIS, SUMMA
-  };
-
-
   public final static String ORG_NAME = "NIST";
   public static final String DATATYPE_LIBRARY_DOCUMENT = "datatypeLibraryDocument";
 
-  public static enum STATUS {
-    PUBLISHED, UNPUBLISHED
-  };
 
-  public static enum DataContext {
-    IG, LIBRARY;
-  }
-
-  public enum BindingType {
-    singlecode, valueset
-  }
- 
 }

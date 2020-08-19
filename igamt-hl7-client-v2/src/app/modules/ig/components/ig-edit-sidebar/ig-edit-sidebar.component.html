@@ -48,7 +48,7 @@
     <button  class="btn btn-text btn-sm btn-primary"  (click)="collapseAll()">
       <i class="fa fa-compress"></i>
     </button>
-    <button  class="btn btn-text btn-sm btn-primary" type="button" (click)="addSection()">
+    <button  class="btn btn-text btn-sm btn-primary" type="button" [disabled]="viewOnly$ | async" (click)="addSection()">
       <i class="fa fa-plus"></i>
     </button>
   </div>

@@ -9,7 +9,7 @@ import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rx
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import {
   ImportResourceFromFile,
-  LibraryEditActionTypes, selectViewOnly,
+  LibraryEditActionTypes, selectViewOnly, TableOfContentSave,
 } from 'src/app/root-store/library/library-edit/library-edit.index';
 import { selectLibraryId } from 'src/app/root-store/library/library-edit/library-edit.index';
 import * as fromLibraryEdit from 'src/app/root-store/library/library-edit/library-edit.index';
