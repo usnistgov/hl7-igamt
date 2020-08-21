@@ -57,7 +57,7 @@ export class CoConstraintBindingDialogComponent implements OnInit {
       {
         criterion: RestrictionType.TYPE,
         allow: true,
-        value: [Type.SEGMENT],
+        value: [Type.SEGMENTREF],
       },
     ],
   };
