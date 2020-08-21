@@ -31,13 +31,8 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
 
   selectedColumns: any[] = [];
   cols: any[] = [];
-  @Input()
-  viewOnly: boolean;
   codeSystemOptions: any[];
   hasOrigin$: Observable<boolean>;
-  get viewOnly$() {
-    return this._viewOnly$;
-  }
   constructor(
     readonly repository: StoreResourceRepositoryService,
     private valueSetService: ValueSetService,
@@ -58,20 +53,6 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
       [],
       [],
     );
-    this._viewOnly$ = combineLatest(
-      this.store.select(fromIgamtSelectors.selectViewOnly),
-      this.store.select(fromIgamtSelectors.selectDelta),
-      this.store.select(fromIgamtSelectors.selectWorkspaceActive).pipe(
-        map((active) => {
-          return active.display.domainInfo && !(active.display.domainInfo.scope === Scope.USER || (active.display.domainInfo.scope === Scope.PHINVADS && active.display.flavor));
-        }),
-      ),
-    ).pipe(
-      map(([vOnly, delta, notUser]) => {
-        return vOnly || notUser || delta;
-      }),
-    );
-
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
     this.resource$.subscribe((resource: IValueSet) => {
       this.cols = [];

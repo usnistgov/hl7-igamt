@@ -295,6 +295,10 @@ public class ValuesetServiceImpl implements ValuesetService {
                 item.setOldPropertyValue(s.getIntensionalComment());
                 s.setContentDefinition(ContentDefinition.fromValue((String) item.getPropertyValue()));
             }
+            else if (item.getPropertyType().equals(PropertyType.NAME)) {
+                item.setOldPropertyValue(s.getName());
+                s.setName((String) item.getPropertyValue());
+            }
 
         }
         this.save(s);
@@ -315,7 +319,7 @@ public class ValuesetServiceImpl implements ValuesetService {
     @Override
     public Valueset findExternalPhinvadsByOid(String oid) {
         Criteria where = Criteria.where("oid").is(oid);
-        where.andOperator(Criteria.where("domainInfo.scope").is(Constant.SCOPE.PHINVADS),Criteria.where("isFlavor").is(false));
+        where.andOperator(Criteria.where("domainInfo.scope").is(Scope.PHINVADS),Criteria.where("isFlavor").is(false));
         Query qry = Query.query(where);
         Valueset valueSet = mongoTemplate.findOne(qry, Valueset.class);
         return valueSet;

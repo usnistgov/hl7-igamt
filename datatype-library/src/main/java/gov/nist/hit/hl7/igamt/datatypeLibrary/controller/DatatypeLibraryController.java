@@ -88,7 +88,6 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.service.EvolutionComparatorService
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.DeltaTreeNode;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SCOPE;
 
 
 
@@ -198,7 +197,7 @@ public class DatatypeLibraryController {
     if (wrapper.getSelected() != null || !wrapper.getSelected().isEmpty()) {
       for (AddingInfo elm : wrapper.getSelected()) {
         List<Datatype> datatypes = datatypeService.findByNameAndVersionAndScope(elm.getName(),
-            elm.getDomainInfo().getVersion(), SCOPE.HL7STANDARD.toString());
+            elm.getDomainInfo().getVersion(), Scope.HL7STANDARD.toString());
         if (elm.isFlavor()) {
 
         if (datatypes != null && !datatypes.isEmpty()) {
@@ -218,7 +217,7 @@ public class DatatypeLibraryController {
         }
         } else {
           throw new DatatypeNotFoundException(elm.getName(), elm.getDomainInfo().getVersion(),
-              SCOPE.HL7STANDARD.toString().toString());
+              Scope.HL7STANDARD.toString().toString());
         }
       }
     }

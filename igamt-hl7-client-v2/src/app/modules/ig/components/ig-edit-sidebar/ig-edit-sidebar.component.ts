@@ -30,6 +30,7 @@ import { ClearResource, LoadResource } from '../../../../root-store/resource-loa
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
+import {EditorReset, selectWorkspaceActive} from '../../../dam-framework/store/data';
 import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
 import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
@@ -367,5 +368,17 @@ export class IgEditSidebarComponent implements OnInit {
     if (this.delta) {
       this.toc.filterByDelta($event);
     }
+  }
+
+  checkDeleteNarrative($event: string) {
+    this.store.select(selectWorkspaceActive).pipe(
+      take(1),
+      map((x) => {
+        if (x.display && x.display.id && x.display.id === $event) {
+          this.store.dispatch(new EditorReset());
+          this.router.navigate(['./' + 'metadata'], { relativeTo: this.activeRoute });
+        }
+    }),
+    ).subscribe();
   }
 }

@@ -61,7 +61,7 @@
               <div style="width: 100%">
                 <p-dropdown (ngModelChange)="submitValueSet(rowData, $event)" *ngIf="edit[index]"
                             [(ngModel)]="temp" [appendTo]="anchor3" [autoDisplayFirst]="false"
-                            [optionLabel]="'variableName'" [options]="data.resources"
+                            [optionLabel]="'variableName'" [options]="data.resources" [filter]="true"
                             placeholder="select value set" [style]="{'minWidth': '100%'}">
                   <ng-template let-item pTemplate="selectedItem">
                     <ng-container *ngIf="item.value">
@@ -98,7 +98,7 @@
     <div #vsDrpD>
       <p-dropdown (ngModelChange)="loadCodes($event)" *ngIf="selectedBindingType!=='VALUESET'"
                   [(ngModel)]="selectedValueSet"
-                  [appendTo]="vsDrpD" [optionLabel]="'variableName'" [options]="data.resources"
+                  [appendTo]="vsDrpD" [optionLabel]="'variableName'" [filter]="true" [options]="data.resources"
                   [style]="{'minWidth':'100%'}" placeholder="select value set">
         <ng-template let-item pTemplate="selectedItem">
           <ng-container *ngIf="item.value">
