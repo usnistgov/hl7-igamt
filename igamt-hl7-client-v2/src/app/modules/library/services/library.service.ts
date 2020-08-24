@@ -306,10 +306,14 @@ export class LibraryService {
     return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + libId + this.CONFIGURATION + conflibId + '/getFilteredDocument');
   }
 
-getLastUserConfiguration = (libId: string): Observable<IExportConfigurationGlobal> => {
+  getLastUserConfiguration = (libId: string): Observable<IExportConfigurationGlobal> => {
     return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + libId +   '/getLastUserConfiguration');
   }
   getDisplay(id: string, delta: boolean) {
       return this.getDisplayInfo(id);
+  }
+
+  deactivateElements(documentId: string, elements: string[]): Observable<Message<any>> {
+    return this.http.post<Message<string>>(this.LIBRARY_END_POINT + documentId + '/deactivate-children' ,  elements);
   }
 }

@@ -87,5 +87,12 @@ Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundExceptio
    */
   public String publishLibray(String id, PublicationResult publicationResult);
 
+  /**
+   * @param id
+   * @param datatypes
+   * @return
+   */
+  void deactivateChildren(String id, Set<String> ids);
+
 
 }

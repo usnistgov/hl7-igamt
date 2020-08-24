@@ -8,6 +8,7 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import {
+  DeactivateElements,
   ImportResourceFromFile,
   LibraryEditActionTypes, selectViewOnly, TableOfContentSave,
 } from 'src/app/root-store/library/library-edit/library-edit.index';
@@ -289,5 +290,48 @@ export class LibraryEditSidebarComponent implements OnInit {
     if (this.delta) {
       this.toc.filterByDelta($event);
     }
+  }
+
+  deactivate($event: IDisplayElement) {
+    console.log($event);
+    this.documentRef$.pipe(
+      take(1),
+      concatMap((documentRef: IDocumentRef) => {
+        return this.crossReferencesService.findUsagesDisplay(documentRef, Type.DATATYPELIBRARY, $event.type, $event.id).pipe(
+          take(1),
+          map((usages: IUsages[]) => {
+            if (usages.length === 0) {
+              const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+                data: {
+                  question: 'Are you sure you want to Deactivate this ' + this.getStringFromType($event.type) + '?',
+                  action: 'Deactivate ' + this.getStringFromType($event.type),
+                },
+              });
+              dialogRef.afterClosed().subscribe(
+                (answer) => {
+                  if (answer) {
+                    this.store.dispatch(new DeactivateElements( documentRef.documentId, [$event.id]));
+                  }
+                },
+              );
+            } else {
+              const dialogRef = this.dialog.open(UsageDialogComponent, {
+                data: {
+                  title: 'Cross References found',
+                  usages,
+                  documentId: documentRef.documentId,
+                },
+              });
+              this.router.events
+                .subscribe((h) => {
+                  dialogRef.close();
+                });
+              dialogRef.afterClosed().subscribe(
+              );
+            }
+          }),
+        );
+      }),
+    ).subscribe();
   }
 }

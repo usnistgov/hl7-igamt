@@ -22,6 +22,7 @@ import {selectSelectedResource} from '../../dam-igamt/igamt.selected-resource.se
 import {selectLoadedDocumentInfo} from '../../dam-igamt/igamt.selectors';
 import {IgEditActionTypes} from '../../ig/ig-edit/ig-edit.actions';
 import {
+  DeactivateElements, DeactivateElementsFailure, DeactivateElementsSuccess,
   LibOpenNarrativeEditorNode, PublishLibrary, PublishLibraryFailure,
   UpdateSections,
 } from './library-edit.actions';
@@ -94,31 +95,7 @@ export class LibraryEditEffects extends DamWidgetEffect {
     }),
   );
 
-  @Effect()
-  libraryPublish$ = this.actions$.pipe(
-    ofType(LibraryEditActionTypes.PublishLibrary),
-    switchMap((action: PublishLibrary) => {
-      this.store.dispatch(new fromDAM.TurnOnLoader({
-        blockUI: true,
-      }));
-      return this.libraryService.publish(action.libId, action.publicationResult).pipe(
-        take(1),
-        flatMap((response: Message<string>) => {
-          return [
-            new fromDAM.TurnOffLoader(),
-            this.message.messageToAction(new Message(MessageType.SUCCESS, 'Library Publish Success', null)),
-            new LibraryEditResolverLoad(response.data),
-          ];
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return of(
-            new fromDAM.TurnOffLoader(),
-            new PublishLibraryFailure(error),
-          );
-        }),
-      );
-    }),
-  );
+
 
   @Effect()
   igEditResolverLoadFailure$ = this.actions$.pipe(
@@ -426,6 +403,60 @@ export class LibraryEditEffects extends DamWidgetEffect {
           return of(
             new fromDAM.TurnOffLoader(),
             new DeleteResourceFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  DeactivateElements = this.actions$.pipe(
+    ofType(LibraryEditActionTypes.DeactivateElements),
+    switchMap((action: DeactivateElements) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      return combineLatest(
+        this.libraryService.deactivateElements(action.documentId, action.elements),
+        this.store.select(selectLibrary).pipe(take(1))).pipe(
+        take(1),
+        flatMap(([response , lib]) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            this.message.messageToAction(new Message(MessageType.SUCCESS, 'Resource Deactivated ', null)),
+            new LibraryEditResolverLoad(lib.id),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new DeactivateElementsFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  libraryPublish$ = this.actions$.pipe(
+    ofType(LibraryEditActionTypes.PublishLibrary),
+    switchMap((action: PublishLibrary) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      return this.libraryService.publish(action.libId, action.publicationResult).pipe(
+        take(1),
+        flatMap((response: Message<string>) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            this.message.messageToAction(new Message(MessageType.SUCCESS, 'Library Publish Success', null)),
+            new LibraryEditResolverLoad(response.data),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new PublishLibraryFailure(error),
           );
         }),
       );

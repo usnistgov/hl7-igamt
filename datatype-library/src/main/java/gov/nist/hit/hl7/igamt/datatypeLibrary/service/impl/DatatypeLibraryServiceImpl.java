@@ -45,6 +45,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ActiveInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
@@ -516,6 +518,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     PublicationSummary summary= new PublicationSummary();
     summary.entries= new ArrayList<PublicationEntry>();
     List<Datatype> toPublish = this.datatypeService.findByParentId(id);
+    
     System.out.println(toPublish.size());
 
     for(Datatype d : toPublish) {
@@ -585,6 +588,31 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     this.save(lib);
     return lib.getId();
   }
+  
+  @Override
+  public void deactivateChildren(String id, Set<String> ids) {
+    // TODO Auto-generated method stub
+
+   List<Datatype> datatypes =  this.datatypeService.findByIdIn(ids);
+   for(Datatype d: datatypes) {
+     ActiveInfo info  = new ActiveInfo();
+     info.setStatus(ActiveStatus.DEPRECATED);
+     
+     if(d.getActiveInfo() != null && d.getActiveInfo().getStart() !=null) {
+       info.setStart(d.getActiveInfo().getStart());
+      
+     }else {
+       info.setStart(d.getCreationDate());
+     }
+     info.setEnd(new Date());
+    
+     d.setActiveInfo(info);
+     datatypeService.save(d);
+     }
+   }
+  
+  
+  
 
   @Override
   public DatatypeLibraryDataModel generateDataModel(DatatypeLibrary dl) throws Exception {

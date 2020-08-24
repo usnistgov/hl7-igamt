@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.common.base.domain.display;
 
 import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.common.base.domain.ActiveInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
@@ -23,8 +24,7 @@ public class DisplayElement {
   private boolean isFlavor;
   private Status status;
   private PublicationInfo publicationInfo;
-
-
+  private ActiveInfo activeInfo;
   private Type parentType;
   private String parentId;
 
@@ -154,6 +154,12 @@ public class DisplayElement {
 
   public void setPublicationInfo(PublicationInfo publicationInfo) {
     this.publicationInfo = publicationInfo;
+  }
+  public ActiveInfo getActiveInfo() {
+    return activeInfo;
+  }
+  public void setActiveInfo(ActiveInfo activeInfo) {
+    this.activeInfo = activeInfo;
   }
 
 @Override

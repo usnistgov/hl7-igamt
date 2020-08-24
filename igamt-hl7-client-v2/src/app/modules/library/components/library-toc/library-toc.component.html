@@ -51,18 +51,18 @@
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" [compatibility]="node.data.domainInfo.scope!=='HL7STANDARD'"></app-display-section>
 
           <context-menu #datatypeContextMenu>
-            <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+            <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly">
               <i class="fa fa-copy"></i> Clone
             </ng-template>
-            <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+            <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly">
               <i class="fa fa-remove"></i> Delete
+            </ng-template>
+            <ng-template (execute)="deactivate(node.data)" contextMenuItem [enabled]="!viewOnly" [visible]="node.data.activeInfo && node.data.activeInfo.status ==='ACTIVE'">
+              <i class="fa fa-remove"></i> Deactivate
             </ng-template>
           </context-menu>
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
         </ng-container>
-
-
-
 
       </ng-container>
     </ng-template>

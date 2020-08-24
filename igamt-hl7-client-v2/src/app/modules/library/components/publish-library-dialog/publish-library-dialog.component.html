@@ -45,7 +45,7 @@
           <app-display-section [element]="rowData.display" compatibility="true" (click)="print(data.entries)"></app-display-section>
         </td>
         <td #td>
-          <div style="display: flex; flex-direction: row; justify-content: flex-start">
+          <div style="display: flex; flex-direction: row; justify-content: flex-start" *ngIf="rowData.display.domainInfo.scope!=='SDTF'">
             <div>
               <app-scope-badge [scope]="'SDTF'" [version]="rowData.display.domainInfo.version">
               </app-scope-badge>
@@ -61,6 +61,7 @@
               </mat-select>
             </div>
           </div>
+          <app-display-section  *ngIf="rowData.display.domainInfo.scope==='SDTF'" [element]="rowData.display" [compatibility]="false" [hideDescription]="true" [hideBadge]="true"></app-display-section>
           <div *ngIf="isDuplicated(rowData.display.fixedName, rowData.suggested)">
             <div>
               <span style="color: red"> *Flavor name is duplicated</span>

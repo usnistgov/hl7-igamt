@@ -40,6 +40,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
+import gov.nist.hit.hl7.igamt.common.base.domain.ActiveInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -48,6 +50,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationResult;
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
@@ -206,6 +209,10 @@ public class DatatypeLibraryController {
           clone.setId(null);
           clone.setName(datatypes.get(0).getName());
           clone.setExt(elm.getExt());
+          ActiveInfo active = new ActiveInfo();
+          active.setStatus(ActiveStatus.ACTIVE);
+          active.setStart(new Date());
+          clone.setActiveInfo(active);
           clone.setDomainInfo(elm.getDomainInfo());
           clone.getDomainInfo().setCompatibilityVersion(datatypeClassificationService.findCompatibility(clone.getName(), clone.getDomainInfo().getVersion()));
           clone.setParentId(id);
@@ -584,11 +591,15 @@ public class DatatypeLibraryController {
     if (found != null) {
       library.getDatatypeRegistry().getChildren().remove(found);
     }
+    
     Datatype datatype = datatypeService.findById(datatypeId);
     if (datatype != null) {
       if (datatype.getDomainInfo().getScope().equals(Scope.USER)) {
         datatypeService.delete(datatype);
+      }else {
+        datatype.setParentId(null);
       }
+      datatypeService.save(datatype);
     }
     dataypeLibraryService.save(library);
     return new ResponseMessage(Status.SUCCESS, DATATYPE_DELETED, datatypeId, new Date());
@@ -608,6 +619,11 @@ public class DatatypeLibraryController {
           Datatype clone = datatype.clone();
           clone.getDomainInfo().setScope(Scope.USER);
           clone.setParentId(id);
+          ActiveInfo active = new ActiveInfo();
+          active.setStatus(ActiveStatus.ACTIVE);
+          active.setStart(new Date());
+          clone.setActiveInfo(active);
+          clone.setDomainInfo(elm.getDomainInfo());
           clone.setParentType(Type.DATATYPELIBRARY);
           clone.getDomainInfo().setCompatibilityVersion(datatypeClassificationService.findCompatibility(clone.getName(), clone.getDomainInfo().getVersion()));
           clone.setUsername(username);
@@ -692,6 +708,17 @@ Authentication authentication) {
   
   return new ResponseMessage<String>(Status.SUCCESS, "", "Publish Library Success", id, false,
       new Date(), dataypeLibraryService.publishLibray(id, publicationResult));
+
+}
+
+
+@RequestMapping(value = "/api/datatype-library/{id}/deactivate-children", method = RequestMethod.POST,
+produces = {"application/json"})
+public ResponseMessage<String> publish(@PathVariable("id") String id,  @RequestBody Set<String> elements,
+Authentication authentication) {
+  this.dataypeLibraryService.deactivateChildren(id, elements);
+  return new ResponseMessage<String>(Status.SUCCESS, "", "Data types decativated successfully", id, false,
+      new Date(), id);
 
 }
 }

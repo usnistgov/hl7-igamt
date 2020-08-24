@@ -73,11 +73,13 @@ public class LibraryDisplayInfoServiceImpl implements LibraryDisplayInfoService 
 		displayElement.setLeaf(!(datatype instanceof ComplexDatatype));
 		displayElement.setVariableName(datatype.getExt());
 		displayElement.setType(Type.DATATYPE);
+		displayElement.setActiveInfo(datatype.getActiveInfo());
 		displayElement.setParentId(datatype.getParentId());
 	    displayElement.setParentType(datatype.getParentType());
 	    displayElement.setPublicationInfo(datatype.getPublicationInfo());
 	    displayElement.setStatus(datatype.getStatus());
 		displayElement.setOrigin(datatype.getOrigin());
+		datatype.getActiveInfo();
 		return displayElement;
 	}
 
