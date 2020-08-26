@@ -15,6 +15,7 @@ export class ResourcePickerComponent implements OnInit {
               @Inject(MAT_DIALOG_DATA) public data: IResourcePickerData) {
   }
   ngOnInit() {
+    console.log(this.data);
   }
 
   select($event: string) {

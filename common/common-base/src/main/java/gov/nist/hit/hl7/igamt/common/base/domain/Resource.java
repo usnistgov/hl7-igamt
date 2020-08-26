@@ -48,6 +48,7 @@ public abstract class Resource extends AbstractDomain {
       elm.parentType = parentType;
       elm.shortDescription = shortDescription;
       elm.purposeAndUse = purposeAndUse;
+      elm.setActiveInfo(new ActiveInfo());
   }
 
 
@@ -92,4 +93,14 @@ public abstract class Resource extends AbstractDomain {
   
  // abstract String getSectionTitle();
   
+  public String getPublicationDateString() {
+    String s = null;
+    if(this.getPublicationInfo() !=null && this.getPublicationInfo().getPublicationDate() !=null) {
+      s = this.getPublicationInfo().getPublicationDate().toString();
+      if(this.getActiveInfo() !=null && this.getActiveInfo().getStatus() !=null && this.getActiveInfo().getStatus().equals(ActiveStatus.DEPRECATED)) {
+        s = '[' + s + "," + this.getActiveInfo().getEnd() + "]";
+      }
+    }
+    return s;
+  }
 }

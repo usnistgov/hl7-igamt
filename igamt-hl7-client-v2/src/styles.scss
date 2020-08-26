@@ -433,3 +433,8 @@ body .ui-dropdown-panel {
 .delta-badge-deleted {
   background-color: $delta_deleted_light;
 }
+.deprecated {
+  background-color: $deprecated-element;
+  text-decoration: line-through;
+  font-style: italic;
+}

@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
-import { MatDialog } from '@angular/material';
-import { IDisplayElement } from '../../../../models/display-element.interface';
-import { PropertyType } from '../../../../models/save-change';
-import { GroupOptions, ReferenceComponent } from '../reference/reference.component';
+import {Component} from '@angular/core';
+import {MatDialog} from '@angular/material';
+import {ActiveStatus} from '../../../../models/abstract-domain.interface';
+import {IDisplayElement} from '../../../../models/display-element.interface';
+import {PropertyType} from '../../../../models/save-change';
+import {GroupOptions, ReferenceComponent} from '../reference/reference.component';
 
 @Component({
   selector: 'app-datatype',
@@ -16,6 +17,7 @@ export class DatatypeComponent extends ReferenceComponent {
   }
 
   filter(opts: IDisplayElement[], selected: IDisplayElement): GroupOptions {
+    opts = opts.filter((x) =>  this.filterByActiveInfo(x));
     const same_base = opts.filter((opt) => {
       return opt.fixedName === selected.fixedName;
     });
@@ -41,5 +43,12 @@ export class DatatypeComponent extends ReferenceComponent {
         items: different_base.map(itemize).sort(this.sort),
       },
     ];
+  }
+
+  private filterByActiveInfo(opt: IDisplayElement) {
+    if (opt.activeInfo  && opt.activeInfo.status && opt.activeInfo.status === ActiveStatus.DEPRECATED) {
+      return false;
+    }
+    return true;
   }
 }

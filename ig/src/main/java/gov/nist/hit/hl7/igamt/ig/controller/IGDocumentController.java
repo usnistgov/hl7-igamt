@@ -1194,12 +1194,11 @@ public class IGDocumentController extends BaseController {
         Datatype datatype = datatypeService.findById(elm.getOriginalId());
         if (datatype != null) {
           Datatype clone = datatype.clone();
-          clone.getDomainInfo().setScope(Scope.USER);
+          clone.setDomainInfo(new DomainInfo(clone.getDomainInfo().getVersion(),Scope.USER ));
           clone.setUsername(username);
-          clone.setName(datatype.getName());
+          clone.setName(datatype.getLabel());
           clone.setExt(elm.getExt());
           clone = datatypeService.save(clone);
-
           savedIds.add(clone.getId());
         }
       } else {

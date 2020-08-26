@@ -21,6 +21,8 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
@@ -84,5 +86,18 @@ public class Datatype extends Resource {
       super.complete(elm);
       elm.ext = ext;
       elm.binding = binding;
+  }
+
+  /**
+   * @return
+   */
+  public String getFixedName() {
+    if(this.getStatus() != null && this.getStatus().equals(Status.PUBLISHED)) {
+      if(this.getDomainInfo().getScope().equals(Scope.SDTF)) {
+        return this.getLabel();
+      }
+    }
+    // TODO Auto-generated method stub
+    return this.getName();
   }
 }

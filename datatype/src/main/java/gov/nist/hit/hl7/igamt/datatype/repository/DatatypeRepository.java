@@ -22,6 +22,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 
@@ -54,4 +55,7 @@ public interface DatatypeRepository extends MongoRepository<Datatype, String> {
   List<Datatype> findByScope(Scope scope);
   List<Datatype> findByIdIn(Set<String> ids);
   List<Datatype> findByParentId(String id);
+  List<Datatype> findByDomainInfoCompatibilityVersionContainsAndDomainInfoScopeAndActiveInfoStatus(String version, Scope scope, ActiveStatus status);
+
+  
 }

@@ -57,7 +57,7 @@
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly">
               <i class="fa fa-remove"></i> Delete
             </ng-template>
-            <ng-template (execute)="deactivate(node.data)" contextMenuItem [enabled]="!viewOnly" [visible]="node.data.activeInfo && node.data.activeInfo.status ==='ACTIVE'">
+            <ng-template (execute)="deactivate(node.data)" contextMenuItem [enabled]="!viewOnly" [visible]="node.data.activeInfo && node.data.activeInfo.status ==='ACTIVE'&& node.data.domainInfo.scope==='SDTF'">
               <i class="fa fa-remove"></i> Deactivate
             </ng-template>
           </context-menu>

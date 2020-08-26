@@ -1,5 +1,5 @@
 import {Type} from '../constants/type.enum';
-import {Status} from './abstract-domain.interface';
+import {IActiveInfo, Status} from './abstract-domain.interface';
 import { SourceType } from './adding-info';
 import {DeltaAction} from './delta';
 import {IDomainInfo} from './domain-info.interface';
@@ -25,5 +25,6 @@ export interface IDisplayElement {
   status?: Status;
   origin?: string;
   publicationInfo?: IPublicationInfo;
+  activeInfo: IActiveInfo;
 
 }

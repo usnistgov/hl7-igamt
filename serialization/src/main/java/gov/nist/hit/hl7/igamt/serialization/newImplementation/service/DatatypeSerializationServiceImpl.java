@@ -617,7 +617,6 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
       }
     }
     return s;
-
   }
 
 
