@@ -34,6 +34,7 @@ public class MessageStructure extends Resource {
   private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
   private ResourceBinding binding;
   private List<Event> events;
+  private boolean custom;
   private List<String> participants = new ArrayList<String>();
   public List<Event> getEvents() {
     return events;
@@ -130,5 +131,13 @@ public class MessageStructure extends Resource {
   }
   public void setParticipants(List<String> participants) {
     this.participants = participants;
+  }
+
+  public boolean isCustom() {
+    return custom;
+  }
+
+  public void setCustom(boolean custom) {
+    this.custom = custom;
   }
 }

@@ -608,16 +608,17 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage<Object>(Status.SUCCESS, METATDATA_UPDATED, id, new Date());
   }
 
-  @RequestMapping(value = "/api/igdocuments/findMessageEvents/{version:.+}", method = RequestMethod.GET, produces = {
+  @RequestMapping(value = "/api/igdocuments/findMessageEvents/{scope}/{version:.+}", method = RequestMethod.GET, produces = {
   "application/json" })
   public @ResponseBody ResponseMessage<List<MessageEventTreeNode>> getMessageEvents(
-      @PathVariable("version") String version, Authentication authentication) {
+      @PathVariable("version") String version, @PathVariable String scope, Authentication authentication) {
     try {
       List<MessageStructure>  structures= new ArrayList<MessageStructure>();
+      /// TODO Handle Username
       if(!version.toLowerCase().equals("custom")) {
-        structures= messageStructureRepository.findByDomainInfoVersion(version);
+        structures = messageStructureRepository.findByDomainInfoScopeAndDomainInfoVersion(scope, version);
       }else {
-        structures= messageStructureRepository.findByParticipantsContaining(authentication.getPrincipal().toString());
+        structures = messageStructureRepository.findByCustomTrueAndParticipantsContainingAndStatus(authentication.getPrincipal().toString(), gov.nist.hit.hl7.igamt.common.base.domain.Status.PUBLISHED);
       }
       List<MessageEventTreeNode> list = messageEventService.convertMessageStructureToEventTree(structures);
       return new ResponseMessage<List<MessageEventTreeNode>>(Status.SUCCESS, null, null, null, false, null, list);

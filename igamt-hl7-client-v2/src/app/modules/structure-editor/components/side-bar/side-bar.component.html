@@ -22,12 +22,9 @@
     <button  class="btn btn-text btn-sm btn-primary"  (click)="collapseAll()">
       <i class="fa fa-compress"></i>
     </button>
-    <button  class="btn btn-text btn-sm btn-primary" type="button" (click)="addSection()">
-      <i class="fa fa-plus"></i>
-    </button>
   </div>
 
 </div>
 <div class="sidebar-content" id="sidebar-content">
-  <app-table-of-content [nodes]="nodes" ></app-table-of-content>
+  <app-table-of-content [nodes]="nodes | async" (createMessageStructure)="createMessage($event)" (createSegmentStructure)="createSegment($event)" (publish)="publish($event)"></app-table-of-content>
 </div>

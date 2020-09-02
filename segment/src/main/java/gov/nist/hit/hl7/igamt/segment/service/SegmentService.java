@@ -16,14 +16,13 @@ package gov.nist.hit.hl7.igamt.segment.service;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -43,6 +42,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 //import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 
 /**
@@ -86,6 +86,7 @@ public interface SegmentService extends ResourceService {
 
 	public Link cloneSegment(String id, HashMap<RealKey, String> newKeys, Link l, String username, Scope user);
 
+	List<Valueset> getDependentValueSets(Set<Segment> resources);
 
 	public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
 			throws SegmentNotFoundException, SegmentValidationException;

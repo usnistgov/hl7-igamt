@@ -1,0 +1,5 @@
+.inline-label {
+  display: grid;
+  align-content: flex-start;
+  grid-template-columns: fit-content(10%) fit-content(10%) fit-content(10%) max-content;
+}

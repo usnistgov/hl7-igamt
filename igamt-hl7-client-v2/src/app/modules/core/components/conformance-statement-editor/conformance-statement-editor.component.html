@@ -78,7 +78,7 @@
       <th>Description</th>
       <th *ngIf="tmpl" style="width: 190px;"></th>
     </tr>
-    <tr *ngFor="let cs of csList; let i = index;" [ngClass]="{'table-warning': !cs.id && !cs.assertion.id && !cs.persisted && tmpl}">
+    <tr *ngFor="let cs of csList; let i = index;">
       <td>{{ getId(cs) }}</td>
       <td>{{ getDescription(cs) }}</td>
       <ng-container *ngIf="tmpl">

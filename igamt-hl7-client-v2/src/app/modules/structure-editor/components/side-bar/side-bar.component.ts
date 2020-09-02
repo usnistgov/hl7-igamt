@@ -1,8 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { TreeNode } from 'angular-tree-component';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { selectMessageStructures, selectSegmentStructures } from '../../../../root-store/structure-editor/structure-editor.reducer';
+import { IMessage } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
+import { InsertResourcesInRepostory } from '../../../dam-framework/store/data/dam.actions';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { Scope } from 'src/app/modules/shared/constants/scope.enum';
+import { StructureEditorService } from '../../services/structure-editor.service';
+import { TableOfContentComponent } from '../table-of-content/table-of-content.component';
 
 @Component({
   selector: 'app-side-bar',
@@ -11,42 +18,92 @@ import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 })
 export class SideBarComponent implements OnInit {
 
-  nodes: Array<Partial<IDisplayElement>>;
+  nodes: Observable<Array<Partial<IDisplayElement>>>;
+  @ViewChild(TableOfContentComponent) toc: TableOfContentComponent;
 
-  constructor() {
-    this.nodes = [{
-      type: Type.CONFORMANCEPROFILEREGISTRY,
-      children: [{
-        id: '1',
-        fixedName: 'VXU_Q11',
-        variableName: undefined,
-        description: '',
-        type: Type.CONFORMANCEPROFILE,
-        leaf: true,
-        domainInfo: {
-          scope: Scope.USERCUSTOM,
-          version: '2.5',
-        },
-        differential: false,
-        isExpanded: false,
-      }],
-    }, {
-      type: Type.SEGMENTREGISTRY,
-      children: [{
-        id: '1',
-        fixedName: 'OBX',
-        variableName: 'A',
-        description: '',
-        type: Type.SEGMENT,
-        domainInfo: {
-          scope: Scope.USERCUSTOM,
-          version: '2.5',
-        },
-        leaf: true,
-        differential: false,
-        isExpanded: false,
-      }],
-    }];
+  constructor(
+    private store: Store<any>,
+    private structureEditorService: StructureEditorService,
+    private messageService: MessageService,
+  ) {
+    this.nodes = combineLatest(
+      this.store.select(selectMessageStructures),
+      this.store.select(selectSegmentStructures),
+    ).pipe(
+      map(([messageStructures, segmentStructures]) => {
+        return [
+          {
+            type: Type.CONFORMANCEPROFILEREGISTRY,
+            isExpanded: true,
+            children: messageStructures || [],
+          },
+          {
+            type: Type.SEGMENTREGISTRY,
+            isExpanded: true,
+            children: segmentStructures || [],
+          },
+        ];
+      }),
+    );
+  }
+
+  scrollTo(type) {
+    this.toc.scroll(type);
+  }
+
+  filterFn(value: any) {
+    this.toc.filter(value);
+  }
+
+  collapseAll() {
+    this.toc.collapseAll();
+  }
+
+  expandAll() {
+    this.toc.expandAll();
+  }
+
+  publish({ id, type }) {
+    const repository = type === Type.SEGMENT ? 'segment-structures' : 'message-structures';
+    const publish: Observable<IMessage<any>> = (Type.SEGMENT ? this.structureEditorService.publishSegment(id) : this.structureEditorService.publishMessageStructure(id));
+
+    publish.pipe(
+      map((response) => {
+        this.store.dispatch(this.messageService.messageToAction(response));
+        this.store.dispatch(new InsertResourcesInRepostory({
+          collections: [{
+            key: repository,
+            values: [response.data.displayElement],
+          }],
+        }));
+      }),
+    ).subscribe();
+  }
+
+  createMessage($event) {
+    this.structureEditorService.createMessageStructure($event).pipe(
+      map((message) => {
+        this.store.dispatch(new InsertResourcesInRepostory({
+          collections: [{
+            key: 'message-structures',
+            values: [message.displayElement],
+          }],
+        }));
+      }),
+    ).subscribe();
+  }
+
+  createSegment($event) {
+    this.structureEditorService.createSegmentStructure($event).pipe(
+      map((segment) => {
+        this.store.dispatch(new InsertResourcesInRepostory({
+          collections: [{
+            key: 'segment-structures',
+            values: [segment.displayElement],
+          }],
+        }));
+      }),
+    ).subscribe();
   }
 
   ngOnInit() {

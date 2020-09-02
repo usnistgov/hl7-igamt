@@ -84,7 +84,7 @@ export class IgEditSidebarComponent implements OnInit {
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
-    this.viewOnly$ =  this.store.select(fromIgamtSelectors.selectViewOnly);
+    this.viewOnly$ = this.store.select(fromIgamtSelectors.selectViewOnly);
   }
 
   getNodes() {
@@ -144,6 +144,9 @@ export class IgEditSidebarComponent implements OnInit {
           documentType: Type.IGDOCUMENT,
           versionChange: (version: string) => {
             this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version }));
+          },
+          versionAndScopeChange: (version: string, scope: Scope) => {
+            this.store.dispatch(new LoadResource({ type: event.type, scope, version }));
           },
           type: event.type,
         };

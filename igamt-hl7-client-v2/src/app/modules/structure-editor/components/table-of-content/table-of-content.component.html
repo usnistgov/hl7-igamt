@@ -4,24 +4,38 @@
       <ng-container [ngSwitch]="node.data.type">
 
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
-          <div #segLib>
-            <span [contextMenu]="segmentsContextMenu"> Custom Message Structures </span>
-            <context-menu #segmentsContextMenu>
-
+          <div #msgLib>
+            <span [contextMenu]="messagesContextMenu"> Custom Message Structures </span>
+            <context-menu #messagesContextMenu>
+              <ng-template (execute)="createMessage()" contextMenuItem>
+                <i class="fa fa-plus"></i> Create Custom Message Structure
+              </ng-template>
             </context-menu>
           </div>
         </ng-container>
 
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-          <app-display-section
-            [contextMenu]="conformanceProfileContextMenu"
-            [element]="node.data"
-            #rla="routerLinkActive"
+          <div #rla="routerLinkActive"
             [routerLink]="getElementUrl(node.data)"
-            routerLinkActive [inline]="true" >
-          </app-display-section>
+            routerLinkActive
+            [contextMenu]="conformanceProfileContextMenu"
+            class="inline-label">
+
+            <app-entity-bagde [type]="node.data.type"></app-entity-bagde>
+            <app-scope-badge [scope]="node.data.domainInfo.scope" [version]="node.data.domainInfo.version" [flavor]="node.data.flavor"></app-scope-badge>
+            <div>
+              <i class="fa fa-lock" style="color: red; margin-left: 5px;" *ngIf="node.data.status === 'PUBLISHED'"></i>
+            </div>
+            <span style="margin-left: 5px;">
+              {{ node.data.fixedName }} - {{ node.data.description }}
+            </span>
+
+          </div>
 
           <context-menu #conformanceProfileContextMenu>
+            <ng-template (execute)="publishStructure(node.data.id, node.data.type)" [enabled]="!rla.isActive && node.data.status !== 'PUBLISHED'" contextMenuItem>
+              <i class="fa fa-lock"></i> Lock Structure
+            </ng-template>
           </context-menu>
 
           <ng-container *ngIf="rla.isActive" >
@@ -37,22 +51,35 @@
           <div #segLib>
             <span [contextMenu]="segmentsContextMenu"> Custom Segment Structures </span>
             <context-menu #segmentsContextMenu>
-
+              <ng-template (execute)="createSegment()" contextMenuItem>
+                <i class="fa fa-plus"></i> Create Custom Segment Structure
+              </ng-template>
             </context-menu>
           </div>
         </ng-container>
 
         <ng-container *ngSwitchCase="'SEGMENT'">
-          <app-display-section
-            [contextMenu]='segmentContextMenu'
-            [element]="node.data"
-            #rla="routerLinkActive"
+          <div #rla="routerLinkActive"
             [routerLink]="getElementUrl(node.data)"
             routerLinkActive
-            [inline]="true" >
-          </app-display-section>
+            [contextMenu]="segmentContextMenu"
+            class="inline-label">
+
+            <app-entity-bagde [type]="node.data.type"></app-entity-bagde>
+            <app-scope-badge [scope]="node.data.domainInfo.scope" [version]="node.data.domainInfo.version" [flavor]="node.data.flavor"></app-scope-badge>
+            <div>
+              <i class="fa fa-lock" style="color: red; margin-left: 5px;" *ngIf="node.data.status === 'PUBLISHED'"></i>
+            </div>
+            <span style="margin-left: 5px;">
+              {{ node.data.fixedName + (node.data.variableName ? '_' + node.data.variableName : '')  }} - {{ node.data.description }}
+            </span>
+
+          </div>
 
           <context-menu #segmentContextMenu>
+            <ng-template (execute)="publishStructure(node.data.id, node.data.type)" [enabled]="!rla.isActive && node.data.status !== 'PUBLISHED'" contextMenuItem>
+              <i class="fa fa-lock"></i> Lock Structure
+            </ng-template>
           </context-menu>
 
           <ng-container *ngIf="rla.isActive" >

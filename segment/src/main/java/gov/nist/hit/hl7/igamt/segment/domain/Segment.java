@@ -19,12 +19,21 @@ public class Segment extends Resource {
   private String ext;
   private DynamicMappingInfo dynamicMappingInfo;
   private ResourceBinding binding;
+  private boolean custom;
 
   private Set<Field> children;
 
   public Segment() {
     super();
     super.setType(Type.SEGMENT);
+  }
+
+  public boolean isCustom() {
+    return custom;
+  }
+
+  public void setCustom(boolean custom) {
+    this.custom = custom;
   }
 
   public ResourceBinding getBinding() {

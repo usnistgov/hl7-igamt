@@ -23,7 +23,7 @@ export class ResourceService {
   private getImportUrl(info: IResourceInfo): string {
     switch (info.type) {
       case Type.EVENTS:
-        return 'api/igdocuments/findMessageEvents/' + info.version;
+        return 'api/igdocuments/findMessageEvents/' + info.scope + '/' + info.version;
       case Type.DATATYPE:
         const datatypeURL = 'api/datatypes/';
 
@@ -56,6 +56,8 @@ export class ResourceService {
     switch (type) {
       case Type.CONFORMANCEPROFILE:
         return 'api/conformanceprofiles/' + id + this.resource;
+      case Type.MESSAGESTRUCT:
+        return '/api/structure-editor/structure/' + id + this.resource;
       case Type.DATATYPE:
         return 'api/datatypes/' + id + this.resource;
       case Type.SEGMENT:

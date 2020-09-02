@@ -5,8 +5,8 @@ import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Message } from '../../dam-framework/models/messages/message.class';
-import {IDocumentCreationWrapper} from '../../document/models/document/document-creation.interface';
-import {MessageEventTreeNode} from '../../document/models/message-event/message-event.class';
+import { IDocumentCreationWrapper } from '../../document/models/document/document-creation.interface';
+import { MessageEventTreeNode } from '../../document/models/message-event/message-event.class';
 import {
   IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse,
   ICreateCoConstraintGroup,
@@ -15,6 +15,7 @@ import {
 import { IgTOCNodeHelper } from '../../document/services/ig-toc-node-helper.service';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
+import { Scope } from '../../shared/constants/scope.enum';
 import { Type } from '../../shared/constants/type.enum';
 import { IConnectingInfo } from '../../shared/models/config.class';
 import { IContent } from '../../shared/models/content.interface';
@@ -22,7 +23,7 @@ import { IConformanceStatement } from '../../shared/models/cs.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
-import {IgTemplate} from '../components/derive-dialog/derive-dialog.component';
+import { IgTemplate } from '../components/derive-dialog/derive-dialog.component';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
 import { IDocumentDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
@@ -161,7 +162,7 @@ export class IgService {
   }
 
   cloneIg(id: string, mode: CloneModeEnum, data: any): Observable<Message<string>> {
-    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/clone',   data).pipe();
+    return this.http.post<Message<string>>(this.IG_END_POINT + id + '/clone', data).pipe();
   }
 
   publish(id: string): Observable<Message<string>> {
@@ -172,8 +173,8 @@ export class IgService {
     return this.http.post<Message<string>>(this.IG_END_POINT + id + '/updateSharedUser', sharedUsers).pipe();
   }
 
-  getMessagesByVersion(hl7Version: string): Observable<Message<MessageEventTreeNode[]>> {
-    return this.http.get<Message<MessageEventTreeNode[]>>(this.IG_END_POINT + 'findMessageEvents/' + hl7Version);
+  getMessagesByVersionAndScope(hl7Version: string, scope: Scope): Observable<Message<MessageEventTreeNode[]>> {
+    return this.http.get<Message<MessageEventTreeNode[]>>(this.IG_END_POINT + 'findMessageEvents/' + scope + '/' + hl7Version);
   }
 
   createIntegrationProfile(wrapper: IDocumentCreationWrapper): Observable<Message<string>> {
@@ -355,7 +356,7 @@ export class IgService {
   }
 
   getLastUserConfiguration = (igId: string): Observable<IExportConfigurationGlobal> => {
-    return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + igId +   '/getLastUserConfiguration');
+    return this.http.get<IExportConfigurationGlobal>(this.EXPORT_URL + igId + '/getLastUserConfiguration');
   }
 
   importFromFile(documentId, resourceType: Type, targetType: Type, file: any) {

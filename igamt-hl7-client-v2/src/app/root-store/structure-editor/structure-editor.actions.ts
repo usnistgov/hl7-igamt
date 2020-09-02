@@ -37,6 +37,7 @@ export class LoadUserStructuresFailure implements Action {
 
 export class LoadMessageStructure implements Action {
   readonly type = StructureEditorActionTypes.LoadMessageStructure;
+  constructor(readonly id: string) { }
 }
 
 export class LoadMessageStructureSuccess implements Action {
@@ -49,6 +50,7 @@ export class LoadMessageStructureFailure implements Action {
 
 export class LoadSegmentStructure implements Action {
   readonly type = StructureEditorActionTypes.LoadSegmentStructure;
+  constructor(readonly id: string) { }
 }
 
 export class LoadSegmentStructureSuccess implements Action {

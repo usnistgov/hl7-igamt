@@ -4,7 +4,6 @@ import { Observable, of, Subscription } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { IChange } from 'src/app/modules/shared/models/save-change';
-import { Type } from '../../../../constants/type.enum';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
 import { IChangeReasonDialogDisplay } from '../../../change-reason-dialog/change-reason-dialog.component';
 import { IResourceRef } from '../../hl7-v2-tree.component';

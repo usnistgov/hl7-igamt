@@ -15,12 +15,21 @@
       <app-dam-fullscreen-button></app-dam-fullscreen-button>
     </div>
     <div>
+      <button class="btn btn-sm btn-dark" style="margin-right: 5px;" (click)="publish()" [disabled]="!(lockEnabled$ | async)" >
+        <i class="fa fa-lock"></i>
+        Lock Structure
+      </button>
       <app-dam-reset-button></app-dam-reset-button>
       <app-dam-save-button></app-dam-save-button>
     </div>
   </ng-template>
 
-  <ng-template #activeTitleBar *ngIf="hasActive$ | async" >
+  <ng-template #activeTitleBar>
+    <app-active-titlebar
+    [active]="activeWorkspace | async"
+    [controls]="activeComponent?.controls"
+    [header]="activeComponent?.header"
+    ></app-active-titlebar>
   </ng-template>
 
   <ng-template #editorContent>

@@ -1,13 +1,15 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {of} from 'rxjs';
-import {catchError, concatMap, flatMap, map, mergeMap, take} from 'rxjs/operators';
-import {MessageService} from '../../modules/dam-framework/services/message.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import { Type } from 'src/app/modules/shared/constants/type.enum';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
 import * as fromDAM from '../../modules/dam-framework/store';
-import {IResource} from '../../modules/shared/models/resource.interface';
-import {ResourceService} from '../../modules/shared/services/resource.service';
+import { IResource } from '../../modules/shared/models/resource.interface';
+import { DisplayService } from '../../modules/shared/services/display.service';
+import { ResourceService } from '../../modules/shared/services/resource.service';
 import {
   IgamtLoadedResourcesActions,
   IgamtLoadedResourcesActionTypes,
@@ -16,7 +18,7 @@ import {
   LoadResourceReferencesSuccess,
 
 } from './igamt.loaded-resources.actions';
-import {selectLoadedDocumentInfo} from './igamt.selectors';
+import { selectLoadedDocumentInfo } from './igamt.selectors';
 
 @Injectable()
 export class LoadedResourcesEffects {
@@ -34,12 +36,26 @@ export class LoadedResourcesEffects {
           return this.resourceService.getResources(action.payload.id, action.payload.resourceType, document.documentId, document.type).pipe(
             take(1),
             flatMap((resources: IResource[]) => {
+              /// TODO Check if there is a better solution
+              const displays = resources
+                .map((resource) => this.display.getDisplay(resource))
+                .filter((display) => !!display);
+
               return [
                 new fromDAM.TurnOffLoader(),
                 new fromDAM.InsertResourcesInRepostory({
                   collections: [{
                     key: 'resources',
                     values: resources,
+                  }, {
+                    key: 'datatypes',
+                    values: displays.filter((resource) => resource.type === Type.DATATYPE),
+                  }, {
+                    key: 'segments',
+                    values: displays.filter((resource) => resource.type === Type.SEGMENT),
+                  }, {
+                    key: 'valuesets',
+                    values: displays.filter((resource) => resource.type === Type.VALUESET),
                   }],
                 }),
                 new LoadResourceReferencesSuccess(resources),
@@ -68,6 +84,7 @@ export class LoadedResourcesEffects {
     private actions$: Actions<IgamtLoadedResourcesActions>,
     private store: Store<any>,
     private message: MessageService,
+    private display: DisplayService,
     private resourceService: ResourceService) {
 
   }

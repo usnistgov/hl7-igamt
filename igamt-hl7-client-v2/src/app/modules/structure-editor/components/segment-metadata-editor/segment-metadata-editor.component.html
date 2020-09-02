@@ -1,3 +1,20 @@
-<p>
-  segment-metadata-editor works!
-</p>
+<form [formGroup]="formGroup" style="display: flex; flex-direction: column; height: 100%;">
+
+  <app-form-input formControlName="name" id="structId" name="structId"
+    placeholder="Name" label="Name" [viewOnly]="true">
+  </app-form-input>
+
+  <app-form-input formControlName="identifier" id="identifier" name="identifier"
+    placeholder="Identifier" label="Identifier" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <app-form-input formControlName="description" id="description" name="description"
+    placeholder="Description" label="Description" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <div class="form-group">
+    <label for="hl7Version" class="form-label-lg"> HL7 Version </label>
+    <div><span class="badge badge-secondary">{{ formGroup.controls.hl7Version.value }}</span></div>
+  </div>
+
+</form>

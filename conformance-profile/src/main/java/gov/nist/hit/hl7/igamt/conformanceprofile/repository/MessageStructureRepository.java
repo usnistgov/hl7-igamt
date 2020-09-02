@@ -14,6 +14,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.repository;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -65,5 +66,14 @@ public interface MessageStructureRepository  extends MongoRepository<MessageStru
 
     public List<MessageStructure> findByIdIn(Set<String> ids);
 
-    public List<MessageStructure> findByParticipantsContaining( String username);
+    public List<MessageStructure> findByParticipantsContaining(String username);
+
+    public List<MessageStructure> findByCustomTrueAndParticipantsContaining(String username);
+
+    public List<MessageStructure> findByCustomTrueAndParticipantsContainingAndStatus(String username, Status status);
+
+    public MessageStructure findByCustomTrueAndParticipantsContainingAndId(String username, String id);
+
+
+
 }
