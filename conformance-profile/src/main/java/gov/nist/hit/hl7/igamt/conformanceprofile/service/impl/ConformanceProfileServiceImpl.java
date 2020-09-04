@@ -1457,7 +1457,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 		return ret;
 	}
 
-	private Set<String> collectSegmentIds(ConformanceProfile cp) {
+	public Set<String> collectSegmentIds(ConformanceProfile cp) {
 		// TODO Auto-generated method stub
 		Set<String> ids = new HashSet<String>();
 		for (MsgStructElement segOrgroup : cp.getChildren()) {
@@ -1473,7 +1473,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
 	}
 
-	private void processSegmentorGroup(MsgStructElement segOrgroup, Set<String> ids) {
+	public void processSegmentorGroup(MsgStructElement segOrgroup, Set<String> ids) {
 		// TODO Auto-generated method stub
 		if (segOrgroup instanceof SegmentRef) {
 			SegmentRef ref = (SegmentRef) segOrgroup;

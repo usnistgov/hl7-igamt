@@ -19,20 +19,18 @@ export class SelectMessagesComponent implements OnInit {
   tableRef: Table;
   selectedData: IAddingInfo[] = [];
   @Output()
-  selected = new EventEmitter<string>();
+  selected = new EventEmitter<{ version: string, scope: Scope }>();
   @Output()
   messages = new EventEmitter<IAddingInfo[]>();
   @Input()
   selectedVersion: string;
   @Input()
-  _hl7Versions: string[] = [];
-  @Input()
+  selectedScope: Scope;
   @Input()
   existing: IDisplayElement[] = [];
   @Input()
-  set hl7Versions(hl7Versions: string[]) {
-    this._hl7Versions = [...hl7Versions, 'Custom'];
-  }
+  hl7Versions: string[];
+
   constructor() {
   }
   ngOnInit() {
@@ -63,6 +61,20 @@ export class SelectMessagesComponent implements OnInit {
       return value.toUpperCase().includes(input.toUpperCase());
     }
   }
+  selectVersion($event: any) {
+    this.selectedVersion = $event;
+    this.selected.emit({
+      version: $event,
+      scope: this.selectedScope,
+    });
+  }
+  selectScope($event: any) {
+    this.selectedScope = $event;
+    this.selected.emit({
+      version: this.selectedVersion,
+      scope: $event,
+    });
+  }
   selectMessageEvent(obj: any) {
     console.log(obj);
     const element: IAddingInfo = {
@@ -85,10 +97,6 @@ export class SelectMessagesComponent implements OnInit {
       this.selectedData.splice(index, 1);
     }
     this.emitData();
-  }
-  select($event: any) {
-    this.selectedVersion = $event;
-    this.selected.emit($event);
   }
   emitData() {
     this.messages.emit(this.selectedData);

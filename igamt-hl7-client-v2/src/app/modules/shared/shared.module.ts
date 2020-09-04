@@ -10,7 +10,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
 import { ToastyModule } from 'ng2-toasty';
-import {AvatarModule} from 'ngx-avatar';
+import { AvatarModule } from 'ngx-avatar';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { CardModule } from 'primeng/card';
@@ -67,6 +67,7 @@ import { PatternDialogComponent } from './components/pattern-dialog/pattern-dial
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
 import { ResourceDropdownComponent } from './components/resource-dropdown/resource-dropdown.component';
+import { ResourceListComponent } from './components/resource-list/resource-list.component';
 import { ResourcePickerComponent } from './components/resource-picker/resource-picker.component';
 import { ScopeBadgeComponent } from './components/scope-badge/scope-badge.component';
 import { SegmentAddDialogComponent } from './components/segment-add-dialog/segment-add-dialog.component';
@@ -167,6 +168,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     NameComponent,
     ChangeReasonDialogComponent,
     ChangeLogInfoComponent,
+    ResourceListComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -237,6 +239,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     CardModule,
     AccordionModule,
     ListboxModule,
+    TreeTableModule,
     CheckboxModule,
     DamMessagesModule,
     DamComponentsModule,
@@ -319,6 +322,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     NameComponent,
     ChangeReasonDialogComponent,
     ChangeLogInfoComponent,
+    ResourceListComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

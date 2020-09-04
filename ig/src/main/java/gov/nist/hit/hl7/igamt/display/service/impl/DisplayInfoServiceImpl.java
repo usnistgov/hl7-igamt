@@ -193,6 +193,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setOrigin(segment.getOrigin());
 		displayElement.setParentId(segment.getParentId());
 	    displayElement.setParentType(segment.getParentType());
+	    displayElement.setStatus(segment.getStatus());
 		return displayElement;
 	}
 

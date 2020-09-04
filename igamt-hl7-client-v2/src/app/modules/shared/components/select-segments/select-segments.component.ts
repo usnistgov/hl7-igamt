@@ -1,11 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {NgForm} from '@angular/forms';
-import {Guid} from 'guid-typescript';
-import {Table} from 'primeng/table';
-import {Scope} from '../../constants/scope.enum';
-import {Type} from '../../constants/type.enum';
-import {IAddingInfo} from '../../models/adding-info';
-import {IDisplayElement} from '../../models/display-element.interface';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { Guid } from 'guid-typescript';
+import { Table } from 'primeng/table';
+import { Scope } from '../../constants/scope.enum';
+import { Type } from '../../constants/type.enum';
+import { IAddingInfo } from '../../models/adding-info';
+import { IDisplayElement } from '../../models/display-element.interface';
 
 @Component({
   selector: 'app-select-segments',
@@ -25,13 +25,15 @@ export class SelectSegmentsComponent implements OnInit {
   tableRef: Table;
   selectedData: IAddingInfo[] = [];
   @Output()
-  selected = new EventEmitter<string>();
+  selected = new EventEmitter<{ version: string, scope: Scope }>();
   @Output()
   added = new EventEmitter<IAddingInfo[]>();
   @Output()
   valid = new EventEmitter<boolean>();
   @Input()
   selectedVersion: string;
+  @Input()
+  selectedScope: Scope;
   @Input()
   hl7Versions: string[] = [];
   @ViewChild(NgForm) form;
@@ -61,7 +63,7 @@ export class SelectSegmentsComponent implements OnInit {
       type: Type.SEGMENT,
       name: obj.name,
       description: obj.description,
-      domainInfo: {...obj.domainInfo , scope: Scope.USER},
+      domainInfo: { ...obj.domainInfo, scope: Scope.USER },
       flavor: true,
     };
     this.selectedData.push(element);
@@ -75,9 +77,19 @@ export class SelectSegmentsComponent implements OnInit {
     }
     this.emitData();
   }
-  select($event: any) {
+  selectVersion($event: any) {
     this.selectedVersion = $event;
-    this.selected.emit($event);
+    this.selected.emit({
+      version: $event,
+      scope: this.selectedScope,
+    });
+  }
+  selectScope($event: any) {
+    this.selectedScope = $event;
+    this.selected.emit({
+      version: this.selectedVersion,
+      scope: $event,
+    });
   }
   emitData() {
     this.added.emit(this.selectedData);

@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Select {{ label }}</h2>
+<mat-dialog-content>
+  <form #form='ngForm'>
+
+    <app-resource-list
+      (selectionChange)="getResources($event)"
+      [hl7Versions]="hl7Version$ | async"
+      [selectedVersion]="selectedVersion"
+      [selectedScope]="selectedScope"
+      [filters]="[ 'fixedName', 'description' ]"
+      [displayScope]="type === 'SEGMENT'"
+      [table]="data$ | async"
+      [resourceLabel]="label">
+      <ng-template #display let-item >
+        <app-scope-badge [scope]="item.domainInfo.scope" [version]="item.domainInfo.version">
+        </app-scope-badge>
+        <span> {{item.fixedName + (item.variableName ? '_' + item.variableName : '') }}
+          <ng-container *ngIf="item.description">
+            {{'-' + item.description}}
+          </ng-container>
+        </span>
+      </ng-template>
+      <ng-template #actions let-item >
+        <button class="btn btn-sm btn-primary pull-right" (click)="startFrom(item)" > Select </button>
+      </ng-template>
+    </app-resource-list>
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button [mat-dialog-close]="" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+</mat-dialog-actions>

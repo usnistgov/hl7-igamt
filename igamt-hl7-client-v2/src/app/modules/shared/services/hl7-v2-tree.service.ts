@@ -6,7 +6,7 @@ import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../components/
 import { Type } from '../constants/type.enum';
 import { Usage } from '../constants/usage.enum';
 import { IStructureElementBinding } from '../models/binding.interface';
-import { IConformanceProfile, IGroup, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
+import { IConformanceProfile, IGroup, IHL7MessageProfile, IMessageStructure, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
 import { IComponent, IDatatype } from '../models/datatype.interface';
 import { IResource } from '../models/resource.interface';
 import { IChangeLog } from '../models/save-change';
@@ -42,6 +42,11 @@ export class Hl7V2TreeService {
         ).subscribe();
       case Type.CONFORMANCEPROFILE:
         return this.formatConformanceProfile(resource as IConformanceProfile, repository, viewOnly, changeable).pipe(
+          take(1),
+          tap(then),
+        ).subscribe();
+      case Type.MESSAGESTRUCT:
+        return this.formatMessageStructure(resource as IMessageStructure, repository, viewOnly, changeable).pipe(
           take(1),
           tap(then),
         ).subscribe();
@@ -244,7 +249,7 @@ export class Hl7V2TreeService {
   }
 
   formatSegmentRef(
-    resource: IConformanceProfile,
+    resource: IHL7MessageProfile,
     bindings: IStructureElementBinding[],
     child: ISegmentRef,
     ref: IRefDataInfo,
@@ -362,6 +367,35 @@ export class Hl7V2TreeService {
     );
   }
 
+  formatMessageStructure(
+    messageStructure: IMessageStructure,
+    repository: AResourceRepositoryService,
+    viewOnly: boolean,
+    changeable: boolean,
+    parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
+    const segmentRefs = this.getAllSegmentRef(messageStructure.children);
+    return combineLatest(
+      repository.getRefData(segmentRefs, Type.SEGMENT).pipe(
+        take(1),
+      ),
+      this.getSegmentMap(segmentRefs, repository),
+    ).pipe(
+      take(1),
+      map(([refsData, segments]) => {
+        return this.formatStructure(
+          messageStructure.binding ? messageStructure.binding.children || [] : [],
+          messageStructure.children,
+          segments,
+          refsData,
+          viewOnly,
+          changeable,
+          messageStructure,
+          parent)
+          ;
+      }),
+    );
+  }
+
   // tslint:disable-next-line: parameters-max-number
   formatStructure(
     bindings: IStructureElementBinding[],
@@ -370,7 +404,7 @@ export class Hl7V2TreeService {
     refsData: IRefData,
     viewOnly: boolean,
     changeable: boolean,
-    cp: IConformanceProfile,
+    cp: IHL7MessageProfile,
     parent?: IHL7v2TreeNode): IHL7v2TreeNode[] {
     return structure.map((child) => {
       if (child.type === Type.SEGMENTREF) {

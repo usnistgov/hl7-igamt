@@ -4,6 +4,11 @@
   background-color: $user_scope_color;
 }
 
+.scope-badge-custom {
+  background-color: $custom_scope_color;
+  color: white;
+}
+
 .scope-badge-hl7 {
   background-color: $hl7_scope_color;
 }

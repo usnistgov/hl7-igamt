@@ -1,0 +1,30 @@
+<div class="input-group sidebar-filter">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+  </div>
+  <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername"
+          placeholder="Filter" required style="background-color: #f0f0f0;" type="text">
+</div>
+<div class="sidebar-controls">
+  <app-dam-side-bar-toggle></app-dam-side-bar-toggle>
+  <div class="btn-group mr-2" role="group">
+
+    <button (click)="scrollTo('messages')" class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
+      CP
+    </button>
+    <button (click)="scrollTo('segments')" class="btn btn-text btn-sm entity-badge-segment" type="button">
+      S
+    </button>
+
+    <button  class="btn btn-text btn-sm btn-primary" (click)="expandAll()">
+      <i class="fa fa-expand"></i>
+    </button>
+    <button  class="btn btn-text btn-sm btn-primary"  (click)="collapseAll()">
+      <i class="fa fa-compress"></i>
+    </button>
+  </div>
+
+</div>
+<div class="sidebar-content" id="sidebar-content">
+  <app-table-of-content [nodes]="nodes | async" (createMessageStructure)="createMessage($event)" (createSegmentStructure)="createSegment($event)" (publish)="publish($event)"></app-table-of-content>
+</div>

@@ -207,11 +207,11 @@ public class SegmentController extends BaseController {
 
 	@RequestMapping(value = "/api/segments/{scope}/{version:.+}", method = RequestMethod.GET, produces = {
 			"application/json" })
-	public @ResponseBody ResponseMessage<List<Segment>> find(@PathVariable String version, @PathVariable String scope,
+	public @ResponseBody ResponseMessage<List<Segment>> find(@PathVariable String version, @PathVariable Scope scope,
 			Authentication authentication) {
 
 		return new ResponseMessage<List<Segment>>(Status.SUCCESS, "", "", null, false, null,
-				segmentService.findDisplayFormatByScopeAndVersion(scope, version));
+				segmentService.findDisplayFormatByScopeAndVersion(scope, version, authentication.getName()));
 	}
 
 	private Segment findById(String id) throws SegmentNotFoundException {

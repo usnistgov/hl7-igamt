@@ -66,6 +66,16 @@ public class ResponseMessage<T> {
 
   }
 
+  public ResponseMessage(Status status, String message, String id, T data, Date date) {
+    // TODO Auto-generated constructor stub
+    this.status = status;
+    this.text = message;
+    this.resourceId = id;
+    this.date = date;
+    this.data = data;
+
+  }
+
   public ResponseMessage(Status status, T data, boolean hide) {
     // TODO Auto-generated constructor stub
     this.status = status;

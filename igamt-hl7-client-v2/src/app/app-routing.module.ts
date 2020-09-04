@@ -55,6 +55,10 @@ const routes: Routes = [
     loadChildren: './modules/documentation/documentation.module#DocumentationModule',
   },
   {
+    path: 'structure-editor',
+    loadChildren: './modules/structure-editor/structure-editor.module#StructureEditorModule',
+  },
+  {
     path: '**', component: ErrorPageComponent,
   },
 ];

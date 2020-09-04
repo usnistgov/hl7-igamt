@@ -143,6 +143,7 @@
 		<module>diff-utils</module>
 		<module>documentation</module>
 		<module>bootstrap</module>
-	</modules>
+        <module>structure-editor</module>
+    </modules>
   
 </project>

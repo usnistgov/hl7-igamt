@@ -1,14 +1,14 @@
-import {Component, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from '@angular/forms';
-import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import * as config from '../../../../root-store/config/config.reducer';
-import {CreateIg, LoadMessageEvents} from '../../../../root-store/create-ig/create-ig.actions';
+import { CreateIg, LoadMessageEvents } from '../../../../root-store/create-ig/create-ig.actions';
 import * as fromCreateIg from '../../../../root-store/create-ig/create-ig.reducer';
-import {IDocumentCreationWrapper} from '../../../document/models/document/document-creation.interface';
-import {MessageEventTreeNode} from '../../../document/models/message-event/message-event.class';
-import {Scope} from '../../../shared/constants/scope.enum';
-import {IAddingInfo} from '../../../shared/models/adding-info';
+import { IDocumentCreationWrapper } from '../../../document/models/document/document-creation.interface';
+import { MessageEventTreeNode } from '../../../document/models/message-event/message-event.class';
+import { Scope } from '../../../shared/constants/scope.enum';
+import { IAddingInfo } from '../../../shared/models/adding-info';
 
 @Component({
   selector: 'app-create-ig',
@@ -33,8 +33,8 @@ export class CreateIGComponent implements OnInit {
   ngOnInit() {
   }
 
-  getVersion($event: string) {
-    this.store.dispatch(new LoadMessageEvents($event));
+  getVersion({ version, scope }) {
+    this.store.dispatch(new LoadMessageEvents({ version, scope }));
   }
 
   setSelected($event: IAddingInfo[]) {
