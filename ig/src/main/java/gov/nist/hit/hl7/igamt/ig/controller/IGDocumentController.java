@@ -294,89 +294,9 @@ public class IGDocumentController extends BaseController {
     return result;
   }
 
-
-  //  /**
-  //   *
-  //   * @param id
-  //   * @param response
-  //   * @throws ExportException
-  //   */
-  //	@RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
-  //	public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id, HttpServletResponse response)
-  //			throws ExportException {
-  //		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-  //		if (authentication != null) {
-  //			String username = authentication.getPrincipal().toString();
-  //			ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, id);
-  //			response.setContentType("text/html");
-  //			response.setHeader("Content-disposition", "attachment;filename=" + exportedFile.getFileName());
-  //			try {
-  //				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-  //			} catch (IOException e) {
-  //				throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
-  //			}
-  //		} else {
-  //			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-  //		}
-  //	}
-
-  // @RequestMapping(value = "/api/igdocuments/{id}/export/html", method =
-  // RequestMethod.GET)
-  // public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String
-  // id,
-  // HttpServletResponse response) throws ExportException {
-  // Authentication authentication =
-  // SecurityContextHolder.getContext().getAuthentication();
-  // if (authentication != null) {
-  // String username = authentication.getPrincipal().toString();
-  // ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username,
-  // id);
-  // File coCons;
-  // response.setContentType("text/html");
-  // response.setHeader("Content-disposition",
-  // "attachment;filename=" + "CoconstraintExcel.xsl");
-  // try {
-  // coCons = new
-  // ClassPathResource("CoconstaintHTMLForConverting.html").getFile();
-  // InputStream targetStream = new FileInputStream(coCons);
-  // FileCopyUtils.copy(targetStream, response.getOutputStream());
-  // } catch (IOException e) {
-  // throw new ExportException(e, "Error while sending back exported IG Document
-  // with id " + id);
-  // }
-  // } else {
-  // throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-  // }
-  // }
-
-  //	/**
-  //	 * 
-  //	 * @param id
-  //	 * @param response
-  //	 * @param authentication
-  //	 * @throws ExportException
-  //	 */
-  //	@RequestMapping(value = "/api/igdocuments/{id}/export/word", method = RequestMethod.GET)
-  //	public @ResponseBody void exportIgDocumentToWord(@PathVariable("id") String id, HttpServletResponse response,
-  //			Authentication authentication) throws ExportException {
-  //		if (authentication != null) {
-  //			String username = authentication.getPrincipal().toString();
-  //			ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, id);
-  //			response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-  //			response.setHeader("Content-disposition", "attachment;filename=" + exportedFile.getFileName());
-  //			try {
-  //				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-  //			} catch (IOException e) {
-  //				throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
-  //			}
-  //		} else {
-  //			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-  //		}
-  //	}
-
   @RequestMapping(value = "/api/igdocuments", method = RequestMethod.GET, produces = { "application/json" })
   public @ResponseBody List<DocumentSummary> getUserIG(Authentication authentication,
-      @RequestParam("type") AccessType type) {
+      @RequestParam("type") AccessType type) throws ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     List<Ig> igdouments = new ArrayList<Ig>();
 
@@ -391,6 +311,7 @@ public class IGDocumentController extends BaseController {
 
       } else if (type.equals(AccessType.ALL)) {
 
+        commonService.checkAuthority(authentication, "ADMIN");
         igdouments = igService.findAllUsersIG();
 
       } else if (type.equals(AccessType.SHARED)) {
@@ -1403,25 +1324,23 @@ public class IGDocumentController extends BaseController {
 
     Ig ig = findIgById(id);
     String cUser = authentication.getPrincipal().toString();
-    if(ig.getUsername() != null) {
-      
-    
-    if(!ig.getUsername().equals(cUser)) {
-      if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(cUser)) {
-        ig.setSharePermission(SharePermission.WRITE);
-      }else {
-        if(ig.getSharedUsers() !=null && ig.getSharedUsers().contains(cUser)) {
-          ig.setSharePermission(SharePermission.READ);
+    if(ig.getUsername() != null || this.commonService.isAdmin(authentication)) {
 
+      if(!ig.getUsername().equals(cUser)) {
+        if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(cUser)) {
+          ig.setSharePermission(SharePermission.WRITE);
         }else {
-          throw new ForbiddenOperationException("Access denied");
-        }
-      
-      }    	
-    }
-    if(ig.getUsername().equals(cUser) && ig.getCurrentAuthor() != null) {
-      ig.setSharePermission(SharePermission.READ);  
-    }
+          if(ig.getSharedUsers() !=null && ig.getSharedUsers().contains(cUser)) {
+            ig.setSharePermission(SharePermission.READ);
+
+          }else {
+            throw new ForbiddenOperationException("Access denied");
+          }
+        }    	
+      }
+      if(ig.getUsername().equals(cUser) && ig.getCurrentAuthor() != null) {
+        ig.setSharePermission(SharePermission.READ);  
+      }
     } else {
       ig.setSharePermission(SharePermission.READ);  
     }

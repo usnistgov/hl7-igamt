@@ -78,6 +78,7 @@ public class LibraryDisplayInfoServiceImpl implements LibraryDisplayInfoService 
 		displayElement.setType(Type.DATATYPE);
 		displayElement.setActiveInfo(datatype.getActiveInfo());
 		displayElement.setParentId(datatype.getParentId());
+		displayElement.setLibraryReferences(datatype.getLibraryReferences());
 	    displayElement.setParentType(datatype.getParentType());
 	    displayElement.setPublicationInfo(datatype.getPublicationInfo());
 	    displayElement.setStatus(datatype.getStatus());

@@ -32,9 +32,9 @@ public class CommonServiceImpl implements CommonService {
   @Override
   public void checkAuthority(Authentication auth, String role)  throws ForbiddenOperationException {
     // TODO Auto-generated method stub
-    if(auth.getAuthorities().contains(new SimpleGrantedAuthority(role))) {
+    if(!auth.getAuthorities().contains(new SimpleGrantedAuthority(role))) {
 
-      throw  new ForbiddenOperationException("The User must have the" +role+ "authority"+"to perform this operation");
+      throw  new ForbiddenOperationException("The User must have the " +role+ " rights"+"to perform this operation");
     }
   }
 
@@ -54,6 +54,15 @@ public class CommonServiceImpl implements CommonService {
        throw new ForbiddenOperationException("The User must be the current author or an admin of this resource to perform this operation");
       }
    // }
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.common.base.service.CommonService#isAdmin(org.springframework.security.core.Authentication)
+   */
+  @Override
+  public boolean isAdmin(Authentication auth) {
+    // TODO Auto-generated method stub
+    return auth.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"));
   }
 
 

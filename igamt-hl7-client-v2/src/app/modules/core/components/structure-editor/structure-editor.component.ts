@@ -182,7 +182,9 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
       concatMap((id) => {
-        return this.store.select(this.elementSelector(), { id });
+        return this.store.select(this.elementSelector(), { id }).pipe(
+          tap((x) => console.log(x)),
+      );
       }),
     );
   }

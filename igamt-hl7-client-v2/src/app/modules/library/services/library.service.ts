@@ -154,7 +154,7 @@ export class LibraryService {
     };
   }
 
-  cloneIg(id: string, mode: CloneModeEnum, data: any): Observable<Message<string>> {
+  clone(id: string, mode: CloneModeEnum, data: any): Observable<Message<string>> {
     return this.http.post<Message<string>>(this.LIBRARY_END_POINT + id + '/clone', { mode, data }).pipe();
   }
 

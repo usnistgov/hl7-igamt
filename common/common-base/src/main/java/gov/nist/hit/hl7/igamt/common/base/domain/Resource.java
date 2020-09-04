@@ -1,10 +1,13 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.util.Set;
+
 public abstract class Resource extends AbstractDomain {
 
   private String preDef;
   private String postDef;
   protected String parentId;
+  protected Set<String> libraryReferences;
   protected Type parentType;
   private String purposeAndUse;
   private String shortDescription;
@@ -90,6 +93,16 @@ public abstract class Resource extends AbstractDomain {
   public void setShortDescription(String shortDescription) {
     this.shortDescription = shortDescription;
   }  
+  
+  public Set<String> getLibraryReferences() {
+    return libraryReferences;
+  }
+
+
+  public void setLibraryReferences(Set<String> libraryReferences) {
+    this.libraryReferences = libraryReferences;
+  }
+
   
  // abstract String getSectionTitle();
   

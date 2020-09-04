@@ -291,7 +291,6 @@ export class LibraryEditSidebarComponent implements OnInit {
   }
 
   deactivate($event: IDisplayElement) {
-    console.log($event);
     this.documentRef$.pipe(
       take(1),
       concatMap((documentRef: IDocumentRef) => {

@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.datatype.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -170,13 +171,15 @@ public class DatatypeController extends BaseController {
             "application/json" })
     public @ResponseBody ResponseMessage<List<Datatype>> findHl7Datatypes(@PathVariable String version,
             @PathVariable String scope, Authentication authentication) {
+      List<Datatype> ret = new ArrayList<>();
       if(scope.equals(Scope.SDTF.toString())) {
-        return new ResponseMessage<List<Datatype>>(Status.SUCCESS, "", "", null, false, null,
-            this.datatypeRepository.findByDomainInfoCompatibilityVersionContainsAndDomainInfoScopeAndActiveInfoStatus(version, Scope.SDTF, ActiveStatus.ACTIVE));  
-      }else {
-        return new ResponseMessage<List<Datatype>>(Status.SUCCESS, "", "", null, false, null,
-         datatypeService.findDisplayFormatByScopeAndVersion(scope, version));
+        ret = this.datatypeRepository.findByDomainInfoCompatibilityVersionContainsAndDomainInfoScopeAndActiveInfoStatus(version, Scope.SDTF, ActiveStatus.ACTIVE);
+      } else {
+        ret =  datatypeService.findDisplayFormatByScopeAndVersion(scope, version);
       }
+        return new ResponseMessage<List<Datatype>>(Status.SUCCESS, "", "", null, false, null,
+         ret);
+      
     }
 
     private Datatype findById(String id) throws DatatypeNotFoundException {

@@ -18,6 +18,7 @@ export interface IDisplayElement {
   children?: IDisplayElement[];
   parentType?: Type;
   parentId?: string;
+  libraryReferences?: string[];
   isExpanded: boolean;
   path?: string;
   delta?: DeltaAction;
@@ -25,6 +26,6 @@ export interface IDisplayElement {
   status?: Status;
   origin?: string;
   publicationInfo?: IPublicationInfo;
-  activeInfo: IActiveInfo;
+  activeInfo?: IActiveInfo;
 
 }

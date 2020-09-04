@@ -18,7 +18,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
  *
  */
 public enum CloneMode {
-  CLONE("CLONE"), DERIVE ("DERIVE");
+  CLONE("CLONE"), DERIVE ("DERIVE"), UPGRADE ("UPGRADE");
 
   CloneMode(String value) {
     this.value = value;

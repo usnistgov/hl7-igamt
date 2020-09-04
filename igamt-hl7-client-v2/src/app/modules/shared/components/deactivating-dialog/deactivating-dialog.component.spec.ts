@@ -8,7 +8,7 @@ describe('DeactivatingDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DeactivatingDialogComponent ]
+      declarations: [ DeactivatingDialogComponent ],
     })
     .compileComponents();
   }));

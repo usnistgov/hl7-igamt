@@ -95,8 +95,6 @@ export class LibraryEditEffects extends DamWidgetEffect {
     }),
   );
 
-
-
   @Effect()
   igEditResolverLoadFailure$ = this.actions$.pipe(
     ofType(LibraryEditActionTypes.LibraryEditResolverLoadFailure),

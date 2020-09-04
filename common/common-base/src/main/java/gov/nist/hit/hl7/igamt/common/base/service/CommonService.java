@@ -30,6 +30,12 @@ void checkAuthority(Authentication auth, String role) throws ForbiddenOperationE
 
 void checkRight(Authentication auth, String author, String username) throws ForbiddenOperationException;
 
+
+/**
+ * @return
+ */
+boolean isAdmin(Authentication auth);
+
   
 
   
