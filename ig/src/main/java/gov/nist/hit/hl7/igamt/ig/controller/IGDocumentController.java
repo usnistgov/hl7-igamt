@@ -611,17 +611,11 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/findMessageEvents/{scope}/{version:.+}", method = RequestMethod.GET, produces = {
   "application/json" })
   public @ResponseBody ResponseMessage<List<MessageEventTreeNode>> getMessageEvents(
-      @PathVariable("version") String version, @PathVariable String scope, Authentication authentication) {
+      @PathVariable("version") String version, @PathVariable Scope scope, Authentication authentication) {
     try {
-      List<MessageStructure>  structures= new ArrayList<MessageStructure>();
-      /// TODO Handle Username
-      if(!version.toLowerCase().equals("custom")) {
-        structures = messageStructureRepository.findByDomainInfoScopeAndDomainInfoVersion(scope, version);
-      }else {
-        structures = messageStructureRepository.findByCustomTrueAndParticipantsContainingAndStatus(authentication.getPrincipal().toString(), gov.nist.hit.hl7.igamt.common.base.domain.Status.PUBLISHED);
-      }
+      List<MessageStructure>  structures = messageEventService.findStructureByScopeAndVersion(version, scope, authentication.getName());
       List<MessageEventTreeNode> list = messageEventService.convertMessageStructureToEventTree(structures);
-      return new ResponseMessage<List<MessageEventTreeNode>>(Status.SUCCESS, null, null, null, false, null, list);
+      return new ResponseMessage<>(Status.SUCCESS, null, null, null, false, null, list);
     } catch (Exception e) {
       throw e;
     }

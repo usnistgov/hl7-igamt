@@ -8,7 +8,6 @@ import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/in
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
-import { LoadResourceReferences } from '../../../../root-store/library/library-edit/library-edit.actions';
 import { selectMessageStructureById } from '../../../../root-store/structure-editor/structure-editor.reducer';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -18,8 +17,8 @@ import { IMessageStructure } from '../../../shared/models/conformance-profile.in
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IResource } from '../../../shared/models/resource.interface';
-import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { StructureEditorComponent } from '../../services/structure-editor-component.abstract';
+import { StructureEditorResourceRepositoryService } from '../../services/structure-editor-resource-repository.service';
 import { StructureEditorService } from '../../services/structure-editor.service';
 
 @Component({
@@ -34,7 +33,6 @@ export class MessageStructureEditorComponent extends StructureEditorComponent im
   public config: Observable<Hl7Config>;
   username: Observable<string>;
   resource$: Observable<IMessageStructure>;
-  workspace_s: Subscription;
   columns: HL7v2TreeColumnType[];
   public datatypes: Observable<IDisplayElement[]>;
   public segments: Observable<IDisplayElement[]>;
@@ -44,7 +42,7 @@ export class MessageStructureEditorComponent extends StructureEditorComponent im
     store: Store<any>,
     private structureEditorService: StructureEditorService,
     private messageService: MessageService,
-    public repository: StoreResourceRepositoryService,
+    public repository: StructureEditorResourceRepositoryService,
   ) {
     super({
       id: EditorID.CONFP_CUSTOM_STRUCTURE,
@@ -94,7 +92,7 @@ export class MessageStructureEditorComponent extends StructureEditorComponent im
       concatMap(([id, current]) => {
         return this.structureEditorService.saveMessageStructure(id, current.data.children).pipe(
           flatMap((message) => {
-            return [this.messageService.messageToAction(message), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: current.data, updateDate: false }), new fromDam.SetValue({ selected: current.data })];
+            return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: current.data, updateDate: false }), new fromDam.SetValue({ selected: current.data })];
           }),
           catchError((error) => throwError(this.messageService.actionFromError(error))),
         );

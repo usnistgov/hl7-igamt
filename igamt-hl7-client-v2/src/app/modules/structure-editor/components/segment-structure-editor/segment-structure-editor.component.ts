@@ -10,15 +10,14 @@ import { Hl7Config, IValueSetBindingConfigMap } from 'src/app/modules/shared/mod
 import { IMessageStructure } from 'src/app/modules/shared/models/conformance-profile.interface';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
-import { LoadResourceReferences } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
 import { selectSegmentStructureById } from '../../../../root-store/structure-editor/structure-editor.reducer';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IResource } from '../../../shared/models/resource.interface';
-import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { StructureEditorComponent } from '../../services/structure-editor-component.abstract';
+import { StructureEditorResourceRepositoryService } from '../../services/structure-editor-resource-repository.service';
 import { StructureEditorService } from '../../services/structure-editor.service';
 
 @Component({
@@ -33,7 +32,6 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent im
   public config: Observable<Hl7Config>;
   username: Observable<string>;
   resource$: Observable<IMessageStructure>;
-  workspace_s: Subscription;
   columns: HL7v2TreeColumnType[];
   public datatypes: Observable<IDisplayElement[]>;
 
@@ -42,7 +40,7 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent im
     store: Store<any>,
     private structureEditorService: StructureEditorService,
     private messageService: MessageService,
-    public repository: StoreResourceRepositoryService,
+    public repository: StructureEditorResourceRepositoryService,
   ) {
     super({
       id: EditorID.SEGMENT_CUSTOM_STRUCTURE,
@@ -90,7 +88,7 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent im
       concatMap(([id, current]) => {
         return this.structureEditorService.saveSegmentStructure(id, current.data.children).pipe(
           flatMap((message) => {
-            return [this.messageService.messageToAction(message), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: current.data, updateDate: false }), new fromDam.SetValue({ selected: current.data })];
+            return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: current.data, updateDate: false }), new fromDam.SetValue({ selected: current.data })];
           }),
           catchError((error) => throwError(this.messageService.actionFromError(error))),
         );
@@ -99,7 +97,6 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent im
   }
 
   ngOnDestroy(): void {
-    this.workspace_s.unsubscribe();
   }
 
   onDeactivate(): void {

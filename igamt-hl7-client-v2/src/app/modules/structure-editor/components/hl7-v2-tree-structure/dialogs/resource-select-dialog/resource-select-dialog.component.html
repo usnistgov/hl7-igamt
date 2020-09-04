@@ -14,7 +14,7 @@
       <ng-template #display let-item >
         <app-scope-badge [scope]="item.domainInfo.scope" [version]="item.domainInfo.version">
         </app-scope-badge>
-        <span> {{item.fixedName}}
+        <span> {{item.fixedName + (item.variableName ? '_' + item.variableName : '') }}
           <ng-container *ngIf="item.description">
             {{'-' + item.description}}
           </ng-container>

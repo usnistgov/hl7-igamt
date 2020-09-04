@@ -479,20 +479,27 @@ public class SegmentServiceImpl implements SegmentService {
 	 * findDisplayFormatByScopeAndVersion(java. lang.String, java.lang.String)
 	 */
 	@Override
-	public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version) {
-		// TODO Auto-generated method stub
+	public List<Segment> findDisplayFormatByScopeAndVersion(Scope scope, String version, String username) {
+		Criteria criteria = new Criteria();
+		criteria.and("domainInfo.scope").is(scope);
+		criteria.and("domainInfo.version").is(version);
 
-		Criteria where = Criteria.where("domainInfo.scope").is(scope);
-		where.andOperator(Criteria.where("domainInfo.version").is(version));
+		if(!scope.equals(Scope.HL7STANDARD)) {
+			criteria.and("username").in(username);
+		}
 
-		Query qry = Query.query(where);
+		if(scope.equals(Scope.USERCUSTOM)) {
+			criteria.and("status").is(Status.PUBLISHED);
+		}
+
+		Query qry = Query.query(criteria);
 		qry.fields().include("domainInfo");
 		qry.fields().include("id");
 		qry.fields().include("name");
+		qry.fields().include("ext");
 		qry.fields().include("description");
-		List<Segment> segments = mongoTemplate.find(qry, Segment.class);
 
-		return segments;
+		return mongoTemplate.find(qry, Segment.class);
 	}
 
 	private void validateField(Field f) throws ValidationException {

@@ -42,7 +42,7 @@ export abstract class AResourceRepositoryService {
 export class StoreResourceRepositoryService extends AResourceRepositoryService {
 
   constructor(
-    private store: Store<any>) {
+    protected store: Store<any>) {
     super();
   }
 

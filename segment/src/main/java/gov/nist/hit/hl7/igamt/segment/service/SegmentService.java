@@ -81,7 +81,7 @@ public interface SegmentService extends ResourceService {
 
 	public PostDef convertDomainToPostdef(Segment segment);
 
-	public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version);
+	public List<Segment> findDisplayFormatByScopeAndVersion(Scope scope, String version, String username);
 
 
 	public Link cloneSegment(String id, HashMap<RealKey, String> newKeys, Link l, String username, Scope user);

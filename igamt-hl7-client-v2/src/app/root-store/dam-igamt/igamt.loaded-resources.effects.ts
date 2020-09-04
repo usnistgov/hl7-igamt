@@ -5,6 +5,7 @@ import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
+import { IDamResource } from '../../modules/dam-framework/models/data/repository';
 import { MessageService } from '../../modules/dam-framework/services/message.service';
 import * as fromDAM from '../../modules/dam-framework/store';
 import { IResource } from '../../modules/shared/models/resource.interface';
@@ -36,27 +37,40 @@ export class LoadedResourcesEffects {
           return this.resourceService.getResources(action.payload.id, action.payload.resourceType, document.documentId, document.type).pipe(
             take(1),
             flatMap((resources: IResource[]) => {
-              /// TODO Check if there is a better solution
-              const displays = resources
-                .map((resource) => this.display.getDisplay(resource))
-                .filter((display) => !!display);
+
+              const collections: Array<{
+                key: string;
+                values: IDamResource[];
+              }> = [{
+                key: 'resources',
+                values: resources,
+              }];
+
+              if (action.payload.display) {
+                const displays = resources
+                  .map((resource) => this.display.getDisplay(resource))
+                  .filter((display) => !!display);
+
+                collections.push({
+                  key: 'datatypes',
+                  values: displays.filter((resource) => resource.type === Type.DATATYPE),
+                });
+
+                collections.push({
+                  key: 'segments',
+                  values: displays.filter((resource) => resource.type === Type.SEGMENT),
+                });
+
+                collections.push({
+                  key: 'valuesets',
+                  values: displays.filter((resource) => resource.type === Type.VALUESET),
+                });
+              }
 
               return [
                 new fromDAM.TurnOffLoader(),
                 new fromDAM.InsertResourcesInRepostory({
-                  collections: [{
-                    key: 'resources',
-                    values: resources,
-                  }, {
-                    key: 'datatypes',
-                    values: displays.filter((resource) => resource.type === Type.DATATYPE),
-                  }, {
-                    key: 'segments',
-                    values: displays.filter((resource) => resource.type === Type.SEGMENT),
-                  }, {
-                    key: 'valuesets',
-                    values: displays.filter((resource) => resource.type === Type.VALUESET),
-                  }],
+                  collections,
                 }),
                 new LoadResourceReferencesSuccess(resources),
               ];

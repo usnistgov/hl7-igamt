@@ -28,6 +28,7 @@ import { SegmentStructureEditorComponent } from './components/segment-structure-
 import { SideBarComponent } from './components/side-bar/side-bar.component';
 import { StructureEditorContainerComponent } from './components/structure-editor-container/structure-editor-container.component';
 import { TableOfContentComponent } from './components/table-of-content/table-of-content.component';
+import { StructureEditorResourceRepositoryService } from './services/structure-editor-resource-repository.service';
 import { StructureEditorRoutingModule } from './structure-editor-routing.module';
 
 @NgModule({
@@ -63,6 +64,9 @@ import { StructureEditorRoutingModule } from './structure-editor-routing.module'
     DamFrameworkModule.forRoot(),
     SharedModule,
     EffectsModule.forFeature([StructureEditorEffects]),
+  ],
+  providers: [
+    StructureEditorResourceRepositoryService,
   ],
   exports: [StructureEditorContainerComponent],
   entryComponents: [CreateMessageDialogComponent, ResourceSelectDialogComponent, SegmentAddDialogComponent, GroupAddDialogComponent, FieldAddDialogComponent, CreateSegmentDialogComponent],

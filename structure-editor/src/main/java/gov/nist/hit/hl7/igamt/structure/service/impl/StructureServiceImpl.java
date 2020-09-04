@@ -253,6 +253,7 @@ public class StructureServiceImpl implements StructureService {
         });
         structure.setEvents(request.getEvents());
         structure.setId(null);
+        structure.setStatus(null);
         structure.setParticipants(Collections.singletonList(user));
         structure.setCustom(true);
         structure.setVersion(null);
@@ -269,8 +270,10 @@ public class StructureServiceImpl implements StructureService {
     public SegmentStructureAndDisplay createSegmentStructure(SegmentStructureCreateWrapper request, String user) {
         Segment structure = this.segmentRepository.findById(request.getFrom()).orElseThrow(() -> new IllegalArgumentException("Segment not found"));
         structure.setDescription(request.getDescription());
+        structure.setExt(request.getIdentifier());
         structure.setOrigin(request.getFrom());
         structure.setId(null);
+        structure.setStatus(null);
         structure.setUsername(user);
         structure.setCustom(true);
         structure.setVersion(null);
@@ -346,16 +349,20 @@ public class StructureServiceImpl implements StructureService {
 
     @Override
     public List<DisplayElement> getResources(Type type, Scope scope, String version, String username) {
-        Criteria _scope = Criteria.where("domainInfo.scope").is(scope);
-        Criteria _version = Criteria.where("domainInfo.version").is(version);
-        Criteria _username = Criteria.where("username").is(username);
+        Criteria criteria = new Criteria();
+        criteria.and("domainInfo.scope").is(scope);
+        criteria.and("domainInfo.version").is(version);
 
-        _scope.andOperator(_version);
         if(!scope.equals(Scope.HL7STANDARD)) {
-            _version.andOperator(_username);
+            criteria.and("username").in(username);
         }
 
-        Query qry = Query.query(_scope);
+        if(scope.equals(Scope.USERCUSTOM)) {
+            criteria.and("status").is(Status.PUBLISHED);
+        }
+
+
+        Query qry = Query.query(criteria);
         switch (type) {
             case SEGMENT:
                 return mongoTemplate.find(qry, Segment.class).stream()
