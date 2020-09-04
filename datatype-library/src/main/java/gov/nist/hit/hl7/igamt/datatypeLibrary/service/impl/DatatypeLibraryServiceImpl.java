@@ -90,7 +90,6 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.STATUS;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -414,7 +413,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       element.setDateUpdated(lib.getUpdateDate());
       element.setTitle(lib.getMetadata().getTitle());
       element.setSubtitle(lib.getMetadata().getSubTitle());
-      // element.setConfrmanceProfiles(confrmanceProfiles);
       element.setCoverpage(lib.getMetadata().getCoverPicture());
       element.setId(lib.getId());
       element.setDerived(lib.isDerived());
@@ -454,7 +452,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     // TODO Auto-generated method stub
 
 
-    Criteria where = Criteria.where("publicationInfo.status").is(STATUS.PUBLISHED);
+    Criteria where = Criteria.where("publicationInfo.status").is(Status.PUBLISHED);
 
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");

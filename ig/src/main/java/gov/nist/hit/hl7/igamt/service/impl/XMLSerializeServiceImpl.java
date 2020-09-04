@@ -622,7 +622,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
           Predicate p = cpModel.getPredicateMap().get(key);
 
-          if (p.getLevel().equals(Level.GROUP)) {
+          if (p.getContext() != null && p.getContext().getElementId() != null) {
 
             int count = countContextChild(p.getContext(), 1);
             
@@ -675,7 +675,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
           Predicate p = cpModel.getPredicateMap().get(key);
 
-          if (p.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+      	if (p.getContext() == null || p.getContext().getElementId() == null) {
         	  String script = this.generateConditionScript(p, cpModel.getModel().getId());
         	  if(script != null) {
                   Element elm_Constraint = new Element("Predicate");
@@ -850,7 +850,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       if (cpModel.getConformanceStatements() != null
           && cpModel.getConformanceStatements().size() > 0) {
         for (ConformanceStatement cs : cpModel.getConformanceStatements()) {
-          if (cs.getLevel().equals(Level.GROUP)) {
+          if (cs.getContext() != null && cs.getContext().getElementId() != null) {
             Element elm_ByID = this.findOrCreatByIDElement(constraints_group_Elm, cs.getContext(), cpModel.getModel());
             String script = this.generateAssertionScript(cs, cpModel.getModel().getId());
             if (script != null) {
@@ -877,7 +877,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       if (cpModel.getConformanceStatements() != null
           && cpModel.getConformanceStatements().size() > 0) {
         for (ConformanceStatement cs : cpModel.getConformanceStatements()) {
-          if (cs.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+        	if (cs.getContext() == null || cs.getContext().getElementId() == null) {
         	  String script = this.generateAssertionScript(cs, cpModel.getModel().getId());
         	  if(script != null) {
         		  Element elm_Constraint = new Element("Constraint");
@@ -1507,7 +1507,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         if (segmentRefOrGroupDataModel.getType().equals(Type.SEGMENTREF)) {
           elmMessage.appendChild(serializeSegmentRef(segmentRefOrGroupDataModel, igModel, defaultHL7Version));
         } else if (segmentRefOrGroupDataModel.getType().equals(Type.GROUP)) {
-          elmMessage.appendChild(serializeGroup(segmentRefOrGroupDataModel, igModel, defaultHL7Version));
+          elmMessage.appendChild(serializeGroup(segmentRefOrGroupDataModel, igModel, defaultHL7Version, cpModel.getModel().getId()));
         }
       }
 
@@ -1519,10 +1519,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   }
 
   private Element serializeGroup(SegmentRefOrGroupDataModel segmentRefOrGroupDataModel,
-      IgDataModel igModel, String defaultHL7Version) throws GroupSerializationException {
+      IgDataModel igModel, String defaultHL7Version, String messageId) throws GroupSerializationException {
     try {
       Element elmGroup = new Element("Group");
-      elmGroup.addAttribute(new Attribute("ID", this.str(igModel.getModel().getId()) + "-"
+      elmGroup.addAttribute(new Attribute("ID", this.str(messageId) + "-"
           + this.str(segmentRefOrGroupDataModel.getModel().getId())));
       elmGroup.addAttribute(
           new Attribute("Name", this.str(segmentRefOrGroupDataModel.getModel().getName())));
@@ -1545,7 +1545,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         if (childModel.getType().equals(Type.SEGMENTREF)) {
           elmGroup.appendChild(serializeSegmentRef(childModel, igModel, defaultHL7Version));
         } else if (childModel.getType().equals(Type.GROUP)) {
-          elmGroup.appendChild(serializeGroup(childModel, igModel, defaultHL7Version));
+          elmGroup.appendChild(serializeGroup(childModel, igModel, defaultHL7Version, messageId));
         }
       }
 

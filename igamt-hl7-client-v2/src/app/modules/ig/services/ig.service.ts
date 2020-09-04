@@ -4,6 +4,7 @@ import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import {TableOfContentSave} from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentCreationWrapper } from '../../document/models/document/document-creation.interface';
 import { MessageEventTreeNode } from '../../document/models/message-event/message-event.class';
@@ -135,10 +136,8 @@ export class IgService {
           values: sectionList,
         }],
       }),
-      new fromDam.SetValue({
-        tableOfContentEdit: {
-          changed: true,
-        },
+      new TableOfContentSave({
+        sections: content, id: ig.id,
       }),
     ];
   }

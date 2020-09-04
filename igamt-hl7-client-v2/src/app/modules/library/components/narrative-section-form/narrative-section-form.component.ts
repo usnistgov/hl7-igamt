@@ -43,4 +43,7 @@ export class NarrativeSectionFormComponent implements OnInit  {
     this.froalaConfig$ = this.froalaService.getConfig();
   }
 
+  getDescription() {
+    return this.sectionForm.getRawValue()['description'];
+  }
 }

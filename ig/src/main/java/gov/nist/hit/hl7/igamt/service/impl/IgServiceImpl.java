@@ -104,7 +104,6 @@ import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationExcepti
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SCOPE;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -223,7 +222,7 @@ public class IgServiceImpl implements IgService {
                 conformanceProfileService.findDisplayFormat(i.getId());
             if (conformanceProfile != null) {
               conformanceProfileNames
-              .add(conformanceProfile.getName() + conformanceProfile.getIdentifier());
+              .add(conformanceProfile.getName());
             }
           }
         }

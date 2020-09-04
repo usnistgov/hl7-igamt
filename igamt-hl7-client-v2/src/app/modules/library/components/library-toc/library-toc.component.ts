@@ -58,6 +58,8 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
   addChild = new EventEmitter<IAddNewWrapper>();
   @Output()
   addVSFromCSV = new EventEmitter<any>();
+  @Output()
+  deleteNarrative = new EventEmitter<string>();
 
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
@@ -114,6 +116,7 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
 
   deleteSection(section) {
     this.nodeHelperService.deleteSection(section.id, this.tree.treeModel);
+    this.deleteNarrative.emit(section.id);
     this.update();
   }
 

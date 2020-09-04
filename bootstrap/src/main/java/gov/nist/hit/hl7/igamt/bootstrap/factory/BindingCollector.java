@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
@@ -37,7 +38,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SCOPE;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 /**
@@ -64,10 +64,10 @@ public class BindingCollector {
   public void collect() throws FileNotFoundException {
     // TODO Auto-generated constructor stub
     for(String s : config.findOne().getHl7Versions()) {
-      List<Valueset> vs= valueSetService.findDisplayFormatByScopeAndVersion(SCOPE.HL7STANDARD.toString(), s);
+      List<Valueset> vs= valueSetService.findDisplayFormatByScopeAndVersion(Scope.HL7STANDARD.toString(), s);
       Map<String, String> valueSetsNames = vs.stream().collect(
           Collectors.toMap(Valueset::getId, Valueset::getBindingIdentifier));
-      List<Datatype> datatypes= datatypeService.findByDomainInfoScopeAndDomainInfoVersion(SCOPE.HL7STANDARD.toString(), s);
+      List<Datatype> datatypes= datatypeService.findByDomainInfoScopeAndDomainInfoVersion(Scope.HL7STANDARD.toString(), s);
       Map<String, String> datatypesNames = datatypes.stream().collect(
           Collectors.toMap(Datatype::getId, Datatype::getName));
       processSegment(s, valueSetsNames, datatypesNames);
@@ -85,13 +85,13 @@ public class BindingCollector {
    */
   private void processSegment(String version, Map<String, String> valueSetsNames, Map<String, String> datatypesNames) throws FileNotFoundException {
     // TODO Auto-generated method stub
-    List<Segment> segments= this.segmentService.findByDomainInfoScopeAndDomainInfoVersion(SCOPE.HL7STANDARD.toString(), version);
+    List<Segment> segments= this.segmentService.findByDomainInfoScopeAndDomainInfoVersion(Scope.HL7STANDARD.toString(), version);
     gerneratefile("segments"+ version, segments, valueSetsNames,datatypesNames );
   }
   
   private void processDatatypes(String version, Map<String, String> valueSetsNames, Map<String, String> datatypesNames) throws FileNotFoundException {
     // TODO Auto-generated method stub
-    List<Datatype> datatypes= this.datatypeService.findByDomainInfoScopeAndDomainInfoVersion(SCOPE.HL7STANDARD.toString(), version);
+    List<Datatype> datatypes= this.datatypeService.findByDomainInfoScopeAndDomainInfoVersion(Scope.HL7STANDARD.toString(), version);
     gerneratefileDatatypesBindings("datatypes"+ version, datatypes, valueSetsNames,datatypesNames );
     
   }
