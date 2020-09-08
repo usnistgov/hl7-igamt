@@ -85,6 +85,7 @@ export class SharingDialogComponent implements OnInit {
   }
 
   tableListBoxSelectEvent(event) {
+    this.changed = true;
     if (event && event.value) {
       this.currentAuthor = event.value;
     }

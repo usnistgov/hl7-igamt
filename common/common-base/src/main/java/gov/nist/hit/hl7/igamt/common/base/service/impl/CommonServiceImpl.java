@@ -49,10 +49,11 @@ public class CommonServiceImpl implements CommonService {
       throw  new ForbiddenOperationException("Resource change not allowed");
     } 
     //if(!auth.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
-      boolean allowed = author !=null? auth.getName().equals(author): auth.getName().equals(username);
-      if(!allowed) {
-       throw new ForbiddenOperationException("The User must be the current author or an admin of this resource to perform this operation");
-      }
+//      boolean allowed = author !=null? auth.getName().equals(author): auth.getName().equals(username);
+    
+//      if(!allowed) {
+//       throw new ForbiddenOperationException("The User must be the current author or an admin of this resource to perform this operation");
+//      }
    // }
   }
 
