@@ -13,19 +13,11 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service.impl;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,18 +30,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.base.domain.LengthType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
@@ -499,20 +479,27 @@ public class SegmentServiceImpl implements SegmentService {
 	 * findDisplayFormatByScopeAndVersion(java. lang.String, java.lang.String)
 	 */
 	@Override
-	public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version) {
-		// TODO Auto-generated method stub
+	public List<Segment> findDisplayFormatByScopeAndVersion(Scope scope, String version, String username) {
+		Criteria criteria = new Criteria();
+		criteria.and("domainInfo.scope").is(scope);
+		criteria.and("domainInfo.version").is(version);
 
-		Criteria where = Criteria.where("domainInfo.scope").is(scope);
-		where.andOperator(Criteria.where("domainInfo.version").is(version));
+		if(!scope.equals(Scope.HL7STANDARD)) {
+			criteria.and("username").in(username);
+		}
 
-		Query qry = Query.query(where);
+		if(scope.equals(Scope.USERCUSTOM)) {
+			criteria.and("status").is(Status.PUBLISHED);
+		}
+
+		Query qry = Query.query(criteria);
 		qry.fields().include("domainInfo");
 		qry.fields().include("id");
 		qry.fields().include("name");
+		qry.fields().include("ext");
 		qry.fields().include("description");
-		List<Segment> segments = mongoTemplate.find(qry, Segment.class);
 
-		return segments;
+		return mongoTemplate.find(qry, Segment.class);
 	}
 
 	private void validateField(Field f) throws ValidationException {
@@ -562,6 +549,16 @@ public class SegmentServiceImpl implements SegmentService {
 		updateDynamicMapping(elm, newKeys);
 		this.save(elm);
 		return newLink;
+	}
+
+	@Override
+	public List<Valueset> getDependentValueSets(Set<Segment> resources) {
+		Set<String> valueSetIds = resources.stream()
+				.map(Segment::getBinding)
+				.filter(Objects::nonNull)
+				.flatMap(resourceBinding -> bindingService.processBinding(resourceBinding).stream())
+				.collect(Collectors.toSet());
+		return valueSetService.findByIdIn(valueSetIds);
 	}
 
 	private void updateDynamicMapping(Segment segment, HashMap<RealKey, String> newKeys) {

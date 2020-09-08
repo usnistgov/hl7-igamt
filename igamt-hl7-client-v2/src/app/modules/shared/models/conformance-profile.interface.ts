@@ -1,3 +1,4 @@
+import { Type } from '../constants/type.enum';
 import { IResourceBinding } from './binding.interface';
 import { ICoConstraintBindingContext } from './co-constraint.interface';
 import { IComment } from './comment.interface';
@@ -17,7 +18,8 @@ export interface IGroup extends IMsgStructElement {
 export interface ISegmentRef extends IMsgStructElement {
   ref: IRef;
 }
-export interface IConformanceProfile extends IResource {
+
+export interface IHL7MessageProfile extends IResource {
   identifier: string;
   messageType: string;
   event: string;
@@ -25,9 +27,27 @@ export interface IConformanceProfile extends IResource {
   profileType: ProfileType;
   role: Role;
   profileIdentifier: IMessageProfileIdentifier[];
-  coConstraintsBindings: ICoConstraintBindingContext[];
   children: IMsgStructElement[];
   binding?: IResourceBinding;
+}
+
+export interface IConformanceProfile extends IHL7MessageProfile {
+  coConstraintsBindings: ICoConstraintBindingContext[];
+}
+
+export interface IMessageStructure extends IHL7MessageProfile {
+  custom: boolean;
+  participants: string[];
+  events: IEvent[];
+}
+
+export interface IEvent {
+  id: string;
+  name: string;
+  parentStructId: string;
+  description: string;
+  type: Type;
+  hl7Version: string;
 }
 
 export enum Role {

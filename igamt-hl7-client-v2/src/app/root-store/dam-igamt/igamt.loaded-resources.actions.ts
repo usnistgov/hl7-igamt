@@ -1,7 +1,7 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Action} from '@ngrx/store';
-import {Type} from '../../modules/shared/constants/type.enum';
-import {IResource} from '../../modules/shared/models/resource.interface';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Action } from '@ngrx/store';
+import { Type } from '../../modules/shared/constants/type.enum';
+import { IResource } from '../../modules/shared/models/resource.interface';
 export enum IgamtLoadedResourcesActionTypes {
   LoadResourceReferences = '[Resource References] Load Resource References',
   LoadResourceReferencesSuccess = '[Resource References] Load Resource References Success',
@@ -14,6 +14,7 @@ export class LoadResourceReferences implements Action {
   constructor(readonly payload: {
     resourceType: Type,
     id: string,
+    display?: boolean,
   }) {
   }
 }
@@ -31,7 +32,7 @@ export class LoadResourceReferencesFailure implements Action {
   constructor(readonly error: HttpErrorResponse) {
   }
 }
-export type IgamtLoadedResourcesActions =  | LoadResourceReferences
+export type IgamtLoadedResourcesActions = | LoadResourceReferences
   | LoadResourceReferencesSuccess
   | LoadResourceReferencesFailure
   ;

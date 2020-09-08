@@ -1,7 +1,14 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 public enum Scope {
-  HL7STANDARD("HL7STANDARD"), SDTF("SDTF"), USER("USER"), PRELOADED("PRELOADED"), PHINVADS("PHINVADS"), INTERMASTER("INTERMASTER"), ARCHIVED("ARCHIVED");
+  HL7STANDARD("HL7STANDARD"),
+  SDTF("SDTF"),
+  USER("USER"),
+  PRELOADED("PRELOADED"),
+  PHINVADS("PHINVADS"),
+  INTERMASTER("INTERMASTER"),
+  USERCUSTOM("USERCUSTOM"),
+  ARCHIVED("ARCHIVED");
 
   Scope(String value) {
     this.value = value;

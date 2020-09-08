@@ -1,0 +1,14 @@
+<app-hl7-v2-tree-structure
+  [columns]="columns"
+  [derived]="false"
+  [datatypes]="datatypes | async"
+  [segments]="segments | async"
+  [valueSets]="[]"
+  [repository]="repository"
+  [viewOnly]="viewOnly$ | async"
+  (structureChange)="change($event)"
+  [resource]="resource$ | async"
+  [config]="config | async"
+  [bindingConfig]= "bindingConfig | async"
+  [username]="username | async">
+</app-hl7-v2-tree-structure>

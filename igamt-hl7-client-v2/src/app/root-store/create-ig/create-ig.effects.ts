@@ -31,7 +31,7 @@ export class CreateIgEffects {
       this.store.dispatch(new fromDAM.TurnOnLoader({
         blockUI: false,
       }));
-      return this.igService.getMessagesByVersion(action.payload).pipe(
+      return this.igService.getMessagesByVersionAndScope(action.payload.version, action.payload.scope).pipe(
         map((resp: Message<MessageEventTreeNode[]>) => {
           return new LoadMessageEventsSuccess(resp);
         })

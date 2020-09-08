@@ -13,6 +13,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service.event;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.ResourcePickerList;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.MessageEvent;
@@ -24,12 +25,9 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEve
  *
  */
 public interface MessageEventService {
-  public List<MessageEventTreeNode> convertMessageStructureToEventTree(List<MessageStructure> messageStructures);
 
-  /**
-   * @param list
-   * @return
-   */
-  public ResourcePickerList convertToDisplay(List<MessageEventTreeNode> list);
+  List<MessageEventTreeNode> convertMessageStructureToEventTree(List<MessageStructure> messageStructures);
+  ResourcePickerList convertToDisplay(List<MessageEventTreeNode> list);
+  List<MessageStructure> findStructureByScopeAndVersion(String version, Scope scope, String username);
 
 }

@@ -2,7 +2,18 @@
   <p-table #dt1 [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="table" [globalFilterFields]="['name', 'description']" scrollHeight="100%" sortField="name"
            scrollable="true">
     <ng-template pTemplate="caption">
-      <app-select-versions (selected)="select($event)" [hl7Versions]="hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
+      <div style="display: flex; margin-bottom: 5px;">
+        <strong style="margin-right: 5px; display: flex; align-items: center;">
+          Scope
+        </strong>
+        <span style="margin-right: 5px; display: flex; align-items: center;">
+          <input [(ngModel)]="selectedScope" (ngModelChange)="selectScope($event)" type="radio" style="margin-right: 5px;" styleClass="'radio-inline'" name="scope" value="HL7STANDARD" /> <app-scope-badge scope="HL7STANDARD"></app-scope-badge>
+        </span>
+        <span style="margin-right: 5px; display: flex; align-items: center;">
+          <input [(ngModel)]="selectedScope" (ngModelChange)="selectScope($event)" type="radio" style="margin-right: 5px;" styleClass="'radio-inline'" name="scope" value="USERCUSTOM" /> <app-scope-badge scope="USERCUSTOM"></app-scope-badge>
+        </span>
+      </div>
+      <app-select-versions (selected)="selectVersion($event)" [hl7Versions]="hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
       <div style="text-align: left">
         <div class="input-group" style="margin-left: 10px;">
           <div class="input-group-prepend" style="height: 35px;">
@@ -31,7 +42,7 @@
         <td>
           <app-scope-badge [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version">
           </app-scope-badge>
-          <span> {{rowData.name}}
+          <span> {{rowData.name + (rowData.ext ? '_' + rowData.ext : '') }}
             <ng-container *ngIf="rowData.description">
               {{'-' + rowData.description}}
             </ng-container>
@@ -86,7 +97,7 @@
           </span>
         </td>
         <td>
-          <ng-container *ngIf="rowData.domainInfo.scope !='HL7STANDARD'">
+          <ng-container *ngIf="rowData.domainInfo.scope !=='HL7STANDARD' && rowData.domainInfo.scope !=='USERCUSTOM'">
             <input [name]="rowData.id" [id]="rowData.id" appNamingDuplication appNamingConvention  [type]="'SEGMENT'" [scope]="rowData.domainInfo.scope" [existing]="existing" [fixedName]="rowData.name" [domainInfo]="rowData.domainInfo"  [documentType]="documentType" [master]="master" type="text" style="width: 100%"  [(ngModel)]="rowData.ext" required (input)="emitData()"/>
             <div *ngIf="addingEditForm.controls[rowData.id] && addingEditForm.controls[rowData.id].errors" style="color:red; font-size: 11px">
               <div *ngIf="addingEditForm.controls[rowData.id].errors.required">

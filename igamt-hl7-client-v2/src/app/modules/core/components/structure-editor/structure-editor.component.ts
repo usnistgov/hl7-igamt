@@ -154,7 +154,8 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
               flatMap((resource) => {
                 this.changes.next({});
                 this.resourceSubject.next(resource as T);
-                return [this.messageService.messageToAction(message), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
+                // new LoadResourceReferences({ resourceType: this.editor.resourceType, id }),
+                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
               }),
             );
           }),

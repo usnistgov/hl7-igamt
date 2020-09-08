@@ -1,8 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { Message } from '../../modules/dam-framework/models/messages/message.class';
-import {IDocumentCreationWrapper} from '../../modules/document/models/document/document-creation.interface';
+import { IDocumentCreationWrapper } from '../../modules/document/models/document/document-creation.interface';
 import { MessageEventTreeNode } from '../../modules/document/models/message-event/message-event.class';
+import { Scope } from '../../modules/shared/constants/scope.enum';
 
 export enum CreateIgActionTypes {
   LoadMessageEvents = '[Create IG Page] Load Message Events',
@@ -16,7 +17,7 @@ export enum CreateIgActionTypes {
 export class LoadMessageEvents implements Action {
   readonly type = CreateIgActionTypes.LoadMessageEvents;
 
-  constructor(readonly payload: string) {
+  constructor(readonly payload: { version: string, scope: Scope }) {
   }
 }
 

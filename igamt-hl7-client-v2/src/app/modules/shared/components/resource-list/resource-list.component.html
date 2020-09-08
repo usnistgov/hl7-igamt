@@ -1,0 +1,58 @@
+<p-table
+  #dt1
+  [style]="{
+    'overflow':'hidden',
+    'grid-area': 'loaded'
+  }"
+  [value]="table"
+  [globalFilterFields]="filters"
+  scrollHeight="300px"
+  sortField="name"
+  scrollable="true">
+
+  <ng-template pTemplate="caption">
+    <div style="display: flex; margin-bottom: 5px;" *ngIf="displayScope">
+      <strong style="margin-right: 5px; display: flex; align-items: center;">
+        Scope
+      </strong>
+      <span style="margin-right: 5px; display: flex; align-items: center;">
+        <input [(ngModel)]="selectedScope" (ngModelChange)="selectScope($event)" type="radio" style="margin-right: 5px;" styleClass="'radio-inline'" name="scope" value="HL7STANDARD" /> <app-scope-badge scope="HL7STANDARD"></app-scope-badge>
+      </span>
+      <span style="margin-right: 5px; display: flex; align-items: center;">
+        <input [(ngModel)]="selectedScope" (ngModelChange)="selectScope($event)" type="radio" style="margin-right: 5px;" styleClass="'radio-inline'" name="scope" value="USERCUSTOM" /> <app-scope-badge scope="USERCUSTOM"></app-scope-badge>
+      </span>
+    </div>
+    <app-select-versions (selected)="selectVersion($event)" [hl7Versions]="hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
+    <div style="text-align: left">
+      <div class="input-group" style="margin-left: 10px;">
+        <div class="input-group-prepend" style="height: 35px; text-align: left">
+          <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+        </div>
+        <input
+          (input)="dt1.filterGlobal($event.target.value, 'contains')"
+          class="form-control"
+          placeholder="Filter"
+          style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="header">
+    <tr>
+      <th>{{ resourceLabel }}</th>
+      <th> Action </th>
+    </tr>
+  </ng-template>
+
+  <ng-template let-rowData pTemplate="body">
+    <tr>
+      <td>
+        <ng-container *ngTemplateOutlet="display; context: { $implicit : rowData }"></ng-container>
+      </td>
+      <td>
+        <ng-container *ngTemplateOutlet="actions; context: { $implicit : rowData }"></ng-container>
+      </td>
+    </tr>
+  </ng-template>
+
+</p-table>

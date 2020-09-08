@@ -534,9 +534,17 @@ public class DeltaServiceImpl implements DeltaService {
       List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
       List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
+      List<CoConstraintBinding> sourceBindings = source.getCoConstraintsBindings() != null ? source.getCoConstraintsBindings() : new ArrayList<>();
+      List<CoConstraintBinding> targetBindings = target.getCoConstraintsBindings() != null ? target.getCoConstraintsBindings() : new ArrayList<>();
+
+      this.coConstraintDeltaService.preProcess(sourceBindings);
+      this.coConstraintDeltaService.preProcess(targetBindings);
+      List<CoConstraintBinding> bindings = this.coConstraintDeltaService.delta(sourceBindings, targetBindings);
+
       ResourceDelta rd = new ResourceDelta();
       rd.setStructureDelta(structure);
       rd.setConformanceStatementDelta(conformanceStatements);
+      rd.setCoConstraintBindings(bindings);
       return rd;
 
     }

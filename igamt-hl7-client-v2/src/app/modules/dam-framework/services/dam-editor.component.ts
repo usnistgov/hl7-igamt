@@ -94,7 +94,6 @@ export abstract class DamAbstractEditorComponent {
 
   editorChange(data: any, valid: boolean) {
     this.changeTime = new Date();
-    console.log(data);
     this.store.dispatch(new fromDam.EditorChange({
       data,
       valid,
