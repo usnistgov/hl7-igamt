@@ -40,6 +40,7 @@ import { SharingDialogComponent } from './../../../shared/components/sharing-dia
   styleUrls: ['./library-list-container.component.scss'],
 })
 export class LibraryListContainerComponent implements OnInit, OnDestroy {
+  readonly   DATATYPE_LIBRARY = 'datatype-library';
 
   constructor(
     private store: Store<fromRoot.IRouteState>,
@@ -145,10 +146,10 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
                 class: 'btn-success',
                 icon: 'fa-plus',
                 action: (item: IgListItem) => {
-                  this.libraryService.cloneIg(item.id, CloneModeEnum.CLONE, null).subscribe(
+                  this.libraryService.clone(item.id, CloneModeEnum.CLONE, null).subscribe(
                     (response: Message<string>) => {
                       this.store.dispatch(this.message.messageToAction(response));
-                      this.router.navigate(['library', response.data]);
+                      this.router.navigate([this.DATATYPE_LIBRARY, response.data]);
                     },
                     (error) => {
                       this.store.dispatch(this.message.actionFromError(error));
@@ -158,16 +159,19 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
                 disabled: (item: IgListItem): boolean => {
                   return false;
                 },
+                hide: (item: IgListItem): boolean => {
+                  return true;
+                },
               },
               {
-                label: 'Derive from',
+                label: 'New Version',
                 class: 'btn-secondary',
                 icon: 'fa fa-map-marker',
                 action: (item: IgListItem) => {
-                  this.libraryService.cloneIg(item.id, CloneModeEnum.DERIVE, null).subscribe(
+                  this.libraryService.clone(item.id, CloneModeEnum.UPGRADE, null).subscribe(
                     (response: Message<string>) => {
                       this.store.dispatch(this.message.messageToAction(response));
-                      this.router.navigate(['library', response.data]);
+                      this.router.navigate([this.DATATYPE_LIBRARY, response.data]);
                     },
                     (error) => {
                       this.store.dispatch(this.message.actionFromError(error));
@@ -187,7 +191,7 @@ export class LibraryListContainerComponent implements OnInit, OnDestroy {
                 icon: 'fa-arrow-right',
                 default: true,
                 action: (item: IgListItem) => {
-                  this.router.navigate(['datatype-library', item.id]);
+                  this.router.navigate([this.DATATYPE_LIBRARY, item.id]);
                 },
                 disabled: (item: IgListItem): boolean => {
                   return false;

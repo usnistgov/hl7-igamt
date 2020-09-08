@@ -1,48 +1,47 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Actions } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
-import { SelectItem } from 'primeng/api';
-import { combineLatest, Observable, of } from 'rxjs';
-import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {MatDialog} from '@angular/material';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Actions} from '@ngrx/effects';
+import {Store} from '@ngrx/store';
+import {SelectItem} from 'primeng/api';
+import {combineLatest, Observable, of} from 'rxjs';
+import {concatMap, filter, map, take, withLatestFrom} from 'rxjs/operators';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
-import {
-  ImportResourceFromFile,
-  LibraryEditActionTypes, selectViewOnly, TableOfContentSave,
-} from 'src/app/root-store/library/library-edit/library-edit.index';
-import { selectLibraryId } from 'src/app/root-store/library/library-edit/library-edit.index';
 import * as fromLibraryEdit from 'src/app/root-store/library/library-edit/library-edit.index';
-import { ToggleDelta } from 'src/app/root-store/library/library-edit/library-edit.index';
 import {
-  CopyResource, CopyResourceSuccess,
+  CopyResource,
+  CopyResourceSuccess,
+  DeactivateElements,
   DeleteResource,
+  LibraryEditActionTypes,
   LibraryEditTocAddResource,
+  selectLibraryId,
+  selectViewOnly,
+  ToggleDelta,
   UpdateSections,
 } from 'src/app/root-store/library/library-edit/library-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
-import * as fromLibrayEdit from '../../../../root-store/library/library-edit/library-edit.index';
-import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
+import {ClearResource, LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
-import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
-import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
+import {ConfirmDialogComponent} from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import {RxjsStoreHelperService} from '../../../dam-framework/services/rxjs-store-helper.service';
 import {selectIsAdmin} from '../../../dam-framework/store/authentication';
 import {EditorReset, selectWorkspaceActive} from '../../../dam-framework/store/data';
 import {IAddWrapper} from '../../../document/models/document/add-wrapper.class';
 import {IDocumentDisplayInfo} from '../../../ig/models/ig/ig-document.class';
-import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
-import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
-import { UsageDialogComponent } from '../../../shared/components/usage-dialog/usage-dialog.component';
-import { Scope } from '../../../shared/constants/scope.enum';
-import { Type } from '../../../shared/constants/type.enum';
-import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
-import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
-import { IUsages } from '../../../shared/models/cross-reference';
-import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
-import { CrossReferencesService } from '../../../shared/services/cross-references.service';
+import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
+import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
+import {UsageDialogComponent} from '../../../shared/components/usage-dialog/usage-dialog.component';
+import {Scope} from '../../../shared/constants/scope.enum';
+import {Type} from '../../../shared/constants/type.enum';
+import {ActiveStatus, IDocumentRef} from '../../../shared/models/abstract-domain.interface';
+import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
+import {IUsages} from '../../../shared/models/cross-reference';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {IResourcePickerData} from '../../../shared/models/resource-picker-data.interface';
+import {CrossReferencesService} from '../../../shared/services/cross-references.service';
 import {ILibrary} from '../../models/library.class';
-import { LibraryTocComponent } from '../library-toc/library-toc.component';
+import {LibraryTocComponent} from '../library-toc/library-toc.component';
 
 @Component({
   selector: 'app-library-edit-sidebar',
@@ -290,4 +289,48 @@ export class LibraryEditSidebarComponent implements OnInit {
       this.toc.filterByDelta($event);
     }
   }
+
+  deactivate($event: IDisplayElement) {
+    this.documentRef$.pipe(
+      take(1),
+      concatMap((documentRef: IDocumentRef) => {
+        return this.crossReferencesService.findUsagesDisplay(documentRef, Type.DATATYPELIBRARY, $event.type, $event.id).pipe(
+          take(1),
+          map((usages: IUsages[]) => {
+            usages =  usages.filter((x) =>  x.element.activeInfo && x.element.activeInfo.status === ActiveStatus.ACTIVE);
+            if (usages.length === 0) {
+              const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+                data: {
+                  question: 'Are you sure you want to Deactivate this ' + this.getStringFromType($event.type) + '?',
+                  action: 'Deactivate ' + this.getStringFromType($event.type),
+                },
+              });
+              dialogRef.afterClosed().subscribe(
+                (answer) => {
+                  if (answer) {
+                    this.store.dispatch(new DeactivateElements( documentRef.documentId, [$event.id]));
+                  }
+                },
+              );
+            } else {
+              const dialogRef = this.dialog.open(UsageDialogComponent, {
+                data: {
+                  title: 'Cross References found',
+                  usages,
+                  documentId: documentRef.documentId,
+                },
+              });
+              this.router.events
+                .subscribe((h) => {
+                  dialogRef.close();
+                });
+              dialogRef.afterClosed().subscribe(
+              );
+            }
+          }),
+        );
+      }),
+    ).subscribe();
+  }
+
 }

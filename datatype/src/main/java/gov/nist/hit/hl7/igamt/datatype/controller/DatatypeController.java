@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.datatype.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
+import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -43,6 +45,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeDisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
+import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 
 @RestController
@@ -52,6 +55,8 @@ public class DatatypeController extends BaseController {
 
     @Autowired
     private DatatypeService datatypeService;
+    @Autowired
+    private DatatypeRepository datatypeRepository;
 
     @Autowired
     EntityChangeService entityChangeService;
@@ -166,8 +171,15 @@ public class DatatypeController extends BaseController {
             "application/json" })
     public @ResponseBody ResponseMessage<List<Datatype>> findHl7Datatypes(@PathVariable String version,
             @PathVariable String scope, Authentication authentication) {
+      List<Datatype> ret = new ArrayList<>();
+      if(scope.equals(Scope.SDTF.toString())) {
+        ret = this.datatypeRepository.findByDomainInfoCompatibilityVersionContainsAndDomainInfoScopeAndActiveInfoStatus(version, Scope.SDTF, ActiveStatus.ACTIVE);
+      } else {
+        ret =  datatypeService.findDisplayFormatByScopeAndVersion(scope, version);
+      }
         return new ResponseMessage<List<Datatype>>(Status.SUCCESS, "", "", null, false, null,
-                datatypeService.findDisplayFormatByScopeAndVersion(scope, version));
+         ret);
+      
     }
 
     private Datatype findById(String id) throws DatatypeNotFoundException {

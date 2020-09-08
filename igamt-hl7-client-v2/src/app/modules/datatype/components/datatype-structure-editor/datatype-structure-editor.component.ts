@@ -89,6 +89,7 @@ export class DatatypeStructureEditorComponent extends StructureEditorComponent<I
 
   isDTM(): Observable<boolean> {
     return this.resource$.pipe(
+      take(1),
       map((datatype) => {
         return datatype.name === 'DTM' || datatype.name === 'DT' || datatype.name === 'TM';
       }),

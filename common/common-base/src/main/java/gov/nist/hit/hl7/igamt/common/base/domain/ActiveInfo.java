@@ -9,39 +9,36 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.display.model;
+package gov.nist.hit.hl7.igamt.common.base.domain;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import java.util.Date;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public enum CloneMode {
-  CLONE("CLONE"), DERIVE ("DERIVE"), UPGRADE ("UPGRADE");
-
-  CloneMode(String value) {
-    this.value = value;
+public class ActiveInfo {
+  private Date start;
+  private Date end;
+  private ActiveStatus status = ActiveStatus.ACTIVE;
+  
+  public ActiveStatus getStatus() {
+    return status;
   }
-  private final String value;
-
-  public String getValue() {
-    return value;
+  public void setStatus(ActiveStatus status) {
+    this.status = status;
   }
-
-  @Override
-  public String toString() {
-    // TODO Auto-generated method stub
-    return this.value;
+  public Date getStart() {
+    return start;
   }
-
-  public static CloneMode fromString(String text) {
-    for (CloneMode t : CloneMode.values()) {
-      if (t.value.equalsIgnoreCase(text)) {
-        return t;
-      }
-    }
-    return null;
+  public void setStart(Date start) {
+    this.start = start;
+  }
+  public Date getEnd() {
+    return end;
+  }
+  public void setEnd(Date end) {
+    this.end = end;
   }
 
 }

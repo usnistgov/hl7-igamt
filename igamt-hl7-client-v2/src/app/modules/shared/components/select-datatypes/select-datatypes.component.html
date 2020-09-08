@@ -1,5 +1,5 @@
 <form #addingEditForm="ngForm" class="select-datatype-container">
-  <p-table #dt1 [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="table" [globalFilterFields]="['name', 'description']" scrollHeight="100%" sortField="name"
+  <p-table #dt1 [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="table" [globalFilterFields]="['label', 'description']" scrollHeight="100%" sortField="name"
            scrollable="true">
     <ng-template pTemplate="caption">
       <app-select-versions (selected)="select($event)" [hl7Versions]="hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
@@ -18,7 +18,7 @@
         <th>
           Data Type
         </th>
-        <th *ngIf="master&& documentType =='DATATYPELIBRARY'">
+        <th *ngIf="master&& documentType =='DATATYPELIBRARY' || scope ==='SDTF'">
          Compatibility
         </th>
         <th style="width:100px" *ngIf="!hideAsIs">
@@ -37,13 +37,13 @@
         <td>
           <app-scope-badge [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version">
           </app-scope-badge>
-          <span> {{rowData.name}}
+          <span> {{rowData.label}}
             <ng-container *ngIf="rowData.description">
               {{'-' + rowData.description}}
             </ng-container>
           </span>
         </td>
-        <td *ngIf="master&& documentType =='DATATYPELIBRARY'">
+        <td *ngIf="master&& documentType =='DATATYPELIBRARY' || scope ==='SDTF'">
           <span class=" badge badge-secondary" style="margin-left:5px;" *ngFor="let version of  rowData.domainInfo?.compatibilityVersion"> {{version}}</span>
         </td>
         <td style="width:100px" *ngIf="!hideAsIs">
@@ -78,9 +78,6 @@
         <th>
           Data Type
         </th>
-        <th *ngIf="master && documentType ==='DTATYPELIBRARY'">
-          Compatibility
-        </th>
         <th *ngIf="!hideFlavor">
           Extension
         </th>
@@ -98,11 +95,8 @@
           </span>
 
         </td>
-        <th *ngIf="master && documentType ==='DTATYPELIBRARY'">
-          {{rowData.domainInfo.compatibilityVersion}}
-        </th>
         <td *ngIf="!hideFlavor">
-          <ng-container *ngIf="rowData.domainInfo.scope !='HL7STANDARD'">
+          <ng-container *ngIf="rowData.domainInfo.scope ==='USER'">
             <input [name]="rowData.id" [id]="rowData.id" appNamingDuplication appNamingConvention  [type]="'DATATYPE'" [scope]="rowData.domainInfo.scope" [documentType]="documentType" [master]="master" [existing]="existing" [fixedName]="rowData.name" [domainInfo]="rowData.domainInfo" type="text" style="width: 100%"  [(ngModel)]="rowData.ext" required (input)="emitData()"/>
           <div *ngIf="addingEditForm.controls[rowData.id] && addingEditForm.controls[rowData.id].errors" style="color:red; font-size: 11px">
             <div *ngIf="addingEditForm.controls[rowData.id].errors.required">

@@ -23,6 +23,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentExportConfiguration;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
@@ -99,5 +100,27 @@ public class DatatypeLibrary extends DocumentStructure {
 
   public void setValueSetRegistry(ValueSetRegistry valueSetRegistry) {
     this.valueSetRegistry = valueSetRegistry;
+  }
+
+
+
+  /**
+   * @param dt
+   * @param id
+   * @return
+   */
+  public static boolean isLibFlavor(Datatype dt, String id) {
+    // TODO Auto-generated method stub
+    if(dt.getParentId() == null) {
+      return false;
+    }else {
+      if(dt.getParentId().equals(id)) {
+        return true;
+      }else if(dt.getLibraryReferences() !=null){
+        return dt.getLibraryReferences().contains(id);  
+      }
+    }
+    return false;
+    
   }
 }

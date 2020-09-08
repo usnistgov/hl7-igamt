@@ -55,6 +55,9 @@
               <ng-template (execute)="import(node.data, 'DATATYPE', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add HL7 Data Types
               </ng-template>
+              <ng-template (execute)="import(node.data, 'DATATYPE', 'SDTF')" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-plus"></i> Add Standard Data Types Flavors
+              </ng-template>
             </context-menu>
           </div>
         </ng-container>

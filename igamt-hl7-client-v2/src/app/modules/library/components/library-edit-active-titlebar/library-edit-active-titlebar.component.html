@@ -46,12 +46,18 @@
         <span *ngFor="let version of  active.display?.domainInfo?.compatibilityVersion" class="badge badge-secondary"
               style="margin-left:5px;"> {{version}}</span>
       </div>
-      <div *ngIf="active.display?.status" style="margin-left: 10px;">
-        <strong>Status: </strong> {{active.display?.status}}
+      <div *ngIf="active.display?.activeInfo?.status" style="margin-left: 10px;">
+        <strong>Status: </strong> {{active.display?.activeInfo?.status}}
       </div>
-      <div *ngIf="active.display?.publicationInfo" style="margin-left: 10px;">
-        <strong>Publication Date: </strong>  {{active.display?.publicationInfo?.publicationDate | date}}
+      <div *ngIf="active.display?.publicationInfo && active.display?.activeInfo?.status=='ACTIVE' " style="margin-left: 10px;">
+        <strong>Publication Date: </strong>
+                {{active.display?.publicationInfo?.publicationDate | date}}
+      </div>
+      <div *ngIf="active.display?.publicationInfo && active.display?.activeInfo?.status=='DEPRECATED' " style="margin-left: 10px;">
+        <strong>Publication Date: </strong>
+        [ {{active.display?.publicationInfo?.publicationDate | date}} , {{active.display?.activeInfo?.end | date}} ]
       </div>
     </div>
+
   </div>
 </ng-template>

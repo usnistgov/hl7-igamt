@@ -9,39 +9,12 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.display.model;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+package gov.nist.hit.hl7.igamt.common.base.domain;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public enum CloneMode {
-  CLONE("CLONE"), DERIVE ("DERIVE"), UPGRADE ("UPGRADE");
-
-  CloneMode(String value) {
-    this.value = value;
-  }
-  private final String value;
-
-  public String getValue() {
-    return value;
-  }
-
-  @Override
-  public String toString() {
-    // TODO Auto-generated method stub
-    return this.value;
-  }
-
-  public static CloneMode fromString(String text) {
-    for (CloneMode t : CloneMode.values()) {
-      if (t.value.equalsIgnoreCase(text)) {
-        return t;
-      }
-    }
-    return null;
-  }
-
+public enum ActiveStatus {
+  ACTIVE, DEPRECATED
 }

@@ -53,6 +53,8 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
   @Output()
   delete = new EventEmitter<IDisplayElement>();
   @Output()
+  deactivateNode = new EventEmitter<IDisplayElement>();
+  @Output()
   addChildren = new EventEmitter<IAddWrapper>();
   @Output()
   addChild = new EventEmitter<IAddNewWrapper>();
@@ -193,5 +195,9 @@ export class LibraryTocComponent implements OnInit, AfterViewInit {
 
   filterByDelta($event: string[]) {
     this.tree.treeModel.filterNodes((node) => node.data.delta != null && $event.indexOf(node.data.delta) > -1 && node.data.Type !== Type.TEXT);
+  }
+
+  deactivate(node: IDisplayElement) {
+    this.deactivateNode.emit(node);
   }
 }

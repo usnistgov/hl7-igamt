@@ -29,6 +29,7 @@ export interface IAbstractDomain {
   version?: number;
   dateTimeConstraints?: any;
   sharePermission?: string;
+  activeInfo?: IActiveInfo;
 }
 export enum Status {
   DRAFT = 'DRAFT',
@@ -36,8 +37,17 @@ export enum Status {
   SUPERSEDED = 'SUPERSEDED',
   WITHDRAWN = 'WITHDRAWN',
 }
-
+export enum ActiveStatus {
+  ACTIVE = 'ACTIVE',
+  DEPRECATED = 'DEPRECATED',
+}
 export enum SharePermission {
   READ = 'READ',
   WRITE = 'WRITE',
+}
+
+export interface IActiveInfo {
+  start?: string;
+  end?: string;
+  status?: ActiveStatus;
 }

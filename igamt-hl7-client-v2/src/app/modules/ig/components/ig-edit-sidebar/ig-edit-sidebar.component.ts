@@ -128,6 +128,7 @@ export class IgEditSidebarComponent implements OnInit {
   }
 
   addChildren(event: IAddWrapper) {
+    console.log(event);
     const subscription = this.hl7Version$.pipe(
       withLatestFrom(this.version$),
       take(1),
