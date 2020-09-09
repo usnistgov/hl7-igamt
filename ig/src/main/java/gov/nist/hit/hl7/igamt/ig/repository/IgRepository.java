@@ -35,5 +35,6 @@ public interface IgRepository extends MongoRepository<Ig, String> {
       value = "{ '_id' : ?0, 'conformanceProfileRegistry.children._id' : { $all : [ ?1, ?2 ] } }",
       exists = true)
   boolean conformanceProfilesInSameIg(ObjectId igId, ObjectId cpSourceId, ObjectId cpTargetId);
+  List<Ig> findByDerived(boolean derived);
 
 }

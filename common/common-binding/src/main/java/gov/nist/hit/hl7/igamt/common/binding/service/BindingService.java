@@ -16,5 +16,7 @@ public interface BindingService {
   Set<String> processBinding(ResourceBinding binding);
   void substitute(ResourceBinding binding, HashMap<RealKey, String > newKeys);
 
+  void lockConformanceStatements(ResourceBinding binding);
+
 
 }

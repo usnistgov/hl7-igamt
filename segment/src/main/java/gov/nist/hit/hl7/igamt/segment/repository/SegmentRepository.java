@@ -52,5 +52,8 @@ public interface SegmentRepository extends MongoRepository<Segment, String> {
 
   List<Segment> findByCustomTrueAndUsername(String username);
 
+  List<Segment> findByDerived(boolean derived);
+
+  public Segment findOneById(String key);
 
 }

@@ -25,6 +25,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
@@ -40,6 +41,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
+
 
 /**
  *
@@ -92,7 +94,7 @@ public interface DatatypeService {
 	Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
 
 	public Link cloneDatatype(String newId, HashMap<RealKey, String> newKeys,  Link l,
-			String username, Scope scope);
+			String username, Scope scope, CloneMode cloneMode);
 
 	public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope);
 

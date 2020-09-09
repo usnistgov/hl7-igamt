@@ -45,7 +45,7 @@ public class ConformanceStatement implements Serializable{
   private ConstraintType type;
   protected String identifier;
   private InstancePath context;
-  
+  private boolean locked;
   private Level level;
   @Deprecated
   private String structureId;
@@ -167,6 +167,14 @@ public String toString() {
 	return "ConformanceStatement [id=" + id + ", type=" + type + ", identifier=" + identifier + ", context=" + context
 			+ ", level=" + level + ", structureId=" + structureId + ", sourceIds=" + sourceIds + ", igDocumentId="
 			+ igDocumentId + "]";
+}
+
+public boolean isLocked() {
+	return locked;
+}
+
+public void setLocked(boolean locked) {
+	this.locked = locked;
 }
   
 }

@@ -16,6 +16,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.mongodb.client.result.UpdateResult;
+
 import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
@@ -27,6 +29,8 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
+import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -55,57 +59,61 @@ public class IgFixer {
 
   @Autowired
   IgService igService;
+
+  @Autowired
+  IgRepository igRepo;
+
   @Autowired
   private CoConstraintService coConstraintService;
 
   public void deleteArived() {
-    
+
   }
-  
-  
+
+
   public void fixIgComponents() throws CoConstraintGroupNotFoundException {
     List<Ig> igs=  igService.findAll();
     for(Ig ig: igs) {
       if(ig.getDomainInfo().getScope() != Scope.ARCHIVED) {
-      if(ig.getStatus()!=null && ig.getStatus().equals(Status.PUBLISHED)) {
-        ig.setUsername(null);
-      }
-      for(Link l: ig.getConformanceProfileRegistry().getChildren()) {
-        if(l.isUser()) {
+        if(ig.getStatus()!=null && ig.getStatus().equals(Status.PUBLISHED)) {
+          ig.setUsername(null);
+        }
+        for(Link l: ig.getConformanceProfileRegistry().getChildren()) {
+          if(l.isUser()) {
+            l.setUsername(ig.getUsername());
+            this.fixConformanceProfile(l.getId(), ig.getUsername());
+          }
+        } 
+        for(Link l: ig.getSegmentRegistry().getChildren()) {
+          if(l.isUser()) {
+            l.setUsername(ig.getUsername());
+            this.fixSegment(l.getId(), ig.getUsername());
+          }
+        } 
+        for(Link l: ig.getDatatypeRegistry().getChildren()) {
+          if(l.isUser()) {
+            l.setUsername(ig.getUsername());
+            this.fixDatatype(l.getId(), ig.getUsername());
+          }
+        } 
+        for(Link l: ig.getValueSetRegistry().getChildren()) {
+          if(l.isUser()) {
+            l.setUsername(ig.getUsername());
+            this.fixValueset(l.getId(), ig.getUsername());
+          }
+        } 
+        for(Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
           l.setUsername(ig.getUsername());
-          this.fixConformanceProfile(l.getId(), ig.getUsername());
+          if(l.getId() ==null) {
+            System.out.println(l);
+          }
+          this.fixCoConstraintGroup(l.getId(), ig.getUsername());
         }
-      } 
-      for(Link l: ig.getSegmentRegistry().getChildren()) {
-        if(l.isUser()) {
-          l.setUsername(ig.getUsername());
-          this.fixSegment(l.getId(), ig.getUsername());
-        }
-      } 
-      for(Link l: ig.getDatatypeRegistry().getChildren()) {
-        if(l.isUser()) {
-          l.setUsername(ig.getUsername());
-          this.fixDatatype(l.getId(), ig.getUsername());
-        }
-      } 
-      for(Link l: ig.getValueSetRegistry().getChildren()) {
-        if(l.isUser()) {
-          l.setUsername(ig.getUsername());
-          this.fixValueset(l.getId(), ig.getUsername());
-        }
-      } 
-      for(Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
-        l.setUsername(ig.getUsername());
-        if(l.getId() ==null) {
-          System.out.println(l);
-        }
-        this.fixCoConstraintGroup(l.getId(), ig.getUsername());
-      }
-    
-      igService.save(ig);
+
+        igService.save(ig);
       }
     }      
-}
+  }
 
   /**
    * @param id
@@ -133,7 +141,7 @@ public class IgFixer {
       vs.setUsername(username);
       this.valuesetService.save(vs);
     }
-    
+
   }
 
 
@@ -148,7 +156,7 @@ public class IgFixer {
       dt.setUsername(username);
       this.datatypeService.save(dt);
     }
-    
+
   }
 
 
@@ -163,7 +171,7 @@ public class IgFixer {
       segment.setUsername(username);
       this.segmentService.save(segment);
     }
-    
+
   }
 
   /**
@@ -177,6 +185,53 @@ public class IgFixer {
       conformanceProfile.setUsername(username);
       this.conformanceProfileService.save(conformanceProfile);
     }
-    
+  }
+
+  public void deriveChildren() throws IGUpdateException{
+    List<Ig> igs = igRepo.findByDerived(true);
+    for(Ig ig : igs) {
+      for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
+        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+          UpdateResult updateResult = this.igService.updateAttribute(l.getId(), "derived", true, ConformanceProfile.class);
+          if(! updateResult.wasAcknowledged()) {
+            throw new IGUpdateException("Could not publish Conformance profile:" +l.getId());
+          }
+        }
+      }
+      for ( Link l: ig.getSegmentRegistry().getChildren()) {
+        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+          UpdateResult updateResult = this.igService.updateAttribute(l.getId(), "derived", true, Segment.class);
+          if(! updateResult.wasAcknowledged()) {
+            throw new IGUpdateException("Could not publish segment:" +l.getId());
+          }
+        }
+      }
+
+      for ( Link l: ig.getDatatypeRegistry().getChildren()) {
+        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+          UpdateResult updateResult = this.igService.updateAttribute(l.getId(), "derived", true, Datatype.class);
+          if(! updateResult.wasAcknowledged()) {
+            throw new IGUpdateException("Could not publish Datatype:" +l.getId());
+          }
+        }
+      }
+      for ( Link l: ig.getValueSetRegistry().getChildren()) {
+        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+          UpdateResult updateResult = this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);
+          if(! updateResult.wasAcknowledged()) {
+            throw new IGUpdateException("Could not publish Value set:" +l.getId());
+          }
+        }
+      }
+
+      for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
+        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+          UpdateResult updateResult = this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);
+          if(! updateResult.wasAcknowledged()) {
+            throw new IGUpdateException("Could not publish Value set:" +l.getId());
+          }
+        }
+      }
+    }
   }
 }

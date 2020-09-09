@@ -50,6 +50,7 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
@@ -72,7 +73,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItem;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.display.model.CloneMode;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileLabel;
@@ -467,9 +467,9 @@ public class IgServiceImpl implements IgService {
     addKeys(ig.getSegmentRegistry(), Type.SEGMENT, newKeys);
     addKeys(ig.getCoConstraintGroupRegistry(), Type.COCONSTRAINTGROUP, newKeys);
     newIg.setValueSetRegistry(copyValueSetRegistry(ig.getValueSetRegistry(), newKeys, username));
-    newIg.setDatatypeRegistry(copyDatatypeRegistry(ig.getDatatypeRegistry(), newKeys, username));
-    newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),newKeys, username));
-    newIg.setConformanceProfileRegistry(copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), newKeys, username));
+    newIg.setDatatypeRegistry(copyDatatypeRegistry(ig.getDatatypeRegistry(), newKeys, username, info.getMode()));
+    newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),newKeys, username,info.getMode()));
+    newIg.setConformanceProfileRegistry(copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), newKeys, username, info.getMode()));
     newIg.setCoConstraintGroupRegistry(
         copyCoConstraintGRoupRegistry(ig.getCoConstraintGroupRegistry(), newKeys, username, newIg.getId())
         );
@@ -594,12 +594,13 @@ public class IgServiceImpl implements IgService {
    * @param datatypesMap
    * @param segmentsMap
    * @param username
+   * @param clone 
    * @return
    */
 
   private ConformanceProfileRegistry copyConformanceProfileRegistry(
       ConformanceProfileRegistry conformanceProfileRegistry,
-      HashMap<RealKey, String> newKeys, String username) {
+      HashMap<RealKey, String> newKeys, String username, CloneMode clone) {
 
     // TODO Auto-generated method stub
     // TODO Auto-generated method stub
@@ -612,7 +613,7 @@ public class IgServiceImpl implements IgService {
         children.add(l);
       } else {
         children.add(conformanceProfileService.cloneConformanceProfile(
-            newKeys.get(key),newKeys,l, username, Scope.USER));
+            newKeys.get(key),newKeys,l, username, Scope.USER, clone));
       }
     }
     newReg.setChildren(children);
@@ -625,11 +626,12 @@ public class IgServiceImpl implements IgService {
    * @param datatypesMap
    * @param segmentsMap
    * @param username
+   * @param clone 
    * @return
    * @throws CoConstraintSaveException
    */
   private SegmentRegistry copySegmentRegistry(SegmentRegistry segmentRegistry,
-      HashMap<RealKey, String> newKeys, String username) {
+      HashMap<RealKey, String> newKeys, String username, CloneMode cloneMode) {
     // TODO Auto-generated method stub
     SegmentRegistry newReg = new SegmentRegistry();
     HashSet<Link> children = new HashSet<Link>();
@@ -638,7 +640,7 @@ public class IgServiceImpl implements IgService {
       if (!l.isUser()) {
         children.add(l);
       } else {
-        children.add(segmentService.cloneSegment(newKeys.get(key),newKeys, l, username,Scope.USER));
+        children.add(segmentService.cloneSegment(newKeys.get(key),newKeys, l, username,Scope.USER, cloneMode));
       }
     }
     newReg.setChildren(children);
@@ -659,12 +661,13 @@ public class IgServiceImpl implements IgService {
 
   /**
    * @param datatypeRegistry
+   * @param clone 
    * @param valuesetsMap
    * @param datatypesMap
    * @return
    */
   private DatatypeRegistry copyDatatypeRegistry(DatatypeRegistry datatypeRegistry,
-      HashMap<RealKey, String> newKeys, String username) {
+      HashMap<RealKey, String> newKeys, String username, CloneMode cloneMode) {
     // TODO Auto-generated method stub
     DatatypeRegistry newReg = new DatatypeRegistry();
     HashSet<Link> children = new HashSet<Link>();
@@ -674,7 +677,7 @@ public class IgServiceImpl implements IgService {
       if (!l.isUser()) {
         children.add(l);
       } else {
-        children.add(this.datatypeService.cloneDatatype(newKeys.get(key),newKeys, l, username,Scope.USER));
+        children.add(this.datatypeService.cloneDatatype(newKeys.get(key),newKeys, l, username, Scope.USER, cloneMode));
       }
     }
 
