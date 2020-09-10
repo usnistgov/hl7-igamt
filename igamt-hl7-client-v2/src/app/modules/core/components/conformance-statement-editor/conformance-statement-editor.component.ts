@@ -2,8 +2,9 @@ import { OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
@@ -12,167 +13,126 @@ import { MessageService } from '../../../dam-framework/services/message.service'
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
-import { IConformanceStatementList, ICPConformanceStatementList } from '../../../shared/models/cs-list.interface';
+import { IConformanceStatementList } from '../../../shared/models/cs-list.interface';
 import { ConstraintType, IConformanceStatement, IPath } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { IDomainInfo } from '../../../shared/models/domain-info.interface';
 import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
-import { ElementNamingService } from '../../../shared/services/element-naming.service';
-import { PathService } from '../../../shared/services/path.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
-export type ConformanceStatementPluck = (cs: IConformanceStatementList | ICPConformanceStatementList) => IConformanceStatementView;
+export interface IDependantConformanceStatements {
+  [id: string]: {
+    domainInfo: IDomainInfo;
+    conformanceStatements: IConformanceStatement[];
+  };
+}
+
+export interface IConformanceStatementEditorData {
+  active: Array<IEditableListNode<IConformanceStatement>>;
+  dependants: {
+    segments?: IDependantConformanceStatements;
+    datatypes?: IDependantConformanceStatements;
+  };
+}
 
 export interface IEditableConformanceStatementGroup {
   context: IPath;
-  name: Observable<string>;
+  name: string;
   list: Array<IEditableListNode<IConformanceStatement>>;
-}
-
-export interface IConformanceStatementView {
-  resourceConformanceStatement: IConformanceStatement[];
-  complementConformanceStatements: {
-    [type: string]: {
-      [name: string]: IConformanceStatement[];
-    };
-  };
-  availableConformanceStatements: IConformanceStatement[];
 }
 
 export interface IEditableListNode<T> {
   id: string;
-  persisted: boolean;
-  changePrototype: IChange<T>;
+  changeType?: ChangeType;
+  original: T;
   payload: T;
 }
 
 export abstract class ConformanceStatementEditorComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
   _types = Type;
-  conformanceStatementView: ReplaySubject<IConformanceStatementView>;
-  conformanceStatementView$: Observable<IConformanceStatementView>;
-
   selectedResource$: Observable<IResource>;
+  conformanceStatementWorkspace$: BehaviorSubject<IConformanceStatementEditorData>;
+  conformanceStatementWorkspaceGrouped$: Observable<IEditableConformanceStatementGroup[]>;
 
-  editable: BehaviorSubject<Array<IEditableListNode<IConformanceStatement>>>;
-  editable$: Observable<Array<IEditableListNode<IConformanceStatement>>>;
-
-  available: BehaviorSubject<IConformanceStatement[]>;
-  available$: Observable<IConformanceStatement[]>;
-
-  groupedCS$: Observable<IEditableConformanceStatementGroup[]>;
-
-  changes: ReplaySubject<{
-    [index: string]: IChange,
-  }>;
   s_workspace: Subscription;
-  s_view: Subscription;
-  s_available: Subscription;
+  s_workspace_update: Subscription;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
     private messageService: MessageService,
     private dialog: MatDialog,
-    private pathService: PathService,
-    private elementNamingService: ElementNamingService,
     actions$: Actions,
     store: Store<any>,
     editorMetadata: IHL7EditorMetadata,
-    plucker: ConformanceStatementPluck,
     protected resource$: MemoizedSelector<any, IResource>) {
     super(editorMetadata, actions$, store);
-
-    this.editable = new BehaviorSubject<Array<IEditableListNode<IConformanceStatement>>>([]);
-    this.editable$ = this.editable.asObservable();
-
-    this.available = new BehaviorSubject<IConformanceStatement[]>([]);
-    this.available$ = this.available.asObservable();
-
-    this.changes = new ReplaySubject(1);
     this.selectedResource$ = this.store.select(this.resource$);
-
-    this.conformanceStatementView = new ReplaySubject(1);
-    this.conformanceStatementView$ = this.conformanceStatementView.asObservable();
-
+    this.conformanceStatementWorkspace$ = new BehaviorSubject(undefined);
     this.s_workspace = this.currentSynchronized$.pipe(
-      tap((data) => {
-        if (data.resource) {
-          this.conformanceStatementView.next(plucker(data.resource));
+      tap((data: IConformanceStatementEditorData) => {
+        if (this.s_workspace_update) {
+          this.s_workspace_update.unsubscribe();
         }
-        this.changes.next({ ...data.changes });
-      }),
-    ).subscribe();
 
-    this.groupedCS$ = this.editable$.pipe(
-      map((list) => {
-        if (list.length > 0) {
-          const grouped = _.groupBy(list, (elm) => {
-            return this.pathService.pathToString(elm.payload.context);
-          }) as {
-              [path: string]: Array<IEditableListNode<IConformanceStatement>>,
-            };
+        this.conformanceStatementWorkspace$.next(data);
 
-          const groups = Object.keys(grouped).map((path) => {
-            return {
-              context: grouped[path][0].payload.context,
-              name: grouped[path][0].payload.context ? this.getName(grouped[path][0].payload.context) : of(''),
-              list: grouped[path],
-            };
-          }) as IEditableConformanceStatementGroup[];
-
-          return groups.sort((a, b) => {
-            return !a.context ? -1 : 1;
-          });
-        } else {
-          return [
-            {
-              context: undefined,
-              name: of(),
-              list: [],
-            },
-          ] as IEditableConformanceStatementGroup[];
-        }
-      }),
-    );
-
-    this.s_view = this.conformanceStatementView$.pipe(
-      map((view) => {
-        return view.resourceConformanceStatement.map((cs) => {
-          const changePrototype = this.createPrototypeChange(cs);
-          return {
-            id: changePrototype.location,
-            payload: changePrototype.oldPropertyValue,
-            persisted: true,
-            changePrototype,
-          };
+        this.s_workspace_update = this.conformanceStatementWorkspace$.subscribe((value) => {
+          this.registerChange(value.active);
         });
       }),
-    ).subscribe(this.editable);
-
-    this.s_available = this.conformanceStatementView$.pipe(
-      map((view) => {
-        return view.availableConformanceStatements;
-      }),
-    ).subscribe(this.available);
-
-  }
-
-  getName(path: IPath): Observable<string> {
-    if (!path) {
-      return of('');
-    }
-
-    return this.selectedResource$.pipe(
-      take(1),
-      flatMap((res) => {
-        return this.elementNamingService.getPathInfoFromPath(res, this.repository, path).pipe(
-          take(1),
-          map((pathInfo) => {
-            return this.elementNamingService.getStringNameFromPathInfo(pathInfo);
-          }),
-        );
+    ).subscribe();
+    this.conformanceStatementWorkspaceGrouped$ = this.conformanceStatementWorkspace$.pipe(
+      map((ws) => {
+        return [];
       }),
     );
+  }
+
+  createEditableNode(cs: IConformanceStatement): IEditableListNode<IConformanceStatement> {
+    return {
+      id: Guid.create().toString(),
+      payload: cs,
+      original: undefined,
+      changeType: ChangeType.ADD,
+    };
+  }
+
+  getCurrentWorkspace() {
+    return _.cloneDeep(this.conformanceStatementWorkspace$.getValue());
+  }
+
+  addConformanceStatement(cs: IConformanceStatement) {
+    const node = this.createEditableNode(cs);
+    const ws = this.getCurrentWorkspace();
+    ws.active.push(node);
+    this.conformanceStatementWorkspace$.next(ws);
+  }
+
+  removeNode(node: IEditableListNode<IConformanceStatement>) {
+    const ws = this.getCurrentWorkspace();
+    const at = ws.active.findIndex((elm) => elm.id === node.id);
+    ws.active.splice(at, 1, {
+      ...ws.active[at],
+      changeType: ChangeType.DELETE,
+    });
+    this.conformanceStatementWorkspace$.next(ws);
+  }
+
+  updateNode(node: IEditableListNode<IConformanceStatement>, cs: IConformanceStatement) {
+    const ws = this.getCurrentWorkspace();
+    const at = ws.active.findIndex((elm) => elm.id === node.id);
+    ws.active.splice(at, 1, {
+      ...ws.active[at],
+      payload: cs,
+      changeType: ChangeType.UPDATE,
+    });
+    this.conformanceStatementWorkspace$.next(ws);
+  }
+
+  registerChange(csList: Array<IEditableListNode<IConformanceStatement>>) {
+    this.editorChange(csList, true);
   }
 
   getId(cs) {
@@ -199,51 +159,6 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     }
   }
 
-  use(cs: IConformanceStatement, i: number) {
-    const changePrototype = {
-      location: cs.identifier,
-      propertyType: PropertyType.STATEMENT,
-      oldPropertyValue: undefined,
-      position: undefined,
-      changeType: undefined,
-      propertyValue: cs,
-    };
-    this.change(changePrototype, ChangeType.ADD);
-    this.addEditableNode(changePrototype);
-    this.available.next([
-      ..._.without(this.available.getValue(), cs),
-    ]);
-  }
-
-  addEditableNode(changePrototype: IChange<IConformanceStatement>) {
-    this.editable.next([
-      ...this.editable.getValue(),
-      {
-        id: changePrototype.location,
-        changePrototype,
-        persisted: false,
-        payload: changePrototype.propertyValue,
-      },
-    ]);
-  }
-
-  removeEditableNode(node: IEditableListNode<IConformanceStatement>) {
-    this.editable.next([
-      ..._.without(this.editable.getValue(), node),
-    ]);
-  }
-
-  createPrototypeChange(cs: IConformanceStatement) {
-    return {
-      location: cs.identifier,
-      propertyType: PropertyType.STATEMENT,
-      propertyValue: undefined,
-      oldPropertyValue: cs,
-      position: undefined,
-      changeType: undefined,
-    };
-  }
-
   editDialog(node: IEditableListNode<IConformanceStatement>) {
     const dialogRef = this.dialog.open(CsDialogComponent, {
       maxWidth: '95vw',
@@ -258,31 +173,10 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     dialogRef.afterClosed().subscribe(
       (changed: IConformanceStatement) => {
         if (changed) {
-          node.payload = changed;
-          node.changePrototype.propertyValue = changed;
-          this.change({
-            ...node.changePrototype,
-          }, node.persisted ? ChangeType.UPDATE : ChangeType.ADD);
-          this.editable.next([
-            ...this.editable.getValue(),
-          ]);
+          this.updateNode(node, changed);
         }
       },
     );
-  }
-
-  change(change: IChange, type: ChangeType) {
-    combineLatest(this.changes.asObservable(), this.current$.pipe(map((ws) => ws.data))).pipe(
-      take(1),
-      map(([changes, data]) => {
-        changes[change.location] = {
-          ...change,
-          changeType: type,
-        };
-        this.changes.next(changes);
-        this.editorChange({ changes, resource: data.resource }, true);
-      }),
-    ).subscribe();
   }
 
   createCs() {
@@ -298,34 +192,10 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     dialogRef.afterClosed().subscribe(
       (cs: IConformanceStatement) => {
         if (cs) {
-          const changePrototype = {
-            location: cs.identifier,
-            propertyType: PropertyType.STATEMENT,
-            oldPropertyValue: undefined,
-            position: undefined,
-            changeType: undefined,
-            propertyValue: cs,
-          };
-          this.change(changePrototype, ChangeType.ADD);
-          this.addEditableNode(changePrototype);
+          this.addConformanceStatement(cs);
         }
       },
     );
-  }
-
-  deleteCs(node: IEditableListNode<IConformanceStatement>) {
-    this.change(node.changePrototype, ChangeType.DELETE);
-    this.removeEditableNode(node);
-    if (node.payload.id) {
-      this.restoreAvailable(node.payload);
-    }
-  }
-
-  restoreAvailable(cs: IConformanceStatement) {
-    this.available.next([
-      ...this.available.getValue(),
-      cs,
-    ]);
   }
 
   keys(obj) {
@@ -343,10 +213,10 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   }
 
   onEditorSave(action: fromDam.EditorSave): Observable<Action> {
-    return combineLatest(this.elementId$, this.documentRef$, this.changes.asObservable()).pipe(
+    return combineLatest(this.elementId$, this.documentRef$, this.current$).pipe(
       take(1),
-      concatMap(([id, documentRef, changes]) => {
-        return this.saveChanges(id, documentRef, this.convert(changes)).pipe(
+      concatMap(([id, documentRef, current]) => {
+        return this.saveChanges(id, documentRef, this.convert(current.data)).pipe(
           mergeMap((message) => {
             return this.getById(id, documentRef).pipe(
               flatMap((resource) => {
@@ -363,14 +233,16 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   abstract saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message>;
   abstract getById(id: string, documentRef: IDocumentRef): Observable<IConformanceStatementList>;
 
-  convert(changes: {
-    [index: string]: IChange,
-  }): IChange[] {
-    const c = [];
-    Object.keys(changes).forEach((id) => {
-      c.push(changes[id]);
+  convert(active: Array<IEditableListNode<IConformanceStatement>>): IChange[] {
+    return active.filter((node) => !!node.changeType).map((node) => {
+      return {
+        location: node.id,
+        propertyType: PropertyType.STATEMENT,
+        propertyValue: node.payload,
+        oldPropertyValue: node.original,
+        changeType: node.changeType,
+      };
     });
-    return c;
   }
 
   ngOnInit() {
@@ -379,14 +251,6 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   ngOnDestroy(): void {
     if (this.s_workspace) {
       this.s_workspace.unsubscribe();
-    }
-
-    if (this.s_view) {
-      this.s_view.unsubscribe();
-    }
-
-    if (this.s_available) {
-      this.s_available.unsubscribe();
     }
   }
 

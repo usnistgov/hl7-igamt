@@ -18,6 +18,57 @@ export class ConformanceStatementService {
 
   constructor(private http: HttpClient) { }
 
+  // export type ConformanceStatementPluck = (cs: IConformanceStatementList | ICPConformanceStatementList) => IConformanceStatementView;
+
+  // createConformanceStatementGroups(view: IConformanceStatementView): IEditableConformanceStatementGroup[] {
+  //   const list = this.convertConformanceStatementListToEditableList(view);
+  //   if (list.length > 0) {
+  //     const grouped = _.groupBy(list, (elm) => {
+  //       return this.pathService.pathToString(elm.payload.context);
+  //     }) as {
+  //         [path: string]: Array<IEditableListNode<IConformanceStatement>>,
+  //       };
+
+  //     const groups = Object.keys(grouped).map((path) => {
+  //       return {
+  //         context: grouped[path][0].payload.context,
+  //         name: grouped[path][0].payload.context ? this.getName(grouped[path][0].payload.context) : of(''),
+  //         list: grouped[path],
+  //       };
+  //     }) as IEditableConformanceStatementGroup[];
+
+  //     return groups.sort((a, b) => {
+  //       return !a.context ? -1 : 1;
+  //     });
+  //   } else {
+  //     return [
+  //       {
+  //         context: undefined,
+  //         name: of(),
+  //         list: [],
+  //       },
+  //     ] as IEditableConformanceStatementGroup[];
+  //   }
+  // }
+
+  // getName(path: IPath): Observable<string> {
+  //   if (!path) {
+  //     return of('');
+  //   }
+
+  //   return this.selectedResource$.pipe(
+  //     take(1),
+  //     flatMap((res) => {
+  //       return this.elementNamingService.getPathInfoFromPath(res, this.repository, path).pipe(
+  //         take(1),
+  //         map((pathInfo) => {
+  //           return this.elementNamingService.getStringNameFromPathInfo(pathInfo);
+  //         }),
+  //       );
+  //     }),
+  //   );
+  // }
+
   generateXMLfromPredicate(predicate: IPredicate, id: string): Observable<string> {
     return this.http.post('api/igdocuments/' + id + '/predicate/assertion', predicate, { responseType: 'text' });
   }
