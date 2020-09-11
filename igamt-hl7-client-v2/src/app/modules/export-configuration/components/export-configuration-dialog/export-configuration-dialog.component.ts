@@ -67,7 +67,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.type = node.type;
     switch (this.type) {
       case Type.SEGMENT: {
-        console.log('Type in TOC is S:' + this.type);
+        console.log('Type in TOC is S bbbbbb:' + this.type);
         if (this.filter.overiddedSegmentMap[node.id]) {
           this.current = this.filter.overiddedSegmentMap[node.id];
         } else {

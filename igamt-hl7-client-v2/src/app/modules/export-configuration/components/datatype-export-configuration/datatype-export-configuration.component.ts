@@ -38,12 +38,14 @@ export class DatatypeExportConfigurationComponent implements OnInit {
 
   triggerChange() {
     this.detectChange.emit(this.config);
+
   }
 
   applyChange(event: any) {
     this.config.deltaMode = event.active;
     this.config.deltaConfig = event.config;
     this.triggerChange();
+
   }
 
   print() {

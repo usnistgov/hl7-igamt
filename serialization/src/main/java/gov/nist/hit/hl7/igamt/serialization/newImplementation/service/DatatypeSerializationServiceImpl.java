@@ -89,6 +89,8 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
 		datatypeElement
 		.addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
+		datatypeElement
+		.addAttribute(new Attribute("label", datatype.getLabel() != null ? datatype.getLabel() : ""));
 		if(datatypeExportConfiguration.getPurposeAndUse()) {
 			datatypeElement.addAttribute(new Attribute("purposeAndUse",
 					datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
@@ -192,6 +194,8 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 							new Attribute("text", component.getText() != null ? frolaCleaning.cleanFroalaInput(component.getText()) : ""));
 					componentElement
 					.addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
+					componentElement.addAttribute(new Attribute("constantValue",
+							component.getConstantValue() != null ? component.getConstantValue() : ""));
 					Element comments = new Element("Comments");
 			    	  Element definitionTextsElement = new Element("DefinitionTexts");
 			    	  datatypeElement.appendChild(definitionTextsElement);

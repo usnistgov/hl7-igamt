@@ -21,7 +21,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
  *
- * @author Maxence Lefort on May 15, 2018.
+ * @author Youssef Bouij
  */
 @Document(collection = "exportFont")
 public class ExportFont {
@@ -30,8 +30,8 @@ public class ExportFont {
   private String id;
   private String name;
   private String value;
-  private static final String DEFAULT_NAME = "'Arial Narrow',sans-serif";
-  private static final String DEFAULT_VALUE = "'Arial Narrow',sans-serif;";
+  private static final String DEFAULT_NAME = "'Times New Roman', Times, serif";
+  private static final String DEFAULT_VALUE = "'Times New Roman', Times, serif;";
 
   public ExportFont() {}
 
