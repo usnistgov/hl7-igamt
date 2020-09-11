@@ -12,10 +12,8 @@
 package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
 import java.util.Set;
+
 import gov.nist.diff.annotation.DeltaField;
-import gov.nist.diff.annotation.DeltaIdentity;
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;
@@ -25,116 +23,114 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;
  *
  */
 public class BindingDisplay {
+	@DeltaField
+	private Predicate predicate;
 
-  @DeltaField
-  private ViewScope sourceType;
-  private String sourceId;
-  @DeltaIdentity
-  private int priority;
-  @DeltaField
-  private Set<Comment> comments;
-  @DeltaField
-  private Set<DisplayValuesetBinding> valuesetBindings;
-  @DeltaField
-  private InternalSingleCode internalSingleCode;
-  @DeltaField
-  private ExternalSingleCode externalSingleCode;
-  @DeltaField
-  private String constantValue;
-  @DeltaField
-  private Predicate predicate;
-  @DeltaField
-  private BindingType bindingType;
+	@DeltaField
+	private ViewScope predicateSourceType;
 
-  public Set<Comment> getComments() {
-    return comments;
-  }
+	@DeltaField
+	private String predicateSourceId;
 
-  public void setComments(Set<Comment> comments) {
-    this.comments = comments;
-  }
+	@DeltaField
+	private Integer predicatePriority;
 
-  public Set<DisplayValuesetBinding> getValuesetBindings() {
-    return valuesetBindings;
-  }
+	@DeltaField
+	private Set<DisplayValuesetBinding> valuesetBindings;
 
+	@DeltaField
+	private ViewScope valuesetBindingsSourceType;
 
-  public BindingType getBindingType() {
-    if(this.valuesetBindings != null && !this.valuesetBindings.isEmpty()) {
-      return BindingType.VS;
-    }else if (this.internalSingleCode !=null) {
-      return  BindingType.SC;
-    }else return BindingType.VS;
-  }
+	@DeltaField
+	private String valuesetBindingsSourceId;
 
-  public void setBindingType(BindingType bindingType) {
-    this.bindingType = bindingType;
-  }
+	@DeltaField
+	private Integer valuesetBindingsPriority;
+	
+	@DeltaField
+	private InternalSingleCode internalSingleCode;
+	
+	@DeltaField
+	private BindingType bindingType;
 
-  public InternalSingleCode getInternalSingleCode() {
-    return internalSingleCode;
-  }
+	public Set<DisplayValuesetBinding> getValuesetBindings() {
+		return valuesetBindings;
+	}
 
-  public void setInternalSingleCode(InternalSingleCode internalSingleCode) {
-    this.internalSingleCode = internalSingleCode;
-  }
+	public Predicate getPredicate() {
+		return predicate;
+	}
 
-  public ExternalSingleCode getExternalSingleCode() {
-    return externalSingleCode;
-  }
+	public void setPredicate(Predicate predicate) {
+		this.predicate = predicate;
+	}
 
-  public void setExternalSingleCode(ExternalSingleCode externalSingleCode) {
-    this.externalSingleCode = externalSingleCode;
-  }
+	public ViewScope getPredicateSourceType() {
+		return predicateSourceType;
+	}
 
-  public String getConstantValue() {
-    return constantValue;
-  }
+	public void setPredicateSourceType(ViewScope predicateSourceType) {
+		this.predicateSourceType = predicateSourceType;
+	}
 
-  public void setConstantValue(String constantValue) {
-    this.constantValue = constantValue;
-  }
+	public ViewScope getValuesetBindingsSourceType() {
+		return valuesetBindingsSourceType;
+	}
 
-  public Predicate getPredicate() {
-    return predicate;
-  }
+	public void setValuesetBindingsSourceType(ViewScope valuesetBindingsSourceType) {
+		this.valuesetBindingsSourceType = valuesetBindingsSourceType;
+	}
 
-  public void setPredicate(Predicate predicate) {
-    this.predicate = predicate;
-  }
+	public String getPredicateSourceId() {
+		return predicateSourceId;
+	}
 
-  public String getSourceId() {
-    return sourceId;
-  }
+	public void setPredicateSourceId(String predicateSourceId) {
+		this.predicateSourceId = predicateSourceId;
+	}
 
-  public void setSourceId(String sourceId) {
-    this.sourceId = sourceId;
-  }
+	public Integer getPredicatePriority() {
+		return predicatePriority;
+	}
 
-  public ViewScope getSourceType() {
-    return sourceType;
-  }
+	public void setPredicatePriority(Integer predicatePriority) {
+		this.predicatePriority = predicatePriority;
+	}
 
-  public void setSourceType(ViewScope sourceType) {
-    this.sourceType = sourceType;
-  }
+	public String getValuesetBindingsSourceId() {
+		return valuesetBindingsSourceId;
+	}
 
-  public int getPriority() {
-    return priority;
-  }
+	public void setValuesetBindingsSourceId(String valuesetBindingsSourceId) {
+		this.valuesetBindingsSourceId = valuesetBindingsSourceId;
+	}
 
-  public void setPriority(int priority) {
-    this.priority = priority;
-  }
+	public Integer getValuesetBindingsPriority() {
+		return valuesetBindingsPriority;
+	}
 
-  /**
-   * @param covertDisplayVSBinding
-   */
-  public void setValuesetBindings(Set<DisplayValuesetBinding> list) {
-    // TODO Auto-generated method stub
-    this.valuesetBindings = list;
-    
-  }
-  
+	public void setValuesetBindingsPriority(Integer valuesetBindingsPriority) {
+		this.valuesetBindingsPriority = valuesetBindingsPriority;
+	}
+
+	public void setValuesetBindings(Set<DisplayValuesetBinding> valuesetBindings) {
+		this.valuesetBindings = valuesetBindings;
+	}
+
+	public InternalSingleCode getInternalSingleCode() {
+		return internalSingleCode;
+	}
+
+	public void setInternalSingleCode(InternalSingleCode internalSingleCode) {
+		this.internalSingleCode = internalSingleCode;
+	}
+
+	public BindingType getBindingType() {
+		return bindingType;
+	}
+
+	public void setBindingType(BindingType bindingType) {
+		this.bindingType = bindingType;
+	}
 
 }

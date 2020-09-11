@@ -12,7 +12,9 @@ import { AssertionMode, ConstraintType, IAssertionConformanceStatement, IFreeTex
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
 import { ConformanceStatementService } from '../../services/conformance-statement.service';
+import { ElementNamingService } from '../../services/element-naming.service';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
+import { PathService } from '../../services/path.service';
 import { StoreResourceRepositoryService } from '../../services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { CsPropositionComponent } from '../cs-proposition/cs-proposition.component';
@@ -84,6 +86,8 @@ export class CsDialogComponent implements OnDestroy {
     private dialog: MatDialog,
     private sanitizer: DomSanitizer,
     private treeService: Hl7V2TreeService,
+    private elementNamingService: ElementNamingService,
+    private pathService: PathService,
     public dialogRef: MatDialogRef<CsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public repository: StoreResourceRepositoryService) {
@@ -159,10 +163,10 @@ export class CsDialogComponent implements OnDestroy {
       return of('');
     }
 
-    return this.treeService.getPathName(this.resource, this.repository, path).pipe(
+    return this.elementNamingService.getPathInfoFromPath(this.resource, this.repository, path).pipe(
       take(1),
       map((pathInfo) => {
-        return this.treeService.getNameFromPath(pathInfo);
+        return this.elementNamingService.getStringNameFromPathInfo(pathInfo);
       }),
     );
   }
@@ -194,7 +198,7 @@ export class CsDialogComponent implements OnDestroy {
   }
 
   selectContextNode(node) {
-    this.selectContext(node.node, this.treeService.trimPathRoot(node.path));
+    this.selectContext(node.node, this.pathService.trimPathRoot(node.path));
     this.showContext = false;
   }
 

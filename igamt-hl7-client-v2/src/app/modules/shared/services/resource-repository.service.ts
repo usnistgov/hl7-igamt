@@ -3,7 +3,7 @@ import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
 import * as fromIgamtResourcesSelectors from 'src/app/root-store/dam-igamt/igamt.loaded-resources.selectors';
-import {LoadResourceReferences} from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
+import { LoadResourceReferences } from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
 import {
   selectCoConstraintGroupsById,
   selectDatatypesById,
@@ -12,21 +12,26 @@ import {
   selectValueSetById,
 } from '../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
+import { InsertResourcesInRepostory } from '../../dam-framework/store/data/dam.actions';
 import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';
 
+export interface IRefDataInfo {
+  leaf: boolean;
+  version: string;
+  name: string;
+}
+
 export interface IRefData {
-  [id: string]: {
-    leaf: boolean,
-    version: string,
-    name: string,
-  };
+  [id: string]: IRefDataInfo;
 }
 
 export abstract class AResourceRepositoryService {
   abstract getResource<T extends IResource>(type: Type, id: string): Observable<T>;
   abstract loadResource(type: Type, id: string): void;
+  abstract hotplug(display: IDisplayElement): Observable<IDisplayElement>;
+  abstract hotplugDisplayList(display: IDisplayElement[], type: Type): Observable<IDisplayElement[]>;
   abstract fetchResource<T extends IResource>(type: Type, id: string): Observable<T>;
   abstract getResourceDisplay(type: Type, id: string): Observable<IDisplayElement>;
   abstract areLeafs(ids: string[]): Observable<{ [id: string]: boolean }>;
@@ -37,7 +42,7 @@ export abstract class AResourceRepositoryService {
 export class StoreResourceRepositoryService extends AResourceRepositoryService {
 
   constructor(
-    private store: Store<any>) {
+    protected store: Store<any>) {
     super();
   }
 
@@ -64,6 +69,33 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
         }
       }),
     );
+  }
+
+  hotplug(display: IDisplayElement): Observable<IDisplayElement> {
+    const repo = display.type.toLowerCase() + 's';
+    this.store.dispatch(new InsertResourcesInRepostory({
+      collections: [{
+        key: repo,
+        values: [display],
+      }],
+    }));
+    return this.getResourceDisplay(display.type, display.id).pipe(
+      filter((resource) => !!resource),
+    );
+  }
+
+  hotplugDisplayList(display: IDisplayElement[], type: Type): Observable<IDisplayElement[]> {
+    const repo = type === Type.VALUESET ? 'valueSets' : type.toLowerCase() + 's';
+    this.store.dispatch(new InsertResourcesInRepostory({
+      collections: [{
+        key: repo,
+        values: [...display],
+      }],
+    }));
+
+    const values = display.map((d) => this.getResourceDisplay(d.type, d.id).pipe(take(1)));
+
+    return RxjsStoreHelperService.forkJoin(values);
   }
 
   getSelector(type: Type): MemoizedSelectorWithProps<object, {

@@ -12,9 +12,12 @@
 package gov.nist.hit.hl7.igamt.common.binding.domain;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 
 
@@ -29,6 +32,8 @@ public class StructureElementBinding extends Binding {
   private Predicate predicate;
   @Deprecated
   private String predicateId;
+
+  private Map<PropertyType, ChangeReason> changeLog;
 
   public StructureElementBinding() {
     super();
@@ -45,6 +50,14 @@ public class StructureElementBinding extends Binding {
     if (this.valuesetBindings == null)
       this.valuesetBindings = new HashSet<ValuesetBinding>();
     this.valuesetBindings.add(newValuesetBinding);
+  }
+
+  public Map<PropertyType, ChangeReason> getChangeLog() {
+    return changeLog;
+  }
+
+  public void setChangeLog(Map<PropertyType, ChangeReason> changeLog) {
+    this.changeLog = changeLog;
   }
 
   public ExternalSingleCode getExternalSingleCode() {
@@ -79,4 +92,16 @@ public class StructureElementBinding extends Binding {
   public void setPredicateId(String predicateId) {
 	this.predicateId = predicateId;
   }
+
+@Override
+public String toString() {
+	return "StructureElementBinding [valuesetBindings=" + valuesetBindings + ", internalSingleCode="
+			+ internalSingleCode + ", externalSingleCode=" + externalSingleCode + ", predicate=" + predicate
+			+ ", predicateId=" + predicateId + ", elementId=" + elementId + ", locationInfo=" + locationInfo
+			+ ", children=" + children + "]";
+}
+
+
+  
+  
 }

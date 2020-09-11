@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material';
 import { PropertyType } from 'src/app/modules/shared/models/save-change';
 import { IDisplayElement } from '../../../../models/display-element.interface';
 import { GroupOptions, ReferenceComponent } from '../reference/reference.component';
@@ -9,8 +10,8 @@ import { GroupOptions, ReferenceComponent } from '../reference/reference.compone
   styleUrls: ['../reference/reference.component.html'],
 })
 export class SegmentComponent extends ReferenceComponent {
-  constructor() {
-    super(PropertyType.SEGMENTREF);
+  constructor(protected dialog: MatDialog) {
+    super(PropertyType.SEGMENTREF, dialog);
   }
 
   filter(opts: IDisplayElement[], selected: IDisplayElement): GroupOptions {

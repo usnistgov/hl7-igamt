@@ -161,7 +161,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       map((id) => this.igService.exportAsWordQuick(id)),
     ).subscribe();
   }
-  
+
   verifyIG(type: string) {
     if (type || type === 'Verification' || type === 'Compliance') {
       this.getIgId().subscribe((igId) => {

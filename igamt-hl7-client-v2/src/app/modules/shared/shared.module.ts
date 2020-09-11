@@ -12,15 +12,15 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
 import { ToastyModule } from 'ng2-toasty';
-import {AvatarModule} from 'ngx-avatar';
+import { AvatarModule } from 'ngx-avatar';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
 import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
-import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import { AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TabViewModule, TooltipModule, TreeTableModule } from 'primeng/primeng';
+import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
@@ -29,10 +29,13 @@ import { AddCoConstraintGroupComponent } from './components/add-co-constraint-gr
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
 import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
+import { ChangeLogInfoComponent } from './components/change-log-info/change-log-info.component';
+import { ChangeReasonDialogComponent } from './components/change-reason-dialog/change-reason-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsListComponent } from './components/cs-list/cs-list.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
+import { DeactivatingDialogComponent } from './components/deactivating-dialog/deactivating-dialog.component';
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
 import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
@@ -53,7 +56,6 @@ import { ConstantValueComponent } from './components/hl7-v2-tree/columns/constan
 import { DatatypeComponent } from './components/hl7-v2-tree/columns/datatype/datatype.component';
 import { LengthComponent } from './components/hl7-v2-tree/columns/length/length.component';
 import { NameComponent } from './components/hl7-v2-tree/columns/name/name.component';
-import { PredicateComponent } from './components/hl7-v2-tree/columns/predicate/predicate.component';
 import { SegmentComponent } from './components/hl7-v2-tree/columns/segment/segment.component';
 import { TextComponent } from './components/hl7-v2-tree/columns/text/text.component';
 import { UsageComponent } from './components/hl7-v2-tree/columns/usage/usage.component';
@@ -68,6 +70,7 @@ import { PatternDialogComponent } from './components/pattern-dialog/pattern-dial
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
 import { ResourceDropdownComponent } from './components/resource-dropdown/resource-dropdown.component';
+import { ResourceListComponent } from './components/resource-list/resource-list.component';
 import { ResourcePickerComponent } from './components/resource-picker/resource-picker.component';
 import { ScopeBadgeComponent } from './components/scope-badge/scope-badge.component';
 import { SegmentAddDialogComponent } from './components/segment-add-dialog/segment-add-dialog.component';
@@ -139,7 +142,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SharingDialogComponent,
     UsageViewerComponent,
     ConstantValueComponent,
-    PredicateComponent,
     StructureTreeComponent,
     CsPropositionComponent,
     CsDialogComponent,
@@ -167,6 +169,10 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SegmentAddDialogComponent,
     FieldAddDialogComponent,
     NameComponent,
+    ChangeReasonDialogComponent,
+    ChangeLogInfoComponent,
+    DeactivatingDialogComponent,
+    ResourceListComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -239,6 +245,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     CardModule,
     AccordionModule,
     ListboxModule,
+    TreeTableModule,
     CheckboxModule,
     DamMessagesModule,
     DamComponentsModule,
@@ -295,7 +302,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     CommentsComponent,
     UsageViewerComponent,
     ConstantValueComponent,
-    PredicateComponent,
     TableModule,
     SelectButtonModule,
     ColorPickerModule,
@@ -323,6 +329,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SegmentAddDialogComponent,
     FieldAddDialogComponent,
     NameComponent,
+    ChangeReasonDialogComponent,
+    ChangeLogInfoComponent,
+    ResourceListComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -342,6 +351,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     VerifyIgDialogComponent,
     SegmentAddDialogComponent,
     FieldAddDialogComponent,
+    ChangeReasonDialogComponent,
+    DeactivatingDialogComponent,
   ],
 })
 export class SharedModule {

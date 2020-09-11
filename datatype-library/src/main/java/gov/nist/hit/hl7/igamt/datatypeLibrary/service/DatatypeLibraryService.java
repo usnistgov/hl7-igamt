@@ -19,8 +19,10 @@ import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibraryDataModel;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryNotFoundException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
+import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
@@ -86,6 +88,22 @@ Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundExceptio
    * @return
    */
   public String publishLibray(String id, PublicationResult publicationResult);
+
+  /**
+   * @param id
+   * @param datatypes
+   * @return
+   */
+  void deactivateChildren(String id, Set<String> ids);
+
+  /**
+   * @param id
+   * @param username
+   * @param info
+   * @return
+   * @throws DatatypeLibraryNotFoundException 
+   */
+  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException;
 
 
 }

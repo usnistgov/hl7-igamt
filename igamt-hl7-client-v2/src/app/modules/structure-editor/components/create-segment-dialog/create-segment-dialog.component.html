@@ -1,0 +1,59 @@
+<h2 mat-dialog-title>Create Custom Segment Structure</h2>
+<mat-dialog-content>
+  <form #form='ngForm'>
+
+    <ng-container *ngIf="!segmentBase" >
+      <label for="selectVersion" style="font-weight: bold;"> Select Segment To Start From </label>
+      <app-resource-list
+        (selectionChange)="getSegments($event)"
+        [hl7Versions]="hl7Version$ | async"
+        [selectedVersion]="selectedVersion"
+        [selectedScope]="selectedScope"
+        [displayScope]="true"
+        [filters]="[ 'fixedName', 'description' ]"
+        [table]="data$ | async"
+        resourceLabel="Segment">
+        <ng-template #display let-item >
+          <app-scope-badge [scope]="item.domainInfo.scope" [version]="item.domainInfo.version">
+          </app-scope-badge>
+          <span> {{item.fixedName}}
+            <ng-container *ngIf="item.description">
+              {{'-' + item.description}}
+            </ng-container>
+          </span>
+        </ng-template>
+        <ng-template #actions let-item >
+          <button class="btn btn-sm btn-primary pull-right" (click)="startFrom(item)" > Start From </button>
+        </ng-template>
+      </app-resource-list>
+    </ng-container>
+
+    <ng-container *ngIf="segmentBase" >
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="margin-right: 10px;" > Selected Segment </span>
+        <div style="margin-right: 10px;">
+          <app-scope-badge [scope]="segmentBase.domainInfo.scope" [version]="segmentBase.domainInfo.version">
+          </app-scope-badge>
+          <span> {{segmentBase.fixedName}}
+            <ng-container *ngIf="segmentBase.description">
+              {{'-' + segmentBase.description}}
+            </ng-container>
+          </span>
+        </div>
+        <button class="btn btn-sm btn-danger" (click)="clearSelection()" >
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+      <br>
+      <label for="name" style="font-weight: bold;"> Identifier </label>
+      <input name="identifier" id="identifier"  type="text" [(ngModel)]="identifier" type="text" style="width: 100%" class="form-control" required />
+      <label for="description" style="font-weight: bold;"> Description </label>
+      <input name="description" id="description"  type="text" [(ngModel)]="description" type="text" style="width: 100%" class="form-control" required />
+    </ng-container>
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" [disabled]="!form || form.invalid || !segmentBase"  class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

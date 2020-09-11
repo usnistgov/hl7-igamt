@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PredicateComponent } from './predicate.component';
+import { ChangeLogInfoComponent } from './change-log-info.component';
 
-describe('PredicateComponent', () => {
-  let component: PredicateComponent;
-  let fixture: ComponentFixture<PredicateComponent>;
+describe('ChangeLogInfoComponent', () => {
+  let component: ChangeLogInfoComponent;
+  let fixture: ComponentFixture<ChangeLogInfoComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PredicateComponent ],
+      declarations: [ ChangeLogInfoComponent ],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PredicateComponent);
+    fixture = TestBed.createComponent(ChangeLogInfoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

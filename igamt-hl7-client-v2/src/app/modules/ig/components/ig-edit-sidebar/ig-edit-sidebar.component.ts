@@ -30,6 +30,7 @@ import { ClearResource, LoadResource } from '../../../../root-store/resource-loa
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
+import {EditorReset, selectWorkspaceActive} from '../../../dam-framework/store/data';
 import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
 import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
@@ -84,7 +85,7 @@ export class IgEditSidebarComponent implements OnInit {
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
-    this.viewOnly$ =  this.store.select(fromIgamtSelectors.selectViewOnly);
+    this.viewOnly$ = this.store.select(fromIgamtSelectors.selectViewOnly);
   }
 
   getNodes() {
@@ -127,6 +128,7 @@ export class IgEditSidebarComponent implements OnInit {
   }
 
   addChildren(event: IAddWrapper) {
+    console.log(event);
     const subscription = this.hl7Version$.pipe(
       withLatestFrom(this.version$),
       take(1),
@@ -144,6 +146,9 @@ export class IgEditSidebarComponent implements OnInit {
           documentType: Type.IGDOCUMENT,
           versionChange: (version: string) => {
             this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version }));
+          },
+          versionAndScopeChange: (version: string, scope: Scope) => {
+            this.store.dispatch(new LoadResource({ type: event.type, scope, version }));
           },
           type: event.type,
         };
@@ -367,5 +372,17 @@ export class IgEditSidebarComponent implements OnInit {
     if (this.delta) {
       this.toc.filterByDelta($event);
     }
+  }
+
+  checkDeleteNarrative($event: string) {
+    this.store.select(selectWorkspaceActive).pipe(
+      take(1),
+      map((x) => {
+        if (x.display && x.display.id && x.display.id === $event) {
+          this.store.dispatch(new EditorReset());
+          this.router.navigate(['./' + 'metadata'], { relativeTo: this.activeRoute });
+        }
+    }),
+    ).subscribe();
   }
 }

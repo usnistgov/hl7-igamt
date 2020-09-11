@@ -23,7 +23,8 @@ export abstract class StructCreateDialog<T> {
     readonly type: Type,
     readonly path: string,
     readonly position: number,
-  ) { }
+  ) {
+  }
 
   getPathId(): string {
     return (this.path && this.path !== '' ? this.path + '.' : '') + this.position;

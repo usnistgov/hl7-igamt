@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Type } from '../../../../constants/type.enum';
+import { MatDialog } from '@angular/material';
+import { IChange } from 'src/app/modules/shared/models/save-change';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
 
@@ -27,8 +28,8 @@ export class NameComponent extends HL7v2TreeColumnComponent<INodeName> implement
   editMode: boolean;
   tmp: string;
 
-  constructor() {
-    super([PropertyType.NAME]);
+  constructor(protected dialog: MatDialog) {
+    super([PropertyType.NAME], dialog);
     this.value$.subscribe(
       (value) => {
         this.nname = { ...value };
@@ -61,6 +62,10 @@ export class NameComponent extends HL7v2TreeColumnComponent<INodeName> implement
     this.nname.name = this.tmp;
     this.onChange(this.value$.getValue().name, this.nname.name, PropertyType.NAME, ChangeType.UPDATE);
     this.toggleEdit();
+  }
+
+  isActualChange<X>(change: IChange<X>): boolean {
+    return change.propertyValue !== change.oldPropertyValue;
   }
 
   ngOnInit() {

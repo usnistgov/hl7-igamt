@@ -73,7 +73,8 @@ public class ConformanceProfileController extends BaseController {
     public ConformanceProfileStructureDisplay getConformanceProfileStructure(@PathVariable("id") String id,
                                                                              Authentication authentication) {
         ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
-
+        System.out.println("START!!!");
+        System.out.println(conformanceProfile.getBinding());
         return conformanceProfileService.convertDomainToDisplayStructure(conformanceProfile,
                 getReadOnly(authentication, conformanceProfile));
 

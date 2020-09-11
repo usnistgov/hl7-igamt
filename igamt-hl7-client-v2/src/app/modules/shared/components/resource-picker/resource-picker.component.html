@@ -4,14 +4,16 @@
 
     <ng-container *ngSwitchCase="'EVENTS'">
       <app-select-messages #child (messages)="selected($event)"
-                           (selected)="data.versionChange($event)"
+                           (selected)="data.versionAndScopeChange($event.version, $event.scope)"
+                           [selectedScope]="data.scope"
                            [existing]="data.existing"
                            [hl7Versions]="data.hl7Versions" [selectedVersion]="data.version"
                            [table]="data.data | async"></app-select-messages>
     </ng-container>
     <ng-container *ngSwitchCase="'SEGMENT'">
       <app-select-segments #child (added)="selected($event)"
-                           (selected)="data.versionChange($event)"
+                           (selected)="data.versionAndScopeChange($event.version, $event.scope)"
+                           [selectedScope]="data.scope"
                            [existing]="data.existing"
                            [documentType]="data.documentType"
                            [master]="data.master"
@@ -31,7 +33,7 @@
                             [existing]="data.existing" [hl7Versions]="data.hl7Versions"
                             [documentType]="data.documentType"
                             [master]="data.master" [hideFlavor]="data.hideFlavor" [hideAsIs]="data.hideAsIs"
-                            [selectedVersion]="data.version" [table]="data.data | async "></app-select-datatypes>
+                            [selectedVersion]="data.version" [table]="data.data | async " [scope]="data.scope"></app-select-datatypes>
     </ng-container>
   </ng-container>
 </mat-dialog-content>

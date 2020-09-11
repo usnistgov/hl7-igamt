@@ -205,7 +205,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			for (Link l : datatypeLibrary.getDatatypeRegistry().getChildren()) {
 				Datatype dt = datatypeService.findById(l.getId());
 //				System.out.println("link id :" + l.getId() + " link parent id : " + l.getParentId() + " datatype parent id : " + dt.getParentId());
-				if(!l.getId().startsWith("HL7") && dt.getParentId().equals(datatypeLibrary.getId())) {
+				if(DatatypeLibrary.isLibFlavor(dt, datatypeLibrary.getId())) {
 					System.out.println("found one");
 				decision.getDatatypesFilterMap().put(l.getId(), true);
 			} else {

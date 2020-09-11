@@ -135,6 +135,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setFixedName(datatype.getName());
 		displayElement.setDescription(datatype.getDescription());
 		displayElement.setDifferantial(datatype.getOrigin() !=null);
+	    displayElement.setActiveInfo(datatype.getActiveInfo());
 		displayElement.setLeaf(!(datatype instanceof ComplexDatatype));
 		displayElement.setVariableName(datatype.getExt());
 		displayElement.setType(Type.DATATYPE);
@@ -193,6 +194,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setOrigin(segment.getOrigin());
 		displayElement.setParentId(segment.getParentId());
 	    displayElement.setParentType(segment.getParentType());
+	    displayElement.setStatus(segment.getStatus());
 		return displayElement;
 	}
 

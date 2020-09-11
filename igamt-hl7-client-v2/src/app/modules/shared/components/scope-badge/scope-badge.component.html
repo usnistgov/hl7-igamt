@@ -6,6 +6,10 @@
     HL7 <span style="font-size: 0.9em; font-weight: 300;">{{version}}</span>
   </span>
 
+  <span *ngSwitchCase="'USERCUSTOM'" class="badge scope-badge-custom">
+    CUSTOM <span style="font-size: 0.9em; font-weight: 300;">{{version}}</span>
+  </span>
+
   <span *ngSwitchCase="'PHINVADS'"
     [ngClass]="{'scope-badge-phinvads': !flavor, 'scope-badge-user': flavor}"
     class="badge">

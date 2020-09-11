@@ -25,5 +25,5 @@
 
 </div>
 <div class="sidebar-content" id="sidebar-content">
-  <app-library-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (copy)="copy($event)" (delete)="delete($event)" [viewOnly]="viewOnly$ | async"></app-library-toc>
+  <app-library-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (copy)="copy($event)" (delete)="delete($event)" [viewOnly]="viewOnly$ | async" (deleteNarrative)="checkDeleteNarrative($event)" (deactivateNode)="deactivate($event)"></app-library-toc>
 </div>

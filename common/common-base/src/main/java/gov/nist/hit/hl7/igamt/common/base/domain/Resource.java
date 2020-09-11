@@ -1,10 +1,13 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.util.Set;
+
 public abstract class Resource extends AbstractDomain {
 
   private String preDef;
   private String postDef;
   protected String parentId;
+  protected Set<String> libraryReferences;
   protected Type parentType;
   private String purposeAndUse;
   private String shortDescription;
@@ -48,6 +51,7 @@ public abstract class Resource extends AbstractDomain {
       elm.parentType = parentType;
       elm.shortDescription = shortDescription;
       elm.purposeAndUse = purposeAndUse;
+      elm.setActiveInfo(new ActiveInfo());
   }
 
 
@@ -90,6 +94,26 @@ public abstract class Resource extends AbstractDomain {
     this.shortDescription = shortDescription;
   }  
   
+  public Set<String> getLibraryReferences() {
+    return libraryReferences;
+  }
+
+
+  public void setLibraryReferences(Set<String> libraryReferences) {
+    this.libraryReferences = libraryReferences;
+  }
+
+  
  // abstract String getSectionTitle();
   
+  public String getPublicationDateString() {
+    String s = null;
+    if(this.getPublicationInfo() !=null && this.getPublicationInfo().getPublicationDate() !=null) {
+      s = this.getPublicationInfo().getPublicationDate().toString();
+      if(this.getActiveInfo() !=null && this.getActiveInfo().getStatus() !=null && this.getActiveInfo().getStatus().equals(ActiveStatus.DEPRECATED)) {
+        s = '[' + s + "," + this.getActiveInfo().getEnd() + "]";
+      }
+    }
+    return s;
+  }
 }

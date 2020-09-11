@@ -5,7 +5,7 @@ import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { CoConstraintColumnType } from 'src/app/modules/shared/models/co-constraint.interface';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { IResource } from '../../../shared/models/resource.interface';
-import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
+import { ElementNamingService } from '../../../shared/services/element-naming.service';
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../../shared/services/tree-filter.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
@@ -56,7 +56,7 @@ export class DataHeaderDialogComponent implements OnInit {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private ccEntityService: CoConstraintEntityService,
-    private treeService: Hl7V2TreeService,
+    private elementNamingService: ElementNamingService,
     public dialogRef: MatDialogRef<DataHeaderDialogComponent>) {
     this.selector = data.selector;
     this.structure = data.structure;
@@ -81,7 +81,7 @@ export class DataHeaderDialogComponent implements OnInit {
 
   selectNode($event) {
     this.selectedNode = $event.node;
-    this.selectedNodeName = this.treeService.getNodeName(this.selectedNode, true);
+    this.selectedNodeName = this.elementNamingService.getTreeNodeName(this.selectedNode, true);
     this.editMode = false;
     if (this.selectedNode.leaf) {
       this.constraints = this.primitive;
@@ -100,7 +100,7 @@ export class DataHeaderDialogComponent implements OnInit {
   }
 
   done() {
-    this.ccEntityService.createDataElementHeader(this.selectedNode, this.segment, this.treeService.getNodeName(this.selectedNode), this.repository, false, this.type).pipe(
+    this.ccEntityService.createDataElementHeader(this.selectedNode, this.segment, this.elementNamingService.getTreeNodeName(this.selectedNode), this.repository, false, this.type).pipe(
       take(1),
       tap((x) => {
         this.dialogRef.close(x);

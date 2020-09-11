@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,17 +38,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
-import gov.nist.hit.hl7.igamt.common.base.domain.LengthType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
@@ -77,6 +67,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingDisplay;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingType;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
@@ -413,7 +404,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 									.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
 							if (cSeb != null) {
 								cModel.setBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE,
-										2, valueSetsMap));
+										2, valueSetsMap, null));
 								if (cSeb.getPredicate() != null) {
 									Predicate p = cSeb.getPredicate();
 									if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
@@ -441,41 +432,37 @@ public class DatatypeServiceImpl implements DatatypeService {
 											scModel.setIdPath(idPath + "-" + c.getId() + "-" + sc.getId());
 											scModel.setPath(path + "-" + c.getPosition() + "-" + sc.getPosition());
 											scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
+											
+											BindingDisplay bindingDisplayForSubComponent = null;
+											
 											StructureElementBinding childCSeb = this
 													.findStructureElementBindingByComponentIdFromStructureElementBinding(
 															cSeb, sc.getId());
 											if (childCSeb != null) {
-												scModel.setBinding(this.createBindingDisplay(childCSeb,
-														datatype.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
-												if (childCSeb.getPredicate() != null) {
-													Predicate p = childCSeb.getPredicate();
-													if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
-														scModel.setTrueUsage(p.getTrueUsage());
-														scModel.setFalseUsage(p.getFalseUsage());
-														scModel.setPredicate(p);
-														if (p.getIdentifier() != null)
-															scModel.getPredicate()
-															.setIdentifier(c.getId() + "-" + sc.getId());
-													}
-												}
+												bindingDisplayForSubComponent = this.createBindingDisplay(childCSeb,
+														datatype.getId(), ViewScope.DATATYPE, 2, valueSetsMap, bindingDisplayForSubComponent);
 											}
 											StructureElementBinding scSeb = this
 													.findStructureElementBindingByComponentIdForDatatype(childChildDt,
 															sc.getId());
 											if (scSeb != null) {
-												scModel.setBinding(this.createBindingDisplay(scSeb,
-														childChildDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
-												if (scSeb.getPredicate() != null) {
-													Predicate p = scSeb.getPredicate();
-													if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
-														scModel.setTrueUsage(p.getTrueUsage());
-														scModel.setFalseUsage(p.getFalseUsage());
-														scModel.setPredicate(p);
-														if (p.getIdentifier() != null)
-															scModel.getPredicate().setIdentifier(sc.getId());
-													}
+												bindingDisplayForSubComponent = this.createBindingDisplay(scSeb,
+														childChildDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap, bindingDisplayForSubComponent);
+											}
+											
+											
+											if (bindingDisplayForSubComponent != null && bindingDisplayForSubComponent.getPredicate() != null) {
+												Predicate p = bindingDisplayForSubComponent.getPredicate();
+												if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+													scModel.setTrueUsage(p.getTrueUsage());
+													scModel.setFalseUsage(p.getFalseUsage());
+													scModel.setPredicate(p);
+													if (p.getIdentifier() != null)
+														scModel.getPredicate().setIdentifier(sc.getId());
 												}
 											}
+											scModel.setBinding(bindingDisplayForSubComponent);
+											
 											subComponentStructureTreeModel.setData(scModel);
 											componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
 										} else {
@@ -510,7 +497,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 									.findStructureElementBindingByComponentIdForDatatype(datatype, sc.getId());
 							if (scSeb != null) {
 								scModel.setBinding(this.createBindingDisplay(scSeb, datatype.getId(),
-										ViewScope.DATATYPE, 2, valueSetsMap));
+										ViewScope.DATATYPE, 2, valueSetsMap, null));
 								if (scSeb.getPredicate() != null) {
 									Predicate p = scSeb.getPredicate();
 									if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
@@ -572,7 +559,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 								.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
 						if (cSeb != null) {
 							cModel.setBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE, 1,
-									valueSetsMap));
+									valueSetsMap, null));
 							if (cSeb.getPredicate() != null) {
 								Predicate p = cSeb.getPredicate();
 								if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
@@ -599,43 +586,38 @@ public class DatatypeServiceImpl implements DatatypeService {
 										scModel.setPath(c.getPosition() + "-" + sc.getPosition());
 										scModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
 
-										StructureElementBinding childSeb = this
+										BindingDisplay bindingDisplayForSubComponent = null;
+										
+										StructureElementBinding childCSeb = this
 												.findStructureElementBindingByComponentIdFromStructureElementBinding(
 														cSeb, sc.getId());
-										if (childSeb != null) {
-											scModel.setBinding(this.createBindingDisplay(childSeb, datatype.getId(),
-													ViewScope.DATATYPE, 1, valueSetsMap));
-											if (childSeb.getPredicate() != null) {
-												Predicate p = childSeb.getPredicate();
-												if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
-													scModel.setTrueUsage(p.getTrueUsage());
-													scModel.setFalseUsage(p.getFalseUsage());
-													scModel.setPredicate(p);
-													if (p.getIdentifier() != null)
-														scModel.getPredicate().setIdentifier(scModel.getIdPath());
-												}
-											}
+										if (childCSeb != null) {
+											bindingDisplayForSubComponent = this.createBindingDisplay(childCSeb,
+													datatype.getId(), ViewScope.DATATYPE, 2, valueSetsMap, bindingDisplayForSubComponent);
 										}
-
 										StructureElementBinding scSeb = this
-												.findStructureElementBindingByComponentIdForDatatype(childDt,
+												.findStructureElementBindingByComponentIdForDatatype(childChildDt,
 														sc.getId());
 										if (scSeb != null) {
-											scModel.setBinding(this.createBindingDisplay(scSeb, childDt.getId(),
-													ViewScope.DATATYPE, 2, valueSetsMap));
-											if (scSeb.getPredicate() != null) {
-												Predicate p = scSeb.getPredicate();
-												if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
-													scModel.setTrueUsage(p.getTrueUsage());
-													scModel.setFalseUsage(p.getFalseUsage());
-													scModel.setPredicate(p);
-													if (p.getIdentifier() != null)
-														scModel.getPredicate().setIdentifier(sc.getId());
-												}
+											bindingDisplayForSubComponent = this.createBindingDisplay(scSeb,
+													childChildDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap, bindingDisplayForSubComponent);
+										}
+										
+										
+										if (bindingDisplayForSubComponent != null && bindingDisplayForSubComponent.getPredicate() != null) {
+											Predicate p = bindingDisplayForSubComponent.getPredicate();
+											if (p.getTrueUsage() != null && p.getFalseUsage() != null) {
+												scModel.setTrueUsage(p.getTrueUsage());
+												scModel.setFalseUsage(p.getFalseUsage());
+												scModel.setPredicate(p);
+												if (p.getIdentifier() != null)
+													scModel.getPredicate().setIdentifier(sc.getId());
 											}
 										}
-
+										scModel.setBinding(bindingDisplayForSubComponent);
+										
 										subComponentStructureTreeModel.setData(scModel);
+										
 										componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
 									} else {
 										// TODO need to handle exception
@@ -655,18 +637,46 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	private BindingDisplay createBindingDisplay(StructureElementBinding seb, String sourceId, ViewScope sourceType,
-			int priority, HashMap<String, Valueset> valueSetsMap) {
-		BindingDisplay bindingDisplay = new BindingDisplay();
-		bindingDisplay.setSourceId(sourceId);
-		bindingDisplay.setSourceType(sourceType);
-		bindingDisplay.setPriority(priority);
-		bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
+			int priority, HashMap<String, Valueset> valueSetsMap, BindingDisplay existingBindingDisplay) {
+		BindingDisplay bindingDisplay = existingBindingDisplay;
+		if (bindingDisplay == null)
+			bindingDisplay = new BindingDisplay();
 
 		if (seb.getPredicate() != null) {
-			bindingDisplay.setPredicate(seb.getPredicate());
+			if (existingBindingDisplay == null || (existingBindingDisplay.getPredicatePriority() != null
+					&& existingBindingDisplay.getPredicatePriority() > priority)) {
+				bindingDisplay.setPredicate(seb.getPredicate());
+				bindingDisplay.setPredicatePriority(priority);
+				bindingDisplay.setPredicateSourceId(sourceId);
+				bindingDisplay.setPredicateSourceType(sourceType);
+			}
+
 		}
 
-		bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+		if (existingBindingDisplay == null || (existingBindingDisplay.getValuesetBindingsPriority() != null
+				&& existingBindingDisplay.getValuesetBindingsPriority() > priority)) {
+			bindingDisplay.setBindingType(BindingType.NA);
+			if (seb.getInternalSingleCode() != null && seb.getInternalSingleCode().getValueSetId() != null
+					&& seb.getInternalSingleCode().getCode() != null) {
+				bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
+				bindingDisplay.setValuesetBindingsPriority(priority);
+				bindingDisplay.setValuesetBindingsSourceId(sourceId);
+				bindingDisplay.setValuesetBindingsSourceType(sourceType);
+				bindingDisplay.setBindingType(BindingType.SC);
+			} else {
+				Set<DisplayValuesetBinding> displayValuesetBindings = this
+						.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap);
+				if (displayValuesetBindings != null) {
+					bindingDisplay
+							.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+					bindingDisplay.setValuesetBindingsPriority(priority);
+					bindingDisplay.setValuesetBindingsSourceId(sourceId);
+					bindingDisplay.setValuesetBindingsSourceType(sourceType);
+					bindingDisplay.setBindingType(BindingType.VS);
+				}
+			}
+		}
+
 		return bindingDisplay;
 	}
 
@@ -853,6 +863,30 @@ public class DatatypeServiceImpl implements DatatypeService {
 		return label;
 	}
 
+	public void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem) {
+		if(structureElement.getChangeLog() == null) {
+			structureElement.setChangeLog(new HashMap<>());
+		}
+
+		if(changeItem.getChangeReason() != null) {
+			structureElement.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
+		} else {
+			structureElement.getChangeLog().remove(changeItem.getPropertyType());
+		}
+	}
+
+	public void logChangeBinding(StructureElementBinding binding, ChangeItemDomain changeItem) {
+		if(binding.getChangeLog() == null) {
+			binding.setChangeLog(new HashMap<>());
+		}
+
+		if(changeItem.getChangeReason() != null) {
+			binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
+		} else {
+			binding.getChangeLog().remove(changeItem.getPropertyType());
+		}
+	}
+
 	@Override
 	public void applyChanges(Datatype d, List<ChangeItemDomain> cItems, String documentId)
 			throws JsonProcessingException, IOException {
@@ -926,6 +960,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 				if (c != null) {
 					item.setOldPropertyValue(c.getUsage());
 					c.setUsage(Usage.valueOf((String) item.getPropertyValue()));
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.LENGTHMIN)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -936,7 +971,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setMinLength((String) item.getPropertyValue());
 					}
-
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.LENGTHMAX)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -947,6 +982,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setMaxLength((String) item.getPropertyValue());
 					}
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.CONFLENGTH)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -957,6 +993,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setConfLength((String) item.getPropertyValue());
 					}
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.LENGTHTYPE)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -967,6 +1004,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setLengthType(LengthType.valueOf((String) item.getPropertyValue()));
 					}
+					this.logChangeStructureElement(c, item);
 				}
 			}
 		    else if (item.getPropertyType().equals(PropertyType.DATATYPE)) {
@@ -976,6 +1014,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					ObjectMapper mapper = new ObjectMapper();
 					String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 					c.setRef(mapper.readValue(jsonInString, Ref.class));
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
 				ObjectMapper mapper = new ObjectMapper();
@@ -984,12 +1023,14 @@ public class DatatypeServiceImpl implements DatatypeService {
 				item.setOldPropertyValue(seb.getValuesetBindings());
 				seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
 						Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
+				this.logChangeBinding(seb, item);
 			} else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
 				item.setOldPropertyValue(seb.getInternalSingleCode());
 				seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
+				this.logChangeBinding(seb, item);
 			} else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
 				Component c = this.findComponentById(d, item.getLocation());
 				if (c != null) {
@@ -999,6 +1040,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setConstantValue((String) item.getPropertyValue());
 					}
+					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
 				Component f = this.findComponentById(d, item.getLocation());
@@ -1068,6 +1110,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					cp.setIgDocumentId(documentId);
 					seb.setPredicate(cp);
 				}
+				this.logChangeBinding(seb, item);
 			}
 		}
 		d.setBinding(this.makeLocationInfo(d));

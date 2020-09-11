@@ -2,18 +2,20 @@ import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
 import { BehaviorSubject, Observable, of } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
-import { IUsageConfiguration } from '../../../../../export-configuration/models/default-export-configuration.interface';
+import { filter, take, tap } from 'rxjs/operators';
+import { IChange } from 'src/app/modules/shared/models/save-change';
 import { Type } from '../../../../constants/type.enum';
 import { Usage } from '../../../../constants/usage.enum';
 import { IDocumentRef } from '../../../../models/abstract-domain.interface';
 import { Hl7Config } from '../../../../models/config.class';
-import { IPredicate } from '../../../../models/predicate.interface';
+import { IAssertionPredicate, IPredicate } from '../../../../models/predicate.interface';
 import { IResource } from '../../../../models/resource.interface';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
-import { Hl7V2TreeService, IBinding } from '../../../../services/hl7-v2-tree.service';
-import { PredicateService } from '../../../../services/predicate.service';
+import { ElementNamingService } from '../../../../services/element-naming.service';
+import { Hl7V2TreeService } from '../../../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../../../services/resource-repository.service';
+import { IBinding, StructureElementBindingService } from '../../../../services/structure-element-binding.service';
+import { IChangeReasonDialogDisplay } from '../../../change-reason-dialog/change-reason-dialog.component';
 import { CsDialogComponent } from '../../../cs-dialog/cs-dialog.component';
 import { IStringValue } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
@@ -50,45 +52,27 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   set usages({ original, config }: { original: Usage, config: Hl7Config }) {
     const includeW = original === 'W';
     const includeB = original === 'B';
-
     this.options = Hl7Config.getUsageOptions(config.usages, includeW, includeB);
   }
 
   @Input()
   set predicate({ documentRef, predicates }: { documentRef: IDocumentRef, predicates: Array<IBinding<IPredicate>> }) {
-    if (predicates && predicates.length > 0) {
-      predicates.sort((a, b) => {
-        return a.level - b.level;
-      });
+    const bindings = this.structureElementBindingService.getActiveAndFrozenBindings(predicates, { resource: this.context });
 
-      const top = predicates[0];
-      let display: IBinding<IPredicate> = predicates.length > 1 ? predicates[1] : undefined;
+    this.editablePredicate.next({ value: bindings.active ? bindings.active.value : undefined });
+    this.freezePredicate$ = of(bindings.frozen).pipe(
+      filter((value) => !!value),
+    );
 
-      if (top.level === 1) {
-        this.initial = top.value;
-        this.editablePredicate.next({ value: top.value });
-
-      } else {
-        display = top;
-      }
-
-      if (display) {
-        this.freezePredicate$ = of({
-          level: display.level,
-          context: display.context,
-          value: display.value,
-        });
-      }
-    } else {
-      this.editablePredicate.next({ value: undefined });
-    }
+    const top = bindings.active || bindings.frozen;
+    this.initial = top ? top.value : undefined;
   }
 
   constructor(
-    private predicateService: PredicateService,
-    private treeService: Hl7V2TreeService,
-    private dialog: MatDialog) {
-    super([PropertyType.USAGE, PropertyType.PREDICATE]);
+    private structureElementBindingService: StructureElementBindingService,
+    private elementNamingService: ElementNamingService,
+    dialog: MatDialog) {
+    super([PropertyType.USAGE, PropertyType.PREDICATE], dialog);
     this.value$.asObservable().subscribe(
       (value) => {
         this.usage = {
@@ -104,10 +88,10 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
     this.resource.pipe(
       take(1),
       tap((resource) => {
-        this.treeService.getPathNameWithLocation(resource, this.repository, this.location).pipe(
+        this.elementNamingService.getPathInfoFromPathId(resource, this.repository, this.location).pipe(
           take(1),
-          tap((path) => {
-            this.openDialog('Create Predicate for ' + this.treeService.getNameFromPath(path), undefined);
+          tap((pathInfo) => {
+            this.openDialog('Create Predicate for ' + this.elementNamingService.getStringNameFromPathInfo(pathInfo), undefined);
           }),
         ).subscribe();
       }),
@@ -118,10 +102,10 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
     this.resource.pipe(
       take(1),
       tap((resource) => {
-        this.treeService.getPathNameWithLocation(resource, this.repository, this.location).pipe(
+        this.elementNamingService.getPathInfoFromPathId(resource, this.repository, this.location).pipe(
           take(1),
           tap((path) => {
-            this.openDialog('Edit Predicate for ' + this.treeService.getNameFromPath(path), predicate);
+            this.openDialog('Edit Predicate for ' + this.elementNamingService.getStringNameFromPathInfo(path), predicate);
           }),
         ).subscribe();
       }),
@@ -139,8 +123,8 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
     }
   }
 
-  delete() {
-    this.onChange(this.initial, undefined, PropertyType.PREDICATE, ChangeType.DELETE);
+  delete(skipReason: boolean = false) {
+    this.onChange(this.initial, undefined, PropertyType.PREDICATE, ChangeType.DELETE, skipReason);
   }
 
   openDialog(title: string, predicate: IPredicate) {
@@ -166,17 +150,46 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
     );
   }
 
-  clear() {
-    this.delete();
+  clear(skipReason: boolean = false) {
+    this.delete(skipReason);
     this.editablePredicate.next({ value: undefined });
   }
 
   modelChange(event: any): void {
     if (event.value !== 'CAB') {
-      this.clear();
+      this.clear(true);
     }
 
     this.onChange<string>(this.getInputValue().value, event.value, PropertyType.USAGE, ChangeType.UPDATE);
+  }
+
+  isActualChange(change: IChange<any>): boolean {
+    if (change.propertyType === PropertyType.PREDICATE) {
+      if (!change.oldPropertyValue && !change.propertyValue) {
+        return false;
+      } else if (change.oldPropertyValue && change.propertyValue) {
+        const old: IAssertionPredicate = change.oldPropertyValue as IAssertionPredicate;
+        const value: IAssertionPredicate = change.propertyValue as IAssertionPredicate;
+        return old.trueUsage !== value.trueUsage ||
+          old.falseUsage !== value.falseUsage ||
+          old.assertion.description !== value.assertion.description;
+      } else {
+        return true;
+      }
+    } else if (change.propertyType === PropertyType.USAGE) {
+      return change.propertyValue !== change.oldPropertyValue;
+    }
+  }
+
+  getDisplayTemplateForProperty(change: IChange): Observable<IChangeReasonDialogDisplay> {
+    return change.propertyType === PropertyType.PREDICATE ? of({
+      current: {
+        context: change.propertyValue ? change.propertyValue.assertion ? change.propertyValue.assertion.description : change.propertyValue.freeText : '',
+      },
+      previous: {
+        context: change.oldPropertyValue ? change.oldPropertyValue.assertion ? change.oldPropertyValue.assertion.description : change.oldPropertyValue.freeText : '',
+      },
+    }) : null;
   }
 
   ngOnInit() {

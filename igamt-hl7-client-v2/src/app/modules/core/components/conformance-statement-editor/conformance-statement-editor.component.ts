@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, concat, Observable, of, race, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
@@ -17,8 +17,8 @@ import { ConstraintType, IConformanceStatement, IPath } from '../../../shared/mo
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
-import { ConformanceStatementService } from '../../../shared/services/conformance-statement.service';
-import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
+import { ElementNamingService } from '../../../shared/services/element-naming.service';
+import { PathService } from '../../../shared/services/path.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
@@ -73,8 +73,8 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     readonly repository: StoreResourceRepositoryService,
     private messageService: MessageService,
     private dialog: MatDialog,
-    private csService: ConformanceStatementService,
-    private treeService: Hl7V2TreeService,
+    private pathService: PathService,
+    private elementNamingService: ElementNamingService,
     actions$: Actions,
     store: Store<any>,
     editorMetadata: IHL7EditorMetadata,
@@ -107,7 +107,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       map((list) => {
         if (list.length > 0) {
           const grouped = _.groupBy(list, (elm) => {
-            return this.treeService.pathToString(elm.payload.context);
+            return this.pathService.pathToString(elm.payload.context);
           }) as {
               [path: string]: Array<IEditableListNode<IConformanceStatement>>,
             };
@@ -165,10 +165,10 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     return this.selectedResource$.pipe(
       take(1),
       flatMap((res) => {
-        return this.treeService.getPathName(res, this.repository, path).pipe(
+        return this.elementNamingService.getPathInfoFromPath(res, this.repository, path).pipe(
           take(1),
           map((pathInfo) => {
-            return this.treeService.getNameFromPath(pathInfo);
+            return this.elementNamingService.getStringNameFromPathInfo(pathInfo);
           }),
         );
       }),

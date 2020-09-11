@@ -4,9 +4,9 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { selectBindingConfig } from '../../../root-store/config/config.reducer';
 import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
-import { IBindingLocationInfo, IValueSetBindingDisplay } from '../components/binding-selector/binding-selector.component';
+import { IBindingLocationInfo, ISingleCodeDisplay, IValueSetBindingDisplay } from '../components/binding-selector/binding-selector.component';
 import { Type } from '../constants/type.enum';
-import { IValuesetBinding } from '../models/binding.interface';
+import { InternalSingleCode, IValuesetBinding } from '../models/binding.interface';
 import { IBindingLocationInfoConfig } from '../models/config.class';
 import { AResourceRepositoryService } from './resource-repository.service';
 
@@ -43,6 +43,19 @@ export class BindingService {
             bindingLocation: binding.valuesetLocations,
           };
         });
+      }),
+    );
+  }
+
+  getSingleCodeBindingDisplay(singleCode: InternalSingleCode, repository: AResourceRepositoryService): Observable<ISingleCodeDisplay> {
+    return repository.getResourceDisplay(Type.VALUESET, singleCode.valueSetId).pipe(
+      take(1),
+      map((vs) => {
+        return {
+          valueSet: vs,
+          code: singleCode.code,
+          codeSystem: singleCode.codeSystem,
+        };
       }),
     );
   }

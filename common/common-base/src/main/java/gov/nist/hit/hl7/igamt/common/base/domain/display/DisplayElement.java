@@ -1,6 +1,9 @@
 package gov.nist.hit.hl7.igamt.common.base.domain.display;
 
+import java.util.Set;
+
 import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.common.base.domain.ActiveInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
@@ -23,10 +26,11 @@ public class DisplayElement {
   private boolean isFlavor;
   private Status status;
   private PublicationInfo publicationInfo;
-
-
+  private ActiveInfo activeInfo;
   private Type parentType;
   private String parentId;
+  private Set<String> libraryReferences;
+
 
   public DeltaAction getDelta() {
     return delta;
@@ -155,5 +159,29 @@ public class DisplayElement {
   public void setPublicationInfo(PublicationInfo publicationInfo) {
     this.publicationInfo = publicationInfo;
   }
+  public ActiveInfo getActiveInfo() {
+    return activeInfo;
+  }
+  public void setActiveInfo(ActiveInfo activeInfo) {
+    this.activeInfo = activeInfo;
+  }
+
+  @Override
+  public String toString() {
+    return "DisplayElement [id=" + id + ", fixedName=" + fixedName + ", variableName=" + variableName + ", description="
+        + description + ", domainInfo=" + domainInfo + ", type=" + type + ", leaf=" + leaf + ", position="
+        + position + ", differantial=" + differantial + ", delta=" + delta + ", origin=" + origin + ", isFlavor="
+        + isFlavor + ", status=" + status + ", publicationInfo=" + publicationInfo + ", parentType=" + parentType
+        + ", parentId=" + parentId + "]";
+  }
+
+  public Set<String> getLibraryReferences() {
+    return libraryReferences;
+  }
+
+  public void setLibraryReferences(Set<String> libraryReferences) {
+    this.libraryReferences = libraryReferences;
+  }
+
 
 }

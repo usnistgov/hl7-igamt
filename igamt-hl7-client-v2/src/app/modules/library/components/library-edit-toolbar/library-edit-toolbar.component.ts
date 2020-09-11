@@ -133,8 +133,10 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
 
   publish() {
     this.getLibId().pipe(
+      take(1),
       mergeMap((libId) => {
           return this.libraryService.getPublicationSummary(libId).pipe(
+            take(1),
             map((summary: IPublicationSummary) => {
               const dialogRef = this.dialog.open(PublishLibraryDialogComponent, {
                 data: summary,

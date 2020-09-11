@@ -9,10 +9,7 @@ import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.r
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
 import { LoadResourceReferences } from '../../../../root-store/dam-igamt/igamt.loaded-resources.actions';
-import { LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import {
-  selectValueSetsNodes,
-} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { selectDerived, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
@@ -24,8 +21,8 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { IResource } from '../../../shared/models/resource.interface';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
-import { IBindingContext } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
+import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
 
 export type BindingLegend = Array<{
@@ -33,7 +30,7 @@ export type BindingLegend = Array<{
   context: IBindingContext,
 }>;
 
-export abstract class StructureEditorComponent<T> extends AbstractEditorComponent implements OnDestroy, OnInit {
+export abstract class StructureEditorComponent<T extends IResource> extends AbstractEditorComponent implements OnDestroy, OnInit {
 
   type = Type;
   resourceSubject: ReplaySubject<T>;
@@ -48,6 +45,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   workspace_s: Subscription;
   hasOrigin$: Observable<boolean>;
   resourceType: Type;
+  derived$: Observable<boolean>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -70,7 +68,11 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     this.bindingConfig.subscribe();
     this.resourceSubject = new ReplaySubject<T>(1);
     this.changes = new ReplaySubject<IStructureChanges>(1);
-
+    this.derived$ = combineLatest(this.store.select(selectDerived), this.hasOrigin$).pipe(
+      map(([derivedIg, elmHadOrigin]) => {
+        return derivedIg && elmHadOrigin;
+      }),
+    );
     this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
         this.resourceSubject.next({ ...current.resource });
@@ -151,7 +153,9 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
             return this.getById(id).pipe(
               flatMap((resource) => {
                 this.changes.next({});
-                return [this.messageService.messageToAction(message), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
+                this.resourceSubject.next(resource as T);
+                // new LoadResourceReferences({ resourceType: this.editor.resourceType, id }),
+                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
               }),
             );
           }),
@@ -179,7 +183,9 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
       concatMap((id) => {
-        return this.store.select(this.elementSelector(), { id });
+        return this.store.select(this.elementSelector(), { id }).pipe(
+          tap((x) => console.log(x)),
+      );
       }),
     );
   }

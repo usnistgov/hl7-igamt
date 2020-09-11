@@ -5,11 +5,10 @@ import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tr
 import { Type } from '../../../shared/constants/type.enum';
 import { IPath } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
+import { ElementNamingService } from '../../../shared/services/element-naming.service';
+import { PathService } from '../../../shared/services/path.service';
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionType } from '../../../shared/services/tree-filter.service';
-import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
-import { CoConstraintGroupService } from '../../services/co-constraint-group.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
 
 export interface IBindingDialogResult {
@@ -58,7 +57,7 @@ export class CoConstraintBindingDialogComponent implements OnInit {
       {
         criterion: RestrictionType.TYPE,
         allow: true,
-        value: [Type.SEGMENT],
+        value: [Type.SEGMENTREF],
       },
     ],
   };
@@ -67,9 +66,8 @@ export class CoConstraintBindingDialogComponent implements OnInit {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private ccEntityService: CoConstraintEntityService,
-    private treeService: Hl7V2TreeService,
-    private ccService: CoConstraintGroupService,
+    private pathService: PathService,
+    private elementNamingService: ElementNamingService,
     public dialogRef: MatDialogRef<DataHeaderDialogComponent>) {
     this.structure = data.structure;
     this.excludePaths = data.excludePaths;
@@ -79,10 +77,10 @@ export class CoConstraintBindingDialogComponent implements OnInit {
   selectContext($event) {
     this.selectedContextNode = {
       node: $event.node,
-      path: $event.node.data.type === Type.CONFORMANCEPROFILE ? undefined : this.treeService.trimPathRoot($event.path),
+      path: $event.node.data.type === Type.CONFORMANCEPROFILE ? undefined : this.pathService.trimPathRoot($event.path),
     };
 
-    this.selectedContextNodeName = this.treeService.getNodeName(this.selectedContextNode.node, true);
+    this.selectedContextNodeName = this.elementNamingService.getTreeNodeName(this.selectedContextNode.node, true);
     this.segmentTree = [
       {
         ...this.selectedContextNode.node,
@@ -94,10 +92,10 @@ export class CoConstraintBindingDialogComponent implements OnInit {
   selectSegment($event) {
     this.selectedSegmentNode = {
       node: $event.node,
-      path: this.treeService.trimPathRoot($event.path),
+      path: this.pathService.trimPathRoot($event.path),
     };
     this.popRoot(this.selectedSegmentNode.node);
-    this.selectedSegmentNodeName = this.treeService.getNodeName(this.selectedSegmentNode.node, true);
+    this.selectedSegmentNodeName = this.elementNamingService.getTreeNodeName(this.selectedSegmentNode.node, true);
   }
 
   popRoot(node: IHL7v2TreeNode): void {

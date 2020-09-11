@@ -47,8 +47,8 @@ export class LibraryMetadataEditorComponent extends AbstractEditorComponent impl
     private messageService: MessageService, private froalaService: FroalaService) {
     super(
       {
-        id: EditorID.IG_METADATA,
-        resourceType: Type.IGDOCUMENT,
+        id: EditorID.LIBRARY_METADATA,
+        resourceType: Type.DATATYPELIBRARY,
         title: 'Metadata',
       },
       actions$,
@@ -160,6 +160,7 @@ export class LibraryMetadataEditorComponent extends AbstractEditorComponent impl
 
   onEditorSave(action: fromDam.EditorSave): Observable<Action> {
     return combineLatest(this.elementId$, this.current$, this.coverPictureFile$.pipe(
+      take(1),
       map((elm) => elm instanceof File ? elm : null),
     )).pipe(
       take(1),
@@ -168,7 +169,6 @@ export class LibraryMetadataEditorComponent extends AbstractEditorComponent impl
           this.libraryService.uploadCoverImage(coverPicture).pipe(
             pluck('link'),
           );
-
         return coverPictureName$.pipe(
           flatMap((pictureName) => {
             return this.libraryService.saveMetadata(id, {

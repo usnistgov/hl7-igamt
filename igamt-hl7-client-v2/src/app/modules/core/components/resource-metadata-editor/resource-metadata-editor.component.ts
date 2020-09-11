@@ -7,10 +7,12 @@ import { catchError, concatMap, flatMap, map, take, withLatestFrom } from 'rxjs/
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import {LibraryEditResolverLoad} from '../../../../root-store/library/library-edit/library-edit.actions';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import {selectIsAdmin} from '../../../dam-framework/store/authentication';
 import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
+import {Type} from '../../../shared/constants/type.enum';
 import { validateConvention } from '../../../shared/functions/convention-factory';
 import { validateUnity } from '../../../shared/functions/unicity-factory';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -207,9 +209,16 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
     return combineLatest(this.elementId$, this.initial$, this.current$, this.documentRef$).pipe(
       take(1),
       concatMap(([id, old, current, documentRef]) => {
+
         return this.save(this.getChanges(id, current.data, old)).pipe(
-          /// TODO Treat Library Case
-          flatMap((message) => [this.messageService.messageToAction(message), this.reloadResource(id), new IgEditResolverLoad(documentRef.documentId)]),
+          flatMap((message) => {
+            if (!documentRef.type || documentRef.type === Type.IGDOCUMENT) {
+              return  [this.messageService.messageToAction(message), this.reloadResource(id), new IgEditResolverLoad(documentRef.documentId)];
+            } else if (documentRef.type && documentRef.type === Type.DATATYPELIBRARY) {
+             return  [this.messageService.messageToAction(message), this.reloadResource(id), new LibraryEditResolverLoad(documentRef.documentId)];
+            }
+            },
+          ),
           catchError((error) => of(this.messageService.actionFromError(error), new fromDAM.EditorSaveFailure())),
         );
       }),

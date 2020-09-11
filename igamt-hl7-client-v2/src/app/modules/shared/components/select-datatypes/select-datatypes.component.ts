@@ -24,6 +24,8 @@ export class SelectDatatypesComponent implements OnInit {
   @Input()
   hideAsIs: boolean;
   @Input()
+  scope: Scope;
+  @Input()
   master: boolean;
   @ViewChild('dt1') tableRef: Table;
   selectedData: IAddingInfo[] = [];
@@ -44,7 +46,7 @@ export class SelectDatatypesComponent implements OnInit {
       originalId: obj.id,
       id: obj.id,
       type: Type.DATATYPE,
-      name: obj.name,
+      name: obj.label,
       ext: '',
       description: obj.description,
       domainInfo: obj.domainInfo,
@@ -58,14 +60,13 @@ export class SelectDatatypesComponent implements OnInit {
       originalId: obj.id,
       id: Guid.create().toString(),
       type: Type.DATATYPE,
-      name: obj.name,
+      name: obj.label,
       description: obj.description,
       flavor: true,
       domainInfo: {...obj.domainInfo , scope: Scope.USER},
     };
     this.selectedData.push(element);
     this.emitData();
-
   }
   unselect(selected: any) {
     const index = this.selectedData.indexOf(selected);

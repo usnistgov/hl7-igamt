@@ -45,7 +45,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ActiveInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -76,12 +79,16 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibraryDataModel;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryNotFoundException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeLibraryRepository;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.LibraryDisplayInfoService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
+import gov.nist.hit.hl7.igamt.display.model.CloneMode;
+import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
@@ -90,7 +97,6 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.STATUS;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -414,7 +420,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       element.setDateUpdated(lib.getUpdateDate());
       element.setTitle(lib.getMetadata().getTitle());
       element.setSubtitle(lib.getMetadata().getSubTitle());
-      // element.setConfrmanceProfiles(confrmanceProfiles);
       element.setCoverpage(lib.getMetadata().getCoverPicture());
       element.setId(lib.getId());
       element.setDerived(lib.isDerived());
@@ -430,7 +435,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
           for (Link i : datatypeRegistry.getChildren()) {
             Datatype datatype =
                 datatypeService.findById(i.getId());
-            if (datatype != null) {
+            if (datatype != null&& DatatypeLibrary.isLibFlavor(datatype, lib.getId()) ) {
               datatypesNames
               .add(datatype.getLabel());
             }
@@ -454,7 +459,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     // TODO Auto-generated method stub
 
 
-    Criteria where = Criteria.where("publicationInfo.status").is(STATUS.PUBLISHED);
+    Criteria where = Criteria.where("status").is(Status.PUBLISHED);
 
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");
@@ -518,6 +523,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     PublicationSummary summary= new PublicationSummary();
     summary.entries= new ArrayList<PublicationEntry>();
     List<Datatype> toPublish = this.datatypeService.findByParentId(id);
+    
     System.out.println(toPublish.size());
 
     for(Datatype d : toPublish) {
@@ -566,6 +572,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   public String publishLibray(String id, PublicationResult publicationResult) {
     // TODO Auto-generated method stub
     DatatypeLibrary lib = this.findById(id);
+    lib.setStatus(Status.PUBLISHED);
     PublicationInfo info = new PublicationInfo();
     info.setPublicationDate(new Date());
     info.setPublicationVersion(publicationResult.getVersion());
@@ -587,6 +594,31 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     this.save(lib);
     return lib.getId();
   }
+  
+  @Override
+  public void deactivateChildren(String id, Set<String> ids) {
+    // TODO Auto-generated method stub
+
+   List<Datatype> datatypes =  this.datatypeService.findByIdIn(ids);
+   for(Datatype d: datatypes) {
+     ActiveInfo info  = new ActiveInfo();
+     info.setStatus(ActiveStatus.DEPRECATED);
+     
+     if(d.getActiveInfo() != null && d.getActiveInfo().getStart() !=null) {
+       info.setStart(d.getActiveInfo().getStart());
+      
+     }else {
+       info.setStart(d.getCreationDate());
+     }
+     info.setEnd(new Date());
+    
+     d.setActiveInfo(info);
+     datatypeService.save(d);
+     }
+   }
+  
+  
+  
 
   @Override
   public DatatypeLibraryDataModel generateDataModel(DatatypeLibrary dl) throws Exception {
@@ -691,6 +723,46 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
       }
     }
     return vs;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#clone(java.lang.String, java.lang.String, gov.nist.hit.hl7.igamt.display.model.CopyInfo)
+   */
+  @Override
+  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException {
+    // TODO Auto-generated method stub
+    DatatypeLibrary lib = this.findById(id);
+  
+    if(lib != null) {
+      DatatypeLibrary newLib = new DatatypeLibrary();
+      newLib.setId(new ObjectId().toString());
+      newLib.setFrom(lib.getId());
+      newLib.setOrigin(lib.getId());
+      newLib.setMetadata(lib.getMetadata().clone());
+      newLib.getMetadata().setTitle(newLib.getMetadata().getTitle() + "[new Version]");
+      newLib.setUsername(username);
+      newLib.setDomainInfo(new DomainInfo());
+      newLib.getDomainInfo().setScope(Scope.USER);
+      newLib.setStatus(null);
+      newLib.setContent(lib.getContent());
+      newLib.setValueSetRegistry(lib.getValueSetRegistry());
+      
+      for(Link l: lib.getDatatypeRegistry().getChildren()) {
+        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.SDTF)) {
+          Datatype d = this.datatypeService.findById(l.getId());
+          if(d.getLibraryReferences() ==null) {
+            d.setLibraryReferences(new HashSet<String>());
+          }
+          d.getLibraryReferences().add(newLib.getId());
+          this.datatypeService.save(d);
+        }
+      }
+      
+      newLib.setDatatypeRegistry(lib.getDatatypeRegistry());
+      newLib = this.save(newLib);
+      return newLib;
+
+    } else throw new DatatypeLibraryNotFoundException(id);
   }
 }
 

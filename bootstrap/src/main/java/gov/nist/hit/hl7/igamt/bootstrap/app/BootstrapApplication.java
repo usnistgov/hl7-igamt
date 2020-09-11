@@ -36,9 +36,11 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.context.FhirContext;
+import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
+import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -70,6 +72,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
+import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -163,6 +166,11 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   TablesFixes tableFixes;
 
+  @Autowired
+  IgFixer igFixer;
+  
+  @Autowired
+  IgRepository igRepo;
 
 
   @Bean
@@ -965,5 +973,11 @@ public class BootstrapApplication implements CommandLineRunner {
     template.setName("Default");
     this.igTemplateRepository.insert(template);
   }
+
+  //@PostConstruct
+  private void fixIGs() throws CoConstraintGroupNotFoundException{
+    this.igFixer.fixIgComponents();
+  }
+  
 
 }

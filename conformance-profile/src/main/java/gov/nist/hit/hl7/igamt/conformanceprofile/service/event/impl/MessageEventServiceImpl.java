@@ -7,7 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -29,9 +35,10 @@ public class MessageEventServiceImpl implements MessageEventService {
 
   @Autowired
   MessageStructureRepository messageStructureRepository;
+  @Autowired
+  MongoTemplate mongoTemplate;
 
   public MessageEventServiceImpl() {
-    // TODO Auto-generated constructor stub
   }
 
   @Override
@@ -80,7 +87,6 @@ public class MessageEventServiceImpl implements MessageEventService {
 
 @Override
 public ResourcePickerList convertToDisplay(List<MessageEventTreeNode> list) {
-	// TODO Auto-generated method stub
 	ResourcePickerList ret = new ResourcePickerList();
 	List<VariableKey> selectors = new ArrayList<VariableKey>();
 	List<ResourcePicker> children = new ArrayList<ResourcePicker>();
@@ -99,7 +105,25 @@ public ResourcePickerList convertToDisplay(List<MessageEventTreeNode> list) {
 	
 }
 
-private Map<VariableKey, List<String>> createComplement(MessageEventTreeNode node) {
+    @Override
+    public List<MessageStructure> findStructureByScopeAndVersion(String version, Scope scope, String username) {
+        Criteria criteria = new Criteria();
+        criteria.and("domainInfo.scope").is(scope);
+        criteria.and("domainInfo.version").is(version);
+
+        if(!scope.equals(Scope.HL7STANDARD)) {
+            criteria.and("participants").in(username);
+        }
+
+        if(scope.equals(Scope.USERCUSTOM)) {
+            criteria.and("status").is(Status.PUBLISHED);
+        }
+
+        Query qry = Query.query(criteria);
+        return mongoTemplate.find(qry, MessageStructure.class);
+    }
+
+    private Map<VariableKey, List<String>> createComplement(MessageEventTreeNode node) {
 	// TODO Auto-generated method stub
 	 List<String> events = new ArrayList<String>();
 	 Map<VariableKey, List<String>> ret = new HashMap<VariableKey, List<String>> ();

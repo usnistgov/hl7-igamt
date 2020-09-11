@@ -40,6 +40,7 @@ $hl7_version_dynamic: orange;
 $user_scope_color: rgb(14, 158, 46);
 $preloaded_scope_color: rgb(125, 218, 255);
 $phinvads_color: white;
+$custom_scope_color: #d0a5d0;
 
 $phinvads_scope_color: gray;
 
@@ -54,6 +55,8 @@ $delta_changed: #ffeec9;
 $delta_deleted_light: #fff1f3;
 $delta_added_light: #edffed;
 $delta_changed_light: #fff7e7;
+
+$deprecated-element: yellow;
 
 .entity-badge-ig {
   background-color: $ig_color !important;

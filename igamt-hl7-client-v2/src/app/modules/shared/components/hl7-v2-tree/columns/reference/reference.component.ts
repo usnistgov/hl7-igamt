@@ -1,8 +1,11 @@
-import { Input, OnInit, TemplateRef } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { Observable, of, Subscription } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
+import { IChange } from 'src/app/modules/shared/models/save-change';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
+import { IChangeReasonDialogDisplay } from '../../../change-reason-dialog/change-reason-dialog.component';
 import { IResourceRef } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
 
@@ -18,6 +21,7 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
 
   ref: IResourceRef;
   _options: GroupOptions;
+  all: IDisplayElement[];
   selected: IDisplayElement;
   _selection: Subscription;
   editMode: boolean;
@@ -25,8 +29,12 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
   @Input()
   anchor: TemplateRef<any>;
 
+  @ViewChild('display', { read: TemplateRef })
+  displayTemplate: TemplateRef<any>;
+
   @Input()
   set options(opts: IDisplayElement[]) {
+    this.all = opts;
     if (this._selection && !this._selection.closed) {
       this._selection.unsubscribe();
     }
@@ -65,8 +73,8 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
     this.ref = value;
   }
 
-  constructor(private property: PropertyType) {
-    super([property]);
+  constructor(private property: PropertyType, protected dialog: MatDialog) {
+    super([property], dialog);
     this.value$.pipe(
       map((value) => {
         this.onInitValue(value);
@@ -84,6 +92,29 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
       version: event.domainInfo.version,
     }, this.property, ChangeType.UPDATE);
     this.toggleEdit();
+  }
+
+  isActualChange(change: IChange<any>): boolean {
+    if (!change.propertyType && !change.oldPropertyValue) {
+      return false;
+    } else if (change.propertyType && change.oldPropertyValue) {
+      return change.propertyValue.id !== change.oldPropertyValue.id;
+    } else {
+      return true;
+    }
+  }
+
+  getDisplayTemplateForProperty(change: IChange): Observable<IChangeReasonDialogDisplay> {
+    return of({
+      current: {
+        template: this.displayTemplate,
+        context: this.all.find((elm) => elm.id === change.propertyValue.id),
+      },
+      previous: {
+        template: this.displayTemplate,
+        context: this.all.find((elm) => elm.id === change.oldPropertyValue.id),
+      },
+    });
   }
 
   ngOnInit() {

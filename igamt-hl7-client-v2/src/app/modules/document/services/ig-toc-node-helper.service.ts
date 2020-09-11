@@ -125,10 +125,10 @@ export class IgTOCNodeHelper {
         const retChild = this.initializeIDisplayElement(child, ret.path + '.' + child.position);
         switch (child.type) {
           case Type.DATATYPEREGISTRY:
-            retChild.children = datatypesNodes.filter((dt: IDisplayElement) => dt.parentId && dt.parentId === documentRef.documentId);
+            retChild.children = datatypesNodes.filter((dt: IDisplayElement) => this.isPartOfLib(dt, documentRef.documentId ) );
             break;
           case Type.DERIVEDDATATYPEREGISTRY:
-            retChild.children = datatypesNodes.filter((dt: IDisplayElement) =>  documentRef.documentId !== dt.parentId  );
+            retChild.children = datatypesNodes.filter((dt: IDisplayElement) =>  !this.isPartOfLib(dt, documentRef.documentId )  );
             break;
         }
         ret.children.push(retChild);
@@ -227,5 +227,16 @@ export class IgTOCNodeHelper {
     } else {
       return 1;
     }
+  }
+
+  static isPartOfLib(dt: IDisplayElement, documentId: string) {
+    if (!dt.parentId ) {
+      return false;
+    } else if (documentId === dt.parentId) {
+      return true;
+    } else if (dt.libraryReferences && dt.libraryReferences.length > 0 ) {
+      return dt.libraryReferences.indexOf(documentId) > -1;
+    }
+    return false;
   }
 }

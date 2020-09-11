@@ -22,6 +22,7 @@ public abstract class AbstractDomain implements Serializable{
 	private String name;
 	private Type type;
 	private String origin;
+	private ActiveInfo activeInfo;
 	private PublicationInfo publicationInfo;
 	private DomainInfo domainInfo;
 	private String username;
@@ -285,6 +286,14 @@ public String getCurrentAuthor() {
 
 public void setCurrentAuthor(String currentAuthor) {
 	this.currentAuthor = currentAuthor;
+}
+
+public ActiveInfo getActiveInfo() {
+  return activeInfo;
+}
+
+public void setActiveInfo(ActiveInfo activeInfo) {
+  this.activeInfo = activeInfo;
 }
 
 }

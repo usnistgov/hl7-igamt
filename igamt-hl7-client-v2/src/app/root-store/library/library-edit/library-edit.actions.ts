@@ -11,6 +11,7 @@ import { IDocumentDisplayInfo } from '../../../modules/ig/models/ig/ig-document.
 import {IPublicationResult} from '../../../modules/library/components/publish-library-dialog/publish-library-dialog.component';
 import {ILibrary} from '../../../modules/library/models/library.class';
 import { Type } from '../../../modules/shared/constants/type.enum';
+import {IDocumentRef} from '../../../modules/shared/models/abstract-domain.interface';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../../modules/shared/models/editor.enum';
@@ -49,6 +50,9 @@ export enum LibraryEditActionTypes {
   PublishLibrary = '[Library] Publish Library',
   PublishLibrarySuccess = '[Library] Publish Library Success',
   PublishLibraryFailure = '[Library] Publish Library Failure',
+  DeactivateElements= '[Library] Deactivate Elements',
+  DeactivateElementsSuccess= '[Library] Deactivate Elements Success',
+  DeactivateElementsFailure= '[Library] Deactivate Elements Failure',
 }
 
 export class ClearLibraryEdit implements Action {
@@ -250,6 +254,22 @@ export class PublishLibrarySuccess implements Action {
 export class PublishLibrary implements Action {
   readonly type = LibraryEditActionTypes.PublishLibrary;
   constructor(readonly libId: string, readonly publicationResult: IPublicationResult) { }
+}
+
+export class DeactivateElements implements Action {
+  readonly type = LibraryEditActionTypes.DeactivateElements;
+  constructor(readonly documentId: string, readonly elements: string[] ) {
+  }
+}
+export class DeactivateElementsSuccess implements Action {
+  readonly type = LibraryEditActionTypes.DeactivateElementsSuccess;
+  constructor( elements: IDisplayElement[] ) {
+  }
+}
+export class DeactivateElementsFailure implements Action {
+  readonly type = LibraryEditActionTypes.DeactivateElementsFailure;
+  constructor(readonly error: HttpErrorResponse ) {
+  }
 }
 export type LibraryEditActions =
   LibraryEditResolverLoad
