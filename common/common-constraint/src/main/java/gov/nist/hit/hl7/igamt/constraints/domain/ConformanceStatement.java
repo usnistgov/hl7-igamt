@@ -34,147 +34,173 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 @Document
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({@JsonSubTypes.Type(value = FreeTextConformanceStatement.class, name = "FREE"),
-    @JsonSubTypes.Type(value = AssertionConformanceStatement.class, name = "ASSERTION")})
+	@JsonSubTypes.Type(value = AssertionConformanceStatement.class, name = "ASSERTION")})
 public class ConformanceStatement implements Serializable{
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 5188411006490923627L;
-  @Id
-  private String id;
-  private ConstraintType type;
-  protected String identifier;
-  private InstancePath context;
-  private boolean locked;
-  private Level level;
-  @Deprecated
-  private String structureId;
-  @Deprecated
-  private HashSet<String> sourceIds;
-  @Deprecated
-  private String igDocumentId;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 5188411006490923627L;
+	@Id
+	private String id;
+	private ConstraintType type;
+	protected String identifier;
+	private InstancePath context;
+	private boolean locked;
+	private Level level;
+	@Deprecated
+	private String structureId;
+	@Deprecated
+	private HashSet<String> sourceIds;
+	@Deprecated
+	private String igDocumentId;
 
-  private Map<PropertyType, ChangeReason> changeLog;
+	private Map<PropertyType, ChangeReason> changeLog;
 
-  public ConformanceStatement() {
-    super();
-  }
+	public ConformanceStatement() {
+		super();
+	}
 
-  public String getIdentifier() {
-    return identifier;
-  }
+	public String getIdentifier() {
+		return identifier;
+	}
 
-  public void setIdentifier(String identifier) {
-    this.identifier = identifier;
-  }
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
 
-  public ConstraintType getType() {
-    return type;
-  }
+	public ConstraintType getType() {
+		return type;
+	}
 
-  public void setType(ConstraintType type) {
-    this.type = type;
-  }
+	public void setType(ConstraintType type) {
+		this.type = type;
+	}
 
-  public InstancePath getContext() {
-    return context;
-  }
+	public InstancePath getContext() {
+		return context;
+	}
 
-  public void setContext(InstancePath context) {
-    this.context = context;
-  }
+	public void setContext(InstancePath context) {
+		this.context = context;
+	}
 
-  public String getId() {
-    return id;
-  }
+	public String getId() {
+		return id;
+	}
 
-  public void setId(String id) {
-    this.id = id;
-  }
-  
-  public String generateDescription() {
-    if(this instanceof  FreeTextConformanceStatement){
-      FreeTextConformanceStatement cs = (FreeTextConformanceStatement)this;
-      return cs.getFreeText();
-    }else if(this instanceof  AssertionConformanceStatement){
-      AssertionConformanceStatement cs = (AssertionConformanceStatement)this;
-      if(cs.getAssertion() != null) return cs.getAssertion().getDescription();
-    }
-    return null;
-  }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-  public Map<PropertyType, ChangeReason> getChangeLog() {
-    return changeLog;
-  }
+	public String generateDescription() {
+		if(this instanceof  FreeTextConformanceStatement){
+			FreeTextConformanceStatement cs = (FreeTextConformanceStatement)this;
+			return cs.getFreeText();
+		}else if(this instanceof  AssertionConformanceStatement){
+			AssertionConformanceStatement cs = (AssertionConformanceStatement)this;
+			if(cs.getAssertion() != null) return cs.getAssertion().getDescription();
+		}
+		return null;
+	}
 
-  public void setChangeLog(Map<PropertyType, ChangeReason> changeLog) {
-    this.changeLog = changeLog;
-  }
+	public Map<PropertyType, ChangeReason> getChangeLog() {
+		return changeLog;
+	}
 
-  public Level getLevel() {
-    return level;
-  }
+	public void setChangeLog(Map<PropertyType, ChangeReason> changeLog) {
+		this.changeLog = changeLog;
+	}
 
-  public void setLevel(Level level) {
-    this.level = level;
-  }
+	public Level getLevel() {
+		return level;
+	}
 
-  @Deprecated
-  public String getStructureId() {
-    return structureId;
-  }
+	public void setLevel(Level level) {
+		this.level = level;
+	}
 
-  @Deprecated
-  public void setStructureId(String structureId) {
-    this.structureId = structureId;
-  }
+	@Deprecated
+	public String getStructureId() {
+		return structureId;
+	}
 
-  @Deprecated
-  public String getIgDocumentId() {
-    return igDocumentId;
-  }
+	@Deprecated
+	public void setStructureId(String structureId) {
+		this.structureId = structureId;
+	}
 
-  @Deprecated
-  public void setIgDocumentId(String igDocumentId) {
-    this.igDocumentId = igDocumentId;
-  }
+	@Deprecated
+	public String getIgDocumentId() {
+		return igDocumentId;
+	}
 
-  @Deprecated
-  public HashSet<String> getSourceIds() {
-    return sourceIds;
-  }
+	@Deprecated
+	public void setIgDocumentId(String igDocumentId) {
+		this.igDocumentId = igDocumentId;
+	}
 
-  @Deprecated
-  public void setSourceIds(HashSet<String> sourceIds) {
-    this.sourceIds = sourceIds;
-  }
+	@Deprecated
+	public HashSet<String> getSourceIds() {
+		return sourceIds;
+	}
 
-  @Deprecated
-  public void addSourceId(String sourceId) {
-    if(this.sourceIds == null) this.sourceIds = new HashSet<String>();
-    this.sourceIds.add(sourceId);
-  }
+	@Deprecated
+	public void setSourceIds(HashSet<String> sourceIds) {
+		this.sourceIds = sourceIds;
+	}
 
-  @Deprecated
-  public void removeSourceId(String sourceId) {
-    if(this.sourceIds != null) {
-      this.sourceIds.remove(sourceId);
-    }
-  }
+	@Deprecated
+	public void addSourceId(String sourceId) {
+		if(this.sourceIds == null) this.sourceIds = new HashSet<String>();
+		this.sourceIds.add(sourceId);
+	}
 
-@Override
-public String toString() {
-	return "ConformanceStatement [id=" + id + ", type=" + type + ", identifier=" + identifier + ", context=" + context
-			+ ", level=" + level + ", structureId=" + structureId + ", sourceIds=" + sourceIds + ", igDocumentId="
-			+ igDocumentId + "]";
-}
+	@Deprecated
+	public void removeSourceId(String sourceId) {
+		if(this.sourceIds != null) {
+			this.sourceIds.remove(sourceId);
+		}
+	}
 
-public boolean isLocked() {
-	return locked;
-}
+	@Override
+	public String toString() {
+		return "ConformanceStatement [id=" + id + ", type=" + type + ", identifier=" + identifier + ", context=" + context
+				+ ", level=" + level + ", structureId=" + structureId + ", sourceIds=" + sourceIds + ", igDocumentId="
+				+ igDocumentId + "]";
+	}
 
-public void setLocked(boolean locked) {
-	this.locked = locked;
-}
-  
+	public boolean isLocked() {
+		return locked;
+	}
+
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ConformanceStatement other = (ConformanceStatement) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+
+
 }

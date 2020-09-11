@@ -984,11 +984,11 @@ public class BootstrapApplication implements CommandLineRunner {
     this.igFixer.fixIgComponents();
   }
   
- //@PostConstruct
+ @PostConstruct
   void fixConformanceStatements() throws IGUpdateException {
     //this.igFixer.deriveChildren();
     this.conformanceStatementFixer.fixConformanceStatmentsId();
-    this.conformanceStatementFixer.lockCfsForDerived();
+    //this.conformanceStatementFixer.lockCfsForDerived();
   }
 
 }

@@ -376,7 +376,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 		} catch (ValidationException e) {
 			throw new ValidationException(f.getPosition() + ":" + e.getMessage());
 		}
-
 	}
 
 	private void validateGroup(Group f) throws ValidationException {
@@ -437,14 +436,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 			Scope scope, CloneMode cloneMode) {
 		ConformanceProfile old = this.findById(l.getId());
 		ConformanceProfile elm = old.clone();
+		elm.setId(key);
 		elm.getDomainInfo().setScope(scope);
 		elm.setOrigin(l.getId());
-		Link newLink = l.clone(key);
-		newLink.setDomainInfo(elm.getDomainInfo());
-		newLink.setOrigin(l.getId());
+		elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
+        elm.setUsername(username);
+		Link newLink = new Link(elm);
 		updateDependencies(elm, newKeys, cloneMode);
-		elm.setId(newLink.getId());
-		elm.setUsername(username);
 		this.save(elm);
 		return newLink;
 	}

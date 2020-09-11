@@ -90,16 +90,7 @@ public interface IgService {
   public Set<RelationShip> buildRelationShip(Ig ig, Type type);
   public Set<RelationShip> builAllRelations(Ig ig) ;
   public void publishIG(Ig ig) throws IGNotFoundException, IGUpdateException;
-
-  /**
-   * @param id
-   * @param attributeName
-   * @param value
-   * @param entityClass
-   * @return
-   */
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass);
-
   public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
 
 

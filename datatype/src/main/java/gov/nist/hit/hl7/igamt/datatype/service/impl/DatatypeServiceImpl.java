@@ -348,14 +348,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 		Datatype old = this.findById(l.getId());
 		Datatype elm = old.clone();
+	    elm.setId(newId);
 		elm.getDomainInfo().setScope(scope);
-		Link newLink = l.clone(null);
-		elm.setOrigin(l.getId());
-		newLink.setId(newId);
-		newLink.setOrigin(l.getId());
-		newLink.setDomainInfo(elm.getDomainInfo());
+		elm.setUsername(username);
+	    elm.setOrigin(l.getId());
+	    elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
+		Link newLink = new Link(elm);
 		updateDependencies(elm, newKey, cloneMode);
-		elm.setId(newLink.getId());
 		this.save(elm);
 		return newLink;
 

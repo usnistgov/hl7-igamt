@@ -106,7 +106,7 @@
 
 <ng-template #editable let-cs>
   <td style="width: 190px;">
-    <button class="btn btn-sm btn-primary" (click)="editDialog(cs)">
+    <button class="btn btn-sm btn-primary" [disabled]="cs?.payload.locked" (click)="editDialog(cs)">
       <i class="fa fa-pencil"></i> Edit
     </button>
     <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteCs(cs)">

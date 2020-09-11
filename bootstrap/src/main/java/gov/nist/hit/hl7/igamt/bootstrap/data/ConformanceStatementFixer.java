@@ -60,26 +60,26 @@ public class ConformanceStatementFixer {
 
     for(ConformanceProfile elm : conformanceProfiles) {
       if(elm.getBinding() !=null) {
-        if(fixCfIds(elm.getBinding())) {
+          fixCfIds(elm.getBinding());
           conformanceProfileRepo.save(elm);
-        }
+        
       }
     }
 
     for(Segment elm : segments) {
       if(elm.getBinding() !=null) {
-        if(fixCfIds(elm.getBinding())) {
+          fixCfIds(elm.getBinding());
           segmentRepo.save(elm);
-        }
+        
       }
     }
     for(Datatype d : datatypes) {
       if(d instanceof ComplexDatatype) {
         ComplexDatatype dt= (ComplexDatatype)d;
         if(dt.getBinding() !=null) {
-          if(fixCfIds(dt.getBinding())) {
+            fixCfIds(dt.getBinding());
             datatypeRepo.save(dt);
-          }
+          
         }
       }
     }
@@ -89,19 +89,24 @@ public class ConformanceStatementFixer {
   /**
    * @param binding
    */
-  private boolean fixCfIds(ResourceBinding binding) {
-    boolean changed = false;
+  private void fixCfIds(ResourceBinding binding) {
     // TODO Auto-generated method stub
+    Map<String, String> idMap = new HashMap<String, String>();
     if(binding.getConformanceStatements() != null) {
       for(ConformanceStatement cs: binding.getConformanceStatements()) {
         if(cs.getId() == null) {
           cs.setId(new ObjectId().toString());
-          changed = true;
-          
+          idMap.put(cs.generateDescription()+cs.getIdentifier(), cs.getId());
+        }else {
+          if(idMap.containsKey(cs.generateDescription()+cs.getIdentifier())) {
+            cs.setId(idMap.get(cs.generateDescription()+cs.getIdentifier()));
+          }else {
+            idMap.put(cs.generateDescription()+cs.getIdentifier(), cs.getId());
+          }
         }
       }
+     binding.setConformanceStatements((binding.getConformanceStatements().stream().distinct().collect(Collectors.toSet())));
     }
-    return changed;
   }
   
   

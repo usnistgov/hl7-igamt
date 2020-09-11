@@ -191,45 +191,30 @@ public class IgFixer {
     List<Ig> igs = igRepo.findByDerived(true);
     for(Ig ig : igs) {
       for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
-        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-          UpdateResult updateResult = this.igService.updateAttribute(l.getId(), "derived", true, ConformanceProfile.class);
-          if(! updateResult.wasAcknowledged()) {
-            throw new IGUpdateException("Could not publish Conformance profile:" +l.getId());
-          }
+        if(l.isComparable()) {
+           this.igService.updateAttribute(l.getId(), "derived", true, ConformanceProfile.class);
         }
       }
       for ( Link l: ig.getSegmentRegistry().getChildren()) {
-        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-          UpdateResult updateResult = this.igService.updateAttribute(l.getId(), "derived", true, Segment.class);
-          if(! updateResult.wasAcknowledged()) {
-            throw new IGUpdateException("Could not publish segment:" +l.getId());
-          }
+        if(l.isComparable()) {
+          this.igService.updateAttribute(l.getId(), "derived", true, Segment.class);
         }
       }
 
       for ( Link l: ig.getDatatypeRegistry().getChildren()) {
-        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-          UpdateResult updateResult = this.igService.updateAttribute(l.getId(), "derived", true, Datatype.class);
-          if(! updateResult.wasAcknowledged()) {
-            throw new IGUpdateException("Could not publish Datatype:" +l.getId());
-          }
+        if(l.isComparable()) {
+           this.igService.updateAttribute(l.getId(), "derived", true, Datatype.class);
         }
       }
       for ( Link l: ig.getValueSetRegistry().getChildren()) {
-        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-          UpdateResult updateResult = this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);
-          if(! updateResult.wasAcknowledged()) {
-            throw new IGUpdateException("Could not publish Value set:" +l.getId());
-          }
+        if(l.isComparable()) {
+          this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);
         }
       }
 
       for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
-        if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-          UpdateResult updateResult = this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);
-          if(! updateResult.wasAcknowledged()) {
-            throw new IGUpdateException("Could not publish Value set:" +l.getId());
-          }
+        if(l.isComparable()) {
+          this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);     
         }
       }
     }

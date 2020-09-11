@@ -539,13 +539,12 @@ public class SegmentServiceImpl implements SegmentService {
 
 		Segment obj = this.findById(l.getId());
 		Segment elm = obj.clone();
+	    elm.setOrigin(l.getId());
 		elm.getDomainInfo().setScope(scope);
-		elm.setOrigin(l.getId());
-		Link newLink = l.clone(key);
-		newLink.setOrigin(l.getId());
-		elm.setId(newLink.getId());
+		elm.setId(key);
+		elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
 		elm.setUsername(username);
-		newLink.setDomainInfo(elm.getDomainInfo());
+		Link newLink = new Link(elm);
 		updateDependencies(elm, newKeys, username, cloneMode);
 		updateDynamicMapping(elm, newKeys);
 		this.save(elm);

@@ -7,6 +7,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
@@ -31,7 +32,7 @@ public interface CoConstraintService {
     public List<CoConstraintGroup> findByIdIn(Set<String> ids);
     public Collection<? extends RelationShip> collectDependencies(CoConstraintGroup ccGroup) ;
     public Link clone(String string, HashMap<RealKey, String> newKeys, Link l, String username,
-        Scope user, String documentTarget);
+        Scope user, String documentTarget, CloneMode cloneMode);
     void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys,
         String username, boolean cloned);
     void updateDepenedencies(CoConstraintTable value, HashMap<RealKey, String> newKeys, boolean cloned);

@@ -10,6 +10,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -374,7 +375,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
    */
   @Override
   public Link clone(String id, HashMap<RealKey, String> newKeys, Link l, String username,
-      Scope scope, String targetId) {
+      Scope scope, String targetId, CloneMode cloneMode) {
     // TODO Auto-generated method stub
     Optional<CoConstraintGroup> group = this.coConstraintGroupRepository.findById(l.getId());
     if(group.isPresent()) {
@@ -382,10 +383,11 @@ public class SimpleCoConstraintService implements CoConstraintService {
       elm.setDocumentId(targetId);
       elm.getDomainInfo().setScope(scope);
       elm.setOrigin(l.getId());
-      Link newLink = l.clone(id);
-      newLink.setOrigin(l.getId());
-      elm.setId(newLink.getId());
-      newLink.setDomainInfo(elm.getDomainInfo());
+      elm.setUsername(username);
+      elm.setId(id);
+      elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
+      Link newLink = new Link(elm);
+     
       updateDependencies(elm, newKeys, username, true);
       this.coConstraintGroupRepository.save(elm);
       return newLink;
