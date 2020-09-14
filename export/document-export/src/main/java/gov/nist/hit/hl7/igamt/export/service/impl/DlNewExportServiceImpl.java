@@ -124,8 +124,8 @@ public class DlNewExportServiceImpl implements DlNewExportService {
 	public ExportedFile serializeDlDocumentToHtml(String username, DatatypeLibrary dl, ExportFormat exportFormat,
 			ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception {
 		try {			
-			ExportFontConfiguration exportFontConfiguration =
-					exportFontConfigurationService.getExportFontConfiguration(username);
+//			ExportFontConfiguration exportFontConfiguration =
+//					exportFontConfigurationService.getExportFontConfiguration(username);
 			DatatypeLibraryDataModel datatypeLibraryDataModel = datatypeLibraryService.generateDataModel(dl);
 			String xmlContent =
 					igDataModelSerializationService.serializeDocument(datatypeLibraryDataModel, exportConfiguration,decision).toXML();
@@ -134,11 +134,12 @@ public class DlNewExportServiceImpl implements DlNewExportService {
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
 					dl.getName(), dl.getMetadata().getCoverPicture(), exportConfiguration,
-					exportFontConfiguration, "2.0_beta",dl.getType());
+					exportConfiguration.getExportFontConfiguration(), "2.0_beta",dl.getType());
 			InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH,
 					exportParameters);
 			ExportedFile exportedFile = new ExportedFile(htmlContent, dl.getName(), dl.getId(),
 					exportFormat);
+			System.out.println(" HEEERE : " + exportConfiguration.getExportFontConfiguration().getExportFont().getValue());
 			exportedFile.setContent(htmlContent);
 			// return new ExportedFile(htmlContent, igDocument.getName(),
 			// igDocument.getId(), exportFormat);

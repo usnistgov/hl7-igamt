@@ -19,6 +19,8 @@
 	<xsl:import href="/templates/profile/datatype/DateTimeDatatype.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
 	<xsl:import href="/templates/profile/commentList.xsl" />
+		<xsl:import href="/templates/profile/constantValue.xsl" />
+	
 	 	<xsl:import href="/templates/profile/definitionText2.xsl" />
 
 	<xsl:import href="/templates/profile/metadata.xsl" />
@@ -287,6 +289,10 @@
 					</xsl:element>
 				</xsl:element>
 			</xsl:element>
+			<xsl:if test=".//@constantValue != ''">
+						<xsl:call-template name="ConstantValue" />
+    </xsl:if>
+
 			<xsl:call-template name="CommentList" />
  		<xsl:call-template name="DefinitionText2" />
 

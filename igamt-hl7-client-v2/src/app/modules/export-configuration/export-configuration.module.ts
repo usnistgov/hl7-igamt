@@ -15,6 +15,7 @@ import { SegmentExportConfigurationComponent } from './components/segment-export
 import { ValueSetExportConfigurationComponent } from './components/value-set-export-configuration/value-set-export-configuration.component';
 import { ExportConfigurationRoutingModule } from './export-configuration-routing.module';
 import { ExportConfigurationService } from './services/export-configuration.service';
+import { FontExportConfigurationComponent } from './components/font-export-configuration/font-export-configuration.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { ExportConfigurationService } from './services/export-configuration.serv
     DeltaExportConfigurationComponent,
     ExportDialogComponent,
     DatatypeLibraryExportConfigurationComponent,
+    FontExportConfigurationComponent,
   ],
   imports: [
     CommonModule,
