@@ -5,6 +5,8 @@ import { ExtendedModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, MatRadioModule, MatSelectModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
+import {MatSliderModule} from '@angular/material/slider';
+import { MatInputModule } from '@angular/material/input';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
@@ -189,6 +191,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ReactiveFormsModule,
     MatRadioModule,
     MatDialogModule,
+    MatSliderModule,
+    MatInputModule,
     FileUploadModule,
     pTreeModule,
     DropdownModule,
@@ -260,6 +264,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ContextMenuModule,
     pTreeModule,
     MatDialogModule,
+    MatSliderModule,
+    MatInputModule,
+    MatFormFieldModule,
     MatRadioModule,
     DropdownModule,
     FormInputComponent,

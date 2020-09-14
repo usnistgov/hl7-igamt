@@ -195,10 +195,10 @@ public class DatatypeDataModel implements Serializable, Comparable {
 
 	public int compareTo(Object u) {
 		// TODO Auto-generated method stub
-		if (getModel().getName() == null || ((DatatypeDataModel) u).getModel().getName() == null) {
+		if (getModel().getLabel() == null || ((DatatypeDataModel) u).getModel().getLabel() == null) {
 		      return 0;
 		    }
-		    return getModel().getName().compareTo(((DatatypeDataModel) u).getModel().getName());
+		    return getModel().getLabel().compareTo(((DatatypeDataModel) u).getModel().getLabel());
 	}
 
 }

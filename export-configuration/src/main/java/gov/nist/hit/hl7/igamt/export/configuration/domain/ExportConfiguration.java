@@ -57,6 +57,7 @@ public class ExportConfiguration {
   private AbstractDomainExportConfiguration abstractDomainExportConfiguration;
   private ResourceExportConfiguration resourceExportConfiguration;
   private DocumentMetadataConfiguration DocumentMetadataConfiguration;
+  private ExportFontConfiguration exportFontConfiguration;
 
 
   boolean defaultType = false;
@@ -125,6 +126,9 @@ public class ExportConfiguration {
 
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue, Type type) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();
+    //setting font
+     ExportFontConfiguration exportFontConfiguration = ExportFontConfiguration.getDefault();
+     defaultConfiguration.setExportFontConfiguration(exportFontConfiguration);
     defaultConfiguration.setType(type);
     defaultConfiguration.setConfigName("");
     defaultConfiguration.setOriginal(false);
@@ -973,7 +977,16 @@ public Type getType() {
 public void setType(Type type) {
 	this.type = type;
 }
+
+public ExportFontConfiguration getExportFontConfiguration() {
+	return exportFontConfiguration;
+}
+
+public void setExportFontConfiguration(ExportFontConfiguration exportFontConfiguration) {
+	this.exportFontConfiguration = exportFontConfiguration;
+}
   
+
   
 
 }

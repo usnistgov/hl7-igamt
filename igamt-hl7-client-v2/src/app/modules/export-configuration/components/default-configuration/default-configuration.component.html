@@ -9,8 +9,8 @@
     <h4 *ngIf="type === 'DATATYPELIBRARY'" class="title-text" >Datatype Library Export Configuration</h4>
 
     <div>
-      <button (click)="reset()" class="btn btn-sm btn-danger" style="margin-right:5px;" [disabled]="!hasChanges"> <i class="fa fa-trash"></i> Reset</button>
-      <button (click)="save()" class="btn btn-sm btn-success" style="margin-right:5px;" [disabled]="!hasChanges">  <i class="fa fa-save"></i> Save</button>
+      <button (click)="reset()" class="btn btn-sm btn-danger" style="margin-right:5px;" [disabled]="!hasChanges || currentConfiguration.original"> <i class="fa fa-trash"></i> Reset</button>
+      <button (click)="save()" class="btn btn-sm btn-success" style="margin-right:5px;" [disabled]="!hasChanges || currentConfiguration.original">  <i class="fa fa-save"></i> Save</button>
     </div>
   </div>
 
@@ -63,12 +63,18 @@
             <p-tabPanel header="Delta">
                 <app-delta-export-configuration [active]="currentConfiguration.deltaMode" [config]="currentConfiguration.deltaConfig" (updateDelta)="updateDelta($event)"></app-delta-export-configuration>
               </p-tabPanel>
+              <p-tabPanel header="Font">
+                <app-font-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.exportFontConfiguration" (detectChange)="change($event)"></app-font-export-configuration>
+              </p-tabPanel>
 
           </p-tabView>
           <p-tabView *ngIf="type === 'DATATYPELIBRARY'" [styleClass]="'configuration-tab-view'" >
               <p-tabPanel header="Datatype Library Datatypes" [selected]="true">
                 <app-datatype-library-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.datatypeExportConfiguration" [displayUsages]="true" (detectChange)="change($event)" ></app-datatype-library-export-configuration>
               </p-tabPanel>
+              <p-tabPanel header="Font">
+                  <app-font-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.exportFontConfiguration" (detectChange)="change($event)"></app-font-export-configuration>
+                </p-tabPanel>
             </p-tabView>
         </div>
       </div>

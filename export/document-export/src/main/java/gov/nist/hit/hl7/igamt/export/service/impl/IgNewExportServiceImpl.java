@@ -161,7 +161,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			// TODO add app infoservice to get app version
 			ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
 					igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
-					exportFontConfiguration, "2.0_beta",igDocument.getType());
+					exportConfiguration.getExportFontConfiguration(), "2.0_beta",igDocument.getType());
 			InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH,
 					exportParameters);
 			ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(),
