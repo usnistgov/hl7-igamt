@@ -32,7 +32,7 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
  * @author jungyubw
  *
  */
-public class ConformanceProfileDataModel implements Serializable{
+public class ConformanceProfileDataModel implements Serializable, Comparable{
 	private ConformanceProfile model;
 
 	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
@@ -186,5 +186,14 @@ public class ConformanceProfileDataModel implements Serializable{
 
 	public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
 		this.conformanceStatements = conformanceStatements;
+	}
+
+	@Override
+	public int compareTo(Object u) {
+		// TODO Auto-generated method stub
+		if (getModel().getLabel() == null || ((ConformanceProfileDataModel) u).getModel().getLabel() == null) {
+		      return 0;
+		    }
+		    return getModel().getLabel().compareTo(((ConformanceProfileDataModel) u).getModel().getLabel());
 	}
 }

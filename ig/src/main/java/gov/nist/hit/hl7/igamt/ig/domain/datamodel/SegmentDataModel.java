@@ -33,7 +33,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
  * @author jungyubw
  *
  */
-public class SegmentDataModel implements Serializable {
+public class SegmentDataModel implements Serializable, Comparable {
 	/**
 	 * 
 	 */
@@ -209,5 +209,14 @@ public class SegmentDataModel implements Serializable {
 			if (fModel.getModel().getPosition() == position) return fModel;
 		}
 		return null;
+	}
+
+	@Override
+	public int compareTo(Object u) {
+		// TODO Auto-generated method stub
+		if (getModel().getLabel() == null || ((SegmentDataModel) u).getModel().getLabel() == null) {
+		      return 0;
+		    }
+		    return getModel().getLabel().compareTo(((SegmentDataModel) u).getModel().getLabel());
 	}
 }

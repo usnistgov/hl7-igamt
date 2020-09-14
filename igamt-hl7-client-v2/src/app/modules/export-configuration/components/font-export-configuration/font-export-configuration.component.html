@@ -1,0 +1,43 @@
+<!-- <div style="display: flex;"> -->
+
+    <div style="display: flex; flex-grow: 1; flex-direction: column;">
+        <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+          <h5 class="card-title title-text custom-card-title">Font Size</h5>
+          <section class="example-section">
+              <mat-form-field class="example-margin">
+                  <mat-label>Value</mat-label>
+                  <input matInput type="number" [(ngModel)]="config.fontSize" (input)="onInputChange($event)">
+                </mat-form-field>
+            </section>
+
+          <mat-slider
+          [disabled]="viewOnly"
+          [(ngModel)]="config.fontSize"
+          (input)="onInputChange($event)"
+          thumbLabel
+          [displayWith]="formatLabel"
+          tickInterval="1"
+          min="1"
+          max="25">
+        </mat-slider>
+        
+        </div>
+
+  <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;" >
+    <h5 class="card-title title-text custom-card-title">Font Type</h5>
+    <mat-radio-group
+    [disabled]="viewOnly"
+  aria-labelledby="radio-group-label"
+  class="radio-group"
+  [(ngModel)]="config.exportFont.name" (change)="triggerChange()">
+  <mat-radio-button class="radio-button" *ngFor="let font of fonts" [value]="font">
+    {{font}}
+  </mat-radio-button>
+</mat-radio-group>
+  </div>
+
+  
+  <!-- </div> -->
+
+
+</div>
