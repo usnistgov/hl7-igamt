@@ -2,6 +2,7 @@ import { Type } from '../constants/type.enum';
 
 export interface IConformanceStatement {
   id?: string;
+  locked?: boolean;
   type: ConstraintType;
   identifier: string;
   level?: Type;

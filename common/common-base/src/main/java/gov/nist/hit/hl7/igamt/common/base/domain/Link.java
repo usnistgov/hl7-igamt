@@ -11,6 +11,7 @@ public class Link implements Serializable, Comparable{
   private Type parentType;
   private String parentId;
   private String username;
+  private boolean derived;
 
   public Link(String id, int position) {
     super();
@@ -53,8 +54,24 @@ public class Link implements Serializable, Comparable{
     this.id = id2;
     this.domainInfo = domainInfo2;
     this.position = position;
-
     // TODO Auto-generated constructor stub
+  }
+   
+  
+  public Link(Resource resource) {
+    this.id = resource.getId();
+    this.domainInfo = resource.getDomainInfo();
+    this.username = resource.getUsername();
+    this.origin = resource.getOrigin();
+    this.type = resource.getType();
+    this.parentType = resource.getParentType();
+    this.parentId = resource.getParentId();
+    this.derived = resource.isDerived();
+  }
+  
+  public Link(Resource resource, int position) {
+    this(resource);
+    this.position= position;
   }
 
   public DomainInfo getDomainInfo() {
@@ -141,12 +158,23 @@ public class Link implements Serializable, Comparable{
   public void setParentId(String documentId) {
     this.parentId = documentId;
   }
+  public boolean isComparable() {
+    return this.getDomainInfo() !=null && this.getDomainInfo().getScope() !=null && this.getDomainInfo().getScope().equals(Scope.USER) && this.getOrigin() !=null;
+  }
 
-@Override
-public int compareTo(Object o) {
+  @Override
+  public int compareTo(Object o) {
 	// TODO Auto-generated method stub
 		return this.position - ((Link) o).position;
-}	
+  }
+
+  public boolean isDerived() {
+    return derived;
+  }
+
+  public void setDerived(boolean derived) {
+    this.derived = derived;
+  }	
 
 
 

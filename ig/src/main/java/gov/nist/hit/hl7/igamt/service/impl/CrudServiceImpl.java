@@ -71,7 +71,7 @@ public class CrudServiceImpl implements CrudService {
 					if (cp != null) {
 						ret.getConformanceProfiles().add(cp);
 						addDependecies(cp, ig, ret);
-						Link link = new Link(cp.getId(), cp.getDomainInfo(), cp.getChildren().size() + 1);
+						Link link = new Link(cp, cp.getChildren().size() + 1);
 						reg.getChildren().add(link);
 					} else {
 						throw new AddingException("Could not find conformance profile with id " + id);
@@ -147,7 +147,7 @@ public class CrudServiceImpl implements CrudService {
 					if (segment != null) {
 						addDependecies(segment, ig, ret);
 						Link link =
-								new Link(segment.getId(), segment.getDomainInfo(), reg.getChildren().size() + 1);
+								new Link(segment, reg.getChildren().size() + 1);
 						ret.getSegments().add(segment);
 						reg.getChildren().add(link);
 					} else {
@@ -251,7 +251,7 @@ public class CrudServiceImpl implements CrudService {
 							Set<String> datatypeIds = getDatatypeResourceDependenciesIds(p);
 							addDatatypes(datatypeIds, ig, ret);
 						}
-						Link link = new Link(datatype.getId(), datatype.getDomainInfo(),
+						Link link = new Link(datatype,
 								ig.getDatatypeRegistry().getChildren().size() + 1);
 						ret.getDatatypes().add(datatype);
 						ig.getDatatypeRegistry().getChildren().add(link);
@@ -286,7 +286,7 @@ public class CrudServiceImpl implements CrudService {
 							}
 						}
 						Link link =
-								new Link(datatype.getId(), datatype.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size() + 1);
+								new Link(datatype, ig.getDatatypeRegistry().getChildren().size() + 1);
 						ig.getDatatypeRegistry().getChildren().add(link);
 						ret.getDatatypes().add(datatype);
 						if (datatype instanceof ComplexDatatype) {
@@ -329,7 +329,7 @@ public class CrudServiceImpl implements CrudService {
 					Valueset valueSet = valuesetService.findById(id);
 					if (valueSet != null) {
 						Link link =
-								new Link(valueSet.getId(), valueSet.getDomainInfo(), reg.getChildren().size() + 1);
+								new Link(valueSet, reg.getChildren().size() + 1);
 						reg.getChildren().add(link);
 						ret.getValueSets().add(valueSet);
 					} else {

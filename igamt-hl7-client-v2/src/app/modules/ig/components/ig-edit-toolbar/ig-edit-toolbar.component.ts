@@ -140,7 +140,6 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
           map((result) => {
             this.igService.exportAsHtml(igId, result.decision, result.configurationId);
 
-            
           }),
         ).subscribe();
       }),

@@ -56,15 +56,15 @@ public class EntityDeltaServiceImpl {
     Map<String, ConformanceStatement> targetMap = new HashMap<String, ConformanceStatement>();
     if(source!=null && !source.isEmpty()) {
       for(ConformanceStatement s : source) {
-        if(s.getIdentifier() !=null) {
-          sourceMap.put(s.getIdentifier(), s);
+        if(s.getId() !=null) {
+          sourceMap.put(s.getId(), s);
         }
       }
     }
     if(target !=null && !target.isEmpty()) {
       for(ConformanceStatement s : target) {
-        if(s.getIdentifier() !=null) {
-          targetMap.put(s.getIdentifier(), s);
+        if(s.getId() !=null) {
+          targetMap.put(s.getId(), s);
         }
       }
     }
@@ -72,8 +72,8 @@ public class EntityDeltaServiceImpl {
       for(ConformanceStatement st: source) {
         ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
 
-        if(targetMap.containsKey(st.getIdentifier())) {
-          this.compare(structureDelta, st, targetMap.get(st.getIdentifier()));
+        if(targetMap.containsKey(st.getId())) {
+          this.compare(structureDelta, st, targetMap.get(st.getId()));
         }else {
           structureDelta.setDescription(new DeltaNode<String>(st.generateDescription(), null, DeltaAction.DELETED));
           structureDelta.setIdentifier(new DeltaNode<String>(st.getIdentifier(), null, DeltaAction.DELETED));
@@ -87,7 +87,7 @@ public class EntityDeltaServiceImpl {
       for(ConformanceStatement st: target) {
         ConformanceStatementDelta structureDelta = new ConformanceStatementDelta();
 
-        if(!sourceMap.containsKey(st.getIdentifier())) {
+        if(!sourceMap.containsKey(st.getId())) {
           structureDelta.setDescription(new DeltaNode<String>( null,st.generateDescription(), DeltaAction.ADDED));
           structureDelta.setIdentifier(new DeltaNode<String>( null,st.getIdentifier(), DeltaAction.ADDED));
           structureDelta.setAction(DeltaAction.ADDED);

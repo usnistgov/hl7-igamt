@@ -9,48 +9,37 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.display.model;
-
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
+package gov.nist.hit.hl7.igamt.common.base.util;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public class CopyInfo {
+public enum CloneMode {
+  CLONE("CLONE"), DERIVE ("DERIVE"), UPGRADE ("UPGRADE");
 
-  private CloneMode mode; 
-  private IgTemplate template;
-  private boolean inherit;
- 
+  CloneMode(String value) {
+    this.value = value;
+  }
+  private final String value;
 
-  public CopyInfo() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
-  
-  public CloneMode getMode() {
-    return mode;
-  }
-  public void setMode(CloneMode mode) {
-    this.mode = mode;
+  public String getValue() {
+    return value;
   }
 
-  public IgTemplate getTemplate() {
-    return template;
+  @Override
+  public String toString() {
+    // TODO Auto-generated method stub
+    return this.value;
   }
 
-  public void setTemplate(IgTemplate template) {
-    this.template = template;
-  }
-  public boolean isInherit() {
-    return inherit;
-  }
-
-  public void setInherit(boolean inherit) {
-    this.inherit = inherit;
+  public static CloneMode fromString(String text) {
+    for (CloneMode t : CloneMode.values()) {
+      if (t.value.equalsIgnoreCase(text)) {
+        return t;
+      }
+    }
+    return null;
   }
 
-  
 }

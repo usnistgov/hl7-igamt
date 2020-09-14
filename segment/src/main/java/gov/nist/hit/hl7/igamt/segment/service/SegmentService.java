@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
@@ -84,7 +85,7 @@ public interface SegmentService extends ResourceService {
 	public List<Segment> findDisplayFormatByScopeAndVersion(Scope scope, String version, String username);
 
 
-	public Link cloneSegment(String id, HashMap<RealKey, String> newKeys, Link l, String username, Scope user);
+	public Link cloneSegment(String id, HashMap<RealKey, String> newKeys, Link l, String username, Scope user, CloneMode cloneMode);
 
 	List<Valueset> getDependentValueSets(Set<Segment> resources);
 

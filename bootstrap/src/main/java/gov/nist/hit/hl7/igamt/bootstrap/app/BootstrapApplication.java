@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.context.FhirContext;
+import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
@@ -72,6 +73,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
@@ -171,6 +173,9 @@ public class BootstrapApplication implements CommandLineRunner {
   
   @Autowired
   IgRepository igRepo;
+  
+  @Autowired
+  ConformanceStatementFixer conformanceStatementFixer;
 
 
   @Bean
@@ -979,5 +984,13 @@ public class BootstrapApplication implements CommandLineRunner {
     this.igFixer.fixIgComponents();
   }
   
+ //@PostConstruct
+  void fixConformanceStatements() throws IGUpdateException, CoConstraintGroupNotFoundException {
+    this.igFixer.deriveChildren();
+    this.conformanceStatementFixer.fixConformanceStatmentsId();
+    this.conformanceStatementFixer.lockCfsForDerived();
+    this.igFixer.fixIgComponents();
+
+  }
 
 }

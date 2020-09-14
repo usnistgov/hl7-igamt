@@ -116,7 +116,7 @@
 
 <ng-template #editable let-cs>
   <td style="width: 190px;">
-    <button *ngIf="cs.changeType !== 'DELETE'" class="btn btn-sm btn-primary" (click)="editDialog(cs)">
+    <button *ngIf="cs.changeType !== 'DELETE'" [disabled]="cs?.payload.locked" class="btn btn-sm btn-primary" (click)="editDialog(cs)">
       <i class="fa fa-pencil"></i> Edit
     </button>
     <button *ngIf="cs.changeType !== 'DELETE'" class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="removeNode(cs)">
