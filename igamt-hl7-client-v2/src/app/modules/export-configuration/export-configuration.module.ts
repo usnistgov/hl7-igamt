@@ -11,11 +11,11 @@ import { DefaultConfigurationComponent } from './components/default-configuratio
 import { DeltaExportConfigurationComponent } from './components/delta-export-configuration/delta-export-configuration.component';
 import { ExportConfigurationDialogComponent } from './components/export-configuration-dialog/export-configuration-dialog.component';
 import { ExportDialogComponent } from './components/export-dialog/export-dialog.component';
+import { FontExportConfigurationComponent } from './components/font-export-configuration/font-export-configuration.component';
 import { SegmentExportConfigurationComponent } from './components/segment-export-configuration/segment-export-configuration.component';
 import { ValueSetExportConfigurationComponent } from './components/value-set-export-configuration/value-set-export-configuration.component';
 import { ExportConfigurationRoutingModule } from './export-configuration-routing.module';
 import { ExportConfigurationService } from './services/export-configuration.service';
-import { FontExportConfigurationComponent } from './components/font-export-configuration/font-export-configuration.component';
 
 @NgModule({
   declarations: [
