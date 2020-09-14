@@ -101,7 +101,10 @@ public class ExportController {
 					ObjectMapper mapper = new ObjectMapper();
 					mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 					decision = mapper.readValue(formData.getJson(), ExportFilterDecision.class);
+					System.out.println("sdsdsdsd : "+decision.getOveriddedSegmentMap().toString() );
 				} else {
+					System.out.println("form data was null");
+
 					ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 					decision = igExportService.getExportFilterDecision(ds, exportConfiguration);
 				}
@@ -220,13 +223,16 @@ public class ExportController {
 //					}
 //					}
 //					else
+
 						if(exportConfigurationService.getDefaultConfig(true, username) != null) {		
 						ExportConfiguration exportConfiguration = exportConfigurationService.getDefaultConfig(true, username);
-						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, null, exportConfiguration.getId());
+						ExportFilterDecision decision = igExportService.getExportFilterDecision(ds, exportConfiguration);
+						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, decision, exportConfiguration.getId());
 					} 
 					else {
 						ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT);
-						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, null, exportConfiguration.getId());
+						ExportFilterDecision decision = igExportService.getExportFilterDecision(ds, exportConfiguration);
+						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, decision, exportConfiguration.getId());
 
 					}					
 				} else if(document.toLowerCase().equals("library")) {

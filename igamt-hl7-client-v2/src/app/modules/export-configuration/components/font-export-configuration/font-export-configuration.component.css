@@ -1,0 +1,19 @@
+.example-margin {
+    margin: 8px;
+  }
+  .example-section {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    height: 60px;
+  }
+
+  .radio-group {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0;
+  }
+  
+  .radio-button {
+    margin: 5px;
+  }

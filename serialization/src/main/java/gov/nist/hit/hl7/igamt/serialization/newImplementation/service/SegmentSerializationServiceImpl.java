@@ -194,6 +194,8 @@ private SerializationTools serializationTools;
 		                  field.getConfLength() != null ? field.getConfLength() : ""));
 		              fieldElement.addAttribute(
 		                  new Attribute("name", field.getName() != null ? field.getName() : ""));
+		              fieldElement.addAttribute(
+			                  new Attribute("constantValue", field.getConstantValue() != null ? field.getConstantValue() : ""));
 		              fieldElement
 		                  .addAttribute(new Attribute("id", field.getId() != null ? field.getId() : ""));
 		              fieldElement.addAttribute(new Attribute("maxLength",
