@@ -6,7 +6,7 @@
 
 
 <!-- RESOURCE CS -->
-<ng-container *ngIf="groupedCS$ | async as groupCs">
+<ng-container *ngIf="conformanceStatementWorkspaceGrouped$ | async as groupCs">
   <div class="header-title">
     <h5>List of conformance statements</h5>
     <div></div>
@@ -16,74 +16,85 @@
   </div>
 </ng-container>
 
-<!-- ASSOCIATED AND AVAILABLE CS -->
-<ng-container *ngIf="conformanceStatementView$ | async as viewData">
-
-  <!-- AVAILABLE -->
-  <ng-container *ngIf="available$ | async as availableView">
-    <div style="margin-top: 10px;" *ngIf="!(viewOnly$ | async)">
-      <div class="header-title">
-        <h5>Available Conformance Statements</h5>
-        <hr>
-      </div>
-      <div class="panel-body">
-        <ng-container *ngTemplateOutlet="csList; context: { $implicit: availableView, tmpl: useable }"></ng-container>
-      </div>
-    </div>
-  </ng-container>
+<!-- ASSOCIATED CS -->
+<ng-container *ngIf="dependants">
 
   <!-- ASSOCIATED -->
-  <ng-container *ngIf="viewData.complementConformanceStatements">
-    <div *ngIf="viewData.complementConformanceStatements[_types.SEGMENT]" style="margin-top: 10px;">
+
+    <div *ngIf="dependants.segments" style="margin-top: 10px;">
       <div class="header-title">
         <h5>Associated segments conformance statements</h5>
         <hr>
       </div>
       <div class="panel-body">
-        <div *ngIf="keys(viewData.complementConformanceStatements[_types.SEGMENT]).length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+        <div *ngIf="dependants.segments.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
           <span> No Conformance Statement </span>
         </div>
-        <ng-container *ngFor="let segment of keys(viewData.complementConformanceStatements[_types.SEGMENT])" >
-          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.SEGMENT][segment], header: segment, type: 'SEGMENT' }"></ng-container>
+        <ng-container *ngFor="let segment of dependants.segments" >
+          <app-display-section [element]="segment.resource" [hideDescription]="true"></app-display-section>
+          <ng-container *ngTemplateOutlet="csListAssociated; context: { $implicit: segment.conformanceStatements, type: 'SEGMENT' }"></ng-container>
         </ng-container>
       </div>
     </div>
-    <div *ngIf="viewData.complementConformanceStatements[_types.DATATYPE]" style="margin-top: 10px;">
+    <div *ngIf="dependants.datatypes" style="margin-top: 10px;">
       <div class="header-title">
         <h5>Associated datatypes conformance statements</h5>
       </div>
       <div class="panel-body">
-        <div *ngIf="keys(viewData.complementConformanceStatements[_types.DATATYPE]).length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+        <div *ngIf="dependants.datatypes.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
           <span> No Conformance Statement </span>
         </div>
-        <ng-container *ngFor="let dt of keys(viewData.complementConformanceStatements[_types.DATATYPE])" >
-          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.DATATYPE][dt], header: dt, type: 'DATATYPE' }"></ng-container>
+        <ng-container *ngFor="let dt of dependants.datatypes" >
+          <app-display-section [element]="dt.resource" [hideDescription]="true"></app-display-section>
+          <ng-container *ngTemplateOutlet="csListAssociated; context: { $implicit: dt.conformanceStatements, type: 'DATATYPE' }"></ng-container>
         </ng-container>
       </div>
     </div>
-  </ng-container>
 
 </ng-container>
 
-<ng-template #csList let-csList let-header="header" let-tmpl="tmpl">
+<ng-template #csList let-csList let-tmpl="tmpl">
   <div *ngIf="!csList || csList.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
     <span> No Conformance Statement </span>
   </div>
   <table class="table table-striped table-bordered table-sm" *ngIf="csList && csList.length > 0">
-    <tr *ngIf="header">
-      <th colspan="3">{{ header }}</th>
-    </tr>
     <tr>
-      <th>ID</th>
+      <th style="width: 100px;">ID</th>
       <th>Description</th>
       <th *ngIf="tmpl" style="width: 190px;"></th>
     </tr>
-    <tr *ngFor="let cs of csList; let i = index;">
-      <td>{{ getId(cs) }}</td>
-      <td>{{ getDescription(cs) }}</td>
+    <tr *ngFor="let cs of csList; let i = index;" [ngClass]="{
+      'table-warning': cs.changeType === 'UPDATE',
+      'table-success': cs.changeType === 'ADD',
+      'table-danger': cs.changeType === 'DELETE'
+    }">
+      <td>
+        {{ cs.payload.identifier }}
+        <span class="badge badge-secondary" *ngIf="cs.payload?.type === 'FREE'">free-text</span>
+      </td>
+      <td>{{ getDescription(cs.payload) }}</td>
       <ng-container *ngIf="tmpl">
         <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: cs, index: i }"></ng-container>
       </ng-container>
+    </tr>
+  </table>
+</ng-template>
+
+<ng-template #csListAssociated let-csList>
+  <div *ngIf="!csList || csList.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+    <span> No Conformance Statement </span>
+  </div>
+  <table class="table table-striped table-bordered table-sm" *ngIf="csList && csList.length > 0">
+    <tr>
+      <th style="width: 100px;">ID</th>
+      <th>Description</th>
+    </tr>
+    <tr *ngFor="let cs of csList; let i = index;">
+      <td>
+        {{ cs.identifier }}
+        <span class="badge badge-secondary" *ngIf="cs.type === 'FREE'">free-text</span>
+      </td>
+      <td>{{ getDescription(cs) }}</td>
     </tr>
   </table>
 </ng-template>
@@ -92,12 +103,11 @@
   <ng-container *ngFor="let item of csGroup" >
     <div *ngIf="item.context" style="display: flex; align-items: center; margin-bottom: 10px;">
       <app-entity-bagde style="display: flex;" [type]="'GROUP'"></app-entity-bagde>
-      <span style="margin-left: 5px;"> {{ item.name | async }} </span>
+      <span style="margin-left: 5px;"> {{ item.name }} </span>
     </div>
     <div *ngIf="!item.context && item.list && item.list.length > 0" style="display: flex; align-items: center; margin-bottom: 10px;">
-      <ng-container *ngIf="(selectedResource$ | async) as cp">
-        <app-entity-bagde style="display: flex;" [type]="cp.type"></app-entity-bagde>
-        <span style="margin-left: 5px;"> {{ cp.name }} </span>
+      <ng-container *ngIf="editorDisplayNode() | async as current">
+        <app-display-section [element]="current" [hideDescription]="true"></app-display-section>
       </ng-container>
     </div>
     <ng-container *ngTemplateOutlet="csList; context: { $implicit: item.list, tmpl: editable }"></ng-container>
@@ -106,19 +116,14 @@
 
 <ng-template #editable let-cs>
   <td style="width: 190px;">
-    <button class="btn btn-sm btn-primary" (click)="editDialog(cs)">
+    <button *ngIf="cs.changeType !== 'DELETE'" class="btn btn-sm btn-primary" (click)="editDialog(cs)">
       <i class="fa fa-pencil"></i> Edit
     </button>
-    <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteCs(cs)">
+    <button *ngIf="cs.changeType !== 'DELETE'" class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="removeNode(cs)">
       <i class="fa fa-trash"></i> Delete
     </button>
-  </td>
-</ng-template>
-
-<ng-template #useable let-cs let-index="index">
-  <td style="width: 190px;">
-    <button class="btn btn-sm btn-info" (click)="use(cs, index)">
-      <i class="fa fa-plus-circle"></i> Use
+    <button *ngIf="cs.changeType === 'DELETE'" class="btn btn-sm btn-success" style="margin-left: 5px;" (click)="restore(cs)">
+      <i class="fa fa-refresh"></i> Restore
     </button>
   </td>
 </ng-template>

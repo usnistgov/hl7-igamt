@@ -2,22 +2,24 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { of } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { CrossReferencesService } from 'src/app/modules/shared/services/cross-references.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
+import { IConformanceStatementEditorData } from '../../modules/core/components/conformance-statement-editor/conformance-statement-editor.component';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { MessageService } from '../../modules/dam-framework/services/message.service';
 import { OpenEditorBase, SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { DatatypeService } from '../../modules/datatype/services/datatype.service';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { IUsages } from '../../modules/shared/models/cross-reference';
-import { IConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
+import { ConformanceStatementService } from '../../modules/shared/services/conformance-statement.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
+import { selectDatatypesById } from '../dam-igamt/igamt.resource-display.selectors';
 import { OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from './datatype-edit.actions';
 import {
   DatatypeEditActionTypes,
@@ -125,7 +127,7 @@ export class DatatypeEditEffects {
   );
 
   @Effect()
-  openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IConformanceStatementList, OpenDatatypeConformanceStatementEditor>(
+  openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IConformanceStatementEditorData, OpenDatatypeConformanceStatementEditor>(
     DatatypeEditActionTypes.OpenDatatypeConformanceStatementEditor,
     Type.DATATYPE,
     fromIgamtDisplaySelectors.selectDatatypesById,
@@ -134,6 +136,21 @@ export class DatatypeEditEffects {
         take(1),
         mergeMap((documentInfo) => {
           return this.datatypeService.getConformanceStatements(action.payload.id, documentInfo);
+        }),
+        flatMap((data) => {
+          const datatypes = this.conformanceStatementService.resolveDependantConformanceStatement(data.associatedConformanceStatementMap || {}, selectDatatypesById);
+
+          return (datatypes.length > 0 ? combineLatest(datatypes) : of([])).pipe(
+            take(1),
+            map((d) => {
+              return {
+                active: this.conformanceStatementService.createEditableNode(data.conformanceStatements || []),
+                dependants: {
+                  datatypes: d,
+                },
+              };
+            }),
+          );
         }),
       );
     },
@@ -156,6 +173,7 @@ export class DatatypeEditEffects {
     private editorHelper: OpenEditorService,
     private datatypeService: DatatypeService,
     private deltaService: DeltaService,
+    private conformanceStatementService: ConformanceStatementService,
     private crossReferenceService: CrossReferencesService,
   ) { }
 

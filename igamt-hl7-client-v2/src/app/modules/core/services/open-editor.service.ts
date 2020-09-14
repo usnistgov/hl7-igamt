@@ -179,10 +179,7 @@ export class OpenEditorService {
           id: action.payload.id,
           display,
           editor: action.payload.editor,
-          initial: {
-            changes: [],
-            resource,
-          },
+          initial: resource,
         });
         this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
         return RxjsStoreHelperService.listenAndReact(this.actions$, {
