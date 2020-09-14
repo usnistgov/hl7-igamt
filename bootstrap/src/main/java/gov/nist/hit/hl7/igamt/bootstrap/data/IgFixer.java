@@ -16,8 +16,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.mongodb.client.result.UpdateResult;
-
 import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
@@ -66,11 +64,6 @@ public class IgFixer {
   @Autowired
   private CoConstraintService coConstraintService;
 
-  public void deleteArived() {
-
-  }
-
-
   public void fixIgComponents() throws CoConstraintGroupNotFoundException {
     List<Ig> igs=  igService.findAll();
     for(Ig ig: igs) {
@@ -109,7 +102,6 @@ public class IgFixer {
           }
           this.fixCoConstraintGroup(l.getId(), ig.getUsername());
         }
-
         igService.save(ig);
       }
     }      
@@ -192,31 +184,37 @@ public class IgFixer {
     for(Ig ig : igs) {
       for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
         if(l.isComparable()) {
+          l.setDerived(true);
            this.igService.updateAttribute(l.getId(), "derived", true, ConformanceProfile.class);
         }
       }
       for ( Link l: ig.getSegmentRegistry().getChildren()) {
         if(l.isComparable()) {
+          l.setDerived(true);
           this.igService.updateAttribute(l.getId(), "derived", true, Segment.class);
         }
       }
 
       for ( Link l: ig.getDatatypeRegistry().getChildren()) {
         if(l.isComparable()) {
-           this.igService.updateAttribute(l.getId(), "derived", true, Datatype.class);
+          l.setDerived(true);
+          this.igService.updateAttribute(l.getId(), "derived", true, Datatype.class);
         }
       }
       for ( Link l: ig.getValueSetRegistry().getChildren()) {
         if(l.isComparable()) {
+          l.setDerived(true);
           this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);
         }
       }
 
       for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
         if(l.isComparable()) {
+          l.setDerived(true);
           this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);     
         }
       }
+      igRepo.save(ig);
     }
   }
 }
