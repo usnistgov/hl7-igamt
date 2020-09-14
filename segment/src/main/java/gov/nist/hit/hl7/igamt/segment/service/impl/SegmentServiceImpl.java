@@ -34,6 +34,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -534,18 +535,17 @@ public class SegmentServiceImpl implements SegmentService {
 	 * java.lang.String)
 	 */
 	@Override
-	public Link cloneSegment(String key, HashMap<RealKey, String> newKeys, Link l, String username, Scope scope) {
+	public Link cloneSegment(String key, HashMap<RealKey, String> newKeys, Link l, String username, Scope scope, CloneMode cloneMode) {
 
 		Segment obj = this.findById(l.getId());
 		Segment elm = obj.clone();
+	    elm.setOrigin(l.getId());
 		elm.getDomainInfo().setScope(scope);
-		elm.setOrigin(l.getId());
-		Link newLink = l.clone(key);
-		newLink.setOrigin(l.getId());
-		elm.setId(newLink.getId());
+		elm.setId(key);
+		elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
 		elm.setUsername(username);
-		newLink.setDomainInfo(elm.getDomainInfo());
-		updateDependencies(elm, newKeys, username);
+		Link newLink = new Link(elm);
+		updateDependencies(elm, newKeys, username, cloneMode);
 		updateDynamicMapping(elm, newKeys);
 		this.save(elm);
 		return newLink;
@@ -577,11 +577,12 @@ public class SegmentServiceImpl implements SegmentService {
 
 	/**
 	 * @param elm
+	 * @param cloneMode 
 	 * @param datatypesMap
 	 * @param valuesetsMap
 	 * @throws CoConstraintSaveException
 	 */
-	private void updateDependencies(Segment elm, HashMap<RealKey, String> newKeys, String username) {
+	private void updateDependencies(Segment elm, HashMap<RealKey, String> newKeys, String username, CloneMode cloneMode) {
 		// TODO Auto-generated method stub
 
 		for (Field f : elm.getChildren()) {
@@ -595,6 +596,9 @@ public class SegmentServiceImpl implements SegmentService {
 			}
 		}
 		this.bindingService.substitute(elm.getBinding(), newKeys);
+		if(cloneMode.equals(CloneMode.DERIVE)) {
+		  this.bindingService.lockConformanceStatements(elm.getBinding());
+		}
 		// updateBindings(elm.getBinding(), valuesetsMap);
 	}
 
@@ -1546,6 +1550,7 @@ public class SegmentServiceImpl implements SegmentService {
 	          cs.addSourceId(s.getId());
 	          cs.setStructureId(s.getName());
 	          cs.setLevel(Level.SEGMENT);
+              cs.setId(new ObjectId().toString());
 	          cs.setIgDocumentId(documentId);
 	          s.getBinding().addConformanceStatement(cs);
 	        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
@@ -1553,6 +1558,7 @@ public class SegmentServiceImpl implements SegmentService {
 	          this.deleteConformanceStatementById(s, item.getLocation());
 	        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
 	          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+	          if(!cs.isLocked()) {
 	          if (cs.getIdentifier() != null) {
 	            this.deleteConformanceStatementById(s, cs.getIdentifier());
 	          }
@@ -1561,6 +1567,7 @@ public class SegmentServiceImpl implements SegmentService {
 	          cs.setLevel(Level.SEGMENT);
 	          cs.setIgDocumentId(documentId);
 	          s.getBinding().addConformanceStatement(cs);
+	          }
 	        }
 	      } else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
 	        ObjectMapper mapper = new ObjectMapper();

@@ -1289,7 +1289,7 @@ public class VerificationServiceImpl implements VerificationService {
       } 
 
       if(ext != null) {
-        String regex = "^[a-zA-Z0-9]+$";
+        String regex = "^[a-zA-Z].*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(ext);       
         
@@ -1326,7 +1326,7 @@ public class VerificationServiceImpl implements VerificationService {
       } 
 
       if(ext != null) {
-        String regex = "^[a-zA-Z0-9]+$";
+        String regex = "^[a-zA-Z].*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(ext);       
         

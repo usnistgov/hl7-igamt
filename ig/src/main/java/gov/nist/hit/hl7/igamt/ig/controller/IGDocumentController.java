@@ -904,9 +904,7 @@ public class IGDocumentController extends BaseController {
     clone.setName(segment.getName());
     clone.setExt(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
-
     clone = segmentService.save(clone);
-
     ig.getSegmentRegistry().getChildren()
     .add(new Link(clone.getId(), clone.getDomainInfo(), ig.getSegmentRegistry().getChildren().size() + 1));
     ig = igService.save(ig);

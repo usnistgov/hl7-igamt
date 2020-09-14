@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -75,9 +76,10 @@ public interface ValuesetService {
 	 * @param newkey
 	 * @param l
 	 * @param scope
+	 * @param cloneMode 
 	 * @return
 	 */
-	Link cloneValueSet(String newkey, Link l, String username, Scope scope);
+	Link cloneValueSet(String newkey, Link l, String username, Scope scope, CloneMode cloneMode);
 
 	public List<Valueset> findByIdIn(Set<String> linksAsIds);
 

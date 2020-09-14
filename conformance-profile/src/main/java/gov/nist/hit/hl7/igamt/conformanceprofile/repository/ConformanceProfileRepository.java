@@ -70,6 +70,8 @@ public interface ConformanceProfileRepository
 
   public List<ConformanceProfile> findByIdIn(Set<String> ids);
   
+  public List<ConformanceProfile> findByDerived(boolean derived);
+
   
 
 }

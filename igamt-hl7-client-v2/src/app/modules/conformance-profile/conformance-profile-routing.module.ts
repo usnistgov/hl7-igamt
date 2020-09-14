@@ -51,6 +51,7 @@ const routes: Routes = [
           idKey: 'conformanceProfileId',
         },
       },
+      {path: 'cross-references'},
       {
         path: 'co-constraint',
         component: CoConstraintsBindingEditorComponent,
