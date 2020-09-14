@@ -31,7 +31,6 @@ export class TocSubMenuComponent implements OnInit {
 
     if (type === Type.COCONSTRAINTGROUP.toLowerCase()) {
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Table', Icons.TABLE));
-      ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'cross-references', 'Cross references', Icons.LIST));
     } else {
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'metadata', 'Metadata', Icons.EDIT));
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'pre-def', 'Pre-definition', Icons.PRE));
@@ -48,9 +47,9 @@ export class TocSubMenuComponent implements OnInit {
       if (type === 'conformanceprofile') {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'co-constraint', 'Co-Constraints', Icons.TABLE));
       }
-      ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'cross-references', 'Cross references', Icons.LIST));
     }
-    console.log(this.element);
+    ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'cross-references', 'Cross references', Icons.LIST));
+
     if (this.element.origin) {
 
       if (this.element.fixedName !== 'DT' && this.element.fixedName !== 'TM' && this.element.fixedName !== 'DTM' ) {

@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -374,7 +376,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 		} catch (ValidationException e) {
 			throw new ValidationException(f.getPosition() + ":" + e.getMessage());
 		}
-
 	}
 
 	private void validateGroup(Group f) throws ValidationException {
@@ -432,30 +433,33 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	 */
 	@Override
 	public Link cloneConformanceProfile(String key, HashMap<RealKey, String> newKeys, Link l, String username,
-			Scope scope) {
+			Scope scope, CloneMode cloneMode) {
 		ConformanceProfile old = this.findById(l.getId());
 		ConformanceProfile elm = old.clone();
+		elm.setId(key);
 		elm.getDomainInfo().setScope(scope);
 		elm.setOrigin(l.getId());
-		Link newLink = l.clone(key);
-		newLink.setDomainInfo(elm.getDomainInfo());
-		newLink.setOrigin(l.getId());
-		updateDependencies(elm, newKeys);
-		elm.setId(newLink.getId());
-		elm.setUsername(username);
+		elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
+        elm.setUsername(username);
+		Link newLink = new Link(elm);
+		updateDependencies(elm, newKeys, cloneMode);
 		this.save(elm);
 		return newLink;
 	}
 
 	/**
 	 * @param elm
+	 * @param cloneMode 
 	 */
-	private void updateDependencies(ConformanceProfile elm, HashMap<RealKey, String> newKeys) {
+	private void updateDependencies(ConformanceProfile elm, HashMap<RealKey, String> newKeys, CloneMode cloneMode) {
 		// TODO Auto-generated method stub
 
 		processAndSubstitute(elm, newKeys);
 		if (elm.getBinding() != null) {
 			this.bindingService.substitute(elm.getBinding(), newKeys);
+			 if(cloneMode.equals(CloneMode.DERIVE)) {
+		          this.bindingService.lockConformanceStatements(elm.getBinding());
+		        }
 		}
 		if (elm.getCoConstraintsBindings() != null) {
 			for (CoConstraintBinding binding : elm.getCoConstraintsBindings()) {
@@ -1706,6 +1710,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	        if (item.getChangeType().equals(ChangeType.ADD)) {
 	          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
 	          cs.addSourceId(cp.getId());
+              cs.setId(new ObjectId().toString());
 	          cs.setStructureId(cp.getStructID());
 	          cs.setLevel(Level.CONFORMANCEPROFILE);
 	          cs.setIgDocumentId(documentId);
@@ -1715,6 +1720,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	          this.deleteConformanceStatementById(cp, item.getLocation());
 	        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
 	          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+	          if(!cs.isLocked()) {
 	          if (cs.getIdentifier() != null) {
 	              this.deleteConformanceStatementById(cp, cs.getIdentifier());
 	          }
@@ -1723,6 +1729,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	          cs.setLevel(Level.CONFORMANCEPROFILE);
 	          cs.setIgDocumentId(documentId);
 	          cp.getBinding().addConformanceStatement(cs);
+	          }
 	        }
 	      } else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
 	        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());

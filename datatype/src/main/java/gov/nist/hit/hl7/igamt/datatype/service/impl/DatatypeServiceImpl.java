@@ -43,6 +43,7 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -342,26 +343,24 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 	@Override
 	public Link cloneDatatype( String newId, HashMap<RealKey, String> newKey, Link l,
-			String username, Scope scope) {
+			String username, Scope scope, CloneMode cloneMode) {
 		// TODO Auto-generated method stub
 
 		Datatype old = this.findById(l.getId());
 		Datatype elm = old.clone();
+	    elm.setId(newId);
 		elm.getDomainInfo().setScope(scope);
-		Link newLink = l.clone(null);
-
-		elm.setOrigin(l.getId());
-		newLink.setId(newId);
-		newLink.setOrigin(l.getId());
-		newLink.setDomainInfo(elm.getDomainInfo());
-		updateDependencies(elm, newKey);
-		elm.setId(newLink.getId());
+		elm.setUsername(username);
+	    elm.setOrigin(l.getId());
+	    elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
+		Link newLink = new Link(elm);
+		updateDependencies(elm, newKey, cloneMode);
 		this.save(elm);
 		return newLink;
 
 	}
 
-	private void updateDependencies(Datatype elm, HashMap<RealKey, String> newKeys) {
+	private void updateDependencies(Datatype elm, HashMap<RealKey, String> newKeys, CloneMode cloneMode) {
 		// TODO Auto-generated method stub
 
 		if (elm instanceof ComplexDatatype) {
@@ -378,6 +377,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 		}
 		if (elm.getBinding() != null) {
 			this.bindingService.substitute(elm.getBinding(), newKeys);
+			 if(cloneMode.equals(CloneMode.DERIVE)) {
+		          this.bindingService.lockConformanceStatements(elm.getBinding());
+		        }
 		}
 	}
 	@Override
@@ -1065,6 +1067,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 				if (item.getChangeType().equals(ChangeType.ADD)) {
 					ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+					cs.setId(new ObjectId().toString());
 					cs.addSourceId(d.getId());
 					cs.setStructureId(d.getName());
 					cs.setLevel(Level.DATATYPE);
@@ -1075,6 +1078,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					this.deleteConformanceStatementById(d, item.getLocation());
 				} else if (item.getChangeType().equals(ChangeType.UPDATE)) {
 					ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+					if(!cs.isLocked()) {
 					if (cs.getIdentifier() != null) {
 						this.deleteConformanceStatementById(d, cs.getIdentifier());
 					}
@@ -1083,6 +1087,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					cs.setLevel(Level.DATATYPE);
 					cs.setIgDocumentId(documentId);
 					d.getBinding().addConformanceStatement(cs);
+					}
 				}
 			} else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
 				ObjectMapper mapper = new ObjectMapper();

@@ -24,6 +24,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
@@ -101,7 +102,7 @@ public interface ConformanceProfileService {
       throws ConformanceProfileValidationException;
 
   public Link cloneConformanceProfile(String key, HashMap<RealKey, String> newKeys, Link l,
-      String username, Scope scope);
+      String username, Scope scope, CloneMode clone);
 
   /**
    * @param conformanceProfile

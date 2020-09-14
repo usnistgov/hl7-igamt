@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
@@ -215,19 +216,16 @@ public class ValuesetServiceImpl implements ValuesetService {
     }
 
     @Override
-    public Link cloneValueSet(String newkey, Link l, String username, Scope scope) {
+    public Link cloneValueSet(String newkey, Link l, String username, Scope scope, CloneMode cloneMode) {
         Valueset old = this.findById(l.getId());
         Valueset elm = old.clone();
         elm.setId(newkey);
         elm.getDomainInfo().setScope(scope);
         elm.setOrigin(l.getId());
         elm.setFrom(l.getId());
-        Link newLink = new Link();
-        newLink.setOrigin(old.getId());
-        newLink = l.clone(newkey);
-        newLink.setOrigin(l.getId());
-        newLink.setDomainInfo(elm.getDomainInfo());
         elm.setUsername(username);
+        elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
+        Link newLink = new Link(elm);
         this.save(elm);
         return newLink;
     }

@@ -26,7 +26,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 
-
 /**
  *
  * @author Maxence Lefort on Mar 1, 2018.
@@ -56,6 +55,9 @@ public interface DatatypeRepository extends MongoRepository<Datatype, String> {
   List<Datatype> findByIdIn(Set<String> ids);
   List<Datatype> findByParentId(String id);
   List<Datatype> findByDomainInfoCompatibilityVersionContainsAndDomainInfoScopeAndActiveInfoStatus(String version, Scope scope, ActiveStatus status);
-
   
+  List<Datatype> findByDerived(boolean derived);
+  public Datatype findOneById(String key);
+
+
 }

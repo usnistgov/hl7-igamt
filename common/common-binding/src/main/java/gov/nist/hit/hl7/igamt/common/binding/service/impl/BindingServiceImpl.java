@@ -19,6 +19,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 
 @Service
 public class BindingServiceImpl implements BindingService {
@@ -208,6 +209,20 @@ public class BindingServiceImpl implements BindingService {
       for (StructureElementBinding child: elm.getChildren()) {
         processAndSubstitute(child, newKeys);
       }
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.common.binding.service.BindingService#lockConformanceStatements(gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding)
+   */
+  @Override
+  public void lockConformanceStatements(ResourceBinding binding) {
+    // TODO Auto-generated method stub
+    
+    if(binding != null && binding.getConformanceStatements() !=null) {
+      for(ConformanceStatement cs: binding.getConformanceStatements()) {
+        cs.setLocked(true);
+      }     
     }
   }
 }
