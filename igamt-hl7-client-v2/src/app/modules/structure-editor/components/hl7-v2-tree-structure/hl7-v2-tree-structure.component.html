@@ -77,6 +77,7 @@
                           (valueChange)="registerChange($event)"
                           [type]="nodeType(rowNode.node)"
                           [value]="rowData.name"
+                          [required]="rowData.name === 'MSH' && rowData.type === 'SEGMENTREF'"
                           (add)="addToNode(rowNode, $event)"
                           (remove)="removeNode(rowNode.node)"
                           [extendable]="nodeType(rowNode.node) !== 'GROUP'"

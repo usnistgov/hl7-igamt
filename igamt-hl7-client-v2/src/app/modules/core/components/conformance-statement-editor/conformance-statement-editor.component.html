@@ -66,11 +66,14 @@
     <tr *ngFor="let cs of csList; let i = index;" [ngClass]="{
       'table-warning': cs.changeType === 'UPDATE',
       'table-success': cs.changeType === 'ADD',
-      'table-danger': cs.changeType === 'DELETE'
+      'table-danger': cs.changeType === 'DELETE',
+      'table-locked' : cs.payload && cs.payload.locked
     }">
       <td>
         {{ cs.payload.identifier }}
         <span class="badge badge-secondary" *ngIf="cs.payload?.type === 'FREE'">free-text</span>
+        <span class="badge badge-success" *ngIf="cs.payload?.type === 'FREE' && cs.payload?.assertionScript">script</span>
+        <span class="badge badge-warning" *ngIf="cs.payload?.locked">derived</span>
       </td>
       <td>{{ getDescription(cs.payload) }}</td>
       <ng-container *ngIf="tmpl">
@@ -89,10 +92,14 @@
       <th style="width: 100px;">ID</th>
       <th>Description</th>
     </tr>
-    <tr *ngFor="let cs of csList; let i = index;">
+    <tr *ngFor="let cs of csList; let i = index;" [ngClass]="{
+      'table-locked' : cs.locked
+    }">
       <td>
         {{ cs.identifier }}
         <span class="badge badge-secondary" *ngIf="cs.type === 'FREE'">free-text</span>
+        <span class="badge badge-success" *ngIf="cs.type === 'FREE' && cs.assertionScript">script</span>
+        <span class="badge badge-warning" *ngIf="cs.locked">derived</span>
       </td>
       <td>{{ getDescription(cs) }}</td>
     </tr>

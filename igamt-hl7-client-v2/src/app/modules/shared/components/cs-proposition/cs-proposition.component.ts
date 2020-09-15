@@ -211,7 +211,7 @@ export class CsPropositionComponent implements OnInit {
     { label: 'contain one of the values in the list: { \‘VALUE 1\’ (DESCRIPTION), \'VALUE 2\' (DESCRIPTION), \'VALUE N\' (DESCRIPTION) } drawn from the code system \'CODE SYSTEM\'.', value: DeclarativeType.CONTAINS_CODES_DESC },
     { label: 'match the regular expression \'REGULAR EXPRESSION\'.', value: DeclarativeType.CONTAINS_REGEX },
     { label: 'contain a positive integer.', value: DeclarativeType.INTEGER },
-    // { label: 'be valued sequentially starting with the value \'1\'.', value: DeclarativeType.SEQUENCE },
+    { label: 'be valued sequentially starting with the value \'1\'.', value: DeclarativeType.SEQUENCE },
     { label: 'be valued with an ISO-compliant OID.', value: DeclarativeType.ISO },
   ];
 

@@ -1115,7 +1115,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	private void deleteConformanceStatementById(ConformanceProfile cp, String location) {
 		ConformanceStatement toBeDeleted = null;
 		for (ConformanceStatement cs : cp.getBinding().getConformanceStatements()) {
-			if (cs.getIdentifier().equals(location))
+			if (cs.getId().equals(location))
 				toBeDeleted = cs;
 		}
 
@@ -1721,14 +1721,14 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
 	          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
 	          if(!cs.isLocked()) {
-	          if (cs.getIdentifier() != null) {
-	              this.deleteConformanceStatementById(cp, cs.getIdentifier());
-	          }
-	          cs.addSourceId(cp.getId());
-	          cs.setStructureId(cp.getStructID());
-	          cs.setLevel(Level.CONFORMANCEPROFILE);
-	          cs.setIgDocumentId(documentId);
-	          cp.getBinding().addConformanceStatement(cs);
+				  if (cs.getIdentifier() != null) {
+					  this.deleteConformanceStatementById(cp, cs.getId());
+				  }
+				  cs.addSourceId(cp.getId());
+				  cs.setStructureId(cp.getStructID());
+				  cs.setLevel(Level.CONFORMANCEPROFILE);
+				  cs.setIgDocumentId(documentId);
+				  cp.getBinding().addConformanceStatement(cs);
 	          }
 	        }
 	      } else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {

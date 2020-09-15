@@ -1080,7 +1080,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
 					if(!cs.isLocked()) {
 					if (cs.getIdentifier() != null) {
-						this.deleteConformanceStatementById(d, cs.getIdentifier());
+						this.deleteConformanceStatementById(d, cs.getId());
 					}
 					cs.addSourceId(d.getId());
 					cs.setStructureId(d.getName());
@@ -1125,7 +1125,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 	private void deleteConformanceStatementById(Datatype d, String location) {
 		ConformanceStatement toBeDeleted = null;
 		for (ConformanceStatement cs : d.getBinding().getConformanceStatements()) {
-			if (cs.getIdentifier().equals(location))
+			if (cs.getId().equals(location))
 				toBeDeleted = cs;
 		}
 

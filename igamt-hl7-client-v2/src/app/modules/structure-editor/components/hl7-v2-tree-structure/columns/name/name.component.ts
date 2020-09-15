@@ -19,6 +19,8 @@ export class NameComponent extends HL7v2TreeColumnComponent<string> implements O
   remove: EventEmitter<boolean>;
   @Input()
   extendable: boolean;
+  @Input()
+  required: boolean;
   editMode: boolean;
   tmp: string;
 
