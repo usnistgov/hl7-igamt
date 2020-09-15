@@ -60,8 +60,8 @@ export enum PropositionType {
   NOT_CONTAINS_VALUE_DESC = 'notContainValueDesc',
   CONTAINS_VALUES = 'containListValues',
   CONTAINS_VALUES_DESC = 'containListValuesDesc',
-  NOT_CONTAINS_VALUES = 'notContainValues',
-  NOT_CONTAINS_VALUES_DESC = 'notContainValuesDesc',
+  NOT_CONTAINS_VALUES = 'notContainListValues',
+  NOT_CONTAINS_VALUES_DESC = 'notContainListValuesDesc',
   VALUED = 'valued',
   NOT_VALUED = 'notValued',
 }

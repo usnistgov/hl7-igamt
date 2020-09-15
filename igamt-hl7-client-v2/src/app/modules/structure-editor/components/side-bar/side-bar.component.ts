@@ -64,8 +64,15 @@ export class SideBarComponent implements OnInit {
   }
 
   publish({ id, type }) {
-    const repository = type === Type.SEGMENT ? 'segment-structures' : 'message-structures';
-    const publish: Observable<IMessage<any>> = (Type.SEGMENT ? this.structureEditorService.publishSegment(id) : this.structureEditorService.publishMessageStructure(id));
+    const { repository, publish } = type === Type.SEGMENT ?
+      {
+        repository: 'segment-structures',
+        publish: this.structureEditorService.publishSegment(id) as Observable<IMessage<any>>,
+      } :
+      {
+        repository: 'message-structures',
+        publish: this.structureEditorService.publishMessageStructure(id) as Observable<IMessage<any>>,
+      };
 
     publish.pipe(
       map((response) => {

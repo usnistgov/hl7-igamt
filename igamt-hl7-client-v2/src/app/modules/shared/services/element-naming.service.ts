@@ -269,4 +269,16 @@ export class ElementNamingService {
     return pathSubject.asObservable();
   }
 
+  getStringNameFromPath(path: IPath, resource: IResource, repository: AResourceRepositoryService): Observable<string> {
+    if (!path) {
+      return of('');
+    }
+    return this.getPathInfoFromPath(resource, repository, path).pipe(
+      take(1),
+      map((pathInfo) => {
+        return this.getStringNameFromPathInfo(pathInfo);
+      }),
+    );
+  }
+
 }

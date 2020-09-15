@@ -1,10 +1,23 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Assertion, BinaryOperator, LEFT, NaryOperator, Operator, Pattern, RIGHT, Statement, StatementType, UnaryOperator } from '../components/pattern-dialog/cs-pattern.domain';
+import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import { Guid } from 'guid-typescript';
+import * as _ from 'lodash';
+import { combineLatest, Observable, of } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import { IConformanceStatementEditorData, IDependantConformanceStatements, IEditableConformanceStatementGroup, IEditableListNode } from '../../core/components/conformance-statement-editor/conformance-statement-editor.component';
+import { Assertion, BinaryOperator, LEFT, NaryOperator, Operator, Pattern, RIGHT, Statement, UnaryOperator } from '../components/pattern-dialog/cs-pattern.domain';
 import { Usage } from '../constants/usage.enum';
-import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, ISimpleAssertion, Operator as CsOperator } from '../models/cs.interface';
+import { IConformanceStatementList, IConformanceStatementsContainerMap, ICPConformanceStatementList } from '../models/cs-list.interface';
+import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, IPath, ISimpleAssertion, Operator as CsOperator } from '../models/cs.interface';
+import { IDisplayElement } from '../models/display-element.interface';
 import { IAssertionPredicate, IFreeTextPredicate, IPredicate } from '../models/predicate.interface';
+import { IResource } from '../models/resource.interface';
+import { ElementNamingService } from './element-naming.service';
+import { PathService } from './path.service';
+import { AResourceRepositoryService } from './resource-repository.service';
+
+export type ConformanceStatementPluck = (cs: IConformanceStatementList | ICPConformanceStatementList) => IConformanceStatementEditorData;
 
 export interface IAssertionBag<T> {
   assertion: T;
@@ -16,7 +29,84 @@ export interface IAssertionBag<T> {
 })
 export class ConformanceStatementService {
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private pathService: PathService,
+    private store: Store<any>,
+    private elementNamingService: ElementNamingService,
+  ) { }
+
+  createConformanceStatementGroups(data: IConformanceStatementEditorData, resource: IResource, repository: AResourceRepositoryService): Observable<IEditableConformanceStatementGroup[]> {
+    const list = data.active;
+    if (list.length > 0) {
+
+      const grouped = list.reduce((acc, elm) => {
+        const path = this.pathService.pathToString(elm.payload.context);
+        if (acc[path]) {
+          acc[path].list.push(elm);
+        } else {
+          acc[path] = {
+            context: elm.payload.context,
+            list: [elm],
+            name: '',
+          };
+        }
+        return acc;
+      }, {} as Map<string, IEditableConformanceStatementGroup>);
+
+      return combineLatest(
+        Object
+          .values(grouped)
+          .sort((a) => {
+            return !a.context ? -1 : 1;
+          })
+          .map((group) => {
+            return this.elementNamingService.getStringNameFromPath(group.context, resource, repository).pipe(
+              take(1),
+              map((name) => {
+                return {
+                  ...group,
+                  name,
+                };
+              }),
+            );
+          }),
+      );
+    } else {
+      return of([
+        {
+          context: undefined,
+          name: '',
+          list: [],
+        },
+      ]);
+    }
+  }
+
+  createEditableNode(list: IConformanceStatement[]): Array<IEditableListNode<IConformanceStatement>> {
+    return list.map((cs) => {
+      return {
+        original: _.cloneDeep(cs),
+        id: Guid.create().toString(),
+        payload: cs,
+      };
+    });
+  }
+
+  resolveDependantConformanceStatement(data: IConformanceStatementsContainerMap, selector: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>): Array<Observable<IDependantConformanceStatements>> {
+    return Object.keys(data).map((key) => {
+      const elm = data[key];
+      return this.store.select(selector, { id: elm.key }).pipe(
+        take(1),
+        map((resource) => {
+          return {
+            resource,
+            conformanceStatements: elm.conformanceStatements,
+          } as IDependantConformanceStatements;
+        }),
+      );
+    });
+  }
 
   generateXMLfromPredicate(predicate: IPredicate, id: string): Observable<string> {
     return this.http.post('api/igdocuments/' + id + '/predicate/assertion', predicate, { responseType: 'text' });
