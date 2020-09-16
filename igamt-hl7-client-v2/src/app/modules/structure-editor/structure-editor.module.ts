@@ -69,6 +69,6 @@ import { StructureEditorRoutingModule } from './structure-editor-routing.module'
     StructureEditorResourceRepositoryService,
   ],
   exports: [StructureEditorContainerComponent],
-  entryComponents: [CreateMessageDialogComponent, ResourceSelectDialogComponent, SegmentAddDialogComponent, GroupAddDialogComponent, FieldAddDialogComponent, CreateSegmentDialogComponent],
+  entryComponents: [CreateMessageDialogComponent, ResourceSelectDialogComponent, SegmentAddDialogComponent, GroupAddDialogComponent, FieldAddDialogComponent, CreateSegmentDialogComponent, StructureEditorContainerComponent],
 })
 export class StructureEditorModule { }
