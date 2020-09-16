@@ -41,4 +41,4 @@ jobs:
           
       - name: Build Prod Front-End
         working-directory: ${{env.front-end-directory}}
-        run: npm run build-prod
+        run: npm run aot
