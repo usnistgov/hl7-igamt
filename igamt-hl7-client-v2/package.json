@@ -6,6 +6,7 @@
     "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "build-prod": "ng build --prod",
+    "aot": "ng build --source-map=false --aot",
     "test": "ng test",
     "lint": "ng lint",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
