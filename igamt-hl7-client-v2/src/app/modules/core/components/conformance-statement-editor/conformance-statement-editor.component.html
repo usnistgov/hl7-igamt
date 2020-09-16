@@ -61,7 +61,7 @@
     <tr>
       <th style="width: 100px;">ID</th>
       <th>Description</th>
-      <th *ngIf="tmpl" style="width: 190px;"></th>
+      <th *ngIf="tmpl && !(viewOnly$ | async)" style="width: 190px;"></th>
     </tr>
     <tr *ngFor="let cs of csList; let i = index;" [ngClass]="{
       'table-warning': cs.changeType === 'UPDATE',
@@ -76,7 +76,7 @@
         <span class="badge badge-warning" *ngIf="cs.payload?.locked">derived</span>
       </td>
       <td>{{ getDescription(cs.payload) }}</td>
-      <ng-container *ngIf="tmpl">
+      <ng-container *ngIf="tmpl && !(viewOnly$ | async)">
         <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: cs, index: i }"></ng-container>
       </ng-container>
     </tr>

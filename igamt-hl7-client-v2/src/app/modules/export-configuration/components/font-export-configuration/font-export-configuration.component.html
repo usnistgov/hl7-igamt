@@ -14,13 +14,11 @@
           [disabled]="viewOnly"
           [(ngModel)]="config.fontSize"
           (input)="onInputChange($event)"
-          thumbLabel
-          [displayWith]="formatLabel"
           tickInterval="1"
           min="1"
           max="25">
         </mat-slider>
-        
+
         </div>
 
   <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;" >
@@ -36,7 +34,7 @@
 </mat-radio-group>
   </div>
 
-  
+
   <!-- </div> -->
 
 

@@ -8,7 +8,7 @@ domain/.settings
 *.project*
 *.classpath*
 *.metadata
-*public*
+public/*
 bootstrap/hl7-igamt.log.*
 hl7-auth.log
 hl7-igamt.log

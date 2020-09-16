@@ -1292,7 +1292,7 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<String> updateSharedUser(@PathVariable("id") String id, @RequestBody SharedUsersInfo sharedUsersInfo, Authentication authentication)
       throws IGNotFoundException, IGUpdateException, ResourceNotFoundException, ForbiddenOperationException {
     Ig ig = findIgById(id);
-    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+    commonService.checkRight(authentication, ig.getUsername(), ig.getUsername());
     this.sharingService.shareIg(id, sharedUsersInfo);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Shared Users Successfully Updated", id, false,
         new Date(), id);
