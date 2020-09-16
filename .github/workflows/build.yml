@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-    branches: [ master, develop ]
+    branches: [ develop ]
   pull_request:
-    branches: [ master, develop ]
+    branches: [ develop ]
 
 jobs:
   build:
@@ -35,11 +35,10 @@ jobs:
       
       - name: Lint Front-End
         run: |
-          pwd
-          cd ~/hl7-igamt/igamt-hl7-client-v2
+          cd ./igamt-hl7-client-v2
           ng lint
           
       - name: Build Prod Front-End
         run: |
-          cd ~/hl7-igamt/igamt-hl7-client-v2
+          cd ./igamt-hl7-client-v2
           ng build --prod
