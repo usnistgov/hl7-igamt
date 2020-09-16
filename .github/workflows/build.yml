@@ -36,9 +36,9 @@ jobs:
       - name: Lint Front-End
         run: |
           cd ./igamt-hl7-client-v2
-          ng lint
+          npm run lint
           
       - name: Build Prod Front-End
         run: |
           cd ./igamt-hl7-client-v2
-          ng build --prod
+          npm build-prod
