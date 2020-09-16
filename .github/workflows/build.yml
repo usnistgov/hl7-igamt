@@ -35,10 +35,11 @@ jobs:
       
       - name: Lint Front-End
         run: |
-          cd ./igamt-hl7-client-v2
+          pwd
+          cd ~/hl7-igamt/igamt-hl7-client-v2
           ng lint
           
       - name: Build Prod Front-End
         run: |
-          cd ./igamt-hl7-client-v2
-          npm build --prod
+          cd ~/hl7-igamt/igamt-hl7-client-v2
+          ng build --prod
