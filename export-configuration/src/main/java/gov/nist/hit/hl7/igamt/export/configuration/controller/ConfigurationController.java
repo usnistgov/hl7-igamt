@@ -71,12 +71,14 @@ public class ConfigurationController {
   @RequestMapping(value = "api/configuration/save", method = RequestMethod.POST,
       consumes = {"application/json"})
   public ResponseMessage saveExportconfuguration(@RequestBody ExportConfiguration exportConfiguration, Authentication authentication) throws Exception{
-    exportConfigurationService.save(exportConfiguration, authentication );
     
     if(exportConfiguration.isOriginal()) {
       throw new Exception("The Default Configuration cannot be modified. Please create your own configuration");
+    }else {
+      exportConfigurationService.save(exportConfiguration, authentication );
+      return new ResponseMessage(Status.SUCCESS, "EXPORT_CONFIGURATION_SAVED", exportConfiguration.getId(), null);
     }
-    return new ResponseMessage(Status.SUCCESS, "EXPORT_CONFIGURATION_SAVED", exportConfiguration.getId(), null);
+
   }
 
   @RequestMapping(value = "api/configuration/saveAsDefault", method = RequestMethod.POST,
@@ -112,7 +114,6 @@ public class ConfigurationController {
     if(original !=null ) {
       configList.addAll(original);
     }   
-    
     List<ExportConfiguration> userConfigs = exportConfigurationService.getAllExportConfigurationWithType(username,docType);
    
     if(userConfigs !=null) {
