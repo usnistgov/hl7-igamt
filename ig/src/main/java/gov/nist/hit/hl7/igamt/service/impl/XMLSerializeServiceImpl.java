@@ -659,11 +659,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           if (p.getContext() != null && p.getContext().getElementId() != null) {
 
             int count = countContextChild(p.getContext(), 1);
-            
-            System.out.println("GROUP------------");
-            System.out.println(key);
-            System.out.println(count);
-            System.out.println(key.split("\\.").length);
             String groupKey = "";
 
             for (int i = count; i < key.split("\\.").length; i++) {
@@ -671,13 +666,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                 groupKey = groupKey + key.split("\\.")[i];
               else
                 groupKey = groupKey + key.split("\\.")[i] + ".";
-              
-              System.out.println(groupKey);
             }
             Element elm_ByID = this.findOrCreatByIDElement(predicates_Group_Elm, p.getContext(), cpModel.getModel());
-            System.out.println(groupKey);
-            
-
+            p.setLevel(Level.GROUP);
             String script = this.generateConditionScript(p, cpModel.getModel().getId());
             if(script != null) {
                 Element elm_Constraint = new Element("Predicate");
@@ -710,6 +701,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           Predicate p = cpModel.getPredicateMap().get(key);
 
       	if (p.getContext() == null || p.getContext().getElementId() == null) {
+      		  p.setLevel(Level.CONFORMANCEPROFILE);
         	  String script = this.generateConditionScript(p, cpModel.getModel().getId());
         	  if(script != null) {
                   Element elm_Constraint = new Element("Predicate");
@@ -886,6 +878,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         for (ConformanceStatement cs : cpModel.getConformanceStatements()) {
           if (cs.getContext() != null && cs.getContext().getElementId() != null) {
             Element elm_ByID = this.findOrCreatByIDElement(constraints_group_Elm, cs.getContext(), cpModel.getModel());
+            cs.setLevel(Level.GROUP);
             String script = this.generateAssertionScript(cs, cpModel.getModel().getId());
             if (script != null) {
             	Element elm_Constraint = new Element("Constraint");
@@ -912,6 +905,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           && cpModel.getConformanceStatements().size() > 0) {
         for (ConformanceStatement cs : cpModel.getConformanceStatements()) {
         	if (cs.getContext() == null || cs.getContext().getElementId() == null) {
+        	  cs.setLevel(Level.CONFORMANCEPROFILE);
         	  String script = this.generateAssertionScript(cs, cpModel.getModel().getId());
         	  if(script != null) {
         		  Element elm_Constraint = new Element("Constraint");
