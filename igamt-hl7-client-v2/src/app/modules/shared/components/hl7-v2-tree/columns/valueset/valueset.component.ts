@@ -7,6 +7,7 @@ import { IDisplayElement } from 'src/app/modules/shared/models/display-element.i
 import { IChange } from 'src/app/modules/shared/models/save-change';
 import { Type } from '../../../../constants/type.enum';
 import { IBindingType, InternalSingleCode, IValuesetBinding } from '../../../../models/binding.interface';
+import {IResource} from '../../../../models/resource.interface';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
 import { BindingService } from '../../../../services/binding.service';
 import { AResourceRepositoryService } from '../../../../services/resource-repository.service';
@@ -58,12 +59,13 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
   repository: AResourceRepositoryService;
   @Input()
   context: Type;
+  @Input()
+  resource: IResource;
 
   @ViewChild('displayVsBindingList', { read: TemplateRef })
   displayVsBindingListTemplate: TemplateRef<any>;
   @ViewChild('displayScBinding', { read: TemplateRef })
   displaySingleCodeTemplate: TemplateRef<any>;
-
   alive: boolean;
 
   constructor(
@@ -135,10 +137,12 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
 
   editBinding() {
     const dialogRef = this.dialog.open(BindingSelectorComponent, {
+
       data: {
         resources: this.valueSets,
         locationInfo: this.bindingInfo,
         path: null,
+        obx2: this.resource.name === 'OBX' && this.position === 2,
         existingBindingType: this.editable.getValue() ? this.editable.getValue().type : undefined,
         selectedValueSetBinding: this.selectedValueSetBinding(this.editable.getValue()),
         selectedSingleCode: this.selectedSingleCode(this.editable.getValue()),

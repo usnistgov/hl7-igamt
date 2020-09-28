@@ -1,5 +1,9 @@
 <h2 mat-dialog-title>Edit Binding</h2>
 <div style="display: flex; flex-direction: column; justify-content: space-between;">
+
+  <div class="alert alert-warning" *ngIf="data.obx2">
+  <i class="fa fa-warning"></i>  This value set binding is used to define the dynamic mapping table. Any value set change would restore the dynamic mapping to defaults values from HL70125
+  </div>
   <div *ngIf="locationInfo?.allowSingleCode && locationInfo?.allowValueSets"
        style="display: flex; flex-direction: row;justify-content: flex-end">
     <p-radioButton [(ngModel)]="selectedBindingType" label="Value set" name="vs" value="VALUESET"></p-radioButton>

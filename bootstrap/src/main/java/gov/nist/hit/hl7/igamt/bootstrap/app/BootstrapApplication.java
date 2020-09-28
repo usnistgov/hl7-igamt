@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementFixer;
+import gov.nist.hit.hl7.igamt.bootstrap.data.DynamicMappingFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
@@ -133,6 +134,8 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   private PredicateRepository predicateRepository;
+  @Autowired
+  DynamicMappingFixer dynamicMappingFixer;
 
   //  @Autowired
   //  RelationShipService testCache;
@@ -993,4 +996,8 @@ public class BootstrapApplication implements CommandLineRunner {
 
   }
 
+ // @PostConstruct
+  void addDynamicMappingInfo() {
+    dynamicMappingFixer.processSegments();
+  }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,6 +23,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.delta.domain.Delta;
 import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
 import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
@@ -63,6 +65,8 @@ private FroalaSerializationUtil frolaCleaning;
 
 @Autowired
 private DeltaService deltaService;
+@Autowired
+private DatatypeService datatypeService;
 
 @Autowired
 private SerializationTools serializationTools;
@@ -103,7 +107,7 @@ private SerializationTools serializationTools;
 	  	    segmentElement
 	  	          .addAttribute(new Attribute("label", segment.getLabel() != null ? segment.getLabel() : ""));
 	  	      }
-	      if (segment.getDynamicMappingInfo() != null && segmentExportConfiguration.getDynamicMappingInfo()) {
+	      if (segment.getDynamicMappingInfo() != null && segment.getDynamicMappingInfo().getItems() !=null && !segment.getDynamicMappingInfo().getItems().isEmpty() ) {
 	        try {
 	          Element dynamicMappingElement =
 	              this.serializeDynamicMapping(segment.getDynamicMappingInfo(),igDataModel);
@@ -251,20 +255,25 @@ private SerializationTools serializationTools;
 		          dynamicMappingInfo.getReferenceFieldId() != null
 		              ? dynamicMappingInfo.getReferenceFieldId()
 		              : ""));
-		      // dynamicMappingElement.addAttribute(new Attribute("variesDatatypePath",
-		      // dynamicMappingInfo.getVariesDatatypePath() != null
-		      // ? dynamicMappingInfo.getVariesDatatypePath()
-		      // : ""));
+		       dynamicMappingElement.addAttribute(new Attribute("variesDatatypePath",
+		       dynamicMappingInfo.getVariesFieldId() != null
+		       ? dynamicMappingInfo.getReferenceFieldId()
+		       : ""));
 		      for (DynamicMappingItem dynamicMappingItem : dynamicMappingInfo.getItems()) {
 		        if (dynamicMappingItem != null) {
 		          Element dynamicMappingItemElement = new Element("DynamicMappingItem");
 		          if (dynamicMappingItem.getDatatypeId() != null) {
-						DatatypeDataModel datatypeDataModel = igDataModel.getDatatypes().stream().filter(dt -> dynamicMappingItem.getDatatypeId().equals(dt.getModel().getId())).findAny().orElseThrow(() -> new DatatypeNotFoundException(dynamicMappingItem.getDatatypeId()));
-		              dynamicMappingItemElement.addAttribute(new Attribute("datatype", datatypeDataModel.getModel().getName()));
+		            
+		            Datatype dt = datatypeService.findById(dynamicMappingItem.getDatatypeId());
+		            if(dt !=null) {
+	                    dynamicMappingItemElement.addAttribute(new Attribute("datatype", dt.getLabel()));
+	                    dynamicMappingItemElement.addAttribute(new Attribute("value",
+	                        dynamicMappingItem.getValue() != null ? dynamicMappingItem.getValue() : ""));
+	                    dynamicMappingElement.appendChild(dynamicMappingItemElement);
+
+		            }
+		
 		          }
-		          dynamicMappingItemElement.addAttribute(new Attribute("value",
-		              dynamicMappingItem.getValue() != null ? dynamicMappingItem.getValue() : ""));
-		          dynamicMappingElement.appendChild(dynamicMappingItemElement);
 		        }
 		      }
 		      return dynamicMappingElement;

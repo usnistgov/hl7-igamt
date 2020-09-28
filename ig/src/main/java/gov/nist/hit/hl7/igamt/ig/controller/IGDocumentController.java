@@ -1114,6 +1114,8 @@ public class IGDocumentController extends BaseController {
           clone.setExt(elm.getExt());
           clone = datatypeService.save(clone);
           savedIds.add(clone.getId());
+        }else {
+          throw new AddingException("Data type not found");
         }
       } else {
         savedIds.add(elm.getId());

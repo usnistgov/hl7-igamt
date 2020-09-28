@@ -139,7 +139,6 @@ public class DlNewExportServiceImpl implements DlNewExportService {
 					exportParameters);
 			ExportedFile exportedFile = new ExportedFile(htmlContent, dl.getName(), dl.getId(),
 					exportFormat);
-			System.out.println(" HEEERE : " + exportConfiguration.getExportFontConfiguration().getExportFont().getValue());
 			exportedFile.setContent(htmlContent);
 			// return new ExportedFile(htmlContent, igDocument.getName(),
 			// igDocument.getId(), exportFormat);
