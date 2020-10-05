@@ -1754,7 +1754,7 @@ public class VerificationServiceImpl implements VerificationService {
         	if(!s.getDomainInfo().getScope().equals(Scope.USER)) {
         		labelWithVersion = labelWithVersion + s.getDomainInfo().getVersion();
         	}
-          if(!segLabelSet.add(s.getLabel())) result.getErrors().add(new IgamtObjectError("Label_Duplicated", s.getId(), Type.SEGMENT, new DTSegMetadata(s),"Segment Label of " + s.getLabel() + " is duplicated in the IG", null, "ERROR", "User"));
+          if(!segLabelSet.add(labelWithVersion)) result.getErrors().add(new IgamtObjectError("Label_Duplicated", s.getId(), Type.SEGMENT, new DTSegMetadata(s),"Segment Label of " + s.getLabel() + " is duplicated in the IG", null, "ERROR", "User"));
           if(s.getDomainInfo().getScope() == null || !s.getDomainInfo().getScope().equals(domainInfo.getScope())) result.getErrors().add(new IgamtObjectError("Link_Scope_notMatched", s.getId(), Type.SEGMENT, new DTSegMetadata(s), "In segment Repository, " + s.getLabel() + "'s scope value of the Link is not matched with actual segment scope.", null, "ERROR", "Internal"));
           if(s.getDomainInfo().getVersion() != null && !s.getDomainInfo().getVersion().equals(domainInfo.getVersion())) result.getErrors().add(new IgamtObjectError("Link_Version_notMatched", s.getId(), Type.SEGMENT, new DTSegMetadata(s), "In segment Repository, "+  s.getLabel() + "'s version value of the Link is not matched with actual segment version.", null, "ERROR", "Internal"));
           
