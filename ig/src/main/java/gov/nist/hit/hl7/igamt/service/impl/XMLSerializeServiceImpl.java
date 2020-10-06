@@ -1303,107 +1303,109 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         // }
 
         // #3 OBX-2 Dynamic Mapping
-        String version = null;
-        String refValuesetId = null;
-        ValuesetDataModel vsModel = null;
-        if (sModel.getValuesetMap().get("2") != null) {
-          for (ValuesetBindingDataModel m : sModel.getValuesetMap().get("2")) {
-            // TODO update value set binding export
-
-            if (m.getValuesetBinding() != null && m.getValuesetBinding().getValueSets() != null
-                && m.getValuesetBinding().getValueSets().size() == 1) {
-              refValuesetId = m.getValuesetBinding().getValueSets().get(0);
-            }
-          }
-        }
-        if (refValuesetId != null) {
-          vsModel = igModel.findValueset(refValuesetId);
-        }
-        if (vsModel != null) {
-          version = vsModel.getModel().getDomainInfo().getVersion();
-          if (version != null) {
-            for (Code c : vsModel.getModel().getCodes()) {
-              String value = c.getValue();
-              DatatypeDataModel itemDTModel = igModel.findDatatype(value, version);
-
-              if (itemDTModel != null) {
-                Element elmCase = new Element("Case");
-                elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
-                if (defaultHL7Version != null
-                    && itemDTModel.getModel().getDomainInfo() != null
-                    && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
-                  if (defaultHL7Version.equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
-                    elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-                  } else {
-                    elmCase.addAttribute(new Attribute("Datatype",
-                        this.str(itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel()
-                            .getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-                  }
-                } else {
-                  elmCase.addAttribute(
-                      new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-                }
-                elmMapping.appendChild(elmCase);
-              } else {
-                Datatype dt = this.datatypeService.findOneByNameAndVersionAndScope(value, version,
-                    "HL7STANDARD");
-                if (dt != null) {
-                  Element elmCase = new Element("Case");
-                  elmCase.addAttribute(new Attribute("Value", dt.getName()));
-                  if (defaultHL7Version != null && dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
-                    if (defaultHL7Version.equals(dt.getDomainInfo().getVersion())) {
-                      elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
-                    } else {
-                      elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel() + "_"
-                          + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-                    }
-                  } else {
-                    elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
-                  }
-                  elmMapping.appendChild(elmCase);
-
-                  missingDts.add(dt);
-                  if (dt instanceof ComplexDatatype) {
-                    ComplexDatatype complexDatatype = (ComplexDatatype) dt;
-                    if (complexDatatype.getComponents() != null) {
-                      for (Component component : complexDatatype.getComponents()) {
-                        if (igModel.findDatatype(component.getRef().getId()) == null) {
-                          Datatype childDT =
-                              this.datatypeService.findById(component.getRef().getId());
-                          if (childDT != null)
-                            missingDts.add(childDT);
-
-                          if (childDT instanceof ComplexDatatype) {
-                            ComplexDatatype complexChildDatatype = (ComplexDatatype) childDT;
-                            if (complexChildDatatype.getComponents() != null) {
-                              for (Component subComponent : complexChildDatatype.getComponents()) {
-                                if (igModel.findDatatype(subComponent.getRef().getId()) == null) {
-                                  Datatype childchildDT =
-                                      this.datatypeService.findById(subComponent.getRef().getId());
-                                  if (childchildDT != null)
-                                    missingDts.add(childchildDT);
-                                }
-                              }
-                            }
-                          }
-
-                        }
-                      }
-                    }
-
-                  }
-                } else {
-                  System.out.println(value + "-" + version);
-                }
-
-              }
-
-            }
-          }
-        }
+        
+//        String version = null;
+//        String refValuesetId = null;
+//        ValuesetDataModel vsModel = null;
+//        if (sModel.getValuesetMap().get("2") != null) {
+//          for (ValuesetBindingDataModel m : sModel.getValuesetMap().get("2")) {
+//            // TODO update value set binding export
+//
+//            if (m.getValuesetBinding() != null && m.getValuesetBinding().getValueSets() != null
+//                && m.getValuesetBinding().getValueSets().size() == 1) {
+//              refValuesetId = m.getValuesetBinding().getValueSets().get(0);
+//            }
+//          }
+//        }
+//        if (refValuesetId != null) {
+//          vsModel = igModel.findValueset(refValuesetId);
+//        }
+//        if (vsModel != null) {
+//          version = vsModel.getModel().getDomainInfo().getVersion();
+//          if (version != null) {
+//            for (Code c : vsModel.getModel().getCodes()) {
+//              String value = c.getValue();
+//              DatatypeDataModel itemDTModel = igModel.findDatatype(value, version);
+//
+//              if (itemDTModel != null) {
+//                Element elmCase = new Element("Case");
+//                elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
+//                if (defaultHL7Version != null
+//                    && itemDTModel.getModel().getDomainInfo() != null
+//                    && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
+//                  if (defaultHL7Version.equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
+//                    elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+//                  } else {
+//                    elmCase.addAttribute(new Attribute("Datatype",
+//                        this.str(itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel()
+//                            .getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+//                  }
+//                } else {
+//                  elmCase.addAttribute(
+//                      new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+//                }
+//                elmMapping.appendChild(elmCase);
+//              } else {
+//                Datatype dt = this.datatypeService.findOneByNameAndVersionAndScope(value, version,
+//                    "HL7STANDARD");
+//                if (dt != null) {
+//                  Element elmCase = new Element("Case");
+//                  elmCase.addAttribute(new Attribute("Value", dt.getName()));
+//                  if (defaultHL7Version != null && dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
+//                    if (defaultHL7Version.equals(dt.getDomainInfo().getVersion())) {
+//                      elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
+//                    } else {
+//                      elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel() + "_"
+//                          + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+//                    }
+//                  } else {
+//                    elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
+//                  }
+//                  elmMapping.appendChild(elmCase);
+//
+//                  missingDts.add(dt);
+//                  if (dt instanceof ComplexDatatype) {
+//                    ComplexDatatype complexDatatype = (ComplexDatatype) dt;
+//                    if (complexDatatype.getComponents() != null) {
+//                      for (Component component : complexDatatype.getComponents()) {
+//                        if (igModel.findDatatype(component.getRef().getId()) == null) {
+//                          Datatype childDT =
+//                              this.datatypeService.findById(component.getRef().getId());
+//                          if (childDT != null)
+//                            missingDts.add(childDT);
+//
+//                          if (childDT instanceof ComplexDatatype) {
+//                            ComplexDatatype complexChildDatatype = (ComplexDatatype) childDT;
+//                            if (complexChildDatatype.getComponents() != null) {
+//                              for (Component subComponent : complexChildDatatype.getComponents()) {
+//                                if (igModel.findDatatype(subComponent.getRef().getId()) == null) {
+//                                  Datatype childchildDT =
+//                                      this.datatypeService.findById(subComponent.getRef().getId());
+//                                  if (childchildDT != null)
+//                                    missingDts.add(childchildDT);
+//                                }
+//                              }
+//                            }
+//                          }
+//
+//                        }
+//                      }
+//                    }
+//
+//                  }
+//                } else {
+//                  System.out.println(value + "-" + version);
+//                }
+//
+//              }
+//
+//            }
+//          }
+//        }
         elmDynamicMapping.appendChild(elmMapping);
         elmSegment.appendChild(elmDynamicMapping);
       }
+
 
       Map<Integer, FieldDataModel> fields = new HashMap<Integer, FieldDataModel>();
 
