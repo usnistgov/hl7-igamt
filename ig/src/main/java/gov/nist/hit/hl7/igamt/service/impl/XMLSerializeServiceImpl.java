@@ -2088,21 +2088,25 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       case containValue:
         result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+            + "\" NotPresentBehavior=\"" + "FAIL" 
             + "\"/>";
         break;
       case notContainValue:
         result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+            + "\" NotPresentBehavior=\"" + "FAIL" 
             + "\"/></NOT>";
         break;
       case containValueDesc:
         result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+            + "\" NotPresentBehavior=\"" + "FAIL" 
             + "\"/>";
         break;
       case notContainValueDesc:
         result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+            + "\" NotPresentBehavior=\"" + "FAIL" 
             + "\"/></NOT>";
         break;
       case containListValues:
@@ -2127,7 +2131,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         break;
       case containCode:
         result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
-            + "\" IgnoreCase=\"" + false + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" IgnoreCase=\"" + false + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + "FAIL" 
+            + "\"/>";
         break;
       case containListCodes:
         result = "<StringList Path=\"" + sPathStr + "\" CSV=\""
