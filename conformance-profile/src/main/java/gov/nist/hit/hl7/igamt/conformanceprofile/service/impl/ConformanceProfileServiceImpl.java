@@ -1115,9 +1115,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	private void deleteConformanceStatementById(ConformanceProfile cp, String location) {
 		ConformanceStatement toBeDeleted = null;
 		for (ConformanceStatement cs : cp.getBinding().getConformanceStatements()) {
-			if (cs.getId().equals(location))
+			if (cs != null && cs.getId() != null && cs.getId().equals(location))
 				toBeDeleted = cs;
-		}
+			}
 
 		if (toBeDeleted != null)
 			cp.getBinding().getConformanceStatements().remove(toBeDeleted);
@@ -1709,11 +1709,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 	        if (item.getChangeType().equals(ChangeType.ADD)) {
 	          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-	          cs.addSourceId(cp.getId());
               cs.setId(new ObjectId().toString());
-	          cs.setStructureId(cp.getStructID());
-	          cs.setLevel(Level.CONFORMANCEPROFILE);
-	          cs.setIgDocumentId(documentId);
 	          cp.getBinding().addConformanceStatement(cs);
 	        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
 	          item.setOldPropertyValue(item.getLocation());
@@ -1724,10 +1720,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 				  if (cs.getIdentifier() != null) {
 					  this.deleteConformanceStatementById(cp, cs.getId());
 				  }
-				  cs.addSourceId(cp.getId());
-				  cs.setStructureId(cp.getStructID());
-				  cs.setLevel(Level.CONFORMANCEPROFILE);
-				  cs.setIgDocumentId(documentId);
 				  cp.getBinding().addConformanceStatement(cs);
 	          }
 	        }
@@ -1736,10 +1728,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
 	        if (item.getChangeType().equals(ChangeType.ADD)) {
 	          Predicate p = mapper.readValue(jsonInString, Predicate.class);
-	          p.addSourceId(cp.getId());
-	          p.setStructureId(cp.getStructID());
-	          p.setLevel(Level.CONFORMANCEPROFILE);
-	          p.setIgDocumentId(documentId);
 	          seb.setPredicate(p);
 	        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
 	          item.setOldPropertyValue(item.getLocation());
@@ -1751,10 +1739,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
 	          Predicate p = mapper.readValue(jsonInString, Predicate.class);
 	          item.setOldPropertyValue(seb.getPredicate());
-	          p.addSourceId(cp.getId());
-	          p.setStructureId(cp.getStructID());
-	          p.setLevel(Level.CONFORMANCEPROFILE);
-	          p.setIgDocumentId(documentId);
 	          seb.setPredicate(p);
 	        }
 	        this.logChangeBinding(seb, item);
