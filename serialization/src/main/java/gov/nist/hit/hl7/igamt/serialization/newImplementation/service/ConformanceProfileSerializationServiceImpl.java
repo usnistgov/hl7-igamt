@@ -176,6 +176,9 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                         conformanceProfileElement.appendChild(constraints);
                     }
                 }
+                if (conformanceProfile.getOrigin() != null) {
+                    conformanceProfileElement.addAttribute(new Attribute("origin",conformanceProfile.getOrigin()));
+                }
 
                 if (conformanceProfile.getBinding() != null) {
                     Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), new HashMap<String, Boolean>());

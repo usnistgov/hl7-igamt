@@ -1,10 +1,6 @@
 package gov.nist.hit.hl7.igamt.export.controller;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -13,6 +9,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -156,6 +153,24 @@ public class ExportController {
 			}
 		} else {
 			throw new AuthenticationCredentialsNotFoundException("No Authentication");
+		}
+	}
+
+	@RequestMapping(value = "/api/export/ig/{id}/xml/diff", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	public void exportXML(@PathVariable("id") String id, HttpServletResponse response) throws Exception {
+
+		Ig ig = igService.findById(id);
+		if (ig != null)  {
+			String xmlContent = igExportService.exportIgDocumentToDiffXml(id);
+			InputStream xmlStream = new ByteArrayInputStream(xmlContent.getBytes());
+
+			ExportedFile exportedFile = new ExportedFile(xmlStream, ig.getMetadata().getTitle(), id,
+					ExportFormat.XML);
+
+			response.setContentType("text/xml");
+			response.setHeader("Content-disposition",
+					"attachment;filename=" + ig.getMetadata().getTitle()+ ".xml");
+			FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 		}
 	}
 	
