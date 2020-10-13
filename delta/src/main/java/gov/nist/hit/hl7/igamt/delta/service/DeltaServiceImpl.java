@@ -320,7 +320,7 @@ public class DeltaServiceImpl implements DeltaService {
    * @see gov.nist.hit.hl7.igamt.delta.service.DeltaService#hasChanged(java.util.List)
    */
   @Override
-  public DeltaAction summarize(List<StructureDelta> deltaStructure, List<ConformanceStatementDelta> cfs) {
+  public DeltaAction summarize(List<StructureDelta> deltaStructure, List<ConformanceStatementDelta> cfs, List<CoConstraintBinding> coConstraintBindings) {
     // TODO Auto-generated method stub
     DeltaAction ret = DeltaAction.UNCHANGED;
     if(deltaStructure !=null)
@@ -332,6 +332,13 @@ public class DeltaServiceImpl implements DeltaService {
     for(ConformanceStatementDelta child: cfs ) {
       if( child.getAction() != DeltaAction.UNCHANGED) {
         return DeltaAction.UPDATED;
+      }
+    }
+    if(coConstraintBindings != null){
+      for(CoConstraintBinding coConstraintBinding: coConstraintBindings ) {
+        if( coConstraintBinding.getDelta() != DeltaAction.UNCHANGED) {
+          return DeltaAction.UPDATED;
+        }
       }
     }
     return ret;
@@ -391,10 +398,17 @@ public class DeltaServiceImpl implements DeltaService {
         ConformanceProfileStructureDisplay sourceDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(source, true);
         ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
         List<ConformanceStatementDelta> cfs = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
-
         List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
+
+        List<CoConstraintBinding> sourceBindings = source.getCoConstraintsBindings() != null ? source.getCoConstraintsBindings() : new ArrayList<>();
+        List<CoConstraintBinding> targetBindings = target.getCoConstraintsBindings() != null ? target.getCoConstraintsBindings() : new ArrayList<>();
+
+        this.coConstraintDeltaService.preProcess(sourceBindings);
+        this.coConstraintDeltaService.preProcess(targetBindings);
+        List<CoConstraintBinding> bindings = this.coConstraintDeltaService.delta(sourceBindings, targetBindings);
+
         DisplayElement elm= this.displayInfoService.convertConformanceProfile(target,l.getPosition());
-        elm.setDelta(summarize(structure,cfs));
+        elm.setDelta(summarize(structure,cfs,bindings));
         return elm;
         
       }
@@ -412,7 +426,7 @@ public class DeltaServiceImpl implements DeltaService {
         }
         List<ConformanceStatementDelta> cfs = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
         DisplayElement elm= this.displayInfoService.convertDatatype(target);
-        elm.setDelta(summarize(structure, cfs));
+        elm.setDelta(summarize(structure, cfs, null));
         return elm;
       }
       case SEGMENTREGISTRY : {
@@ -426,7 +440,7 @@ public class DeltaServiceImpl implements DeltaService {
         List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
         DisplayElement elm= this.displayInfoService.convertSegment(target);
         List<ConformanceStatementDelta> cfs = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
-        elm.setDelta(summarize(structure,cfs));
+        elm.setDelta(summarize(structure,cfs, null));
         return elm;
       }
       case VALUESETREGISTRY: {
