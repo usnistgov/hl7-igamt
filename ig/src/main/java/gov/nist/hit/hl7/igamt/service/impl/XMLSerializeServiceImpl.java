@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 
 import com.google.gson.Gson;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.LengthType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 // import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
@@ -250,26 +251,59 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
               } else {
                 elmComponent.addAttribute(new Attribute("Datatype", this.str(childDT.getLabel())));
               }
+              
+              if(c.getLengthType().equals(LengthType.Length)) {
+            	  elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
+            	  
+            	  if (c.getMinLength() != null && !c.getMinLength().isEmpty()) {
+                      elmComponent.addAttribute(new Attribute("MinLength", this.str(c.getMinLength())));
 
-              if (c.getMinLength() != null && !c.getMinLength().isEmpty()) {
-                elmComponent.addAttribute(new Attribute("MinLength", this.str(c.getMinLength())));
+                    } else {
+                      elmComponent.addAttribute(new Attribute("MinLength", "NA"));
+                    }
 
+                    if (c.getMaxLength() != null && !c.getMaxLength().isEmpty()) {
+                      elmComponent.addAttribute(new Attribute("MaxLength", this.str(c.getMaxLength())));
+
+                    } else {
+                      elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
+
+                    }
+            	  
+            	  
+              } else if(c.getLengthType().equals(LengthType.ConfLength)) {
+            	  elmComponent.addAttribute(new Attribute("MinLength", "NA"));
+            	  elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
+            	  
+                    if (c.getConfLength() != null && !c.getConfLength().equals("")) {
+                      elmComponent.addAttribute(new Attribute("ConfLength", this.str(c.getConfLength())));
+                    } else {
+                      elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
+                    }
+            	  
               } else {
-                elmComponent.addAttribute(new Attribute("MinLength", "NA"));
+            	  if (c.getMinLength() != null && !c.getMinLength().isEmpty()) {
+                      elmComponent.addAttribute(new Attribute("MinLength", this.str(c.getMinLength())));
+
+                    } else {
+                      elmComponent.addAttribute(new Attribute("MinLength", "NA"));
+                    }
+
+                    if (c.getMaxLength() != null && !c.getMaxLength().isEmpty()) {
+                      elmComponent.addAttribute(new Attribute("MaxLength", this.str(c.getMaxLength())));
+
+                    } else {
+                      elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
+
+                    }
+                    if (c.getConfLength() != null && !c.getConfLength().equals("")) {
+                      elmComponent.addAttribute(new Attribute("ConfLength", this.str(c.getConfLength())));
+                    } else {
+                      elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
+                    }	  
               }
 
-              if (c.getMaxLength() != null && !c.getMaxLength().isEmpty()) {
-                elmComponent.addAttribute(new Attribute("MaxLength", this.str(c.getMaxLength())));
-
-              } else {
-                elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
-
-              }
-              if (c.getConfLength() != null && !c.getConfLength().equals("")) {
-                elmComponent.addAttribute(new Attribute("ConfLength", this.str(c.getConfLength())));
-              } else {
-                elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
-              }
+              
               elmDatatype.appendChild(elmComponent);
             } catch (Exception e) {
               throw new DatatypeComponentSerializationException(e, i);
@@ -625,11 +659,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           if (p.getContext() != null && p.getContext().getElementId() != null) {
 
             int count = countContextChild(p.getContext(), 1);
-            
-            System.out.println("GROUP------------");
-            System.out.println(key);
-            System.out.println(count);
-            System.out.println(key.split("\\.").length);
             String groupKey = "";
 
             for (int i = count; i < key.split("\\.").length; i++) {
@@ -637,13 +666,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                 groupKey = groupKey + key.split("\\.")[i];
               else
                 groupKey = groupKey + key.split("\\.")[i] + ".";
-              
-              System.out.println(groupKey);
             }
             Element elm_ByID = this.findOrCreatByIDElement(predicates_Group_Elm, p.getContext(), cpModel.getModel());
-            System.out.println(groupKey);
-            
-
+            p.setLevel(Level.GROUP);
             String script = this.generateConditionScript(p, cpModel.getModel().getId());
             if(script != null) {
                 Element elm_Constraint = new Element("Predicate");
@@ -676,6 +701,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           Predicate p = cpModel.getPredicateMap().get(key);
 
       	if (p.getContext() == null || p.getContext().getElementId() == null) {
+      		  p.setLevel(Level.CONFORMANCEPROFILE);
         	  String script = this.generateConditionScript(p, cpModel.getModel().getId());
         	  if(script != null) {
                   Element elm_Constraint = new Element("Predicate");
@@ -852,6 +878,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         for (ConformanceStatement cs : cpModel.getConformanceStatements()) {
           if (cs.getContext() != null && cs.getContext().getElementId() != null) {
             Element elm_ByID = this.findOrCreatByIDElement(constraints_group_Elm, cs.getContext(), cpModel.getModel());
+            cs.setLevel(Level.GROUP);
             String script = this.generateAssertionScript(cs, cpModel.getModel().getId());
             if (script != null) {
             	Element elm_Constraint = new Element("Constraint");
@@ -878,6 +905,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           && cpModel.getConformanceStatements().size() > 0) {
         for (ConformanceStatement cs : cpModel.getConformanceStatements()) {
         	if (cs.getContext() == null || cs.getContext().getElementId() == null) {
+        	  cs.setLevel(Level.CONFORMANCEPROFILE);
         	  String script = this.generateAssertionScript(cs, cpModel.getModel().getId());
         	  if(script != null) {
         		  Element elm_Constraint = new Element("Constraint");
@@ -1049,28 +1077,56 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
               elmComponent
                   .addAttribute(new Attribute("Datatype", this.str(c.getDatatype().getLabel())));
             }
+            
+            if(c.getModel().getLengthType().equals(LengthType.Length)) {
+          	  elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
+          	  
+          	  if (c.getModel().getMinLength() != null && !c.getModel().getMinLength().isEmpty()) {
+                    elmComponent.addAttribute(new Attribute("MinLength", this.str(c.getModel().getMinLength())));
 
-            if (c.getModel().getMinLength() != null && !c.getModel().getMinLength().isEmpty()) {
-              elmComponent
-                  .addAttribute(new Attribute("MinLength", this.str(c.getModel().getMinLength())));
+                  } else {
+                    elmComponent.addAttribute(new Attribute("MinLength", "NA"));
+                  }
 
+                  if (c.getModel().getMaxLength() != null && !c.getModel().getMaxLength().isEmpty()) {
+                    elmComponent.addAttribute(new Attribute("MaxLength", this.str(c.getModel().getMaxLength())));
+
+                  } else {
+                    elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
+
+                  }
+          	  
+          	  
+            } else if(c.getModel().getLengthType().equals(LengthType.ConfLength)) {
+          	  elmComponent.addAttribute(new Attribute("MinLength", "NA"));
+          	  elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
+          	  
+                  if (c.getModel().getConfLength() != null && !c.getModel().getConfLength().equals("")) {
+                    elmComponent.addAttribute(new Attribute("ConfLength", this.str(c.getModel().getConfLength())));
+                  } else {
+                    elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
+                  }
+          	  
             } else {
-              elmComponent.addAttribute(new Attribute("MinLength", "NA"));
-            }
+          	  if (c.getModel().getMinLength() != null && !c.getModel().getMinLength().isEmpty()) {
+                    elmComponent.addAttribute(new Attribute("MinLength", this.str(c.getModel().getMinLength())));
 
-            if (c.getModel().getMaxLength() != null && !c.getModel().getMaxLength().isEmpty()) {
-              elmComponent
-                  .addAttribute(new Attribute("MaxLength", this.str(c.getModel().getMaxLength())));
+                  } else {
+                    elmComponent.addAttribute(new Attribute("MinLength", "NA"));
+                  }
 
-            } else {
-              elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
+                  if (c.getModel().getMaxLength() != null && !c.getModel().getMaxLength().isEmpty()) {
+                    elmComponent.addAttribute(new Attribute("MaxLength", this.str(c.getModel().getMaxLength())));
 
-            }
-            if (c.getModel().getConfLength() != null && !c.getModel().getConfLength().equals("")) {
-              elmComponent.addAttribute(
-                  new Attribute("ConfLength", this.str(c.getModel().getConfLength())));
-            } else {
-              elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
+                  } else {
+                    elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
+
+                  }
+                  if (c.getModel().getConfLength() != null && !c.getModel().getConfLength().equals("")) {
+                    elmComponent.addAttribute(new Attribute("ConfLength", this.str(c.getModel().getConfLength())));
+                  } else {
+                    elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
+                  }	  
             }
 
             Set<ValuesetBindingDataModel> valueSetBindings = c.getValuesets();
@@ -1247,107 +1303,109 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         // }
 
         // #3 OBX-2 Dynamic Mapping
-        String version = null;
-        String refValuesetId = null;
-        ValuesetDataModel vsModel = null;
-        if (sModel.getValuesetMap().get("2") != null) {
-          for (ValuesetBindingDataModel m : sModel.getValuesetMap().get("2")) {
-            // TODO update value set binding export
-
-            if (m.getValuesetBinding() != null && m.getValuesetBinding().getValueSets() != null
-                && m.getValuesetBinding().getValueSets().size() == 1) {
-              refValuesetId = m.getValuesetBinding().getValueSets().get(0);
-            }
-          }
-        }
-        if (refValuesetId != null) {
-          vsModel = igModel.findValueset(refValuesetId);
-        }
-        if (vsModel != null) {
-          version = vsModel.getModel().getDomainInfo().getVersion();
-          if (version != null) {
-            for (Code c : vsModel.getModel().getCodes()) {
-              String value = c.getValue();
-              DatatypeDataModel itemDTModel = igModel.findDatatype(value, version);
-
-              if (itemDTModel != null) {
-                Element elmCase = new Element("Case");
-                elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
-                if (defaultHL7Version != null
-                    && itemDTModel.getModel().getDomainInfo() != null
-                    && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
-                  if (defaultHL7Version.equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
-                    elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-                  } else {
-                    elmCase.addAttribute(new Attribute("Datatype",
-                        this.str(itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel()
-                            .getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-                  }
-                } else {
-                  elmCase.addAttribute(
-                      new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-                }
-                elmMapping.appendChild(elmCase);
-              } else {
-                Datatype dt = this.datatypeService.findOneByNameAndVersionAndScope(value, version,
-                    "HL7STANDARD");
-                if (dt != null) {
-                  Element elmCase = new Element("Case");
-                  elmCase.addAttribute(new Attribute("Value", dt.getName()));
-                  if (defaultHL7Version != null && dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
-                    if (defaultHL7Version.equals(dt.getDomainInfo().getVersion())) {
-                      elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
-                    } else {
-                      elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel() + "_"
-                          + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-                    }
-                  } else {
-                    elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
-                  }
-                  elmMapping.appendChild(elmCase);
-
-                  missingDts.add(dt);
-                  if (dt instanceof ComplexDatatype) {
-                    ComplexDatatype complexDatatype = (ComplexDatatype) dt;
-                    if (complexDatatype.getComponents() != null) {
-                      for (Component component : complexDatatype.getComponents()) {
-                        if (igModel.findDatatype(component.getRef().getId()) == null) {
-                          Datatype childDT =
-                              this.datatypeService.findById(component.getRef().getId());
-                          if (childDT != null)
-                            missingDts.add(childDT);
-
-                          if (childDT instanceof ComplexDatatype) {
-                            ComplexDatatype complexChildDatatype = (ComplexDatatype) childDT;
-                            if (complexChildDatatype.getComponents() != null) {
-                              for (Component subComponent : complexChildDatatype.getComponents()) {
-                                if (igModel.findDatatype(subComponent.getRef().getId()) == null) {
-                                  Datatype childchildDT =
-                                      this.datatypeService.findById(subComponent.getRef().getId());
-                                  if (childchildDT != null)
-                                    missingDts.add(childchildDT);
-                                }
-                              }
-                            }
-                          }
-
-                        }
-                      }
-                    }
-
-                  }
-                } else {
-                  System.out.println(value + "-" + version);
-                }
-
-              }
-
-            }
-          }
-        }
+        
+//        String version = null;
+//        String refValuesetId = null;
+//        ValuesetDataModel vsModel = null;
+//        if (sModel.getValuesetMap().get("2") != null) {
+//          for (ValuesetBindingDataModel m : sModel.getValuesetMap().get("2")) {
+//            // TODO update value set binding export
+//
+//            if (m.getValuesetBinding() != null && m.getValuesetBinding().getValueSets() != null
+//                && m.getValuesetBinding().getValueSets().size() == 1) {
+//              refValuesetId = m.getValuesetBinding().getValueSets().get(0);
+//            }
+//          }
+//        }
+//        if (refValuesetId != null) {
+//          vsModel = igModel.findValueset(refValuesetId);
+//        }
+//        if (vsModel != null) {
+//          version = vsModel.getModel().getDomainInfo().getVersion();
+//          if (version != null) {
+//            for (Code c : vsModel.getModel().getCodes()) {
+//              String value = c.getValue();
+//              DatatypeDataModel itemDTModel = igModel.findDatatype(value, version);
+//
+//              if (itemDTModel != null) {
+//                Element elmCase = new Element("Case");
+//                elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
+//                if (defaultHL7Version != null
+//                    && itemDTModel.getModel().getDomainInfo() != null
+//                    && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
+//                  if (defaultHL7Version.equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
+//                    elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+//                  } else {
+//                    elmCase.addAttribute(new Attribute("Datatype",
+//                        this.str(itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel()
+//                            .getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+//                  }
+//                } else {
+//                  elmCase.addAttribute(
+//                      new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+//                }
+//                elmMapping.appendChild(elmCase);
+//              } else {
+//                Datatype dt = this.datatypeService.findOneByNameAndVersionAndScope(value, version,
+//                    "HL7STANDARD");
+//                if (dt != null) {
+//                  Element elmCase = new Element("Case");
+//                  elmCase.addAttribute(new Attribute("Value", dt.getName()));
+//                  if (defaultHL7Version != null && dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
+//                    if (defaultHL7Version.equals(dt.getDomainInfo().getVersion())) {
+//                      elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
+//                    } else {
+//                      elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel() + "_"
+//                          + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+//                    }
+//                  } else {
+//                    elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
+//                  }
+//                  elmMapping.appendChild(elmCase);
+//
+//                  missingDts.add(dt);
+//                  if (dt instanceof ComplexDatatype) {
+//                    ComplexDatatype complexDatatype = (ComplexDatatype) dt;
+//                    if (complexDatatype.getComponents() != null) {
+//                      for (Component component : complexDatatype.getComponents()) {
+//                        if (igModel.findDatatype(component.getRef().getId()) == null) {
+//                          Datatype childDT =
+//                              this.datatypeService.findById(component.getRef().getId());
+//                          if (childDT != null)
+//                            missingDts.add(childDT);
+//
+//                          if (childDT instanceof ComplexDatatype) {
+//                            ComplexDatatype complexChildDatatype = (ComplexDatatype) childDT;
+//                            if (complexChildDatatype.getComponents() != null) {
+//                              for (Component subComponent : complexChildDatatype.getComponents()) {
+//                                if (igModel.findDatatype(subComponent.getRef().getId()) == null) {
+//                                  Datatype childchildDT =
+//                                      this.datatypeService.findById(subComponent.getRef().getId());
+//                                  if (childchildDT != null)
+//                                    missingDts.add(childchildDT);
+//                                }
+//                              }
+//                            }
+//                          }
+//
+//                        }
+//                      }
+//                    }
+//
+//                  }
+//                } else {
+//                  System.out.println(value + "-" + version);
+//                }
+//
+//              }
+//
+//            }
+//          }
+//        }
         elmDynamicMapping.appendChild(elmMapping);
         elmSegment.appendChild(elmDynamicMapping);
       }
+
 
       Map<Integer, FieldDataModel> fields = new HashMap<Integer, FieldDataModel>();
 
@@ -1381,31 +1439,58 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             } else {
               elmField.addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel())));
             }
+            
+            if(f.getModel().getLengthType().equals(LengthType.Length)) {
+            	elmField.addAttribute(new Attribute("ConfLength", "NA"));
+            	  
+            	  if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
+            		  elmField.addAttribute(new Attribute("MinLength", this.str(f.getModel().getMinLength())));
 
-            if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
-              elmField
-                  .addAttribute(new Attribute("MinLength", this.str(f.getModel().getMinLength())));
+                    } else {
+                    	elmField.addAttribute(new Attribute("MinLength", "NA"));
+                    }
 
-            } else {
-              elmField.addAttribute(new Attribute("MinLength", "NA"));
-            }
+                    if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
+                    	elmField.addAttribute(new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
 
-            if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
-              elmField
-                  .addAttribute(new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
+                    } else {
+                    	elmField.addAttribute(new Attribute("MaxLength", "NA"));
 
-            } else {
-              elmField.addAttribute(new Attribute("MaxLength", "NA"));
+                    }
+            	  
+            	  
+              } else if(f.getModel().getLengthType().equals(LengthType.ConfLength)) {
+            	  elmField.addAttribute(new Attribute("MinLength", "NA"));
+            	  elmField.addAttribute(new Attribute("MaxLength", "NA"));
+            	  
+                    if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
+                    	elmField.addAttribute(new Attribute("ConfLength", this.str(f.getModel().getConfLength())));
+                    } else {
+                    	elmField.addAttribute(new Attribute("ConfLength", "NA"));
+                    }
+            	  
+              } else {
+            	  if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
+            		  elmField.addAttribute(new Attribute("MinLength", this.str(f.getModel().getMinLength())));
 
-            }
+                    } else {
+                    	elmField.addAttribute(new Attribute("MinLength", "NA"));
+                    }
 
-            if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
-              elmField.addAttribute(
-                  new Attribute("ConfLength", this.str(f.getModel().getConfLength())));
-            } else {
-              elmField.addAttribute(new Attribute("ConfLength", "NA"));
-            }
+                    if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
+                    	elmField.addAttribute(new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
 
+                    } else {
+                    	elmField.addAttribute(new Attribute("MaxLength", "NA"));
+
+                    }
+                    if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
+                    	elmField.addAttribute(new Attribute("ConfLength", this.str(f.getModel().getConfLength())));
+                    } else {
+                    	elmField.addAttribute(new Attribute("ConfLength", "NA"));
+                    }	  
+              }
+            
             Set<ValuesetBindingDataModel> valueSetBindings = f.getValuesets();
             if (valueSetBindings != null && valueSetBindings.size() > 0) {
               String bindingString = "";
@@ -2003,21 +2088,25 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       case containValue:
         result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+            + "\" NotPresentBehavior=\"" + "FAIL" 
             + "\"/>";
         break;
       case notContainValue:
         result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+            + "\" NotPresentBehavior=\"" + "FAIL" 
             + "\"/></NOT>";
         break;
       case containValueDesc:
         result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+            + "\" NotPresentBehavior=\"" + "FAIL" 
             + "\"/>";
         break;
       case notContainValueDesc:
         result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+            + "\" NotPresentBehavior=\"" + "FAIL" 
             + "\"/></NOT>";
         break;
       case containListValues:
@@ -2042,7 +2131,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         break;
       case containCode:
         result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
-            + "\" IgnoreCase=\"" + false + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" IgnoreCase=\"" + false + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + "FAIL" 
+            + "\"/>";
         break;
       case containListCodes:
         result = "<StringList Path=\"" + sPathStr + "\" CSV=\""
