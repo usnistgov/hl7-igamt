@@ -625,6 +625,15 @@ public class EntityDeltaServiceImpl {
           }
         }
       }
+    } else if(source == null && target != null){
+        if(target.getBindingType().equals(BindingType.VS)){
+            structure.setValueSetBinding(this.compareValueSetBinding(new HashSet<DisplayValuesetBinding>(), target.getValuesetBindings()));
+            structure.getValueSetBinding().setAction(DeltaAction.ADDED);
+
+        } else if(target.getBindingType().equals(BindingType.SC)){
+            structure.setInternalSingleCode(this.compareInternalSingleCodes(new InternalSingleCode() , target.getInternalSingleCode()));
+            structure.getInternalSingleCode().setAction(DeltaAction.ADDED);
+        }
     }
 
   }
