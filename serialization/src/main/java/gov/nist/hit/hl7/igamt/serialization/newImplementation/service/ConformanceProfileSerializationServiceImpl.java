@@ -594,15 +594,22 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
         if (conformanceStatementDelta != null) {
             if (conformanceStatementDelta.getAction().equals(DeltaAction.DELETED) || conformanceStatementDelta.getAction().equals(DeltaAction.ADDED)) {
                 Element addedDesc = new Element("Change");
+                String value = "";
+                if(conformanceStatementDelta.getAction().equals(DeltaAction.DELETED)){
+                    value = conformanceStatementDelta.getIdentifier().getPrevious();
+                }
+                if(conformanceStatementDelta.getAction().equals(DeltaAction.ADDED)){
+                    value = conformanceStatementDelta.getIdentifier().getCurrent();
+                }
                 addedDesc.addAttribute(new Attribute("type", Type.CONFORMANCESTATEMENT.getValue()));
-                addedDesc.addAttribute(new Attribute("identifier", conformanceStatementDelta.getIdentifier().getCurrent()));
+                addedDesc.addAttribute(new Attribute("identifier", value));
                 addedDesc.addAttribute(new Attribute("action", conformanceStatementDelta.getAction().name()));
                 addedDesc.addAttribute(new Attribute("property", PropertyType.DESCRIPTION.name()));
                 changedElements.add(addedDesc);
 
                 Element addedId = new Element("Change");
                 addedId.addAttribute(new Attribute("type", Type.CONFORMANCESTATEMENT.getValue()));
-                addedId.addAttribute(new Attribute("identifier", conformanceStatementDelta.getIdentifier().getCurrent()));
+                addedId.addAttribute(new Attribute("identifier", value));
                 addedId.addAttribute(new Attribute("action", conformanceStatementDelta.getAction().name()));
                 addedId.addAttribute(new Attribute("property", PropertyType.IDENTIFIER.name()));
                 changedElements.add(addedId);

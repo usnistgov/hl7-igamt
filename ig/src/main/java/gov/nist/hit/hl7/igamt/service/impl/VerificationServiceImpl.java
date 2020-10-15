@@ -2308,7 +2308,7 @@ public class VerificationServiceImpl implements VerificationService {
 					if (!s.getDomainInfo().getScope().equals(Scope.USER)) {
 						labelWithVersion = labelWithVersion + s.getDomainInfo().getVersion();
 					}
-					if (!segLabelSet.add(s.getLabel()))
+					if (!segLabelSet.add(labelWithVersion))
 						result.getErrors().add(new IgamtObjectError("Label_Duplicated", s.getId(), Type.SEGMENT,
 								new DTSegMetadata(s), "Segment Label of " + s.getLabel() + " is duplicated in the IG",
 								null, "ERROR", "User"));
