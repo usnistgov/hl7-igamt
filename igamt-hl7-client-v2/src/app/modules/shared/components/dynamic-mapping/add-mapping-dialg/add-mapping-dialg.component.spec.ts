@@ -8,7 +8,7 @@ describe('AddMappingDialgComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddMappingDialgComponent ]
+      declarations: [ AddMappingDialgComponent ],
     })
     .compileComponents();
   }));

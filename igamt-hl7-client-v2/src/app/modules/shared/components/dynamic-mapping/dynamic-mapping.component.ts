@@ -121,7 +121,7 @@ export class DynamicMappingComponent implements OnInit, OnDestroy {
         documentType: this.documentType,
       },
     });
-    const subsc = dialogRef.afterClosed().pipe(
+    dialogRef.afterClosed().pipe(
       take(1),
       filter((x) => x !== undefined),
       tap((result) => {
@@ -135,7 +135,7 @@ export class DynamicMappingComponent implements OnInit, OnDestroy {
     if (!ret.display) {
       ret.display = {
         fixedName: x.value, domainInfo: {version: this.hl7Version, scope: Scope.HL7STANDARD}, type: Type.DATATYPE, id: x.datatypeId,
-      }
+      };
       ret.missing = true;
       this.namingMap[x.value] = [ret.display];
     }

@@ -118,8 +118,8 @@ export class DynamicMappingEditorComponent extends AbstractEditorComponent imple
                 return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({
                   value: {
                     changes: {},
-                    resource
-                  }, updateDate: false
+                    resource,
+                  }, updateDate: false,
                 }), new fromDam.SetValue({selected: resource})];
               }),
             );

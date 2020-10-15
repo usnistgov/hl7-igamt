@@ -38,12 +38,11 @@ export class SegmentService {
     if (obj.binding != null && obj.binding.children && obj.binding.children.length) {
       const obx2Binding = obj.binding.children.find((x: IStructureElementBinding) => x.locationInfo && x.locationInfo.position === 2);
       if (obx2Binding && obx2Binding.valuesetBindings.length > 0) {
-        const vsList = obx2Binding.valuesetBindings.map((vsB) => {
+        return obx2Binding.valuesetBindings.map((vsB) => {
           return vsB.valueSets;
         }).reduce((a, b) => {
           return a.concat(b);
         });
-        return vsList;
       }
     } else { return []; }
   }
