@@ -73,12 +73,13 @@
                             <xsl:for-each select="Changes/Change[@type='CONFORMANCESTATEMENT' and @property='CONFORMANCESTATEMENT']">
                                 <xsl:sort select="./@identifier" data-type="text" order="ascending"/>
                                 <xsl:variable name="changedPosition" select="./@identifier"/>
+                                <xsl:variable name="action" select="./@action"/>
 
 
                                 <xsl:choose>
                                     <xsl:when test="not(../../Changes/@mode) or ../../Changes/@mode = 'HIGHLIGHT' or ../../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
                                         <xsl:call-template name="ConstraintContent">
-                                            <xsl:with-param name="changeClass" select="../../Changes/Change[@identifier=$changedPosition]"  />
+                                            <xsl:with-param name="changeClass" select="../../Changes/Change[@identifier=$changedPosition and @action=$action]"  />
                                             <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
                                             <xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
                                             <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
