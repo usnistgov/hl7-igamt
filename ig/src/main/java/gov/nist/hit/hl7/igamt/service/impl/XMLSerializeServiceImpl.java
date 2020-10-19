@@ -851,15 +851,19 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         for (ConformanceStatement cs : segModel.getConformanceStatements()) {
         	
         	String script = this.generateAssertionScript(cs, segModel.getModel().getId());
+
         	
         	if(script != null) {
-                Element elm_Constraint = new Element("Constraint");
-                elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
-                Element elm_Description = new Element("Description");
-                elm_Description.appendChild(cs.generateDescription());
-                elm_Constraint.appendChild(elm_Description);
-                elm_Constraint.appendChild(this.innerXMLHandler(script));
-                elm_ByID.appendChild(elm_Constraint);        		
+            	Node scriptNode = this.innerXMLHandler(script);
+            	if(scriptNode != null) {
+            		Element elm_Constraint = new Element("Constraint");
+                    elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
+                    Element elm_Description = new Element("Description");
+                    elm_Description.appendChild(cs.generateDescription());
+                    elm_Constraint.appendChild(elm_Description);
+                    elm_Constraint.appendChild(this.innerXMLHandler(script));
+                    elm_ByID.appendChild(elm_Constraint);      	
+            	}  		
         	}
         }
       }
@@ -994,7 +998,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   }
 
   private Node innerXMLHandler(String xml) {
-    if (xml != null) {
+    if (xml != null && !xml.equals("")) {
     	xml = xml.replace("&", "&amp;");
       Builder builder = new Builder(new NodeFactory());
       try {
@@ -1225,7 +1229,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       }
 
       // DynamicMapping
-      if (sModel.getModel().getName().equals("OBX")) {
+      if (sModel.getModel().getName().equals("OBX") 
+    		  && sModel.getModel().getDynamicMappingInfo() != null 
+    		  && sModel.getModel().getDynamicMappingInfo().getItems() != null
+    		  && sModel.getModel().getDynamicMappingInfo().getItems().size() > 0) {
         Element elmDynamicMapping = new Element("DynamicMapping");
         Element elmMapping = new Element("Mapping");
         elmMapping.addAttribute(new Attribute("Position", "5"));
@@ -1621,19 +1628,21 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       Map<Integer, SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels =
           new HashMap<Integer, SegmentRefOrGroupDataModel>();
 
-      for (SegmentRefOrGroupDataModel child : segmentRefOrGroupDataModel.getChildren()) {
-        segmentRefOrGroupDataModels.put(child.getModel().getPosition(), child);
-      }
+      if(segmentRefOrGroupDataModel.getChildren() != null) {
+          for (SegmentRefOrGroupDataModel child : segmentRefOrGroupDataModel.getChildren()) {
+              segmentRefOrGroupDataModels.put(child.getModel().getPosition(), child);
+            }
 
-      for (int i = 1; i < segmentRefOrGroupDataModels.size() + 1; i++) {
-        SegmentRefOrGroupDataModel childModel = segmentRefOrGroupDataModels.get(i);
-        if (childModel.getType().equals(Type.SEGMENTREF)) {
-          elmGroup.appendChild(serializeSegmentRef(childModel, igModel, defaultHL7Version));
-        } else if (childModel.getType().equals(Type.GROUP)) {
-          elmGroup.appendChild(serializeGroup(childModel, igModel, defaultHL7Version, messageId));
-        }
+            for (int i = 1; i < segmentRefOrGroupDataModels.size() + 1; i++) {
+              SegmentRefOrGroupDataModel childModel = segmentRefOrGroupDataModels.get(i);
+              if (childModel.getType().equals(Type.SEGMENTREF)) {
+                elmGroup.appendChild(serializeSegmentRef(childModel, igModel, defaultHL7Version));
+              } else if (childModel.getType().equals(Type.GROUP)) {
+                elmGroup.appendChild(serializeGroup(childModel, igModel, defaultHL7Version, messageId));
+              }
+            }    	  
       }
-
+      
       return elmGroup;
     } catch (Exception e) {
       e.printStackTrace();
