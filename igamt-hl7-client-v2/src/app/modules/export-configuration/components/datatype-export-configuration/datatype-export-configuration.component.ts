@@ -17,7 +17,6 @@ export class DatatypeExportConfigurationComponent implements OnInit {
   @Input()
   leaf: boolean;
 
-
   @Input()
   displayColumns: boolean;
 
