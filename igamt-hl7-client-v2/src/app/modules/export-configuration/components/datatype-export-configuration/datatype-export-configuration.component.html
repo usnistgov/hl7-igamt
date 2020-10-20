@@ -1,7 +1,6 @@
 <div style="width: 100%; display: flex; align-items: flex-start;">
   <div style="width: 100%;">
-
-    <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+    <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;" *ngIf="!leaf">
       <h5 class="card-title title-text custom-card-title">Usages (Components to Export)</h5>
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.componentExport.r"></p-checkbox></li>
@@ -38,7 +37,7 @@
           </ul>
         </div>
       </div>
-      <div style="display: flex; flex-grow: 1; flex-direction: column;">
+      <div style="display: flex; flex-grow: 1; flex-direction: column;" >
         <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
           <h5 class="card-title title-text custom-card-title">Constraints</h5>
           <ul class="list-group list-group-flush">

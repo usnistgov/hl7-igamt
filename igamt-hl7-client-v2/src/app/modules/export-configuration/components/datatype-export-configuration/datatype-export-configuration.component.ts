@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as _ from 'lodash';
 import {CardModule} from 'primeng/card';
 import {TabViewModule} from 'primeng/tabview';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
 
 @Component({
   selector: 'app-datatype-export-configuration',
@@ -12,6 +13,10 @@ export class DatatypeExportConfigurationComponent implements OnInit {
 
   @Input()
   config: any;
+
+  @Input()
+  leaf: boolean;
+
 
   @Input()
   displayColumns: boolean;

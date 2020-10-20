@@ -60,7 +60,6 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	public Element serializeDocumentMetadata(DocumentMetadata metadata, DomainInfo domainInfo,
 			PublicationInfo publicationInfo, DocumentMetadataConfiguration documentMetadataConfiguration) {
 		Element metadataElement = new Element("Metadata");
-		metadataElement.addAttribute(new Attribute("title", metadata.getTitle() != null ? metadata.getTitle() : ""));
 		metadataElement.addAttribute(new Attribute("topics", metadata.getTopics() != null ? metadata.getTopics() : ""));
 		metadataElement.addAttribute(new Attribute("description",
 				metadata.getSpecificationName() != null ? metadata.getSpecificationName() : ""));
@@ -70,6 +69,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 				metadata.getSubTitle() != null ? metadata.getSubTitle() : ""));
 		metadataElement
 		.addAttribute(new Attribute("orgName", metadata.getOrgName() != null ? metadata.getOrgName() : ""));
+		metadataElement.addAttribute(new Attribute("title", metadata.getTitle() != null ? metadata.getTitle() : ""));
 		metadataElement.addAttribute(
 				new Attribute("coverPicture", metadata.getCoverPicture() != null ? "aade49bd-1af7-4061-81d2-60b8fb6eee60b.png" : ""));
 		metadataElement
