@@ -1061,12 +1061,17 @@ public class VerificationServiceImpl implements VerificationService {
 					result);
 			this.checkCardinalityVerificationError(conformanceProfile.getId(), conformanceProfile.getType(),
 					new CPMetadata(conformanceProfile), usage, min, max, positionPath, path, result);
+			
 
-			if (group.getChildren() != null) {
+			if (group.getChildren() != null && group.getChildren().size() > 0) {
 				for (SegmentRefOrGroup child : group.getChildren()) {
 					this.checkingSegmentRefOrGroup(conformanceProfile, child, result, positionPath, path,
 							this.findSEB(sebs, child.getId()), needDeep);
 				}
+			} else {
+				result.getErrors()
+				.add(new IgamtObjectError("Child_Missing", conformanceProfile.getId(), conformanceProfile.getType(),
+						new CPMetadata(conformanceProfile), "Group: " + path + ", child is missing", positionPath + "", "ERROR", "User"));
 			}
 		}
 	}
