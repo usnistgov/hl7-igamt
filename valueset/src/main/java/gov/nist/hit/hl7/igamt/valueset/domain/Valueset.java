@@ -193,6 +193,13 @@ public class Valueset extends Resource {
 
 	public void setFlavor(boolean isFlavor) {
 		this.isFlavor = isFlavor;
+	}
+
+	public boolean contains(String value) {
+		for(Code code : this.codes) {
+			if(code.getValue().equals(value)) return true;
+		}
+		return false;
 	};
 	
 	

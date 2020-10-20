@@ -19,7 +19,7 @@
     <div>
       <button class="btn btn-sm btn-primary" style="margin-left: 20px;" *ngIf="!viewOnly && (type === 'FIELD' || type === 'GROUP') && !editMode" (click)="toggleEdit()"><i class="fa fa-pencil"></i></button>
       <!-- DELETE -->
-      <button *ngIf="!viewOnly && !editMode" class="btn btn-sm btn-danger" (click)="btnRemove()" style="margin-left: 5px;">
+      <button *ngIf="!viewOnly && !editMode && !required" class="btn btn-sm btn-danger" (click)="btnRemove()" style="margin-left: 5px;">
         <i class="fa fa-trash"></i>
       </button>
     </div>

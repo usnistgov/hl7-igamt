@@ -57,8 +57,12 @@ export class ResourceDropdownComponent implements OnInit {
   valueChange: EventEmitter<IDisplayElement> = new EventEmitter<IDisplayElement>();
 
   @Input()
-  set resources(list: IDisplayElement[]) {
+  set resources(l: IDisplayElement[]) {
     this.resourceMap = {};
+    const list = [...l];
+    list.sort((a, b) => {
+      return `${a.fixedName}${a.variableName}`.localeCompare(`${b.fixedName}${b.variableName}`);
+    });
     this._resources = [...list];
     this.filtered = [...list];
     list.forEach((elm) => {

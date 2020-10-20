@@ -25,7 +25,7 @@ export class SelectMessagesComponent implements OnInit {
   @Input()
   selectedVersion: string;
   @Input()
-  selectedScope: Scope;
+  selectedScope: Scope = Scope.HL7STANDARD;
   @Input()
   existing: IDisplayElement[] = [];
   @Input()

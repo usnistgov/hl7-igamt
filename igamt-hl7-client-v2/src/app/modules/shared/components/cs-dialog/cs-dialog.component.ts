@@ -3,7 +3,7 @@ import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as _ from 'lodash';
-import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { map, take, tap } from 'rxjs/operators';
 import * as vk from 'vkbeautify';
 import { Type } from '../../constants/type.enum';
@@ -158,37 +158,24 @@ export class CsDialogComponent implements OnDestroy {
     );
   }
 
-  getName(path: IPath): Observable<string> {
-    if (!path) {
-      return of('');
-    }
-
-    return this.elementNamingService.getPathInfoFromPath(this.resource, this.repository, path).pipe(
-      take(1),
-      map((pathInfo) => {
-        return this.elementNamingService.getStringNameFromPathInfo(pathInfo);
-      }),
-    );
-  }
-
   selectContext(node: IHL7v2TreeNode, path: IPath) {
-    if (node.data.type !== Type.CONFORMANCEPROFILE) {
+    if (node.data.type === Type.GROUP) {
       this.cs.context = path;
       this.cs.level = Type.GROUP;
       this.structure = [
         node,
       ];
-      this.getName(this.cs.context).pipe(
+      this.elementNamingService.getStringNameFromPath(this.cs.context, this.resource, this.repository).pipe(
         take(1),
         map((value) => {
           this.contextName = value;
           this.contextType = Type.GROUP;
         }),
       ).subscribe();
-    } else if (node.data.type === Type.CONFORMANCEPROFILE) {
+    } else {
       this.cs.context = undefined;
-      this.cs.level = Type.CONFORMANCEPROFILE;
-      this.contextType = Type.CONFORMANCEPROFILE;
+      this.cs.level = node.data.type;
+      this.contextType = node.data.type;
       this.contextName = node.data.name;
       this.structure = [
         node,

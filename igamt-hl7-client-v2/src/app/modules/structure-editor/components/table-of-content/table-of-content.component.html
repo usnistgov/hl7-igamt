@@ -18,7 +18,6 @@
           <div #rla="routerLinkActive"
             [routerLink]="getElementUrl(node.data)"
             routerLinkActive
-            [contextMenu]="conformanceProfileContextMenu"
             class="inline-label">
 
             <app-entity-bagde [type]="node.data.type"></app-entity-bagde>
@@ -32,11 +31,11 @@
 
           </div>
 
-          <context-menu #conformanceProfileContextMenu>
-            <ng-template (execute)="publishStructure(node.data.id, node.data.type)" [enabled]="!rla.isActive && node.data.status !== 'PUBLISHED'" contextMenuItem>
-              <i class="fa fa-lock"></i> Lock Structure
-            </ng-template>
-          </context-menu>
+<!--          <context-menu #conformanceProfileContextMenu>-->
+<!--            <ng-template (execute)="publishStructure(node.data.id, node.data.type)" [enabled]="!rla.isActive && node.data.status !== 'PUBLISHED'" contextMenuItem>-->
+<!--              <i class="fa fa-lock"></i> Lock Structure-->
+<!--            </ng-template>-->
+<!--          </context-menu>-->
 
           <ng-container *ngIf="rla.isActive" >
             <ng-container *ngTemplateOutlet="subMenu; context: { $implicit : node.data }"></ng-container>
@@ -62,7 +61,6 @@
           <div #rla="routerLinkActive"
             [routerLink]="getElementUrl(node.data)"
             routerLinkActive
-            [contextMenu]="segmentContextMenu"
             class="inline-label">
 
             <app-entity-bagde [type]="node.data.type"></app-entity-bagde>
@@ -76,11 +74,11 @@
 
           </div>
 
-          <context-menu #segmentContextMenu>
-            <ng-template (execute)="publishStructure(node.data.id, node.data.type)" [enabled]="!rla.isActive && node.data.status !== 'PUBLISHED'" contextMenuItem>
-              <i class="fa fa-lock"></i> Lock Structure
-            </ng-template>
-          </context-menu>
+<!--          <context-menu #segmentContextMenu>-->
+<!--            <ng-template (execute)="publishStructure(node.data.id, node.data.type)" [enabled]="!rla.isActive && node.data.status !== 'PUBLISHED'" contextMenuItem>-->
+<!--              <i class="fa fa-lock"></i> Lock Structure-->
+<!--            </ng-template>-->
+<!--          </context-menu>-->
 
           <ng-container *ngIf="rla.isActive" >
             <ng-container *ngTemplateOutlet="subMenu; context: { $implicit : node.data }"></ng-container>

@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { of } from 'rxjs';
+import { combineLatest, of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import { OpenEditorBase } from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
@@ -10,15 +10,17 @@ import { Type } from 'src/app/modules/shared/constants/type.enum';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
+import { IConformanceStatementEditorData } from '../../modules/core/components/conformance-statement-editor/conformance-statement-editor.component';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { MessageService } from '../../modules/dam-framework/services/message.service';
 import { SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { SegmentService } from '../../modules/segment/services/segment.service';
 import { IUsages } from '../../modules/shared/models/cross-reference';
-import { IConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { ISegment } from '../../modules/shared/models/segment.interface';
+import { ConformanceStatementService } from '../../modules/shared/services/conformance-statement.service';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
+import { selectDatatypesById } from '../dam-igamt/igamt.resource-display.selectors';
 import {
   LoadSegment,
   LoadSegmentFailure,
@@ -128,7 +130,7 @@ export class SegmentEditEffects {
   );
 
   @Effect()
-  openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IConformanceStatementList, OpenSegmentConformanceStatementEditor>(
+  openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IConformanceStatementEditorData, OpenSegmentConformanceStatementEditor>(
     SegmentEditActionTypes.OpenSegmentConformanceStatementEditor,
     Type.SEGMENT,
     fromIgamtDisplaySelectors.selectSegmentsById,
@@ -137,6 +139,21 @@ export class SegmentEditEffects {
         take(1),
         mergeMap((documentInfo) => {
           return this.segmentService.getConformanceStatements(action.payload.id, documentInfo);
+        }),
+        flatMap((data) => {
+          const datatypes = this.conformanceStatementService.resolveDependantConformanceStatement(data.associatedConformanceStatementMap || {}, selectDatatypesById);
+
+          return (datatypes.length > 0 ? combineLatest(datatypes) : of([])).pipe(
+            take(1),
+            map((d) => {
+              return {
+                active: this.conformanceStatementService.createEditableNode(data.conformanceStatements || []),
+                dependants: {
+                  datatypes: d,
+                },
+              };
+            }),
+          );
         }),
       );
     },
@@ -171,6 +188,7 @@ export class SegmentEditEffects {
     private deltaService: DeltaService,
     private segmentService: SegmentService,
     private editorHelper: OpenEditorService,
+    private conformanceStatementService: ConformanceStatementService,
     private crossReferenceService: CrossReferencesService,
   ) { }
 

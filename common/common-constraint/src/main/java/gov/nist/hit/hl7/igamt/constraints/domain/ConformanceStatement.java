@@ -185,6 +185,7 @@ public class ConformanceStatement implements Serializable{
 		return result;
 	}
 
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -195,8 +196,7 @@ public class ConformanceStatement implements Serializable{
 			return false;
 		ConformanceStatement other = (ConformanceStatement) obj;
 		if (id == null) {
-			if (other.id != null)
-				return false;
+			return false;
 		} else if (!id.equals(other.id))
 			return false;
 		return true;

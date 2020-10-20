@@ -684,7 +684,7 @@ public class SegmentServiceImpl implements SegmentService {
 	private void deleteConformanceStatementById(Segment s, String location) {
 		ConformanceStatement toBeDeleted = null;
 		for (ConformanceStatement cs : s.getBinding().getConformanceStatements()) {
-			if (cs.getIdentifier().equals(location)) {
+			if (cs.getId().equals(location)) {
 				toBeDeleted = cs;
 			}
 		}
@@ -1560,7 +1560,7 @@ public class SegmentServiceImpl implements SegmentService {
 	          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
 	          if(!cs.isLocked()) {
 	          if (cs.getIdentifier() != null) {
-	            this.deleteConformanceStatementById(s, cs.getIdentifier());
+	            this.deleteConformanceStatementById(s, cs.getId());
 	          }
 	          cs.addSourceId(s.getId());
 	          cs.setStructureId(s.getName());

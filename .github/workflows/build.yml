@@ -1,0 +1,44 @@
+name: build
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      front-end-directory: ./igamt-hl7-client-v2
+    strategy:
+      matrix:
+        node-version: [10.x]
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+      - name: Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          
+      - name: Install Dependencies
+        working-directory: ${{env.front-end-directory}}
+        run: npm install
+      
+      - name: Lint Front-End
+        working-directory: ${{env.front-end-directory}}
+        run: npm run lint
+          
+      - name: Build Prod Front-End
+        working-directory: ${{env.front-end-directory}}
+        run: npm run aot

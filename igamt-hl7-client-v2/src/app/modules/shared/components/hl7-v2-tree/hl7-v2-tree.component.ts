@@ -190,8 +190,10 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   s_resource: Subscription;
   context: IBindingContext;
   treeSubscriptions: Subscription[];
-  nodeType = this.treeService.nodeType;
 
+  nodeType(node: IHL7v2TreeNode): Type {
+    return this.treeService.nodeType(node);
+  }
   readonly trackBy = (index, item) => {
     return item.node.data.id;
   }

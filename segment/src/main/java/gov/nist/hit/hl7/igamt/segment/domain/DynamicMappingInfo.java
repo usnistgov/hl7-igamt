@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+
 /**
  * @author jungyubw
  *
@@ -84,4 +86,12 @@ public class DynamicMappingInfo {
   public void setMapping(HashMap<String, String> mapping) {
     this.mapping = mapping;
   }
+
+public boolean contains(Code code) {
+	if(this.items != null)
+	for(DynamicMappingItem dmi : this.items) {
+		if(dmi.getValue().equals(code.getValue())) return true;
+	}
+	return false;
+}
 }

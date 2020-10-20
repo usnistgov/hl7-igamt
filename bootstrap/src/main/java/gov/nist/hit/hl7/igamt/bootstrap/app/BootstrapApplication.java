@@ -986,8 +986,8 @@ public class BootstrapApplication implements CommandLineRunner {
   
  //@PostConstruct
   void fixConformanceStatements() throws IGUpdateException, CoConstraintGroupNotFoundException {
+   // this.conformanceStatementFixer.fixConformanceStatmentsId();
     this.igFixer.deriveChildren();
-    this.conformanceStatementFixer.fixConformanceStatmentsId();
     this.conformanceStatementFixer.lockCfsForDerived();
     this.igFixer.fixIgComponents();
 

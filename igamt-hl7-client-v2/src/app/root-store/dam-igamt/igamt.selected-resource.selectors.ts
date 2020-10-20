@@ -72,7 +72,7 @@ export const selectedValueSet = createSelector(
 export const selectedResourceHasOrigin = createSelector(
   selectSelectedResource,
   (state: IResource) => {
-    return !!state.origin;
+    return state.derived;
   },
 );
 
