@@ -10,6 +10,7 @@ import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaExportConfigMode;
@@ -176,13 +177,17 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                         conformanceProfileElement.appendChild(constraints);
                     }
                 }
+                
+        	      Map<String, Boolean > bindedPaths = conformanceProfile.getChildren().stream().filter(  field  -> field != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), field.getUsage())).collect(Collectors.toMap( x -> x.getId(), x -> true ));
+
 
                 if (conformanceProfile.getBinding() != null) {
-                    Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), new HashMap<String, Boolean>());
+                    Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), bindedPaths);
                     if (bindingElement != null) {
                         conformanceProfileElement.appendChild(bindingElement);
                     }
                 }
+
 
 
                 if (conformanceProfile.getChildren() != null
