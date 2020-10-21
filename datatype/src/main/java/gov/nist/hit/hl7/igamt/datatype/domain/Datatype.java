@@ -69,7 +69,7 @@ public class Datatype extends Resource {
   public String getLabel() {
     String entireExt = this.getEntireException();
     if (entireExt != null && !entireExt.isEmpty()) {
-      return  entireExt  + "_" + this.getName();
+      return  this.getName()  + "_" + this.getName();
     }
     return this.getName();
   }
