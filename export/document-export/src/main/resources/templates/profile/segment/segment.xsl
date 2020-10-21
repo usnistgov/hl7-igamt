@@ -253,8 +253,7 @@
 				
 		<xsl:call-template name="ValueSetBindingList"/>	
 		<xsl:call-template name="InternalSingleCode"/>	
-		<xsl:apply-templates select="./DynamicMapping"/>
-				
+		<xsl:apply-templates select="./DynamicMapping"/>				
 					
 						
 <!-- 		<xsl:apply-templates select="./Comments" />

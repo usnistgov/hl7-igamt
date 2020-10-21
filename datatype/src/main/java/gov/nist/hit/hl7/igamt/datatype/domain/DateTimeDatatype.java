@@ -88,15 +88,11 @@ public class DateTimeDatatype extends PrimitiveDatatype {
 
     DateTimeDatatype clone = new DateTimeDatatype();
     super.complete(clone);
+    clone.dateTimeConstraints=dateTimeConstraints;
     return clone;
 
   };
-  
-  public void complete(DateTimeDatatype elm) {
-	  
-	  elm.dateTimeConstraints=dateTimeConstraints;
-	  
-  }
+ 
   
   
   

@@ -1607,10 +1607,14 @@ public class SegmentServiceImpl implements SegmentService {
       } else if (item.getPropertyType().equals(PropertyType.DYNAMICMAPPINGITEM)) {
         String value = (String)item.getPropertyValue();
         String location = (String)item.getLocation();
+        if(s.getDynamicMappingInfo().getItems() ==null) {
+          s.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
+        }
         if(item.getChangeType().equals(ChangeType.DELETE)) {
           s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
         }
         else if(item.getChangeType().equals(ChangeType.ADD)) {
+
           s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
           s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
         }else if(item.getChangeType().equals(ChangeType.UPDATE)) {
@@ -1675,19 +1679,46 @@ public class SegmentServiceImpl implements SegmentService {
    */
   @Override
   public void restoreDefaultDynamicMapping(Segment segment) {
-    List<Valueset> vsList = valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(Scope.HL7STANDARD.toString(), segment.getDomainInfo().getVersion(), "HL70125");
-    if(vsList !=null && !vsList.isEmpty()) {
-      segment.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
-      for(Code c : vsList.get(0).getCodes()) {
+    Valueset source = null; 
+    String valueSetId = findObx2VsId(segment);
+    if (valueSetId !=null) {
+      source = valueSetService.findById(valueSetId);
+//      if(source == null) {
+//        List<Valueset> vsList = valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(Scope.HL7STANDARD.toString(), segment.getDomainInfo().getVersion(), "HL70125");
+//        if(vsList != null && ! vsList.isEmpty()) {
+//          source = vsList.get(0);
+//        }
+//      }
+    }
+    segment.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
+    if(source !=null) {
+      for(Code c : source.getCodes()) {
         if(c.getValue() !=null && c.getUsage() != CodeUsage.E) {
           Datatype d = datatypeService.findOneByNameAndVersionAndScope(c.getValue(),segment.getDomainInfo().getVersion(), Scope.HL7STANDARD.toString());
           if(d != null) {
             segment.getDynamicMappingInfo().addItem(new DynamicMappingItem(d.getId(), c.getValue()));
           }
         }
-
       }
     }
   }
 
+
+  private String findObx2VsId(Segment s) {
+    // TODO Auto-generated method stub
+    if(s.getBinding() != null && s.getBinding().getChildren() != null) {
+      for(StructureElementBinding child : s.getBinding().getChildren()) {
+        if(child.getLocationInfo() != null && child.getLocationInfo().getPosition() ==2) {
+          if(child.getValuesetBindings() != null) {
+            Optional<ValuesetBinding> vs = child.getValuesetBindings().stream().findAny();
+            if(vs.isPresent() && vs.get().getValueSets() !=null && !vs.get().getValueSets().isEmpty()) {
+              return vs.get().getValueSets().get(0);
+            }
+
+          }
+        }
+      }
+    }
+    return null;
+  }
 }

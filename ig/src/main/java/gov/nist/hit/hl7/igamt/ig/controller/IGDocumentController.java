@@ -932,6 +932,9 @@ public class IGDocumentController extends BaseController {
     }
     Datatype clone = datatype.clone();
     clone.setUsername(username);
+    if(datatype.getDomainInfo().getScope().equals(Scope.SDTF)) {
+      clone.setFixedExtension(datatype.getExt());
+    }
     clone.setId(new ObjectId().toString());
     clone.setExt(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
@@ -1327,7 +1330,6 @@ public class IGDocumentController extends BaseController {
         }else {
           if(ig.getSharedUsers() !=null && ig.getSharedUsers().contains(cUser)) {
             ig.setSharePermission(SharePermission.READ);
-
           }else {
             throw new ForbiddenOperationException("Access denied");
           }
