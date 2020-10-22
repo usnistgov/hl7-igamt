@@ -42,7 +42,9 @@ export class ConformanceProfileService {
       structID: conformanceProfile.structID,
       profileType: conformanceProfile.profileType,
       role: conformanceProfile.role,
-      profileIdentifier: conformanceProfile.profileIdentifier || [],
+      description: conformanceProfile.description,
+      displayName: conformanceProfile.displayName,
+      profileIdentifier:  conformanceProfile.preCoordinatedMessageIdentifier ? conformanceProfile.preCoordinatedMessageIdentifier : {},
     };
   }
 }

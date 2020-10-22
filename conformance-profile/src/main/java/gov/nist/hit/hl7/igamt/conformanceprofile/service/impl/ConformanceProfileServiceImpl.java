@@ -1591,6 +1591,14 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	        item.setOldPropertyValue(cp.getName());
 	        cp.setName((String) item.getPropertyValue());
 	      }
+	      if (item.getPropertyType().equals(PropertyType.DESCRIPTION)) {
+            item.setOldPropertyValue(cp.getDescription());
+            cp.setDescription((String) item.getPropertyValue());
+          }
+	      if (item.getPropertyType().equals(PropertyType.DISPLAYNAME)) {
+            item.setOldPropertyValue(cp.getDisplayName());
+            cp.setDisplayName((String) item.getPropertyValue());
+          }
 	      else if (item.getPropertyType().equals(PropertyType.ORGANISATION)) {
 	        item.setOldPropertyValue(cp.getOrganization());
 	        cp.setOrganization((String) item.getPropertyValue());
@@ -1618,8 +1626,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	      else if (item.getPropertyType().equals(PropertyType.PROFILEIDENTIFIER)) {
 	        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 	        item.setOldPropertyValue(cp.getAuthors());
-	        List<MessageProfileIdentifier> profileIdentifier= mapper.readValue(jsonInString, new TypeReference<List<MessageProfileIdentifier>>() {});
-	        cp.setProfileIdentifier(profileIdentifier);
+	        MessageProfileIdentifier profileIdentifier= mapper.readValue(jsonInString, MessageProfileIdentifier.class);
+	        cp.setPreCoordinatedMessageIdentifier(profileIdentifier);
 
 	      }         
 	      else if (item.getPropertyType().equals(PropertyType.PREDEF)) {
