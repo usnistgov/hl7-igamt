@@ -16,7 +16,11 @@
       <span style="margin-left: 10px; color: #818181;">{{igListItem.subtitle}}</span>
       <span *ngIf="igListItem.username" style="margin-left: 10px; color: #818181;">
         <i class="fa fa-user"></i>
-        {{igListItem.username}}
+         {{igListItem.username}}
+      </span>
+      <span *ngIf="igListItem.dateUpdated" style="margin-left: 10px; color: #818181;">
+        <i class="fa fa-calendar"></i>
+         updated on:  {{igListItem.dateUpdated | date}}
       </span>
       <span *ngIf="igListItem.participants" style="margin-left: 10px;">
         <i class="fa fa-users"></i>

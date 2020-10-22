@@ -36,7 +36,9 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ca.uhn.fhir.context.FhirContext;
+import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementFixer;
+import gov.nist.hit.hl7.igamt.bootstrap.data.DynamicMappingFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
@@ -133,6 +135,8 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   private PredicateRepository predicateRepository;
+  @Autowired
+  DynamicMappingFixer dynamicMappingFixer;
 
   //  @Autowired
   //  RelationShipService testCache;
@@ -176,6 +180,8 @@ public class BootstrapApplication implements CommandLineRunner {
   
   @Autowired
   ConformanceStatementFixer conformanceStatementFixer;
+  @Autowired
+  CodeFixer codeFixer;
 
 
   @Bean
@@ -993,4 +999,14 @@ public class BootstrapApplication implements CommandLineRunner {
 
   }
 
+ // @PostConstruct
+  void addDynamicMappingInfo() {
+    codeFixer.fixTableHL70125();
+    dynamicMappingFixer.processSegments();
+  }
+
+  // @PostConstruct
+   void fixHl70125() throws FileNotFoundException {
+     codeFixer.fixFromCSV();
+   }
 }

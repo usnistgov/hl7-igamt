@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -133,11 +134,19 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setId(datatype.getId());
 		displayElement.setDomainInfo(datatype.getDomainInfo());
 		displayElement.setFixedName(datatype.getName());
+		if(!datatype.getDomainInfo().getScope().equals(Scope.SDTF)) {
+	        displayElement.setFixedName(datatype.getName());
+	        if(datatype.getFixedExtension() !=null && !datatype.getFixedExtension().isEmpty()) {
+	          displayElement.setFixedName(datatype.getName() + "_"+ datatype.getFixedExtension());
+	        }
+	        displayElement.setVariableName(datatype.getExt());
+		}else {
+          displayElement.setFixedName(datatype.getLabel());
+		}
 		displayElement.setDescription(datatype.getDescription());
 		displayElement.setDifferantial(datatype.getOrigin() !=null);
 	    displayElement.setActiveInfo(datatype.getActiveInfo());
 		displayElement.setLeaf(!(datatype instanceof ComplexDatatype));
-		displayElement.setVariableName(datatype.getExt());
 		displayElement.setType(Type.DATATYPE);
 		displayElement.setOrigin(datatype.getOrigin());
 		displayElement.setParentId(datatype.getParentId());
@@ -145,6 +154,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		return displayElement;
 	}
 
+	
 	@Override
 	public DisplayElement convertCoConstraintGroup(CoConstraintGroup group) {
 		Segment base =  this.segmentService.findById(group.getBaseSegment());

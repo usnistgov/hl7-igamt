@@ -280,13 +280,14 @@ export class OpenEditorService {
       displayElement$,
       resource,
       notFoundMessage,
-      (action: A, dynMapping: any, display: IDisplayElement) => {
+      (action: A, segment: any, display: IDisplayElement) => {
         return of(new OpenEditor({
           id: action.payload.id,
           display,
           editor: action.payload.editor,
           initial: {
-            ...dynMapping,
+            changes: {},
+            resource: segment,
           },
         }));
       },

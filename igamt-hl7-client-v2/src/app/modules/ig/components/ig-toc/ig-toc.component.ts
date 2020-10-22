@@ -78,7 +78,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
-            if (from.data.type === Type.CONFORMANCEPROFILE && !this.isOrphan(to)) {
+            if (from.data.type === Type.CONFORMANCEPROFILE && to.parent.data.type === Type.CONFORMANCEPROFILEREGISTRY) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
@@ -94,6 +94,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    console.log(this.nodes);
   }
 
   print() {

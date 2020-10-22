@@ -6,11 +6,11 @@
           placeholder="Filter" required style="background-color: #f0f0f0;" type="text">
 </div>
 <div class="delta-filter" *ngIf="derived">
-
   <div>
     <div class="custom-control custom-switch diff-view">
       <input [(ngModel)]="delta" class="custom-control-input" id="deltaSwitch" type="checkbox" (ngModelChange)="toggleDelta()">
       <label class="custom-control-label" for="deltaSwitch">Differential view </label>
+
     </div>
   </div>
 
@@ -20,6 +20,7 @@
       <span class="badge delta-badge-added delta-badge"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> added </span>
       <span class="badge delta-badge">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"> </p-checkbox> unchanged</span>
   </div>
+  <div *ngIf="delta" class="alert-info" style="height: 25px; padding: 5px; display: flex; flex-direction: row; justify-content: center"> <i class="fa fa-eye">View Only</i></div>
 
 </div>
 <div class="sidebar-controls">

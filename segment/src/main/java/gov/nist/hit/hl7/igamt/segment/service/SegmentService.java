@@ -146,5 +146,7 @@ public interface SegmentService extends ResourceService {
 	public void collectResources(Segment seg, HashMap<String, Resource> used);
 
 	public Set<Resource> getDependencies(Segment segment);
+	
+	public void restoreDefaultDynamicMapping(Segment segment);
 
 }

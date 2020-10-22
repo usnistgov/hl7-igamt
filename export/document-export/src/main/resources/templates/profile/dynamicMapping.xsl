@@ -38,10 +38,10 @@
 				<xsl:for-each select="./DynamicMappingItem">
 					<xsl:element name="tr">
 						<xsl:element name="td">
-							<xsl:value-of select="@FirstReferenceValue" />
+							<xsl:value-of select="@value" />
 						</xsl:element>
 						<xsl:element name="td">
-							<xsl:value-of select="@Datatype" />
+							<xsl:value-of select="@datatype" />
 						</xsl:element>
 					</xsl:element>
 				</xsl:for-each>

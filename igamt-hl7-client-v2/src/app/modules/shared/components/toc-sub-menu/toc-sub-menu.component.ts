@@ -24,11 +24,10 @@ export class TocSubMenuComponent implements OnInit {
     }
   }
 
+  // tslint:disable-next-line:cognitive-complexity
   getMenuItems() {
-
     const type = this.element.type.toLowerCase();
     const ret: SubMenu[] = [];
-
     if (type === Type.COCONSTRAINTGROUP.toLowerCase()) {
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Table', Icons.TABLE));
     } else {
@@ -44,6 +43,9 @@ export class TocSubMenuComponent implements OnInit {
       if (type !== Type.VALUESET.toLowerCase()) {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'conformance-statement', 'Conformance statements', Icons.TABLE));
       }
+      if (type === Type.SEGMENT.toLocaleLowerCase() && this.element.fixedName === 'OBX') {
+        ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'dynamic-mapping', 'Dynamic Mapping', Icons.LIST));
+      }
       if (type === 'conformanceprofile') {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'co-constraint', 'Co-Constraints', Icons.TABLE));
       }
@@ -52,12 +54,15 @@ export class TocSubMenuComponent implements OnInit {
 
     if (this.element.origin) {
 
-      if (this.element.fixedName !== 'DT' && this.element.fixedName !== 'TM' && this.element.fixedName !== 'DTM' ) {
+      if (this.isDateAndTime() ) {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'delta', 'Delta', Icons.LIST));
       } else {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'dtm-delta', 'Delta', Icons.LIST));
       }
     }
     return ret;
+  }
+  isDateAndTime() {
+    return this.element.fixedName === 'DT' || this.element.fixedName === 'TM' || this.element.fixedName === 'DTM' ;
   }
 }

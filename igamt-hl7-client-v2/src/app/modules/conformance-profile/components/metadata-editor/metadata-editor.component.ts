@@ -22,6 +22,8 @@ import { ConformanceProfileService } from '../../services/conformance-profile.se
 export interface IConformanceProfileEditMetadata {
   name: string;
   hl7Version: string;
+  description: string;
+  displayName: string;
   organization: string;
   authors: string[];
   messageType: string;
@@ -29,12 +31,12 @@ export interface IConformanceProfileEditMetadata {
   structID: string;
   profileType: string;
   role: string;
-  profileIdentifier: Array<{
-    entityIdentifier: string,
-    namespaceId: string,
-    universalId: string,
-    universalIdType: string,
-  }>;
+  profileIdentifier: {
+    entityIdentifier?: string,
+    namespaceId?: string,
+    universalId?: string,
+    universalIdType?: string,
+  };
 }
 
 @Component({
@@ -100,19 +102,9 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
       tap((metadata: IConformanceProfileEditMetadata) => {
 
         this.initFormGroup();
-        const profileIdentifierFormArray = this.formGroup.get('profileIdentifier') as FormArray;
-        if (metadata.profileIdentifier) {
-          for (const profile of metadata.profileIdentifier) {
-            profileIdentifierFormArray.push(this.formBuilder.group({
-              entityIdentifier: [profile.entityIdentifier],
-              namespaceId: [profile.namespaceId],
-              universalId: [profile.universalId],
-              universalIdType: [profile.universalIdType],
-            }));
-          }
-        }
         this.formGroup.patchValue(metadata);
         this.formGroup.valueChanges.subscribe((changed) => {
+          console.log(this.formGroup.getRawValue());
           this.editorChange(changed, this.formGroup.valid);
         });
 
@@ -123,6 +115,8 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
   initFormGroup() {
     this.formGroup = this.formBuilder.group({
       name: [''],
+      description: [''],
+      displayName: [''],
       hl7Version: [''],
       organization: [''],
       authors: [''],
@@ -131,7 +125,12 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
       structID: [''],
       profileType: [''],
       role: [''],
-      profileIdentifier: this.formBuilder.array([]),
+      profileIdentifier: this.formBuilder.group({
+        entityIdentifier: [''],
+        namespaceId: [''],
+        universalId: [''],
+        universalIdType: [''],
+      }),
     });
   }
 
@@ -170,6 +169,27 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
         oldPropertyValue: old.name,
         propertyValue: current.name,
         propertyType: PropertyType.NAME,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
+    if (current.displayName !== old.displayName) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.displayName,
+        propertyValue: current.displayName,
+        propertyType: PropertyType.DISPLAYNAME,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
+
+    if (current.displayName !== old.displayName) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.description,
+        propertyValue: current.description,
+        propertyType: PropertyType.DESCRIPTION,
         position: -1,
         changeType: ChangeType.UPDATE,
       });

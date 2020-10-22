@@ -95,6 +95,7 @@ export const selectedResourceMetadata = createSelector(
       usageNotes: state.usageNotes,
       compatibilityVersions: state.compatibilityVersions,
       shortDescription: state.shortDescription,
+      fixedExtension: state.fixedExtension,
     };
   },
 );

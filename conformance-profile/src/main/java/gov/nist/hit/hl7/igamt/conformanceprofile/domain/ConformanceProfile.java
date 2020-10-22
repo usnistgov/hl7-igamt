@@ -35,8 +35,11 @@ public class ConformanceProfile extends Resource {
   private String event; // Message/@Event
   private String structID; // Message/@StructID private String identifier;
   private ProfileType profileType;
+  private String displayName;
   private Role role;
+  @Deprecated
   private List<MessageProfileIdentifier> profileIdentifier;
+  private MessageProfileIdentifier preCoordinatedMessageIdentifier;
   private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
   private List<CoConstraintBinding> coConstraintsBindings;
 
@@ -182,6 +185,22 @@ public String toString() {
 			+ ", structID=" + structID + ", profileType=" + profileType + ", role=" + role + ", profileIdentifier="
 			+ profileIdentifier + ", children=" + children + ", coConstraintsBindings=" + coConstraintsBindings
 			+ ", binding=" + binding + "]";
+}
+
+public String getDisplayName() {
+  return displayName;
+}
+
+public void setDisplayName(String displayName) {
+  this.displayName = displayName;
+}
+
+public MessageProfileIdentifier getPreCoordinatedMessageIdentifier() {
+  return preCoordinatedMessageIdentifier;
+}
+
+public void setPreCoordinatedMessageIdentifier(MessageProfileIdentifier preCoordinatedMessageIdentifier) {
+  this.preCoordinatedMessageIdentifier = preCoordinatedMessageIdentifier;
 }
   
   

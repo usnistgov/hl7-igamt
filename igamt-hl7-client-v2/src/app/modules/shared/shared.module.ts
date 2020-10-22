@@ -42,6 +42,7 @@ import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.
 import { DisplayRefComponent } from './components/display-ref/display-ref.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
+import {AddMappingDialgComponent} from './components/dynamic-mapping/add-mapping-dialg/add-mapping-dialg.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
@@ -173,6 +174,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeLogInfoComponent,
     DeactivatingDialogComponent,
     ResourceListComponent,
+    AddMappingDialgComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -353,6 +355,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     FieldAddDialogComponent,
     ChangeReasonDialogComponent,
     DeactivatingDialogComponent,
+    AddMappingDialgComponent,
   ],
 })
 export class SharedModule {
