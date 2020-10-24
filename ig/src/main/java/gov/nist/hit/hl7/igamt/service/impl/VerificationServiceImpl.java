@@ -1873,7 +1873,7 @@ public class VerificationServiceImpl implements VerificationService {
 					}
 					
 					for (DynamicMappingItem item : dynamicMappingInfo.getItems()) {
-						if (this.isNotNullNotEmptyNotWhiteSpaceOnly(item.getValue())) {
+						if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(item.getValue())) {
 							result.getErrors()
 							.add(new IgamtObjectError("DM_DTBaseName_Missing", segment.getId(), segment.getType(),
 									new DTSegMetadata(segment),
