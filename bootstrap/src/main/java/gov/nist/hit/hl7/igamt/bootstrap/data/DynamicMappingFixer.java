@@ -22,6 +22,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -45,6 +46,9 @@ public class DynamicMappingFixer {
   
   @Autowired
   DatatypeService datatypeService;
+  
+  @Autowired
+  IgService service;
   
   
   public void processSegments() {
@@ -98,6 +102,7 @@ public class DynamicMappingFixer {
     
     return null;
   }
+
   
   
 }

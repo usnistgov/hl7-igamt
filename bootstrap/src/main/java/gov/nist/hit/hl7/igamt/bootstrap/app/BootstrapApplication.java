@@ -999,7 +999,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
   }
 
-  @PostConstruct
+  //@PostConstruct
   void addDynamicMappingInfo() {
     codeFixer.fixTableHL70125();
     dynamicMappingFixer.processSegments();
