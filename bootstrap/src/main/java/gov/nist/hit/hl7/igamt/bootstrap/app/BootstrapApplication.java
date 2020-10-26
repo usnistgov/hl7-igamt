@@ -999,14 +999,14 @@ public class BootstrapApplication implements CommandLineRunner {
 
   }
 
- // @PostConstruct
+  @PostConstruct
   void addDynamicMappingInfo() {
     codeFixer.fixTableHL70125();
     dynamicMappingFixer.processSegments();
   }
 
-  // @PostConstruct
-   void fixHl70125() throws FileNotFoundException {
+  //@PostConstruct
+   void fixDeprecated() throws FileNotFoundException {
      codeFixer.fixFromCSV();
    }
 }
