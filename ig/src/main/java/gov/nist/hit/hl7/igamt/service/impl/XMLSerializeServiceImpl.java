@@ -1572,10 +1572,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     try {
       Element elmMessage = new Element("Message");
       elmMessage.addAttribute(new Attribute("ID", cpModel.getModel().getId()));
-      if (cpModel.getModel().getIdentifier() != null
-          && !cpModel.getModel().getIdentifier().equals(""))
+      if (cpModel.getModel().getDisplayName() != null
+          && !cpModel.getModel().getDisplayName().equals(""))
         elmMessage.addAttribute(
-            new Attribute("Identifier", this.str(cpModel.getModel().getIdentifier())));
+            new Attribute("Identifier", this.str(cpModel.getModel().getDisplayName())));
       if (cpModel.getModel().getName() != null && !cpModel.getModel().getName().equals(""))
         elmMessage.addAttribute(new Attribute("Name", this.str(cpModel.getModel().getName())));
       elmMessage.addAttribute(new Attribute("Type", this.str(cpModel.getModel().getMessageType())));
