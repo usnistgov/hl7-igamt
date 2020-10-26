@@ -184,7 +184,7 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
       });
     }
 
-    if (current.displayName !== old.displayName) {
+    if (current.description !== old.description) {
       changes.push({
         location: elementId,
         oldPropertyValue: old.description,
