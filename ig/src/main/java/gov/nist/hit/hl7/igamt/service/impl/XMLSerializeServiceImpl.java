@@ -1243,6 +1243,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         if (sModel.getModel().getDynamicMappingInfo() != null
             && sModel.getModel().getDynamicMappingInfo().getItems() != null) {
           for (DynamicMappingItem item : sModel.getModel().getDynamicMappingInfo().getItems()) {
+        	  
             Element elmCase = new Element("Case");
             elmCase.addAttribute(new Attribute("Value", item.getValue()));
 
@@ -1262,11 +1263,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                 elmCase.addAttribute(
                     new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
               }
+              elmMapping.appendChild(elmCase);
             } else {
               // throw new SegmentSerializationException("Datatype not found");
             }
-
-            elmMapping.appendChild(elmCase);
           }
         }
 
@@ -1572,10 +1572,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     try {
       Element elmMessage = new Element("Message");
       elmMessage.addAttribute(new Attribute("ID", cpModel.getModel().getId()));
-      if (cpModel.getModel().getIdentifier() != null
-          && !cpModel.getModel().getIdentifier().equals(""))
+      if (cpModel.getModel().getDisplayName() != null
+          && !cpModel.getModel().getDisplayName().equals(""))
         elmMessage.addAttribute(
-            new Attribute("Identifier", this.str(cpModel.getModel().getIdentifier())));
+            new Attribute("Identifier", this.str(cpModel.getModel().getDisplayName())));
       if (cpModel.getModel().getName() != null && !cpModel.getModel().getName().equals(""))
         elmMessage.addAttribute(new Attribute("Name", this.str(cpModel.getModel().getName())));
       elmMessage.addAttribute(new Attribute("Type", this.str(cpModel.getModel().getMessageType())));
@@ -1760,8 +1760,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         List<String> pathList = new LinkedList<String>(Arrays.asList(key.split("\\.")));
 
         if (pathList.size() > 1) {
-          ComponentDataModel cModel =
-              dtModel.findComponentDataModelByPosition(Integer.parseInt(pathList.remove(0)));
+          ComponentDataModel cModel = dtModel.findComponentDataModelByPosition(Integer.parseInt(pathList.remove(0)));
 
           DatatypeDataModel childDtModel = igModel.findDatatype(cModel.getDatatype().getId());
           if (childDtModel == null)
@@ -1798,15 +1797,13 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           int randumNum = new SecureRandom().nextInt(100000);
           copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
           String ext = childDtModel.getModel().getExt();
-          if (ext == null)
-            ext = "";
+          if (ext == null) ext = "";
           copyDtModel.getModel().setExt(ext + "_A" + randumNum);
           toBeAddedDTs.put(copyDtModel.getModel().getId(), copyDtModel);
           fModel.getDatatype().setId(copyDtModel.getModel().getId());
           fModel.getDatatype().setExt(ext + "_A" + randumNum);
 
-          updateChildDatatype(pathList, copyDtModel, igModel, segModel.getValuesetMap().get(key),
-              toBeAddedDTs);
+          updateChildDatatype(pathList, copyDtModel, igModel, segModel.getValuesetMap().get(key), toBeAddedDTs);
         }
       }
     }
