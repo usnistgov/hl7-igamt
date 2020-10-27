@@ -72,9 +72,11 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationServ
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
+import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
@@ -174,15 +176,14 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   IgFixer igFixer;
-  
+
   @Autowired
   IgRepository igRepo;
-  
+
   @Autowired
   ConformanceStatementFixer conformanceStatementFixer;
   @Autowired
   CodeFixer codeFixer;
-
 
   @Bean
   public JavaMailSenderImpl mailSender() {
@@ -339,7 +340,7 @@ public class BootstrapApplication implements CommandLineRunner {
     tableFixes.removeSegmentsDuplicatedBinding();
   }
 
-//   @PostConstruct
+  //   @PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
@@ -989,10 +990,10 @@ public class BootstrapApplication implements CommandLineRunner {
   private void fixIGs() throws CoConstraintGroupNotFoundException{
     this.igFixer.fixIgComponents();
   }
-  
- //@PostConstruct
+
+  //@PostConstruct
   void fixConformanceStatements() throws IGUpdateException, CoConstraintGroupNotFoundException {
-   // this.conformanceStatementFixer.fixConformanceStatmentsId();
+    // this.conformanceStatementFixer.fixConformanceStatmentsId();
     this.igFixer.deriveChildren();
     this.conformanceStatementFixer.lockCfsForDerived();
     this.igFixer.fixIgComponents();
@@ -1006,7 +1007,24 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
   //@PostConstruct
-   void fixDeprecated() throws FileNotFoundException {
-     codeFixer.fixFromCSV();
-   }
+  void fixDeprecated() throws FileNotFoundException {
+    codeFixer.fixFromCSV();
+  }
+  
+  //@PostConstruct
+  void generateDefaultFontConfigForAll(){
+    List<ExportConfiguration> allConfigs= exportConfigurationRepository.findAll();
+    ExportFontConfiguration fontConfig = ExportFontConfiguration.getDefault();
+    for(ExportConfiguration config: allConfigs) {
+      config.setExportFontConfiguration(fontConfig);
+      exportConfigurationRepository.save(config);
+    }
+  }
+ @PostConstruct
+  void fixIgWithDynamicMapping() throws AddingException {
+    dynamicMappingFixer.addMissingDatatypesBasedOnDynamicMapping();
+  }
+  
+  
+  
 }

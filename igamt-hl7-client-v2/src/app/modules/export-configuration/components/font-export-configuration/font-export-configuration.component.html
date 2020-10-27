@@ -6,7 +6,7 @@
           <section class="example-section">
               <mat-form-field class="example-margin">
                   <mat-label>Value</mat-label>
-                  <input matInput type="number" [(ngModel)]="config.fontSize" (input)="onInputChange($event)">
+                  <input matInput type="number"  [disabled]="viewOnly" [(ngModel)]="config.fontSize" (input)="onInputChange($event)">
                 </mat-form-field>
             </section>
 
@@ -19,9 +19,6 @@
           max="25">
         </mat-slider>
         </div>
-      <pre>{{config?.fontSize}}
-</pre>
-
   <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;" >
     <h5 class="card-title title-text custom-card-title">Font Type</h5>
     <mat-radio-group

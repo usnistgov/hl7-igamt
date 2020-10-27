@@ -127,8 +127,8 @@ public class ExportConfiguration {
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue, Type type) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();
     //setting font
-     ExportFontConfiguration exportFontConfiguration = ExportFontConfiguration.getDefault();
-     defaultConfiguration.setExportFontConfiguration(exportFontConfiguration);
+    ExportFontConfiguration exportFontConfiguration = ExportFontConfiguration.getDefault();
+    defaultConfiguration.setExportFontConfiguration(exportFontConfiguration);
     defaultConfiguration.setType(type);
     defaultConfiguration.setConfigName("");
     defaultConfiguration.setOriginal(false);
