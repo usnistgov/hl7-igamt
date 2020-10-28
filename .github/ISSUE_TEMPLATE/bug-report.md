@@ -10,6 +10,12 @@ assignees: Abdelghani90
 **Describe the bug**
 A clear and concise description of what the bug is.
 
+**User Account**
+The Account logged in when the issue occurs.
+
+**URL**
+The URL copied from the browser when the issue occurs.
+
 **To Reproduce**
 Steps to reproduce the behavior:
 1. Go to '...'
