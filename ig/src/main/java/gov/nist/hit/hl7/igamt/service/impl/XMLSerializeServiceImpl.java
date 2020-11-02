@@ -1953,7 +1953,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       AssertionPredicate cp = (AssertionPredicate) p;
       if (cp.getAssertion() != null)
         return "<Condition>" + this
-            .generateAssertionScript(cp.getAssertion(), cp.getLevel(), targetId, cp.getContext())
+            .generateAssertionScript(cp.getAssertion(), cp.getLevel(), targetId, cp.getContext(), true)
             .replace("\n", "").replace("\r", "") + "</Condition>";
     }
     return null;
@@ -1969,23 +1969,23 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       AssertionConformanceStatement cs = (AssertionConformanceStatement) c;
       if (cs.getAssertion() != null)
         return "<Assertion>" + this
-            .generateAssertionScript(cs.getAssertion(), cs.getLevel(), targetId, cs.getContext())
+            .generateAssertionScript(cs.getAssertion(), cs.getLevel(), targetId, cs.getContext(), false)
             .replace("\n", "").replace("\r", "") + "</Assertion>";
     }
     return null;
   }
 
   private String generateAssertionScript(Assertion assertion, Level level, String targetId,
-		  InstancePath context) {
+		  InstancePath context, boolean presenceCheckOn) {
     if (assertion instanceof NotAssertion) {
       return "<NOT>" + this.generateAssertionScript(((NotAssertion) assertion).getChild(), level,
-          targetId, context) + "</NOT>";
+          targetId, context, presenceCheckOn) + "</NOT>";
     } else if (assertion instanceof IfThenAssertion) {
       return "<IMPLY>"
           + this.generateAssertionScript(((IfThenAssertion) assertion).getIfAssertion(), level,
-              targetId, context)
+              targetId, context, true)
           + this.generateAssertionScript(((IfThenAssertion) assertion).getThenAssertion(), level,
-              targetId, context)
+              targetId, context, true)
           + "</IMPLY>";
     } else if (assertion instanceof OperatorAssertion) {
       OperatorAssertion oAssertion = (OperatorAssertion) assertion;
@@ -1993,13 +1993,13 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         if (oAssertion.getAssertions().size() == 2) {
           String script = "<AND>";
           for (Assertion a : oAssertion.getAssertions()) {
-            script = script + this.generateAssertionScript(a, level, targetId, context);
+            script = script + this.generateAssertionScript(a, level, targetId, context, presenceCheckOn);
           }
           return script + "</AND>";
         } else if (oAssertion.getAssertions().size() > 2) {
           String script = "<FORALL>";
           for (Assertion a : oAssertion.getAssertions()) {
-            script = script + this.generateAssertionScript(a, level, targetId, context);
+            script = script + this.generateAssertionScript(a, level, targetId, context, presenceCheckOn);
           }
           return script + "</FORALL>";
         }
@@ -2008,13 +2008,13 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         if (oAssertion.getAssertions().size() == 2) {
           String script = "<OR>";
           for (Assertion a : oAssertion.getAssertions()) {
-            script = script + this.generateAssertionScript(a, level, targetId, context);
+            script = script + this.generateAssertionScript(a, level, targetId, context, presenceCheckOn);
           }
           return script + "</OR>";
         } else if (oAssertion.getAssertions().size() > 2) {
           String script = "<EXIST>";
           for (Assertion a : oAssertion.getAssertions()) {
-            script = script + this.generateAssertionScript(a, level, targetId, context);
+            script = script + this.generateAssertionScript(a, level, targetId, context, presenceCheckOn);
           }
           return script + "</EXIST>";
         }
@@ -2022,7 +2022,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         if (oAssertion.getAssertions().size() == 2) {
           String script = "<XOR>";
           for (Assertion a : oAssertion.getAssertions()) {
-            script = script + this.generateAssertionScript(a, level, targetId, context);
+            script = script + this.generateAssertionScript(a, level, targetId, context, presenceCheckOn);
           }
           return script + "</XOR>";
         }
@@ -2030,7 +2030,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
     } else if (assertion instanceof SingleAssertion) {
       return this.generateSingleAssertionScript((SingleAssertion) assertion, level, targetId,
-          context);
+          context, presenceCheckOn);
     }
 
     return null;
@@ -2051,7 +2051,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
    * @return
    */
   private String generateSingleAssertionScript(SingleAssertion assertion, Level level,
-      String targetId, InstancePath context) {
+      String targetId, InstancePath context, boolean presenceCheckOn) {
     Complement complement = assertion.getComplement();
     ComplementKey key = complement.getComplementKey();
     boolean notAssertion = assertion.getVerbKey().contains("NOT");
@@ -2092,10 +2092,18 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         result = "<NOT><Presence Path=\"" + sPathStr + "\"/></NOT>";
         break;
       case containValue:
-        result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
-            + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
-            + "\" NotPresentBehavior=\"" + "FAIL" 
-            + "\"/>";
+    	  if(presenceCheckOn) {
+    		  result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+              + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+              + "\" NotPresentBehavior=\"" + "FAIL" 
+              + "\"/>";	  
+    	  } else {
+    		  result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+              + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+              + "\" NotPresentBehavior=\"" + "PASS" 
+              + "\"/>";
+    	  }
+        
         break;
       case notContainValue:
         result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
