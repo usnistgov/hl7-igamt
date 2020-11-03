@@ -23,7 +23,7 @@
 </span>
 
 <!-- CONTEXT MENU -->
-<context-menu #elmCtxMenu [disabled]="extendable">
+<context-menu #elmCtxMenu [disabled]="true">
   <ng-template (execute)="ctxAdd()" contextMenuItem>
     <i class="fa fa-plus"></i> Add Child
   </ng-template>

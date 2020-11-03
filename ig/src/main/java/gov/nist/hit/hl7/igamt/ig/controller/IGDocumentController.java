@@ -1037,7 +1037,6 @@ public class IGDocumentController extends BaseController {
         if (segment != null) {
           Segment clone = segment.clone();
           clone.getDomainInfo().setScope(Scope.USER);
-
           clone.setUsername(username);
           clone.setName(segment.getName());
           clone.setExt(elm.getExt());

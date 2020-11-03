@@ -17,7 +17,7 @@ public interface StructureService {
     List<MessageStructure> getUserCustomMessageStructure(String user);
     List<Segment> getUserCustomSegment(String user);
 
-    MessageStructure saveMessageStructure(String id, String user, Set<SegmentRefOrGroup> children);
+    MessageStructure saveMessageStructure(String id, String user, Set<SegmentRefOrGroup> children) throws InvalidStructureException;
     MessageStructure saveMessageMetadata(String id, String user, MessageStructureMetadata metadata);
 
     Segment saveSegment(String id, String user, Set<Field> children);

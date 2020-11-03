@@ -3,7 +3,8 @@
   <form #form='ngForm'>
     <div class="form-group">
       <label for="segment" style="font-weight: bold;"> Group Name </label>
-      <input class="form-control" name="name" id="name" type="text" [(ngModel)]="blueprint.name" required>
+      <input class="form-control" name="name" id="name" type="text" [(ngModel)]="blueprint.name" pattern="[a-zA-Z]+[a-zA-Z_]*" required>
+      <small *ngIf="form.controls.name.invalid">Only letters and underscores permitted</small>
     </div>
     <div class="form-group">
       <label for="segment" style="font-weight: bold;" #pos> Position </label>

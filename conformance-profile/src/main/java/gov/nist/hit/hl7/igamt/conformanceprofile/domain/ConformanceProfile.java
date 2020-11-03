@@ -31,6 +31,8 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 public class ConformanceProfile extends Resource {
 
   private String identifier;
+  private String messageStructureId;
+  private boolean custom;
   private String messageType; // Message/@Type
   private String event; // Message/@Event
   private String structID; // Message/@StructID private String identifier;
@@ -128,6 +130,8 @@ public class ConformanceProfile extends Resource {
       elm.children = children;
       elm.binding = binding;
       elm.coConstraintsBindings= coConstraintsBindings;
+      elm.custom = custom;
+      elm.messageStructureId = messageStructureId;
   }
 
   public ConformanceProfile(MessageStructure elm, String event) {
@@ -137,6 +141,8 @@ public class ConformanceProfile extends Resource {
     this.event = event;
     this.structID = elm.getStructID();
     this.binding = elm.getBinding();
+    this.messageStructureId = elm.getId();
+    this.custom = elm.isCustom();
     this.setDomainInfo(elm.getDomainInfo());
   }
   
@@ -202,6 +208,12 @@ public MessageProfileIdentifier getPreCoordinatedMessageIdentifier() {
 public void setPreCoordinatedMessageIdentifier(MessageProfileIdentifier preCoordinatedMessageIdentifier) {
   this.preCoordinatedMessageIdentifier = preCoordinatedMessageIdentifier;
 }
-  
-  
+
+  public String getMessageStructureId() {
+    return messageStructureId;
+  }
+
+  public void setMessageStructureId(String messageStructureId) {
+    this.messageStructureId = messageStructureId;
+  }
 }
