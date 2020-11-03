@@ -1,43 +1,33 @@
-<div>
-  <div class="p-grid p-align-start" style="margin: 0; padding: 50px;">
-    <div class="p-col-12 p-align-center" style="text-align: center; color: wheat; height: 10%;">
+  <div  style="margin: 0; padding: 50px;">
+    <div style="text-align: center; color: wheat; height: 10%;">
       <h2>Welcome to HL7 Implementation Guide Authoring and Management Tool !</h2>
     </div>
-    <div class="p-col-12">
-      <p-card [styleClass]="'fill_height notice'">
-        <div class="ui-card-title" style="color: red;"><i class="fa fa-exclamation-triangle"></i> Beta Notice</div>
-        <p>
+    <div class="row">
+      <div class="col-md-12">
+      <p-card [styleClass]="'fill_height fill_width notice'">
+        <span class="ui-card-title" style="color: red;"><i class="fa fa-exclamation-triangle"></i> Beta Notice: </span>
           IGAMT is currently provided as a beta pre-release in order to gather feedback from the larger community.
           <strong>User data WILL be lost on the official release.</strong>
-        </p>
       </p-card>
+      </div>
     </div>
-    <div class="p-col-12">
-      <p-card [styleClass]="'fill_height'" header="What is IGAMT ?">
-        <p>
-          IGAMT is a tool used to create HL7 v2.x implementation guides that contain one or more conformance profiles.
-          The tool provides capabilities to create both narrative text (akin to a word processing program) and
-          messaging
-          requirements in a structured environment. IGAMT contains a model of all the message events for every version
-          of the HL7 v2 standard. Users begin by selecting the version of the HL7 v2 standard and the message events
-          they want to include and refine (constrain) in their implementation guide.
-        </p>
-      </p-card>
-    </div>
-    <div class="p-col-12">
+    <div class="row" style="margin-top: 5px;">
+    <div class="col-md-4">
       <p-card [styleClass]="'fill_height'" header="Note to Users">
         <p>
-          <strong style="color: red;">IGAMT is a work-in-progress and is in a constant state of change. Many core
-            features exist and IGAMT
-            has been used to create complete Implementation Guides in pilot projects. However, be aware that new
-            features may not be completely functionality and some existing features will change. Also, we are
-            currently
-            working on integration with the NIST validation tool. If you have issues, please contact us or join the
-            IGAMT Google Group to post questions.</strong>
+          The NIST Implementation Guide Authoring and Management Tool (IGAMT) is part of the NIST HL7 v2 Standards
+          Development and Testing Platform. IGAMT is a tool used to create HL7 v2.x implementation guides that contain
+          one or more conformance profiles. The tool provides capabilities to create both narrative text
+          (similar to a word processing program) and messaging requirements in a structured environment
+          . IGAMT contains a model of all the message events for every version of the HL7 v2 standard.
+          Users begin by selecting the version of the HL7 v2 standard and the message events they want
+          to include and refine (constrain) in their implementation guide.
+
         </p>
       </p-card>
     </div>
-    <div class="p-col-12">
+
+    <div class="col-md-4">
       <p-card [styleClass]="'fill_height'" header=" Have a question ?">
         <p>
           A Google Group NIST-IGAMT has been established for discussion/questions about the tool. No membership is
@@ -49,5 +39,44 @@
         </ul>
       </p-card>
     </div>
-  </div>
+
+
+    <div class="col-md-4">
+      <p-card [styleClass]="'fill_height'" header=" Supported Browsers">
+          <p style="text-align: justify">The following browsers are supported:
+          </p>
+        <ul>
+          <li>Chrome <span style="color:red">(Recommended)</span></li>
+          <li>Firefox <span style="color:red"></span></li>
+          <li>Safari</li>
+        </ul>
+      </p-card>
+    </div>
+    </div>
+
+  <div class="row" style="margin-top: 5px;">
+    <div class="col-md-12">
+    <p-card [styleClass]="'fill_height'">
+
+    <div style="display: flex; flex-direction: row">
+      <div style="width: 70%" style="display: flex; justify-content: center; flex-direction: column">
+      <div>
+        <img style="width:100%"  src="../../../../../assets/framework.png"/>
+      </div>
+      </div>
+        <div style="width: 30%">
+          <p>
+          </p><ul>
+          <li><strong>Context-Free Testing</strong> provides validation of an HL7 v2 message based on the technical requirements defined in a conformance profile.</li>
+          <li><strong>IGAMT</strong> is a profiling tool used to create HL7 v2.x implementation guides that contain one or more conformance profiles. The tool provides capabilities to create both narrative text and messaging requirements in a structured environment. The output of IGAMT is machine-computable artifacts used to generate validation tools for Context-Free Testing.</li>
+          <li><strong>Context-Based Testing</strong> provides validation of an HL7 v2 message based on the technical requirements defined in a conformance profile and with a provided context. The context is provided through the means of a directed test case. Context-based testing expands the scope of testing.</li>
+          <li><strong>TCAMT</strong> is used to create scenario-based test cases and test messages to support Context-Based Testing. Machine-computable artifacts from IGAMT are imported into TCAMT and serve as the basis for creating test cases. </li>
+        </ul>
+          <p></p>
+        </div>
+
+    </div>
+    </p-card>
+    </div>
 </div>
+  </div>
