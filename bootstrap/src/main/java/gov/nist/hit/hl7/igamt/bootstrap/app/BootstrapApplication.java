@@ -1011,7 +1011,7 @@ public class BootstrapApplication implements CommandLineRunner {
     codeFixer.fixFromCSV();
   }
   
-  //@PostConstruct
+  @PostConstruct
   void generateDefaultFontConfigForAll(){
     List<ExportConfiguration> allConfigs= exportConfigurationRepository.findAll();
     ExportFontConfiguration fontConfig = ExportFontConfiguration.getDefault();
@@ -1020,6 +1020,7 @@ public class BootstrapApplication implements CommandLineRunner {
       exportConfigurationRepository.save(config);
     }
   }
+  
  @PostConstruct
   void fixIgWithDynamicMapping() throws AddingException {
     dynamicMappingFixer.addMissingDatatypesBasedOnDynamicMapping();
