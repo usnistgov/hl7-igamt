@@ -54,7 +54,7 @@ export class TocSubMenuComponent implements OnInit {
 
     if (this.element.origin) {
 
-      if (this.isDateAndTime() ) {
+      if (!this.isDateAndTime() ) {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'delta', 'Delta', Icons.LIST));
       } else {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'dtm-delta', 'Delta', Icons.LIST));

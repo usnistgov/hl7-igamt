@@ -33,6 +33,7 @@ import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
@@ -167,7 +168,9 @@ public class CrudServiceImpl implements CrudService {
 		// TODO Auto-generated method stub
 
 		Set<String> datatypeIds = getSegmentResourceDependenciesIds(segment);
-
+		if(segment.getDynamicMappingInfo() !=null && segment.getDynamicMappingInfo().getItems() !=null && !segment.getDynamicMappingInfo().getItems().isEmpty()  ) {
+		addDynamicMappingDatatypesIds(segment.getDynamicMappingInfo().getItems(), datatypeIds);
+		}
 		AddDatatypeResponseObject fromDataypes = addDatatypes(datatypeIds, ig);
 
 		for (Datatype d : fromDataypes.getDatatypes()) {
@@ -193,7 +196,20 @@ public class CrudServiceImpl implements CrudService {
 
 	}
 
-	private Set<String> processBinding(ResourceBinding binding) {
+	/**
+   * @param items
+   * @param datatypeIds
+   */
+  private void addDynamicMappingDatatypesIds(Set<DynamicMappingItem> items, Set<String> datatypeIds) {
+    for(DynamicMappingItem item: items) {
+      if(item.getDatatypeId() !=null) {
+        datatypeIds.add((item.getDatatypeId()));
+      }
+    }
+        
+  }
+
+  private Set<String> processBinding(ResourceBinding binding) {
 		// TODO Auto-generated method stub
 		Set<String> vauleSetIds = new HashSet<String>();
 		if (binding.getChildren() != null) {
@@ -225,6 +241,8 @@ public class CrudServiceImpl implements CrudService {
 		}
 		return ids;
 	}
+	
+	
 
 	@Override
 	public AddDatatypeResponseObject addDatatypes(Set<String> ids, Ig ig) throws AddingException {
