@@ -1,12 +1,10 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
 import { Type } from '../../../shared/constants/type.enum';
 import { Usage } from '../../../shared/constants/usage.enum';
 import { IGroup } from '../../../shared/models/conformance-profile.interface';
-import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { StructCreateDialog } from '../../services/struct-create-dialog.abstract';
 
