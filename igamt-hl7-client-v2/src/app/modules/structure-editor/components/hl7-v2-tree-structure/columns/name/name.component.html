@@ -28,7 +28,7 @@
 </span>
 
 <!-- CONTEXT MENU -->
-<context-menu #elmCtxMenu [disabled]="extendable">
+<context-menu #elmCtxMenu [disabled]="extendable || viewOnly">
   <ng-template (execute)="ctxAddSegment()" contextMenuItem>
     <i class="fa fa-plus"></i> Add Segment
   </ng-template>

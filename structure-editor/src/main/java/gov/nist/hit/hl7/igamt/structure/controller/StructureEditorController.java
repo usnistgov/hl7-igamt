@@ -25,7 +25,6 @@ public class StructureEditorController {
     @Autowired
     StructureService structureService;
 
-
     @RequestMapping(value = "api/structure-editor/structures", method = RequestMethod.GET, produces = {"application/json" })
     public @ResponseBody
     CustomStructureRegistry registry(Authentication authentication) {
@@ -46,7 +45,7 @@ public class StructureEditorController {
 
     @RequestMapping(value = "api/structure-editor/structure/{id}/save", method = RequestMethod.POST, produces = {"application/json" })
     public @ResponseBody
-    ResponseMessage<Object> saveStructure(@PathVariable("id") String id, @RequestBody Set<SegmentRefOrGroup> children, Authentication authentication) {
+    ResponseMessage<Object> saveStructure(@PathVariable("id") String id, @RequestBody Set<SegmentRefOrGroup> children, Authentication authentication) throws InvalidStructureException {
         MessageStructure ms = structureService.saveMessageStructure(id, authentication.getName(), children);
         return new ResponseMessage<Object>(ResponseMessage.Status.SUCCESS, "MESSAGE STRUCTURE SAVED", ms.getId(), new Date());
     }
