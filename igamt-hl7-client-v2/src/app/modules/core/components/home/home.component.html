@@ -58,25 +58,28 @@
     <div class="col-md-12">
     <p-card [styleClass]="'fill_height'">
 
-    <div style="display: flex; flex-direction: row">
-      <div style="width: 70%" style="display: flex; justify-content: center; flex-direction: column">
-      <div>
-        <img style="width:100%"  src="../../../../../assets/framework.png"/>
+    <div style="display: flex; flex-direction: row; width: 100%">
+      <div style="display: flex; justify-content: center; flex-direction: column; width: 70%;">
+          <img style="width:100%"  src="../../../../../assets/framework.png"/>
+
+
       </div>
-      </div>
-        <div style="width: 30%">
-          <p>
-          </p><ul>
-          <li><strong>Context-Free Testing</strong> provides validation of an HL7 v2 message based on the technical requirements defined in a conformance profile.</li>
-          <li><strong>IGAMT</strong> is a profiling tool used to create HL7 v2.x implementation guides that contain one or more conformance profiles. The tool provides capabilities to create both narrative text and messaging requirements in a structured environment. The output of IGAMT is machine-computable artifacts used to generate validation tools for Context-Free Testing.</li>
-          <li><strong>Context-Based Testing</strong> provides validation of an HL7 v2 message based on the technical requirements defined in a conformance profile and with a provided context. The context is provided through the means of a directed test case. Context-based testing expands the scope of testing.</li>
-          <li><strong>TCAMT</strong> is used to create scenario-based test cases and test messages to support Context-Based Testing. Machine-computable artifacts from IGAMT are imported into TCAMT and serve as the basis for creating test cases. </li>
+      <div style="width: 30% ;display: flex; flex-direction: row;">
+        <div>
+        <strong>NIST HL7 v2 Standards Development and Testing Platform consists of:</strong>
+        <ul>
+          <li> <strong>Implementation Guide Authoring & Management Tool (IGAMT): </strong> is a profiling tool used to create HL7 v2.x implementation guides; output of IGAMT includes machine-computable artifacts used to (1) generate validation tools for Context-free Testing in GVT (2) generate profiles that are imported into TCAMT for development of Test Cases used for Context-based Testing in GVT</li>
+          <li> <strong>Test Case Authoring & Management Tool (TCAMT):</strong> is used to create scenario-based Test Cases to support Context-based Testing; machine-computable artifacts from IGAMT are imported into TCAMT and serve as the basis for creating the Test Cases </li> 
+          <li> <strong> General Validation Tool (GVT):</strong> utilizes artifacts developed in IGAMT for Context-free Testing and in TCAMT for Context-based Testing </li>
+          <ul>  <li> <strong>Context-free Testing:</strong> provides validation of an HL7 v2 message based on the technical requirements defined in a conformance profile</li>
+            <li> <strong>  Context-based Testing:</strong> provides validation of an HL7 v2 message based on the technical requirements defined in a conformance profile and with a provided context. The context is provided through the means of a directed test case. Context-based testing expands the scope of testing</li>
+          </ul>
         </ul>
-          <p></p>
         </div>
+      </div>
 
     </div>
     </p-card>
     </div>
-</div>
+  </div>
   </div>
