@@ -76,7 +76,7 @@ private SerializationTools serializationTools;
 		Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, position, segmentExportConfiguration);
 	      Segment segment = segmentDataModel.getModel();
 		// Calculate segment delta if the segment has an origin
-		if(deltaMode && segment.getOrigin() != null && segmentExportConfiguration.isDeltaMode()) {
+		if(deltaMode && segment.isDerived() && segmentExportConfiguration.isDeltaMode()) {
 			ResourceDelta resourceDelta = deltaService.delta(Type.SEGMENT, segment);
 			if(resourceDelta != null){
 				List<StructureDelta> structureDeltaChanged = resourceDelta.getStructureDelta().stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());

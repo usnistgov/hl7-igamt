@@ -87,7 +87,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                 List<CoConstraintBinding> coConstraintDelta = null;
                 // Calculate conformanceProfile delta if the conformanceProfile has an origin
 
-                if (deltaMode && conformanceProfile.getOrigin() != null && conformanceProfileExportConfiguration.isDeltaMode()) {
+                if (deltaMode && conformanceProfile.isDerived() && conformanceProfileExportConfiguration.isDeltaMode()) {
                     ResourceDelta resourceDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
                     if (resourceDelta != null) {
                         List<StructureDelta> structureDelta = resourceDelta.getStructureDelta();
@@ -233,7 +233,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
 //		            }
                     }
                 }
-                if (deltaMode && conformanceProfile.getOrigin() != null && conformanceProfileExportConfiguration.isDeltaMode() && coConstraintDelta != null && coConstraintDelta.size() > 0) {
+                if (deltaMode && conformanceProfile.isDerived() && conformanceProfileExportConfiguration.isDeltaMode() && coConstraintDelta != null && coConstraintDelta.size() > 0) {
                     Element coConstraintsBindingsElement = new Element("coConstraintsBindingsElement");
                     conformanceProfileElement.appendChild(coConstraintsBindingsElement);
                     if (conformanceProfileExportConfiguration.getDeltaConfig().getMode().equals(DeltaExportConfigMode.HIDE) ||

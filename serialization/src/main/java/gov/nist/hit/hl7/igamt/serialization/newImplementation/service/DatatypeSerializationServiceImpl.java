@@ -68,7 +68,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
     Datatype datatype = datatypeDataModel.getModel();
 
     // Calculate datatype delta if the datatype has an origin
-    if(deltaMode && datatype.getOrigin() != null && datatypeExportConfiguration.isDeltaMode()) {
+    if(deltaMode && datatype.isDerived() && datatypeExportConfiguration.isDeltaMode()) {
       ResourceDelta resourceDelta = deltaService.delta(Type.DATATYPE, datatype);
       if(resourceDelta != null) {
         List<StructureDelta> structureDelta = resourceDelta.getStructureDelta();
