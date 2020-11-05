@@ -610,14 +610,30 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                 addedDesc.addAttribute(new Attribute("identifier", value));
                 addedDesc.addAttribute(new Attribute("action", conformanceStatementDelta.getAction().name()));
                 addedDesc.addAttribute(new Attribute("property", PropertyType.DESCRIPTION.name()));
-                changedElements.add(addedDesc);
 
                 Element addedId = new Element("Change");
                 addedId.addAttribute(new Attribute("type", Type.CONFORMANCESTATEMENT.getValue()));
                 addedId.addAttribute(new Attribute("identifier", value));
                 addedId.addAttribute(new Attribute("action", conformanceStatementDelta.getAction().name()));
                 addedId.addAttribute(new Attribute("property", PropertyType.IDENTIFIER.name()));
+
+                if(conformanceStatementDelta.getAction().equals(DeltaAction.DELETED) ){
+                    Element addedConf = new Element("Change");
+                    addedConf.addAttribute(new Attribute("type", Type.CONFORMANCESTATEMENT.getValue()));
+                    addedConf.addAttribute(new Attribute("identifier", value));
+                    addedConf.addAttribute(new Attribute("action", conformanceStatementDelta.getAction().name()));
+                    addedConf.addAttribute(new Attribute("property", Type.CONFORMANCESTATEMENT.getValue()));
+                    addedId.addAttribute(new Attribute("oldValue", conformanceStatementDelta.getIdentifier().getPrevious()));
+                    changedElements.add(addedConf);
+
+                    addedDesc.addAttribute(new Attribute("oldValue", conformanceStatementDelta.getDescription().getPrevious()));
+                    addedId.addAttribute(new Attribute("oldValue", conformanceStatementDelta.getIdentifier().getPrevious()));
+
+                }
+
+                changedElements.add(addedDesc);
                 changedElements.add(addedId);
+
 
             } else {
                 if (conformanceStatementDelta.getDescription() != null && !conformanceStatementDelta.getDescription().getAction().equals(DeltaAction.UNCHANGED)) {

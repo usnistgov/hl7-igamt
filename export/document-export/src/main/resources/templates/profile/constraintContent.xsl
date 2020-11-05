@@ -96,7 +96,7 @@
                                             <xsl:attribute name="style">
                                                 <xsl:value-of select="concat('background-color:' , $deletedColor)"/>
                                             </xsl:attribute>
-                                            <xsl:value-of select="$changeClass[@property='IDENTIFIER']/@oldValue" />
+                                            <xsl:value-of select="$changeClass[@property='IDENTIFIER' and @action='DELETED']/@oldValue" />
                                         </xsl:when>
                                     </xsl:choose>
                                 </xsl:when>
