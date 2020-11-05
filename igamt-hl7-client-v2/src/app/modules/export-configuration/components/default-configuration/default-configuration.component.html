@@ -61,7 +61,7 @@
               <app-value-set-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.valueSetExportConfiguration" [displayColumns]="true" (detectChange)="change($event)" ></app-value-set-export-configuration>
             </p-tabPanel>
             <p-tabPanel header="Delta">
-                <app-delta-export-configuration [active]="currentConfiguration.deltaMode" [config]="currentConfiguration.deltaConfig" (updateDelta)="updateDelta($event)"></app-delta-export-configuration>
+                <app-delta-export-configuration [active]="currentConfiguration.deltaMode" [config]="currentConfiguration.deltaConfig" (updateDelta)="updateDelta($event)" [viewOnly]="currentConfiguration.original"></app-delta-export-configuration>
               </p-tabPanel>
               <p-tabPanel header="Font">
                 <app-font-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.exportFontConfiguration" (detectChange)="change($event)"></app-font-export-configuration>
