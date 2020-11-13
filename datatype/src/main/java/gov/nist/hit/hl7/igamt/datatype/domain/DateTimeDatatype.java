@@ -88,7 +88,7 @@ public class DateTimeDatatype extends PrimitiveDatatype {
 
     DateTimeDatatype clone = new DateTimeDatatype();
     super.complete(clone);
-    clone.dateTimeConstraints=dateTimeConstraints;
+    clone.dateTimeConstraints = dateTimeConstraints;
     return clone;
 
   }; 

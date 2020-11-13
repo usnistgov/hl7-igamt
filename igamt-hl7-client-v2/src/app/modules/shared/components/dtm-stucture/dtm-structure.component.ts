@@ -29,7 +29,7 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
     this.resource$ = of(resource);
     this.dateTimeConstraints = resource.dateTimeConstraints;
 
-    if (this.viewOnly || !this.dateTimeConstraints || !this.dateTimeConstraints.dateTimeComponentDefinitions) {
+    if (!this.dateTimeConstraints || !this.dateTimeConstraints.dateTimeComponentDefinitions) {
       if (resource.name === 'DTM') {
         this.dateTimeConstraints = {
           dateTimeComponentDefinitions: [
