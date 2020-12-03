@@ -18,7 +18,8 @@ public class SubStructElement extends StructureElement {
   public static final String NA = "NA";
   
   private StandardKey conceptDomain;
-
+  
+  private String constantValue;
 
 
   public SubStructElement() {
@@ -85,6 +86,16 @@ public class SubStructElement extends StructureElement {
 
   public void setConceptDomain(StandardKey conceptDomain) {
     this.conceptDomain = conceptDomain;
+  }
+
+
+  public String getConstantValue() {
+    return constantValue;
+  }
+
+
+  public void setConstantValue(String constantValue) {
+    this.constantValue = constantValue;
   }
 
 }

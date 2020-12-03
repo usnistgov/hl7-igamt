@@ -14,6 +14,7 @@ package gov.nist.hit.hl7.igamt.datatype.domain.display;
 import java.util.Set;
 
 import gov.nist.diff.annotation.DeltaField;
+import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;

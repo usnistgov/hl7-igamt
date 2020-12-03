@@ -15,11 +15,15 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 
 @Service
 public class BindingServiceImpl implements BindingService {
@@ -225,4 +229,119 @@ public class BindingServiceImpl implements BindingService {
       }     
     }
   }
+  
+
+  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(StructureElementBinding binding,
+      String location) {
+  if (binding.getChildren() == null) {
+      if (location.contains("-")) {
+          StructureElementBinding seb = new StructureElementBinding();
+          seb.setElementId(location.split("\\-")[0]);
+          binding.addChild(seb);
+          return this.findAndCreateStructureElementBindingByIdPath(seb,
+                  location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+          StructureElementBinding seb = new StructureElementBinding();
+          seb.setElementId(location);
+          binding.addChild(seb);
+          return seb;
+      }
+  } else {
+      if (location.contains("-")) {
+          for (StructureElementBinding seb : binding.getChildren()) {
+              if (seb.getElementId().equals(location.split("\\-")[0]))
+                  return this.findAndCreateStructureElementBindingByIdPath(seb,
+                          location.replace(location.split("\\-")[0] + "-", ""));
+          }
+          StructureElementBinding seb = new StructureElementBinding();
+          seb.setElementId(location.split("\\-")[0]);
+          binding.addChild(seb);
+          return this.findAndCreateStructureElementBindingByIdPath(seb,
+                  location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+          for (StructureElementBinding seb : binding.getChildren()) {
+              if (seb.getElementId().equals(location))
+                  return seb;
+          }
+          StructureElementBinding seb = new StructureElementBinding();
+          seb.setElementId(location);
+          binding.addChild(seb);
+          return seb;
+      }
+  }
+}
+  @Override
+  public StructureElementBinding findAndCreateStructureElementBindingByIdPath(ResourceBinding binding,
+      String location) {
+  if (binding.getChildren() == null) {
+      if (location.contains("-")) {
+          StructureElementBinding seb = new StructureElementBinding();
+          seb.setElementId(location.split("\\-")[0]);
+          binding.addChild(seb);
+          return this.findAndCreateStructureElementBindingByIdPath(seb,
+                  location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+          StructureElementBinding seb = new StructureElementBinding();
+          seb.setElementId(location);
+          binding.addChild(seb);
+          return seb;
+      }
+  } else {
+      if (location.contains("-")) {
+          for (StructureElementBinding seb : binding.getChildren()) {
+              if (seb.getElementId().equals(location.split("\\-")[0]))
+                  return this.findAndCreateStructureElementBindingByIdPath(seb,
+                          location.replace(location.split("\\-")[0] + "-", ""));
+          }
+          StructureElementBinding seb = new StructureElementBinding();
+          seb.setElementId(location.split("\\-")[0]);
+          binding.addChild(seb);
+          return this.findAndCreateStructureElementBindingByIdPath(seb,
+                  location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+          for (StructureElementBinding seb : binding.getChildren()) {
+              if (seb.getElementId().equals(location))
+                  return seb;
+          }
+          StructureElementBinding seb = new StructureElementBinding();
+          seb.setElementId(location);
+          binding.addChild(seb);
+          return seb;
+      }
+  }
+}
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.common.binding.service.BindingService#convertDisplayValuesetBinding(java.util.HashSet)
+   */
+  @Override
+  public  Set<ValuesetBinding> convertDisplayValuesetBinding(
+      HashSet<DisplayValuesetBinding> displayValuesetBindings) {
+    if (displayValuesetBindings != null) {
+      Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
+      for (DisplayValuesetBinding dvb : displayValuesetBindings) {
+        ValuesetBinding vb = new ValuesetBinding();
+        vb.setStrength(dvb.getStrength());
+        vb.setValueSets(dvb.getValueSets());
+
+        vb.setValuesetLocations(dvb.getValuesetLocations());
+        result.add(vb);
+      }
+      return result;
+    }
+    return null;
+  }
+  
+  @Override
+  public void deleteConformanceStatementById(ResourceBinding binding, String id) {
+    ConformanceStatement toBeDeleted = null;
+    for (ConformanceStatement cs : binding.getConformanceStatements()) {
+      if (cs.getId().equals(id)) {
+        toBeDeleted = cs;
+      }
+    }
+    if (toBeDeleted != null)
+      binding.getConformanceStatements().remove(toBeDeleted);
+  }
+  
 }

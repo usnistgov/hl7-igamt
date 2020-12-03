@@ -48,6 +48,12 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
+
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>resource</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>

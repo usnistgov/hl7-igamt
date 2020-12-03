@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service.impl;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,6 +28,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -39,6 +41,7 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
@@ -61,7 +64,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingType;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
@@ -86,6 +88,8 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
+import gov.nist.hit.hl7.resource.change.service.ApplyChange;
 
 /**
  *
@@ -115,6 +119,8 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   ValuesetService valueSetService;
+  @Autowired
+  ApplyChange applyChange;
 
   @Override
   public Segment findById(String key) {
@@ -1382,250 +1388,219 @@ public class SegmentServiceImpl implements SegmentService {
    * updateSegmentByChangeItems(gov.nist.hit. hl7.igamt.segment.domain.Segment,
    * java.util.List)
    */
+
   @Override
   public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws Exception {
     Collections.sort(cItems);
+    //Resource part
+    applyChange.apply(s,cItems.stream().collect(Collectors.toMap(x-> x.getPropertyType(), x ->x)) , documentId);
 
-    this.applyStructure(s, cItems);
+    //Fields Parts:
+    Map<PropertyType, List<ChangeItemDomain>> map = covertChangesToMap(cItems);
+    applyChange.applySubstructureElementChanges(map, s.getChildren(), documentId);
+    this.applyChildrenChange(map, s.getChildren(), documentId);
 
-    for (ChangeItemDomain item : cItems) {
-      if (item.getPropertyType().equals(PropertyType.PREDEF)) {
-        item.setOldPropertyValue(s.getPreDef());
-        s.setPreDef((String) item.getPropertyValue());
+    //  add Field staff;
+    applyChange.applyBindingChanges(map, s.getBinding(), documentId, Level.SEGMENT);
 
-      } else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
-        item.setOldPropertyValue(s.getPostDef());
-        s.setPostDef((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
-        item.setOldPropertyValue(s.getAuthorNotes());
-        s.setAuthorNotes((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
-        item.setOldPropertyValue(s.getUsageNotes());
-        s.setUsageNotes((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.EXT)) {
-        item.setOldPropertyValue(s.getExt());
-        s.setExt((String) item.getPropertyValue());
-      } 
-      else if (item.getPropertyType().equals(PropertyType.SHORTDESCRIPTION)) {
-        item.setOldPropertyValue(s.getShortDescription());
-        s.setShortDescription((String) item.getPropertyValue());
-      } 
-      else if (item.getPropertyType().equals(PropertyType.USAGE)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getUsage());
-          f.setUsage(Usage.valueOf((String) item.getPropertyValue()));
-          this.logChangeStructureElement(f, item);
-        }
-      }
-      else if (item.getPropertyType().equals(PropertyType.NAME)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getName());
-          f.setName(item.getPropertyValue().toString());
-          this.logChangeStructureElement(f, item);
-        }
-      }
-      else if (item.getPropertyType().equals(PropertyType.CARDINALITYMIN)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getMin());
-          if (item.getPropertyValue() == null) {
-            f.setMin(0);
-          } else {
-            f.setMin((Integer) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.CARDINALITYMAX)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getMax());
-          if (item.getPropertyValue() == null) {
-            f.setMax("NA");
-          } else {
-            f.setMax((String) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.LENGTHMIN)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getMinLength());
-          if (item.getPropertyValue() == null) {
-            f.setMinLength("NA");
-          } else {
-            f.setMinLength((String) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.LENGTHMAX)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getMaxLength());
-          if (item.getPropertyValue() == null) {
-            f.setMaxLength("NA");
-          } else {
-            f.setMaxLength((String) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.CONFLENGTH)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getConfLength());
-          if (item.getPropertyValue() == null) {
-            f.setConfLength("NA");
-          } else {
-            f.setConfLength((String) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.LENGTHTYPE)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getLengthType());
-          if (item.getPropertyValue() == null) {
-            f.setLengthType(LengthType.UNSET);
-          } else {
-            f.setLengthType(LengthType.valueOf((String) item.getPropertyValue()));
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.DATATYPE)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getRef());
-          ObjectMapper mapper = new ObjectMapper();
-          String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-          f.setRef(mapper.readValue(jsonInString, Ref.class));
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-        item.setOldPropertyValue(seb.getValuesetBindings());
-        seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
-            Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
-        if(s.getName().equals("OBX") && "2".equals(item.getLocation())){
-          this.restoreDefaultDynamicMapping(s);
-        }
-        this.logChangeBinding(seb, item);
-      } else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-        item.setOldPropertyValue(seb.getInternalSingleCode());
-        seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
-        this.logChangeBinding(seb, item);
-      } else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getConstantValue());
-          if (item.getPropertyValue() == null) {
-            f.setConstantValue(null);
-          } else {
-            f.setConstantValue((String) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getText());
-          if (item.getPropertyValue() == null) {
-            f.setText(null);
-          } else {
-            f.setText((String) item.getPropertyValue());
-          }
-        }
-      } else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getComments());
-          f.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
-        }
-      } else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        if (item.getChangeType().equals(ChangeType.ADD)) {
-          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-          cs.addSourceId(s.getId());
-          cs.setStructureId(s.getName());
-          cs.setLevel(Level.SEGMENT);
-          cs.setId(new ObjectId().toString());
-          cs.setIgDocumentId(documentId);
-          s.getBinding().addConformanceStatement(cs);
-        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
-          item.setOldPropertyValue(item.getLocation());
-          this.deleteConformanceStatementById(s, item.getLocation());
-        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
-          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-          if(!cs.isLocked()) {
-            if (cs.getIdentifier() != null) {
-              this.deleteConformanceStatementById(s, cs.getId());
-            }
-            cs.addSourceId(s.getId());
-            cs.setStructureId(s.getName());
-            cs.setLevel(Level.SEGMENT);
-            cs.setIgDocumentId(documentId);
-            s.getBinding().addConformanceStatement(cs);
-          }
-        }
-      } else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-        if (item.getChangeType().equals(ChangeType.ADD)) {
-          Predicate cp = mapper.readValue(jsonInString, Predicate.class);
-          cp.addSourceId(s.getId());
-          cp.setStructureId(s.getName());
-          cp.setLevel(Level.SEGMENT);
-          cp.setIgDocumentId(documentId);
-          seb.setPredicate(cp);
-        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
-          item.setOldPropertyValue(item.getLocation());
-          if (seb.getPredicate() != null) {
-            item.setOldPropertyValue(seb.getPredicate());
-            seb.setPredicate(null);
-          }
-
-        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
-          Predicate cp = mapper.readValue(jsonInString, Predicate.class);
-          item.setOldPropertyValue(seb.getPredicate());
-          cp.addSourceId(s.getId());
-          cp.setStructureId(s.getName());
-          cp.setLevel(Level.SEGMENT);
-          cp.setIgDocumentId(documentId);
-          seb.setPredicate(cp);
-        }
-
-        this.logChangeBinding(seb, item);
-      } else if (item.getPropertyType().equals(PropertyType.DYNAMICMAPPINGITEM)) {
-        String value = (String)item.getPropertyValue();
-        String location = (String)item.getLocation();
-        if(s.getDynamicMappingInfo().getItems() ==null) {
-          s.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
-        }
-        if(item.getChangeType().equals(ChangeType.DELETE)) {
-          s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
-        }
-        else if(item.getChangeType().equals(ChangeType.ADD)) {
-
-          s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
-          s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
-        }else if(item.getChangeType().equals(ChangeType.UPDATE)) {
-          s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
-          s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
-        }
-      }
+    if(map.containsKey(PropertyType.DYNAMICMAPPINGITEM)) {
+      this.applyDynamicMappingChanges(map, s, documentId);
     }
     s.setBinding(this.makeLocationInfo(s));
     this.save(s);
   }
+  /**
+   * @param map
+   * @param children
+   * @param documentId
+   * @throws ApplyChangeException 
+   */
+  private void applyChildrenChange(Map<PropertyType, List<ChangeItemDomain>> map,
+      Set<Field> children, String documentId) throws ApplyChangeException {
+    // TODO Auto-generated method stub
+    applyChange.applySubstructureElementChanges(map, children, documentId);
+    
+    // TODO Auto-generated method stub
+    if (map.containsKey(PropertyType.CARDINALITYMIN)) {
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, documentId, this::applyCardMin);
+
+    } else if (map.containsKey(PropertyType.CARDINALITYMAX)) {
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, documentId, this::applyCardMax);
+    } 
+  }
+  
+  
+  public void applyCardMin( ChangeItemDomain change, Field f, String documentId) {
+
+      change.setOldPropertyValue(f.getMin());
+            if (change.getPropertyValue() == null) {
+             f.setMin(0);
+           } else {
+            f.setMin((Integer) change.getPropertyValue());
+           }
+            applyChange.logChangeStructureElement(f, change);
+       
+  }
+  public void applyCardMax( ChangeItemDomain change, Field f, String documentId) {
+
+    change.setOldPropertyValue(f.getMax());
+      if (change.getPropertyValue() == null) {
+       f.setMax("NA");
+           } else {
+         f.setMax((String) change.getPropertyValue());
+           }
+      applyChange.logChangeStructureElement(f, change);
+  }
+  
+  
+
+  /**
+   * @param map
+   * @param s
+   * @param documentId
+   */
+  private void applyDynamicMappingChanges(Map<PropertyType, List<ChangeItemDomain>> map, Segment s,
+      String documentId) {
+    // TODO Auto-generated method stub
+    for(ChangeItemDomain item: map.get(PropertyType.DYNAMICMAPPINGITEM)) {
+      String value = (String)item.getPropertyValue();
+      String location = (String)item.getLocation();
+      if(s.getDynamicMappingInfo().getItems() ==null) {
+        s.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
+      }
+      if(item.getChangeType().equals(ChangeType.DELETE)) {
+        s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
+      }
+      else if(item.getChangeType().equals(ChangeType.ADD)) {
+
+        s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
+        s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
+      }else if(item.getChangeType().equals(ChangeType.UPDATE)) {
+        s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
+        s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
+      } 
+    }
+
+    if(s.getName().equals("OBX")){
+      if(map.containsKey(PropertyType.VALUESET)) {
+        if( map.get(PropertyType.VALUESET).stream().anyMatch(x -> "2".equals(x.getLocation()))){
+          this.restoreDefaultDynamicMapping(s);
+        }
+      }
+    }
+  }
+
+  /**
+   * @param cItems
+   * @return
+   */
+  private Map<PropertyType, List<ChangeItemDomain>> covertChangesToMap(
+      List<ChangeItemDomain> cItems) {
+    // TODO Auto-generated method stub
+    Map<PropertyType, List<ChangeItemDomain>> ret = new HashMap<PropertyType, List<ChangeItemDomain>>();
+    for(ChangeItemDomain change: cItems ) {
+      if(ret.containsKey(change.getPropertyType())) {
+        ret.get(change.getPropertyType()).add(change);
+      }else {
+        ret.put(change.getPropertyType(), new ArrayList<ChangeItemDomain>(Arrays.asList(change)));
+      }
+    }  
+    return ret;
+  }
+
+
+
+
+
+  /**
+   * @param s
+   * @param map
+   * @param documentId
+   * @throws IOException 
+   */
+  //  private void applyChangeForChildren(Segment s, Map<PropertyType, ChangeItemDomain> map,
+  //      String documentId) throws IOException {
+  //    this.applyChange.applySubstructureElementChange(s.getFields(), map, documentId);
+  //    
+  //   
+  //     if (map.containsKey(PropertyType.CARDINALITYMIN)) {
+  //      Field f = this.findFieldById(s, map.get(PropertyType.CARDINALITYMIN).getLocation());
+  //      if (f != null) {
+  //        map.get(PropertyType.CARDINALITYMIN).setOldPropertyValue(f.getMin());
+  //        if (map.get(PropertyType.CARDINALITYMIN).getPropertyValue() == null) {
+  //          f.setMin(0);
+  //        } else {
+  //          f.setMin((Integer) map.get(PropertyType.CARDINALITYMIN).getPropertyValue());
+  //        }
+  //        this.logChangeStructureElement(f, map.get(PropertyType.CARDINALITYMIN));
+  //      }
+  //    } else if (map.containsKey(PropertyType.CARDINALITYMAX)) {
+  //      Field f = this.findFieldById(s, map.get(PropertyType.CARDINALITYMAX).getLocation());
+  //      if (f != null) {
+  //        map.get(PropertyType.CARDINALITYMAX).setOldPropertyValue(f.getMax());
+  //        if (map.get(PropertyType.CARDINALITYMAX).getPropertyValue() == null) {
+  //          f.setMax("NA");
+  //        } else {
+  //          f.setMax((String) map.get(PropertyType.CARDINALITYMAX).getPropertyValue());
+  //        }
+  //        this.logChangeStructureElement(f, map.get(PropertyType.CARDINALITYMAX));
+  //      }
+  //    } else if (map.containsKey(PropertyType.LENGTHMIN)) {
+  //      Field f = this.findFieldById(s, map.get(PropertyType.LENGTHMIN).getLocation());
+  //      if (f != null) {
+  //        map.get(PropertyType.LENGTHMIN).setOldPropertyValue(f.getMinLength());
+  //        if (map.get(PropertyType.LENGTHMIN).getPropertyValue() == null) {
+  //          f.setMinLength("NA");
+  //        } else {
+  //          f.setMinLength((String) map.get(PropertyType.LENGTHMIN).getPropertyValue());
+  //        }
+  //        this.logChangeStructureElement(f, map.get(PropertyType.LENGTHMIN));
+  //      }
+  //    } else if (map.containsKey(PropertyType.LENGTHMAX)) {
+  //      Field f = this.findFieldById(s, map.get(PropertyType.LENGTHMAX).getLocation());
+  //      if (f != null) {
+  //        map.get(PropertyType.LENGTHMAX).setOldPropertyValue(f.getMaxLength());
+  //        if (map.get(PropertyType.LENGTHMAX).getPropertyValue() == null) {
+  //          f.setMaxLength("NA");
+  //        } else {
+  //          f.setMaxLength((String) map.get(PropertyType.LENGTHMAX).getPropertyValue());
+  //        }
+  //        this.logChangeStructureElement(f, map.get(PropertyType.LENGTHMAX));
+  //      }
+  //    } else if (map.containsKey(PropertyType.CONFLENGTH)) {
+  //      Field f = this.findFieldById(s, map.get(PropertyType.CONFLENGTH).getLocation());
+  //      if (f != null) {
+  //        map.get(PropertyType.CONFLENGTH).setOldPropertyValue(f.getConfLength());
+  //        if (map.get(PropertyType.CONFLENGTH).getPropertyValue() == null) {
+  //          f.setConfLength("NA");
+  //        } else {
+  //          f.setConfLength((String) map.get(PropertyType.CONFLENGTH).getPropertyValue());
+  //        }
+  //        this.logChangeStructureElement(f, map.get(PropertyType.CONFLENGTH));
+  //      }
+  //    } else if (map.containsKey(PropertyType.LENGTHTYPE)) {
+  //      Field f = this.findFieldById(s, map.get(PropertyType.LENGTHTYPE).getLocation());
+  //      if (f != null) {
+  //        map.get(PropertyType.LENGTHTYPE).setOldPropertyValue(f.getLengthType());
+  //        if (map.get(PropertyType.LENGTHTYPE).getPropertyValue() == null) {
+  //          f.setLengthType(LengthType.UNSET);
+  //        } else {
+  //          f.setLengthType(LengthType.valueOf((String) map.get(PropertyType.LENGTHTYPE).getPropertyValue()));
+  //        }
+  //        this.logChangeStructureElement(f, map.get(PropertyType.LENGTHTYPE));
+  //      }
+  //    } else if (map.containsKey(PropertyType.DATATYPE)) {
+  //      Field f = this.findFieldById(s, map.get(PropertyType.DATATYPE).getLocation());
+  //      if (f != null) {
+  //        map.get(PropertyType.DATATYPE).setOldPropertyValue(f.getRef());
+  //        ObjectMapper mapper = new ObjectMapper();
+  //        String jsonInString = mapper.writeValueAsString(map.get(PropertyType.DATATYPE).getPropertyValue());
+  //        f.setRef(mapper.readValue(jsonInString, Ref.class));
+  //        this.logChangeStructureElement(f, map.get(PropertyType.DATATYPE));
+  //      }
+  //    }  
+  //  }
+
   public void applyStructure(Segment segment, List<ChangeItemDomain> cItems)
       throws Exception {
     ObjectMapper mapper = new ObjectMapper();
@@ -1683,12 +1658,12 @@ public class SegmentServiceImpl implements SegmentService {
     String valueSetId = findObx2VsId(segment);
     if (valueSetId !=null) {
       source = valueSetService.findById(valueSetId);
-//      if(source == null) {
-//        List<Valueset> vsList = valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(Scope.HL7STANDARD.toString(), segment.getDomainInfo().getVersion(), "HL70125");
-//        if(vsList != null && ! vsList.isEmpty()) {
-//          source = vsList.get(0);
-//        }
-//      }
+      //      if(source == null) {
+      //        List<Valueset> vsList = valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(Scope.HL7STANDARD.toString(), segment.getDomainInfo().getVersion(), "HL70125");
+      //        if(vsList != null && ! vsList.isEmpty()) {
+      //          source = vsList.get(0);
+      //        }
+      //      }
     }
     segment.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
     if(source !=null) {

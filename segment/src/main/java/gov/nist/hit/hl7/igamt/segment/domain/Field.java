@@ -15,10 +15,6 @@ public class Field extends SubStructElement {
   private int min;
   @DeltaField
   private String max;
-  @DeltaField
-  private String constantValue;
-  @DeltaField
-  private Set<Comment> comments;
 
   public Field() {
     super();
@@ -30,8 +26,7 @@ public class Field extends SubStructElement {
         ref);
     this.min = min;
     this.max = max;
-    this.constantValue = constantValue;
-    this.comments = comments;
+    this.setConstantValue(constantValue);
     this.setType(Type.FIELD);
   }
 
@@ -51,21 +46,8 @@ public class Field extends SubStructElement {
     this.max = max;
   }
 
-  public String getConstantValue() {
-    return constantValue;
-  }
 
-  public void setConstantValue(String constantValue) {
-    this.constantValue = constantValue;
-  }
 
-  public Set<Comment> getComments() {
-    return comments;
-  }
-
-  public void setComments(Set<Comment> comments) {
-    this.comments = comments;
-  }
   
   
 }

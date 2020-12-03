@@ -15,8 +15,6 @@ public class MsgStructElement extends StructureElement {
   private int min;
   @DeltaField
   private String max;
-  @DeltaField
-  private Set<Comment> comments;
 
   public MsgStructElement() {
     super();
