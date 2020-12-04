@@ -23,7 +23,7 @@ public class Field extends SubStructElement {
 
   public Field(String id, String name, int position, Usage usage, String text, boolean custom, String maxLength, String minLength, String confLength, Ref ref, int min, String max, String constantValue, Set<Comment> comments) {
     super(id, name, position, usage, Type.FIELD, text, custom, maxLength, minLength, confLength,
-        ref);
+        ref, comments);
     this.min = min;
     this.max = max;
     this.setConstantValue(constantValue);

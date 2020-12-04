@@ -18,6 +18,7 @@ import java.util.Set;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
@@ -55,6 +56,9 @@ public interface ApplyChange {
 			throws ApplyChangeException;
 
 	<T extends StructureElement> void applyStructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> children, String documentId)
+			throws ApplyChangeException;
+	
+	<T extends MsgStructElement> void applyMsgStructElementChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> children, String documentId)
 			throws ApplyChangeException;
 
 
@@ -200,6 +204,20 @@ public interface ApplyChange {
 	 * @param changeItem
 	 */
 	void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem);
+
+
+	/**
+	 * @param cItems
+	 * @return
+	 */
+	Map<PropertyType, ChangeItemDomain> convertToSingleChangeMap(List<ChangeItemDomain> cItems);
+
+
+	/**
+	 * @param cItems
+	 * @return
+	 */
+	Map<PropertyType, List<ChangeItemDomain>> convertToMultiplePropertyChangeMap(List<ChangeItemDomain> cItems);
 
 
 }

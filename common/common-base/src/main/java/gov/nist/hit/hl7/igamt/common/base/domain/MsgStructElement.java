@@ -23,10 +23,9 @@ public class MsgStructElement extends StructureElement {
 
   public MsgStructElement(String id, String name, int position, Usage usage, Type type, String text,
       boolean custom, int min, String max, Set<Comment> comments) {
-    super(id, name, position, usage, type, text, custom);
+    super(id, name, position, usage, type, text, custom, comments);
     this.min = min;
     this.max = max;
-    this.comments = comments;
   }
 
 
@@ -46,13 +45,6 @@ public class MsgStructElement extends StructureElement {
     this.max = max;
   }
 
-  public Set<Comment> getComments() {
-    return comments;
-  }
-
-  public void setComments(Set<Comment> comments) {
-    this.comments = comments;
-  }
 
   
 }

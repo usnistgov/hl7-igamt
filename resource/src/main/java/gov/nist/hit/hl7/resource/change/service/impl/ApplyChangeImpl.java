@@ -12,7 +12,9 @@
 package gov.nist.hit.hl7.resource.change.service.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -319,30 +321,30 @@ public class ApplyChangeImpl implements ApplyChange {
 		// TODO Auto-generated method stub
 
 		try {
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
-		if (change.getChangeType().equals(ChangeType.ADD)) {
-			ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-			cs.setLevel(Level.SEGMENT);
-			cs.setId(new ObjectId().toString());
-			binding.addConformanceStatement(cs);
-
-		} else if (change.getChangeType().equals(ChangeType.DELETE)) {
-			change.setOldPropertyValue(change.getLocation());
-			this.bindingService.deleteConformanceStatementById(binding, change.getLocation());
-		} else if (change.getChangeType().equals(ChangeType.UPDATE)) {
-			ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-			if(!cs.isLocked()) {
-				if (cs.getIdentifier() != null) {
-					this.bindingService.deleteConformanceStatementById(binding, cs.getId());
-				}		      cs.setLevel(Level.SEGMENT);
+			ObjectMapper mapper = new ObjectMapper();
+			String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
+			if (change.getChangeType().equals(ChangeType.ADD)) {
+				ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+				cs.setLevel(Level.SEGMENT);
+				cs.setId(new ObjectId().toString());
 				binding.addConformanceStatement(cs);
+
+			} else if (change.getChangeType().equals(ChangeType.DELETE)) {
+				change.setOldPropertyValue(change.getLocation());
+				this.bindingService.deleteConformanceStatementById(binding, change.getLocation());
+			} else if (change.getChangeType().equals(ChangeType.UPDATE)) {
+				ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+				if(!cs.isLocked()) {
+					if (cs.getIdentifier() != null) {
+						this.bindingService.deleteConformanceStatementById(binding, cs.getId());
+					}		      cs.setLevel(Level.SEGMENT);
+					binding.addConformanceStatement(cs);
+				}
 			}
-		}
-	} catch (IOException e) {
-		// TODO Auto-generated catch block
-		throw new ApplyChangeException(change);
-	}  
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new ApplyChangeException(change);
+		}  
 
 	}
 
@@ -354,7 +356,7 @@ public class ApplyChangeImpl implements ApplyChange {
 	 * @throws ApplyChangeException 
 	 */
 	private void applyAllStructureBindingChanges(List<ChangeItemDomain> changes, ResourceBinding binding, String documentId,
-			 Level level, ApplyBindingPropertyFunction fn) throws ApplyChangeException {
+			Level level, ApplyBindingPropertyFunction fn) throws ApplyChangeException {
 		// TODO Auto-generated method stub
 		for(ChangeItemDomain change: changes) {
 			StructureElementBinding elm = bindingService.findAndCreateStructureElementBindingByIdPath(binding, change.getLocation());
@@ -442,7 +444,27 @@ public class ApplyChangeImpl implements ApplyChange {
 	}
 
 
-
+	@Override
+	public Map<PropertyType, ChangeItemDomain> convertToSingleChangeMap(List<ChangeItemDomain> cItems) {
+		Collections.sort(cItems);
+		Map<PropertyType, ChangeItemDomain> ret = new HashMap<PropertyType, ChangeItemDomain>();
+		cItems.forEach(x -> ret.put(x.getPropertyType(), x));
+		return ret;
+	}
+	@Override
+	public Map<PropertyType, List<ChangeItemDomain>> convertToMultiplePropertyChangeMap(
+			List<ChangeItemDomain> cItems) {
+		Collections.sort(cItems);
+		Map<PropertyType, List<ChangeItemDomain>> ret = new HashMap<PropertyType, List<ChangeItemDomain>>();
+		for(ChangeItemDomain change: cItems ) {
+			if(ret.containsKey(change.getPropertyType())) {
+				ret.get(change.getPropertyType()).add(change);
+			}else {
+				ret.put(change.getPropertyType(), new ArrayList<ChangeItemDomain>(Arrays.asList(change)));
+			}
+		}  
+		return ret;
+	}
 
 
 }

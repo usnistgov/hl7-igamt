@@ -44,7 +44,7 @@ public class StructureElement implements Serializable {
   }
 
   public StructureElement(String id, String name, int position, Usage usage, Type type, String text,
-      boolean custom) {
+      boolean custom, Set<Comment> comments) {
     super();
     this.id = id;
     this.name = name;
@@ -53,6 +53,7 @@ public class StructureElement implements Serializable {
     this.type = type;
     this.text = text;
     this.custom = custom;
+    this.comments = comments;
   }
 
   public Map<PropertyType, ChangeReason> getChangeLog() {

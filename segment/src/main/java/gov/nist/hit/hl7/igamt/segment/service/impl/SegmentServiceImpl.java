@@ -1391,16 +1391,17 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws Exception {
-    Collections.sort(cItems);
     //Resource part
-    applyChange.apply(s,cItems.stream().collect(Collectors.toMap(x-> x.getPropertyType(), x ->x)) , documentId);
-
-    //Fields Parts:
-    Map<PropertyType, List<ChangeItemDomain>> map = covertChangesToMap(cItems);
-    applyChange.applySubstructureElementChanges(map, s.getChildren(), documentId);
+    Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
+    applyChange.apply(s, singlePropertyMap , documentId);
+    
+   if (singlePropertyMap.containsKey(PropertyType.EXT)) {
+      s.setExt((String) singlePropertyMap.get(PropertyType.EXT).getPropertyValue());
+   }
+    
+    Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
     this.applyChildrenChange(map, s.getChildren(), documentId);
 
-    //  add Field staff;
     applyChange.applyBindingChanges(map, s.getBinding(), documentId, Level.SEGMENT);
 
     if(map.containsKey(PropertyType.DYNAMICMAPPINGITEM)) {
@@ -1409,6 +1410,7 @@ public class SegmentServiceImpl implements SegmentService {
     s.setBinding(this.makeLocationInfo(s));
     this.save(s);
   }
+
   /**
    * @param map
    * @param children
@@ -1419,40 +1421,41 @@ public class SegmentServiceImpl implements SegmentService {
       Set<Field> children, String documentId) throws ApplyChangeException {
     // TODO Auto-generated method stub
     applyChange.applySubstructureElementChanges(map, children, documentId);
-    
+
     // TODO Auto-generated method stub
     if (map.containsKey(PropertyType.CARDINALITYMIN)) {
       applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, documentId, this::applyCardMin);
 
-    } else if (map.containsKey(PropertyType.CARDINALITYMAX)) {
+    }
+    if (map.containsKey(PropertyType.CARDINALITYMAX)) {
       applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, documentId, this::applyCardMax);
     } 
   }
-  
-  
+
+
   public void applyCardMin( ChangeItemDomain change, Field f, String documentId) {
 
-      change.setOldPropertyValue(f.getMin());
-            if (change.getPropertyValue() == null) {
-             f.setMin(0);
-           } else {
-            f.setMin((Integer) change.getPropertyValue());
-           }
-            applyChange.logChangeStructureElement(f, change);
-       
+    change.setOldPropertyValue(f.getMin());
+    if (change.getPropertyValue() == null) {
+      f.setMin(0);
+    } else {
+      f.setMin((Integer) change.getPropertyValue());
+    }
+    applyChange.logChangeStructureElement(f, change);
+
   }
   public void applyCardMax( ChangeItemDomain change, Field f, String documentId) {
 
     change.setOldPropertyValue(f.getMax());
-      if (change.getPropertyValue() == null) {
-       f.setMax("NA");
-           } else {
-         f.setMax((String) change.getPropertyValue());
-           }
-      applyChange.logChangeStructureElement(f, change);
+    if (change.getPropertyValue() == null) {
+      f.setMax("NA");
+    } else {
+      f.setMax((String) change.getPropertyValue());
+    }
+    applyChange.logChangeStructureElement(f, change);
   }
-  
-  
+
+
 
   /**
    * @param map
@@ -1508,98 +1511,6 @@ public class SegmentServiceImpl implements SegmentService {
     return ret;
   }
 
-
-
-
-
-  /**
-   * @param s
-   * @param map
-   * @param documentId
-   * @throws IOException 
-   */
-  //  private void applyChangeForChildren(Segment s, Map<PropertyType, ChangeItemDomain> map,
-  //      String documentId) throws IOException {
-  //    this.applyChange.applySubstructureElementChange(s.getFields(), map, documentId);
-  //    
-  //   
-  //     if (map.containsKey(PropertyType.CARDINALITYMIN)) {
-  //      Field f = this.findFieldById(s, map.get(PropertyType.CARDINALITYMIN).getLocation());
-  //      if (f != null) {
-  //        map.get(PropertyType.CARDINALITYMIN).setOldPropertyValue(f.getMin());
-  //        if (map.get(PropertyType.CARDINALITYMIN).getPropertyValue() == null) {
-  //          f.setMin(0);
-  //        } else {
-  //          f.setMin((Integer) map.get(PropertyType.CARDINALITYMIN).getPropertyValue());
-  //        }
-  //        this.logChangeStructureElement(f, map.get(PropertyType.CARDINALITYMIN));
-  //      }
-  //    } else if (map.containsKey(PropertyType.CARDINALITYMAX)) {
-  //      Field f = this.findFieldById(s, map.get(PropertyType.CARDINALITYMAX).getLocation());
-  //      if (f != null) {
-  //        map.get(PropertyType.CARDINALITYMAX).setOldPropertyValue(f.getMax());
-  //        if (map.get(PropertyType.CARDINALITYMAX).getPropertyValue() == null) {
-  //          f.setMax("NA");
-  //        } else {
-  //          f.setMax((String) map.get(PropertyType.CARDINALITYMAX).getPropertyValue());
-  //        }
-  //        this.logChangeStructureElement(f, map.get(PropertyType.CARDINALITYMAX));
-  //      }
-  //    } else if (map.containsKey(PropertyType.LENGTHMIN)) {
-  //      Field f = this.findFieldById(s, map.get(PropertyType.LENGTHMIN).getLocation());
-  //      if (f != null) {
-  //        map.get(PropertyType.LENGTHMIN).setOldPropertyValue(f.getMinLength());
-  //        if (map.get(PropertyType.LENGTHMIN).getPropertyValue() == null) {
-  //          f.setMinLength("NA");
-  //        } else {
-  //          f.setMinLength((String) map.get(PropertyType.LENGTHMIN).getPropertyValue());
-  //        }
-  //        this.logChangeStructureElement(f, map.get(PropertyType.LENGTHMIN));
-  //      }
-  //    } else if (map.containsKey(PropertyType.LENGTHMAX)) {
-  //      Field f = this.findFieldById(s, map.get(PropertyType.LENGTHMAX).getLocation());
-  //      if (f != null) {
-  //        map.get(PropertyType.LENGTHMAX).setOldPropertyValue(f.getMaxLength());
-  //        if (map.get(PropertyType.LENGTHMAX).getPropertyValue() == null) {
-  //          f.setMaxLength("NA");
-  //        } else {
-  //          f.setMaxLength((String) map.get(PropertyType.LENGTHMAX).getPropertyValue());
-  //        }
-  //        this.logChangeStructureElement(f, map.get(PropertyType.LENGTHMAX));
-  //      }
-  //    } else if (map.containsKey(PropertyType.CONFLENGTH)) {
-  //      Field f = this.findFieldById(s, map.get(PropertyType.CONFLENGTH).getLocation());
-  //      if (f != null) {
-  //        map.get(PropertyType.CONFLENGTH).setOldPropertyValue(f.getConfLength());
-  //        if (map.get(PropertyType.CONFLENGTH).getPropertyValue() == null) {
-  //          f.setConfLength("NA");
-  //        } else {
-  //          f.setConfLength((String) map.get(PropertyType.CONFLENGTH).getPropertyValue());
-  //        }
-  //        this.logChangeStructureElement(f, map.get(PropertyType.CONFLENGTH));
-  //      }
-  //    } else if (map.containsKey(PropertyType.LENGTHTYPE)) {
-  //      Field f = this.findFieldById(s, map.get(PropertyType.LENGTHTYPE).getLocation());
-  //      if (f != null) {
-  //        map.get(PropertyType.LENGTHTYPE).setOldPropertyValue(f.getLengthType());
-  //        if (map.get(PropertyType.LENGTHTYPE).getPropertyValue() == null) {
-  //          f.setLengthType(LengthType.UNSET);
-  //        } else {
-  //          f.setLengthType(LengthType.valueOf((String) map.get(PropertyType.LENGTHTYPE).getPropertyValue()));
-  //        }
-  //        this.logChangeStructureElement(f, map.get(PropertyType.LENGTHTYPE));
-  //      }
-  //    } else if (map.containsKey(PropertyType.DATATYPE)) {
-  //      Field f = this.findFieldById(s, map.get(PropertyType.DATATYPE).getLocation());
-  //      if (f != null) {
-  //        map.get(PropertyType.DATATYPE).setOldPropertyValue(f.getRef());
-  //        ObjectMapper mapper = new ObjectMapper();
-  //        String jsonInString = mapper.writeValueAsString(map.get(PropertyType.DATATYPE).getPropertyValue());
-  //        f.setRef(mapper.readValue(jsonInString, Ref.class));
-  //        this.logChangeStructureElement(f, map.get(PropertyType.DATATYPE));
-  //      }
-  //    }  
-  //  }
 
   public void applyStructure(Segment segment, List<ChangeItemDomain> cItems)
       throws Exception {

@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.util.Set;
+
 import gov.nist.diff.annotation.DeltaField;
 
 public class SubStructElement extends StructureElement {
@@ -28,8 +30,8 @@ public class SubStructElement extends StructureElement {
 
 
   public SubStructElement(String id, String name, int position, Usage usage, Type type, String text,
-      boolean custom, String maxLength, String minLength, String confLength, Ref ref) {
-    super(id, name, position, usage, type, text, custom);
+      boolean custom, String maxLength, String minLength, String confLength, Ref ref, Set<Comment> comments) {
+    super(id, name, position, usage, type, text, custom, comments);
     this.maxLength = maxLength;
     this.minLength = minLength;
     this.confLength = confLength;
