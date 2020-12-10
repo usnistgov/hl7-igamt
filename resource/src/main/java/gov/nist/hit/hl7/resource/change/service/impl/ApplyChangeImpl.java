@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.LengthType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
@@ -49,6 +50,7 @@ import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 import gov.nist.hit.hl7.resource.change.service.ApplyBindingPropertyFunction;
 import gov.nist.hit.hl7.resource.change.service.ApplyChange;
 import gov.nist.hit.hl7.resource.change.service.ApplyPropertyFunction;
+import gov.nist.hit.hl7.resource.change.service.FindByFunction;
 
 /**
  * @author Abdelghani El Ouakili
@@ -62,18 +64,21 @@ public class ApplyChangeImpl implements ApplyChange {
 
 
 	@Override
-	public void apply(Resource resource, Map<PropertyType, ChangeItemDomain> map, String documentId) throws Exception {
+	public void apply(Resource resource, Map<PropertyType, ChangeItemDomain> map, String documentId) throws ApplyChangeException {
 		// TODO Auto-generated method stub
 		if (map.containsKey(PropertyType.PREDEF)) {
 			resource.setPreDef((String) map.get(PropertyType.PREDEF).getPropertyValue());
-		} else if (map.containsKey(PropertyType.POSTDEF)) {
+		}
+		if (map.containsKey(PropertyType.POSTDEF)) {
 			resource.setPostDef((String) map.get(PropertyType.POSTDEF).getPropertyValue());
-		} else if (map.containsKey(PropertyType.AUTHORNOTES)) {
+		} 
+		if (map.containsKey(PropertyType.AUTHORNOTES)) {
 			resource.setAuthorNotes((String) map.get(PropertyType.AUTHORNOTES).getPropertyValue());
-		} else if (map.containsKey(PropertyType.USAGENOTES)) {
+		}
+		if (map.containsKey(PropertyType.USAGENOTES)) {
 			resource.setUsageNotes((String) map.get(PropertyType.USAGENOTES).getPropertyValue());
 		} 
-		else if (map.containsKey(PropertyType.SHORTDESCRIPTION)) {
+		if (map.containsKey(PropertyType.SHORTDESCRIPTION)) {
 			resource.setShortDescription((String) map.get(PropertyType.SHORTDESCRIPTION).getPropertyValue());
 		}
 	}
@@ -94,18 +99,18 @@ public class ApplyChangeImpl implements ApplyChange {
 	}
 
 	@Override
-	public <T extends StructureElement> void applyAll( List<ChangeItemDomain> changes, Set<T> structureElments,  String documentId, ApplyPropertyFunction<T> fn) throws ApplyChangeException {
+	public <T extends StructureElement> void applyAll( List<ChangeItemDomain> changes, Set<T> structureElments,  String documentId, ApplyPropertyFunction<T> fn, FindByFunction<T> findBy) throws ApplyChangeException {
 
 		for(ChangeItemDomain change: changes) {
-			T elm = this.findStructElementById(structureElments, change.getLocation());
+			T elm = findBy.apply(structureElments, change.getLocation());
 			if(elm !=null) {
 				fn.apply( change,  elm,  documentId);
 			}
 		}
 	}
 
-
-	private <T extends StructureElement> T findStructElementById(Set<T> structureElments, String location) {
+	@Override
+	public <T extends StructureElement> T findStructElementById(Set<T> structureElments, String location) {
 		for (T elm : structureElments) {
 			if (elm.getId().equals(location)) {
 				return elm;
@@ -237,19 +242,19 @@ public class ApplyChangeImpl implements ApplyChange {
 	 */
 	@Override
 	public <T extends StructureElement> void applyStructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map,
-			Set<T> children, String documentId) throws ApplyChangeException {
+			Set<T> children, String documentId, FindByFunction<T> findBy) throws ApplyChangeException {
 		// TODO Auto-generated method stub
 		if(map.containsKey(PropertyType.USAGE)) {
-			this.applyAll(map.get(PropertyType.USAGE), children, documentId, this::applyUsage);
+			this.applyAll(map.get(PropertyType.USAGE), children, documentId, this::applyUsage, findBy);
 		}
 		if(map.containsKey(PropertyType.NAME)) {
-			this.applyAll(map.get(PropertyType.NAME), children, documentId, this::applyName);
+			this.applyAll(map.get(PropertyType.NAME), children, documentId, this::applyName, findBy);
 		}
 		if(map.containsKey(PropertyType.COMMENT)) {
-			this.applyAll(map.get(PropertyType.COMMENT), children, documentId, this::applyComments);
+			this.applyAll(map.get(PropertyType.COMMENT), children, documentId, this::applyComments, findBy);
 		}
 		if(map.containsKey(PropertyType.DEFINITIONTEXT)) {
-			this.applyAll(map.get(PropertyType.DEFINITIONTEXT), children, documentId, this::applyDefinitionText);
+			this.applyAll(map.get(PropertyType.DEFINITIONTEXT), children, documentId, this::applyDefinitionText, findBy);
 		}
 
 	}
@@ -257,29 +262,29 @@ public class ApplyChangeImpl implements ApplyChange {
 
 	@Override
 	public <T extends SubStructElement> void applySubstructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map,
-			Set<T> children, String documentId) throws ApplyChangeException  {
+			Set<T> children, String documentId, FindByFunction<T> findBy ) throws ApplyChangeException  {
 		// TODO Auto-generated method stub
-		this.applyStructureElementChanges(map, children, documentId);
+		this.applyStructureElementChanges(map, children, documentId, findBy);
 		if(map.containsKey(PropertyType.LENGTHMIN)) {
-			this.applyAll(map.get(PropertyType.LENGTHMIN), children, documentId, this::applyMinLength);
+			this.applyAll(map.get(PropertyType.LENGTHMIN), children, documentId, this::applyMinLength, findBy);
 		}
 
 		if(map.containsKey(PropertyType.LENGTHMAX)) {
-			this.applyAll(map.get(PropertyType.LENGTHMAX), children, documentId, this::applyMaxLength);
+			this.applyAll(map.get(PropertyType.LENGTHMAX), children, documentId, this::applyMaxLength, findBy);
 		}
 
 		if(map.containsKey(PropertyType.LENGTHTYPE)) {
-			this.applyAll(map.get(PropertyType.LENGTHTYPE), children, documentId, this::applyLengthType);
+			this.applyAll(map.get(PropertyType.LENGTHTYPE), children, documentId, this::applyLengthType, findBy);
 		}
 
 		if(map.containsKey(PropertyType.CONFLENGTH)) {
-			this.applyAll(map.get(PropertyType.CONFLENGTH), children, documentId, this::applyConfLength);
+			this.applyAll(map.get(PropertyType.CONFLENGTH), children, documentId, this::applyConfLength, findBy);
 		}
 		if(map.containsKey(PropertyType.DATATYPE)) {
-			this.applyAll(map.get(PropertyType.DATATYPE), children, documentId, this::applyDatatype);
+			this.applyAll(map.get(PropertyType.DATATYPE), children, documentId, this::applyDatatype, findBy);
 		}
 		if(map.containsKey(PropertyType.CONSTANTVALUE)) {
-			this.applyAll(map.get(PropertyType.CONSTANTVALUE), children, documentId, this::applyConstantValue);
+			this.applyAll(map.get(PropertyType.CONSTANTVALUE), children, documentId, this::applyConstantValue, findBy);
 		}
 
 	}
@@ -465,6 +470,7 @@ public class ApplyChangeImpl implements ApplyChange {
 		}  
 		return ret;
 	}
+
 
 
 }

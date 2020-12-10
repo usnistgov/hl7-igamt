@@ -41,7 +41,7 @@ public interface ApplyChange {
 	 * @param documentId
 	 * @throws Exception
 	 */
-	void apply(Resource resource, Map<PropertyType, ChangeItemDomain> map, String documentId) throws Exception;
+	void apply(Resource resource, Map<PropertyType, ChangeItemDomain> map, String documentId) throws ApplyChangeException;
 
 
 	/**
@@ -52,15 +52,11 @@ public interface ApplyChange {
 	 */
 	void applyUsage(ChangeItemDomain change, StructureElement elm, String documentId);
 	
-	<T extends SubStructElement> void applySubstructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> children, String documentId)
+	<T extends SubStructElement> void applySubstructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> children, String documentId, FindByFunction<T> findBy)
 			throws ApplyChangeException;
 
-	<T extends StructureElement> void applyStructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> children, String documentId)
+	<T extends StructureElement> void applyStructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> children, String documentId, FindByFunction<T> findBy)
 			throws ApplyChangeException;
-	
-	<T extends MsgStructElement> void applyMsgStructElementChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> children, String documentId)
-			throws ApplyChangeException;
-
 
 	/**
 	 * @param change
@@ -189,7 +185,7 @@ public interface ApplyChange {
 			Level level) throws ApplyChangeException;
 
 
-	public <T extends StructureElement> void applyAll( List<ChangeItemDomain> changes, Set<T> structureElments,  String documentId, ApplyPropertyFunction<T> fn) throws ApplyChangeException;
+	public <T extends StructureElement> void applyAll( List<ChangeItemDomain> changes, Set<T> structureElments,  String documentId, ApplyPropertyFunction<T> fn, FindByFunction<T> findBy) throws ApplyChangeException;
 
 
 	/**
@@ -218,6 +214,14 @@ public interface ApplyChange {
 	 * @return
 	 */
 	Map<PropertyType, List<ChangeItemDomain>> convertToMultiplePropertyChangeMap(List<ChangeItemDomain> cItems);
+
+
+	/**
+	 * @param structureElments
+	 * @param location
+	 * @return
+	 */
+	 <T extends StructureElement> T findStructElementById(Set<T> structureElments, String location);
 
 
 }

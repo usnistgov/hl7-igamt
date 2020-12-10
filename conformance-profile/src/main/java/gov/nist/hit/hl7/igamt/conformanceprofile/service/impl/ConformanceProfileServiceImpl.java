@@ -13,8 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -42,7 +40,6 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
@@ -66,7 +63,6 @@ import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
@@ -150,7 +146,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Autowired
   ApplyChange applyChange;
-  
+
   @Override
   public ConformanceProfile create(ConformanceProfile conformanceProfile) {
     conformanceProfile.setId(new String());
@@ -256,54 +252,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     return conformanceProfile;
   }
 
-  @Override
-  public DisplayConformanceProfileMetadata convertDomainToMetadata(ConformanceProfile conformanceProfile) {
-    if (conformanceProfile != null) {
-      DisplayConformanceProfileMetadata result = new DisplayConformanceProfileMetadata();
-      result.setDescription(conformanceProfile.getDescription());
-      result.setDomainInfo(conformanceProfile.getDomainInfo());
-      result.setId(conformanceProfile.getId());
-      result.setIdentifier(conformanceProfile.getIdentifier());
-      result.setMessageType(conformanceProfile.getMessageType());
-      result.setName(conformanceProfile.getName());
-      result.setStructId(conformanceProfile.getStructID());
-      // result.setAuthorNotes(conformanceProfile.getComment());
-      return result;
-    }
-    return null;
-  }
-
-  @Override
-  public DisplayConformanceProfilePreDef convertDomainToPredef(ConformanceProfile conformanceProfile) {
-    if (conformanceProfile != null) {
-      DisplayConformanceProfilePreDef result = new DisplayConformanceProfilePreDef();
-      result.setDomainInfo(conformanceProfile.getDomainInfo());
-      result.setId(conformanceProfile.getId());
-      result.setIdentifier(conformanceProfile.getIdentifier());
-      result.setMessageType(conformanceProfile.getMessageType());
-      result.setName(conformanceProfile.getName());
-      result.setStructId(conformanceProfile.getStructID());
-      result.setPreDef(conformanceProfile.getPreDef());
-      return result;
-    }
-    return null;
-  }
-
-  @Override
-  public DisplayConformanceProfilePostDef convertDomainToPostdef(ConformanceProfile conformanceProfile) {
-    if (conformanceProfile != null) {
-      DisplayConformanceProfilePostDef result = new DisplayConformanceProfilePostDef();
-      result.setDomainInfo(conformanceProfile.getDomainInfo());
-      result.setId(conformanceProfile.getId());
-      result.setIdentifier(conformanceProfile.getIdentifier());
-      result.setMessageType(conformanceProfile.getMessageType());
-      result.setName(conformanceProfile.getName());
-      result.setStructId(conformanceProfile.getStructID());
-      result.setPostDef(conformanceProfile.getPostDef());
-      return result;
-    }
-    return null;
-  }
 
   @Override
   public ConformanceProfile findDisplayFormat(String id) {
@@ -1098,7 +1046,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    * @param location
    * @return
    */
-  private SegmentRefOrGroup findSegmentRefOrGroupById(Set<SegmentRefOrGroup> children, String idPath) {
+
+  public <T extends StructureElement> T findSegmentRefOrGroupByIdAsStructureElement(Set<T> children, String idPath) {
+    return  (T) this.findSegmentRefOrGroupById(children.stream().map(x -> (SegmentRefOrGroup) x).collect(Collectors.toSet()), idPath);
+
+  }
+
+  public SegmentRefOrGroup findSegmentRefOrGroupById(Set<SegmentRefOrGroup> children, String idPath) {
     if (idPath.contains("-")) {
       for (SegmentRefOrGroup srog : children) {
         if (srog instanceof Group) {
@@ -1111,7 +1065,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     } else {
       for (SegmentRefOrGroup srog : children) {
         if (srog.getId().equals(idPath))
-          return srog;
+          return  srog;
       }
     }
     return null;
@@ -1498,310 +1452,156 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
 
   }
-  public void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem) {
-    if(structureElement.getChangeLog() == null) {
-      structureElement.setChangeLog(new HashMap<>());
-    }
-
-    if(changeItem.getChangeReason() != null) {
-      structureElement.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-    } else {
-      structureElement.getChangeLog().remove(changeItem.getPropertyType());
-    }
-  }
-
-  public void logChangeBinding(StructureElementBinding binding, ChangeItemDomain changeItem) {
-    if(binding.getChangeLog() == null) {
-      binding.setChangeLog(new HashMap<>());
-    }
-
-    if(changeItem.getChangeReason() != null) {
-      binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-    } else {
-      binding.getChangeLog().remove(changeItem.getPropertyType());
-    }
-  }
-
-  public void applyStructure(ConformanceProfile cp, List<ChangeItemDomain> cItems)
-      throws Exception {
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    Map<ChangeType, List<ChangeItemDomain>> structureChangeItems = cItems
-        .stream()
-        .filter(c -> c.getPropertyType().equals(PropertyType.STRUCTSEGMENT))
-        .collect(Collectors.groupingBy(ChangeItemDomain::getChangeType));
-
-    // REMOVE FROM STRUCTURE
-    if(structureChangeItems.containsKey(ChangeType.DELETE)) {
-      for(ChangeItemDomain structDelete: structureChangeItems.get(ChangeType.DELETE)) {
-        // GET ADD SET
-        Set<SegmentRefOrGroup> targetList = this.getTargetList(cp, structDelete.getLocation());
-
-        // VALID PATH
-        if(targetList != null) {
-          // Make sure position does exist
-          Optional<SegmentRefOrGroup> element = targetList.stream().filter(elm -> elm.getPosition() == structDelete.getPosition()).findFirst();
-          if(element.isPresent()) {
-
-            // Remove Bindings
-            this.removeElementBindings(createPath(structDelete.getLocation(), element.get().getId()), cp.getBinding(), 0);
-            targetList.remove(element.get());
-          } else {
-            throw new Exception("At path " + structDelete.getLocation() + " cannot remove segment to position " + structDelete.getPosition() + " (Does not Exists)");
-          }
-        }
-      }
-    }
-
-    // ADD TO STRUCTURE
-    if(structureChangeItems.containsKey(ChangeType.ADD)) {
-      List<ChangeItemDomain> addList = structureChangeItems.get(ChangeType.ADD).stream().sorted(Comparator.comparingInt(ChangeItemDomain::getPosition)).collect(Collectors.toList());
-      for(ChangeItemDomain structAdd: addList) {
-        // GET ADD SET
-        Set<SegmentRefOrGroup> targetList = this.getTargetList(cp, structAdd.getLocation());
-
-        // VALID PATH
-        if(targetList != null) {
-          // Make sure position does not exist
-          if(targetList.stream().noneMatch(elm -> elm.getPosition() == structAdd.getPosition())) {
-            String jsonInString = mapper.writeValueAsString(structAdd.getPropertyValue());
-            SegmentRef segmentRef = mapper.readValue(jsonInString, SegmentRef.class);
-            segmentRef.setCustom(true);
-
-            // Can only add at the end
-            if((targetList.size() + 1) == segmentRef.getPosition()) {
-              targetList.add(segmentRef);
-            } else {
-              throw new Exception("At path " + structAdd.getLocation() + " cannot add segment to position " + structAdd.getPosition() + " (Not End Of Message)");
-            }
-          } else {
-            throw new Exception("At path " + structAdd.getLocation() + " cannot add segment to position " + structAdd.getPosition() + " (Already Exists)");
-          }
-        }
-      }
-    }
-  }
-
-
 
   @Override
-  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems, String documentId)
-      throws Exception {
-    Collections.sort(cItems);
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-    this.applyStructure(cp, cItems);
-
-    for (ChangeItemDomain item : cItems) {
-      if (item.getPropertyType().equals(PropertyType.NAME)) {
-        item.setOldPropertyValue(cp.getName());
-        cp.setName((String) item.getPropertyValue());
-      }
-      if (item.getPropertyType().equals(PropertyType.DESCRIPTION)) {
-        item.setOldPropertyValue(cp.getDescription());
-        cp.setDescription((String) item.getPropertyValue());
-      }
-      if (item.getPropertyType().equals(PropertyType.DISPLAYNAME)) {
-        item.setOldPropertyValue(cp.getDisplayName());
-        cp.setDisplayName((String) item.getPropertyValue());
-      }
-      else if (item.getPropertyType().equals(PropertyType.ORGANISATION)) {
-        item.setOldPropertyValue(cp.getOrganization());
-        cp.setOrganization((String) item.getPropertyValue());
-      } 
-      else if (item.getPropertyType().equals(PropertyType.ROLE)) {
-        item.setOldPropertyValue(cp.getRole());
-        cp.setRole(Role.valueOf((String) item.getPropertyValue()));
-      } 
-      else if (item.getPropertyType().equals(PropertyType.PROFILETYPE)) {
-        item.setOldPropertyValue(cp.getProfileType());
-        cp.setProfileType(ProfileType.valueOf((String) item.getPropertyValue()));
-      } 
-      else if (item.getPropertyType().equals(PropertyType.AUTHORS)) {
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        item.setOldPropertyValue(cp.getAuthors());
-        List<String> authors= mapper.readValue(jsonInString, new TypeReference<List<String>>() {});
-        cp.setAuthors(authors);
-      }
-      else if (item.getPropertyType().equals(PropertyType.COCONSTRAINTBINDINGS)) {
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        item.setOldPropertyValue(cp.getCoConstraintsBindings());
-        List<CoConstraintBinding> coconstraints = mapper.readValue(jsonInString, new TypeReference<List<CoConstraintBinding>>() {});
-        cp.setCoConstraintsBindings(coconstraints);
-      }
-      else if (item.getPropertyType().equals(PropertyType.PROFILEIDENTIFIER)) {
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        item.setOldPropertyValue(cp.getAuthors());
-        MessageProfileIdentifier profileIdentifier= mapper.readValue(jsonInString, MessageProfileIdentifier.class);
-        cp.setPreCoordinatedMessageIdentifier(profileIdentifier);
-
-      }         
-      else if (item.getPropertyType().equals(PropertyType.PREDEF)) {
-        item.setOldPropertyValue(cp.getPreDef());
-        cp.setPreDef((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
-        item.setOldPropertyValue(cp.getPostDef());
-        cp.setPostDef((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
-        item.setOldPropertyValue(cp.getAuthorNotes());
-        cp.setAuthorNotes((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
-        item.setOldPropertyValue(cp.getUsageNotes());
-        cp.setUsageNotes((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.IDENTIFIER)) {
-        item.setOldPropertyValue(cp.getIdentifier());
-        cp.setIdentifier((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.USAGE)) {
-        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
-        if (srog != null) {
-          item.setOldPropertyValue(srog.getUsage());
-          srog.setUsage(Usage.valueOf((String) item.getPropertyValue()));
-          this.logChangeStructureElement(srog, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.SEGMENTREF)) {
-        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
-        if (srog != null && srog instanceof SegmentRef) {
-          SegmentRef sr = (SegmentRef) srog;
-          item.setOldPropertyValue(sr.getRef());
-          String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-          sr.setRef(mapper.readValue(jsonInString, Ref.class));
-          this.logChangeStructureElement(srog, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.CARDINALITYMIN)) {
-        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
-        if (srog != null) {
-          item.setOldPropertyValue(srog.getMin());
-          if (item.getPropertyValue() == null) {
-            srog.setMin(0);
-          } else {
-            srog.setMin((Integer) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(srog, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.CARDINALITYMAX)) {
-        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
-        if (srog != null) {
-          item.setOldPropertyValue(srog.getMax());
-          if (item.getPropertyValue() == null) {
-            srog.setMax("NA");
-          } else {
-            srog.setMax((String) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(srog, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
-        item.setOldPropertyValue(seb.getValuesetBindings());
-        seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
-            Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
-        this.logChangeBinding(seb, item);
-      } else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
-        seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
-        this.logChangeBinding(seb, item);
-      } else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
-        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
-        if (srog != null) {
-          item.setOldPropertyValue(srog.getText());
-          if (item.getPropertyValue() == null) {
-            srog.setText(null);
-          } else {
-            srog.setText((String) item.getPropertyValue());
-          }
-        }
-      } else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
-        if (srog != null) {
-          item.setOldPropertyValue(srog.getComments());
-          srog.setComments(
-              new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
-        }
-      } else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        if (item.getChangeType().equals(ChangeType.ADD)) {
-          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-          cs.setId(new ObjectId().toString());
-          cp.getBinding().addConformanceStatement(cs);
-        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
-          item.setOldPropertyValue(item.getLocation());
-          this.deleteConformanceStatementById(cp, item.getLocation());
-        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
-          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-          if(!cs.isLocked()) {
-            if (cs.getIdentifier() != null) {
-              this.deleteConformanceStatementById(cp, cs.getId());
-            }
-            cp.getBinding().addConformanceStatement(cs);
-          }
-        }
-      } else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
-        if (item.getChangeType().equals(ChangeType.ADD)) {
-          Predicate p = mapper.readValue(jsonInString, Predicate.class);
-          seb.setPredicate(p);
-        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
-          item.setOldPropertyValue(item.getLocation());
-          if (seb.getPredicate() != null) {
-            item.setOldPropertyValue(seb.getPredicate());
-            seb.setPredicate(null);
-          }
-
-        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
-          Predicate p = mapper.readValue(jsonInString, Predicate.class);
-          item.setOldPropertyValue(seb.getPredicate());
-          seb.setPredicate(p);
-        }
-        this.logChangeBinding(seb, item);
-      }
-    }
-    cp.setBinding(this.makeLocationInfo(cp));
-    this.save(cp);
-  }
-
-
-  public void applyChanges_new(ConformanceProfile conformanceProfile, List<ChangeItemDomain> cItems, String documentId) throws Exception {
+  public void applyChanges(ConformanceProfile conformanceProfile, List<ChangeItemDomain> cItems, String documentId) throws Exception {
     //Resource part
     Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
-    	        applyChange.apply(conformanceProfile, singlePropertyMap , documentId);
-    	        
-    	        
-    	        Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
-    	        this.applyChildrenChange(map, conformanceProfile.getChildren(), documentId);
-    
-    	        applyChange.applyBindingChanges(map, conformanceProfile.getBinding(), documentId, Level.CONFORMANCEPROFILE);
-    
-    	        conformanceProfile.setBinding(this.makeLocationInfo(conformanceProfile));
-    	        this.save(conformanceProfile);
+    this.applyMetaData(conformanceProfile, singlePropertyMap , documentId);
+    Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
+    this.applyChildrenChange(map, conformanceProfile.getChildren(), documentId);
+    applyChange.applyBindingChanges(map, conformanceProfile.getBinding(), documentId, Level.CONFORMANCEPROFILE);
+    conformanceProfile.setBinding(this.makeLocationInfo(conformanceProfile));
+    this.save(conformanceProfile);
+  }
+
+  /**
+   * @param conformanceProfile
+   * @param singlePropertyMap
+   * @param documentId
+   * @throws ApplyChangeException 
+   * @throws Exception 
+   */
+  private void applyMetaData(ConformanceProfile cp,
+      Map<PropertyType, ChangeItemDomain> singlePropertyMap, String documentId) throws ApplyChangeException{
+    // TODO Auto-generated method stub
+    applyChange.apply(cp, singlePropertyMap , documentId);
+    ObjectMapper mapper = new ObjectMapper();
+
+
+    if (singlePropertyMap.containsKey(PropertyType.NAME)) {
+      singlePropertyMap.get(PropertyType.NAME).setOldPropertyValue(cp.getName());
+      cp.setName((String) singlePropertyMap.get(PropertyType.NAME).getPropertyValue());
+    }
+    if (singlePropertyMap.containsKey(PropertyType.DISPLAYNAME)) {
+      singlePropertyMap.get(PropertyType.DISPLAYNAME).setOldPropertyValue(cp.getDisplayName());
+      cp.setDisplayName((String) singlePropertyMap.get(PropertyType.DISPLAYNAME).getPropertyValue());
+    }
+    if (singlePropertyMap.containsKey(PropertyType.ORGANISATION)) {
+      singlePropertyMap.get(PropertyType.ORGANISATION).setOldPropertyValue(cp.getOrganization());
+      cp.setOrganization((String) singlePropertyMap.get(PropertyType.ORGANISATION).getPropertyValue());
+    } 
+    if (singlePropertyMap.containsKey(PropertyType.ROLE)) {
+      singlePropertyMap.get(PropertyType.ROLE).setOldPropertyValue(cp.getRole());
+      cp.setRole(Role.valueOf((String) singlePropertyMap.get(PropertyType.ROLE).getPropertyValue()));
+    } 
+    if (singlePropertyMap.containsKey(PropertyType.PROFILETYPE)) {
+      singlePropertyMap.get(PropertyType.PROFILETYPE).setOldPropertyValue(cp.getProfileType());
+      cp.setProfileType(ProfileType.valueOf((String) singlePropertyMap.get(PropertyType.PROFILETYPE).getPropertyValue()));
+    } 
+    if (singlePropertyMap.get(PropertyType.IDENTIFIER).getPropertyType().equals(PropertyType.IDENTIFIER)) {
+      singlePropertyMap.get(PropertyType.IDENTIFIER).setOldPropertyValue(cp.getIdentifier());
+      cp.setIdentifier((String) singlePropertyMap.get(PropertyType.IDENTIFIER).getPropertyValue());
+    }
+
+
+    if (singlePropertyMap.containsKey(PropertyType.AUTHORS)) {
+      try {
+        String jsonInString= mapper.writeValueAsString(singlePropertyMap.get(PropertyType.AUTHORS).getPropertyValue());
+        singlePropertyMap.get(PropertyType.AUTHORS).setOldPropertyValue(cp.getAuthors());
+        List<String> authors= mapper.readValue(jsonInString, new TypeReference<List<String>>() {});
+        cp.setAuthors(authors);
+      } catch (IOException e) {
+        // TODO Auto-generated catch block
+        throw new ApplyChangeException(singlePropertyMap.get(PropertyType.AUTHORS));
+      }
+    }
+    if (singlePropertyMap.containsKey(PropertyType.COCONSTRAINTBINDINGS)) {
+      try {
+
+        String jsonInString = mapper.writeValueAsString(singlePropertyMap.get(PropertyType.COCONSTRAINTBINDINGS).getPropertyValue());
+        singlePropertyMap.get(PropertyType.COCONSTRAINTBINDINGS).setOldPropertyValue(cp.getCoConstraintsBindings());
+        List<CoConstraintBinding> coconstraints = mapper.readValue(jsonInString, new TypeReference<List<CoConstraintBinding>>() {});
+        cp.setCoConstraintsBindings(coconstraints);
+      } catch (IOException e) {
+        throw new ApplyChangeException(singlePropertyMap.get(PropertyType.COCONSTRAINTBINDINGS));
+
+      }
+    }
+    if (singlePropertyMap.containsKey(PropertyType.PROFILEIDENTIFIER)) {
+      try {
+
+        String jsonInString = mapper.writeValueAsString(singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER).getPropertyValue());
+        singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER).setOldPropertyValue(cp.getAuthors());
+        MessageProfileIdentifier profileIdentifier= mapper.readValue(jsonInString, MessageProfileIdentifier.class);
+        cp.setPreCoordinatedMessageIdentifier(profileIdentifier);
+      } catch (IOException e) {
+        throw new ApplyChangeException(singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER));
+      }
+    } 
+
   }
 
   /**
    * @param map
    * @param children
    * @param documentId
+   * @throws ApplyChangeException 
    */
   private void applyChildrenChange(Map<PropertyType, List<ChangeItemDomain>> map,
-      Set<SegmentRefOrGroup> children, String documentId) {
-    // TODO Auto-generated method stub
-    
-      // TODO Auto-generated method stub
-      applyChange.applyMsgStructElementChanges(map, children, documentId);
+      Set<SegmentRefOrGroup> children, String documentId) throws ApplyChangeException {
 
-      // TODO Auto-generated method stub
-      if (map.containsKey(PropertyType.CARDINALITYMIN)) {
-        applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, documentId, this::applyCardMin);
+    applyChange.applyStructureElementChanges(map, children, documentId, this::findSegmentRefOrGroupByIdAsStructureElement);
 
-      }
-      if (map.containsKey(PropertyType.CARDINALITYMAX)) {
-        applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, documentId, this::applyCardMax);
-      }
+    if (map.containsKey(PropertyType.CARDINALITYMIN)) {
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, documentId, this::applyCardMin, this::findSegmentRefOrGroupByIdAsStructureElement);
     }
-    
+    if (map.containsKey(PropertyType.CARDINALITYMAX)) {
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, documentId, this::applyCardMax, this::findSegmentRefOrGroupByIdAsStructureElement);
+    } 
+    if(map.containsKey((PropertyType.SEGMENTREF))){
+      applyChange.applyAll(map.get(PropertyType.SEGMENTREF), children, documentId, this::applyRef, this::findSegmentRefOrGroupByIdAsStructureElement);
+    }
   }
+
+
+  public void applyCardMin( ChangeItemDomain change, SegmentRefOrGroup elm, String documentId) {
+
+    change.setOldPropertyValue(elm.getMin());
+    if (change.getPropertyValue() == null) {
+      elm.setMin(0);
+    } else {
+      elm.setMin((Integer) change.getPropertyValue());
+    }
+    applyChange.logChangeStructureElement(elm, change);
+
+  }
+  public void applyCardMax( ChangeItemDomain change, SegmentRefOrGroup elm, String documentId) {
+
+    change.setOldPropertyValue(elm.getMax());
+    if (change.getPropertyValue() == null) {
+      elm.setMax("NA");
+    } else {
+      elm.setMax((String) change.getPropertyValue());
+    }
+    applyChange.logChangeStructureElement(elm, change);
+  }
+
+  public void applyRef( ChangeItemDomain change, SegmentRefOrGroup elm, String documentId) throws ApplyChangeException {
+    ObjectMapper mapper = new ObjectMapper();
+    try {
+      if ( elm instanceof SegmentRef) {
+        SegmentRef sr = (SegmentRef) elm;
+        change.setOldPropertyValue(sr.getRef());
+        String  jsonInString = mapper.writeValueAsString(change.getPropertyValue());
+        sr.setRef(mapper.readValue(jsonInString, Ref.class));
+        applyChange.logChangeStructureElement(elm, change);
+      }
+    } catch (IOException e) {
+      throw new ApplyChangeException(change);
+    }
+  }
+
 
 
 }

@@ -46,6 +46,7 @@ import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 
 @RestController
 public class DatatypeController extends BaseController {
@@ -160,7 +161,7 @@ public class DatatypeController extends BaseController {
   @ResponseBody
   public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
       @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
-      Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException {
+      Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException, ApplyChangeException {
     Datatype dt = this.datatypeService.findById(id);
     validateSaveOperation(dt);
     commonService.checkRight(authentication, dt.getCurrentAuthor(), dt.getUsername());

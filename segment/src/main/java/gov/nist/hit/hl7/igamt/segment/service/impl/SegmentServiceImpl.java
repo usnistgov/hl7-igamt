@@ -13,13 +13,18 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service.impl;
 
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.*;
-import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -28,22 +33,28 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Level;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
-import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
@@ -64,8 +75,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingType;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -104,9 +113,6 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   private InMemoryDomainExtentionService domainExtention;
-
-  // @Autowired
-  // private CoConstraintService coConstraintService;
 
   @Autowired
   private MongoTemplate mongoTemplate;
@@ -444,43 +450,6 @@ public class SegmentServiceImpl implements SegmentService {
     return null;
   }
 
-  @Override
-  public PreDef convertDomainToPredef(Segment segment) {
-    if (segment != null) {
-
-      PreDef result = new PreDef();
-      result.setId(segment.getId());
-      result.setScope(segment.getDomainInfo().getScope());
-      result.setVersion(segment.getDomainInfo().getVersion());
-      if (segment.getExt() != null) {
-        result.setLabel(segment.getName() + segment.getExt());
-      } else {
-        result.setLabel(segment.getName());
-      }
-      result.setPreDef(segment.getPreDef());
-      return result;
-    }
-    return null;
-  }
-
-  @Override
-  public PostDef convertDomainToPostdef(Segment segment) {
-    if (segment != null) {
-      PostDef result = new PostDef();
-      result.setId(segment.getId());
-      result.setScope(segment.getDomainInfo().getScope());
-      result.setVersion(segment.getDomainInfo().getVersion());
-      if (segment.getExt() != null) {
-        result.setLabel(segment.getName() + segment.getExt());
-      } else {
-        result.setLabel(segment.getName());
-      }
-      result.setPostDef(segment.getPreDef());
-      return result;
-    }
-    return null;
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -510,21 +479,6 @@ public class SegmentServiceImpl implements SegmentService {
 
     return mongoTemplate.find(qry, Segment.class);
   }
-
-  private void validateField(Field f) throws ValidationException {
-    if (f.getRef() == null || StringUtils.isEmpty(f.getRef().getId())) {
-      throw new SegmentValidationException("Datatype not found");
-    }
-    Datatype d = datatypeService.findById(f.getRef().getId());
-    if (d == null) {
-      throw new SegmentValidationException("Datatype not found");
-    }
-    ValidationUtil.validateUsage(f.getUsage(), f.getMin());
-    ValidationUtil.validateLength(f.getMinLength(), f.getMaxLength());
-    ValidationUtil.validateCardinality(f.getMin(), f.getMax(), f.getUsage());
-    ValidationUtil.validateConfLength(f.getConfLength());
-  }
-
   /**
    * TODO: anything more to validate ??
    */
@@ -607,51 +561,6 @@ public class SegmentServiceImpl implements SegmentService {
     if(cloneMode.equals(CloneMode.DERIVE)) {
       this.bindingService.lockConformanceStatements(elm.getBinding());
     }
-    // updateBindings(elm.getBinding(), valuesetsMap);
-  }
-
-  private void updateCoConstraint(Segment elm, Segment old, HashMap<String, String> valuesetsMap,
-      HashMap<String, String> datatypesMap, String username) {
-    // CoConstraintTable cc =
-    // coConstraintService.getCoConstraintForSegment(old.getId());
-    // if (cc != null) {
-    // CoConstraintTable cc_ = coConstraintService.clone(valuesetsMap, datatypesMap,
-    // elm.getId(), cc);
-    // coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
-    // }
-
-  }
-
-  /**
-   * @param elm
-   * @param valuesetsMap
-   */
-  private void updateBindings(ResourceBinding binding, HashMap<String, String> valuesetsMap) {
-    // TODO Auto-generated method stub
-    if (binding.getChildren() != null) {
-      for (StructureElementBinding child : binding.getChildren()) {
-        if (child.getValuesetBindings() != null) {
-          for (ValuesetBinding vs : child.getValuesetBindings()) {
-            if (vs.getValueSets() != null) {
-              for (String s : vs.getValueSets()) {
-                if (valuesetsMap.containsKey(s)) {
-                  if (!vs.getValueSets().contains(s)) {
-                    vs.getValueSets().add(valuesetsMap.get(s));
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  private void updateDynamicMapping(Segment elm, HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap, String username) {
-
-    DynamicMappingInfo dynmaicMapping = elm.getDynamicMappingInfo();
-
   }
 
   @Override
@@ -680,161 +589,6 @@ public class SegmentServiceImpl implements SegmentService {
         if (child.getElementId().equals(id))
           return child;
       }
-    }
-    return null;
-  }
-
-  /**
-   * @param s
-   * @param location
-   * @return
-   */
-  private void deleteConformanceStatementById(Segment s, String location) {
-    ConformanceStatement toBeDeleted = null;
-    for (ConformanceStatement cs : s.getBinding().getConformanceStatements()) {
-      if (cs.getId().equals(location)) {
-        toBeDeleted = cs;
-      }
-    }
-
-    if (toBeDeleted != null)
-      s.getBinding().getConformanceStatements().remove(toBeDeleted);
-  }
-
-  /**
-   * @param hashSet
-   * @return
-   */
-  private Set<ValuesetBinding> convertDisplayValuesetBinding(
-      HashSet<DisplayValuesetBinding> displayValuesetBindings) {
-    if (displayValuesetBindings != null) {
-      Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
-      for (DisplayValuesetBinding dvb : displayValuesetBindings) {
-        ValuesetBinding vb = new ValuesetBinding();
-        vb.setStrength(dvb.getStrength());
-        vb.setValueSets(dvb.getValueSets());
-
-        vb.setValuesetLocations(dvb.getValuesetLocations());
-        result.add(vb);
-      }
-      return result;
-    }
-    return null;
-  }
-
-  /**
-   * @param sebs
-   * @param location
-   * @return
-   */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(Segment s, String location) {
-    if (s.getBinding() == null) {
-      ResourceBinding binding = new ResourceBinding();
-      binding.setElementId(s.getId());
-      s.setBinding(binding);
-    }
-    return this.findAndCreateStructureElementBindingByIdPath(s.getBinding(), location);
-  }
-
-  /**
-   * @param binding
-   * @param location
-   * @return
-   */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(ResourceBinding binding,
-      String location) {
-    if (binding.getChildren() == null) {
-      if (location.contains("-")) {
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location.split("\\-")[0]);
-        binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb,
-            location.replace(location.split("\\-")[0] + "-", ""));
-      } else {
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location);
-        binding.addChild(seb);
-        return seb;
-      }
-    } else {
-      if (location.contains("-")) {
-        for (StructureElementBinding seb : binding.getChildren()) {
-          if (seb.getElementId().equals(location.split("\\-")[0]))
-            return this.findAndCreateStructureElementBindingByIdPath(seb,
-                location.replace(location.split("\\-")[0] + "-", ""));
-        }
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location.split("\\-")[0]);
-        binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb,
-            location.replace(location.split("\\-")[0] + "-", ""));
-      } else {
-        for (StructureElementBinding seb : binding.getChildren()) {
-          if (seb.getElementId().equals(location))
-            return seb;
-        }
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location);
-        binding.addChild(seb);
-        return seb;
-      }
-    }
-  }
-
-  /**
-   * @param seb
-   * @param replace
-   * @return
-   */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(StructureElementBinding binding,
-      String location) {
-    if (binding.getChildren() == null) {
-      if (location.contains("-")) {
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location.split("\\-")[0]);
-        binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb,
-            location.replace(location.split("\\-")[0] + "-", ""));
-      } else {
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location);
-        binding.addChild(seb);
-        return seb;
-      }
-    } else {
-      if (location.contains("-")) {
-        for (StructureElementBinding seb : binding.getChildren()) {
-          if (seb.getElementId().equals(location.split("\\-")[0]))
-            return this.findAndCreateStructureElementBindingByIdPath(seb,
-                location.replace(location.split("\\-")[0] + "-", ""));
-        }
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location.split("\\-")[0]);
-        binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb,
-            location.replace(location.split("\\-")[0] + "-", ""));
-      } else {
-        for (StructureElementBinding seb : binding.getChildren()) {
-          if (seb.getElementId().equals(location))
-            return seb;
-        }
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location);
-        binding.addChild(seb);
-        return seb;
-      }
-    }
-  }
-
-  /**
-   * @param s
-   * @param location
-   * @return
-   */
-  private Field findFieldById(Segment s, String location) {
-    for (Field f : s.getChildren()) {
-      if (f.getId().equals(location))
-        return f;
     }
     return null;
   }
@@ -1299,26 +1053,6 @@ public class SegmentServiceImpl implements SegmentService {
     return segmentRepository.findByIdIn(ids);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#
-   * collectAvaliableConformanceStatements(java.lang.String, java.lang.String,
-   * java.lang.String)
-   */
-  @Override
-  public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String segmentId,
-      String segmentName) {
-    // Set<ConformanceStatement> found = this.conformanceStatementRepository
-    // .findByIgDocumentIdAndStructureId(documentId, segmentName);
-    // Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-    // for (ConformanceStatement cs : found) {
-    // if (!cs.getSourceIds().contains(segmentId))
-    // result.add(cs);
-    // }
-    return null;
-  }
-
   @Override
   public void collectResources(Segment seg, HashMap<String, Resource> used) {
     // TODO Auto-generated method stub
@@ -1390,7 +1124,7 @@ public class SegmentServiceImpl implements SegmentService {
    */
 
   @Override
-  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws Exception {
+  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
     //Resource part
     Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
     applyChange.apply(s, singlePropertyMap , documentId);
@@ -1420,15 +1154,15 @@ public class SegmentServiceImpl implements SegmentService {
   private void applyChildrenChange(Map<PropertyType, List<ChangeItemDomain>> map,
       Set<Field> children, String documentId) throws ApplyChangeException {
     // TODO Auto-generated method stub
-    applyChange.applySubstructureElementChanges(map, children, documentId);
+    applyChange.applySubstructureElementChanges(map, children, documentId, applyChange::findStructElementById);
 
     // TODO Auto-generated method stub
     if (map.containsKey(PropertyType.CARDINALITYMIN)) {
-      applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, documentId, this::applyCardMin);
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, documentId, this::applyCardMin, applyChange::findStructElementById);
 
     }
     if (map.containsKey(PropertyType.CARDINALITYMAX)) {
-      applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, documentId, this::applyCardMax);
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, documentId, this::applyCardMax, applyChange::findStructElementById);
     } 
   }
 
@@ -1493,25 +1227,6 @@ public class SegmentServiceImpl implements SegmentService {
     }
   }
 
-  /**
-   * @param cItems
-   * @return
-   */
-  private Map<PropertyType, List<ChangeItemDomain>> covertChangesToMap(
-      List<ChangeItemDomain> cItems) {
-    // TODO Auto-generated method stub
-    Map<PropertyType, List<ChangeItemDomain>> ret = new HashMap<PropertyType, List<ChangeItemDomain>>();
-    for(ChangeItemDomain change: cItems ) {
-      if(ret.containsKey(change.getPropertyType())) {
-        ret.get(change.getPropertyType()).add(change);
-      }else {
-        ret.put(change.getPropertyType(), new ArrayList<ChangeItemDomain>(Arrays.asList(change)));
-      }
-    }  
-    return ret;
-  }
-
-
   public void applyStructure(Segment segment, List<ChangeItemDomain> cItems)
       throws Exception {
     ObjectMapper mapper = new ObjectMapper();
@@ -1569,12 +1284,6 @@ public class SegmentServiceImpl implements SegmentService {
     String valueSetId = findObx2VsId(segment);
     if (valueSetId !=null) {
       source = valueSetService.findById(valueSetId);
-      //      if(source == null) {
-      //        List<Valueset> vsList = valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(Scope.HL7STANDARD.toString(), segment.getDomainInfo().getVersion(), "HL70125");
-      //        if(vsList != null && ! vsList.isEmpty()) {
-      //          source = vsList.get(0);
-      //        }
-      //      }
     }
     segment.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
     if(source !=null) {
@@ -1607,4 +1316,5 @@ public class SegmentServiceImpl implements SegmentService {
     }
     return null;
   }
+
 }
