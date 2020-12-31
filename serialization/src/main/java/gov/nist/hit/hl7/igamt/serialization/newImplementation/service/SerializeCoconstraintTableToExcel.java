@@ -151,8 +151,13 @@ public class SerializeCoconstraintTableToExcel {
 			
 			Cell cardinalityHeaderCell = headerRow.createCell(headerCellNumber++);
 			cardinalityHeaderCell.setCellStyle(usageAndCardinalityStyle);
-			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
+//			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
 			cardinalityHeaderCell.setCellValue("Cardinality");
+			Cell cardinalityHeaderCell2 = headerRow2.createCell(headerCellNumber);
+			cardinalityHeaderCell2.setCellStyle(usageAndCardinalityStyle);
+			cardinalityHeaderCell2.setCellValue("Cardinality");
+			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
+
 			headerCellNumber++;
 			
 			Cell ifCell = headerRow.createCell(headerCellNumber);

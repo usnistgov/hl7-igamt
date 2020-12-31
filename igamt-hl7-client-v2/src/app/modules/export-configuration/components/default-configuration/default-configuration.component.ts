@@ -61,6 +61,7 @@ export class DefaultConfigurationComponent implements OnInit {
   change($event) {
     this.hasChanges = true;
   }
+  
 
   updateDelta($event) {
     this.hasChanges = true;

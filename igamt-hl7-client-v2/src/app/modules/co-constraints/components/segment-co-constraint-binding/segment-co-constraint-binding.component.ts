@@ -5,7 +5,7 @@ import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import * as _ from 'lodash';
 import { Observable } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
+import { map, take, tap, mergeMap } from 'rxjs/operators';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
@@ -24,6 +24,11 @@ import { StoreResourceRepositoryService } from '../../../shared/services/resourc
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 import { CoConstraintGroupSelectorComponent } from '../co-constraint-group-selector/co-constraint-group-selector.component';
 import { CoConstraintAction, CoConstraintTableComponent } from '../co-constraint-table/co-constraint-table.component';
+import { FormGroup } from '@angular/forms';
+import { FormControl } from '@angular/forms';
+import { Validators } from '@angular/forms';
+import { FileUploadService } from '../../services/file-upload.service';
+import { flatMap } from 'lodash';
 
 @Component({
   selector: 'app-segment-co-constraint-binding',
@@ -67,6 +72,52 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   delete: EventEmitter<boolean>;
   display$: Observable<IDisplayElement>;
 
+  excelImport : boolean=false;
+
+  // Variable to store shortLink from api response 
+  shortLink: string = ""; 
+  loading: boolean = false; // Flag variable 
+  file: File = null; // Variable to store file 
+
+
+
+  // On file Select 
+  onChange(event) { 
+      this.file = event.target.files[0]; 
+  } 
+
+  // OnClick of button Upload 
+  onUpload() { 
+      this.loading = !this.loading; 
+      console.log(this.file); 
+      this.conformanceProfile.pipe(
+        take(1),
+        mergeMap((cp) => {
+          return this.fileUploadService.upload(this.file, this.binding.flavorId, cp.id,this.documentRef.documentId, this.context.pathId).pipe(
+            map((v) => {
+
+            })
+          );
+        })
+    ).subscribe();
+
+  }
+  // fileToUpload: File = null;
+  
+  // handleFileInput(files: FileList) {
+  //     this.fileToUpload = files.item(0);
+  //     this.uploadFileToActivity();
+  // }
+
+  // uploadFileToActivity() {
+  //   this.fileUploadService.postFile(this.fileToUpload).subscribe(data => {
+  //     // do something, if upload success
+  //     }, error => {
+  //       console.log(error);
+  //     });
+  // }
+  
+
   @Input()
   set value(binding: ICoConstraintBindingSegment) {
     this.binding = {
@@ -81,6 +132,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     private dialog: MatDialog,
     protected store: Store<any>,
     public repository: StoreResourceRepositoryService,
+    private fileUploadService: FileUploadService,
     protected ccService: CoConstraintEntityService) {
     this.valueChange = new EventEmitter<ICoConstraintBindingSegment>();
     this.delete = new EventEmitter<boolean>();
@@ -90,7 +142,10 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   exportAsExcel(table: ICoConstraintTable) {
     this.ccService.exportAsExcel(table);
   }
-
+  importAsExcel(){
+    console.log("Button import excel working");
+    this.excelImport = true;
+  }
   triggerRemove() {
     this.delete.emit(true);
   }

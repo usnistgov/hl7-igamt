@@ -129,6 +129,8 @@ public class ExportConfiguration {
     //setting font
      ExportFontConfiguration exportFontConfiguration = ExportFontConfiguration.getDefault();
      defaultConfiguration.setExportFontConfiguration(exportFontConfiguration);
+     
+     
     defaultConfiguration.setType(type);
     defaultConfiguration.setConfigName("");
     defaultConfiguration.setOriginal(false);
