@@ -105,7 +105,8 @@ public class SegmentController extends BaseController {
 				cfs.add(cs);
 			}
 		}
-
+//
+//	
 		Set<ConformanceStatement> acs = this.segmentService.collectAvaliableConformanceStatements(did, segment.getId(),
 				segment.getName());
 

@@ -135,6 +135,9 @@ public interface SegmentService extends ResourceService {
 	public LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
 
 	public List<Segment> findByIdIn(Set<String> linksAsIds);
+	  
+	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String segmentId,
+           String segmentName);
 
 	public void collectResources(Segment seg, HashMap<String, Resource> used);
 
