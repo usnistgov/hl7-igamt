@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -27,7 +26,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
-import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
@@ -105,15 +103,10 @@ public class SegmentController extends BaseController {
 				cfs.add(cs);
 			}
 		}
-//
-//	
-		Set<ConformanceStatement> acs = this.segmentService.collectAvaliableConformanceStatements(did, segment.getId(),
-				segment.getName());
-
 		HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
 		this.segmentService.collectAssoicatedConformanceStatements(segment, associatedConformanceStatementMap);
 		conformanceStatementDisplay.complete(segment, SectionType.CONFORMANCESTATEMENTS,
-				getReadOnly(authentication, segment), cfs, acs, associatedConformanceStatementMap);
+				getReadOnly(authentication, segment), cfs, null, associatedConformanceStatementMap);
 		conformanceStatementDisplay.setType(Type.SEGMENT);
 		return conformanceStatementDisplay;
 	}

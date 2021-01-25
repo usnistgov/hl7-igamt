@@ -1499,12 +1499,10 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       singlePropertyMap.get(PropertyType.PROFILETYPE).setOldPropertyValue(cp.getProfileType());
       cp.setProfileType(ProfileType.valueOf((String) singlePropertyMap.get(PropertyType.PROFILETYPE).getPropertyValue()));
     } 
-    if (singlePropertyMap.get(PropertyType.IDENTIFIER).getPropertyType().equals(PropertyType.IDENTIFIER)) {
+    if (singlePropertyMap.containsKey(PropertyType.IDENTIFIER)) {
       singlePropertyMap.get(PropertyType.IDENTIFIER).setOldPropertyValue(cp.getIdentifier());
       cp.setIdentifier((String) singlePropertyMap.get(PropertyType.IDENTIFIER).getPropertyValue());
     }
-
-
     if (singlePropertyMap.containsKey(PropertyType.AUTHORS)) {
       try {
         String jsonInString= mapper.writeValueAsString(singlePropertyMap.get(PropertyType.AUTHORS).getPropertyValue());

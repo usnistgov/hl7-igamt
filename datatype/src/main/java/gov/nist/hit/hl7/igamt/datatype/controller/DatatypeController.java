@@ -115,14 +115,10 @@ public class DatatypeController extends BaseController {
         cfs.add(cs);
       }
     }
-
-    Set<ConformanceStatement> acs = this.datatypeService.collectAvaliableConformanceStatements(did,
-        datatype.getId(), datatype.getName());
-
     HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
     this.datatypeService.collectAssoicatedConformanceStatements(datatype, associatedConformanceStatementMap);
     conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS,
-        getReadOnly(authentication, datatype), cfs, acs, associatedConformanceStatementMap);
+        getReadOnly(authentication, datatype), cfs, null, associatedConformanceStatementMap);
     conformanceStatementDisplay.setType(Type.DATATYPE);
     return conformanceStatementDisplay;
   }
