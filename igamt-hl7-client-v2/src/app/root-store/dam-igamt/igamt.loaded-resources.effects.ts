@@ -67,9 +67,10 @@ export class LoadedResourcesEffects {
                 });
               }
 
+              const RepoAction = action.payload.insert ? fromDAM.InsertResourcesInRepostory : fromDAM.LoadResourcesInRepostory;
               return [
                 new fromDAM.TurnOffLoader(),
-                new fromDAM.InsertResourcesInRepostory({
+                new RepoAction({
                   collections,
                 }),
                 new LoadResourceReferencesSuccess(resources),

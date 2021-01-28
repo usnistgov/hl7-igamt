@@ -62,7 +62,7 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
       take(1),
       mergeMap((resource) => {
         if (!resource || !resource.type || resource.type !== type) {
-          this.store.dispatch(new LoadResourceReferences({ resourceType: type, id }));
+          this.store.dispatch(new LoadResourceReferences({ resourceType: type, id, insert: true }));
           return this.getResource(type, id);
         } else {
           return of(resource as T);
