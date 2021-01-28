@@ -2064,6 +2064,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     if (complement.getPath() != null) {
       cPathStr = this.generatePath(complement.getPath(), targetId, level, context);
     }
+    
+    String notPresentBehaviorStr;
+    if(presenceCheckOn) notPresentBehaviorStr = "FAIL";
+    else notPresentBehaviorStr = "PASS";
 
 
     if (assertion.getSubject().getOccurenceType() != null) {
@@ -2092,134 +2096,168 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         result = "<NOT><Presence Path=\"" + sPathStr + "\"/></NOT>";
         break;
       case containValue:
-    	  if(presenceCheckOn) {
-    		  result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
-              + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
-              + "\" NotPresentBehavior=\"" + "FAIL" 
-              + "\"/>";	  
-    	  } else {
-    		  result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
-              + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
-              + "\" NotPresentBehavior=\"" + "PASS" 
-              + "\"/>";
-    	  }
-        
-        break;
+    	  result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+          + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+          + "\" NotPresentBehavior=\"" + notPresentBehaviorStr 
+          + "\"/>";
+    	  break;
       case notContainValue:
         result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
-            + "\" NotPresentBehavior=\"" + "FAIL" 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
             + "\"/></NOT>";
         break;
       case containValueDesc:
         result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
-            + "\" NotPresentBehavior=\"" + "FAIL" 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr 
             + "\"/>";
         break;
       case notContainValueDesc:
         result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
-            + "\" NotPresentBehavior=\"" + "FAIL" 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
             + "\"/></NOT>";
         break;
       case containListValues:
         result = "<StringList Path=\"" + sPathStr + "\" CSV=\""
             + String.join(",", complement.getValues()) + "\" IgnoreCase=\""
-            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case notContainListValues:
         result = "<NOT><StringList Path=\"" + sPathStr + "\" CSV=\""
             + String.join(",", complement.getValues()) + "\" IgnoreCase=\""
-            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
+            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/></NOT>";
         break;
       case containListValuesDesc:
         result = "<StringList Path=\"" + sPathStr + "\" CSV=\""
             + String.join(",", complement.getValues()) + "\" IgnoreCase=\""
-            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case notContainListValuesDesc:
         result = "<NOT><StringList Path=\"" + sPathStr + "\" CSV=\""
             + String.join(",", complement.getValues()) + "\" IgnoreCase=\""
-            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
+            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/></NOT>";
         break;
       case containCode:
         result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
             + "\" IgnoreCase=\"" + false + "\" AtLeastOnce=\"" + atLeastOnce 
-            + "\" NotPresentBehavior=\"" + "FAIL" 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr 
             + "\"/>";
         break;
       case containListCodes:
         result = "<StringList Path=\"" + sPathStr + "\" CSV=\""
             + String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + false
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case regex:
         result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + complement.getValue()
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case positiveInteger:
         result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + "^[1-9]\\d*$"
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case LOINC:
         result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "LOINC"
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case SNOMED:
         result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "SNOMED"
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case sequentially:
         result = "<SetID Path=\"" + sPathStr + "\"/>";
         break;
       case iso:
         result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + "[0-2](\\.(0|[1-9][0-9]*))*"
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cEarlier:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LT" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cEarlierEquivalent:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LE" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cEquivalent:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cEquivalentLater:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GE" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cIdentical:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cLater:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GT" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cTruncatedEarlier:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LT" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cTruncatedEarlierEquivalent:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LE" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cTruncatedEquivalent:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cTruncatedEquivalentLater:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GE" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cTruncatedLater:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GT" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       default:
         break;
