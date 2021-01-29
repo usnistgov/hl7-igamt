@@ -1,6 +1,6 @@
 <div class="tt-cell" style="display: flex; align-items: center;">
   <app-change-log-info  style="margin-right: 5px;" [sections]="changeDisplaySections" ></app-change-log-info>
-  <ng-container *ngIf="val && val.confLength" [ngSwitch]="viewOnly">
+  <ng-container [ngSwitch]="viewOnly">
     <ng-container *ngSwitchCase="false" [ngSwitch]="active()">
       <ng-container *ngSwitchCase="true">
         <input style="width: 100%;" class="range-input" type="text" [name]="location + 'conf-length'" [id]="location + 'conf-length'" placeholder="Conf Length" [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="val.confLength" (ngModelChange)="confLengthChange($event)">
@@ -17,7 +17,7 @@
     </ng-container>
   </ng-container>
   <ng-template #display let-val let-active="active">
-    <strong [ngClass]="{ 'treetable-light': !active }" >{{val.confLength}}</strong>
+    <strong [ngClass]="{ 'treetable-light': !active }" >{{val.confLength ? val.confLength : 'NA'}}</strong>
   </ng-template>
 
 </div>
