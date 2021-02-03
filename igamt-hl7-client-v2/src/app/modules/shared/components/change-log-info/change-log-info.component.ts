@@ -16,6 +16,8 @@ export class ChangeLogInfoComponent implements OnInit {
 
   @Input()
   sections: IChangeReasonSection[];
+  @Input()
+  viewOnly: boolean;
   @Output()
   editChange: EventEmitter<IChangeReasonSection>;
 

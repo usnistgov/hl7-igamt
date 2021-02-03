@@ -12,7 +12,7 @@
               <span>
                 Change {{ item.property }} ( {{ item.date | date }})
               </span>
-              <div style="display: flex;">
+              <div style="display: flex;" *ngIf="!viewOnly">
                 <button class="btn btn-sm btn-dark" style="margin-right: 2px;" (click)="edit(item)">
                   <i class="fa fa-pencil"></i>
                 </button>
