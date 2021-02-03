@@ -1,5 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { IChangeLog, IChangeReason, PropertyType } from '../../models/save-change';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { IChangeReason, PropertyType } from '../../models/save-change';
+import { ChangeReasonDialogComponent } from '../change-reason-dialog/change-reason-dialog.component';
 
 export interface IChangeReasonSection extends IChangeReason {
   property: PropertyType;
@@ -13,9 +15,37 @@ export interface IChangeReasonSection extends IChangeReason {
 export class ChangeLogInfoComponent implements OnInit {
 
   @Input()
-  sections: PropertyType[];
+  sections: IChangeReasonSection[];
+  @Output()
+  editChange: EventEmitter<IChangeReasonSection>;
 
-  constructor() { }
+  constructor(private dialog: MatDialog) {
+    this.editChange = new EventEmitter<IChangeReasonSection>();
+  }
+
+  edit(changeReason: IChangeReasonSection) {
+    this.dialog.open(ChangeReasonDialogComponent, {
+      data: {
+        edit: true,
+        caption: changeReason.property,
+        changeReason,
+      },
+    }).afterClosed().subscribe((value) => {
+      this.editChange.emit({
+        property: changeReason.property,
+        reason: value ? value.reason : undefined,
+        date: value ? value.date : undefined,
+      });
+    });
+  }
+
+  delete(property: PropertyType) {
+    this.editChange.emit({
+      property,
+      reason: undefined,
+      date: undefined,
+    });
+  }
 
   ngOnInit() {
   }

@@ -94,6 +94,7 @@ import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-del
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
+import { StickyPopoverDirective } from './directives/sticky-popover.directive';
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
 import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
@@ -175,6 +176,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DeactivatingDialogComponent,
     ResourceListComponent,
     AddMappingDialgComponent,
+    StickyPopoverDirective,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -334,6 +336,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeReasonDialogComponent,
     ChangeLogInfoComponent,
     ResourceListComponent,
+    StickyPopoverDirective,
   ],
   entryComponents: [
     ResourcePickerComponent,

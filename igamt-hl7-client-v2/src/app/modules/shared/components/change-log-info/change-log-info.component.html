@@ -1,5 +1,5 @@
 <ng-container *ngIf="sections && sections.length > 0" >
-  <span [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="mouseenter:mouseleave" placement="bottom" class="badge" style="background: transparent !important; border: 1px solid blue !important; cursor: help;">
+  <span [stickyPopover]="popContent" [popoverTitle]="popTitle" triggers="click" placement="bottom" class="badge" style="background: transparent !important; border: 1px solid blue !important; cursor: help;">
     <i class="fa fa-info" style="color: blue; font-size: 1.5em;"></i>
   </span>
 
@@ -8,7 +8,19 @@
       <tbody *ngFor="let item of sections" >
         <tr>
           <th>
-            Change {{ item.property }} ( {{ item.date | date }})
+            <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between;">
+              <span>
+                Change {{ item.property }} ( {{ item.date | date }})
+              </span>
+              <div style="display: flex;">
+                <button class="btn btn-sm btn-dark" style="margin-right: 2px;" (click)="edit(item)">
+                  <i class="fa fa-pencil"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="delete(item.property)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </div>
           </th>
         </tr>
         <tr>
