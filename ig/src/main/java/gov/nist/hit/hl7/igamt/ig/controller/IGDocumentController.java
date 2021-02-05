@@ -205,6 +205,8 @@ public class IGDocumentController extends BaseController {
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
   private static final String VALUESET_DELETE = "VALUESET_DELETE";
   private static final String CONFORMANCE_PROFILE_DELETE = "CONFORMANCE_PROFILE_DELETE";
+  private static final String CC_GROUP_DELETED = "COCONSTRAINT_GROUP_DELETE";
+
   private static final String TABLE_OF_CONTENT_UPDATED = "TABLE_OF_CONTENT_UPDATED";
   private static final String METATDATA_UPDATED = "METATDATA_UPDATED";
 
@@ -967,7 +969,7 @@ public class IGDocumentController extends BaseController {
   public ResponseMessage<CoConstraintGroupCreateResponse> createCoConstraint(
       @PathVariable("id") String id,
       @RequestBody CoConstraintGroupCreateWrapper coConstraintGroupCreateWrapper,
-      Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, SegmentNotFoundException, ForbiddenOperationException {
+      Authentication authentication) throws IGNotFoundException, SegmentNotFoundException, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
@@ -989,6 +991,35 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage<CoConstraintGroupCreateResponse>(Status.SUCCESS, "", "CoConstraint Group Created Successfully", ig.getId(), false,
         ig.getUpdateDate(), response);
   }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/co-constraint-group/{ccGroupId}/delete", method = RequestMethod.DELETE, produces = {
+          "application/json" })
+  public ResponseMessage deleteCoConstraintGroup(
+          @PathVariable("id") String id,
+          @PathVariable("ccGroupId") String ccGroupId,
+          Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
+    Link found = findLinkById(ccGroupId, ig.getCoConstraintGroupRegistry().getChildren());
+    if (found != null) {
+      ig.getCoConstraintGroupRegistry().getChildren().remove(found);
+    }
+    try {
+      CoConstraintGroup coConstraintGroup = this.coConstraintService.findById(ccGroupId);
+      if (coConstraintGroup != null) {
+        if (coConstraintGroup.getDomainInfo().getScope().equals(Scope.USER)) {
+          this.coConstraintService.delete(coConstraintGroup);
+        }
+      }
+    } catch (CoConstraintGroupNotFoundException e) {
+      e.printStackTrace();
+    }
+    igService.save(ig);
+    return new ResponseMessage(Status.SUCCESS, CC_GROUP_DELETED, ccGroupId, new Date());
+  }
+
+
 
   @RequestMapping(value = "/api/igdocuments/{documentId}/coconstraints/group/segment/{id}", method = RequestMethod.GET, produces = {"application/json" })
   public List<DisplayElement> getCoConstraintGroupForSegment(@PathVariable("id") String id,

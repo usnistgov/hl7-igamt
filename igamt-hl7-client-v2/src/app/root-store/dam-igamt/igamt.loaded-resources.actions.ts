@@ -15,6 +15,7 @@ export class LoadResourceReferences implements Action {
     resourceType: Type,
     id: string,
     display?: boolean,
+    insert?: boolean,
   }) {
   }
 }
