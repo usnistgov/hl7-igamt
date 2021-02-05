@@ -41,7 +41,7 @@ public interface ApplyChange {
 	 * @param documentId
 	 * @throws Exception
 	 */
-	void apply(Resource resource, Map<PropertyType, ChangeItemDomain> map, String documentId) throws ApplyChangeException;
+	void applyResourceChanges(Resource resource, Map<PropertyType, ChangeItemDomain> map, String documentId) throws ApplyChangeException;
 
 
 	/**
@@ -138,7 +138,7 @@ public interface ApplyChange {
 	 * @param documentId
 	 * @throws ApplyChangeException 
 	 */
-	public void applyConformanceStatments(ChangeItemDomain change, ResourceBinding binding, String documentId) throws ApplyChangeException ;
+	public void applyConformanceStatements(ChangeItemDomain change, ResourceBinding binding, String documentId) throws ApplyChangeException ;
 
 
 	/**
@@ -185,21 +185,7 @@ public interface ApplyChange {
 			Level level) throws ApplyChangeException;
 
 
-	public <T extends StructureElement> void applyAll( List<ChangeItemDomain> changes, Set<T> structureElments,  String documentId, ApplyPropertyFunction<T> fn, FindByFunction<T> findBy) throws ApplyChangeException;
-
-
-	/**
-	 * @param binding
-	 * @param changeItem
-	 */
-	void logChangeBinding(StructureElement binding, ChangeItemDomain changeItem);
-
-
-	/**
-	 * @param structureElement
-	 * @param changeItem
-	 */
-	void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem);
+	<T extends StructureElement> void applyAll( List<ChangeItemDomain> changes, Set<T> structureElments,  String documentId, ApplyPropertyFunction<T> fn, FindByFunction<T> findBy) throws ApplyChangeException;
 
 
 	/**

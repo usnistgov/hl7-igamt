@@ -814,53 +814,25 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 		return label;
 	}
-
-	public void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem) {
-		if(structureElement.getChangeLog() == null) {
-			structureElement.setChangeLog(new HashMap<>());
-		}
-
-		if(changeItem.getChangeReason() != null) {
-			structureElement.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-		} else {
-			structureElement.getChangeLog().remove(changeItem.getPropertyType());
-		}
-	}
-
-	public void logChangeBinding(StructureElementBinding binding, ChangeItemDomain changeItem) {
-		if(binding.getChangeLog() == null) {
-			binding.setChangeLog(new HashMap<>());
-		}
-
-		if(changeItem.getChangeReason() != null) {
-			binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-		} else {
-			binding.getChangeLog().remove(changeItem.getPropertyType());
-		}
-	}
-	
 	
 	@Override
-	  public void applyChanges(Datatype d, List<ChangeItemDomain> cItems, String documentId)
-	            throws ApplyChangeException {
-	    Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
-        applyChange.apply(d, singlePropertyMap , documentId);
-	  
-        if (singlePropertyMap.containsKey(PropertyType.EXT)) {
-          d.setExt((String) singlePropertyMap.get(PropertyType.EXT).getPropertyValue());
-       }
-        
-        Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
-        if(d instanceof ComplexDatatype) {
-          this.applyChildrenChange(map, ((ComplexDatatype)d).getComponents(), documentId);
+	public void applyChanges(Datatype d, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+		Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
+		applyChange.applyResourceChanges(d, singlePropertyMap , documentId);
 
-        }else if(d instanceof DateTimeDatatype) {
-          this.applyDTMChange(map, ((DateTimeDatatype)d), documentId);
+		if (singlePropertyMap.containsKey(PropertyType.EXT)) {
+		  d.setExt((String) singlePropertyMap.get(PropertyType.EXT).getPropertyValue());
+	   }
 
-        } 
-        applyChange.applyBindingChanges(map, d.getBinding(), documentId, Level.DATATYPE);
-        d.setBinding(this.makeLocationInfo(d));
-        this.save(d);
+		Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
+		if(d instanceof ComplexDatatype) {
+		  this.applyChildrenChange(map, ((ComplexDatatype)d).getComponents(), documentId);
+		} else if(d instanceof DateTimeDatatype) {
+		  this.applyDTMChange(map, ((DateTimeDatatype)d), documentId);
+		}
+		applyChange.applyBindingChanges(map, d.getBinding(), documentId, Level.DATATYPE);
+		d.setBinding(this.makeLocationInfo(d));
+		this.save(d);
 	}
 	
 
@@ -872,8 +844,7 @@ public class DatatypeServiceImpl implements DatatypeService {
    */
   private void applyDTMChange(Map<PropertyType, List<ChangeItemDomain>> map,
       DateTimeDatatype dateTimeDatatype, String documentId) throws ApplyChangeException {
-    // TODO Auto-generated method stub
-    
+
     if (map.containsKey(PropertyType.DTMSTRUC)) {
       for(ChangeItemDomain change: map.get(PropertyType.DTMSTRUC)) {
         
@@ -899,11 +870,12 @@ public class DatatypeServiceImpl implements DatatypeService {
    * @param components
    * @param documentId
    */
-  private void applyChildrenChange(Map<PropertyType, List<ChangeItemDomain>> map,
-      Set<Component> components, String documentId) throws ApplyChangeException {
-    // TODO Auto-generated method stub
+  private void applyChildrenChange(
+  		Map<PropertyType, List<ChangeItemDomain>> map,
+		Set<Component> components,
+		String documentId
+  ) throws ApplyChangeException {
     applyChange.applySubstructureElementChanges(map, components, documentId, applyChange::findStructElementById);
-
   }
 
 

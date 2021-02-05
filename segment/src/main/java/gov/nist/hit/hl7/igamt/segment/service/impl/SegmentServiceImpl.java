@@ -63,7 +63,6 @@ import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;
@@ -1091,30 +1090,6 @@ public class SegmentServiceImpl implements SegmentService {
     return ret;
   }
 
-  public void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem) {
-    if(structureElement.getChangeLog() == null) {
-      structureElement.setChangeLog(new HashMap<>());
-    }
-
-    if(changeItem.getChangeReason() != null) {
-      structureElement.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-    } else {
-      structureElement.getChangeLog().remove(changeItem.getPropertyType());
-    }
-  }
-
-  public void logChangeBinding(StructureElementBinding binding, ChangeItemDomain changeItem) {
-    if(binding.getChangeLog() == null) {
-      binding.setChangeLog(new HashMap<>());
-    }
-
-    if(changeItem.getChangeReason() != null) {
-      binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-    } else {
-      binding.getChangeLog().remove(changeItem.getPropertyType());
-    }
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -1127,7 +1102,7 @@ public class SegmentServiceImpl implements SegmentService {
   public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
     //Resource part
     Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
-    applyChange.apply(s, singlePropertyMap , documentId);
+    applyChange.applyResourceChanges(s, singlePropertyMap , documentId);
     
    if (singlePropertyMap.containsKey(PropertyType.EXT)) {
       s.setExt((String) singlePropertyMap.get(PropertyType.EXT).getPropertyValue());
@@ -1153,43 +1128,35 @@ public class SegmentServiceImpl implements SegmentService {
    */
   private void applyChildrenChange(Map<PropertyType, List<ChangeItemDomain>> map,
       Set<Field> children, String documentId) throws ApplyChangeException {
-    // TODO Auto-generated method stub
+
     applyChange.applySubstructureElementChanges(map, children, documentId, applyChange::findStructElementById);
 
-    // TODO Auto-generated method stub
     if (map.containsKey(PropertyType.CARDINALITYMIN)) {
       applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, documentId, this::applyCardMin, applyChange::findStructElementById);
-
     }
+
     if (map.containsKey(PropertyType.CARDINALITYMAX)) {
       applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, documentId, this::applyCardMax, applyChange::findStructElementById);
     } 
   }
 
-
   public void applyCardMin( ChangeItemDomain change, Field f, String documentId) {
-
     change.setOldPropertyValue(f.getMin());
     if (change.getPropertyValue() == null) {
       f.setMin(0);
     } else {
       f.setMin((Integer) change.getPropertyValue());
     }
-    applyChange.logChangeStructureElement(f, change);
-
   }
-  public void applyCardMax( ChangeItemDomain change, Field f, String documentId) {
 
+  public void applyCardMax( ChangeItemDomain change, Field f, String documentId) {
     change.setOldPropertyValue(f.getMax());
     if (change.getPropertyValue() == null) {
       f.setMax("NA");
     } else {
       f.setMax((String) change.getPropertyValue());
     }
-    applyChange.logChangeStructureElement(f, change);
   }
-
-
 
   /**
    * @param map

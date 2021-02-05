@@ -14,13 +14,11 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -69,7 +67,6 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
@@ -81,8 +78,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfi
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureTreeModel;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.GroupDisplayModel;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.GroupStructureTreeModel;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.SegmentLabel;
@@ -1469,16 +1464,10 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     this.save(conformanceProfile);
   }
 
-  /**
-   * @param conformanceProfile
-   * @param map
-   * @param documentId
-   * @throws ApplyChangeException 
-   */
-  private void applyCoConstraintsBindingChanges(ConformanceProfile conformanceProfile,
-    List<ChangeItemDomain> items, String documentId) throws ApplyChangeException {
-    // TODO Auto-generated method stub
-    
+  private void applyCoConstraintsBindingChanges(
+          ConformanceProfile conformanceProfile,
+          List<ChangeItemDomain> items, String documentId
+  ) throws ApplyChangeException {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     for(ChangeItemDomain item : items) {
@@ -1490,23 +1479,18 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       } catch (IOException e) {
         throw new ApplyChangeException(item);
       }
-    
     }
   }
 
-  /**
-   * @param conformanceProfile
-   * @param singlePropertyMap
-   * @param documentId
-   * @throws ApplyChangeException 
-   * @throws Exception 
-   */
-  private void applyMetaData(ConformanceProfile cp,
-      Map<PropertyType, ChangeItemDomain> singlePropertyMap, String documentId) throws ApplyChangeException{
-    // TODO Auto-generated method stub
-    applyChange.apply(cp, singlePropertyMap , documentId);
-    ObjectMapper mapper = new ObjectMapper();
 
+  private void applyMetaData(
+          ConformanceProfile cp,
+          Map<PropertyType, ChangeItemDomain> singlePropertyMap,
+          String documentId
+  ) throws ApplyChangeException{
+
+    applyChange.applyResourceChanges(cp, singlePropertyMap , documentId);
+    ObjectMapper mapper = new ObjectMapper();
 
     if (singlePropertyMap.containsKey(PropertyType.NAME)) {
       singlePropertyMap.get(PropertyType.NAME).setOldPropertyValue(cp.getName());
@@ -1539,13 +1523,11 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         List<String> authors= mapper.readValue(jsonInString, new TypeReference<List<String>>() {});
         cp.setAuthors(authors);
       } catch (IOException e) {
-        // TODO Auto-generated catch block
         throw new ApplyChangeException(singlePropertyMap.get(PropertyType.AUTHORS));
       }
     }
     if (singlePropertyMap.containsKey(PropertyType.PROFILEIDENTIFIER)) {
       try {
-
         String jsonInString = mapper.writeValueAsString(singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER).getPropertyValue());
         singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER).setOldPropertyValue(cp.getAuthors());
         MessageProfileIdentifier profileIdentifier= mapper.readValue(jsonInString, MessageProfileIdentifier.class);
@@ -1579,27 +1561,22 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
   }
 
-
   public void applyCardMin( ChangeItemDomain change, SegmentRefOrGroup elm, String documentId) {
-
     change.setOldPropertyValue(elm.getMin());
     if (change.getPropertyValue() == null) {
       elm.setMin(0);
     } else {
       elm.setMin((Integer) change.getPropertyValue());
     }
-    applyChange.logChangeStructureElement(elm, change);
-
   }
-  public void applyCardMax( ChangeItemDomain change, SegmentRefOrGroup elm, String documentId) {
 
+  public void applyCardMax( ChangeItemDomain change, SegmentRefOrGroup elm, String documentId) {
     change.setOldPropertyValue(elm.getMax());
     if (change.getPropertyValue() == null) {
       elm.setMax("NA");
     } else {
       elm.setMax((String) change.getPropertyValue());
     }
-    applyChange.logChangeStructureElement(elm, change);
   }
 
   public void applyRef( ChangeItemDomain change, SegmentRefOrGroup elm, String documentId) throws ApplyChangeException {
@@ -1610,7 +1587,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         change.setOldPropertyValue(sr.getRef());
         String  jsonInString = mapper.writeValueAsString(change.getPropertyValue());
         sr.setRef(mapper.readValue(jsonInString, Ref.class));
-        applyChange.logChangeStructureElement(elm, change);
       }
     } catch (IOException e) {
       throw new ApplyChangeException(change);

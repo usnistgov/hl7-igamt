@@ -1,4 +1,4 @@
-/**
+/*
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -21,16 +21,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.LengthType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
-import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
@@ -41,9 +40,6 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
@@ -62,45 +58,51 @@ public class ApplyChangeImpl implements ApplyChange {
 	@Autowired
 	BindingService bindingService;
 
+	private final List<PropertyType> ALLOW_CHANGE_REASON_STRUCT_ELM = Collections.unmodifiableList(Arrays.asList(
+			PropertyType.USAGE,
+			PropertyType.NAME,
+			PropertyType.CARDINALITYMAX,
+			PropertyType.CARDINALITYMIN,
+			PropertyType.LENGTHMAX,
+			PropertyType.LENGTHMIN,
+			PropertyType.CONFLENGTH,
+			PropertyType.DATATYPE,
+			PropertyType.LENGTHTYPE,
+			PropertyType.CONSTANTVALUE
+	));
+
+	private final List<PropertyType> ALLOW_CHANGE_REASON_BINDING = Collections.unmodifiableList(Arrays.asList(
+			PropertyType.VALUESET,
+			PropertyType.SINGLECODE,
+			PropertyType.PREDICATE
+	));
 
 	@Override
-	public void apply(Resource resource, Map<PropertyType, ChangeItemDomain> map, String documentId) throws ApplyChangeException {
-		// TODO Auto-generated method stub
-		if (map.containsKey(PropertyType.PREDEF)) {
-			resource.setPreDef((String) map.get(PropertyType.PREDEF).getPropertyValue());
-		}
-		if (map.containsKey(PropertyType.POSTDEF)) {
-			resource.setPostDef((String) map.get(PropertyType.POSTDEF).getPropertyValue());
-		} 
-		if (map.containsKey(PropertyType.AUTHORNOTES)) {
-			resource.setAuthorNotes((String) map.get(PropertyType.AUTHORNOTES).getPropertyValue());
-		}
-		if (map.containsKey(PropertyType.USAGENOTES)) {
-			resource.setUsageNotes((String) map.get(PropertyType.USAGENOTES).getPropertyValue());
-		} 
-		if (map.containsKey(PropertyType.SHORTDESCRIPTION)) {
-			resource.setShortDescription((String) map.get(PropertyType.SHORTDESCRIPTION).getPropertyValue());
-		}
+	public Map<PropertyType, ChangeItemDomain> convertToSingleChangeMap(List<ChangeItemDomain> cItems) {
+		Collections.sort(cItems);
+		Map<PropertyType, ChangeItemDomain> ret = new HashMap<>();
+		cItems.forEach(x -> ret.put(x.getPropertyType(), x));
+		return ret;
 	}
-
 
 	@Override
-	public void applyComments( ChangeItemDomain change, StructureElement elm, String documentId) throws ApplyChangeException {
-		change.getPropertyType().equals(PropertyType.COMMENT);
-		ObjectMapper mapper = new ObjectMapper();
-		String jsonInString;
-		try {
-			jsonInString = mapper.writeValueAsString(change.getPropertyValue());
-			change.setOldPropertyValue(elm.getComments());
-			elm.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
-		} catch (IOException e) {
-			throw new ApplyChangeException(change);
+	public Map<PropertyType, List<ChangeItemDomain>> convertToMultiplePropertyChangeMap(List<ChangeItemDomain> cItems) {
+		Collections.sort(cItems);
+		Map<PropertyType, List<ChangeItemDomain>> ret = new HashMap<>();
+		for(ChangeItemDomain change: cItems ) {
+			if(ret.containsKey(change.getPropertyType())) {
+				ret.get(change.getPropertyType()).add(change);
+			}else {
+				ret.put(change.getPropertyType(), new ArrayList<>(Collections.singletonList(change)));
+			}
 		}
+		return ret;
 	}
+
+	// ---------------------- Generic Helpers ------------------
 
 	@Override
 	public <T extends StructureElement> void applyAll( List<ChangeItemDomain> changes, Set<T> structureElments,  String documentId, ApplyPropertyFunction<T> fn, FindByFunction<T> findBy) throws ApplyChangeException {
-
 		for(ChangeItemDomain change: changes) {
 			T elm = findBy.apply(structureElments, change.getLocation());
 			if(elm !=null) {
@@ -119,131 +121,82 @@ public class ApplyChangeImpl implements ApplyChange {
 		return null;
 	}
 
+	private void applyAllStructureBindingChanges(
+			List<ChangeItemDomain> changes,
+			ResourceBinding binding,
+			String documentId,
+			Level level,
+			ApplyBindingPropertyFunction fn
+	) throws ApplyChangeException {
 
-	@Override
-	public void logChangeBinding(StructureElement binding, ChangeItemDomain changeItem) {
-		if(binding.getChangeLog() == null) {
-			binding.setChangeLog(new HashMap<>());
-		}
-
-		if(changeItem.getChangeReason() != null) {
-			binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-		} else {
-			binding.getChangeLog().remove(changeItem.getPropertyType());
-		}
-	}
-
-	@Override
-	public void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem) {
-		if(structureElement.getChangeLog() == null) {
-			structureElement.setChangeLog(new HashMap<>());
-		}
-
-		if(changeItem.getChangeReason() != null) {
-			structureElement.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-		} else {
-			structureElement.getChangeLog().remove(changeItem.getPropertyType());
+		for(ChangeItemDomain change: changes) {
+			StructureElementBinding elm = bindingService.findAndCreateStructureElementBindingByIdPath(binding, change.getLocation());
+			if(elm !=null) {
+				fn.apply( change,  elm,  documentId, level);
+			}
 		}
 	}
 
-	@Override
-	public void applyUsage( ChangeItemDomain change, StructureElement elm, String documentId) {
-		change.setOldPropertyValue(elm.getUsage());
-		elm.setUsage(Usage.valueOf((String) change.getPropertyValue()));
-		this.logChangeStructureElement(elm, change);
-	}
+	// --------------------- Hierarchical Apply Methods -------------
 
 	@Override
-	public void applyDefinitionText( ChangeItemDomain change, StructureElement elm, String documentId) {
-		change.setOldPropertyValue(elm.getText());
-		if (change.getPropertyValue() == null) {
-			elm.setText(null);
-		} else {
-			elm.setText((String) change.getPropertyValue());
+	public void applyResourceChanges(Resource resource, Map<PropertyType, ChangeItemDomain> map, String documentId) {
+		if (map.containsKey(PropertyType.PREDEF)) {
+			resource.setPreDef((String) map.get(PropertyType.PREDEF).getPropertyValue());
+		}
+		if (map.containsKey(PropertyType.POSTDEF)) {
+			resource.setPostDef((String) map.get(PropertyType.POSTDEF).getPropertyValue());
+		} 
+		if (map.containsKey(PropertyType.AUTHORNOTES)) {
+			resource.setAuthorNotes((String) map.get(PropertyType.AUTHORNOTES).getPropertyValue());
+		}
+		if (map.containsKey(PropertyType.USAGENOTES)) {
+			resource.setUsageNotes((String) map.get(PropertyType.USAGENOTES).getPropertyValue());
+		} 
+		if (map.containsKey(PropertyType.SHORTDESCRIPTION)) {
+			resource.setShortDescription((String) map.get(PropertyType.SHORTDESCRIPTION).getPropertyValue());
 		}
 	}
 
 	@Override
-	public void applyName( ChangeItemDomain change, StructureElement elm, String documentId) {
-		change.setOldPropertyValue(elm.getName());
-		elm.setName(change.getPropertyValue().toString());
-		this.logChangeStructureElement(elm, change);
-	}
-	@Override
-	public void applyMinLength( ChangeItemDomain change, SubStructElement elm, String documentId) {
-		change.setOldPropertyValue(elm.getMinLength());
-		if (change.getPropertyValue() == null) {
-			elm.setMinLength("NA");
-		} else {
-			elm.setMinLength((String) change.getPropertyValue());
-		}
-		this.logChangeStructureElement(elm,change);
-	}
-	@Override
-	public void applyMaxLength( ChangeItemDomain change, SubStructElement elm, String documentId) {
-		change.setOldPropertyValue(elm.getMaxLength());
-		if (change.getPropertyValue() == null) {
-			elm.setMaxLength("NA");
-		} else {
-			elm.setMaxLength((String) change.getPropertyValue());
-		}
-		this.logChangeStructureElement(elm, change);
-	}
-	@Override
-	public void applyLengthType( ChangeItemDomain change, SubStructElement elm, String documentId) {
-		change.setOldPropertyValue(elm.getLengthType());
-		if (change.getPropertyValue() == null) {
-			elm.setLengthType(LengthType.UNSET);
-		} else {
-			elm.setLengthType(LengthType.valueOf((String) change.getPropertyValue()));
-		}
-		this.logChangeStructureElement(elm, change);
-	}
-	@Override
-	public void applyConfLength( ChangeItemDomain change, SubStructElement elm, String documentId) {
-		change.setOldPropertyValue(elm.getConfLength());
-		if (change.getPropertyValue() == null) {
-			elm.setConfLength("NA");
-		} else {
-			elm.setConfLength((String) change.getPropertyValue());
-		}
-		this.logChangeStructureElement(elm, change);
-	}
-	@Override
-	public void applyDatatype( ChangeItemDomain change, SubStructElement elm, String documentId) throws ApplyChangeException {
-		change.setOldPropertyValue(elm.getRef());
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
-			elm.setRef(mapper.readValue(jsonInString, Ref.class));
-			this.logChangeStructureElement(elm, change);
+	public <T extends SubStructElement> void applySubstructureElementChanges(
+			Map<PropertyType, List<ChangeItemDomain>> map,
+			Set<T> children,
+			String documentId,
+			FindByFunction<T> findBy
+	) throws ApplyChangeException  {
 
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			throw new ApplyChangeException(change);
-		}      
+		this.applyStructureElementChanges(map, children, documentId, findBy);
+
+		if(map.containsKey(PropertyType.LENGTHMIN)) {
+			this.applyAll(map.get(PropertyType.LENGTHMIN), children, documentId, this::applyMinLength, findBy);
+		}
+		if(map.containsKey(PropertyType.LENGTHMAX)) {
+			this.applyAll(map.get(PropertyType.LENGTHMAX), children, documentId, this::applyMaxLength, findBy);
+		}
+		if(map.containsKey(PropertyType.LENGTHTYPE)) {
+			this.applyAll(map.get(PropertyType.LENGTHTYPE), children, documentId, this::applyLengthType, findBy);
+		}
+		if(map.containsKey(PropertyType.CONFLENGTH)) {
+			this.applyAll(map.get(PropertyType.CONFLENGTH), children, documentId, this::applyConfLength, findBy);
+		}
+		if(map.containsKey(PropertyType.DATATYPE)) {
+			this.applyAll(map.get(PropertyType.DATATYPE), children, documentId, this::applyDatatype, findBy);
+		}
+		if(map.containsKey(PropertyType.CONSTANTVALUE)) {
+			this.applyAll(map.get(PropertyType.CONSTANTVALUE), children, documentId, this::applyConstantValue, findBy);
+		}
 	}
 
 	@Override
-	public void applyConstantValue( ChangeItemDomain change, SubStructElement elm, String documentId) {
+	public <T extends StructureElement> void applyStructureElementChanges(
+			Map<PropertyType,
+			List<ChangeItemDomain>> map,
+			Set<T> children,
+			String documentId,
+			FindByFunction<T> findBy
+	) throws ApplyChangeException {
 
-		change.setOldPropertyValue(elm.getConstantValue());
-		if (change.getPropertyValue() == null) {
-			elm.setConstantValue(null);
-		} else {
-			elm.setConstantValue((String) change.getPropertyValue());
-		}
-		this.logChangeStructureElement(elm, change);
-
-	}
-
-	/* (non-Javadoc)
-	 * @see gov.nist.hit.hl7.resource.change.service.ApplyChange#applyStructureElemnentChanges(java.util.Map, java.util.Set, java.lang.String)
-	 */
-	@Override
-	public <T extends StructureElement> void applyStructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map,
-			Set<T> children, String documentId, FindByFunction<T> findBy) throws ApplyChangeException {
-		// TODO Auto-generated method stub
 		if(map.containsKey(PropertyType.USAGE)) {
 			this.applyAll(map.get(PropertyType.USAGE), children, documentId, this::applyUsage, findBy);
 		}
@@ -256,75 +209,192 @@ public class ApplyChangeImpl implements ApplyChange {
 		if(map.containsKey(PropertyType.DEFINITIONTEXT)) {
 			this.applyAll(map.get(PropertyType.DEFINITIONTEXT), children, documentId, this::applyDefinitionText, findBy);
 		}
-
+		if(map.containsKey(PropertyType.CHANGEREASON)) {
+			this.applyChangeReason(map.get(PropertyType.CHANGEREASON), children, findBy);
+		}
 	}
 
-
-	@Override
-	public <T extends SubStructElement> void applySubstructureElementChanges(Map<PropertyType, List<ChangeItemDomain>> map,
-			Set<T> children, String documentId, FindByFunction<T> findBy ) throws ApplyChangeException  {
-		// TODO Auto-generated method stub
-		this.applyStructureElementChanges(map, children, documentId, findBy);
-		if(map.containsKey(PropertyType.LENGTHMIN)) {
-			this.applyAll(map.get(PropertyType.LENGTHMIN), children, documentId, this::applyMinLength, findBy);
-		}
-
-		if(map.containsKey(PropertyType.LENGTHMAX)) {
-			this.applyAll(map.get(PropertyType.LENGTHMAX), children, documentId, this::applyMaxLength, findBy);
-		}
-
-		if(map.containsKey(PropertyType.LENGTHTYPE)) {
-			this.applyAll(map.get(PropertyType.LENGTHTYPE), children, documentId, this::applyLengthType, findBy);
-		}
-
-		if(map.containsKey(PropertyType.CONFLENGTH)) {
-			this.applyAll(map.get(PropertyType.CONFLENGTH), children, documentId, this::applyConfLength, findBy);
-		}
-		if(map.containsKey(PropertyType.DATATYPE)) {
-			this.applyAll(map.get(PropertyType.DATATYPE), children, documentId, this::applyDatatype, findBy);
-		}
-		if(map.containsKey(PropertyType.CONSTANTVALUE)) {
-			this.applyAll(map.get(PropertyType.CONSTANTVALUE), children, documentId, this::applyConstantValue, findBy);
-		}
-
-	}
-
-	/* (non-Javadoc)
-	 * @see gov.nist.hit.hl7.resource.change.service.ApplyChange#applyBindingChanges(java.util.Map, gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding, java.lang.String)
-	 */
 	@Override
 	public void applyBindingChanges(Map<PropertyType, List<ChangeItemDomain>> map, ResourceBinding binding,
-			String documentId, Level level) throws ApplyChangeException {
-		// TODO Auto-generated method stub
+									String documentId, Level level) throws ApplyChangeException {
 
 		if(map.containsKey(PropertyType.STATEMENT)) {
 			for(ChangeItemDomain change:map.get(PropertyType.STATEMENT) ) {
-				this.applyConformanceStatments(change, binding, documentId);
+				this.applyConformanceStatements(change, binding, documentId);
 			}
 		}
 		if(map.containsKey(PropertyType.VALUESET)) {
 			this.applyAllStructureBindingChanges(map.get(PropertyType.VALUESET), binding, documentId,level,  this::applyValueSet);
 		}
-
 		if(map.containsKey(PropertyType.SINGLECODE)) {
 			this.applyAllStructureBindingChanges(map.get(PropertyType.SINGLECODE), binding, documentId,level,  this::applySingleCode);
 		}
 		if(map.containsKey(PropertyType.PREDICATE)) {
 			this.applyAllStructureBindingChanges(map.get(PropertyType.PREDICATE), binding, documentId,level, this::applyPredicate);
 		}
-
+		if(map.containsKey(PropertyType.CHANGEREASON)) {
+			applyChangeReason(map.get(PropertyType.CHANGEREASON), binding);
+		}
 	}
 
-	/**
-	 * @param list
-	 * @param binding
-	 * @param documentId
-	 * @throws ApplyChangeException 
-	 */
-	@Override
-	public void applyConformanceStatments(ChangeItemDomain change, ResourceBinding binding, String documentId) throws ApplyChangeException {
-		// TODO Auto-generated method stub
+	//------------- Property Apply Changes ------------
 
+	@Override
+	public void applyComments( ChangeItemDomain change, StructureElement elm, String documentId) throws ApplyChangeException {
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString;
+		try {
+			jsonInString = mapper.writeValueAsString(change.getPropertyValue());
+			change.setOldPropertyValue(elm.getComments());
+			elm.setComments(new HashSet<>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+		} catch (IOException e) {
+			throw new ApplyChangeException(change);
+		}
+	}
+
+	@Override
+	public void applyUsage( ChangeItemDomain change, StructureElement elm, String documentId) {
+		change.setOldPropertyValue(elm.getUsage());
+		elm.setUsage(Usage.valueOf((String) change.getPropertyValue()));
+	}
+
+	@Override
+	public void applyDefinitionText( ChangeItemDomain change, StructureElement elm, String documentId) {
+		change.setOldPropertyValue(elm.getText());
+		if (change.getPropertyValue() == null) {
+			elm.setText(null);
+		} else {
+			elm.setText((String) change.getPropertyValue());
+		}
+	}
+
+	public void applyChangeReasonStructureElement(ChangeReason changeReason, PropertyType propertyType, StructureElement elm) {
+		if(this.ALLOW_CHANGE_REASON_STRUCT_ELM.contains(propertyType)) {
+			if(elm.getChangeLog() == null) {
+				elm.setChangeLog(new HashMap<>());
+			}
+			if(changeReason != null) {
+				elm.getChangeLog().put(propertyType, changeReason);
+			} else {
+				elm.getChangeLog().remove(propertyType);
+			}
+		}
+	}
+
+	public void applyChangeReasonBinding(ChangeReason changeReason, PropertyType propertyType, StructureElementBinding elm) {
+		if(this.ALLOW_CHANGE_REASON_BINDING.contains(propertyType)) {
+			if(elm.getChangeLog() == null) {
+				elm.setChangeLog(new HashMap<>());
+			}
+			if(changeReason != null) {
+				elm.getChangeLog().put(propertyType, changeReason);
+			} else {
+				elm.getChangeLog().remove(propertyType);
+			}
+		}
+	}
+
+	@Override
+	public void applyName( ChangeItemDomain change, StructureElement elm, String documentId) {
+		change.setOldPropertyValue(elm.getName());
+		elm.setName(change.getPropertyValue().toString());
+	}
+
+	@Override
+	public void applyMinLength( ChangeItemDomain change, SubStructElement elm, String documentId) {
+		change.setOldPropertyValue(elm.getMinLength());
+		if (change.getPropertyValue() == null) {
+			elm.setMinLength("NA");
+		} else {
+			elm.setMinLength((String) change.getPropertyValue());
+		}
+	}
+
+	@Override
+	public void applyMaxLength( ChangeItemDomain change, SubStructElement elm, String documentId) {
+		change.setOldPropertyValue(elm.getMaxLength());
+		if (change.getPropertyValue() == null) {
+			elm.setMaxLength("NA");
+		} else {
+			elm.setMaxLength((String) change.getPropertyValue());
+		}
+	}
+
+	@Override
+	public void applyLengthType( ChangeItemDomain change, SubStructElement elm, String documentId) {
+		change.setOldPropertyValue(elm.getLengthType());
+		if (change.getPropertyValue() == null) {
+			elm.setLengthType(LengthType.UNSET);
+		} else {
+			elm.setLengthType(LengthType.valueOf((String) change.getPropertyValue()));
+		}
+	}
+
+	@Override
+	public void applyConfLength( ChangeItemDomain change, SubStructElement elm, String documentId) {
+		change.setOldPropertyValue(elm.getConfLength());
+		if (change.getPropertyValue() == null) {
+			elm.setConfLength("NA");
+		} else {
+			elm.setConfLength((String) change.getPropertyValue());
+		}
+	}
+
+	@Override
+	public void applyDatatype( ChangeItemDomain change, SubStructElement elm, String documentId) throws ApplyChangeException {
+		change.setOldPropertyValue(elm.getRef());
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
+			elm.setRef(mapper.readValue(jsonInString, Ref.class));
+		} catch (IOException e) {
+			throw new ApplyChangeException(change);
+		}      
+	}
+
+	@Override
+	public void applyConstantValue( ChangeItemDomain change, SubStructElement elm, String documentId) {
+		change.setOldPropertyValue(elm.getConstantValue());
+		if (change.getPropertyValue() == null) {
+			elm.setConstantValue(null);
+		} else {
+			elm.setConstantValue((String) change.getPropertyValue());
+		}
+	}
+
+	public  <T extends StructureElement>  void applyChangeReason(List<ChangeItemDomain> changes, Set<T> children, FindByFunction<T> findBy) throws ApplyChangeException {
+		for(ChangeItemDomain change: changes) {
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				ChangeReasonTarget target = new ChangeReasonTarget(change.getLocation());
+				String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
+				ChangeReason changeReason = mapper.readValue(jsonInString, ChangeReason.class);
+				this.applyChangeReasonStructureElement(changeReason, target.getProperty(), findBy.apply(children, target.getPath()));
+			} catch (Exception exception) {
+				exception.printStackTrace();
+				throw new ApplyChangeException(change); 
+			}
+		}
+	}
+
+	public void applyChangeReason(List<ChangeItemDomain> changes, ResourceBinding resourceBinding) throws ApplyChangeException {
+		for(ChangeItemDomain change: changes) {
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				ChangeReasonTarget target = new ChangeReasonTarget(change.getLocation());
+				String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
+				ChangeReason changeReason = mapper.readValue(jsonInString, ChangeReason.class);
+				StructureElementBinding elm = bindingService.findAndCreateStructureElementBindingByIdPath(resourceBinding, target.getPath());
+				this.applyChangeReasonBinding(changeReason, target.getProperty(), elm);
+			} catch (Exception exception) {
+				exception.printStackTrace();
+				throw new ApplyChangeException(change);
+			}
+		}
+	}
+
+	@Override
+	public void applyConformanceStatements(ChangeItemDomain change, ResourceBinding binding, String documentId) throws ApplyChangeException {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
@@ -333,7 +403,6 @@ public class ApplyChangeImpl implements ApplyChange {
 				cs.setLevel(Level.SEGMENT);
 				cs.setId(new ObjectId().toString());
 				binding.addConformanceStatement(cs);
-
 			} else if (change.getChangeType().equals(ChangeType.DELETE)) {
 				change.setOldPropertyValue(change.getLocation());
 				this.bindingService.deleteConformanceStatementById(binding, change.getLocation());
@@ -342,52 +411,30 @@ public class ApplyChangeImpl implements ApplyChange {
 				if(!cs.isLocked()) {
 					if (cs.getIdentifier() != null) {
 						this.bindingService.deleteConformanceStatementById(binding, cs.getId());
-					}		      cs.setLevel(Level.SEGMENT);
+					}
+					cs.setLevel(Level.SEGMENT);
 					binding.addConformanceStatement(cs);
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			throw new ApplyChangeException(change);
-		}  
-
-	}
-
-	/**
-	 * @param list
-	 * @param binding
-	 * @param documentId
-	 * @param object
-	 * @throws ApplyChangeException 
-	 */
-	private void applyAllStructureBindingChanges(List<ChangeItemDomain> changes, ResourceBinding binding, String documentId,
-			Level level, ApplyBindingPropertyFunction fn) throws ApplyChangeException {
-		// TODO Auto-generated method stub
-		for(ChangeItemDomain change: changes) {
-			StructureElementBinding elm = bindingService.findAndCreateStructureElementBindingByIdPath(binding, change.getLocation());
-			if(elm !=null) {
-				fn.apply( change,  elm,  documentId, level);
-			}
 		}
-
-
 	}
 
 	@Override
 	public void applyValueSet(ChangeItemDomain change, StructureElementBinding elm, String documentId, Level level) throws ApplyChangeException{
-
 		ObjectMapper mapper = new ObjectMapper();
 		String jsonInString;
 		try {
 			jsonInString = mapper.writeValueAsString(change.getPropertyValue());
 			change.setOldPropertyValue(elm.getValuesetBindings());
-			elm.setValuesetBindings(this.bindingService.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
+			elm.setValuesetBindings(this.bindingService.convertDisplayValuesetBinding(new HashSet<>(
 					Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
-			this.logChangeBinding(elm, change);
 		} catch (IOException e) {
 			throw new ApplyChangeException(change);
 		}
 	}
+
 	@Override
 	public void applySingleCode(ChangeItemDomain change, StructureElementBinding elm, String documentId, Level level) throws ApplyChangeException{
 		ObjectMapper mapper = new ObjectMapper();
@@ -395,8 +442,6 @@ public class ApplyChangeImpl implements ApplyChange {
 			String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
 			change.setOldPropertyValue(elm.getInternalSingleCode());
 			elm.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
-			this.logChangeBinding(elm, change);
-
 		} catch (IOException e) {
 			throw new ApplyChangeException(change);
 		}
@@ -405,7 +450,6 @@ public class ApplyChangeImpl implements ApplyChange {
 	@Override
 	public void applyPredicate(ChangeItemDomain change, StructureElementBinding elm, String documentId,  Level level) throws ApplyChangeException{
 		try {
-
 			ObjectMapper mapper = new ObjectMapper();
 			String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
 			if (change.getChangeType().equals(ChangeType.ADD)) {
@@ -418,59 +462,15 @@ public class ApplyChangeImpl implements ApplyChange {
 					change.setOldPropertyValue(elm.getPredicate());
 					elm.setPredicate(null);
 				}
-
 			} else if (change.getChangeType().equals(ChangeType.UPDATE)) {
 				Predicate cp = mapper.readValue(jsonInString, Predicate.class);
 				change.setOldPropertyValue(elm.getPredicate());
 				cp.setLevel(level);
 				elm.setPredicate(cp);
 			}
-			this.logChangeBinding(elm, change);
 		} catch (IOException e) {
 			throw new ApplyChangeException(change);
 		}
-
-
-
 	}
-
-
-
-	public void logChangeBinding(StructureElementBinding binding, ChangeItemDomain changeItem) {
-		if(binding.getChangeLog() == null) {
-			binding.setChangeLog(new HashMap<>());
-		}
-
-		if(changeItem.getChangeReason() != null) {
-			binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-		} else {
-			binding.getChangeLog().remove(changeItem.getPropertyType());
-		}
-	}
-
-
-	@Override
-	public Map<PropertyType, ChangeItemDomain> convertToSingleChangeMap(List<ChangeItemDomain> cItems) {
-		Collections.sort(cItems);
-		Map<PropertyType, ChangeItemDomain> ret = new HashMap<PropertyType, ChangeItemDomain>();
-		cItems.forEach(x -> ret.put(x.getPropertyType(), x));
-		return ret;
-	}
-	@Override
-	public Map<PropertyType, List<ChangeItemDomain>> convertToMultiplePropertyChangeMap(
-			List<ChangeItemDomain> cItems) {
-		Collections.sort(cItems);
-		Map<PropertyType, List<ChangeItemDomain>> ret = new HashMap<PropertyType, List<ChangeItemDomain>>();
-		for(ChangeItemDomain change: cItems ) {
-			if(ret.containsKey(change.getPropertyType())) {
-				ret.get(change.getPropertyType()).add(change);
-			}else {
-				ret.put(change.getPropertyType(), new ArrayList<ChangeItemDomain>(Arrays.asList(change)));
-			}
-		}  
-		return ret;
-	}
-
-
 
 }
