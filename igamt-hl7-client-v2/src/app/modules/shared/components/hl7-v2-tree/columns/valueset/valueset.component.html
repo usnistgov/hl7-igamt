@@ -1,44 +1,52 @@
 <div style="display: flex; justify-content: space-between;">
- <app-change-log-info style="margin-right: 5px;" [sections]="changeDisplaySections" ></app-change-log-info>
-  <div>
-    <ng-container *ngIf="editable$ | async as edit">
-      <ng-container [ngSwitch]="!!edit.value && (edit.type === 'SINGLECODE' || edit.value.length > 0)">
-        <ng-container *ngSwitchCase="true">
-            <ng-container [ngSwitch]="edit.type">
-              <ng-container *ngSwitchCase="'VALUESET'">
+  <ng-container *ngIf="editable$ | async as edit">
+    <ng-container [ngSwitch]="!!edit.value && (edit.type === 'SINGLECODE' || edit.value.length > 0)">
+      <ng-container *ngSwitchCase="true">
+          <app-change-log-info style="margin-right: 5px;"
+            [sections]="activeChangeLog$ | async"
+            [viewOnly]="globalViewOnly"
+            [context]="context"
+            (editChange)="updateReasonForChange($event)"
+          ></app-change-log-info>
+          <ng-container [ngSwitch]="edit.type">
+            <ng-container *ngSwitchCase="'VALUESET'">
 
-                <ng-container *ngFor="let item of edit.value">
-                  <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : { resource : context} }"></ng-container>
-                </ng-container>
+              <ng-container *ngFor="let item of edit.value">
+                <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : { resource : context} }"></ng-container>
+              </ng-container>
 
-              </ng-container>
-              <ng-container *ngSwitchCase="'SINGLECODE'">
-                  <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: edit.value, context : { resource : context } }"></ng-container>
-              </ng-container>
             </ng-container>
-
-        </ng-container>
-        <ng-container *ngSwitchCase="false">
-
-          <ng-container *ngIf="freeze$ | async as freeze">
-            <ng-container [ngSwitch]="freeze.binding.type">
-              <ng-container *ngSwitchCase="'VALUESET'">
-
-                <ng-container *ngFor="let item of freeze.binding.value">
-                  <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : freeze.context }"></ng-container>
-                </ng-container>
-
-              </ng-container>
-              <ng-container *ngSwitchCase="'SINGLECODE'">
-                <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: freeze.binding.value, context : freeze.context }"></ng-container>
-              </ng-container>
+            <ng-container *ngSwitchCase="'SINGLECODE'">
+                <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: edit.value, context : { resource : context } }"></ng-container>
             </ng-container>
           </ng-container>
 
+      </ng-container>
+      <ng-container *ngSwitchCase="false">
+        <app-change-log-info style="margin-right: 5px;"
+          [sections]="changeDisplaySections$ | async"
+          [viewOnly]="globalViewOnly"
+          [context]="context"
+          (editChange)="updateReasonForChange($event)"
+        ></app-change-log-info>
+        <ng-container *ngIf="freeze$ | async as freeze">
+          <ng-container [ngSwitch]="freeze.binding.type">
+            <ng-container *ngSwitchCase="'VALUESET'">
+
+              <ng-container *ngFor="let item of freeze.binding.value">
+                <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : freeze.context }"></ng-container>
+              </ng-container>
+
+            </ng-container>
+            <ng-container *ngSwitchCase="'SINGLECODE'">
+              <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: freeze.binding.value, context : freeze.context }"></ng-container>
+            </ng-container>
+          </ng-container>
         </ng-container>
+
       </ng-container>
     </ng-container>
-  </div>
+  </ng-container>
 
   <div *ngIf="bindingInfo?.allowValueSets && !globalViewOnly" style="margin-left: 5px;">
     <button class="btn btn-sm btn-primary"  (click)="editBinding()"><i class="fa fa-pencil"></i></button>
@@ -62,7 +70,7 @@
     </tr>
     <tr *ngFor="let item of vsBinding.valueSets">
       <td colspan="3">
-        <div [pTooltip]="item?.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
+        <div [pTooltip]="item?.description" tooltipPosition="top">
            <app-display-ref [documentId]="documentRef.documentId" [documentType]="documentRef.type" [element]="item" [hideDescription]="true"></app-display-ref>
         </div>
       </td>
@@ -87,7 +95,7 @@
     </tr>
     <tr>
       <td colspan="3">
-        <div [pTooltip]="singleCode.valueSet?.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
+        <div [pTooltip]="singleCode.valueSet?.description" tooltipPosition="top">
           <app-display-ref [documentId]="documentRef.documentId" [documentType]="documentRef.type" [element]="singleCode.valueSet" [hideDescription]="true"></app-display-ref>
         </div>
       </td>

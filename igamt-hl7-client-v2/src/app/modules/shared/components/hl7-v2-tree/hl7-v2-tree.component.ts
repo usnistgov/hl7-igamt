@@ -15,7 +15,7 @@ import { IPath } from '../../models/cs.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
-import { ChangeType, IChange, IChangeLog, PropertyType } from '../../models/save-change';
+import { ChangeType, IChange, IChangeLog, PropertyType, ILocationChangeLog } from '../../models/save-change';
 import { IField, ISegment } from '../../models/segment.interface';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
@@ -88,7 +88,7 @@ export interface IHL7v2TreeNodeData {
   bindings?: IElementBinding;
   level?: number;
   custom?: boolean;
-  changeLog?: IChangeLog;
+  changeLog?: ILocationChangeLog;
   rootPath: IPath;
 }
 
@@ -374,11 +374,24 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   }
 
   datatypeChange(change: IChange, row: { node: IHL7v2TreeNode }) {
-    this.referenceChange(change.propertyValue, row.node, change);
+    if (this.capture(change, PropertyType.DATATYPE)) {
+      this.referenceChange(change.propertyValue, row.node, change);
+    }
   }
 
   segmentChange(change: IChange, row: { node: IHL7v2TreeNode }) {
-    this.referenceChange(change.propertyValue, row.node, change);
+    if (this.capture(change, PropertyType.SEGMENTREF)) {
+      this.referenceChange(change.propertyValue, row.node, change);
+    }
+  }
+
+  capture(change: IChange, property: PropertyType): boolean {
+    if (change.propertyType === property) {
+      return true;
+    } else {
+      this.registerChange(change);
+      return false;
+    }
   }
 
   referenceChange(ref: IResourceRef, node: IHL7v2TreeNode, change: IChange) {
