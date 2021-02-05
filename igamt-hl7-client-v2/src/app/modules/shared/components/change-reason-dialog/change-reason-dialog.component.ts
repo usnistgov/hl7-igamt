@@ -24,6 +24,7 @@ export class ChangeReasonDialogComponent<T> implements OnInit {
   caption: string;
   text: string;
   existingChangeReason: IChangeReason;
+  edit: boolean;
 
   constructor(
     public dialogRef: MatDialogRef<ChangeReasonDialogComponent<T>>,
@@ -32,7 +33,9 @@ export class ChangeReasonDialogComponent<T> implements OnInit {
     this.current = data.display && data.display.current ? data.display.current : { context: data.current };
     this.previous = data.display && data.display.previous ? data.display.previous : { context: data.previous };
     this.existingChangeReason = data.changeReason;
+    this.edit = data.edit;
     this.caption = data.caption;
+    this.text = this.edit ? data.changeReason.reason : '';
   }
 
   keepReason() {

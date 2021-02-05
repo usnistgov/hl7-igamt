@@ -1,5 +1,10 @@
 <div class="tt-cell" style="display: flex; align-items: center;">
-  <app-change-log-info  style="margin-right: 5px;" [sections]="changeDisplaySections" ></app-change-log-info>
+  <app-change-log-info style="margin-right: 5px;"
+    [sections]="changeDisplaySections$ | async"
+    [context]="context"
+    [viewOnly]="viewOnly"
+    (editChange)="updateReasonForChange($event)"
+  ></app-change-log-info>
   <ng-container [ngSwitch]="viewOnly">
     <ng-container *ngSwitchCase="false" [ngSwitch]="active()">
       <ng-container *ngSwitchCase="true">

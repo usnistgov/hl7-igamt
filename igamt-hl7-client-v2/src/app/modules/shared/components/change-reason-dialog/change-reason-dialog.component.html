@@ -1,19 +1,22 @@
 <h2 mat-dialog-title>Change Reason for {{ caption }}</h2>
-<p>Please enter a reason for the following change : </p>
-<table class="table table-sm table-bordered table-striped">
-  <tr>
-    <td>Previous</td>
-    <td>
-      <ng-container *ngTemplateOutlet="previous.template ? previous.template : defaultTemplate; context: { $implicit : previous.context }"></ng-container>
-    </td>
-  </tr>
-  <tr>
-    <td>Current</td>
-    <td>
-      <ng-container *ngTemplateOutlet="current.template ? current.template : defaultTemplate; context: { $implicit : current.context }"></ng-container>
-    </td>
-  </tr>
-</table>
+<ng-container *ngIf="!edit" >
+  <p>Please enter a reason for the following change : </p>
+  <table class="table table-sm table-bordered table-striped">
+    <tr>
+      <td>Previous</td>
+      <td>
+        <ng-container *ngTemplateOutlet="previous.template ? previous.template : defaultTemplate; context: { $implicit : previous.context }"></ng-container>
+      </td>
+    </tr>
+    <tr>
+      <td>Current</td>
+      <td>
+        <ng-container *ngTemplateOutlet="current.template ? current.template : defaultTemplate; context: { $implicit : current.context }"></ng-container>
+      </td>
+    </tr>
+  </table>
+</ng-container>
+
 <div *ngIf="existingChangeReason" style="padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; border: 1px solid #dee2e6;">
   <strong>Previous Change ({{ existingChangeReason.date | date }})</strong>
   <span>{{  existingChangeReason.reason  }}</span>
