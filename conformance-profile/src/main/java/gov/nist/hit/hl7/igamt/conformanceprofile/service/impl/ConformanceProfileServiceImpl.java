@@ -1458,11 +1458,40 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     //Resource part
     Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
     this.applyMetaData(conformanceProfile, singlePropertyMap , documentId);
+
     Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
     this.applyChildrenChange(map, conformanceProfile.getChildren(), documentId);
+    if (map.containsKey(PropertyType.COCONSTRAINTBINDINGS)) {
+    this.applyCoConstraintsBindingChanges(conformanceProfile, map.get(PropertyType.COCONSTRAINTBINDINGS) , documentId);
+    }
     applyChange.applyBindingChanges(map, conformanceProfile.getBinding(), documentId, Level.CONFORMANCEPROFILE);
     conformanceProfile.setBinding(this.makeLocationInfo(conformanceProfile));
     this.save(conformanceProfile);
+  }
+
+  /**
+   * @param conformanceProfile
+   * @param map
+   * @param documentId
+   * @throws ApplyChangeException 
+   */
+  private void applyCoConstraintsBindingChanges(ConformanceProfile conformanceProfile,
+    List<ChangeItemDomain> items, String documentId) throws ApplyChangeException {
+    // TODO Auto-generated method stub
+    
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    for(ChangeItemDomain item : items) {
+      try {
+        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+        item.setOldPropertyValue(conformanceProfile.getCoConstraintsBindings());
+        List<CoConstraintBinding> coconstraints = mapper.readValue(jsonInString, new TypeReference<List<CoConstraintBinding>>() {});
+        conformanceProfile.setCoConstraintsBindings(coconstraints);
+      } catch (IOException e) {
+        throw new ApplyChangeException(item);
+      }
+    
+    }
   }
 
   /**
@@ -1512,18 +1541,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       } catch (IOException e) {
         // TODO Auto-generated catch block
         throw new ApplyChangeException(singlePropertyMap.get(PropertyType.AUTHORS));
-      }
-    }
-    if (singlePropertyMap.containsKey(PropertyType.COCONSTRAINTBINDINGS)) {
-      try {
-
-        String jsonInString = mapper.writeValueAsString(singlePropertyMap.get(PropertyType.COCONSTRAINTBINDINGS).getPropertyValue());
-        singlePropertyMap.get(PropertyType.COCONSTRAINTBINDINGS).setOldPropertyValue(cp.getCoConstraintsBindings());
-        List<CoConstraintBinding> coconstraints = mapper.readValue(jsonInString, new TypeReference<List<CoConstraintBinding>>() {});
-        cp.setCoConstraintsBindings(coconstraints);
-      } catch (IOException e) {
-        throw new ApplyChangeException(singlePropertyMap.get(PropertyType.COCONSTRAINTBINDINGS));
-
       }
     }
     if (singlePropertyMap.containsKey(PropertyType.PROFILEIDENTIFIER)) {
