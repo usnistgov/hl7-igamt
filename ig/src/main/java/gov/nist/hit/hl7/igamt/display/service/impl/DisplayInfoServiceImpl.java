@@ -19,6 +19,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -29,6 +30,9 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
+import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -41,6 +45,9 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 	
 	  @Autowired
 	  ConformanceProfileService conformanceProfileService;
+	  
+	  @Autowired
+	  ProfileComponentService profileComponentService;
 
 	  @Autowired
 	  DatatypeService datatypeService;
@@ -63,10 +70,37 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		ret.setDatatypes(convertDatatypeRegistry(ig.getDatatypeRegistry()));
 		ret.setValueSets(convertValueSetRegistry(ig.getValueSetRegistry()));
 		ret.setCoConstraintGroups(convertCoConstraintGroupRegistry(ig.getCoConstraintGroupRegistry()));
+		ret.setProfileComponents(convertPofileComponentRegistry(ig.getProfileComponentRegistry()));
+		ret.setCompositePofiles(convertCompositeProfileRegistry(ig.getCompositeProfileRegistry()));
 		return ret;
 	}
 
-	@Override
+	/**
+   * @param compositeProfileRegistry
+   * @return
+   */
+  private Set<DisplayElement> convertCompositeProfileRegistry(
+      CompositeProfileRegistry registry) {
+    //Set<String> ids= this.gatherIds(registry.getChildren());
+    Set<DisplayElement> ret = new HashSet<DisplayElement>();
+    //TODO: generate composite profiles nodes
+    return ret;
+  }
+
+  /**
+   * @param profileComponentRegistry
+   * @return
+   */
+  private Set<DisplayElement> convertPofileComponentRegistry(
+      ProfileComponentRegistry registry) {
+    // TODO Auto-generated method stub
+    Set<String> ids= this.gatherIds(registry.getChildren());
+    Set<DisplayElement> ret = new HashSet<DisplayElement>();
+    List<ProfileComponent> components = profileComponentService.findByIdIn(ids);
+    return ret;
+  }
+
+  @Override
 	public Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry) {
 		Set<String> ids= this.gatherIds(registry.getChildren());
 		List<Datatype> datatypes= datatypeService.findByIdIn(ids);

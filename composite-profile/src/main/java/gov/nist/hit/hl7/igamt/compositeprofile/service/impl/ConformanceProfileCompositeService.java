@@ -27,7 +27,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.Permutation;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.PermutationMap;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent.Level;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext.Level;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ApplyDatatype;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ApplyField;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ApplyMsgStructElement;
@@ -56,12 +56,12 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 		ArrayList<OrderedProfileComponentLink> links = new ArrayList<>(structure);
 		Collections.sort(links);
 		
-		List<PermutationMap> pmList = links.stream().map(l -> this.profileComponentService.findById(l.getProfileComponentId()))
-		.map(x ->  x != null ? new PermutationMap(x) : null)
-		.filter(x -> x != null)
-		.collect(Collectors.toList());
+//		List<PermutationMap> pmList = links.stream().map(l -> this.profileComponentService.findById(l.getProfileComponentId()))
+//		.map(x ->  x != null ? new PermutationMap(x) : null)
+//		.filter(x -> x != null)
+//		.collect(Collectors.toList());
 		
-		return pmList;
+		return null;
 	}
 
 	// Create a ConformanceProfile from Composite

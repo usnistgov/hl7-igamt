@@ -14,6 +14,8 @@ public class IGDisplayInfo {
 	private Set<DisplayElement> datatypes = new HashSet<DisplayElement>();
 	private Set<DisplayElement> valueSets = new HashSet<DisplayElement>();
 	private Set<DisplayElement> coConstraintGroups = new HashSet<DisplayElement>();
+	private Set<DisplayElement> profileComponents = new HashSet<DisplayElement>();
+	private Set<DisplayElement> compositePofiles = new HashSet<DisplayElement>();
 
 	public Ig getIg() {
 		return ig;
@@ -51,4 +53,16 @@ public class IGDisplayInfo {
 	public void setCoConstraintGroups(Set<DisplayElement> coConstraintGroups) {
 		this.coConstraintGroups = coConstraintGroups;
 	}
+  public Set<DisplayElement> getProfileComponents() {
+    return profileComponents;
+  }
+  public void setProfileComponents(Set<DisplayElement> profileComponents) {
+    this.profileComponents = profileComponents;
+  }
+  public Set<DisplayElement> getCompositePofiles() {
+    return compositePofiles;
+  }
+  public void setCompositePofiles(Set<DisplayElement> compositePofiles) {
+    this.compositePofiles = compositePofiles;
+  }
 }

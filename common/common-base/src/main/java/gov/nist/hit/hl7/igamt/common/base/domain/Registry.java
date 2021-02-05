@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Registry implements Serializable{
+public class Registry extends GenericRegistry implements Serializable{
 
   private Set<Link> children = new HashSet<Link>();
   protected Type type;
@@ -24,15 +24,6 @@ public class Registry implements Serializable{
   public Registry() {
 
   }
-
-  /**
-   * @return
-   */
-  public Type getType() {
-    // TODO Auto-generated method stub
-    return type;
-  }
-
   
   public Set<String> getLinksAsIds(){
 	  

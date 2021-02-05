@@ -13,10 +13,7 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-
-
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 /**
  * A profile component is an objects that contains all the changes between the source (a message or
@@ -24,15 +21,19 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class ProfileComponent extends Resource {
+public class ProfileComponentContext {
 
-  private Level level;
+  /**
+   * 
+   */
+  private String id;
+  private Type level;
   private String sourceId;
   private String structure;
   private Set<ProfileComponentItem> profileComponentItems;
 
 
-  public ProfileComponent() {
+  public ProfileComponentContext() {
     super();
     // TODO Auto-generated constructor stub
   }
@@ -41,11 +42,11 @@ public class ProfileComponent extends Resource {
     MESSAGE, SEGMENT
   }
 
-  public Level getLevel() {
+  public Type getLevel() {
     return level;
   }
 
-  public void setLevel(Level level) {
+  public void setLevel(Type level) {
     this.level = level;
   }
 
@@ -79,19 +80,17 @@ public class ProfileComponent extends Resource {
     this.profileComponentItems.add(item);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
-   */
-  @Override
-  public String getLabel() {
-    return this.getName();
-  }
-
 	@Override
-	public ProfileComponent clone() {
+	public ProfileComponentContext clone() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 }

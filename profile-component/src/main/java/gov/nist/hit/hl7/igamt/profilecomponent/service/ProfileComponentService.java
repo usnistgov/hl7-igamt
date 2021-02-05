@@ -13,6 +13,7 @@ package gov.nist.hit.hl7.igamt.profilecomponent.service;
 
 
 import java.util.List;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 
@@ -35,5 +36,7 @@ public interface ProfileComponentService {
   void delete(String compositeKey);
 
   public void removeCollection();
+
+  public List<ProfileComponent> findByIdIn(Set<String> ids);
 
 }

@@ -5,14 +5,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Stack;
 
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent.Level;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext.Level;
 
 public class PermutationMap extends Permutation {
 	
 	public String targetId;
-	public Level type;
+	public Type type;
 
-	public PermutationMap(ProfileComponent pc) {
+	public PermutationMap(ProfileComponentContext pc) {
 		super(pc.getId(), 0, null, new HashSet<>(), new ArrayList<>());
 		this.targetId = pc.getSourceId();
 		this.type = pc.getLevel();

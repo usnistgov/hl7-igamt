@@ -9,21 +9,29 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain.registry;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+package gov.nist.hit.hl7.igamt.common.base.domain;
 
 /**
- * @author ena3
+ * @author Abdelghani El Ouakili
  *
  */
-public class ProfileComponentRegistry extends Registry {
+public class GenericRegistry {
+  
+  protected Type type;
 
-  public ProfileComponentRegistry() {
-    super();
-    this.type = Type.PROFILECOMPONENTREGISTRY;
-    // TODO Auto-generated constructor stub
+  public void setType(Type type) {
+    this.type = type;
   }
 
+  public Type getType() {
+    // TODO Auto-generated method stub
+    return type;
+  }
+
+  public GenericRegistry() {
+    super();
+    // TODO Auto-generated constructor stub
+  }
+  
+  
 }
