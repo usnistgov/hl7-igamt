@@ -15,7 +15,7 @@ import { IPath } from '../../models/cs.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
-import { ChangeType, IChange, IChangeLog, PropertyType, ILocationChangeLog } from '../../models/save-change';
+import { ChangeType, IChange, IChangeLog, ILocationChangeLog, PropertyType } from '../../models/save-change';
 import { IField, ISegment } from '../../models/segment.interface';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
