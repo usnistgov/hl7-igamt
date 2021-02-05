@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, MatRadioModule, MatSelectModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
-import {MatSliderModule} from '@angular/material/slider';
+import { MatSliderModule } from '@angular/material/slider';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
@@ -42,7 +42,7 @@ import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.
 import { DisplayRefComponent } from './components/display-ref/display-ref.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
-import {AddMappingDialgComponent} from './components/dynamic-mapping/add-mapping-dialg/add-mapping-dialg.component';
+import { AddMappingDialgComponent } from './components/dynamic-mapping/add-mapping-dialg/add-mapping-dialg.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
@@ -94,7 +94,6 @@ import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-del
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
-import { StickyPopoverDirective } from './directives/sticky-popover.directive';
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
 import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
@@ -176,7 +175,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DeactivatingDialogComponent,
     ResourceListComponent,
     AddMappingDialgComponent,
-    StickyPopoverDirective,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -336,7 +334,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeReasonDialogComponent,
     ChangeLogInfoComponent,
     ResourceListComponent,
-    StickyPopoverDirective,
   ],
   entryComponents: [
     ResourcePickerComponent,

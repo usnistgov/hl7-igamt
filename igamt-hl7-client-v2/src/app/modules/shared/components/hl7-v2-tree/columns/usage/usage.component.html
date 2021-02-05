@@ -3,7 +3,7 @@
     <app-change-log-info style="margin-right: 5px;"
       [sections]="changeDisplaySections$ | async"
       [context]="context"
-      [viewOnly]="viewOnly"
+      [viewOnly]="globalViewOnly"
       (editChange)="updateReasonForChange($event)"
     ></app-change-log-info>
 

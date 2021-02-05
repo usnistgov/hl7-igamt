@@ -1,10 +1,10 @@
 <ng-container *ngIf="sections && sections.length > 0" >
-  <span [stickyPopover]="popContent" [popoverTitle]="popTitle" triggers="click" placement="bottom" class="badge" style="background: transparent !important; border: 1px solid blue !important; cursor: help;">
-    <i class="fa fa-info" style="color: blue; font-size: 1.5em;"></i>
-  </span>
+  <button [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="click:click" placement="bottom" class="btn btn-sm btn-i">
+    <i class="fa fa-info"></i>
+  </button>
 
   <ng-template #popContent>
-    <table class="table table-sm table-striped table-bordered">
+    <table style="table-layout: auto;" class="table table-sm table-striped table-bordered">
       <tbody *ngFor="let item of sections" >
         <tr>
           <th style="vertical-align: middle;">
