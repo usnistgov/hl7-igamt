@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.exception.InvalidChangeTargetLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -201,7 +202,7 @@ public class DatatypeController extends BaseController {
     @ResponseBody
     public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
             @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
-            Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException {
+            Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException, InvalidChangeTargetLocation {
         Datatype dt = this.datatypeService.findById(id);
         validateSaveOperation(dt);
         commonService.checkRight(authentication, dt.getCurrentAuthor(), dt.getUsername());

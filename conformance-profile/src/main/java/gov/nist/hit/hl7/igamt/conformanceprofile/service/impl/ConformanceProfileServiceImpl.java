@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -26,6 +27,8 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.*;
+import gov.nist.hit.hl7.igamt.common.change.entity.exception.InvalidChangeTargetLocation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -71,9 +74,6 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageProfileIdentifier;
@@ -1493,29 +1493,59 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 		}
 
 	}
-	  public void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem) {
-	    if(structureElement.getChangeLog() == null) {
-	      structureElement.setChangeLog(new HashMap<>());
-	    }
+	public void logChangeStructureElement(StructureElement structureElement, PropertyType propertyType, ChangeReason changeReason) {
+		if(structureElement.getChangeLog() == null) {
+			structureElement.setChangeLog(new HashMap<>());
+		}
 
-	    if(changeItem.getChangeReason() != null) {
-	      structureElement.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-	    } else {
-	      structureElement.getChangeLog().remove(changeItem.getPropertyType());
-	    }
-	  }
+		if(changeReason != null) {
+			structureElement.getChangeLog().put(propertyType, changeReason);
+		} else {
+			structureElement.getChangeLog().remove(propertyType);
+		}
+	}
 
-	  public void logChangeBinding(StructureElementBinding binding, ChangeItemDomain changeItem) {
-	    if(binding.getChangeLog() == null) {
-	      binding.setChangeLog(new HashMap<>());
-	    }
+	public void logChangeBinding(StructureElementBinding binding, PropertyType propertyType, ChangeReason changeReason) {
+		if(binding.getChangeLog() == null) {
+			binding.setChangeLog(new HashMap<>());
+		}
 
-	    if(changeItem.getChangeReason() != null) {
-	      binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-	    } else {
-	      binding.getChangeLog().remove(changeItem.getPropertyType());
-	    }
-	  }
+		if(changeReason != null) {
+			binding.getChangeLog().put(propertyType, changeReason);
+		} else {
+			binding.getChangeLog().remove(propertyType);
+		}
+	}
+
+	public void logReasonForChange(ConformanceProfile cp, ChangeItemDomain item) throws IOException, InvalidChangeTargetLocation {
+		ObjectMapper mapper = new ObjectMapper();
+		ChangeReasonTarget target = new ChangeReasonTarget(item.getLocation());
+		String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+		ChangeReason changeReason = mapper.readValue(jsonInString, ChangeReason.class);
+		switch (target.getProperty()) {
+			case USAGE:
+			case NAME:
+			case CARDINALITYMAX:
+			case CARDINALITYMIN:
+			case LENGTHMAX:
+			case LENGTHMIN:
+			case CONFLENGTH:
+			case SEGMENTREF:
+			case LENGTHTYPE:
+			case CONSTANTVALUE:
+				SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), target.getPath());
+				if (srog != null) {
+					this.logChangeStructureElement(srog, target.getProperty(), changeReason);
+				}
+				break;
+			case VALUESET:
+			case SINGLECODE:
+			case PREDICATE:
+				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, target.getPath());
+				this.logChangeBinding(seb, target.getProperty(), changeReason);
+				break;
+		}
+	}
 	  
 	  public void applyStructure(ConformanceProfile cp, List<ChangeItemDomain> cItems)
           throws Exception {
@@ -1650,7 +1680,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	        if (srog != null) {
 	          item.setOldPropertyValue(srog.getUsage());
 	          srog.setUsage(Usage.valueOf((String) item.getPropertyValue()));
-	          this.logChangeStructureElement(srog, item);
 	        }
 	      } else if (item.getPropertyType().equals(PropertyType.SEGMENTREF)) {
 	        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
@@ -1659,7 +1688,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	          item.setOldPropertyValue(sr.getRef());
 	          String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 	          sr.setRef(mapper.readValue(jsonInString, Ref.class));
-	          this.logChangeStructureElement(srog, item);
 	        }
 	      } else if (item.getPropertyType().equals(PropertyType.CARDINALITYMIN)) {
 	        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
@@ -1670,7 +1698,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	          } else {
 	            srog.setMin((Integer) item.getPropertyValue());
 	          }
-	          this.logChangeStructureElement(srog, item);
 	        }
 	      } else if (item.getPropertyType().equals(PropertyType.CARDINALITYMAX)) {
 	        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
@@ -1681,7 +1708,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	          } else {
 	            srog.setMax((String) item.getPropertyValue());
 	          }
-	          this.logChangeStructureElement(srog, item);
 	        }
 	      } else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
 	        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
@@ -1689,12 +1715,10 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	        item.setOldPropertyValue(seb.getValuesetBindings());
 	        seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
 	            Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
-	        this.logChangeBinding(seb, item);
 	      } else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
 	        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 	        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
 	        seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
-	        this.logChangeBinding(seb, item);
 	      } else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
 	        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
 	        if (srog != null) {
@@ -1749,8 +1773,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	          item.setOldPropertyValue(seb.getPredicate());
 	          seb.setPredicate(p);
 	        }
-	        this.logChangeBinding(seb, item);
-	      }
+	      } else if (item.getPropertyType().equals(PropertyType.CHANGEREASON)) {
+			  this.logReasonForChange(cp, item);
+		  }
 	    }
 	    cp.setBinding(this.makeLocationInfo(cp));
 	    this.save(cp);

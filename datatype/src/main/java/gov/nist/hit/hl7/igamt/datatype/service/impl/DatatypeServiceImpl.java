@@ -26,6 +26,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.*;
+import gov.nist.hit.hl7.igamt.common.change.entity.exception.InvalidChangeTargetLocation;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +56,6 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
@@ -865,33 +864,63 @@ public class DatatypeServiceImpl implements DatatypeService {
 		return label;
 	}
 
-	public void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem) {
+	public void logChangeStructureElement(StructureElement structureElement, PropertyType propertyType, ChangeReason changeReason) {
 		if(structureElement.getChangeLog() == null) {
 			structureElement.setChangeLog(new HashMap<>());
 		}
 
-		if(changeItem.getChangeReason() != null) {
-			structureElement.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
+		if(changeReason != null) {
+			structureElement.getChangeLog().put(propertyType, changeReason);
 		} else {
-			structureElement.getChangeLog().remove(changeItem.getPropertyType());
+			structureElement.getChangeLog().remove(propertyType);
 		}
 	}
 
-	public void logChangeBinding(StructureElementBinding binding, ChangeItemDomain changeItem) {
+	public void logChangeBinding(StructureElementBinding binding, PropertyType propertyType, ChangeReason changeReason) {
 		if(binding.getChangeLog() == null) {
 			binding.setChangeLog(new HashMap<>());
 		}
 
-		if(changeItem.getChangeReason() != null) {
-			binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
+		if(changeReason != null) {
+			binding.getChangeLog().put(propertyType, changeReason);
 		} else {
-			binding.getChangeLog().remove(changeItem.getPropertyType());
+			binding.getChangeLog().remove(propertyType);
+		}
+	}
+
+	public void logReasonForChange(Datatype s, ChangeItemDomain item) throws IOException, InvalidChangeTargetLocation {
+		ObjectMapper mapper = new ObjectMapper();
+		ChangeReasonTarget target = new ChangeReasonTarget(item.getLocation());
+		String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+		ChangeReason changeReason = mapper.readValue(jsonInString, ChangeReason.class);
+		switch (target.getProperty()) {
+			case USAGE:
+			case NAME:
+			case CARDINALITYMAX:
+			case CARDINALITYMIN:
+			case LENGTHMAX:
+			case LENGTHMIN:
+			case CONFLENGTH:
+			case DATATYPE:
+			case LENGTHTYPE:
+			case CONSTANTVALUE:
+				Component cmp = this.findComponentById(s, target.getPath());
+				if(cmp != null) {
+					this.logChangeStructureElement(cmp, target.getProperty(), changeReason);
+				}
+				break;
+			case VALUESET:
+			case SINGLECODE:
+			case PREDICATE:
+				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, target.getPath());
+				this.logChangeBinding(seb, target.getProperty(), changeReason);
+				break;
 		}
 	}
 
 	@Override
 	public void applyChanges(Datatype d, List<ChangeItemDomain> cItems, String documentId)
-			throws JsonProcessingException, IOException {
+			throws JsonProcessingException, IOException, InvalidChangeTargetLocation {
 		Collections.sort(cItems);
 		for (ChangeItemDomain item : cItems) {
 		    if (item.getPropertyType().equals(PropertyType.DTMSTRUC)) {
@@ -952,9 +981,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 			 else if (item.getPropertyType().equals(PropertyType.SHORTDESCRIPTION)) {
                item.setOldPropertyValue(d.getShortDescription());
                d.setShortDescription((String) item.getPropertyValue());
-           } 
-		
-			else if (item.getPropertyType().equals(PropertyType.EXT)) {
+           } else if (item.getPropertyType().equals(PropertyType.EXT)) {
 				item.setOldPropertyValue(d.getExt());
 				d.setExt((String) item.getPropertyValue());
 			} else if (item.getPropertyType().equals(PropertyType.USAGE)) {
@@ -962,7 +989,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 				if (c != null) {
 					item.setOldPropertyValue(c.getUsage());
 					c.setUsage(Usage.valueOf((String) item.getPropertyValue()));
-					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.LENGTHMIN)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -973,7 +999,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setMinLength((String) item.getPropertyValue());
 					}
-					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.LENGTHMAX)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -984,7 +1009,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setMaxLength((String) item.getPropertyValue());
 					}
-					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.CONFLENGTH)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -995,7 +1019,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setConfLength((String) item.getPropertyValue());
 					}
-					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.LENGTHTYPE)) {
 				Component c = this.findComponentById(d, item.getLocation());
@@ -1006,7 +1029,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setLengthType(LengthType.valueOf((String) item.getPropertyValue()));
 					}
-					this.logChangeStructureElement(c, item);
 				}
 			}
 		    else if (item.getPropertyType().equals(PropertyType.DATATYPE)) {
@@ -1016,7 +1038,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 					ObjectMapper mapper = new ObjectMapper();
 					String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 					c.setRef(mapper.readValue(jsonInString, Ref.class));
-					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
 				ObjectMapper mapper = new ObjectMapper();
@@ -1025,14 +1046,12 @@ public class DatatypeServiceImpl implements DatatypeService {
 				item.setOldPropertyValue(seb.getValuesetBindings());
 				seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
 						Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
-				this.logChangeBinding(seb, item);
 			} else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
 				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
 				item.setOldPropertyValue(seb.getInternalSingleCode());
 				seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
-				this.logChangeBinding(seb, item);
 			} else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
 				Component c = this.findComponentById(d, item.getLocation());
 				if (c != null) {
@@ -1042,7 +1061,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 					} else {
 						c.setConstantValue((String) item.getPropertyValue());
 					}
-					this.logChangeStructureElement(c, item);
 				}
 			} else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
 				Component f = this.findComponentById(d, item.getLocation());
@@ -1115,7 +1133,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 					cp.setIgDocumentId(documentId);
 					seb.setPredicate(cp);
 				}
-				this.logChangeBinding(seb, item);
+			} else if (item.getPropertyType().equals(PropertyType.CHANGEREASON)) {
+				this.logReasonForChange(d, item);
 			}
 		}
 		d.setBinding(this.makeLocationInfo(d));

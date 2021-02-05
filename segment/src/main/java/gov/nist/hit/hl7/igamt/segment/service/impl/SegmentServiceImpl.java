@@ -13,11 +13,14 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service.impl;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.*;
+import gov.nist.hit.hl7.igamt.common.change.entity.exception.InvalidChangeTargetLocation;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +49,6 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
@@ -1351,27 +1351,57 @@ public class SegmentServiceImpl implements SegmentService {
     return ret;
   }
 
-  public void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem) {
+  public void logChangeStructureElement(StructureElement structureElement, PropertyType propertyType, ChangeReason changeReason) {
     if(structureElement.getChangeLog() == null) {
       structureElement.setChangeLog(new HashMap<>());
     }
 
-    if(changeItem.getChangeReason() != null) {
-      structureElement.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
+    if(changeReason != null) {
+      structureElement.getChangeLog().put(propertyType, changeReason);
     } else {
-      structureElement.getChangeLog().remove(changeItem.getPropertyType());
+      structureElement.getChangeLog().remove(propertyType);
     }
   }
 
-  public void logChangeBinding(StructureElementBinding binding, ChangeItemDomain changeItem) {
+  public void logChangeBinding(StructureElementBinding binding, PropertyType propertyType, ChangeReason changeReason) {
     if(binding.getChangeLog() == null) {
       binding.setChangeLog(new HashMap<>());
     }
 
-    if(changeItem.getChangeReason() != null) {
-      binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
+    if(changeReason != null) {
+      binding.getChangeLog().put(propertyType, changeReason);
     } else {
-      binding.getChangeLog().remove(changeItem.getPropertyType());
+      binding.getChangeLog().remove(propertyType);
+    }
+  }
+
+  public void logReasonForChange(Segment s, ChangeItemDomain item) throws IOException, InvalidChangeTargetLocation {
+    ObjectMapper mapper = new ObjectMapper();
+    ChangeReasonTarget target = new ChangeReasonTarget(item.getLocation());
+    String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+    ChangeReason changeReason = mapper.readValue(jsonInString, ChangeReason.class);
+    switch (target.getProperty()) {
+      case USAGE:
+      case NAME:
+      case CARDINALITYMAX:
+      case CARDINALITYMIN:
+      case LENGTHMAX:
+      case LENGTHMIN:
+      case CONFLENGTH:
+      case DATATYPE:
+      case LENGTHTYPE:
+      case CONSTANTVALUE:
+        Field field = this.findFieldById(s, target.getPath());
+        if (field != null) {
+          this.logChangeStructureElement(field, target.getProperty(), changeReason);
+        }
+        break;
+      case VALUESET:
+      case SINGLECODE:
+      case PREDICATE:
+        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, target.getPath());
+        this.logChangeBinding(seb, target.getProperty(), changeReason);
+        break;
     }
   }
 
@@ -1415,7 +1445,6 @@ public class SegmentServiceImpl implements SegmentService {
         if (f != null) {
           item.setOldPropertyValue(f.getUsage());
           f.setUsage(Usage.valueOf((String) item.getPropertyValue()));
-          this.logChangeStructureElement(f, item);
         }
       }
       else if (item.getPropertyType().equals(PropertyType.NAME)) {
@@ -1423,7 +1452,6 @@ public class SegmentServiceImpl implements SegmentService {
         if (f != null) {
           item.setOldPropertyValue(f.getName());
           f.setName(item.getPropertyValue().toString());
-          this.logChangeStructureElement(f, item);
         }
       }
       else if (item.getPropertyType().equals(PropertyType.CARDINALITYMIN)) {
@@ -1435,7 +1463,6 @@ public class SegmentServiceImpl implements SegmentService {
           } else {
             f.setMin((Integer) item.getPropertyValue());
           }
-          this.logChangeStructureElement(f, item);
         }
       } else if (item.getPropertyType().equals(PropertyType.CARDINALITYMAX)) {
         Field f = this.findFieldById(s, item.getLocation());
@@ -1446,7 +1473,6 @@ public class SegmentServiceImpl implements SegmentService {
           } else {
             f.setMax((String) item.getPropertyValue());
           }
-          this.logChangeStructureElement(f, item);
         }
       } else if (item.getPropertyType().equals(PropertyType.LENGTHMIN)) {
         Field f = this.findFieldById(s, item.getLocation());
@@ -1457,7 +1483,6 @@ public class SegmentServiceImpl implements SegmentService {
           } else {
             f.setMinLength((String) item.getPropertyValue());
           }
-          this.logChangeStructureElement(f, item);
         }
       } else if (item.getPropertyType().equals(PropertyType.LENGTHMAX)) {
         Field f = this.findFieldById(s, item.getLocation());
@@ -1468,7 +1493,6 @@ public class SegmentServiceImpl implements SegmentService {
           } else {
             f.setMaxLength((String) item.getPropertyValue());
           }
-          this.logChangeStructureElement(f, item);
         }
       } else if (item.getPropertyType().equals(PropertyType.CONFLENGTH)) {
         Field f = this.findFieldById(s, item.getLocation());
@@ -1479,7 +1503,6 @@ public class SegmentServiceImpl implements SegmentService {
           } else {
             f.setConfLength((String) item.getPropertyValue());
           }
-          this.logChangeStructureElement(f, item);
         }
       } else if (item.getPropertyType().equals(PropertyType.LENGTHTYPE)) {
         Field f = this.findFieldById(s, item.getLocation());
@@ -1490,7 +1513,6 @@ public class SegmentServiceImpl implements SegmentService {
           } else {
             f.setLengthType(LengthType.valueOf((String) item.getPropertyValue()));
           }
-          this.logChangeStructureElement(f, item);
         }
       } else if (item.getPropertyType().equals(PropertyType.DATATYPE)) {
         Field f = this.findFieldById(s, item.getLocation());
@@ -1499,7 +1521,6 @@ public class SegmentServiceImpl implements SegmentService {
           ObjectMapper mapper = new ObjectMapper();
           String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
           f.setRef(mapper.readValue(jsonInString, Ref.class));
-          this.logChangeStructureElement(f, item);
         }
       } else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
         ObjectMapper mapper = new ObjectMapper();
@@ -1511,14 +1532,12 @@ public class SegmentServiceImpl implements SegmentService {
         if(s.getName().equals("OBX") && "2".equals(item.getLocation())){
           this.restoreDefaultDynamicMapping(s);
         }
-        this.logChangeBinding(seb, item);
       } else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
         StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
         item.setOldPropertyValue(seb.getInternalSingleCode());
         seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
-        this.logChangeBinding(seb, item);
       } else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
         Field f = this.findFieldById(s, item.getLocation());
         if (f != null) {
@@ -1528,7 +1547,6 @@ public class SegmentServiceImpl implements SegmentService {
           } else {
             f.setConstantValue((String) item.getPropertyValue());
           }
-          this.logChangeStructureElement(f, item);
         }
       } else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
         Field f = this.findFieldById(s, item.getLocation());
@@ -1603,7 +1621,6 @@ public class SegmentServiceImpl implements SegmentService {
           seb.setPredicate(cp);
         }
 
-        this.logChangeBinding(seb, item);
       } else if (item.getPropertyType().equals(PropertyType.DYNAMICMAPPINGITEM)) {
         String value = (String)item.getPropertyValue();
         String location = (String)item.getLocation();
@@ -1621,6 +1638,8 @@ public class SegmentServiceImpl implements SegmentService {
           s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
           s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
         }
+      } else if (item.getPropertyType().equals(PropertyType.CHANGEREASON)) {
+        this.logReasonForChange(s, item);
       }
     }
     s.setBinding(this.makeLocationInfo(s));
