@@ -30,6 +30,7 @@ public class ProfileComponentContext {
   private Type level;
   private String sourceId;
   private String structure;
+  private int position;
   private Set<ProfileComponentItem> profileComponentItems;
 
 
@@ -80,17 +81,19 @@ public class ProfileComponentContext {
     this.profileComponentItems.add(item);
   }
 
-	@Override
-	public ProfileComponentContext clone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
   public String getId() {
     return id;
   }
 
   public void setId(String id) {
     this.id = id;
+  }
+
+  public int getPosition() {
+    return position;
+  }
+
+  public void setPosition(int position) {
+    this.position = position;
   }
 }

@@ -39,7 +39,7 @@ export class IgTOCNodeHelper {
     return ret;
   }
 
-  static createProfileSection(section: IContent, messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[], path: string) {
+  static createProfileSection(section: IContent, messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[], profileComponentNodes: IDisplayElement[], compositeProfileNodes: IDisplayElement[], path: string) {
     const ret = this.initializeIDisplayElement(section, path);
     if (section.children && section.children.length > 0) {
       for (const child of section.children) {
@@ -60,6 +60,11 @@ export class IgTOCNodeHelper {
           case Type.COCONSTRAINTGROUPREGISTRY:
             retChild.children = coConstraintGroupNodes;
             break;
+          case Type.PROFILECOMPONENTREGISTRY :
+            retChild.children = profileComponentNodes;
+            break;
+          case Type.COMPOSITEPROFILEREGISTRY:
+            retChild.children = compositeProfileNodes;
         }
         ret.children.push(retChild);
       }
@@ -68,7 +73,10 @@ export class IgTOCNodeHelper {
     return ret;
   }
 
-  static buildTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[]) {
+  static buildTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[], profileComponentNodes: IDisplayElement[], compositeProfileNodes: IDisplayElement[]) {
+    console.log(profileComponentNodes);
+    console.log("profileComponentNodes");
+
     const ret: IDisplayElement[] = [];
     for (const section of structure) {
       switch (section.type) {
@@ -76,7 +84,7 @@ export class IgTOCNodeHelper {
           ret.push(this.createNarativeSection(section, section.position + ''));
           break;
         case Type.PROFILE:
-          ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, section.position + ''));
+          ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, profileComponentNodes, compositeProfileNodes, section.position + ''));
           break;
         default:
           break;
@@ -142,7 +150,7 @@ export class IgTOCNodeHelper {
     const ret: IDisplayElement[] = [];
     for (const section of structure) {
       if (section.type === Type.PROFILE) {
-        ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, section.position + ''));
+        ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, [], [], section.position + '' ));
       }
     }
     return this.sort(ret);

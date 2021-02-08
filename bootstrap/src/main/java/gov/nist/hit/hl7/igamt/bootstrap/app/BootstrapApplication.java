@@ -44,6 +44,8 @@ import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -75,12 +77,16 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
+import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
@@ -165,7 +171,10 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   ConformanceProfileService messageService;
-
+  
+  @Autowired
+  ProfileComponentService profileComponentService;
+  
   @Autowired
   BindingCollector bindingCollector;
   @Autowired
@@ -1026,6 +1035,37 @@ public class BootstrapApplication implements CommandLineRunner {
     dynamicMappingFixer.addMissingDatatypesBasedOnDynamicMapping();
   }
   
-  
+  @PostConstruct
+  void createPc() {
+    Ig ig= this.igRepo.findById("6021a5cb2ad88586c88eeb39").get();
+    ig.getProfileComponentRegistry().getChildren().add(new Link("PC_ID_1", new DomainInfo("*", Scope.USER),1));
+    
+    ProfileComponent p = new ProfileComponent();
+    p.setName("PC1");
+    p.setChildren(new HashSet<ProfileComponentContext>());
+    ProfileComponentContext c1 = new ProfileComponentContext();
+    ProfileComponentContext c2 = new ProfileComponentContext();
+    c1.setId("C1");
+    c2.setId("C2");
+    c1.setLevel(Type.SEGMENT);
+    c2.setLevel(Type.CONFORMANCEPROFILE);
+    c1.setId("HL7OBX-V2-7");
+    c1.setSourceId("HL7OBX-V2-7");
+
+    c2.setId("6021a5cb2ad88586c88ee412");
+    c2.setSourceId("6021a5cb2ad88586c88ee412");
+
+    p.getChildren().add(c1);
+    p.getChildren().add(c2);
+    p.setDomainInfo(new DomainInfo("*", Scope.USER));
+    p.setId("PC_ID_1");
+    profileComponentService.delete("PC_ID_1");
+    this.profileComponentService.save(p);
+    this.igRepo.save(ig);
+    
+    
+    
+   
+  }
   
 }

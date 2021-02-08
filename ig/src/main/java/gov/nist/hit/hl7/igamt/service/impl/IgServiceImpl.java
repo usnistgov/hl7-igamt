@@ -91,6 +91,7 @@ import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
@@ -806,7 +807,7 @@ public class IgServiceImpl implements IgService {
     for (Link l : profileComponentRegistry.getChildren()) {
       if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.USER)) {
         l.getDomainInfo().setScope(Scope.ARCHIVED);
-        ProfileComponentContext el = profileComponentService.findById(l.getId());
+        ProfileComponent el = profileComponentService.findById(l.getId());
         if (el != null) {
           el.getDomainInfo().setScope(Scope.ARCHIVED);
           profileComponentService.save(el);

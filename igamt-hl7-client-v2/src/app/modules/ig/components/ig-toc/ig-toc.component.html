@@ -179,6 +179,23 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
+          <span  #rla="routerLinkActive" [contextMenu]='pc'[routerLink]="getElementUrl(node.data)" routerLinkActive>{{node.data.variableName}}</span>
+          <context-menu #pc [disabled]="viewOnly||delta">
+            <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
+          </context-menu>
+          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'MESSAGECONTEXT'">
+          <span  #rla="routerLinkActive" [routerLink]="getElementUrl(node.data)" routerLinkActive>{{node.data.variableName}}</span>
+          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'SEGMENTCONTEXT'">
+          <span  #rla="routerLinkActive" [routerLink]="getElementUrl(node.data)" routerLinkActive>{{node.data.fixedName}}</span>
+          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
       </ng-container>

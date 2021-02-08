@@ -13,6 +13,7 @@ package gov.nist.hit.hl7.igamt.profilecomponent.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,6 +74,15 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
   @Override
   public void removeCollection() {
     profileComponentRepository.deleteAll();
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#findByIdIn(java.util.Set)
+   */
+  @Override
+  public List<ProfileComponent> findByIdIn(Set<String> ids) {
+    // TODO Auto-generated method stub
+    return profileComponentRepository.findByIdIn(ids);
   }
 
 }

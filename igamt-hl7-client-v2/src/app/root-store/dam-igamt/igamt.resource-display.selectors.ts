@@ -78,10 +78,15 @@ export const selectValueSetById = createSelector(
 
 // MESSAGE DISPLAY GETTERS
 export const selectMessages = fromDAM.selectFromCollection<IDisplayElement>('messages');
+export const selectProfileComponents = fromDAM.selectFromCollection<IDisplayElement>('profileComponents');
+
+export const selectCompositeProfiles = fromDAM.selectFromCollection<IDisplayElement>('compositeProfiles');
+
 export const selectAllMessages = createSelector(
   selectMessages,
   selectAll,
 );
+
 export const selectMessagesEntites = createSelector(
   selectMessages,
   selectEntities,
@@ -91,6 +96,16 @@ export const selectMessagesById = createSelector(
   (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
     return dictionary[props.id];
   },
+);
+
+export const selectProfileComponentsEntites = createSelector(
+  selectProfileComponents,
+  selectEntities,
+);
+
+export const selectCompositeProfilesEntites = createSelector(
+  selectCompositeProfiles,
+  selectEntities,
 );
 
 // COCONSTRAINT GROUP DISPLAY GETTERS

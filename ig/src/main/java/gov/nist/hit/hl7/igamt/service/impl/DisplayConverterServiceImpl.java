@@ -237,45 +237,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
   }
 
 
-
-  private List<TreeNode> createCompositeProfileNodes(Set<Link> children) {
-
-    // TODO Auto-generated method stub
-    List<TreeNode> nodes = new ArrayList<TreeNode>();
-    // TODO Auto-generated method stub
-    for (Link l : children) {
-      CompositeProfileStructure compositeProfile = compositeProfileServie.findById(l.getId());
-      if (compositeProfile != null) {
-        nodes.add(createCompositeProfileNode(compositeProfile, l.getPosition()));
-      }
-    }
-    nodes.sort((h1, h2) -> h1.compareTo(h2));
-
-    return nodes;
-  }
-
-  /**
-   * @param node
-   * @return
-   */
-  @Override
-  public TreeNode createCompositeProfileNode(CompositeProfileStructure compositeProfile,
-      int position) {
-    // TODO Auto-generated method stub
-    TreeNode node = new TreeNode();
-    ElementTreeData data = new ElementTreeData();
-    data.setLabel(compositeProfile.getName());
-    data.setDescription(compositeProfile.getDescription());
-    data.setDomainInfo(compositeProfile.getDomainInfo());
-    data.setId(compositeProfile.getId());
-    data.setPosition(position);
-    data.setType(Type.COMPOSITEPROFILE);
-    node.setData(data);
-    node.setId(compositeProfile.getId());
-    return node;
-  }
-
-
   private List<TreeNode> createValueSetsNodes(Set<Link> children, Map<String, Valueset> map) throws ResourceNotFoundException {
 
     List<TreeNode> nodes = new ArrayList<TreeNode>();

@@ -24,5 +24,7 @@ export interface IDocumentDisplayInfo<T extends IDocument> {
   valueSets?: IDisplayElement[];
   datatypes?: IDisplayElement[];
   messages?: IDisplayElement[];
+  profileComponents?: IDisplayElement[];
+  compositeProfiles?: IDisplayElement[];
   coConstraintGroups?: IDisplayElement[];
 }

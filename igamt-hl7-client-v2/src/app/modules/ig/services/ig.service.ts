@@ -45,6 +45,7 @@ export class IgService {
   getRegistryAndCollectionByType(type: Type): { registry: string, collection: string } {
     let registry: string;
     let collection: string;
+    console.log(type);
 
     if (type === Type.VALUESET) {
       registry = 'valueSetRegistry';
@@ -61,13 +62,19 @@ export class IgService {
     } else if (type === Type.COCONSTRAINTGROUP) {
       registry = 'coConstraintGroupRegistry';
       collection = 'coConstraintGroups';
+    } else if (type === Type.PROFILECOMPONENT) {
+      registry = 'profileComponentRegistry';
+      collection = 'profileComponents';
+    } else if (type === Type.COMPOSITEPROFILE) {
+      registry = 'compositeProfileRegistry';
+      collection = 'compositeProfiles';
     }
-
     return { registry, collection };
   }
 
   loadOrInsertRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, load: boolean, values?: string[]): fromDam.InsertResourcesInRepostory | fromDam.LoadResourcesInRepostory {
-    const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'sections'];
+    const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'profileComponents', 'compositeProfiles',  'sections'];
+    console.log("loading");
     const collections = (values ? values : _default).map((key) => {
       return {
         key,
