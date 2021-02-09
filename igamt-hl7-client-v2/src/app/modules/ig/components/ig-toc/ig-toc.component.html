@@ -190,12 +190,12 @@
 
         <ng-container *ngSwitchCase="'MESSAGECONTEXT'">
           <span  #rla="routerLinkActive" [routerLink]="getElementUrl(node.data)" routerLinkActive>{{node.data.variableName}}</span>
-          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
+          <app-toc-sub-menu [element]="node.data"  [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'SEGMENTCONTEXT'">
           <span  #rla="routerLinkActive" [routerLink]="getElementUrl(node.data)" routerLinkActive>{{node.data.fixedName}}</span>
-          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
+          <app-toc-sub-menu [element]="node.data" [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
       </ng-container>
