@@ -37,6 +37,27 @@ export interface ICreateCoConstraintGroup {
   name: string;
   baseSegment: string;
 }
+export interface ICreateProfileComponent {
+  documentId?: string;
+  name: string;
+  children: IDisplayElement[];
+}
+
+export interface IAddProfileComponentContext {
+  documentId?: string;
+  pcId: string;
+  added: IDisplayElement[];
+}
+export interface ICreateProfileComponentResponse {
+  id: string;
+  registry: IRegistry;
+  display: IDisplayElement;
+}
+export interface IAddProfileComponentContextResponse {
+  pcId: string;
+  registry: IRegistry;
+  pcDisplay: IDisplayElement;
+}
 
 export interface IAddResourceFromFile {
   documentId?: string;

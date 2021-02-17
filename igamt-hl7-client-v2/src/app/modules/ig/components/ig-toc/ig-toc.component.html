@@ -24,7 +24,14 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
-          <span> {{node.data.path}} {{node.data.variableName}}</span>
+          <div #pcLib>
+            <span [contextMenu]="ProfileComponentContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+            <context-menu #ProfileComponentContextMenu [disabled]="viewOnly||delta">
+              <ng-template (execute)="createNew(node.data, 'PROFILECOMPONENT')" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-plus"></i> Create Profile Component
+              </ng-template>
+            </context-menu>
+          </div>
         </ng-container>
 
         <ng-container *ngSwitchCase="'CONFORMANCESTATEMENTSUMMARY'">
@@ -101,7 +108,6 @@
                 <i class="fa fa-plus"></i> Add HL7 Segments
               </ng-template>
             </context-menu>
-
           </div>
         </ng-container>
 
@@ -179,23 +185,25 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
-          <span  #rla="routerLinkActive" [contextMenu]='pc'[routerLink]="getElementUrl(node.data)" routerLinkActive>{{node.data.variableName}}</span>
+         <span  [contextMenu]='pc' [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node">{{node.data.variableName}}</span>
           <context-menu #pc [disabled]="viewOnly||delta">
+            <ng-template (execute)="addPcContexts(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-plus"></i> Add Contexts
+            </ng-template>
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-remove"></i> Delete
             </ng-template>
           </context-menu>
-          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'MESSAGECONTEXT'">
-          <span  #rla="routerLinkActive" [routerLink]="getElementUrl(node.data)" routerLinkActive>{{node.data.variableName}}</span>
-          <app-toc-sub-menu [element]="node.data"  [delta]="delta"></app-toc-sub-menu>
+         <app-display-section  #msg="routerLinkActive" [element]="node.data"  [routerLink]="getPcElementUrl(node)" routerLinkActive></app-display-section>
+          <app-toc-sub-menu [element]="node.data"  *ngIf="msg.isActive" [delta]="delta" [pcId]="node.parent.data.id" ></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'SEGMENTCONTEXT'">
-          <span  #rla="routerLinkActive" [routerLink]="getElementUrl(node.data)" routerLinkActive>{{node.data.fixedName}}</span>
-          <app-toc-sub-menu [element]="node.data" [delta]="delta"></app-toc-sub-menu>
+          <app-display-section  #rla="routerLinkActive"  [element]="node.data" [routerLink]="getPcElementUrl(node)" routerLinkActive></app-display-section>
+          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [pcId]="node.parent.data.id" ></app-toc-sub-menu>
         </ng-container>
 
       </ng-container>

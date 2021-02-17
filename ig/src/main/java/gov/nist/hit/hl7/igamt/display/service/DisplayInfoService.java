@@ -11,6 +11,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -33,18 +34,9 @@ public interface DisplayInfoService {
 //	public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles);
 	public Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes);
 	public Set<DisplayElement> convertSegments(Set<Segment> segments);
-  /**
-   * @param conformanceProfile
-   * @param position
-   * @return
-   */
-  /**
-   * @param conformanceProfiles
-   * @param conformanceProfileRegistry
-   * @return
-   */
-  public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles,
+    public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles,
       ConformanceProfileRegistry conformanceProfileRegistry);
+    public DisplayElement convertProfileComponent(ProfileComponent pc);
 
 	
 }

@@ -15,6 +15,7 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -27,6 +28,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -62,8 +64,6 @@ public interface IgService {
 
   public TextSection findSectionById(Set<TextSection> content, String sectionId);
 
-  //UpdateResult updateAttribute(String id, String attributeName, Object value);
-
   public List<Ig> findAllUsersIG();
 
   public List<Ig> findAllPreloadedIG();
@@ -86,12 +86,20 @@ public interface IgService {
   public IgDataModel generateDataModel(Ig ig) throws Exception;
 
   public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException, ProfileSerializationException, TableSerializationException;
+  
   public Set<RelationShip> findUsage(Set<RelationShip> relations, Type type, String elementId);
+  
   public Set<RelationShip> buildRelationShip(Ig ig, Type type);
+  
   public Set<RelationShip> builAllRelations(Ig ig) ;
+  
   public void publishIG(Ig ig) throws IGNotFoundException, IGUpdateException;
+  
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass);
+  
   public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
+  
+  public ProfileComponent createProfileComponent(Ig ig, String name, List<DisplayElement> children);
 
 
 }

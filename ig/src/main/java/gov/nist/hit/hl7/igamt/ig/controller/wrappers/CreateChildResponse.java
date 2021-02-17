@@ -3,18 +3,18 @@ package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 
-public class CoConstraintGroupCreateResponse {
+public class CreateChildResponse {
     private String id;
     private Registry registry;
     private DisplayElement display;
 
-    public CoConstraintGroupCreateResponse(String id, Registry registry, DisplayElement display) {
+    public CreateChildResponse(String id, Registry registry, DisplayElement display) {
         this.id = id;
         this.registry = registry;
         this.display = display;
     }
 
-    public CoConstraintGroupCreateResponse() {
+    public CreateChildResponse() {
     }
 
     public String getId() {

@@ -19,13 +19,29 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
-import { AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TabViewModule, TooltipModule, TreeTableModule } from 'primeng/primeng';
+import {
+  AccordionModule,
+  AutoCompleteModule,
+  CheckboxModule,
+  ChipsModule,
+  FileUploadModule,
+  InputSwitchModule,
+  MultiSelectModule,
+  OrganizationChartModule,
+  PanelModule,
+  PickListModule,
+  RadioButtonModule,
+  TabViewModule,
+  TooltipModule,
+  TreeTableModule
+} from 'primeng/primeng';
 import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
 import { DamComponentsModule, DamLoaderModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { AddCoConstraintGroupComponent } from './components/add-co-constraint-group/add-co-constraint-group.component';
+import {AddProfileComponentComponent} from './components/add-profile-component/add-profile-component.component';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
 import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
@@ -99,6 +115,8 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { SelectProfileComponentContextComponent } from './components/select-profile-component-context/select-profile-component-context.component';
+import { AddProfileComponentContextComponent } from './components/add-profile-component-context/add-profile-component-context.component';
 
 @NgModule({
   declarations: [
@@ -175,6 +193,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DeactivatingDialogComponent,
     ResourceListComponent,
     AddMappingDialgComponent,
+    AddProfileComponentComponent,
+    SelectProfileComponentContextComponent,
+    AddProfileComponentContextComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -232,6 +253,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     TabViewModule,
     OverlayPanelModule,
     AvatarModule,
+    PickListModule,
   ],
   exports: [
     CommonModule,
@@ -334,6 +356,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeReasonDialogComponent,
     ChangeLogInfoComponent,
     ResourceListComponent,
+    AddProfileComponentComponent,
+    AddProfileComponentContextComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -356,6 +380,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeReasonDialogComponent,
     DeactivatingDialogComponent,
     AddMappingDialgComponent,
+    AddProfileComponentComponent,
+    AddProfileComponentContextComponent,
   ],
 })
 export class SharedModule {

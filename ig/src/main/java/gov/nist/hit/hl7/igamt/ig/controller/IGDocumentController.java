@@ -92,9 +92,10 @@ import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.display.model.IGMetaDataDisplay;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CoConstraintGroupCreateResponse;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreateChildResponse;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CoConstraintGroupCreateWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ProfileComponentCreateWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
@@ -123,6 +124,8 @@ import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.SharingService;
 import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
@@ -201,6 +204,9 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   CommonService commonService;
+  
+  @Autowired
+  ProfileComponentService profileComponentService;
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
@@ -1063,7 +1069,7 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/co-constraint-group/create", method = RequestMethod.POST, produces = {
   "application/json" })
-  public ResponseMessage<CoConstraintGroupCreateResponse> createCoConstraint(
+  public ResponseMessage<CreateChildResponse> createCoConstraint(
       @PathVariable("id") String id,
       @RequestBody CoConstraintGroupCreateWrapper coConstraintGroupCreateWrapper,
       Authentication authentication) throws IGNotFoundException, SegmentNotFoundException, ForbiddenOperationException {
@@ -1083,9 +1089,9 @@ public class IGDocumentController extends BaseController {
 
     this.igService.save(ig);
 
-    CoConstraintGroupCreateResponse response = new CoConstraintGroupCreateResponse(group.getId(), ig.getCoConstraintGroupRegistry(), this.displayInfoService.convertCoConstraintGroup(group));
+    CreateChildResponse response = new CreateChildResponse(group.getId(), ig.getCoConstraintGroupRegistry(), this.displayInfoService.convertCoConstraintGroup(group));
 
-    return new ResponseMessage<CoConstraintGroupCreateResponse>(Status.SUCCESS, "", "CoConstraint Group Created Successfully", ig.getId(), false,
+    return new ResponseMessage<CreateChildResponse>(Status.SUCCESS, "", "CoConstraint Group Created Successfully", ig.getId(), false,
         ig.getUpdateDate(), response);
   }
 
@@ -1116,7 +1122,75 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage(Status.SUCCESS, CC_GROUP_DELETED, ccGroupId, new Date());
   }
 
+  
+  
 
+  @RequestMapping(value = "/api/igdocuments/{id}/profile-component/create", method = RequestMethod.POST, produces = {
+  "application/json" })
+  public ResponseMessage<CreateChildResponse> createProfileComponent(
+      @PathVariable("id") String id,
+      @RequestBody ProfileComponentCreateWrapper profileComponentCreateWrapper,
+      Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
+    String username = authentication.getPrincipal().toString();
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
+    ProfileComponent pc = this.igService.createProfileComponent(ig, profileComponentCreateWrapper.name , profileComponentCreateWrapper.children);
+    CreateChildResponse createChildResponse = new CreateChildResponse(pc.getId(), ig.getProfileComponentRegistry(), this.displayInfoService.convertProfileComponent(pc));
+    this.igService.save(ig);
+
+    return new ResponseMessage<CreateChildResponse>(Status.SUCCESS, "", "Profile Component Created Successfully", ig.getId(), false,
+        ig.getUpdateDate(), createChildResponse);
+  }
+  
+  
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/addChildren", method = RequestMethod.POST, produces = {
+  "application/json" })
+  public ResponseMessage<CreateChildResponse> updatePcChildren(
+      @PathVariable("id") String id,
+      @PathVariable("pcId") String pcId,
+      @RequestBody List<DisplayElement> children,
+      Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+    
+    ProfileComponent pc = this.profileComponentService.addChildrenFromDisplayElement(pcId, children);
+    CreateChildResponse createChildResponse = new CreateChildResponse(pc.getId(), ig.getProfileComponentRegistry(), this.displayInfoService.convertProfileComponent(pc));
+    this.igService.save(ig);
+    return new ResponseMessage<CreateChildResponse>(Status.SUCCESS, "", "Profile Component updated Successfully", ig.getId(), false,
+        ig.getUpdateDate(), createChildResponse);
+  }
+ 
+  
+//
+//  @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/delete", method = RequestMethod.DELETE, produces = {
+//          "application/json" })
+//  public ResponseMessage deleteProfileComponent(
+//          @PathVariable("id") String id,
+//          @PathVariable("pcIf") String pcId,
+//          Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
+//    Ig ig = findIgById(id);
+//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+//
+//    Link found = findLinkById(ccGroupId, ig.getCoConstraintGroupRegistry().getChildren());
+//    if (found != null) {
+//      ig.getCoConstraintGroupRegistry().getChildren().remove(found);
+//    }
+//    try {
+//      CoConstraintGroup coConstraintGroup = this.coConstraintService.findById(ccGroupId);
+//      if (coConstraintGroup != null) {
+//        if (coConstraintGroup.getDomainInfo().getScope().equals(Scope.USER)) {
+//          this.coConstraintService.delete(coConstraintGroup);
+//        }
+//      }
+//    } catch (CoConstraintGroupNotFoundException e) {
+//      e.printStackTrace();
+//    }
+//    igService.save(ig);
+//    return new ResponseMessage(Status.SUCCESS, CC_GROUP_DELETED, ccGroupId, new Date());
+//  }
+  
 
   @RequestMapping(value = "/api/igdocuments/{documentId}/coconstraints/group/segment/{id}", method = RequestMethod.GET, produces = {"application/json" })
   public List<DisplayElement> getCoConstraintGroupForSegment(@PathVariable("id") String id,

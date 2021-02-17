@@ -9,9 +9,9 @@ import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentCreationWrapper } from '../../document/models/document/document-creation.interface';
 import { MessageEventTreeNode } from '../../document/models/message-event/message-event.class';
 import {
-  IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse,
+  IAddNodes, IAddProfileComponentContext, IAddResourceFromFile, ICopyNode, ICopyResourceResponse,
   ICreateCoConstraintGroup,
-  ICreateCoConstraintGroupResponse,
+  ICreateCoConstraintGroupResponse, ICreateProfileComponent, ICreateProfileComponentResponse,
 } from '../../document/models/toc/toc-operation.class';
 import { IgTOCNodeHelper } from '../../document/services/ig-toc-node-helper.service';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
@@ -45,8 +45,6 @@ export class IgService {
   getRegistryAndCollectionByType(type: Type): { registry: string, collection: string } {
     let registry: string;
     let collection: string;
-    console.log(type);
-
     if (type === Type.VALUESET) {
       registry = 'valueSetRegistry';
       collection = 'valueSets';
@@ -74,7 +72,7 @@ export class IgService {
 
   loadOrInsertRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, load: boolean, values?: string[]): fromDam.InsertResourcesInRepostory | fromDam.LoadResourcesInRepostory {
     const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'profileComponents', 'compositeProfiles',  'sections'];
-    console.log("loading");
+    console.log('loading');
     const collections = (values ? values : _default).map((key) => {
       return {
         key,
@@ -387,5 +385,13 @@ export class IgService {
 
   loadTemplate(): Observable<IgTemplate[]> {
     return this.http.get<IgTemplate[]>('api/igdocuments/igTemplates');
+  }
+
+  createProfileComponent(request: ICreateProfileComponent): Observable<Message<ICreateProfileComponentResponse>> {
+    return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/profile-component/create', request);
+  }
+
+  addProfileComponentContext(request: IAddProfileComponentContext): Observable<Message<ICreateProfileComponentResponse>> {
+    return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/profile-component/' + request.pcId + '/addChildren', request.added);
   }
 }

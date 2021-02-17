@@ -36,6 +36,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupRegistry;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 //import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
@@ -46,6 +47,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
@@ -93,6 +95,7 @@ import gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -1415,5 +1418,37 @@ public class IgServiceImpl implements IgService {
       this.save(ig);
     }
   }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.ig.service.IgService#createProfileComponent(gov.nist.hit.hl7.igamt.ig.domain.Ig, java.lang.String, java.util.List)
+   */
+  @Override
+  public ProfileComponent createProfileComponent(Ig ig, String name,
+      List<DisplayElement> children) {
+    ProfileComponent ret = new ProfileComponent();
+    ret.setUsername(ig.getUsername());
+    ret.setCurrentAuthor(ig.getCurrentAuthor());
+    ret.setDomainInfo(new DomainInfo("*", Scope.USER));
+    ret.setName(name);
+    String id = new ObjectId().toString();
+    ret.setId(id);
+    ret.setChildren(new HashSet<ProfileComponentContext>());
+    for(int i=0; i < children.size(); i++) {
+      DisplayElement elm = children.get(i);
+      // TODO set struct ID 
+      ProfileComponentContext ctx = new ProfileComponentContext(elm.getId(), elm.getType(), elm.getId(), elm.getFixedName(), i+1, new HashSet<ProfileComponentItem>());
+      ret.getChildren().add(ctx);
+    }
+    Link pcLink =   new Link(ret);
+    ig.getProfileComponentRegistry().getChildren().add(pcLink);
+    this.profileComponentService.save(ret);
+    this.save(ig);
+
+    return ret;
+  }
+  
+  
+  
+  
 
 }

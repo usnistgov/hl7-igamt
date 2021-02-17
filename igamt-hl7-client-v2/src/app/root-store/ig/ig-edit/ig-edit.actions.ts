@@ -2,12 +2,12 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {Action} from '@ngrx/store';
 import {IResource} from 'src/app/modules/shared/models/resource.interface';
 import {
-  IAddNodes,
+  IAddNodes, IAddProfileComponentContext,
   IAddResourceFromFile,
   ICopyNode,
   ICopyResourceResponse,
   ICreateCoConstraintGroup,
-  ICreateCoConstraintGroupResponse,
+  ICreateCoConstraintGroupResponse, ICreateProfileComponent, ICreateProfileComponentResponse,
   IDeleteNode,
 } from '../../../modules/document/models/toc/toc-operation.class';
 import {IDocumentDisplayInfo, IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
@@ -62,6 +62,14 @@ export enum IgEditActionTypes {
   ToggleDelta = '[Ig Edit] Toggle DELTA Delta',
   ToggleDeltaSuccess = '[Ig Edit] Toggle DELTA Success',
   ToggleDeltaFailure = '[Ig Edit] Toggle DELTA Failure',
+
+  CreateProfileComponent = '[Ig Edit TOC] Create Profile Component',
+  CreateProfileComponentSuccess = '[Ig Edit TOC] Create Profile Component Success',
+  CreateProfileComponentFailure = '[Ig Edit TOC] Create Profile Component Failure',
+
+  AddProfileComponentContext = '[Ig Edit TOC] Add Profile Component Context',
+  AddProfileComponentContextSuccess = '[Ig Edit TOC] Add Profile Component Context Success',
+  AddProfileComponentContextFailure = '[Ig Edit TOC] Add Profile Component Context Failure',
 }
 
 export class ClearIgEdit implements Action {
@@ -272,6 +280,42 @@ export class ToggleDeltaFailure implements Action {
   constructor(readonly error: HttpErrorResponse) { }
 
 }
+
+export class CreateProfileComponent implements Action {
+  readonly type = IgEditActionTypes.CreateProfileComponent;
+  constructor(readonly payload: ICreateProfileComponent) {
+  }
+}
+
+export class CreateProfileComponentSuccess implements Action {
+  readonly type = IgEditActionTypes.CreateProfileComponentSuccess;
+  constructor(readonly payload: ICreateProfileComponentResponse) {
+  }
+}
+
+export class CreateProfileComponentFailure implements Action {
+  readonly type = IgEditActionTypes.CreateProfileComponentFailure;
+  constructor(readonly payload: HttpErrorResponse) {
+  }
+}
+
+export class AddProfileComponentContext implements Action {
+  readonly type = IgEditActionTypes.AddProfileComponentContext;
+  constructor(readonly payload: IAddProfileComponentContext) {
+  }
+}
+
+export class AddProfileComponentContextSuccess implements Action {
+  readonly type = IgEditActionTypes.AddProfileComponentContextSuccess;
+  constructor(readonly payload: ICreateProfileComponentResponse) {
+  }
+}
+
+export class AddProfileComponentContextFailure implements Action {
+  readonly type = IgEditActionTypes.AddProfileComponentContextFailure;
+  constructor(readonly payload: HttpErrorResponse) {
+  }
+}
 export type IgEditActions =
   IgEditResolverLoad
   | IgEditResolverLoadSuccess
@@ -300,4 +344,10 @@ export type IgEditActions =
   | CreateCoConstraintGroupFailure
   | CreateCoConstraintGroupSuccess
   | CreateCoConstraintGroup
+  | CreateProfileComponent
+  | CreateProfileComponentSuccess
+  | CreateProfileComponentFailure
+  | AddProfileComponentContext
+  | AddProfileComponentContextSuccess
+  | AddProfileComponentContextFailure
   | ToggleDeltaFailure;

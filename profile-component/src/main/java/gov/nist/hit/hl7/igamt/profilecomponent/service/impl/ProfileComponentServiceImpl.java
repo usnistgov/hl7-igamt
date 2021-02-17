@@ -12,13 +12,17 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
 import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 
@@ -84,5 +88,24 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     // TODO Auto-generated method stub
     return profileComponentRepository.findByIdIn(ids);
   }
+  
+  @Override 
+  public ProfileComponent addChildrenFromDisplayElement(String id, List<DisplayElement> children) {
+    
+    ProfileComponent pc = this.findById(id);
+    if(pc.getChildren() == null) {
+      pc.setChildren(new HashSet<ProfileComponentContext>());
+    }
+
+    for(int i=0; i < children.size(); i++) {
+      DisplayElement elm = children.get(i);
+      // TODO set struct ID 
+      ProfileComponentContext ctx = new ProfileComponentContext(elm.getId(), elm.getType(), elm.getId(), elm.getFixedName(), i+ pc.getChildren().size()+1, new HashSet<ProfileComponentItem>());
+      pc.getChildren().add(ctx);
+    }
+    this.save(pc);
+    return pc;
+  }
+  
 
 }

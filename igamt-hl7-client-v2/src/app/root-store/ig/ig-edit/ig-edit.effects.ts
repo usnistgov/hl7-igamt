@@ -28,9 +28,10 @@ import {
 import {selectSelectedResource} from '../../dam-igamt/igamt.selected-resource.selectors';
 import {selectLoadedDocumentInfo} from '../../dam-igamt/igamt.selectors';
 import {
+  AddProfileComponentContext, AddProfileComponentContextFailure, AddProfileComponentContextSuccess,
   CreateCoConstraintGroup,
   CreateCoConstraintGroupFailure,
-  CreateCoConstraintGroupSuccess,
+  CreateCoConstraintGroupSuccess, CreateProfileComponent, CreateProfileComponentFailure, CreateProfileComponentSuccess,
   OpenConformanceStatementSummaryEditorNode,
   UpdateSections,
 } from './ig-edit.actions';
@@ -525,6 +526,104 @@ export class IgEditEffects extends DamWidgetEffect {
       return this.message.messageToAction(new Message(MessageType.SUCCESS, 'CoConstraint Group Created Successfully', null));
     }),
   );
+
+  @Effect()
+  igCreateProfileComponent = this.actions$.pipe(
+    ofType(IgEditActionTypes.CreateProfileComponent),
+    switchMap((action: CreateProfileComponent) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      return combineLatest(
+        this.igService.createProfileComponent(action.payload),
+        this.store.select(selectIgDocument).pipe(take(1))).pipe(
+        take(1),
+        flatMap(([response, ig]) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            ...this.igService.insertRepositoryCopyResource(response.data.registry, response.data.display, ig),
+            new CreateProfileComponentSuccess(response.data),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new CreateProfileComponentFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  createProfileComponentFailure$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.CreateProfileComponentFailure),
+    map((action: CreateProfileComponentFailure) => {
+      return this.message.actionFromError(action.payload);
+    }),
+  );
+
+  @Effect()
+  createProfileComponentSuccess$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.CreateProfileComponentSuccess),
+    map((action: CreateProfileComponentSuccess) => {
+      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Profile Component Created Successfully', null));
+    }),
+  );
+  @Effect()
+  addProfileComponentContext = this.actions$.pipe(
+    ofType(IgEditActionTypes.AddProfileComponentContext),
+    switchMap((action: AddProfileComponentContext) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      return combineLatest(
+        this.igService.addProfileComponentContext(action.payload),
+        this.store.select(selectIgDocument).pipe(take(1))).pipe(
+        take(1),
+        flatMap(([response, ig]) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            ...this.igService.insertRepositoryCopyResource(response.data.registry, response.data.display, ig),
+            new AddProfileComponentContextSuccess(response.data),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new AddProfileComponentContextFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  addProfileComponentContextFailure$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.AddProfileComponentContextFailure),
+    map((action: CreateProfileComponentFailure) => {
+      return this.message.actionFromError(action.payload);
+    }),
+  );
+
+  @Effect()
+  addProfileComponentContextSuccess$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.AddProfileComponentContextSuccess),
+    map((action: CreateProfileComponentSuccess) => {
+      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Profile Component Created Successfully', null));
+    }),
+  );
+
+
+
+
+
+
+
+
+
+
+
 
   @Effect()
   displayDelta$ = this.actions$.pipe(

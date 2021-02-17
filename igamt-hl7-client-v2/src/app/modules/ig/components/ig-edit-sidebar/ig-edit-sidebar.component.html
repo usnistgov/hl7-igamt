@@ -27,6 +27,9 @@
   <app-dam-side-bar-toggle></app-dam-side-bar-toggle>
   <div class="btn-group mr-2" role="group">
 
+    <button (click)="scrollTo('profilecomponents')" class="btn btn-text btn-sm entity-badge-profile-component" type="button">
+      PC
+    </button>
     <button (click)="scrollTo('messages')" class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
       CP
     </button>
@@ -56,5 +59,5 @@
 
 </div>
 <div class="sidebar-content" id="sidebar-content">
-  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (addChild)="addChild($event)" (copy)="copy($event)" (delete)="delete($event)" (addVSFromCSV)="addVSFromCSV($event)"  [delta]="deltaMode$ | async" [viewOnly]="viewOnly$ | async" (deleteNarrative)="checkDeleteNarrative($event)"></app-ig-toc>
+  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (addChild)="addChild($event)" (copy)="copy($event)" (delete)="delete($event)" (addVSFromCSV)="addVSFromCSV($event)"  [delta]="deltaMode$ | async" [viewOnly]="viewOnly$ | async" (deleteNarrative)="checkDeleteNarrative($event)" (addPcChildren)="onAddPcChildren($event)"></app-ig-toc>
 </div>

@@ -75,7 +75,7 @@ export class IgTOCNodeHelper {
 
   static buildTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[], profileComponentNodes: IDisplayElement[], compositeProfileNodes: IDisplayElement[]) {
     console.log(profileComponentNodes);
-    console.log("profileComponentNodes");
+    console.log('profileComponentNodes');
 
     const ret: IDisplayElement[] = [];
     for (const section of structure) {

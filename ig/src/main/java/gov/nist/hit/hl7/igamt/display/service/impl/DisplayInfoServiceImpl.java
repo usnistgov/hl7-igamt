@@ -147,7 +147,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     for(Valueset vs : valueSets) {
       ret.add(convertValueSet(vs));
     }
-    return ret;	
+    return ret; 
   }
 
   @Override
@@ -265,7 +265,8 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     return displayElement;
   }
   
-  private DisplayElement convertProfileComponent(ProfileComponent pc) {
+  @Override
+  public DisplayElement convertProfileComponent(ProfileComponent pc) {
     DisplayElement displayElement= new DisplayElement();
     displayElement.setId(pc.getId());
     displayElement.setDomainInfo(pc.getDomainInfo());

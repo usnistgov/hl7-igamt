@@ -34,6 +34,25 @@ public class ProfileComponentContext {
   private Set<ProfileComponentItem> profileComponentItems;
 
 
+  /**
+   * @param id
+   * @param level
+   * @param sourceId
+   * @param structure
+   * @param position
+   * @param profileComponentItems
+   */
+  public ProfileComponentContext(String id, Type level, String sourceId, String structure,
+      int position, Set<ProfileComponentItem> profileComponentItems) {
+    super();
+    this.id = id;
+    this.level = level;
+    this.sourceId = sourceId;
+    this.structure = structure;
+    this.position = position;
+    this.profileComponentItems = profileComponentItems;
+  }
+
   public ProfileComponentContext() {
     super();
     // TODO Auto-generated constructor stub

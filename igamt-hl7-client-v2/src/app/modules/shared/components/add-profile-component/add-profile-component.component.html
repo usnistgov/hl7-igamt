@@ -1,0 +1,25 @@
+<h2 mat-dialog-title>Create Profile Component</h2>
+<mat-dialog-content>
+  <form #form='ngForm'>
+    <div class="form-group">
+      <label for="groupName" style="font-weight: bold;"> Profile Component Name : </label>
+      <input [(ngModel)]="model.name" class="form-control" id="groupName" name="name" required style="width: 100%"
+             type="text" type="text"/>
+      <div *ngIf="form.controls['name'] && form.controls['name'].errors"
+           style="color:red; font-size: 11px">
+        <div *ngIf="form.controls['name'].errors.required">
+          <span>*Profile component name is required</span>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <app-select-profile-component-context [selectedType]="'CONFORMANCEPROFILE'" [selectedMap]="{}" [availableContexts]="table" (selected)="onSelect($event)"></app-select-profile-component-context>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" [disabled]="form && form.invalid" class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

@@ -9,37 +9,18 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.profilecomponent.service;
-
+package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
 import java.util.List;
-import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 
 /**
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ * @author Abdelghani El Ouakili
+ *
  */
-public interface ProfileComponentService {
-
-  ProfileComponent findById(String id);
-
-  ProfileComponent create(ProfileComponent profileComponent);
-
-  List<ProfileComponent> findAll();
-
-  ProfileComponent save(ProfileComponent profileComponent);
-
-  List<ProfileComponent> saveAll(List<ProfileComponent> profileComponents);
-
-  void delete(String compositeKey);
-
-  public void removeCollection();
-
-  public List<ProfileComponent> findByIdIn(Set<String> ids);
-
-  ProfileComponent addChildrenFromDisplayElement(String id, List<DisplayElement> children);
-
+public class ProfileComponentCreateWrapper {
+  public String documentId;
+  public String name;
+  public List<DisplayElement> children;
 }

@@ -134,6 +134,10 @@ const routes: Routes = [
         path: 'coconstraintgroup',
         loadChildren: 'src/app/modules/co-constraints/co-constraints.module#CoConstraintsModule',
       },
+      {
+        path: 'profilecomponent',
+        loadChildren: 'src/app/modules/profile-component/profile-component.module#ProfileComponentModule',
+      },
     ],
   },
   {

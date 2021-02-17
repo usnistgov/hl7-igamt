@@ -1,0 +1,77 @@
+<div style="display: flex; flex-direction: row; justify-content: space-between">
+  <p-table #dt1 [globalFilterFields]="['label','fixedName', 'variableName']" [value]="table" [style]="{'margin-right': '20px'}">
+    <ng-template pTemplate="caption">
+      <div style="display: flex; margin-bottom: 5px;">
+        <strong style="margin-right: 10px; display: flex; align-items: center;">
+          Select Context:
+        </strong>
+
+        <span style="margin-right: 5px; display: flex; align-items: center;">
+                  <input (ngModelChange)="selectType($event)" [(ngModel)]="selectedType" name="Conformance Profile" style="margin-right: 5px;"
+                         styleClass="'radio-inline'" type="radio" value="CONFORMANCEPROFILE"/> Conformance Profile
+              </span>
+        <span style="margin-right: 5px; display: flex; align-items: center;">
+                  <input (ngModelChange)=" selectType($event)" [(ngModel)]="selectedType" name="Segment" style="margin-right: 5px;"
+                         styleClass="'radio-inline'" type="radio" value="SEGMENT"/> Segment
+              </span>
+      </div>
+      <div style="text-align: left">
+        <div class="input-group" style="margin-left: 10px;">
+          <div class="input-group-prepend" style="height: 35px; text-align: left">
+            <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+          </div>
+          <input
+            (input)="dt1.filterGlobal($event.target.value, 'contains')"
+            class="form-control"
+            placeholder="Filter"
+            style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
+        </div>
+      </div>
+    </ng-template>
+
+
+    <ng-template let-columns pTemplate="header">
+      <tr>
+        <th>
+          Available Contexts
+        </th>
+        <th width="20%">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template let-columns="columns" let-index="rowIndex" let-rowData pTemplate="body">
+      <tr>
+        <td>
+          <app-display-section [element]="rowData"></app-display-section>
+        </td>
+        <td width="20%">
+          <button class="btn btn-sm btn-primary" (click)="selectElement(rowData)" [disabled]="selectedMap[rowData.id]"><i class="fa fa-plus"></i> Add</button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <p-table [value]="children">
+    <ng-template let-columns pTemplate="header">
+      <tr>
+        <th style="width:2.5em"></th>
+        <th>
+          Selected Contexts
+        </th>
+        <th width="20%">Actions</th>
+      </tr>
+    </ng-template>
+    <ng-template let-columns="columns" let-index="rowIndex" let-rowData pTemplate="body">
+      <tr [pReorderableRow]="index">
+        <td>
+          <i class="fa fa-bars" pReorderableRowHandle></i>
+        </td>
+        <td>
+          <app-display-section [element]="rowData"></app-display-section>
+        </td>
+        <td width="20%">
+          <button class="btn btn-sm btn-danger" (click)="removeElement(rowData)"><i class="fa fa-remove"></i></button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</div>
