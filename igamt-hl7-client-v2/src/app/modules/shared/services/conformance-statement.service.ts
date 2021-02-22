@@ -6,10 +6,10 @@ import * as _ from 'lodash';
 import { combineLatest, Observable, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { IConformanceStatementEditorData, IDependantConformanceStatements, IEditableConformanceStatementGroup, IEditableListNode } from '../../core/components/conformance-statement-editor/conformance-statement-editor.component';
-import { Assertion, BinaryOperator, LEFT, NaryOperator, Operator, Pattern, RIGHT, Statement, UnaryOperator } from '../components/pattern-dialog/cs-pattern.domain';
+import { Assertion, BinaryOperator, NaryOperator, Operator, Pattern, Statement, UnaryOperator, LeafStatementType, IfThenOperator, OperatorType, Position, SubContextOperator } from '../components/pattern-dialog/cs-pattern.domain';
 import { Usage } from '../constants/usage.enum';
 import { IConformanceStatementList, IConformanceStatementsContainerMap, ICPConformanceStatementList } from '../models/cs-list.interface';
-import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, IPath, ISimpleAssertion, Operator as CsOperator } from '../models/cs.interface';
+import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, IPath, ISimpleAssertion, Operator as CsOperator, ISubContextAssertion, ISubContext } from '../models/cs.interface';
 import { IDisplayElement } from '../models/display-element.interface';
 import { IAssertionPredicate, IFreeTextPredicate, IPredicate } from '../models/predicate.interface';
 import { IResource } from '../models/resource.interface';
@@ -165,8 +165,10 @@ export class ConformanceStatementService {
   getCsPattern(assertion: IAssertion, predicate: boolean): Pattern {
     const pattern = new Pattern(this.getCsViewAssertion(assertion, { counter: 0 }));
     if (predicate) {
-      pattern.leafs.forEach((leaf) => {
-        leaf.data.branch = 'P';
+      pattern.leafs.filter((leaf) => {
+        return leaf.data.branch !== LeafStatementType.CONTEXT;
+      }).forEach((leaf) => {
+        leaf.data.branch = LeafStatementType.PROPOSITION;
       });
     }
     return pattern;
@@ -217,6 +219,22 @@ export class ConformanceStatementService {
     };
   }
 
+  createSubContextAssertion(_a: IAssertion): ISubContextAssertion {
+    return {
+      mode: AssertionMode.SUBCONTEXT,
+      child: _a,
+      context: {
+        path: undefined,
+        occurenceIdPath: undefined,
+        occurenceLocationStr: undefined,
+        occurenceValue: undefined,
+        occurenceType: undefined,
+        description: '',
+      },
+      description: '',
+    };
+  }
+
   createOpAssertion(operator: CsOperator, ..._a: IAssertion[]): IOperatorAssertion {
     return {
       mode: AssertionMode.ANDOR,
@@ -236,14 +254,22 @@ export class ConformanceStatementService {
         leafs: [simple],
       };
     } else if (assertion instanceof UnaryOperator) {
-      if (assertion.data.type !== 'NOT') {
-        throw new Error('Unrecognized unary operator');
-      } else {
+      if (assertion instanceof SubContextOperator) {
+        const inner = this.getCsDataAssertion(assertion.getOperand());
+        const subContext = this.createSubContextAssertion(inner.assertion);
+        assertion.context.payload = subContext.context;
+        return {
+          assertion: subContext,
+          leafs: inner.leafs,
+        };
+      } else if (assertion.data.type === 'NOT') {
         const inner = this.getCsDataAssertion(assertion.getOperand());
         return {
           assertion: this.createNotAssertion(inner.assertion),
           leafs: inner.leafs,
         };
+      } else {
+        throw new Error('Unrecognized unary operator');
       }
     } else if (assertion instanceof BinaryOperator) {
       if (assertion.data.type === 'IF-THEN') {
@@ -260,7 +286,8 @@ export class ConformanceStatementService {
           assertion: this.createOpAssertion(
             CsOperator.AND,
             left.assertion,
-            right.assertion),
+            right.assertion,
+          ),
           leafs: [...left.leafs, ...right.leafs],
         };
       } else if (assertion.data.type === 'OR') {
@@ -270,7 +297,8 @@ export class ConformanceStatementService {
           assertion: this.createOpAssertion(
             CsOperator.OR,
             left.assertion,
-            right.assertion),
+            right.assertion,
+          ),
           leafs: [...left.leafs, ...right.leafs],
         };
       } else if (assertion.data.type === 'XOR') {
@@ -280,7 +308,8 @@ export class ConformanceStatementService {
           assertion: this.createOpAssertion(
             CsOperator.XOR,
             left.assertion,
-            right.assertion),
+            right.assertion,
+          ),
           leafs: [...left.leafs, ...right.leafs],
         };
       }
@@ -292,7 +321,8 @@ export class ConformanceStatementService {
         return {
           assertion: this.createOpAssertion(
             CsOperator.AND,
-            ...assertions.map((a) => a.assertion)),
+            ...assertions.map((a) => a.assertion),
+          ),
           leafs,
         };
       } else if (assertion.data.type === 'EXISTS') {
@@ -302,7 +332,8 @@ export class ConformanceStatementService {
         return {
           assertion: this.createOpAssertion(
             CsOperator.OR,
-            ...assertions.map((a) => a.assertion)),
+            ...assertions.map((a) => a.assertion),
+          ),
           leafs,
         };
       }
@@ -317,13 +348,13 @@ export class ConformanceStatementService {
       case AssertionMode.IFTHEN:
         const ifThenAssertion = assertion as IIfThenAssertion;
         const ifThen = this.getCsConditionalPattern(ifThenAssertion, parent, position);
-        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.ifAssertion, idsRef, ifThen, LEFT), LEFT);
-        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.thenAssertion, idsRef, ifThen, RIGHT), RIGHT);
+        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.ifAssertion, idsRef, ifThen, Position.LEFT), Position.LEFT);
+        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.thenAssertion, idsRef, ifThen, Position.RIGHT), Position.RIGHT);
         return ifThen;
       case AssertionMode.NOT:
         const notAssertion = assertion as INotAssertion;
         const not = this.getCsNotPattern(notAssertion, parent, position);
-        not.putOne(this.getCsViewAssertion(notAssertion.child, idsRef, not, LEFT), LEFT);
+        not.putOne(this.getCsViewAssertion(notAssertion.child, idsRef, not, Position.LEFT), Position.LEFT);
         return not;
       case AssertionMode.ANDOR:
         const opAssertion = assertion as IOperatorAssertion;
@@ -342,32 +373,49 @@ export class ConformanceStatementService {
             return biOp;
           }
         }
+        return this.getCsBinaryOpPattern(opAssertion, parent, position);
+      case AssertionMode.SUBCONTEXT:
+        const subContext = assertion as ISubContextAssertion;
+        const subC = this.getCsSubContextPattern(subContext, parent, position);
+        subC.setOperand(this.getCsViewAssertion(subContext.child, idsRef, not, Position.LEFT));
+        subC.context = this.getCsContextPattern(subContext.context, idsRef.counter++, subC);
+        return subC;
     }
   }
 
   getCsSimplePattern(assertion: ISimpleAssertion, id: number, parent?: Operator, position?: number): Statement {
-    const statement = new Statement('D', id, parent, position || 1);
+    const statement = new Statement(LeafStatementType.DECLARATION, id, parent, position || 1);
     statement.payload = assertion;
     return statement;
   }
 
-  getCsConditionalPattern(assertion: IIfThenAssertion, parent?: Operator, position?: number): Operator {
-    return new BinaryOperator('D', 'IF-THEN', parent, position);
+  getCsContextPattern(context: ISubContext, id: number, parent?: Operator): Statement {
+    const statement = new Statement(LeafStatementType.CONTEXT, id, parent, 1);
+    statement.payload = context;
+    return statement;
   }
 
-  getCsNotPattern(assertion: INotAssertion, parent?: Operator, position?: number): Operator {
-    return new UnaryOperator('D', 'NOT', parent, position);
+  getCsConditionalPattern(assertion: IIfThenAssertion, parent?: Operator, position?: number): IfThenOperator {
+    return new IfThenOperator(LeafStatementType.DECLARATION, parent, position);
   }
 
-  getCsBinaryOpPattern(assertion: IOperatorAssertion, parent?: Operator, position?: number): Operator {
-    return new BinaryOperator('D', assertion.operator, parent, position);
+  getCsNotPattern(assertion: INotAssertion, parent?: Operator, position?: number): UnaryOperator {
+    return new UnaryOperator(LeafStatementType.DECLARATION, OperatorType.NOT, parent, position);
   }
 
-  getCsNaryOpPattern(assertion: IOperatorAssertion, parent?: Operator, position?: number): Operator {
+  getCsSubContextPattern(assertion: ISubContextAssertion, parent?: Operator, position?: number): SubContextOperator {
+    return new SubContextOperator(LeafStatementType.DECLARATION, parent, position);
+  }
+
+  getCsBinaryOpPattern(assertion: IOperatorAssertion, parent?: Operator, position?: number): BinaryOperator {
+    return new BinaryOperator(LeafStatementType.DECLARATION, assertion.operator.toString() as OperatorType, parent, position);
+  }
+
+  getCsNaryOpPattern(assertion: IOperatorAssertion, parent?: Operator, position?: number): NaryOperator {
     const op = assertion.operator === 'AND' ? 'ALL' : assertion.operator === 'OR' ? 'EXISTS' : undefined;
     if (!op) {
       throw Error(assertion.operator + ' is not Nary Op');
     }
-    return new NaryOperator('D', op, parent, position);
+    return new NaryOperator(LeafStatementType.DECLARATION, op as OperatorType, parent, position);
   }
 }

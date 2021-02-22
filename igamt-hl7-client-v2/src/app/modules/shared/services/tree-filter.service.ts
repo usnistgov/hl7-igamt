@@ -28,6 +28,7 @@ export enum RestrictionType {
   TYPE = 'TYPE',
   PATH = 'PATH',
   PARENTS = 'PARENTS',
+  MULTI = 'MULTI',
 }
 
 export interface IPathValue {
@@ -94,7 +95,7 @@ export class TreeFilterService {
 
   pathIsProhibited(path: string, list: IPathValue[]): boolean {
     return list.map((p) => {
-      return p.excludeChildren ? path.startsWith(p.path) : path === p.path;
+      return p.excludeChildren ? path === p.path || path.startsWith(p.path + '-') : path === p.path;
     }).reduce((a, b) => {
       return a || b;
     }, false);
@@ -116,6 +117,8 @@ export class TreeFilterService {
         return this.path(node, restriction.value);
       case RestrictionType.PARENTS:
         return this.parents(node, restriction.value);
+      case RestrictionType.MULTI:
+        return this.multi(node, restriction.value);
     }
   }
 
@@ -148,6 +151,10 @@ export class TreeFilterService {
   }
 
   repeat(node: IHL7v2TreeNode, range: ICardinalityRange): boolean {
+    if (!node.data.cardinality) {
+      return false;
+    }
+
     const min = node.data.cardinality.min >= range.min;
     let max = false;
     if (range.max === '*') {
@@ -160,6 +167,19 @@ export class TreeFilterService {
       }
     }
     return min && max;
+  }
+
+  multi(node: IHL7v2TreeNode, value: boolean): boolean {
+    if (!node.data.cardinality) {
+      return false === value;
+    }
+    if (node.data.cardinality.max === '*') {
+      return true === value;
+    }
+    if ((+node.data.cardinality.max - node.data.cardinality.min) > 0) {
+      return true === value;
+    }
+    return false === value;
   }
 
   datatypes(node: IHL7v2TreeNode, datatypes: string[]): boolean {

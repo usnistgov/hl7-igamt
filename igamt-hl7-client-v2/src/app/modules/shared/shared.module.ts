@@ -35,6 +35,7 @@ import { CopyResourceComponent } from './components/copy-resource/copy-resource.
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsListComponent } from './components/cs-list/cs-list.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
+import { CsSubcontextComponent } from './components/cs-subcontext/cs-subcontext.component';
 import { DeactivatingDialogComponent } from './components/deactivating-dialog/deactivating-dialog.component';
 import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
 import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
@@ -175,6 +176,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DeactivatingDialogComponent,
     ResourceListComponent,
     AddMappingDialgComponent,
+    CsSubcontextComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -334,6 +336,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeReasonDialogComponent,
     ChangeLogInfoComponent,
     ResourceListComponent,
+    CsSubcontextComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

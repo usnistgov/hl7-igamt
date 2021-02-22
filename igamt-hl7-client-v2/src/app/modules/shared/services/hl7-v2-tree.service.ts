@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, from, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, Observable, Subscription, ReplaySubject } from 'rxjs';
 import { filter, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
 import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
@@ -92,6 +92,7 @@ export class Hl7V2TreeService {
         node.expanded = true;
         node.leaf = true;
       }
+      node.$hl7V2TreeHelpers.children$.next(node.children);
       then();
     };
   }
@@ -296,6 +297,7 @@ export class Hl7V2TreeService {
             $hl7V2TreeHelpers: {
               ref$: data.ref.asObservable(),
               treeChildrenSubscription: undefined,
+              children$: new ReplaySubject<IHL7v2TreeNode[]>(1),
             },
           };
         }).sort((a, b) => a.data.position - b.data.position);
@@ -331,6 +333,7 @@ export class Hl7V2TreeService {
             $hl7V2TreeHelpers: {
               ref$: data.ref.asObservable(),
               treeChildrenSubscription: undefined,
+              children$: new ReplaySubject<IHL7v2TreeNode[]>(1),
             },
           };
         }).sort((a, b) => a.data.position - b.data.position);
@@ -426,6 +429,7 @@ export class Hl7V2TreeService {
           $hl7V2TreeHelpers: {
             ref$: data.ref.asObservable(),
             treeChildrenSubscription: undefined,
+            children$: new ReplaySubject<IHL7v2TreeNode[]>(1),
           },
           children: [],
         };
@@ -446,10 +450,12 @@ export class Hl7V2TreeService {
           $hl7V2TreeHelpers: {
             ref$: undefined,
             treeChildrenSubscription: undefined,
+            children$: new ReplaySubject<IHL7v2TreeNode[]>(1),
           },
           children: [],
         };
         node.children = this.formatStructure([], group.children, segments, refsData, viewOnly, changeable, cp, node);
+        node.$hl7V2TreeHelpers.children$.next(node.children);
         return node;
       }
     }).sort((a, b) => a.data.position - b.data.position);

@@ -18,7 +18,7 @@ import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 export class StructureTreeComponent implements OnInit, OnDestroy {
 
   type: Type;
-  structure: TreeNode[];
+  structure: IHL7v2TreeNode[];
   selectedNode: TreeNode;
   treeSubscriptions: Subscription[] = [];
   s_resource: Subscription;
@@ -90,7 +90,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
     };
 
     if (this.structure) {
-      this.doFilter(this.structure as IHL7v2TreeNode[]);
+      this.doFilter(this.structure);
     }
   }
 

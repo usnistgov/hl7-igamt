@@ -81,91 +81,25 @@
         </div>
       </div>
     </div>
-
-    <div *ngIf="activeTab === tabType.SIMPLE">
-      <app-cs-proposition
-        [resourceType]="resourceType"
-        [excludePaths]="excludePaths"
-        [predicateMode]="predicateMode"
-        [resource]="resource"
-        [tree]="structure"
-        [context]="cs.context"
-        [repository]="repository"
-        [type]="predicateMode ? 'PROPOSITION' : 'STATEMENT'"
-        [(value)]="cs.assertion"
-        (valueChange)="change()"
-      ></app-cs-proposition>
-    </div>
-    <div *ngIf="activeTab === tabType.CONDITIONAL">
-      <table class="table table-bordered table-sm">
-        <tr>
-          <td><strong> PROPOSITION </strong></td>
-        </tr>
-        <tr>
-          <app-cs-proposition
-            [resourceType]="resourceType"
-            [excludePaths]="excludePaths"
-            [resource]="resource"
-            [tree]="structure"
-            [context]="cs.context"
-            [repository]="repository"
-            [type]="'PROPOSITION'"
-            [(value)]="cs.assertion.ifAssertion"
-            [collapsed]="false"
-            (valueChange)="change()"
-          ></app-cs-proposition>
-        </tr>
-      </table>
-      <table class="table table-bordered table-sm">
-        <tr>
-          <td><strong> DECLARATION </strong></td>
-        </tr>
-        <tr>
-          <app-cs-proposition
-            [resourceType]="resourceType"
-            [excludePaths]="excludePaths"
-            [resource]="resource"
-            [tree]="structure"
-            [context]="cs.context"
-            [repository]="repository"
-            [type]="'STATEMENT'"
-            [(value)]="cs.assertion.thenAssertion"
-            [collapsed]="false"
-            (valueChange)="change()"
-          ></app-cs-proposition>
-        </tr>
-      </table>
-    </div>
-    <div *ngIf="activeTab === tabType.COMPLEX">
+    <div>
       <div class="form-group">
         <label for="free" class="form-label-lg"> Assertion Pattern </label>
-        <span *ngIf="pattern" style="margin-left: 5px;" [innerHTML]="html(pattern.assertion.write())"></span>
-        <button class="btn btn-primary" style="margin-left: 10px;" (click)="openPatternDialog()">
+        <span *ngIf="pattern" style="margin-left: 5px;">
+          <ng-container *ngTemplateOutlet="tokenized; context : { $implicit :  pattern.tokens }" ></ng-container>
+        </span>
+        <button class="btn btn-primary" style="margin-left: 10px;" (click)="openPatternDialog()" *ngIf="activeTab === tabType.COMPLEX">
           <i class="fa fa-pencil"></i>
         </button>
       </div>
       <mat-dialog-content>
-        <ng-container *ngIf="pattern" >
-          <table *ngFor="let leaf of pattern.leafs" class="table table-bordered table-sm">
-            <tr>
-              <td><strong [ngStyle]="{ color : leaf.data.color}">{{ leaf.name() }}</strong></td>
-            </tr>
-            <tr>
-              <app-cs-proposition
-              [resourceType]="resourceType"
-              [excludePaths]="excludePaths"
-              [predicateMode]="predicateMode"
-              [resource]="resource"
-              [tree]="structure"
-              [context]="cs.context"
-              [repository]="repository"
-              [type]="leaf.data.branch === 'D' ? 'STATEMENT' : 'PROPOSITION'"
-              [(value)]="leaf.payload"
-              [collapsed]="false"
-              (valueChange)="change()"
-              ></app-cs-proposition>
-            </tr>
-          </table>
+        <ng-container *ngIf="activeStatement !== -1" >
+          <div style="width: 100%;" *ngFor="let token of pattern.statements">
+            <ng-container *ngTemplateOutlet="complexStatementLeaf; context : {
+              $implicit :  token,
+              context: token.dependency && token.dependency.payload?.contextPath ? token.dependency.payload.contextPath : cs.context
+            }"
+            ></ng-container>
+          </div>
         </ng-container>
       </mat-dialog-content>
     </div>
@@ -186,12 +120,64 @@
       </div>
     </div>
   </ng-container>
-
-
-
 </form>
 <mat-dialog-actions style="justify-content: flex-end;">
   <button (click)="reset()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Reset</button>
   <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
   <button (click)="done()" [disabled]="!valid()" class="btn btn-sm btn-success">Done</button>
 </mat-dialog-actions>
+
+<ng-template #tokenized let-tokens>
+  <ng-container *ngFor="let token of tokens" >
+    <span *ngIf="token.type === 'TEXT'">{{ token.value }}</span>
+    <button
+      *ngIf="token.type === 'STATEMENT'"
+      [ngStyle]="{ color : token.value.data.color}"
+      class="btn statement-btn"
+      [ngClass]="{'btn-statement-selected': token.value.data.id === activeStatement }"
+      [disabled]="token.dependency && !token.dependency.valid"
+      (click)="toggleStatement(token.value.data.id)">
+      <i *ngIf="!token.valid" class="fa fa-times-circle-o" style="color: red; margin-right: 5px;"></i>
+      <i *ngIf="token.valid" class="fa fa-check" style="color: green; margin-right: 5px;"></i>
+      {{ token.name }}
+    </button>
+  </ng-container>
+</ng-template>
+
+<ng-template #complexStatementLeaf let-context="context" let-token >
+  <table
+    [ngClass]="{'hide': token.value.data.id !== activeStatement }"
+    class="table table-bordered table-sm">
+    <tr>
+      <td style="text-align: center;">
+        <strong [ngStyle]="{ color : token.value.data.color}">{{ token.name }}</strong>
+      </td>
+    </tr>
+    <tr>
+      <app-cs-proposition
+      *ngIf="token.value.data.branch !== 'CONTEXT'"
+      [resourceType]="resourceType"
+      [excludePaths]="excludePaths"
+      [predicateMode]="predicateMode"
+      [resource]="resource"
+      [rootTree]="structure"
+      [repository]="repository"
+      [type]="token.value.data.branch"
+      [collapsed]="false"
+      [token]="token"
+      (valueChange)="change()"
+      ></app-cs-proposition>
+      <app-cs-subcontext
+      *ngIf="token.value.data.branch === 'CONTEXT'"
+      [resourceType]="resourceType"
+      [excludePaths]="excludePaths"
+      [resource]="resource"
+      [rootTree]="structure"
+      [repository]="repository"
+      [collapsed]="false"
+      [token]="token"
+      (valueChange)="change()"
+      ></app-cs-subcontext>
+    </tr>
+  </table>
+</ng-template>
