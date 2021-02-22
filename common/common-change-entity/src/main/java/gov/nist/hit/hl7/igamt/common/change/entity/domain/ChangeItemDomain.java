@@ -22,7 +22,6 @@ public class ChangeItemDomain implements Comparable<ChangeItemDomain> {
   private Object propertyValue;
   private Object oldPropertyValue;
   private ChangeType changeType;
-  private ChangeReason changeReason;
   private int position;
 
   public ChangeItemDomain() {
@@ -86,15 +85,6 @@ public class ChangeItemDomain implements Comparable<ChangeItemDomain> {
     this.oldPropertyValue = oldPropertyValue;
     this.changeType = changeType;
     this.position = position;
-  }
-
-
-  public ChangeReason getChangeReason() {
-    return changeReason;
-  }
-
-  public void setChangeReason(ChangeReason changeReason) {
-    this.changeReason = changeReason;
   }
 
   /*

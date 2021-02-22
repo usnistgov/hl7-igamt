@@ -271,7 +271,6 @@ export class DtmStructureComponent implements OnInit, OnDestroy {
       position: null,
       changeType: ChangeType.UPDATE,
     });
-
   }
 
   ngOnDestroy() {

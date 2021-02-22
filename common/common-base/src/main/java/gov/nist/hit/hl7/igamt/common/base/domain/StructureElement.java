@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.diff.annotation.DeltaField;
 import gov.nist.diff.annotation.DeltaIdentity;
@@ -9,6 +10,14 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 public class StructureElement implements Serializable {
+
+  public Set<Comment> getComments() {
+    return comments;
+  }
+
+  public void setComments(Set<Comment> comments) {
+    this.comments = comments;
+  }
 
   private String id;
   @DeltaField
@@ -25,6 +34,9 @@ public class StructureElement implements Serializable {
   private String text;
   private Map<PropertyType, ChangeReason> changeLog;
 
+  @DeltaField
+  private Set<Comment> comments;
+
   private boolean custom = false;
 
   public StructureElement() {
@@ -32,7 +44,7 @@ public class StructureElement implements Serializable {
   }
 
   public StructureElement(String id, String name, int position, Usage usage, Type type, String text,
-      boolean custom) {
+      boolean custom, Set<Comment> comments) {
     super();
     this.id = id;
     this.name = name;
@@ -41,6 +53,7 @@ public class StructureElement implements Serializable {
     this.type = type;
     this.text = text;
     this.custom = custom;
+    this.comments = comments;
   }
 
   public Map<PropertyType, ChangeReason> getChangeLog() {

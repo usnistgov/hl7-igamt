@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>gov.nist.hit.hl7</groupId>
+	<artifactId>resource</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+
+	<parent>
+		<groupId>gov.nist.hit.hl7</groupId>
+		<artifactId>igamt</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<name>resource</name>
+	<url>http://maven.apache.org</url>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-base</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-util</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+
+		</dependency>
+			<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-binding</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+
+		</dependency>
+
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-exception</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-change-entity</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
+</project>

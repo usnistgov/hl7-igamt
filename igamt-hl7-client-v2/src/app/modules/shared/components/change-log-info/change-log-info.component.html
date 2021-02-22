@@ -1,18 +1,33 @@
 <ng-container *ngIf="sections && sections.length > 0" >
-  <span [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="mouseenter:mouseleave" placement="bottom" class="badge" style="background: transparent !important; border: 1px solid blue !important; cursor: help;">
-    <i class="fa fa-info" style="color: blue; font-size: 1.5em;"></i>
-  </span>
+  <button [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="click:click" placement="bottom" class="btn btn-sm btn-i">
+    <i class="fa fa-info"></i>
+  </button>
 
   <ng-template #popContent>
-    <table class="table table-sm table-striped table-bordered">
+    <table style="table-layout: auto;" class="table table-sm table-striped table-bordered">
       <tbody *ngFor="let item of sections" >
         <tr>
+          <th style="vertical-align: middle;">
+            <div style="display: flex; justify-content: center; align-items: center; width: 100%;">
+              <app-binding-badge [context]="item.context"></app-binding-badge>
+            </div>
+          </th>
           <th>
             Change {{ item.property }} ( {{ item.date | date }})
           </th>
+          <th>
+            <div style="display: flex;" *ngIf="!viewOnly && item.context.resource === context && !item.context.element">
+              <button class="btn btn-sm btn-dark" style="margin-right: 2px;" (click)="edit(item)">
+                <i class="fa fa-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-danger" (click)="delete(item)">
+                <i class="fa fa-trash"></i>
+              </button>
+            </div>
+          </th>
         </tr>
         <tr>
-          <td> {{ item.reason }}</td>
+          <td colspan="3" style="vertical-align: center;">{{ item.reason }}</td>
         </tr>
       </tbody>
     </table>
