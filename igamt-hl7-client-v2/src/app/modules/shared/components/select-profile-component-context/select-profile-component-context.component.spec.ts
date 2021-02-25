@@ -8,7 +8,7 @@ describe('SelectProfileComponentContextComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SelectProfileComponentContextComponent ]
+      declarations: [ SelectProfileComponentContextComponent ],
     })
     .compileComponents();
   }));

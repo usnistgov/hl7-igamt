@@ -4,8 +4,6 @@ import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { IgTOCNodeHelper } from '../../../modules/document/services/ig-toc-node-helper.service';
 import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
-import { Scope } from '../../../modules/shared/constants/scope.enum';
-import { SharePermission, Status } from '../../../modules/shared/models/abstract-domain.interface';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { IRegistry } from '../../../modules/shared/models/registry.interface';

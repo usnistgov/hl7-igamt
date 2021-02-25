@@ -1,53 +1,62 @@
+import {HttpErrorResponse} from '@angular/common/http';
 import { Action } from '@ngrx/store';
+import {IHL7EditorMetadata} from '../../modules/shared/models/editor.enum';
+import {IProfileComponent, IProfileComponentContext} from '../../modules/shared/models/segment.interface';
 
 export enum ProfileComponentActionTypes {
-  OpenProfileComponent = '[ProfileComponent] Open Profile Component',
-  LoadSegmentContext =  '[ProfileComponent] Load Segment Context',
-  LoadSegmentContextSuccess = '[ProfileComponent] Load Segment Context Success',
-  LoadSegmentContextFailure = '[ProfileComponent] Load Segment Context Failure',
-  OpenSegmentContextStructureEditor = 'Open Segment Context Structure Editor',
-  LoadMessageContext =  '[ProfileComponent] Load Message Context',
-  LoadMessageContextSuccess = '[ProfileComponent] Load Message Context Success',
-  LoadMessageContextFailure = '[ProfileComponent] Load Message Context Failure',
-  OpenMessageContextStructureEditor = 'Open Message Context Structure Editor',
-
+  LoadProfileComponent = '[ProfileComponent] Load Profile Component',
+  LoadProfileComponentSuccess = '[ProfileComponent] Load Profile Component Success',
+  LoadProfileComponentFailure = '[ProfileComponent] Load Profile Component Failure',
+  LoadContext =  '[ProfileComponent] Load  Context',
+  LoadContextSuccess = '[ProfileComponent] Load  Context Success',
+  LoadContextFailure = '[ProfileComponent] Load  Context Failure',
+  OpenContextStructureEditor = '[ProfileComponent] Open  Context Structure Editor',
+  OpenProfileComponentMetadataEditor = '[ProfileComponent] Open Profile Component Metadata Editor',
 }
 
-export class OpenProfileComponent implements Action {
-  readonly type = ProfileComponentActionTypes.OpenProfileComponent;
+export class LoadProfileComponent implements Action {
+  readonly type = ProfileComponentActionTypes.LoadProfileComponent;
+  constructor(readonly id: string) { }
 }
 
-export class LoadSegmentContext implements Action {
-  readonly type = ProfileComponentActionTypes.LoadSegmentContext;
+export class LoadContext implements Action {
+  readonly type = ProfileComponentActionTypes.LoadContext;
+  constructor(readonly id: string) { }
 }
 
-export class LoadSegmentContextSuccess implements Action {
-  readonly type = ProfileComponentActionTypes.LoadSegmentContextSuccess;
+export class LoadContextSuccess implements Action {
+  readonly type = ProfileComponentActionTypes.LoadContextSuccess;
+  constructor(readonly context: IProfileComponentContext) { }
 }
 
-export class LoadSegmentContextFailure implements Action {
-  readonly type = ProfileComponentActionTypes.LoadSegmentContextFailure;
+export class LoadProfileComponentFailure implements Action {
+  readonly type = ProfileComponentActionTypes.LoadProfileComponentFailure;
+  constructor(readonly error: HttpErrorResponse) { }
+}
+export class LoadProfileComponentSuccess implements Action {
+  readonly type = ProfileComponentActionTypes.LoadProfileComponentSuccess;
+  constructor(readonly profileComponent: IProfileComponent) { }
 }
 
-export class OpenSegmentContextStructureEditor implements Action {
-  readonly type = ProfileComponentActionTypes.OpenSegmentContextStructureEditor;
+export class LoadContextFailure implements Action {
+  readonly type = ProfileComponentActionTypes.LoadContextFailure;
+  constructor(readonly error: HttpErrorResponse) { }
 }
 
-export class LoadMessageContext implements Action {
-  readonly type = ProfileComponentActionTypes.LoadMessageContext;
+export class OpenContextStructureEditor implements Action {
+  readonly type = ProfileComponentActionTypes.OpenContextStructureEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) { }
 }
 
-export class LoadMessageContextSuccess implements Action {
-  readonly type = ProfileComponentActionTypes.LoadMessageContextSuccess;
+export class OpenProfileComponentMetadataEditor implements Action {
+  readonly type = ProfileComponentActionTypes.OpenProfileComponentMetadataEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) { }
 }
 
-export class LoadMessageContextFailure implements Action {
-  readonly type = ProfileComponentActionTypes.LoadMessageContextFailure;
-}
-
-export class OpenMessageContextStructureEditor implements Action {
-  readonly type = ProfileComponentActionTypes.OpenMessageContextStructureEditor;
-}
-
-export type ProfileComponentActions = OpenProfileComponent | LoadSegmentContext| LoadSegmentContextSuccess | LoadSegmentContextFailure | OpenSegmentContextStructureEditor | LoadMessageContext
-  | LoadMessageContextSuccess | LoadMessageContextFailure | OpenMessageContextStructureEditor;
+export type ProfileComponentActions = LoadProfileComponent | LoadContext| LoadContextSuccess | LoadContextFailure | OpenContextStructureEditor | LoadProfileComponentFailure | LoadProfileComponentSuccess | OpenProfileComponentMetadataEditor;

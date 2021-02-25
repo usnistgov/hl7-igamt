@@ -6,11 +6,13 @@ import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.in
 import { IConformanceProfile } from '../../modules/shared/models/conformance-profile.interface';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
 import { IResource } from '../../modules/shared/models/resource.interface';
-import { ISegment } from '../../modules/shared/models/segment.interface';
+import {IProfileComponent, IProfileComponentContext, ISegment} from '../../modules/shared/models/segment.interface';
 import { IValueSet } from '../../modules/shared/models/value-set.interface';
 
 // SELECT 'SELECTED' attribute from DAM state
 export const selectSelectedResource = fromDAM.selectValue<IResource>('selected');
+
+export const selectProfileComponentContext = fromDAM.selectValue<IProfileComponentContext>('context');
 
 // SELECTED RESOURCE GETTERS
 export const selectedConformanceProfile = createSelector(
@@ -18,6 +20,17 @@ export const selectedConformanceProfile = createSelector(
   (state: IResource): IConformanceProfile => {
     if (state && state.type === Type.CONFORMANCEPROFILE) {
       return state as IConformanceProfile;
+    } else {
+      return undefined;
+    }
+  },
+);
+
+export const selectedProfileComponent = createSelector(
+  selectSelectedResource,
+  (state: IResource): IProfileComponent => {
+    if (state && state.type === Type.PROFILECOMPONENT) {
+      return state as IProfileComponent;
     } else {
       return undefined;
     }

@@ -614,17 +614,6 @@ export class IgEditEffects extends DamWidgetEffect {
     }),
   );
 
-
-
-
-
-
-
-
-
-
-
-
   @Effect()
   displayDelta$ = this.actions$.pipe(
     ofType(IgEditActionTypes.ToggleDelta),

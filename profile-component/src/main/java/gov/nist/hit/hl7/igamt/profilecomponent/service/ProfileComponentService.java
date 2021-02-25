@@ -15,8 +15,12 @@ package gov.nist.hit.hl7.igamt.profilecomponent.service;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
+import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContextNotFoundException;
+import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 
 /**
  * 
@@ -41,5 +45,9 @@ public interface ProfileComponentService {
   public List<ProfileComponent> findByIdIn(Set<String> ids);
 
   ProfileComponent addChildrenFromDisplayElement(String id, List<DisplayElement> children);
+
+  ProfileComponentContext findContextById(String pcId, String contextId) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
+
+  Set<Resource> getDependencies(String pcId, String contextId) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
 
 }

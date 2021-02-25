@@ -34,6 +34,7 @@ export const selectSegmentsEntites = createSelector(
   selectSegments,
   selectEntities,
 );
+
 export const selectAllSegments = createSelector(
   selectSegments,
   selectAll,
@@ -103,11 +104,33 @@ export const selectProfileComponentsEntites = createSelector(
   selectEntities,
 );
 
+export const selectProfileComponentById = createSelector(
+  selectProfileComponentsEntites,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
+);
+
+export const selectContexts = fromDAM.selectFromCollection<IDisplayElement>('contexts');
+export const selectContextEntites = createSelector(
+  selectContexts,
+  selectEntities,
+);
+export const selectAllContexts = createSelector(
+  selectContexts,
+  selectAll,
+);
+export const selectContextById = createSelector(
+  selectContextEntites,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
+);
+
 export const selectCompositeProfilesEntites = createSelector(
   selectCompositeProfiles,
   selectEntities,
 );
-
 // COCONSTRAINT GROUP DISPLAY GETTERS
 export const selectCoConstraintGroups = fromDAM.selectFromCollection<IDisplayElement>('coConstraintGroups');
 export const selectCoConstraintGroupEntites = createSelector(

@@ -45,7 +45,6 @@ export class SelectProfileComponentContextComponent implements OnInit {
     const index = this.children.indexOf(elm, 0);
     if (index > -1) {
       this.children.splice(index, 1);
-      this.selectedMap[elm.id] = true;
       this.selectedMap[elm.id] = false;
     }
   }

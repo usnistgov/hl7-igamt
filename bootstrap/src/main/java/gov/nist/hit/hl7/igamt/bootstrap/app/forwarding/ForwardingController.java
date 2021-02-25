@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.bootstrap.app;
+package gov.nist.hit.hl7.igamt.bootstrap.app.forwarding;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,6 +8,6 @@ class ForwardingController {
 
     @RequestMapping(value = "/**/{path:[^.]*}")       
     public String redirect() {
-        return "forward:/";
+        return "forward:/error";
     }
 }

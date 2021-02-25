@@ -79,7 +79,11 @@ export class IgService {
         values: key === 'sections' ? IgTOCNodeHelper.getIDisplayFromSections(igInfo.ig.content, '') : igInfo[key],
       };
     });
-
+    if (igInfo.profileComponents !== null ) {
+      let childrenArray = [];
+      igInfo['profileComponents'].forEach((x) => childrenArray = childrenArray.concat(x.children));
+      collections.push({key: 'contexts', values: childrenArray});
+    }
     return !load ? new fromDam.InsertResourcesInRepostory({
       collections,
     }) : new fromDam.LoadResourcesInRepostory({
@@ -97,16 +101,20 @@ export class IgService {
 
   insertRepositoryCopyResource(registryList: IRegistry, display: IDisplayElement, ig: IgDocument): Action[] {
     const { registry, collection } = this.getRegistryAndCollectionByType(display.type);
+    const collections = [{
+      key: collection,
+      values: [display],
+    }];
+    if (display.type === Type.PROFILECOMPONENT && display.children ) {
+      collections.push({key: 'contexts' , values: display.children });
+    }
     return [
       ...(registry ? [new fromDam.LoadPayloadData({
         ...ig,
         [registry]: registryList,
       })] : []),
       ...(collection ? [new fromDam.InsertResourcesInRepostory({
-        collections: [{
-          key: collection,
-          values: [display],
-        }],
+         collections,
       })] : []),
     ];
   }

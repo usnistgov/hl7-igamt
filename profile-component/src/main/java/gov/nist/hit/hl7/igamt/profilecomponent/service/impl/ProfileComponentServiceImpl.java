@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.service.impl;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -19,12 +20,20 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
+import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContextNotFoundException;
+import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
 
 /**
@@ -36,6 +45,14 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Autowired
   private ProfileComponentRepository profileComponentRepository;
+
+  @Autowired
+  private ConformanceProfileService conformanceProfileService;
+
+  @Autowired
+  private SegmentService segmentService;
+
+
 
   @Override
   public ProfileComponent findById(String id) {
@@ -88,10 +105,10 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     // TODO Auto-generated method stub
     return profileComponentRepository.findByIdIn(ids);
   }
-  
+
   @Override 
   public ProfileComponent addChildrenFromDisplayElement(String id, List<DisplayElement> children) {
-    
+
     ProfileComponent pc = this.findById(id);
     if(pc.getChildren() == null) {
       pc.setChildren(new HashSet<ProfileComponentContext>());
@@ -106,6 +123,42 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     this.save(pc);
     return pc;
   }
-  
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#findContextById(java.lang.String, java.lang.String)
+   */
+  @Override
+  public ProfileComponentContext findContextById(String pcId, String contextId) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
+    ProfileComponent pc = this.findById(pcId);
+    if(pc  == null ) {
+      throw new ProfileComponentNotFoundException(pcId);
+    }
+    return pc.getChildren().stream().filter(customer -> contextId.equals(customer.getId())).findAny().orElseThrow( () -> new ProfileComponentContextNotFoundException(contextId));
+
+
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#getDependencies(java.lang.String, java.lang.String)
+   */
+  @Override
+  public Set<Resource> getDependencies(String pcId, String contextId) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
+    // TODO Auto-generated method stub
+    Set<Resource> ret = new HashSet<Resource>();
+    ProfileComponentContext profileComponentContext = this.findContextById(pcId, contextId);
+    if(profileComponentContext != null) {
+      if(profileComponentContext.getLevel().equals(Type.CONFORMANCEPROFILE)) {
+        ConformanceProfile cp = this.conformanceProfileService.findById(profileComponentContext.getSourceId());
+        ret.addAll(this.conformanceProfileService.getDependencies(cp));
+      }else if(profileComponentContext.getLevel().equals(Type.SEGMENT)) {
+        Segment s = this.segmentService.findById(profileComponentContext.getSourceId());
+        if(s != null) {
+          ret.addAll(this.segmentService.getDependencies(s));
+        }
+      }
+    }
+    return ret;
+  }
+
 
 }

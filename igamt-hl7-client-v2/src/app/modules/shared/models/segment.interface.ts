@@ -1,3 +1,5 @@
+import {IAddProfileComponentContext} from '../../document/models/toc/toc-operation.class';
+import {Type} from '../constants/type.enum';
 import { IResourceBinding } from './binding.interface';
 import { IComment } from './comment.interface';
 import { IDisplayElement } from './display-element.interface';
@@ -39,4 +41,19 @@ export interface ISegment extends IResource {
   binding?: IResourceBinding;
   children: IField[];
   dynamicMappingInfo?: IDynamicMappingInfo;
+}
+export interface IProfileComponent extends IResource {
+  children?: IProfileComponentContext;
+}
+export interface IProfileComponentContext {
+  id: string;
+  level: Type;
+  sourceId: string;
+  structure: string;
+  position: number;
+  profileComponentItems:  IProfileComponentItem[];
+}
+export interface IProfileComponentItem {
+  path: string;
+  itemProperties: any[];
 }

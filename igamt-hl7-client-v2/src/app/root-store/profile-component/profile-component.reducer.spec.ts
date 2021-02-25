@@ -1,4 +1,4 @@
-import { reducer, initialState } from './profile-component.reducer';
+import { initialState, reducer } from './profile-component.reducer';
 
 describe('ProfileComponent Reducer', () => {
   describe('an unknown action', () => {

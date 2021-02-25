@@ -33,7 +33,7 @@ import {
   RadioButtonModule,
   TabViewModule,
   TooltipModule,
-  TreeTableModule
+  TreeTableModule,
 } from 'primeng/primeng';
 import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import { SelectButtonModule } from 'primeng/selectbutton';
@@ -41,6 +41,7 @@ import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
 import { DamComponentsModule, DamLoaderModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
 import { AddCoConstraintGroupComponent } from './components/add-co-constraint-group/add-co-constraint-group.component';
+import { AddProfileComponentContextComponent } from './components/add-profile-component-context/add-profile-component-context.component';
 import {AddProfileComponentComponent} from './components/add-profile-component/add-profile-component.component';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
@@ -94,6 +95,7 @@ import { SegmentAddDialogComponent } from './components/segment-add-dialog/segme
 import { SelectDatatypesComponent } from './components/select-datatypes/select-datatypes.component';
 import { SelectMessagesComponent } from './components/select-messages/select-messages.component';
 import { SelectNameComponent } from './components/select-name/select-name.component';
+import { SelectProfileComponentContextComponent } from './components/select-profile-component-context/select-profile-component-context.component';
 import { SelectResourceIdsComponent } from './components/select-resource-ids/select-resource-ids.component';
 import { SelectSegmentsComponent } from './components/select-segments/select-segments.component';
 import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
@@ -115,8 +117,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { SelectProfileComponentContextComponent } from './components/select-profile-component-context/select-profile-component-context.component';
-import { AddProfileComponentContextComponent } from './components/add-profile-component-context/add-profile-component-context.component';
 
 @NgModule({
   declarations: [

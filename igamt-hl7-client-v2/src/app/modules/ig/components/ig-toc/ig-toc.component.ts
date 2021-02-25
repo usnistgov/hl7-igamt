@@ -227,7 +227,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
      }
     }
     return url;
-
   }
 
   addPcContexts(node) {
