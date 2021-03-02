@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { Component } from '@angular/core';
 import { finalize, map, take, tap } from 'rxjs/operators';
 import { OccurrenceType } from '../../models/conformance-statements.domain';
 import { ISubContext, ISubject } from '../../models/cs.interface';
@@ -9,7 +8,6 @@ import { StatementTarget } from '../../services/statement.service';
 import { RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { CsStatementComponent, IStatementTokenPayload } from '../cs-dialog/cs-statement.component';
 import { Statement, Token } from '../pattern-dialog/cs-pattern.domain';
-import { StructureTreeComponent } from '../structure-tree/structure-tree.component';
 
 @Component({
   selector: 'app-cs-subcontext',
@@ -28,9 +26,6 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
     { label: '\'COUNT\' occurrences of', value: OccurrenceType.COUNT },
     { label: 'All occurrences of', value: OccurrenceType.ALL },
   ];
-
-  @ViewChild('targetOccurenceValues', { read: NgForm }) targetOccurenceValues: NgForm;
-  @ViewChild('structureTree', { read: StructureTreeComponent }) structureTree: StructureTreeComponent;
 
   constructor(
     elementNamingService: ElementNamingService,
@@ -81,6 +76,11 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
     ).subscribe();
   }
 
+  changeOccurrenceType() {
+    this.subject.clearOccurrenceValue();
+    this.change();
+  }
+
   change() {
     this.subject.getDescription(this.res, this.repository).pipe(
       take(1),
@@ -116,7 +116,7 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
   }
 
   complete() {
-    return this.subject.isComplete(this.targetOccurenceValues);
+    return this.subject.isComplete();
   }
 
 }

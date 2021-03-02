@@ -68,7 +68,7 @@ export class StatementTarget {
     this.name = '';
     this.valid = false;
     this.node = undefined;
-    this.repeatMax = 0;
+    this.repeatMax = undefined;
     this.context = undefined;
 
     if (subject.path) {
@@ -99,8 +99,13 @@ export class StatementTarget {
       occurenceType: undefined,
       occurenceLocationStr: undefined,
     };
-    this.repeatMax = 0;
+    this.repeatMax = undefined;
     this.context = undefined;
+  }
+
+  clearOccurrenceValue() {
+    this.value.occurenceValue = undefined;
+    this.value.occurenceLocationStr = undefined;
   }
 
   reset(context: IPath, target: IPath, resource: IResource, repository: AResourceRepositoryService, tree: IHL7v2TreeNode[], node: IHL7v2TreeNode): Observable<StatementTarget> {
@@ -251,16 +256,24 @@ export class StatementTarget {
     return val ? val : '_';
   }
 
-  isComplete(occurrenceForm?: NgForm): boolean {
-    return this.occurenceValid(occurrenceForm) && this.nodeValid();
+  isComplete(): boolean {
+    return this.occurenceValid() && this.nodeValid();
   }
 
-  occurenceValid(occurrenceForm?: NgForm) {
-    if (occurrenceForm && (this.value && this.value.occurenceType) || this.repeatMax > 0) {
-      return !!this.value.occurenceType && occurrenceForm.valid;
-    } else {
-      return true;
+  occurenceValid() {
+    if (this.repeatMax > 0) {
+      if (!(this.value && this.value.occurenceType)) {
+        return false;
+      }
+
+      switch (this.value.occurenceType) {
+        case OccurrenceType.COUNT:
+          return +this.value.occurenceValue <= this.repeatMax && +this.value.occurenceValue >= 1;
+        case OccurrenceType.INSTANCE:
+          return +this.value.occurenceValue <= Math.min(8, this.repeatMax) && +this.value.occurenceValue >= 1;
+      }
     }
+    return true;
   }
 
   nodeValid() {

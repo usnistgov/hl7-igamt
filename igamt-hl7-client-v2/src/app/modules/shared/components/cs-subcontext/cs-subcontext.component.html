@@ -19,7 +19,7 @@
     </td>
 
     <!-- Occurrence -->
-    <td style="white-space: nowrap;" *ngIf="(subject && subject.value.occurenceType) || subject.repeatMax > 0" [ngClass]="{'invalid': !subject.occurenceValid(targetOccurenceValues)}">
+    <td style="white-space: nowrap;" *ngIf="(subject && subject.value.occurenceType) || subject.repeatMax > 0" [ngClass]="{'invalid': !subject.occurenceValid()}">
       <span class="value" *ngIf="!subject.value.occurenceType"> SELECT </span>
       <form #targetOccurenceValues="ngForm">
         <ng-container [ngSwitch]="subject.value.occurenceType">
@@ -66,7 +66,7 @@
     <!-- Occurrence -->
     <td *ngIf="(subject.value && subject.value.occurenceType) || subject.repeatMax > 0" class="table-font">
       <ng-container *ngFor="let occurence of occurences">
-        <input type="radio" [name]="id + 'target-occurences'" [value]="occurence.value" [(ngModel)]="subject.value.occurenceType" (ngModelChange)="change()"/> {{ occurence.label }}<br>
+        <input type="radio" [name]="id + 'target-occurences'" [value]="occurence.value" [(ngModel)]="subject.value.occurenceType" (ngModelChange)="changeOccurrenceType()"/> {{ occurence.label }}<br>
       </ng-container>
     </td>
 

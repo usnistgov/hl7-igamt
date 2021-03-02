@@ -34,17 +34,8 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
     ).subscribe((value) => {
       this.onOwnPayloadUpdate(value);
     });
-
-    if (this.token.dependency) {
-      // Listen to dependency changes
-      this.closeSubscription(this.dependencySubscription);
-      this.dependencySubscription = this.token.dependency.payload.pipe(
-        skip(1),
-      ).subscribe((value) => {
-        this.onDependencyPayloadUpdate(value);
-      });
-    }
   }
+
   get token() {
     return this._token;
   }
@@ -80,7 +71,6 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
   _occurrenceType = OccurrenceType;
   _token: Token<Statement, IStatementTokenPayload>;
   value: T;
-  dependencySubscription: Subscription;
   payloadSubscription: Subscription;
 
   constructor(public treeFilter: IHL7v2TreeFilter, private blank: T) {
@@ -89,23 +79,13 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
   }
 
   public min(a: number, b: number) {
-    return a < b ? a : b;
+    return Math.min(a === undefined ? Number.MAX_VALUE : a, b === undefined ? Number.MAX_VALUE : b);
   }
 
   public abstract complete(): boolean;
   public abstract clearStatementTargetElements(): void;
   public abstract initializeStatement(token: Token<Statement, IStatementTokenPayload>);
   public abstract change(): void;
-
-  onDependencyPayloadUpdate(dependencyPayload: IStatementTokenPayload) {
-    // When dependency changes update the sub-tree and the sub-context
-    this.token.payload.next({
-      effectiveTree: dependencyPayload.active ? [dependencyPayload.active] : this.rootTree,
-      effectiveContext: dependencyPayload.activeNodeRootPath,
-      active: undefined,
-      activeNodeRootPath: undefined,
-    });
-  }
 
   onOwnPayloadUpdate(payload: IStatementTokenPayload) {
     // When payload change clear the Target Data Elements of the statement if no active node is selected
@@ -128,7 +108,6 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.closeSubscription(this.dependencySubscription);
     this.closeSubscription(this.payloadSubscription);
   }
 

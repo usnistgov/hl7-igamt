@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { combineLatest } from 'rxjs';
 import { finalize, map, take, tap } from 'rxjs/operators';
@@ -35,10 +35,9 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
 
   @Input()
   predicateMode: boolean;
+  id: string;
 
   @ViewChild('statementValues', { read: NgForm }) statementValues: NgForm;
-  @ViewChild('targetOccurenceValues', { read: NgForm }) targetOccurenceValues: NgForm;
-  @ViewChild('compOccurenceValues', { read: NgForm }) compOccurenceValues: NgForm;
 
   @Input()
   set type(type: LeafStatementType) {
@@ -69,7 +68,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   labelsMap = {};
 
   constructor(
-    private elementNamingService: ElementNamingService,
+    elementNamingService: ElementNamingService,
     private pathService: PathService,
   ) {
     super({
@@ -101,6 +100,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
         verbKey: '',
         description: '',
       });
+    this.id = new Date().getTime() + '';
     this.csType = LeafStatementType.DECLARATION;
     this.subject = new StatementTarget(elementNamingService, pathService, this.occurences);
     this.compare = new StatementTarget(elementNamingService, pathService, this.occurences);
@@ -161,13 +161,13 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
         const verb = this.labelsMap[this.assertion.verbKey];
         const statement = this.getStatementLiteral(this.assertion.complement);
         this.assertion.description = `${node} ${this.csType === LeafStatementType.DECLARATION ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)} ${this.statementType === StatementType.COMPARATIVE ? compNode.toLowerCase() : ''}`;
-        this.updateTokenStatus();
         Object.assign(this.assertion.subject, {
           ...this.subject.value,
         });
         Object.assign(this.assertion.complement, {
           ...this.compare.value,
         });
+        this.updateTokenStatus();
         this.valueChange.emit(this.assertion);
       }),
     ).subscribe();
@@ -227,7 +227,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   }
 
   complete() {
-    return this.subject.isComplete(this.targetOccurenceValues) && this.verbValid() && this.statementValid() && this.comparisonValid();
+    return this.subject.isComplete() && this.verbValid() && this.statementValid() && this.comparisonValid();
   }
 
   pathValid(context: IPath, path: IPath) {
@@ -250,7 +250,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
 
   comparisonValid() {
     if (this.statementType === StatementType.COMPARATIVE) {
-      return this.compare.isComplete(this.compOccurenceValues);
+      return this.compare.isComplete();
     } else {
       return true;
     }
@@ -292,6 +292,11 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
       this.assertion.complement.complementKey = undefined;
       this.changeStatement();
     }
+    this.change();
+  }
+
+  changeOccurrenceType(subject: StatementTarget) {
+    subject.clearOccurrenceValue();
     this.change();
   }
 

@@ -25,12 +25,10 @@ export enum NodeType {
   STATEMENT = 'statement',
   OPERATOR = 'operator',
 }
-
 export enum TokenType {
   TEXT = 'TEXT',
   STATEMENT = 'STATEMENT',
 }
-
 export interface Token<T, E> {
   type: TokenType;
   value: T;
@@ -69,6 +67,13 @@ export abstract class Assertion implements TreeNode {
     };
   }
 
+  getBranchForParent(parent?: Assertion) {
+    if (parent && this.data.branch !== LeafStatementType.CONTEXT) {
+      return parent.data.branch;
+    }
+    return this.data.branch;
+  }
+
   // Writes Assertion As String
   public abstract write(): string;
   // Clones an Assertion
@@ -105,8 +110,7 @@ export class Statement extends Assertion {
   }
 
   public clone(parent: Operator): Statement {
-    const branch = (parent ? parent.data.branch : LeafStatementType.DECLARATION) || this.data.branch;
-    return new Statement(branch, this.data.id, parent, this.data.position);
+    return new Statement(this.getBranchForParent(parent), this.data.id, parent, this.data.position);
   }
 
   public getLeafs(): Statement[] {
@@ -128,6 +132,30 @@ export class Statement extends Assertion {
 // -------------------- -------------------- --------------------
 // --------------------      UI WRAPPER      --------------------
 // -------------------- -------------------- --------------------
+export class StatementIdIndex {
+  private lastRegistered = 0;
+
+  getNextAvailableId(): number {
+    return this.lastRegistered;
+  }
+
+  useNextAvailableId(): number {
+    const current = this.lastRegistered;
+    this.lastRegistered++;
+    return current;
+  }
+
+  alignIds(assertion: Assertion) {
+    let id = 0;
+    assertion.tokenize()
+      .filter((t) => t.type === TokenType.STATEMENT)
+      .map((t) => t.value as Statement)
+      .forEach((s) => {
+        s.data.id = id++;
+      });
+    this.lastRegistered = id;
+  }
+}
 
 export class Pattern {
   assertion: Assertion;
@@ -162,8 +190,10 @@ export abstract class Operator extends Assertion {
   public abstract write(): string;
   // Puts Statement at Index i
   public abstract putOne(a: Assertion, i: number): void;
+
+  public abstract resetOne(i: number, index: StatementIdIndex): void;
   // Completes the operator's children with enough statements
-  public abstract complete(statements: Statement[]): void;
+  public abstract complete(index: StatementIdIndex);
 
   public getLeafs(): Statement[] {
     let sts = [];
@@ -224,17 +254,21 @@ export class UnaryOperator extends Operator {
     }
   }
 
-  public complete(statements: Statement[]) {
+  public resetOne(position: Position, index: StatementIdIndex) {
+    if (position === 0) {
+      this.setOperand(new Statement(this.getBranchForParent(this.parent), index.useNextAvailableId(), this, 0));
+    }
+  }
+
+  public complete(index: StatementIdIndex) {
     if (this.getOperand() === null) {
-      const st = new Statement(this.parent.data.branch, statements.length, this, 0);
+      const st = new Statement(this.parent.data.branch, index.useNextAvailableId(), this, 0);
       this.setOperand(st);
-      statements.push(st);
     }
   }
 
   public clone(parent: Operator): UnaryOperator {
-    const branch = parent ? parent.data.branch : LeafStatementType.DECLARATION;
-    const uo: UnaryOperator = new UnaryOperator(branch, this.data.type, parent, this.data.position);
+    const uo: UnaryOperator = new UnaryOperator(this.getBranchForParent(parent), this.data.type, parent, this.data.position);
     for (const child of this.children) {
       uo.children.push(child.clone(uo));
     }
@@ -297,21 +331,18 @@ export class SubContextOperator extends UnaryOperator {
     ];
   }
 
-  public complete(statements: Statement[]) {
+  public complete(index: StatementIdIndex) {
     if (this.getOperand() === null) {
-      const st = new Statement(this.parent.data.branch, statements.length, this, 0);
-      statements.push(st);
+      const st = new Statement(this.parent.data.branch, index.useNextAvailableId(), this, 0);
       this.setOperand(st);
     }
     if (!this.context) {
-      this.context = new Statement(LeafStatementType.CONTEXT, statements.length, this, 0);
-      statements.push(this.context);
+      this.context = new Statement(LeafStatementType.CONTEXT, index.useNextAvailableId(), this, 0);
     }
   }
 
   public clone(parent: Operator): UnaryOperator {
-    const branch = parent ? parent.data.branch : LeafStatementType.DECLARATION;
-    const uo: SubContextOperator = new SubContextOperator(branch, parent, this.data.position);
+    const uo: SubContextOperator = new SubContextOperator(this.getBranchForParent(parent), parent, this.data.position);
     if (this.context) {
       uo.context = this.context.clone(parent);
     }
@@ -360,6 +391,12 @@ export class BinaryOperator extends Operator {
     }
   }
 
+  public resetOne(position: Position, index: StatementIdIndex) {
+    if (position === Position.LEFT || Position.RIGHT) {
+      this.setOperand(position, new Statement(this.getBranchForParent(this.parent), index.useNextAvailableId(), this, position));
+    }
+  }
+
   public write() {
     return ' ( ' + this.getLeft().write() + ' ) ' + this.data.type + ' ( ' + this.getRight().write() + ' ) ';
   }
@@ -391,22 +428,19 @@ export class BinaryOperator extends Operator {
     ];
   }
 
-  public complete(statements: Statement[]) {
+  public complete(index: StatementIdIndex) {
     if (!this.getLeft()) {
-      const st = new Statement(this.data.branch, statements.length, this, Position.LEFT);
+      const st = new Statement(this.data.branch, index.useNextAvailableId(), this, Position.LEFT);
       this.setOperand(Position.LEFT, st);
-      statements.push(st);
     }
     if (!this.getRight()) {
-      const st = new Statement(this.data.branch, statements.length, this, Position.RIGHT);
+      const st = new Statement(this.data.branch, index.useNextAvailableId(), this, Position.RIGHT);
       this.setOperand(Position.RIGHT, st);
-      statements.push(st);
     }
   }
 
   public clone(parent: Operator): BinaryOperator {
-    const branch = parent ? parent.data.branch : LeafStatementType.DECLARATION;
-    const bo: BinaryOperator = new BinaryOperator(branch, this.data.type, parent, this.data.position);
+    const bo: BinaryOperator = new BinaryOperator(this.getBranchForParent(parent), this.data.type, parent, this.data.position);
 
     if (this.getLeft()) {
       bo.setOperand(Position.LEFT, this.getLeft().clone(bo));
@@ -463,16 +497,14 @@ export class IfThenOperator extends BinaryOperator {
     }
     return bo;
   }
-  public complete(statements: Statement[]) {
+  public complete(index: StatementIdIndex) {
     if (!this.getLeft()) {
-      const st = new Statement(LeafStatementType.PROPOSITION, statements.length, this, Position.LEFT);
+      const st = new Statement(LeafStatementType.PROPOSITION, index.useNextAvailableId(), this, Position.LEFT);
       this.setOperand(Position.LEFT, st);
-      statements.push(st);
     }
     if (!this.getRight()) {
-      const st = new Statement(this.data.branch, statements.length, this, Position.RIGHT);
+      const st = new Statement(this.data.branch, index.useNextAvailableId(), this, Position.RIGHT);
       this.setOperand(Position.RIGHT, st);
-      statements.push(st);
     }
   }
 }
@@ -496,6 +528,10 @@ export class NaryOperator extends Operator {
 
   public setOperand(operand: Assertion) {
     this.children.push(operand);
+  }
+
+  public resetOne(position: Position, index: StatementIdIndex) {
+    this.children.splice(position, 1, new Statement(this.getBranchForParent(this.parent), index.useNextAvailableId(), this, position));
   }
 
   public putOne(a: Assertion, i: number) {
@@ -548,17 +584,15 @@ export class NaryOperator extends Operator {
     ];
   }
 
-  public complete(statements: Statement[]) {
+  public complete(index: StatementIdIndex) {
     if (this.getOperand(0) === null) {
-      const st = new Statement(this.parent.data.branch || LeafStatementType.DECLARATION, statements.length, this, 0);
+      const st = new Statement(this.parent.data.branch || LeafStatementType.DECLARATION, index.useNextAvailableId(), this, 0);
       this.setOperand(st);
-      statements.push(st);
     }
   }
 
   public clone(parent: Operator): NaryOperator {
-    const branch = parent ? parent.data.branch : LeafStatementType.DECLARATION;
-    const no: NaryOperator = new NaryOperator(branch, this.data.type, parent, this.data.position);
+    const no: NaryOperator = new NaryOperator(this.getBranchForParent(parent), this.data.type, parent, this.data.position);
     for (const child of this.children) {
       no.children.push(child.clone(no));
     }

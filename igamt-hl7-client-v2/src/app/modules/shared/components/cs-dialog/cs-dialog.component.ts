@@ -1,9 +1,9 @@
-import { Component, Inject, OnDestroy, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import * as _ from 'lodash';
 import { BehaviorSubject, EMPTY, from, Observable, of, Subject, Subscription } from 'rxjs';
-import { concatMap, finalize, flatMap, map, take, tap } from 'rxjs/operators';
+import { concatMap, finalize, flatMap, map, skip, take, takeWhile, tap } from 'rxjs/operators';
 import * as vk from 'vkbeautify';
 import { Type } from '../../constants/type.enum';
 import { ConditionalUsageOptions } from '../../constants/usage.enum';
@@ -17,9 +17,8 @@ import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { PathService } from '../../services/path.service';
 import { StoreResourceRepositoryService } from '../../services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
-import { CsPropositionComponent } from '../cs-proposition/cs-proposition.component';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
-import { BinaryOperator, IfThenOperator, LeafStatementType, Pattern, Statement, Token, TokenType } from '../pattern-dialog/cs-pattern.domain';
+import { BinaryOperator, IfThenOperator, LeafStatementType, Pattern, Statement, Token, TokenType, StatementIdIndex } from '../pattern-dialog/cs-pattern.domain';
 import { PatternDialogComponent } from '../pattern-dialog/pattern-dialog.component';
 import { IAssertion } from './../../models/cs.interface';
 import { IStatementTokenPayload } from './cs-statement.component';
@@ -65,7 +64,7 @@ export class CsDialogComponent implements OnDestroy {
     public repository: StoreResourceRepositoryService,
     private descriptionService: CsDescriptionService) {
     this.ifThenPattern = new IfThenOperator(LeafStatementType.DECLARATION, null, 0);
-    this.ifThenPattern.complete([]);
+    this.ifThenPattern.complete(new StatementIdIndex());
 
     this.xmlExpression = new BehaviorSubject({
       isSet: false,
@@ -185,8 +184,8 @@ export class CsDialogComponent implements OnDestroy {
   }>;
   xmlVisible = true;
   activeStatement = 0;
+  alive = true;
 
-  @ViewChildren(CsPropositionComponent) propositions: QueryList<CsPropositionComponent>;
   @ViewChild('csForm', { read: NgForm }) form: NgForm;
 
   setPatternTokenPayload(p: Pattern): Observable<any> {
@@ -254,11 +253,28 @@ export class CsDialogComponent implements OnDestroy {
 
             // Once token payload computed, initialize it as a behavior subject
             token.payload = new BehaviorSubject<IStatementTokenPayload>(payload);
+            this.registerOnDependencyPayloadChange(token);
             return token;
           }),
         );
       }),
     ) : of(token);
+  }
+
+  registerOnDependencyPayloadChange(token: Token<Statement, IStatementTokenPayload>) {
+    if (token.dependency && token.dependency.payload) {
+      token.dependency.payload.pipe(
+        skip(1),
+        takeWhile(() => this.alive),
+      ).subscribe((dependencyPayload) => {
+        token.payload.next({
+          effectiveTree: dependencyPayload.active ? [dependencyPayload.active] : this.structure,
+          effectiveContext: dependencyPayload.activeNodeRootPath,
+          active: undefined,
+          activeNodeRootPath: undefined,
+        });
+      });
+    }
   }
 
   getTokenPayload(dependency: IStatementTokenPayload, type: LeafStatementType, pathValue?: any): Observable<IStatementTokenPayload> {
@@ -397,10 +413,10 @@ export class CsDialogComponent implements OnDestroy {
   }
 
   statementsValid() {
-    if (this.propositions && this.propositions.length > 0) {
+    if (this.pattern && this.pattern.statements) {
       let statementsValidity = true;
-      this.propositions.forEach((p) => {
-        statementsValidity = statementsValidity && p.complete();
+      this.pattern.statements.forEach((p) => {
+        statementsValidity = statementsValidity && p.valid;
       });
 
       return statementsValidity;
@@ -544,6 +560,7 @@ export class CsDialogComponent implements OnDestroy {
     if (this.s_resource) {
       this.s_resource.unsubscribe();
     }
+    this.alive = false;
   }
 
 }

@@ -38,7 +38,7 @@
   <tr class="values-row">
 
     <td>
-      <span [ngSwitch]="complete()">
+      <span [ngSwitch]="token.valid">
         <i *ngSwitchCase="false" class="fa fa-times-circle-o" style="color: red;"></i>
         <i *ngSwitchCase="true" class="fa fa-check" style="color: green;"></i>
       </span>
@@ -47,7 +47,7 @@
     <th *ngIf="csType === _csType.PROPOSITION"> If </th>
 
     <!-- Occurrence -->
-    <td style="white-space: nowrap;" *ngIf="(subject.value && subject.value.occurenceType) || subject.repeatMax > 0" [ngClass]="{'invalid': !subject.occurenceValid(targetOccurenceValues)}">
+    <td style="white-space: nowrap;" *ngIf="(subject.value && subject.value.occurenceType) || subject.repeatMax > 0" [ngClass]="{'invalid': !subject.occurenceValid()}">
       <span class="value" *ngIf="!subject.value.occurenceType"> SELECT </span>
       <form #targetOccurenceValues="ngForm">
         <ng-container [ngSwitch]="subject.value.occurenceType">
@@ -202,7 +202,7 @@
     </td>
 
     <!-- Occurrence -->
-    <td style="white-space: nowrap;" *ngIf="(assertion.complement && compare.value.occurenceType) || compare.repeatMax > 0" [ngClass]="{'invalid': !compare.occurenceValid(compOccurenceValues)}">
+    <td style="white-space: nowrap;" *ngIf="(assertion.complement && compare.value.occurenceType) || compare.repeatMax > 0" [ngClass]="{'invalid': !compare.occurenceValid()}">
       <span class="value" *ngIf="!compare.value.occurenceType"> SELECT </span>
       <form #compOccurenceValues="ngForm">
         <ng-container [ngSwitch]="compare.value.occurenceType">
@@ -253,7 +253,7 @@
     <!-- Occurrence -->
     <td *ngIf="(subject.value && subject.value.occurenceType) || subject.repeatMax > 0" class="table-font">
       <ng-container *ngFor="let occurence of occurences">
-        <input type="radio" [name]="id + 'target-occurences'" [value]="occurence.value" [(ngModel)]="subject.value.occurenceType" (ngModelChange)="change()"/> {{ occurence.label }}<br>
+        <input type="radio" [name]="id + 'target-occurences'" [value]="occurence.value" [(ngModel)]="subject.value.occurenceType" (ngModelChange)="changeOccurrenceType(subject)"/> {{ occurence.label }}<br>
       </ng-container>
     </td>
 
@@ -287,7 +287,7 @@
     <!-- Occurrence -->
     <td *ngIf="(assertion.complement && compare.value.occurenceType) || compare.repeatMax > 0" class="table-font">
       <ng-container *ngFor="let occurence of occurences">
-        <input type="radio"  [name]="id + 'comp-occurences'" [value]="occurence.value" [(ngModel)]="compare.value.occurenceType" (ngModelChange)="change()"/> {{ occurence.label }}<br>
+        <input type="radio"  [name]="id + 'comp-occurences'" [value]="occurence.value" [(ngModel)]="compare.value.occurenceType" (ngModelChange)="changeOccurrenceType(compare)"/> {{ occurence.label }}<br>
       </ng-container>
     </td>
 

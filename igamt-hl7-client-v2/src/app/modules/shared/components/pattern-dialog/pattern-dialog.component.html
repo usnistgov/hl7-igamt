@@ -11,7 +11,7 @@
 
     </div>
   </div>
-  <p-organizationChart [style]="{'width' : '100%', 'background-color' : 'white', 'padding' : '20px', 'min-height' : '500px', 'max-height' : '65vh', 'overflow' : 'scroll'}" [value]="[ pattern.assertion ]" styleClass="pattern" *ngIf="pattern && pattern.assertion" >
+  <p-organizationChart [style]="{'width' : '100%', 'background-color' : 'white', 'padding' : '20px', 'min-height' : '500px', 'max-height' : '65vh', 'overflow' : 'scroll'}" [value]="[ assertion ]" styleClass="pattern" *ngIf="assertion" >
 
     <ng-template let-node pTemplate="statement">
       <div class="operator-drop-area" pDroppable="operator"  (onDrop)="dropOp($event, node)">
@@ -44,7 +44,7 @@
       <strong>Assertion Canonical Form</strong>
     </div>
     <div disabled="true" style="text-align: center; overflow: scroll;">
-      <strong *ngIf="pattern && pattern.assertion" [innerHTML]="html(pattern.assertion.write())"></strong>
+      <strong *ngIf="assertion" [innerHTML]="html(assertion.write())"></strong>
     </div>
   </div>
 

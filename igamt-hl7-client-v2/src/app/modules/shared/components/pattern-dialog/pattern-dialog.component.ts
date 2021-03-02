@@ -2,7 +2,7 @@ import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Assertion, BinaryOperator, NaryOperator, Operator, Pattern, Statement, UnaryOperator, SubContextOperator, OperatorType, LeafStatementType, IfThenOperator } from './cs-pattern.domain';
+import { Assertion, BinaryOperator, NaryOperator, Operator, Pattern, Statement, UnaryOperator, SubContextOperator, OperatorType, LeafStatementType, IfThenOperator, StatementIdIndex } from './cs-pattern.domain';
 
 @Component({
   selector: 'app-pattern-dialog',
@@ -14,8 +14,8 @@ export class PatternDialogComponent implements OnInit {
 
   dragOp: Operator;
   dragSta: Statement;
-  pattern: Pattern = null;
-  backUp: Pattern;
+  assertion: Assertion;
+  backUp: Assertion;
   condition: boolean;
   operatorList = [
     new BinaryOperator(LeafStatementType.DECLARATION, OperatorType.OR, null, 0),
@@ -27,6 +27,7 @@ export class PatternDialogComponent implements OnInit {
     new NaryOperator(LeafStatementType.DECLARATION, OperatorType.EXISTS, null, 0),
     new IfThenOperator(LeafStatementType.DECLARATION, null, 0),
   ];
+  statementIndex = new StatementIdIndex();
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -34,16 +35,21 @@ export class PatternDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any) {
     this.condition = data.condition;
     if (!data.pattern) {
-      this.initPattern();
+      this.initAssertion();
     } else {
-      this.pattern = data.pattern;
+      this.setAssertion(data.pattern.assertion);
     }
 
-    this.backUp = this.pattern.clone();
+    this.backUp = this.assertion.clone(null);
+  }
+
+  setAssertion(assertion: Assertion) {
+    this.assertion = assertion.clone(null);
+    this.statementIndex.alignIds(this.assertion);
   }
 
   reset() {
-    this.pattern = this.backUp.clone();
+    this.setAssertion(this.backUp);
   }
 
   cancel() {
@@ -51,12 +57,11 @@ export class PatternDialogComponent implements OnInit {
   }
 
   finish() {
-    this.dialogRef.close(new Pattern(this.pattern.assertion));
+    this.dialogRef.close(new Pattern(this.assertion));
   }
 
-  initPattern() {
-    const statement = new Statement(this.condition ? LeafStatementType.PROPOSITION : LeafStatementType.DECLARATION, 0, null, 0);
-    this.pattern = new Pattern(statement);
+  initAssertion() {
+    this.setAssertion(new Statement(this.condition ? LeafStatementType.PROPOSITION : LeafStatementType.DECLARATION, 0, null, 0));
   }
 
   ngOnInit() {
@@ -68,17 +73,15 @@ export class PatternDialogComponent implements OnInit {
   }
 
   add(node: NaryOperator) {
-    const statements = this.pattern.leafs;
-    const st = new Statement(LeafStatementType.DECLARATION, statements.length, node, node.children.length);
-    statements.push(st);
+    const st = new Statement(LeafStatementType.DECLARATION, this.statementIndex.useNextAvailableId(), node, node.children.length);
     node.putOne(st, node.children.length);
   }
 
-  dragStartOp(event, op: Operator) {
+  dragStartOp(_, op: Operator) {
     this.dragOp = op;
   }
 
-  dragStartSta(event, sta: Statement) {
+  dragStartSta(_, sta: Statement) {
     this.dragSta = sta;
   }
 
@@ -100,16 +103,16 @@ export class PatternDialogComponent implements OnInit {
     }
 
     dropOp.putOne(dropZoneClone, 0);
-    dropOp.complete(this.pattern.leafs);
+    dropOp.complete(this.statementIndex);
 
     if (dropZone.parent) {
       dropZone.parent.putOne(dropOp, positionInParent);
     } else {
-      this.pattern.assertion = dropOp;
+      this.assertion = dropOp;
     }
   }
 
-  dropSta(event, node: Assertion) {
+  dropSta(_, node: Assertion) {
     const destination_parent = node.parent;
     const d_i = node.data.position;
     const d = this.dragSta.clone(destination_parent);
@@ -123,34 +126,23 @@ export class PatternDialogComponent implements OnInit {
 
   remove(node: any) {
     if (node.parent) {
-      node.parent.children.splice(node.data.position);
-      this.removeLeafs(this.pattern, node);
-      node.parent.complete(this.pattern.leafs);
+      node.parent.resetOne(node.data.position, this.statementIndex);
+      this.statementIndex.alignIds(this.assertion);
     } else {
-      this.initPattern();
+      this.initAssertion();
     }
   }
 
-  dragEndOp(event) {
+  dragEndOp(_) {
     this.dragOp = null;
   }
 
-  dragEndSta(event) {
+  dragEndSta(_) {
     this.dragSta = null;
   }
 
   public html(str: string) {
     return this.sanitizer.bypassSecurityTrustHtml(str);
-  }
-
-  removeLeafs(pattern: Pattern, node: Operator) {
-    const rmLeafs = node.getLeafs();
-    for (const leaf of rmLeafs) {
-      const i = pattern.leafs.indexOf(leaf);
-      if (i !== -1) {
-        pattern.leafs.splice(i);
-      }
-    }
   }
 
 }
