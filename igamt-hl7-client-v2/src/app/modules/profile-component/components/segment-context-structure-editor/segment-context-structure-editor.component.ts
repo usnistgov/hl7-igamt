@@ -1,4 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
 import {Actions} from '@ngrx/effects';
 import {MemoizedSelectorWithProps, Store} from '@ngrx/store';
 import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
@@ -18,6 +19,7 @@ import {IResource} from '../../../shared/models/resource.interface';
 import {IChange} from '../../../shared/models/save-change';
 import {IProfileComponentContext, ISegment} from '../../../shared/models/segment.interface';
 import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
+import {PcTreeService} from '../../services/pc-tree.service';
 import {ProfileComponentStructureEditor} from '../profile-component-structure-editor/profile-component-structure-editor';
 
 @Component({
@@ -40,7 +42,8 @@ export class SegmentContextStructureEditorComponent extends ProfileComponentStru
     private segmentService: SegmentService,
     messageService: MessageService,
     actions$: Actions,
-    store: Store<any>) {
+    store: Store<any>, public pcTreeService: PcTreeService, public dialog: MatDialog,
+  ) {
     super(
       repository,
       messageService,
@@ -86,7 +89,7 @@ export class SegmentContextStructureEditorComponent extends ProfileComponentStru
         HL7v2TreeColumnType.TEXT,
         HL7v2TreeColumnType.COMMENT,
       ],
-    );
+      pcTreeService, dialog);
   }
 
   saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {

@@ -1,5 +1,6 @@
-<app-hl7-v2-tree
+<app-profile-component-structure-tree
   [columns]="columns"
+  [profileComponentContext]="context$ | async"
   [documentRef]="documentRef$ | async"
   [derived]="derived$ | async"
   [datatypes]="datatypes | async"
@@ -12,4 +13,4 @@
   [config]="config | async"
   [bindingConfig]= "bindingConfig | async"
   [username]="username | async">
-</app-hl7-v2-tree>
+</app-profile-component-structure-tree>

@@ -22,7 +22,8 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
   selectedNode: TreeNode;
   treeSubscriptions: Subscription[] = [];
   s_resource: Subscription;
-
+  @Input()
+  multiple = false;
   @Output()
   selection = new EventEmitter<{
     node: IHL7v2TreeNode,
@@ -34,7 +35,8 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
     cardinality: boolean,
     usage: boolean,
   };
-
+  @Input()
+  selectionMode = 'single';
   @Input()
   repository: AResourceRepositoryService;
 
@@ -78,6 +80,9 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
 
   @Input()
   set tree(str: TreeNode[]) {
+    console.log(str);
+    console.log("str");
+
     const clone = this.treeCloneService.cloneViewTree(str);
     this.doFilter(clone as IHL7v2TreeNode[]);
   }

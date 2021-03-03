@@ -1,59 +1,60 @@
 import { Injectable } from '@angular/core';
-import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, from, Observable, Subscription } from 'rxjs';
-import { filter, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
-import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../components/hl7-v2-tree/hl7-v2-tree.component';
-import { Type } from '../constants/type.enum';
-import { Usage } from '../constants/usage.enum';
-import { IStructureElementBinding } from '../models/binding.interface';
-import { IConformanceProfile, IGroup, IHL7MessageProfile, IMessageStructure, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
-import { IComponent, IDatatype } from '../models/datatype.interface';
-import { IResource } from '../models/resource.interface';
-import { IChangeLog } from '../models/save-change';
-import {IField, IProfileComponentContext, ISegment} from '../models/segment.interface';
-import { IStructureElement, ISubStructElement } from '../models/structure-element.interface';
-import { BindingService } from './binding.service';
-import { PathService } from './path.service';
-import { AResourceRepositoryService, IRefData, IRefDataInfo } from './resource-repository.service';
-import { IBinding, StructureElementBindingService } from './structure-element-binding.service';
+import {BehaviorSubject, combineLatest, from, Observable, Subscription} from 'rxjs';
+import {filter, map, mergeMap, switchMap, take, tap, toArray} from 'rxjs/operators';
+import {
+  IHL7v2TreeNode,
+  IHL7v2TreeNodeData,
+  IResourceRef,
+} from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import {Type} from '../../shared/constants/type.enum';
+import {Usage} from '../../shared/constants/usage.enum';
+import {IStructureElementBinding} from '../../shared/models/binding.interface';
+import {
+  IConformanceProfile, IGroup, IHL7MessageProfile,
+  IMsgStructElement, ISegmentRef,
+} from '../../shared/models/conformance-profile.interface';
+import {IPath} from '../../shared/models/cs.interface';
+import {IComponent, IDatatype} from '../../shared/models/datatype.interface';
+import {IResource} from '../../shared/models/resource.interface';
+import {IChangeLog} from '../../shared/models/save-change';
+import {IField, IProfileComponentContext, ISegment} from '../../shared/models/segment.interface';
+import {IStructureElement, ISubStructElement} from '../../shared/models/structure-element.interface';
+import {BindingService} from '../../shared/services/binding.service';
+import {PathService} from '../../shared/services/path.service';
+import {AResourceRepositoryService, IRefData, IRefDataInfo} from '../../shared/services/resource-repository.service';
+import {IBinding, StructureElementBindingService} from '../../shared/services/structure-element-binding.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class Hl7V2TreeService {
-
+export class PcTreeService {
   constructor(
     private valueSetBindingService: BindingService,
     private structureElementBindingService: StructureElementBindingService,
     private pathService: PathService,
   ) { }
 
-  getTree(resource: IResource, repository: AResourceRepositoryService, viewOnly: boolean, changeable: boolean, then?: (value: any) => void): Subscription {
+  getTree(resource: IResource, pcContext: IProfileComponentContext, treeMode: PCTreeMode,  repository: AResourceRepositoryService, viewOnly: boolean, changeable: boolean, then?: (value: any) => void): Subscription {
+    const pathTree: IPath[] = this.generatePathTreeFromContext(pcContext);
     switch (resource.type) {
-      case Type.DATATYPE:
-        return this.formatDatatype(resource as IDatatype, repository, viewOnly, changeable).pipe(
-          take(1),
-          tap(then),
-        ).subscribe();
       case Type.SEGMENT:
-        return this.formatSegment(resource as ISegment, repository, viewOnly, changeable).pipe(
+        return this.formatSegment(resource as ISegment, repository, pathTree, treeMode,  viewOnly, true).pipe(
           take(1),
           tap(then),
         ).subscribe();
       case Type.CONFORMANCEPROFILE:
-        return this.formatConformanceProfile(resource as IConformanceProfile, repository, viewOnly, changeable).pipe(
-          take(1),
-          tap(then),
-        ).subscribe();
-      case Type.MESSAGESTRUCT:
-        return this.formatMessageStructure(resource as IMessageStructure, repository, viewOnly, changeable).pipe(
+        return this.formatConformanceProfile(resource as IConformanceProfile, repository, pathTree, treeMode, viewOnly, true).pipe(
           take(1),
           tap(then),
         ).subscribe();
     }
   }
-
-  resolveReference(node: IHL7v2TreeNode, repository: AResourceRepositoryService, viewOnly: boolean, then?: () => void, transform?: (children: IHL7v2TreeNode[]) => IHL7v2TreeNode[]): Subscription {
+  generatePathTreeFromContext(pcContext: IProfileComponentContext) {
+    return [{
+      elementId: '2',
+    }, { elementId : '3', child: { elementId: '2' }}, { elementId : '16', child: { elementId: '2', child: {elementId : '3'} }}  ];
+  }
+  resolveReference(node: IHL7v2TreeNode, repository: AResourceRepositoryService, viewOnly: boolean, path: IPath[], treeMode: PCTreeMode,  then?: () => void, transform?: (children: IHL7v2TreeNode[]) => IHL7v2TreeNode[]): Subscription {
     if (node.data.ref && node.$hl7V2TreeHelpers && (!node.$hl7V2TreeHelpers.treeChildrenSubscription || node.$hl7V2TreeHelpers.treeChildrenSubscription.closed)) {
       node.$hl7V2TreeHelpers.treeChildrenSubscription = node.data.ref.asObservable().pipe(
         filter((ref) => ref.type === Type.DATATYPE || ref.type === Type.SEGMENT),
@@ -62,12 +63,12 @@ export class Hl7V2TreeService {
             switchMap((resource) => {
               switch (ref.type) {
                 case Type.DATATYPE:
-                  return this.formatDatatype(resource as IDatatype, repository, viewOnly, false, node).pipe(
+                  return this.formatDatatype(resource as IDatatype, repository, path, treeMode, viewOnly , false, node).pipe(
                     take(1),
                     tap(this.addChildren(node, then, transform)),
                   );
                 case Type.SEGMENT:
-                  return this.formatSegment(resource as ISegment, repository, viewOnly, false, node).pipe(
+                  return this.formatSegment(resource as ISegment, repository, path, treeMode, viewOnly, false, node).pipe(
                     take(1),
                     tap(this.addChildren(node, then, transform)),
                     tap(() => node.data.name = (resource as ISegment).name),
@@ -126,7 +127,7 @@ export class Hl7V2TreeService {
       text: {
         value: child.text,
       },
-      custom: child.custom,
+      custom: true,
       changeLog: {
         ...child.changeLog,
         ...this.getBindingsActiveChangeLog(elementBindings && elementBindings.values.changeLog ? elementBindings.values.changeLog : []),
@@ -273,13 +274,17 @@ export class Hl7V2TreeService {
   formatSegment(
     segment: ISegment,
     repository: AResourceRepositoryService,
+    pathTree: IPath[],
+    treeMode: PCTreeMode,
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
-    return repository.getRefData(segment.children.map((child) => child.ref.id), Type.DATATYPE).pipe(
+    const filterChildren = this.filterChildrenByDisplayMode(segment.children, treeMode, pathTree);
+
+    return repository.getRefData(filterChildren.map((child) => child.ref.id), Type.DATATYPE).pipe(
       take(1),
       map((refsData) => {
-        return segment.children.map((child) => {
+        return filterChildren.map((child) => {
           const data: IHL7v2TreeNodeData = this.formatField(
             segment,
             child,
@@ -288,29 +293,46 @@ export class Hl7V2TreeService {
             viewOnly,
             parent,
           );
-
-          return {
+          const node: IHL7v2TreeNode = {
             data,
             parent,
-            leaf: refsData[child.ref.id].leaf,
+            selectable: this.getChildPath(pathTree, child.position).length <= 0,
+            leaf: this.getChildPath(pathTree, child.position).length > 0,
             $hl7V2TreeHelpers: {
               ref$: data.ref.asObservable(),
               treeChildrenSubscription: undefined,
             },
           };
+          if (this.getChildPath(pathTree, child.position).length || treeMode === PCTreeMode.SELECT ) {
+            this.resolveReference(node, repository, viewOnly, this.getChildPath(pathTree, child.position).map( (x) => x.child), treeMode,  () => {
+            }, (children: IHL7v2TreeNode[]) => {
+              node.children = children;
+              return children;
+            });
+          }
+          return node;
         }).sort((a, b) => a.data.position - b.data.position);
       }),
     );
+  }
+  containsChild(pathTree: IPath[], position: number): boolean {
+    return pathTree.filter( (x) => x.elementId === position.toString()).length > 0;
+  }
+  getChildPath(pathTree: IPath[], position: number): IPath[] {
+    const childPath = pathTree.filter( (x) => x.elementId === position.toString());
+    return childPath;
   }
 
   formatDatatype(
     datatype: IDatatype,
     repository: AResourceRepositoryService,
+    pathTree: IPath[],
+    treeMode: PCTreeMode,
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
-    const components = datatype.components || [];
-
+    let components = datatype.components || [];
+    components = this.filterChildrenByDisplayMode(components, treeMode, pathTree);
     return repository.getRefData(components.map((child) => child.ref.id), Type.DATATYPE).pipe(
       take(1),
       map((refsData) => {
@@ -323,28 +345,42 @@ export class Hl7V2TreeService {
             viewOnly,
             parent,
           );
-
-          return {
+          const node: IHL7v2TreeNode = {
             data,
             parent,
-            leaf: refsData[child.ref.id].leaf,
+            leaf: this.getChildPath(pathTree, child.position).length > 0,
+            selectable: this.getChildPath(pathTree, child.position).length <= 0,
             $hl7V2TreeHelpers: {
               ref$: data.ref.asObservable(),
               treeChildrenSubscription: undefined,
             },
           };
+          if (this.getChildPath(pathTree, child.position).length || treeMode === PCTreeMode.SELECT) {
+            this.resolveReference(node, repository,  viewOnly, this.reducePath(pathTree, child.position), treeMode, () => {
+            }, (children: IHL7v2TreeNode[]) => {
+              node.children = children;
+              return children;
+            });
+          }
+          return node;
         }).sort((a, b) => a.data.position - b.data.position);
       }),
     );
+  }
+  reducePath(pathTree: IPath[], position: number ): IPath[] {
+   return this.getChildPath(pathTree, position).filter( (x) => x.child).map( (x) => x.child );
   }
 
   formatConformanceProfile(
     confProfile: IConformanceProfile,
     repository: AResourceRepositoryService,
+    pathTree: IPath[],
+    treeMode: PCTreeMode,
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
-    const segmentRefs = this.getAllSegmentRef(confProfile.children);
+    const filteredChildren = this.filterChildrenByDisplayMode(confProfile.children, treeMode, pathTree);
+    const segmentRefs = this.getAllSegmentRef(filteredChildren);
     return combineLatest(
       repository.getRefData(segmentRefs, Type.SEGMENT).pipe(
         take(1),
@@ -355,7 +391,10 @@ export class Hl7V2TreeService {
       map(([refsData, segments]) => {
         return this.formatStructure(
           confProfile.binding ? confProfile.binding.children || [] : [],
-          confProfile.children,
+          filteredChildren,
+          repository,
+          pathTree,
+          treeMode,
           segments,
           refsData,
           viewOnly,
@@ -366,47 +405,31 @@ export class Hl7V2TreeService {
       }),
     );
   }
-
-  formatMessageStructure(
-    messageStructure: IMessageStructure,
-    repository: AResourceRepositoryService,
-    viewOnly: boolean,
-    changeable: boolean,
-    parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
-    const segmentRefs = this.getAllSegmentRef(messageStructure.children);
-    return combineLatest(
-      repository.getRefData(segmentRefs, Type.SEGMENT).pipe(
-        take(1),
-      ),
-      this.getSegmentMap(segmentRefs, repository),
-    ).pipe(
-      take(1),
-      map(([refsData, segments]) => {
-        return this.formatStructure(
-          messageStructure.binding ? messageStructure.binding.children || [] : [],
-          messageStructure.children,
-          segments,
-          refsData,
-          viewOnly,
-          changeable,
-          messageStructure,
-          parent)
-          ;
-      }),
-    );
+  filterChildrenByDisplayMode(children: any[], treeMode: PCTreeMode, pathTree: IPath[]) {
+    let ret = children;
+    if (treeMode === PCTreeMode.DISPLAY) {
+      ret = children.filter((x) => this.containsChild( pathTree, x.position));
+      return ret;
+    } else {
+      return children;
+    }
   }
 
   // tslint:disable-next-line: parameters-max-number
   formatStructure(
     bindings: IStructureElementBinding[],
     structure: IMsgStructElement[],
+    repository: AResourceRepositoryService,
+    pathTree: IPath[],
+    treeMode: PCTreeMode,
     segments: { [id: string]: ISegment },
     refsData: IRefData,
     viewOnly: boolean,
     changeable: boolean,
     cp: IHL7MessageProfile,
     parent?: IHL7v2TreeNode): IHL7v2TreeNode[] {
-    return structure.map((child) => {
+    const filteredStructure = this.filterChildrenByDisplayMode(structure, treeMode, pathTree);
+    return filteredStructure.map((child) => {
       if (child.type === Type.SEGMENTREF) {
         const segmentRef = child as ISegmentRef;
         const data = this.formatSegmentRef(
@@ -419,9 +442,10 @@ export class Hl7V2TreeService {
           parent,
         );
         data.name = segments[(child as ISegmentRef).ref.id].name;
-        return {
+        const node = {
           data,
-          leaf: refsData[segmentRef.ref.id].leaf,
+          leaf: this.getChildPath(pathTree, child.position).length > 0,
+          selectable: this.getChildPath(pathTree, child.position).length <= 0,
           parent,
           $hl7V2TreeHelpers: {
             ref$: data.ref.asObservable(),
@@ -429,6 +453,14 @@ export class Hl7V2TreeService {
           },
           children: [],
         };
+        if (this.getChildPath(pathTree, child.position).length > 0 || treeMode === PCTreeMode.SELECT) {
+          this.resolveReference(node, repository,  viewOnly, this.reducePath(pathTree, child.position), treeMode,  () => {
+          }, (children: IHL7v2TreeNode[]) => {
+            node.children = children;
+            return children;
+          });
+        }
+        return node;
       } else {
         const group = child as IGroup;
         const data = this.formatMsgStructureElement(
@@ -441,15 +473,19 @@ export class Hl7V2TreeService {
         );
         const node: IHL7v2TreeNode = {
           data,
-          leaf: !group.children || group.children.length === 0,
+          leaf: this.getChildPath(pathTree, child.position).length > 0,
+          selectable: this.getChildPath(pathTree, child.position).length <= 0,
           parent,
+          expanded: true,
           $hl7V2TreeHelpers: {
             ref$: undefined,
             treeChildrenSubscription: undefined,
           },
           children: [],
         };
-        node.children = this.formatStructure([], group.children, segments, refsData, viewOnly, changeable, cp, node);
+        if (this.getChildPath(pathTree, child.position).length) {
+          node.children = this.formatStructure([], group.children, repository, this.getChildPath(pathTree, group.position).map( (x) => x.child),  treeMode, segments, refsData, viewOnly, changeable, cp, node);
+        }
         return node;
       }
     }).sort((a, b) => a.data.position - b.data.position);
@@ -463,7 +499,7 @@ export class Hl7V2TreeService {
       usage: node.data.usage.value as Usage,
       oldUsage: node.data.oldUsage,
       type: Type.SEGMENTREF,
-      custom: node.data.custom,
+      custom: true,
       min: node.data.cardinality.min,
       max: node.data.cardinality.max,
       comments: node.data.comments,
@@ -533,4 +569,7 @@ export class Hl7V2TreeService {
     return node ? (node.parent && node.parent.data.type === Type.COMPONENT) ? Type.SUBCOMPONENT : node.data.type : undefined;
   }
 
+}
+export enum PCTreeMode {
+  SELECT = 'SELECT', DISPLAY = 'DISPLAY',
 }

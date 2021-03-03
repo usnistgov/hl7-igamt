@@ -87,6 +87,7 @@ export class CoConstraintBindingDialogComponent implements OnInit {
         parent: null,
       },
     ];
+    console.log(this.selectedContextNode);
   }
 
   selectSegment($event) {

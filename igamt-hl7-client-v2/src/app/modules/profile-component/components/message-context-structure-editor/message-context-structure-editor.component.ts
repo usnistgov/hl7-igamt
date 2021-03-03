@@ -1,4 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
 import {Actions} from '@ngrx/effects';
 import {MemoizedSelectorWithProps, Store} from '@ngrx/store';
 import {Observable, of} from 'rxjs';
@@ -19,7 +20,9 @@ import {EditorID} from '../../../shared/models/editor.enum';
 import {IResource} from '../../../shared/models/resource.interface';
 import {IChange} from '../../../shared/models/save-change';
 import {IProfileComponentContext} from '../../../shared/models/segment.interface';
+import {Hl7V2TreeService} from '../../../shared/services/hl7-v2-tree.service';
 import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
+import {PcTreeService} from '../../services/pc-tree.service';
 import {ProfileComponentStructureEditor} from '../profile-component-structure-editor/profile-component-structure-editor';
 
 @Component({
@@ -34,7 +37,8 @@ export class MessageContextStructureEditorComponent extends ProfileComponentStru
     private conformanceProfileService: ConformanceProfileService,
     messageService: MessageService,
     actions$: Actions,
-    store: Store<any>) {
+    store: Store<any>, public treeService: PcTreeService,  public dialog: MatDialog,
+  ) {
     super(
       repository,
       messageService,
@@ -86,7 +90,7 @@ export class MessageContextStructureEditorComponent extends ProfileComponentStru
         HL7v2TreeColumnType.CONFLENGTH,
         HL7v2TreeColumnType.TEXT,
         HL7v2TreeColumnType.COMMENT,
-      ]);
+      ], treeService, dialog);
   }
   saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {
     return this.conformanceProfileService.saveChanges(id, documentRef, changes);

@@ -1,33 +1,33 @@
-import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
-import { Actions } from '@ngrx/effects';
-import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
+import {OnDestroy, OnInit, Type as CoreType} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {Actions} from '@ngrx/effects';
+import {Action, MemoizedSelectorWithProps, Store} from '@ngrx/store';
+import {combineLatest, Observable, ReplaySubject, Subscription, throwError} from 'rxjs';
+import {catchError, concatMap, flatMap, map, mergeMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
-import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
-import {
-  selectLoadedResourceById,
-  selectLoadedSegmentById,
-} from '../../../../root-store/dam-igamt/igamt.loaded-resources.selectors';
-import { selectDerived, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {getHl7ConfigState, selectBindingConfig} from '../../../../root-store/config/config.reducer';
+import * as fromIgamtSelectors from '../../../../root-store/dam-igamt/igamt.selectors';
+import {selectDerived, selectValueSetsNodes} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import { Message } from '../../../dam-framework/models/messages/message.class';
-import { MessageService } from '../../../dam-framework/services/message.service';
-import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
-import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { Type } from '../../../shared/constants/type.enum';
-import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
-import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/config.class';
-import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
-import { IResource } from '../../../shared/models/resource.interface';
-import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
+import {Message} from '../../../dam-framework/models/messages/message.class';
+import {MessageService} from '../../../dam-framework/services/message.service';
+import {IStructureChanges} from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
+import {HL7v2TreeColumnType} from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import {Type} from '../../../shared/constants/type.enum';
+import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
+import {Hl7Config, IValueSetBindingConfigMap} from '../../../shared/models/config.class';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {IHL7EditorMetadata} from '../../../shared/models/editor.enum';
+import {IResource} from '../../../shared/models/resource.interface';
+import {ChangeType, IChange, PropertyType} from '../../../shared/models/save-change';
 import {IProfileComponentContext} from '../../../shared/models/segment.interface';
-import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
-import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
+import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
+import {IBindingContext} from '../../../shared/services/structure-element-binding.service';
+import {PCTreeMode, PcTreeService} from '../../services/pc-tree.service';
+import {AddProfileComponentItemComponent} from '../add-profile-component-item/add-profile-component-item.component';
 
 export type BindingLegend = Array<{
   label: string,
@@ -51,7 +51,6 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
   resourceType: Type;
   derived$: Observable<boolean>;
   resource$: Observable<IResource>;
-
   constructor(
     readonly repository: StoreResourceRepositoryService,
     private messageService: MessageService,
@@ -60,7 +59,7 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
     editorMetadata: IHL7EditorMetadata,
     public LoadAction: CoreType<Action>,
     public legend: BindingLegend,
-    public columns: HL7v2TreeColumnType[]) {
+    public columns: HL7v2TreeColumnType[], public hl7V2TreeService: PcTreeService, public dialog: MatDialog) {
     super(editorMetadata, actions$, store);
     this.resourceType = editorMetadata.resourceType;
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
@@ -73,6 +72,13 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
     this.bindingConfig.subscribe();
     this.resourceSubject = new ReplaySubject<T>(1);
     this.changes = new ReplaySubject<IStructureChanges>(1);
+    this._viewOnly$ = combineLatest(
+      this.store.select(fromIgamtSelectors.selectViewOnly),
+      this.store.select(fromIgamtSelectors.selectDelta)).pipe(
+      map(([vOnly, delta]) => {
+        return vOnly || delta;
+      }),
+    );
     this.derived$ = combineLatest(this.store.select(selectDerived), this.hasOrigin$).pipe(
       map(([derivedIg, elmHadOrigin]) => {
         return derivedIg && elmHadOrigin;
@@ -90,6 +96,38 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
 
   ngOnDestroy(): void {
     this.workspace_s.unsubscribe();
+  }
+  addItems() {
+    this.resource$.pipe(
+      withLatestFrom(this.context$),
+      tap(([resource, context]) => {
+        this.hl7V2TreeService.getTree(resource, (context as IProfileComponentContext), PCTreeMode.SELECT, this.repository, true, true, (value) => {
+          const structure = [
+            {
+              data: {
+                id: resource.id,
+                pathId: resource.id,
+                name: resource.name,
+                type: resource.type,
+                rootPath: { elementId: resource.id },
+                position: 0,
+              },
+              expanded: true,
+              children: [...value],
+              parent: undefined,
+            },
+          ];
+          const ref = this.dialog.open(AddProfileComponentItemComponent
+            , {
+              data: {
+                context,
+                tree: structure,
+                repository: this.repository,
+              },
+            });
+        });
+      }),
+    ).subscribe();
   }
 
   onDeactivate() {
