@@ -2,9 +2,10 @@ import {OnDestroy, OnInit, Type as CoreType} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Actions} from '@ngrx/effects';
 import {Action, MemoizedSelectorWithProps, Store} from '@ngrx/store';
-import {combineLatest, Observable, ReplaySubject, Subscription, throwError} from 'rxjs';
-import {catchError, concatMap, flatMap, map, mergeMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {combineLatest, Observable, of, ReplaySubject, Subscription, throwError} from 'rxjs';
+import {catchError, concatMap, filter, flatMap, map, mergeMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
+import {selectValue, SetValue} from 'src/app/modules/dam-framework/store/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
@@ -23,7 +24,7 @@ import {IDisplayElement} from '../../../shared/models/display-element.interface'
 import {IHL7EditorMetadata} from '../../../shared/models/editor.enum';
 import {IResource} from '../../../shared/models/resource.interface';
 import {ChangeType, IChange, PropertyType} from '../../../shared/models/save-change';
-import {IProfileComponentContext} from '../../../shared/models/segment.interface';
+import {IProfileComponentContext, IProfileComponentItem} from '../../../shared/models/segment.interface';
 import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
 import {IBindingContext} from '../../../shared/services/structure-element-binding.service';
 import {PCTreeMode, PcTreeService} from '../../services/pc-tree.service';
@@ -90,7 +91,7 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
       }),
     ).subscribe();
 
-    this.context$ = this.resourceSubject.asObservable();
+    this.context$ = this.store.select(selectValue('context'));
     this.resource$ = this.getContextResource();
   }
 
@@ -101,6 +102,7 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
     this.resource$.pipe(
       withLatestFrom(this.context$),
       tap(([resource, context]) => {
+        take(1),
         this.hl7V2TreeService.getTree(resource, (context as IProfileComponentContext), PCTreeMode.SELECT, this.repository, true, true, (value) => {
           const structure = [
             {
@@ -125,9 +127,20 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
                 repository: this.repository,
               },
             });
+          ref.afterClosed().pipe(
+            filter((x) => x !== undefined),
+            map((x) => {
+              this.store.dispatch(new SetValue({
+                  context: {...(context as IProfileComponentContext) , profileComponentItems : [...context.profileComponentItems, ...this.createNewContext(x)]},
+                }));
+            }),
+          ).subscribe();
         });
       }),
     ).subscribe();
+  }
+  createNewContext(paths: string[]): IProfileComponentItem[] {
+    return paths.map((x) => ({ path: x, itemProperties: []}) );
   }
 
   onDeactivate() {

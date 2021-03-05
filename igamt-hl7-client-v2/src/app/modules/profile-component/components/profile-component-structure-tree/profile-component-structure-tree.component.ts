@@ -67,7 +67,7 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
     this.resourceName = this._resource.name;
     this.resource$ = of(this._resource);
     this.close(this.s_resource);
-    this.s_resource = this.treeService.getTree(this._resource,this._profileComponentContext, PCTreeMode.DISPLAY, this.repository, this.viewOnly, true, (value: IHL7v2TreeNode[]) => {
+    this.s_resource = this.treeService.getTree(this._resource, this._profileComponentContext, PCTreeMode.DISPLAY, this.repository, this.viewOnly, true, (value: IHL7v2TreeNode[]) => {
      console.log(value);
       this.nodes = [...value];
       this.recoverExpandState(this.nodes, this.treeExpandedNodes);
@@ -90,7 +90,29 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   @Input()
   set profileComponentContext(profileComponentContext: IProfileComponentContext) {
     this._profileComponentContext = profileComponentContext;
-    this.filterByContext();
+    console.log(profileComponentContext);
+    this.type = this._resource.type;
+    this.resourceName = this._resource.name;
+    this.resource$ = of(this._resource);
+    this.close(this.s_resource);
+    this.s_resource = this.treeService.getTree(this._resource, this._profileComponentContext, PCTreeMode.DISPLAY, this.repository, this.viewOnly, true, (value: IHL7v2TreeNode[]) => {
+      console.log(value);
+      this.nodes = [...value];
+      this.recoverExpandState(this.nodes, this.treeExpandedNodes);
+    });
+    switch (this._resource.type) {
+      case Type.DATATYPE:
+        this.context = { resource: Type.DATATYPE };
+        break;
+      case Type.SEGMENT:
+        this.context = { resource: Type.SEGMENT };
+        this.structChangeType = PropertyType.FIELD;
+        break;
+      case Type.CONFORMANCEPROFILE:
+        this.context = { resource: Type.CONFORMANCEPROFILE };
+        this.structChangeType = PropertyType.STRUCTSEGMENT;
+        break;
+    }
   }
   @Input()
   set columns(cols: HL7v2TreeColumnType[]) {

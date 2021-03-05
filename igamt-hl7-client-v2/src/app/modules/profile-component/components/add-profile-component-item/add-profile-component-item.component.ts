@@ -43,4 +43,10 @@ export class AddProfileComponentItemComponent implements OnInit {
   print(obj) {
     console.log(obj);
   }
+  submit() {
+    this.dialogRef.close(this.selectedNodes.map((x) => x.data.pathId));
+  }
+  cancel() {
+    this.dialogRef.close();
+  }
 }

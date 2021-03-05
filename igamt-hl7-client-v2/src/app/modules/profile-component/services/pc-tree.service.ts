@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import {forEach} from '@angular/router/src/utils/collection';
 import {BehaviorSubject, combineLatest, from, Observable, Subscription} from 'rxjs';
 import {filter, map, mergeMap, switchMap, take, tap, toArray} from 'rxjs/operators';
 import {
@@ -49,10 +50,17 @@ export class PcTreeService {
         ).subscribe();
     }
   }
-  generatePathTreeFromContext(pcContext: IProfileComponentContext) {
-    return [{
-      elementId: '2',
-    }, { elementId : '3', child: { elementId: '2' }}, { elementId : '16', child: { elementId: '2', child: {elementId : '3'} }}  ];
+  generatePathTreeFromContext(pcContext: IProfileComponentContext): IPath[] {
+    console.log(pcContext);
+    let ret = []
+    if (pcContext && pcContext.profileComponentItems && pcContext.profileComponentItems.length > 0) {
+      ret = pcContext.profileComponentItems.map((x) => x.path).map( (x) =>  this.pathService.getPathFromPathId(x));
+    }
+    console.log(ret);
+    return ret;
+    // return [{
+    //   elementId: '2',
+    // }, { elementId : '3', child: { elementId: '2' }}, { elementId : '16', child: { elementId: '2', child: {elementId : '3'} }}  ];
   }
   resolveReference(node: IHL7v2TreeNode, repository: AResourceRepositoryService, viewOnly: boolean, path: IPath[], treeMode: PCTreeMode,  then?: () => void, transform?: (children: IHL7v2TreeNode[]) => IHL7v2TreeNode[]): Subscription {
     if (node.data.ref && node.$hl7V2TreeHelpers && (!node.$hl7V2TreeHelpers.treeChildrenSubscription || node.$hl7V2TreeHelpers.treeChildrenSubscription.closed)) {

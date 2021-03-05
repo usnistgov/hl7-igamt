@@ -14,8 +14,8 @@
     </div>
   </div>
 </mat-dialog-content>
-<mat-dialog-actions  style="display: flex; flex-d justify-content: space-between">
-  <div style="justify-content: flex-end;">
+<mat-dialog-actions style="justify-content: flex-end;">
+  <div>
     <button  class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="cancel()">Cancel</button>
     <button  class="btn btn-sm btn-success" [disabled]="!selectedNodes.length" (click)="submit()">Add</button>
   </div>
