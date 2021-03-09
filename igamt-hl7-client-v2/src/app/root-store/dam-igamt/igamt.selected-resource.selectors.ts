@@ -11,6 +11,7 @@ import { IValueSet } from '../../modules/shared/models/value-set.interface';
 
 // SELECT 'SELECTED' attribute from DAM state
 export const selectSelectedResource = fromDAM.selectValue<IResource>('selected');
+export const selectSelectedProfileComponent = fromDAM.selectValue<IResource>('profileComponent');
 
 export const selectProfileComponentContext = fromDAM.selectValue<IProfileComponentContext>('context');
 
@@ -98,6 +99,24 @@ export const selectedResourcePreDef = createSelector(
 
 export const selectedResourceMetadata = createSelector(
   selectSelectedResource,
+  (state: any): IResourceMetadata => {
+    return {
+      name: state.name,
+      bindingIdentifier: state.bindingIdentifier,
+      ext: (state.type === Type.DATATYPE ? (state as IDatatype).ext : state.type === Type.SEGMENT) ? (state as ISegment).ext : undefined,
+      description: state.description,
+      authorNotes: state.authorNotes,
+      usageNotes: state.usageNotes,
+      compatibilityVersions: state.compatibilityVersions,
+      shortDescription: state.shortDescription,
+      fixedExtension: state.fixedExtension,
+    };
+  },
+);
+
+export const selectedProfileComponentMetadata = createSelector(
+  selectSelectedProfileComponent,
+  // tslint:disable-next-line:no-identical-functions
   (state: any): IResourceMetadata => {
     return {
       name: state.name,

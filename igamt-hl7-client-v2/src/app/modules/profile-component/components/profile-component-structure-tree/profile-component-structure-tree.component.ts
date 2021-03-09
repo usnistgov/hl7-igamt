@@ -7,7 +7,7 @@ import {FieldAddDialogComponent} from '../../../shared/components/field-add-dial
 import {
   ColumnOptions,
   HL7v2TreeColumnType,
-  IHL7v2TreeNode, IResourceRef
+  IHL7v2TreeNode, IResourceRef,
 } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import {SegmentAddDialogComponent} from '../../../shared/components/segment-add-dialog/segment-add-dialog.component';
 import {LengthType} from '../../../shared/constants/length-type.enum';
@@ -69,50 +69,22 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
     this.close(this.s_resource);
     this.s_resource = this.treeService.getTree(this._resource, this._profileComponentContext, PCTreeMode.DISPLAY, this.repository, this.viewOnly, true, (value: IHL7v2TreeNode[]) => {
      console.log(value);
-      this.nodes = [...value];
-      this.recoverExpandState(this.nodes, this.treeExpandedNodes);
-      // this.filterByContext();
+     this.nodes = [...value];
+     this.recoverExpandState(this.nodes, this.treeExpandedNodes);
     });
-    switch (this._resource.type) {
-      case Type.DATATYPE:
-        this.context = { resource: Type.DATATYPE };
-        break;
-      case Type.SEGMENT:
-        this.context = { resource: Type.SEGMENT };
-        this.structChangeType = PropertyType.FIELD;
-        break;
-      case Type.CONFORMANCEPROFILE:
-        this.context = { resource: Type.CONFORMANCEPROFILE };
-        this.structChangeType = PropertyType.STRUCTSEGMENT;
-        break;
-    }
   }
   @Input()
   set profileComponentContext(profileComponentContext: IProfileComponentContext) {
-    this._profileComponentContext = profileComponentContext;
-    console.log(profileComponentContext);
+    this._profileComponentContext = _.cloneDeep(profileComponentContext);
     this.type = this._resource.type;
     this.resourceName = this._resource.name;
     this.resource$ = of(this._resource);
     this.close(this.s_resource);
-    this.s_resource = this.treeService.getTree(this._resource, this._profileComponentContext, PCTreeMode.DISPLAY, this.repository, this.viewOnly, true, (value: IHL7v2TreeNode[]) => {
+    this.s_resource = this.treeService.getTree(this._resource, _.cloneDeep(this._profileComponentContext), PCTreeMode.DISPLAY, this.repository, this.viewOnly, true, (value: IHL7v2TreeNode[]) => {
       console.log(value);
       this.nodes = [...value];
       this.recoverExpandState(this.nodes, this.treeExpandedNodes);
     });
-    switch (this._resource.type) {
-      case Type.DATATYPE:
-        this.context = { resource: Type.DATATYPE };
-        break;
-      case Type.SEGMENT:
-        this.context = { resource: Type.SEGMENT };
-        this.structChangeType = PropertyType.FIELD;
-        break;
-      case Type.CONFORMANCEPROFILE:
-        this.context = { resource: Type.CONFORMANCEPROFILE };
-        this.structChangeType = PropertyType.STRUCTSEGMENT;
-        break;
-    }
   }
   @Input()
   set columns(cols: HL7v2TreeColumnType[]) {
@@ -186,12 +158,16 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   addFieldToSegment(segment: ISegment, field: IField) {
     segment.children.push(field);
   }
-
-  filterByContext() {
-    console.log(this.nodes);
-    //this.nodes = this.nodes.filter( node => (node.data.pathId ==='1-2'));
-  }
-  hasChange( node, col: HL7v2TreeColumnType) {
+  hasChange( pathId: string, col: string) {
+    for (const item of  this._profileComponentContext.profileComponentItems) {
+      if (item.path === pathId && item.itemProperties) {
+        for (const prop of item.itemProperties ) {
+          if (prop.propertyKey.toString().toLowerCase() === col.toLowerCase()) {
+            return true;
+          }
+        }
+      }
+    }
     return false;
   }
   addSegmentRefToMessage(message: IConformanceProfile, segmentRef: ISegmentRef, location: string) {
@@ -208,8 +184,6 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
     }
     cursor.push(segmentRef);
   }
-
-
   addSegment(path: string, nodes: IHL7v2TreeNode[], parent?: IHL7v2TreeNode) {
     this.addChild<IField>(
       path,
@@ -328,7 +302,6 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
     if (!this.treeExpandedNodes.includes(event.node.data.pathId)) {
       this.treeExpandedNodes.push(event.node.data.pathId);
     }
-   // this.resolveReference(event.node);
     this.nodes = [...this.nodes];
 
   }

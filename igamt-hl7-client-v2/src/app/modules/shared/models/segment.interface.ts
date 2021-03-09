@@ -4,6 +4,7 @@ import { IResourceBinding } from './binding.interface';
 import { IComment } from './comment.interface';
 import { IDisplayElement } from './display-element.interface';
 import { IResource } from './resource.interface';
+import {PropertyType} from './save-change';
 import { ISubStructElement } from './structure-element.interface';
 
 export interface IField extends ISubStructElement {
@@ -55,5 +56,10 @@ export interface IProfileComponentContext {
 }
 export interface IProfileComponentItem {
   path: string;
-  itemProperties: any[];
+  itemProperties: ItemProperty[];
+}
+
+export interface ItemProperty {
+  propertyKey: PropertyType;
+  propertyValue: any;
 }

@@ -46,7 +46,7 @@ public class ProfileComponentItem {
     this.itemProperties = itemProperties;
   }
   
-  public void addItemProperty(ItemProperty itemProperty){
+  public void addItemProperty(ItemProperty itemProperty) {
     if(itemProperties == null) this.itemProperties = new HashSet<ItemProperty>();
     this.itemProperties.add(itemProperty);
   }

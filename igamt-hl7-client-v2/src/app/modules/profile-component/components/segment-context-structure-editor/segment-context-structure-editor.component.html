@@ -1,3 +1,9 @@
+<ng-template #headerControls>
+  <button class="btn btn-success btn-sm" (click)="addItems()" *ngIf="!(viewOnly$ | async)">
+    <i class="fa fa-plus"></i> Add Items
+  </button>
+</ng-template>
+
 <app-profile-component-structure-tree
   [columns]="columns"
   [profileComponentContext]="context$ | async"

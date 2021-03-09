@@ -6,6 +6,7 @@ import { distinctUntilChanged, filter, map, tap, withLatestFrom } from 'rxjs/ope
 import { IWorkspaceCurrent } from 'src/app/modules/dam-framework';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
+import {IProfileComponentContext} from '../../shared/models/segment.interface';
 import { IEditorMetadata, IWorkspaceActive } from '../models/data/workspace';
 
 export abstract class DamAbstractEditorComponent {

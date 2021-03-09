@@ -24,7 +24,7 @@ import {IDisplayElement} from '../../../shared/models/display-element.interface'
 import {IHL7EditorMetadata} from '../../../shared/models/editor.enum';
 import {IResource} from '../../../shared/models/resource.interface';
 import {ChangeType, IChange, PropertyType} from '../../../shared/models/save-change';
-import {IProfileComponentContext, IProfileComponentItem} from '../../../shared/models/segment.interface';
+import {IProfileComponentContext, IProfileComponentItem, ItemProperty} from '../../../shared/models/segment.interface';
 import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
 import {IBindingContext} from '../../../shared/services/structure-element-binding.service';
 import {PCTreeMode, PcTreeService} from '../../services/pc-tree.service';
@@ -87,11 +87,13 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
     );
     this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
-        this.resourceSubject.next({ ...current.context });
+        console.log(current);
+        this.resourceSubject.next({ ...current.resource });
+        this.changes.next({ ...current.changes });
       }),
     ).subscribe();
 
-    this.context$ = this.store.select(selectValue('context'));
+    this.context$ = this.resourceSubject.asObservable();
     this.resource$ = this.getContextResource();
   }
 
@@ -130,15 +132,16 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
           ref.afterClosed().pipe(
             filter((x) => x !== undefined),
             map((x) => {
-              this.store.dispatch(new SetValue({
-                  context: {...(context as IProfileComponentContext) , profileComponentItems : [...context.profileComponentItems, ...this.createNewContext(x)]},
-                }));
+              const res: IProfileComponentContext = {...(context as IProfileComponentContext) , profileComponentItems : [...context.profileComponentItems ? context.profileComponentItems : [] , ...this.createNewContext(x)]};
+              this.resourceSubject.next(res as T);
+              this.editorChange({ changes: {}, resource: res}, true);
             }),
           ).subscribe();
         });
       }),
     ).subscribe();
   }
+
   createNewContext(paths: string[]): IProfileComponentItem[] {
     return paths.map((x) => ({ path: x, itemProperties: []}) );
   }
@@ -186,15 +189,57 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
   }
 
   change(change: IChange) {
-    combineLatest(this.changes.asObservable(), this.resource$).pipe(
+    combineLatest(this.changes.asObservable(), this.context$).pipe(
       take(1),
       map(([changes, resource]) => {
-        changes = this.mergeStructChange(change, changes);
-        this.changes.next(changes);
+        this.applyChange(change, resource);
+        this.changes.next({});
+        this.resourceSubject.next({ ... resource as IProfileComponentContext } as T);
         this.editorChange({ changes, resource }, true);
       }),
     ).subscribe();
   }
+  applyChange(change: IChange, resource: IProfileComponentContext) {
+    if (!resource.profileComponentItems) {
+      resource.profileComponentItems = [];
+    }
+    this.applyPropertyChange(change, resource.profileComponentItems);
+  }
+  applyProperty(item: ItemProperty, existing: ItemProperty[]) {
+    let found = false;
+    if (!existing) {
+      existing = [];
+    }
+    for (const index in existing) {
+      if (existing[index].propertyKey === item.propertyKey) {
+        existing[index] = item;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      existing.push(item);
+    }
+  }
+
+  applyPropertyChange(change: IChange, existing: IProfileComponentItem[]) {
+    const item: ItemProperty = {propertyKey: change.propertyType, propertyValue: change.propertyValue};
+    let found = false;
+    for (const index in existing) {
+      if (existing[index].path === change.location) {
+        if (!existing[index].itemProperties) {
+          existing[index].itemProperties = [];
+        }
+        this.applyProperty(item, existing[index].itemProperties);
+        found = true;
+        break;
+        }
+      }
+    if (!found) {
+      existing.push({ path: change.location, itemProperties: [item] });
+    }
+  }
+
   onEditorSave(action: fromDam.EditorSave): Observable<Action> {
     return combineLatest(this.elementId$, this.documentRef$, this.changes.asObservable()).pipe(
       take(1),

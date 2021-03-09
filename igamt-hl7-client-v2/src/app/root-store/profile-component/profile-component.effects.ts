@@ -100,7 +100,7 @@ export class ProfileComponentEffects {
     flatMap((action: LoadProfileComponentSuccess) => {
       return [
         new SetValue({
-          selected: action.profileComponent,
+          profileComponent: action.profileComponent,
         }),
       ];
     }),
@@ -126,7 +126,7 @@ export class ProfileComponentEffects {
   openProfileComponentEditor$ = this.editorHelper.openMetadataEditor<OpenProfileComponentMetadataEditor>(
     ProfileComponentActionTypes.OpenProfileComponentMetadataEditor,
     fromIgamtDisplaySelectors.selectProfileComponentById,
-    this.store.select(fromIgamtSelectedSelectors.selectedResourceMetadata),
+    this.store.select(fromIgamtSelectedSelectors.selectedProfileComponentMetadata),
     'Profile Component not found',
   );
 

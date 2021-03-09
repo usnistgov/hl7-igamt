@@ -123,7 +123,8 @@ export class OpenEditorService {
             display,
             editor: action.payload.editor,
             initial: {
-              context,
+              resource: context,
+              changes: {},
             },
           });
           return  this.store.select(fromRouterSelector.selectRouteParams).pipe(

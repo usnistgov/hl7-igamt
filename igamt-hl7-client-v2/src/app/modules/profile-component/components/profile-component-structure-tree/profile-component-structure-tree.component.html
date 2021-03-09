@@ -59,7 +59,7 @@
     </ng-template>
     <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
       <tr>
-        <td  [ngSwitch]="col.field"  [ngStyle]="{'background-color': hasChange( rowNode, col )? 'pink': 'inherit' }" *ngFor="let col of columns; let i = index" [id]="i + '-' + rowNode.index" #anchor>
+        <td  [ngSwitch]="col.field"  *ngFor="let col of columns; let i = index" [id]="i + '-' + rowNode.index" #anchor [ngStyle]="{'background-color': hasChange( rowData.pathId, col.field )? 'pink': 'inherit' }">
           <ng-container *ngSwitchCase="columnTypes.NAME">
             <tbody>
             <tr>
