@@ -1,5 +1,11 @@
 <div class="tt-cell">
-  <app-change-log-info  *ngIf="!edit" style="margin-right: 5px;" [sections]="changeDisplaySections" ></app-change-log-info>
+  <app-change-log-info style="margin-right: 5px;"
+    *ngIf="!edit"
+    [sections]="changeDisplaySections$ | async"
+    [context]="context"
+    [viewOnly]="viewOnly"
+    (editChange)="updateReasonForChange($event)"
+  ></app-change-log-info>
   <strong style="text-align: center; flex-grow: 1;" *ngIf="!edit">{{constant?.value}}</strong>
   <div class="input-group" *ngIf="edit">
     <input type="text" class="form-control" placeholder="value" aria-describedby="button-addon2" [(ngModel)]="tmp" [ngModelOptions]="{updateOn: 'blur'}">

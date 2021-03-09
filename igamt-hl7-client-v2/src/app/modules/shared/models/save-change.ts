@@ -1,10 +1,10 @@
+import { IBindingContext } from '../services/structure-element-binding.service';
 export interface IChange<T = any> {
   location: string;
   propertyType: PropertyType;
   propertyValue: T;
   oldPropertyValue?: T;
   position?: number;
-  changeReason?: IChangeReason;
   changeType: ChangeType;
 }
 
@@ -15,6 +15,13 @@ export interface IChangeReason {
 
 export interface IChangeLog {
   [type: string]: IChangeReason;
+}
+
+export interface ILocationChangeLog {
+  [type: string]: Array<{
+    context: IBindingContext,
+    log: IChangeReason;
+  }>;
 }
 
 export enum ChangeType {
@@ -67,4 +74,5 @@ export enum PropertyType {
   SHORTDESCRIPTION = 'SHORTDESCRIPTION',
   DYNAMICMAPPINGITEM = 'DYNAMICMAPPINGITEM',
   DISPLAYNAME = 'DISPLAYNAME',
+  CHANGEREASON = 'CHANGEREASON',
 }

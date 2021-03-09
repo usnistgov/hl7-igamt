@@ -13,14 +13,10 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.service;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -31,16 +27,13 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
-import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
+import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 
 
 /**
@@ -79,10 +72,6 @@ public interface DatatypeService {
 
 	public List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
 
-	public PreDef convertDomainToPredef(Datatype datatype);
-
-	public PostDef convertDomainToPostdef(Datatype datatype);
-
 	List<Datatype> findDisplayFormatByScopeAndVersion(String scope, String version);
 
 	public DatatypeConformanceStatement convertDomainToConformanceStatement(Datatype datatype);
@@ -109,7 +98,7 @@ public interface DatatypeService {
 	public List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(Set<String> ids, Datatype dt, String scope);
 
 	public void applyChanges(Datatype dt, List<ChangeItemDomain> cItems, String documentId)
-			throws JsonProcessingException, IOException;
+			throws ApplyChangeException;
 
 	public Set<RelationShip> collectDependencies(Datatype dt);
 
@@ -121,9 +110,6 @@ public interface DatatypeService {
 	public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt, StructureElementBinding seb);
 
 	public List<Datatype> findByIdIn(Set<String> linksAsIds);
-
-	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String datatypeId,
-			String datatypeName);
 	
 	public void collectResources(Datatype d, HashMap<String, Resource> used);
 

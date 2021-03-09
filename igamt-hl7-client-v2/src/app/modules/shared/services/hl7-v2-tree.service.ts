@@ -9,13 +9,13 @@ import { IStructureElementBinding } from '../models/binding.interface';
 import { IConformanceProfile, IGroup, IHL7MessageProfile, IMessageStructure, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
 import { IComponent, IDatatype } from '../models/datatype.interface';
 import { IResource } from '../models/resource.interface';
-import { IChangeLog } from '../models/save-change';
-import {IField, IProfileComponentContext, ISegment} from '../models/segment.interface';
+import { IChangeLog, ILocationChangeLog } from '../models/save-change';
+import { IField, ISegment } from '../models/segment.interface';
 import { IStructureElement, ISubStructElement } from '../models/structure-element.interface';
 import { BindingService } from './binding.service';
 import { PathService } from './path.service';
 import { AResourceRepositoryService, IRefData, IRefDataInfo } from './resource-repository.service';
-import { IBinding, StructureElementBindingService } from './structure-element-binding.service';
+import { IBinding, IBindingContext, StructureElementBindingService } from './structure-element-binding.service';
 
 @Injectable({
   providedIn: 'root',
@@ -105,13 +105,17 @@ export class Hl7V2TreeService {
     parent?: IHL7v2TreeNode,
   ): IHL7v2TreeNodeData {
     const level = parent ? parent.data.level + 1 : 0;
+    const context = { resource: resource.type, element: this.nodeType(parent) };
     const elementBindings = this.structureElementBindingService.getElementBinding(
       child.id,
       bindings,
-      { resource: resource.type, element: this.nodeType(parent) },
+      context,
       level,
       parent,
     );
+    const changeLog = child.changeLog || (elementBindings && elementBindings.values.changeLog) ?
+      this.mergeElmAndBindingChangeLog(child.changeLog || {}, context, elementBindings && elementBindings.values.changeLog ? elementBindings.values.changeLog : []) :
+      {};
 
     return {
       id: child.id,
@@ -127,16 +131,43 @@ export class Hl7V2TreeService {
         value: child.text,
       },
       custom: child.custom,
-      changeLog: {
-        ...child.changeLog,
-        ...this.getBindingsActiveChangeLog(elementBindings && elementBindings.values.changeLog ? elementBindings.values.changeLog : []),
-      },
+      changeLog,
       changeable,
       viewOnly,
       level,
       pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
       bindings: elementBindings,
     };
+  }
+
+  mergeElmAndBindingChangeLog(elm: IChangeLog, context: IBindingContext, binding: Array<IBinding<IChangeLog>>): ILocationChangeLog {
+    const changeLog: Array<{ log: IChangeLog, context: IBindingContext }> = [
+      ...binding.map((b) => ({
+        log: b.value,
+        context: b.context,
+      })),
+      {
+        log: elm,
+        context,
+      },
+    ];
+
+    return changeLog.reduce((acc, v) => {
+      return this.mergeChangeLog(v.log, v.context, acc);
+    }, {});
+  }
+
+  mergeChangeLog(elm: IChangeLog, context: IBindingContext, locationChangeLog: ILocationChangeLog): ILocationChangeLog {
+    Object.keys(elm).forEach((e) => {
+      locationChangeLog[e] = [
+        ...(locationChangeLog[e] || []),
+        {
+          log: elm[e],
+          context,
+        },
+      ];
+    });
+    return locationChangeLog;
   }
 
   formatMsgStructureElement(

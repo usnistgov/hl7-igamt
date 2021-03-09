@@ -145,7 +145,7 @@ export class StructureElementBindingService {
     pick('valuesetBindings', (property) => property.valuesetBindings.length > 0);
     pick('internalSingleCode', (property) => true);
     pick('predicate', (property) => true);
-    pick('changeLog', (property) => true);
+    pick('changeLog', (property) => property.changeLog && Object.keys(property.changeLog).length > 0);
     return values;
   }
 

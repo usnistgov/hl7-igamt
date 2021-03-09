@@ -28,6 +28,7 @@ public enum ComplementKey {
 	 containCode,
 	 containCodeDesc,
 	 containListCodes,
+	 containListCodesDesc,
 	 regex,
 	 positiveInteger,
 	 sequentially,

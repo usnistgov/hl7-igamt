@@ -1,11 +1,11 @@
-import { EventEmitter, Input, Output, TemplateRef } from '@angular/core';
+import { EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, concat, Observable, of } from 'rxjs';
 import { flatMap, map, tap } from 'rxjs/operators';
 import { Type } from '../../../constants/type.enum';
 import { IDocumentRef } from '../../../models/abstract-domain.interface';
-import { ChangeType, IChange, IChangeLog, PropertyType } from '../../../models/save-change';
-import { IChangeReasonSection } from '../../change-log-info/change-log-info.component';
+import { ChangeType, IChange, IChangeReason, ILocationChangeLog, PropertyType } from '../../../models/save-change';
+import { ChangeLogService, IChangeReasonSection } from '../../../services/change-log.service';
 import { ChangeReasonDialogComponent, IChangeReasonDialogDisplay } from '../../change-reason-dialog/change-reason-dialog.component';
 
 export abstract class HL7v2TreeColumnComponent<T> {
@@ -33,35 +33,30 @@ export abstract class HL7v2TreeColumnComponent<T> {
   @Input()
   position: number;
   @Input()
+  context: Type;
+  @Input()
   set value(val: T) {
     this.value$.next(val);
   }
   @Input()
-  set changeLog(log: IChangeLog) {
-    this._changeLog = log;
-    this.sessionLog = {
-      ...log,
-    };
-    this.updateLogDisplay();
+  set changeLog(log: ILocationChangeLog) {
+    this.changeLogService.init(log);
   }
 
-  get changeLog() {
-    return this._changeLog;
+  get changeDisplaySections$() {
+    return this.changeLogService ? this.changeLogService.changeDisplaySections$ : null;
   }
 
   @Output()
   valueChange: EventEmitter<IChange>;
-  sessionLog: IChangeLog;
-  _changeLog: IChangeLog;
+  changeLogService: ChangeLogService;
   value$: BehaviorSubject<T>;
-  public changeDisplaySections: IChangeReasonSection[];
 
   constructor(
     protected propertyTypes: PropertyType[],
     protected dialog: MatDialog,
   ) {
-    this.sessionLog = {};
-    this.changeDisplaySections = [];
+    this.changeLogService = new ChangeLogService({}, propertyTypes);
     this.valueChange = new EventEmitter<IChange>();
     this.value$ = new BehaviorSubject<T>(undefined);
   }
@@ -69,10 +64,57 @@ export abstract class HL7v2TreeColumnComponent<T> {
   onChange<X>(old: X, value: X, propertyType: PropertyType, changeType?: ChangeType, skipReason: boolean = false) {
     this.getChange<X>(old, value, propertyType, changeType, skipReason).pipe(
       tap((change) => {
-        this.logChangeInSession(change);
+        this.logChangeInSession(change, propertyType);
         this.valueChange.emit(change);
       }),
     ).subscribe();
+  }
+
+  updateReasonForChange(changeReason: IChangeReasonSection) {
+    const change = this.createReasonForChange(changeReason);
+    this.logChangeInSession(change, changeReason.property);
+    this.valueChange.emit(change);
+  }
+
+  createReasonForChange(changeReason: IChangeReasonSection): IChange {
+    const value: IChangeReason = changeReason && changeReason.reason && changeReason.reason !== '' ? {
+      reason: changeReason.reason,
+      date: changeReason.date,
+    } : undefined;
+    return {
+      location: this.location + '>' + changeReason.property,
+      propertyType: PropertyType.CHANGEREASON,
+      propertyValue: value,
+      oldPropertyValue: this.changeLogService.getInit(changeReason.property, { resource: this.context }),
+      position: this.position,
+      changeType: ChangeType.UPDATE,
+    };
+  }
+
+  getChangeReasonForPropertyChange(change: IChange, skipReason: boolean = false): Observable<IChange> {
+    if (this.enforceChangeReason && !skipReason && this.isActualChange(change)) {
+      return (this.getDisplayTemplateForProperty(change) || of(undefined)).pipe(
+        flatMap((display) => {
+          return this.dialog.open(ChangeReasonDialogComponent, {
+            data: {
+              previous: change.oldPropertyValue,
+              current: change.propertyValue,
+              caption: change.propertyType,
+              display,
+              changeReason: this.changeLogService.get(change.propertyType, { resource: this.context }),
+            },
+          }).afterClosed().pipe(
+            map((changeReason) => {
+              return this.createReasonForChange({
+                ...changeReason,
+                property: change.propertyType,
+              });
+            }));
+        }),
+      );
+    } else {
+      return of();
+    }
   }
 
   getChange<X>(old: X, value: X, propertyType: PropertyType, changeType?: ChangeType, skipReason: boolean = false): Observable<IChange> {
@@ -89,56 +131,14 @@ export abstract class HL7v2TreeColumnComponent<T> {
       changeType,
     };
 
-    if (this.enforceChangeReason && !skipReason) {
-      if (this.isActualChange(change)) {
+    const reasonForChange = this.getChangeReasonForPropertyChange(change, skipReason);
 
-        return (this.getDisplayTemplateForProperty(change) || of(undefined)).pipe(
-          flatMap((display) => {
-            return this.dialog.open(ChangeReasonDialogComponent, {
-              data: {
-                previous: old,
-                current: value,
-                caption: propertyType,
-                display,
-                changeReason: this.sessionLog[propertyType],
-              },
-            }).afterClosed().pipe(
-              map((changeReason) => {
-                if (changeReason && changeReason.reason && changeReason.reason !== '') {
-                  change.changeReason = changeReason;
-                }
-                return change;
-              }));
-          }),
-        );
-
-      } else {
-        change.changeReason = this.changeLog[propertyType];
-      }
-    }
-
-    return of(change);
+    return concat(of(change), reasonForChange);
   }
 
-  logChangeInSession(change: IChange) {
-    if (change.changeReason) {
-      this.sessionLog[change.propertyType] = change.changeReason;
-    } else {
-      delete this.sessionLog[change.propertyType];
-    }
-    this.updateLogDisplay();
-  }
-
-  updateLogDisplay() {
-    this.changeDisplaySections = [];
-
-    for (const prop of this.propertyTypes) {
-      if (this.sessionLog[prop]) {
-        this.changeDisplaySections.push({
-          ...this.sessionLog[prop],
-          property: prop,
-        });
-      }
+  logChangeInSession(change: IChange<IChangeReason>, property: PropertyType) {
+    if (change.propertyType === PropertyType.CHANGEREASON) {
+      this.changeLogService.put({ property, context: { resource: this.context }, ...change.propertyValue });
     }
   }
 

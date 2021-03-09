@@ -17,12 +17,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.resource.change.service.ApplyChange;
 
 /**
  *
@@ -43,7 +46,8 @@ public class ConformanceProfile extends Resource {
   private List<MessageProfileIdentifier> profileIdentifier;
   private MessageProfileIdentifier preCoordinatedMessageIdentifier;
   private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
-  private List<CoConstraintBinding> coConstraintsBindings;
+  private List<CoConstraintBinding> coConstraintsBindings; 
+
 
   private ResourceBinding binding;
 

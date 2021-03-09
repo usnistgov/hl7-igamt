@@ -44,6 +44,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 //import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 
 /**
@@ -78,12 +79,7 @@ public interface SegmentService extends ResourceService {
 
 	public List<Segment> findByDomainInfoScopeAndName(String scope, String name);
 
-	public PreDef convertDomainToPredef(Segment segment);
-
-	public PostDef convertDomainToPostdef(Segment segment);
-
 	public List<Segment> findDisplayFormatByScopeAndVersion(Scope scope, String version, String username);
-
 
 	public Link cloneSegment(String id, HashMap<RealKey, String> newKeys, Link l, String username, Scope user, CloneMode cloneMode);
 
@@ -113,7 +109,7 @@ public interface SegmentService extends ResourceService {
 	 */
 
 	public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId)
-            throws Exception;
+            throws ApplyChangeException;
 
 	/**
 	 * @param datatype
@@ -139,9 +135,6 @@ public interface SegmentService extends ResourceService {
 	public LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
 
 	public List<Segment> findByIdIn(Set<String> linksAsIds);
-
-	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String segmentId,
-			String segmentName);
 
 	public void collectResources(Segment seg, HashMap<String, Resource> used);
 

@@ -2096,25 +2096,25 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         result = "<NOT><Presence Path=\"" + sPathStr + "\"/></NOT>";
         break;
       case containValue:
-    	  result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+    	  result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getEscapeXml()
           + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
           + "\" NotPresentBehavior=\"" + notPresentBehaviorStr 
           + "\"/>";
     	  break;
       case notContainValue:
-        result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+        result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getEscapeXml()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
             + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
             + "\"/></NOT>";
         break;
       case containValueDesc:
-        result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+        result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getEscapeXml()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
             + "\" NotPresentBehavior=\"" + notPresentBehaviorStr 
             + "\"/>";
         break;
       case notContainValueDesc:
-        result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+        result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getEscapeXml()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
             + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
             + "\"/></NOT>";
@@ -2148,11 +2148,17 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             + "\"/></NOT>";
         break;
       case containCode:
-        result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+        result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getEscapeXml()
             + "\" IgnoreCase=\"" + false + "\" AtLeastOnce=\"" + atLeastOnce 
             + "\" NotPresentBehavior=\"" + notPresentBehaviorStr 
             + "\"/>";
         break;
+      case containCodeDesc:
+          result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+              + "\" IgnoreCase=\"" + false + "\" AtLeastOnce=\"" + atLeastOnce 
+              + "\" NotPresentBehavior=\"" + notPresentBehaviorStr 
+              + "\"/>";
+          break;
       case containListCodes:
         result = "<StringList Path=\"" + sPathStr + "\" CSV=\""
             + String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + false
@@ -2160,6 +2166,14 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
             + "\"/>";
         break;
+        
+      case containListCodesDesc:
+          result = "<StringList Path=\"" + sPathStr + "\" CSV=\""
+              + String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + false
+              + "\" AtLeastOnce=\"" + atLeastOnce 
+              + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+              + "\"/>";
+          break;
       case regex:
         result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + complement.getValue()
             + "\" AtLeastOnce=\"" + atLeastOnce 
