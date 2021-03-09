@@ -49,4 +49,12 @@ public class Registry implements Serializable{
 	  return null;
   }
 
+  /**
+   * @return
+   */
+  public Type getType() {
+    // TODO Auto-generated method stub
+    return type;
+  }
+
 }
