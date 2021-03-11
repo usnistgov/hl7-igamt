@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+
 /**
  * Created by Maxence Lefort on Feb 20, 2018.
  */
@@ -19,12 +21,12 @@ public class PropertyLengthMin extends ItemProperty {
   private String min;
 
   public PropertyLengthMin(String min) {
-    super(PropertyKey.LENGTH_MIN);
+    super(PropertyType.LENGTHMIN);
     this.min = min;
   }
 
   public PropertyLengthMin() {
-    super(PropertyKey.LENGTH_MIN);
+    super(PropertyType.LENGTHMIN);
   }
 
   public String getMin() {

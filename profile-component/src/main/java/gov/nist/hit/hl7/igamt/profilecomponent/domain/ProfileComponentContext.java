@@ -23,9 +23,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
  */
 public class ProfileComponentContext {
 
-  /**
-   * 
-   */
+ 
   private String id;
   private Type level;
   private String sourceId;
@@ -33,15 +31,6 @@ public class ProfileComponentContext {
   private int position;
   private Set<ProfileComponentItem> profileComponentItems;
 
-
-  /**
-   * @param id
-   * @param level
-   * @param sourceId
-   * @param structure
-   * @param position
-   * @param profileComponentItems
-   */
   public ProfileComponentContext(String id, Type level, String sourceId, String structure,
       int position, Set<ProfileComponentItem> profileComponentItems) {
     super();
@@ -115,4 +104,32 @@ public class ProfileComponentContext {
   public void setPosition(int position) {
     this.position = position;
   }
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((level == null) ? 0 : level.hashCode());
+    result = prime * result + ((sourceId == null) ? 0 : sourceId.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ProfileComponentContext other = (ProfileComponentContext) obj;
+    if (level != other.level)
+      return false;
+    if (sourceId == null) {
+      if (other.sourceId != null)
+        return false;
+    } else if (!sourceId.equals(other.sourceId))
+      return false;
+    return true;
+  }
+
 }

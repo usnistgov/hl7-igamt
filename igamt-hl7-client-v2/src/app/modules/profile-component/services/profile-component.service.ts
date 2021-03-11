@@ -1,7 +1,22 @@
 import {HttpClient} from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
-import {IProfileComponent, IProfileComponentContext, ISegment} from '../../shared/models/segment.interface';
+import {Message} from '../../dam-framework/models/messages/message.class';
+import {Usage} from '../../shared/constants/usage.enum';
+import {IComment} from '../../shared/models/comment.interface';
+import {
+  IProfileComponent,
+  IProfileComponentContext,
+  IProfileComponentItem,
+  ItemProperty,
+  PropertyCardinalityMax, PropertyCardinalityMin, PropertyComment,
+  PropertyConfLength, PropertyDatatype,
+  PropertyLengthMax,
+  PropertyLengthMin,
+  PropertyName, PropertySingleCode,
+  PropertyUsage, PropertyValueSet,
+} from '../../shared/models/profile.component';
+import {IChange, PropertyType} from '../../shared/models/save-change';
 
 @Injectable({
   providedIn: 'root',
@@ -17,5 +32,91 @@ export class ProfileComponentService {
    return this.http.get<IProfileComponentContext>(this.URL + pcId + '/context/' + id);
   }
 
+  saveContext(pcId: string, context: IProfileComponentContext): Observable<Message<string>> {
+    console.log(context);
+    return this.http.post<Message<string>>(this.URL + pcId + '/context/' + context.id + '/update', context.profileComponentItems);
+  }
+
+  applyChange(change: IChange, profileComponentContext: IProfileComponentContext) {
+    if (!profileComponentContext.profileComponentItems) {
+      profileComponentContext.profileComponentItems = [];
+    }
+    this.applyPropertyChange(change, profileComponentContext.profileComponentItems);
+  }
+  applyProperty(item: ItemProperty, properties: ItemProperty[]) {
+    let found = false;
+    if (!properties) {
+      properties = [];
+    }
+    for (const index in properties) {
+      if (properties[index].propertyKey === item.propertyKey) {
+        properties[index] = item;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      properties.push(item);
+    }
+  }
+
+  applyPropertyChange(change: IChange, existing: IProfileComponentItem[]) {
+    const item: ItemProperty = this.convertChangeToProfileComponentItem(change);
+    console.log(item);
+    let found = false;
+    for (const index in existing) {
+      if (existing[index].path === change.location) {
+        this.applyProperty(item, existing[index].itemProperties);
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      existing.push({ path: change.location, itemProperties: [item] });
+    }
+  }
+  convertChangeToProfileComponentItem(change: IChange): ItemProperty {
+    console.log(change);
+    let itemProperty = {propertyKey: change.propertyType};
+    switch (change.propertyType) {
+      case PropertyType.USAGE:
+        itemProperty = new PropertyUsage(change.propertyValue as Usage);
+        break;
+      case PropertyType.PREDICATE:
+        console.log(change);
+        break;
+      case PropertyType.LENGTHMAX:
+        itemProperty = new PropertyLengthMax(change.propertyValue as string);
+        break;
+      case PropertyType.LENGTHMIN:
+        itemProperty = new PropertyLengthMin(change.propertyValue);
+        break;
+      case PropertyType.CONFLENGTH:
+        itemProperty = new PropertyConfLength(change.propertyValue);
+        break;
+      case PropertyType.NAME:
+        itemProperty = new PropertyName(change.propertyValue );
+        break;
+      case PropertyType.CONSTANTVALUE:
+        itemProperty = new PropertyName(change.propertyValue);
+        break;
+      case PropertyType.CARDINALITYMAX:
+        itemProperty = new PropertyCardinalityMax(change.propertyValue);
+        break;
+      case PropertyType.CARDINALITYMIN:
+        itemProperty = new PropertyCardinalityMin(change.propertyValue);
+        break;
+      case PropertyType.COMMENT:
+        itemProperty = new PropertyComment(change.propertyValue);
+        break;
+      case PropertyType.DATATYPE:
+        itemProperty = new PropertyDatatype(change.propertyValue);
+        break;
+      case PropertyType.VALUESET:
+        itemProperty = new PropertyValueSet(change.propertyValue);
+        break;
+    }
+    return itemProperty;
+  }
   constructor(private http: HttpClient) { }
 }

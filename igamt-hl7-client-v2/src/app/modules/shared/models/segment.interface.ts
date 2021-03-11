@@ -43,23 +43,3 @@ export interface ISegment extends IResource {
   children: IField[];
   dynamicMappingInfo?: IDynamicMappingInfo;
 }
-export interface IProfileComponent extends IResource {
-  children?: IProfileComponentContext;
-}
-export interface IProfileComponentContext {
-  id: string;
-  level: Type;
-  sourceId: string;
-  structure: string;
-  position: number;
-  profileComponentItems:  IProfileComponentItem[];
-}
-export interface IProfileComponentItem {
-  path: string;
-  itemProperties: ItemProperty[];
-}
-
-export interface ItemProperty {
-  propertyKey: PropertyType;
-  propertyValue: any;
-}

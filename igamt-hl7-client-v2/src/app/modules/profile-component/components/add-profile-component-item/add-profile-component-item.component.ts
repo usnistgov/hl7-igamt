@@ -3,7 +3,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {TreeNode} from 'primeng/api';
 import {IHL7v2TreeNode} from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import {Type} from '../../../shared/constants/type.enum';
-import {IProfileComponentContext} from '../../../shared/models/segment.interface';
+import {IProfileComponentContext} from '../../../shared/models/profile.component';
 import {ElementNamingService} from '../../../shared/services/element-naming.service';
 import {PathService} from '../../../shared/services/path.service';
 import {IHL7v2TreeFilter} from '../../../shared/services/tree-filter.service';

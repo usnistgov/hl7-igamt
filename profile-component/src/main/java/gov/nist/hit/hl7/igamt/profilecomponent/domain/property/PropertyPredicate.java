@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 /**
  *
@@ -29,7 +30,7 @@ public class PropertyPredicate extends ItemProperty {
 
 
   public PropertyPredicate() {
-    super(PropertyKey.PREDICATE);
+    super(PropertyType.PREDICATE);
   }
 
 

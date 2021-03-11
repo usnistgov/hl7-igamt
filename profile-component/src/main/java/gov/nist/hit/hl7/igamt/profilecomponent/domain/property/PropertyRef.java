@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+
 /**
  * 
  * Created by Jungyub Woo on Feb 20, 2018.
@@ -20,7 +22,7 @@ public class PropertyRef extends ItemProperty {
   private String ref;
   
   public PropertyRef() {
-    super(PropertyKey.REF);
+    super(PropertyType.SEGMENTREF); //
   }
 
   public String getRef() {

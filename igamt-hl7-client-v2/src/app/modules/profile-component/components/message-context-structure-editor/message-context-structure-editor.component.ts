@@ -17,12 +17,12 @@ import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
 import {IConformanceProfile} from '../../../shared/models/conformance-profile.interface';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {EditorID} from '../../../shared/models/editor.enum';
+import {IProfileComponentContext} from '../../../shared/models/profile.component';
 import {IResource} from '../../../shared/models/resource.interface';
 import {IChange} from '../../../shared/models/save-change';
-import {IProfileComponentContext} from '../../../shared/models/segment.interface';
-import {Hl7V2TreeService} from '../../../shared/services/hl7-v2-tree.service';
 import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
 import {PcTreeService} from '../../services/pc-tree.service';
+import {ProfileComponentService} from '../../services/profile-component.service';
 import {ProfileComponentStructureEditor} from '../profile-component-structure-editor/profile-component-structure-editor';
 
 @Component({
@@ -37,7 +37,7 @@ export class MessageContextStructureEditorComponent extends ProfileComponentStru
     private conformanceProfileService: ConformanceProfileService,
     messageService: MessageService,
     actions$: Actions,
-    store: Store<any>, public treeService: PcTreeService,  public dialog: MatDialog,
+    store: Store<any>, public treeService: PcTreeService, public pcService: ProfileComponentService,  public dialog: MatDialog,
   ) {
     super(
       repository,
@@ -90,7 +90,7 @@ export class MessageContextStructureEditorComponent extends ProfileComponentStru
         HL7v2TreeColumnType.CONFLENGTH,
         HL7v2TreeColumnType.TEXT,
         HL7v2TreeColumnType.COMMENT,
-      ], treeService, dialog);
+      ], treeService, pcService, dialog);
   }
   saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {
     return this.conformanceProfileService.saveChanges(id, documentRef, changes);

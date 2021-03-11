@@ -23,8 +23,8 @@ import { IConformanceProfile } from '../../shared/models/conformance-profile.int
 import { IUsages } from '../../shared/models/cross-reference';
 import { IDelta } from '../../shared/models/delta';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
+import {IProfileComponentContext} from '../../shared/models/profile.component';
 import { IResource } from '../../shared/models/resource.interface';
-import {IProfileComponentContext} from '../../shared/models/segment.interface';
 import {ResourceService} from '../../shared/services/resource.service';
 import { IResourceMetadata } from '../components/resource-metadata-editor/resource-metadata-editor.component';
 

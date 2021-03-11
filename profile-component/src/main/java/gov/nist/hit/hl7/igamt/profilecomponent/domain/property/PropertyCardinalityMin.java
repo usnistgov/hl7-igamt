@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
@@ -20,12 +22,12 @@ public class PropertyCardinalityMin extends ItemProperty {
   private int min;
 
   public PropertyCardinalityMin(int min) {
-    super(PropertyKey.CARDINALITY_MIN);
+    super(PropertyType.CARDINALITYMIN);
     this.min = min;
   }
 
   public PropertyCardinalityMin() {
-    super(PropertyKey.CARDINALITY_MIN);
+    super(PropertyType.CARDINALITYMIN);
   }
 
   public int getMin() {

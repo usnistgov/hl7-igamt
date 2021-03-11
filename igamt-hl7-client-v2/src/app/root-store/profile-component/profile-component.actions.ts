@@ -1,7 +1,7 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import {IHL7EditorMetadata} from '../../modules/shared/models/editor.enum';
-import {IProfileComponent, IProfileComponentContext} from '../../modules/shared/models/segment.interface';
+import {IProfileComponent, IProfileComponentContext} from '../../modules/shared/models/profile.component';
 
 export enum ProfileComponentActionTypes {
   LoadProfileComponent = '[ProfileComponent] Load Profile Component',

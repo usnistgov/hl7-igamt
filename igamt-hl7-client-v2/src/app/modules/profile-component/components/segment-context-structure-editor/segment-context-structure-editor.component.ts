@@ -6,7 +6,6 @@ import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
 import {selectLoadedSegmentById} from '../../../../root-store/dam-igamt/igamt.loaded-resources.selectors';
 import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import {LoadSegment} from '../../../../root-store/segment-edit/segment-edit.actions';
-import {StructureEditorComponent} from '../../../core/components/structure-editor/structure-editor.component';
 import {Message} from '../../../dam-framework/models/messages/message.class';
 import {MessageService} from '../../../dam-framework/services/message.service';
 import {SegmentService} from '../../../segment/services/segment.service';
@@ -15,11 +14,13 @@ import {Type} from '../../../shared/constants/type.enum';
 import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {EditorID} from '../../../shared/models/editor.enum';
+import {IProfileComponentContext} from '../../../shared/models/profile.component';
 import {IResource} from '../../../shared/models/resource.interface';
 import {IChange} from '../../../shared/models/save-change';
-import {IProfileComponentContext, ISegment} from '../../../shared/models/segment.interface';
+import { ISegment} from '../../../shared/models/segment.interface';
 import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
 import {PcTreeService} from '../../services/pc-tree.service';
+import {ProfileComponentService} from '../../services/profile-component.service';
 import {ProfileComponentStructureEditor} from '../profile-component-structure-editor/profile-component-structure-editor';
 
 @Component({
@@ -42,7 +43,7 @@ export class SegmentContextStructureEditorComponent extends ProfileComponentStru
     private segmentService: SegmentService,
     messageService: MessageService,
     actions$: Actions,
-    store: Store<any>, public pcTreeService: PcTreeService, public dialog: MatDialog,
+    store: Store<any>, public pcTreeService: PcTreeService, public pcService: ProfileComponentService, public dialog: MatDialog,
   ) {
     super(
       repository,
@@ -89,7 +90,7 @@ export class SegmentContextStructureEditorComponent extends ProfileComponentStru
         HL7v2TreeColumnType.TEXT,
         HL7v2TreeColumnType.COMMENT,
       ],
-      pcTreeService, dialog);
+      pcTreeService, pcService, dialog);
   }
 
   saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {

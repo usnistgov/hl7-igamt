@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 /**
  *
@@ -24,12 +25,12 @@ public class PropertyUsage extends ItemProperty {
   private Usage usage;
 
   public PropertyUsage(Usage usage) {
-    super(PropertyKey.USAGE);
+    super(PropertyType.USAGE);
     this.usage = usage;
   }
 
   public PropertyUsage() {
-    super(PropertyKey.USAGE);
+    super(PropertyType.USAGE);
   }
 
   public Usage getUsage() {

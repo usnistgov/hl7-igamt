@@ -31,9 +31,9 @@ public class PermutationMap extends Permutation {
 			if(path.size() == 0) {
 				
 				if(existing != null) {
-					existing.getItems().addAll(item.getDeltaObjects());
+					existing.getItems().addAll(item.getItemProperties());
 				} else {
-					Permutation permutation = new Permutation(nId, i, null, item.getDeltaObjects(), new ArrayList<>());
+					Permutation permutation = new Permutation(nId, i, null, item.getItemProperties(), new ArrayList<>());
 					permutationsList.add(permutation);
 				}
 				

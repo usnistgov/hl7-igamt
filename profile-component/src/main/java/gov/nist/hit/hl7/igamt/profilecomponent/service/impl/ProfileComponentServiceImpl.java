@@ -160,5 +160,26 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     return ret;
   }
 
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#updateContext(java.lang.String, java.lang.String, gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext)
+   */
+  @Override
+  public ProfileComponentContext updateContext(String pcId, String contextId,
+      Set<ProfileComponentItem> children) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
+    // TODO Auto-generated method stub
+    boolean found = false;
+    ProfileComponent pc = this.findById(pcId);
+    for(ProfileComponentContext ctx:  pc.getChildren()) {
+      if(ctx.getId().equals(contextId)) {
+        ctx.setProfileComponentItems(children);
+
+      }
+    }
+    this.save(pc);
+    
+    return findContextById(pcId, contextId);
+    
+  }
+
 
 }

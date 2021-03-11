@@ -229,8 +229,7 @@
               [position]="rowData.position"
               [level]="rowData.level"
               [value]="rowData.text"
-              (valueChange)="registerChange($event)"
-            >
+              (valueChange)="registerChange($event)">
             </app-text>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.VALUESET">

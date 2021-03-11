@@ -5,8 +5,9 @@ import { Type } from '../../modules/shared/constants/type.enum';
 import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.interface';
 import { IConformanceProfile } from '../../modules/shared/models/conformance-profile.interface';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
+import {IProfileComponent, IProfileComponentContext} from '../../modules/shared/models/profile.component';
 import { IResource } from '../../modules/shared/models/resource.interface';
-import {IProfileComponent, IProfileComponentContext, ISegment} from '../../modules/shared/models/segment.interface';
+import {ISegment} from '../../modules/shared/models/segment.interface';
 import { IValueSet } from '../../modules/shared/models/value-set.interface';
 
 // SELECT 'SELECTED' attribute from DAM state

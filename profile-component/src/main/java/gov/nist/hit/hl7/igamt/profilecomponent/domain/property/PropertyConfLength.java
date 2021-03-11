@@ -13,6 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+
 /**
  *
  * @author Maxence Lefort on Feb 23, 2018.
@@ -22,12 +24,12 @@ public class PropertyConfLength extends ItemProperty {
   private String confLength;
 
   public PropertyConfLength(String confLength) {
-    super(PropertyKey.CONF_LENGTH);
+    super(PropertyType.CONFLENGTH);
     this.confLength = confLength;
   }
 
   public PropertyConfLength() {
-    super(PropertyKey.CONF_LENGTH);
+    super(PropertyType.CONFLENGTH);
   }
 
   public String getConfLength() {

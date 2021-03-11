@@ -10,7 +10,7 @@ import {SetValue} from '../../modules/dam-framework/store';
 import * as fromDAM from '../../modules/dam-framework/store';
 import * as fromRouterSelector from '../../modules/dam-framework/store/router/router.selectors';
 import {ProfileComponentService} from '../../modules/profile-component/services/profile-component.service';
-import {IProfileComponent, IProfileComponentContext, ISegment} from '../../modules/shared/models/segment.interface';
+import {IProfileComponent, IProfileComponentContext} from '../../modules/shared/models/profile.component';
 import {ConformanceStatementService} from '../../modules/shared/services/conformance-statement.service';
 import {CrossReferencesService} from '../../modules/shared/services/cross-references.service';
 import {DeltaService} from '../../modules/shared/services/delta.service';

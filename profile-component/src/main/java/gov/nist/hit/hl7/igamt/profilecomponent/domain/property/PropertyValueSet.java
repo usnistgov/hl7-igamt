@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 /**
  *
@@ -27,12 +28,12 @@ public class PropertyValueSet extends ItemProperty {
   private Set<ValuesetBinding> valuesetBindings;
 
   public PropertyValueSet(Set<ValuesetBinding> valuesetBindings) {
-    super(PropertyKey.VALUESET);
+    super(PropertyType.VALUESET);
     this.valuesetBindings = valuesetBindings;
   }
 
   public PropertyValueSet() {
-    super(PropertyKey.VALUESET);
+    super(PropertyType.VALUESET);
   }
 
   public Set<ValuesetBinding> getValuesetBindings() {

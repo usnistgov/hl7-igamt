@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
@@ -20,12 +22,12 @@ public class PropertyDefinitionText extends ItemProperty {
   private String definitionText;
 
   public PropertyDefinitionText(String definitionText) {
-    super(PropertyKey.DEFINITION_TEXT);
+    super(PropertyType.DEFINITIONTEXT);
     this.definitionText = definitionText;
   }
   
   public PropertyDefinitionText() {
-    super(PropertyKey.DEFINITION_TEXT);
+    super(PropertyType.DEFINITIONTEXT);
   }
 
   public String getDefinitionText() {

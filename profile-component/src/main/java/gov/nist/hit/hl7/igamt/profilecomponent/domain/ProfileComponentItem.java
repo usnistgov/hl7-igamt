@@ -16,12 +16,7 @@ import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
 
-/**
- * A profile component item is a set of changes for a specific item (a datatype, a component, a
- * message...).
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
- */
+
 public class ProfileComponentItem {
 
   private String path;
@@ -38,7 +33,7 @@ public class ProfileComponentItem {
     this.path = path;
   }
 
-  public Set<ItemProperty> getDeltaObjects() {
+  public Set<ItemProperty> getItemProperties() {
     return itemProperties;
   }
 
@@ -50,6 +45,36 @@ public class ProfileComponentItem {
     if(itemProperties == null) this.itemProperties = new HashSet<ItemProperty>();
     this.itemProperties.add(itemProperty);
   }
+
+  public void setItemProperties(Set<ItemProperty> itemProperties) {
+    this.itemProperties = itemProperties;
+  }
+
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((path == null) ? 0 : path.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ProfileComponentItem other = (ProfileComponentItem) obj;
+    if (path == null) {
+      if (other.path != null)
+        return false;
+    } else if (!path.equals(other.path))
+      return false;
+    return true;
+  }
+
 
 }
 

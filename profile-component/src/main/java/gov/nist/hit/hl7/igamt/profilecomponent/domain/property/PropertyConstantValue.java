@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
@@ -20,12 +22,12 @@ public class PropertyConstantValue extends ItemProperty {
   private String constantValue;
 
   public PropertyConstantValue(String constantValue) {
-    super(PropertyKey.CONSTANT_VALUE);
+    super(PropertyType.CONSTANTVALUE);
     this.constantValue = constantValue;
   }
 
   public PropertyConstantValue() {
-    super(PropertyKey.CONSTANT_VALUE);
+    super(PropertyType.CONSTANTVALUE);
   }
   
   public String getConstantValue() {

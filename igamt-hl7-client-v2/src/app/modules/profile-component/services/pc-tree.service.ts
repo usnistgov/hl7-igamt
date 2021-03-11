@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import {forEach} from '@angular/router/src/utils/collection';
 import {BehaviorSubject, combineLatest, from, Observable, Subscription} from 'rxjs';
 import {filter, map, mergeMap, switchMap, take, tap, toArray} from 'rxjs/operators';
 import {
@@ -16,9 +15,10 @@ import {
 } from '../../shared/models/conformance-profile.interface';
 import {IPath} from '../../shared/models/cs.interface';
 import {IComponent, IDatatype} from '../../shared/models/datatype.interface';
+import {IProfileComponentContext} from '../../shared/models/profile.component';
 import {IResource} from '../../shared/models/resource.interface';
 import {IChangeLog} from '../../shared/models/save-change';
-import {IField, IProfileComponentContext, ISegment} from '../../shared/models/segment.interface';
+import {IField, ISegment} from '../../shared/models/segment.interface';
 import {IStructureElement, ISubStructElement} from '../../shared/models/structure-element.interface';
 import {BindingService} from '../../shared/services/binding.service';
 import {PathService} from '../../shared/services/path.service';

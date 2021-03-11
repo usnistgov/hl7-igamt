@@ -16,9 +16,10 @@ import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
 import {Hl7Config, IValueSetBindingConfigMap} from '../../../shared/models/config.class';
 import {IConformanceProfile, IGroup, ISegmentRef} from '../../../shared/models/conformance-profile.interface';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {IProfileComponentContext} from '../../../shared/models/profile.component';
 import {IResource} from '../../../shared/models/resource.interface';
 import {ChangeType, IChange, PropertyType} from '../../../shared/models/save-change';
-import {IField, IProfileComponentContext, ISegment} from '../../../shared/models/segment.interface';
+import {IField, ISegment} from '../../../shared/models/segment.interface';
 import {AResourceRepositoryService} from '../../../shared/services/resource-repository.service';
 import {IStructCreateDialogResult} from '../../../shared/services/struct-create-dialog.abstract';
 import {IBindingContext} from '../../../shared/services/structure-element-binding.service';
@@ -159,16 +160,15 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
     segment.children.push(field);
   }
   hasChange( pathId: string, col: string) {
-    for (const item of  this._profileComponentContext.profileComponentItems) {
-      if (item.path === pathId && item.itemProperties) {
-        for (const prop of item.itemProperties ) {
-          if (prop.propertyKey.toString().toLowerCase() === col.toLowerCase()) {
-            return true;
+    for (const item of this._profileComponentContext.profileComponentItems) {
+        if (item.path === pathId && item.itemProperties) {
+          for (const prop of item.itemProperties) {
+            if (prop.propertyKey.toString().toLowerCase() === col.toLowerCase()) {
+              return true;
+            }
           }
         }
       }
-    }
-    return false;
   }
   addSegmentRefToMessage(message: IConformanceProfile, segmentRef: ISegmentRef, location: string) {
     const parts = location !== '' ? location.split('-') : [];
