@@ -1,4 +1,5 @@
 import { Type } from '../constants/type.enum';
+import {IProfileComponentItem, ItemProperty} from './profile.component';
 
 export interface IConformanceStatement {
   id?: string;

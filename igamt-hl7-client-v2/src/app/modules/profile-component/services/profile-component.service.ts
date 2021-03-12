@@ -32,9 +32,9 @@ export class ProfileComponentService {
    return this.http.get<IProfileComponentContext>(this.URL + pcId + '/context/' + id);
   }
 
-  saveContext(pcId: string, context: IProfileComponentContext): Observable<Message<string>> {
+  saveContext(pcId: string, context: IProfileComponentContext): Observable<IProfileComponentContext> {
     console.log(context);
-    return this.http.post<Message<string>>(this.URL + pcId + '/context/' + context.id + '/update', context.profileComponentItems);
+    return this.http.post<IProfileComponentContext>(this.URL + pcId + '/context/' + context.id + '/update', context.profileComponentItems);
   }
 
   applyChange(change: IChange, profileComponentContext: IProfileComponentContext) {

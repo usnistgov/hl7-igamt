@@ -27,87 +27,92 @@ export class ItemProperty {
   }
 }
 export class PropertyCardinalityMax extends ItemProperty {
-  constructor( private max: string ) {
+  constructor( public max: string ) {
     super(PropertyType.CARDINALITYMAX);
   }
 }
 export class PropertyCardinalityMin extends ItemProperty {
-  constructor( private min: string ) {
+  constructor( public min: number ) {
     super(PropertyType.CARDINALITYMIN);
   }
 }
 export class PropertyComment extends ItemProperty {
-  constructor( comment: IComment ) {
+  constructor( public comment: IComment[] ) {
     super(PropertyType.COMMENT);
   }
 }
 export class PropertyConfLength extends ItemProperty {
-  constructor( private confLength: string ) {
+  constructor( public confLength: string ) {
     super(PropertyType.CONFLENGTH);
   }
 }
 export class PropertyConformanceStatement extends ItemProperty {
-  constructor( private constraintId: string, private description: string, private assertionScript: string ) {
+  constructor( public constraintId: string, private description: string, private assertionScript: string ) {
     super(PropertyType.STATEMENT);
   }
 }
 export class PropertyConstantValue extends ItemProperty {
-  constructor( private constantValue: string ) {
+  constructor( public constantValue: string ) {
     super(PropertyType.CONSTANTVALUE);
   }
 }
 export class PropertyDatatype extends ItemProperty {
-  constructor( private datatypeId: string ) {
+  constructor( public datatypeId: string ) {
     super(PropertyType.DATATYPE);
   }
 }
 export class PropertyDefinitionText extends ItemProperty {
-  constructor( private definitionText: string ) {
+  constructor( public definitionText: string ) {
     super(PropertyType.DEFINITIONTEXT);
   }
 }
 export class PropertyDynamicMapping extends ItemProperty {
-  constructor( private dynamicMappingInfo: IDynamicMappingInfo ) {
+  constructor( public dynamicMappingInfo: IDynamicMappingInfo ) {
     super(PropertyType.DYNAMICMAPPINGITEM);
   }
 }
 export class PropertyLengthMax extends ItemProperty {
-  constructor( private max: string ) {
+  constructor( public max: string ) {
     super(PropertyType.LENGTHMAX);
   }
 }
 export class PropertyLengthMin extends ItemProperty {
-  constructor( private min: string ) {
+  constructor( public min: string ) {
     super(PropertyType.LENGTHMIN);
   }
 }
 export class PropertyName extends ItemProperty {
-  constructor( private name: string ) {
+  constructor( public name: string ) {
     super(PropertyType.NAME);
   }
 }
 export class PropertyPredicate extends ItemProperty {
-  constructor( private trueUsage: Usage, private falseUsage: Usage, private constraintTarget: string, private description: string, private assertion: string ) {
+  constructor( public trueUsage: Usage, public falseUsage: Usage, public constraintTarget: string, public description: string, public assertion: string ) {
     super(PropertyType.PREDICATE);
   }
 }
 export class PropertyRef extends ItemProperty {
-  constructor( private ref: string ) {
+  constructor( public ref: string ) {
     super(PropertyType.SEGMENTREF);
   }
 }
 export class PropertySingleCode extends ItemProperty {
-  constructor( private singleCodeId: string, private externalSingleCode: IExternalSingleCode ) {
+  constructor( public singleCodeId: string, public externalSingleCode: IExternalSingleCode ) {
     super(PropertyType.SINGLECODE);
   }
 }
 export class PropertyUsage extends ItemProperty {
-  constructor( private usage: Usage ) {
+  constructor( public usage: Usage ) {
     super(PropertyType.USAGE);
   }
 }
 export class PropertyValueSet extends ItemProperty {
-  constructor( private valuesetBinding: IValuesetBinding[] ) {
+  constructor( public valuesetBinding: IValuesetBinding[] ) {
     super(PropertyType.VALUESET);
   }
+}
+export interface IValuedPath {
+  elementId: string;
+  child?: IValuedPath;
+  values?: ItemProperty[];
 }

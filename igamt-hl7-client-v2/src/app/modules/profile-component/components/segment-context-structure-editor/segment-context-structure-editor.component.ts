@@ -93,12 +93,6 @@ export class SegmentContextStructureEditorComponent extends ProfileComponentStru
       pcTreeService, pcService, dialog);
   }
 
-  saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {
-    return this.segmentService.saveChanges(id, documentRef, changes);
-  }
-  getById(id: string): Observable<ISegment> {
-    return this.segmentService.getById(id);
-  }
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
     return fromIgamtDisplaySelectors.selectSegmentsById;
   }

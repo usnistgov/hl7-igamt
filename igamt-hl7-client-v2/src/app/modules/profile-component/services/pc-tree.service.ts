@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, from, Observable, Subscription} from 'rxjs';
 import {filter, map, mergeMap, switchMap, take, tap, toArray} from 'rxjs/operators';
 import {
@@ -6,18 +6,32 @@ import {
   IHL7v2TreeNodeData,
   IResourceRef,
 } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import {LengthType} from '../../shared/constants/length-type.enum';
 import {Type} from '../../shared/constants/type.enum';
 import {Usage} from '../../shared/constants/usage.enum';
 import {IStructureElementBinding} from '../../shared/models/binding.interface';
 import {
-  IConformanceProfile, IGroup, IHL7MessageProfile,
-  IMsgStructElement, ISegmentRef,
+  IConformanceProfile,
+  IGroup,
+  IHL7MessageProfile,
+  IMsgStructElement,
+  ISegmentRef,
 } from '../../shared/models/conformance-profile.interface';
-import {IPath} from '../../shared/models/cs.interface';
 import {IComponent, IDatatype} from '../../shared/models/datatype.interface';
-import {IProfileComponentContext} from '../../shared/models/profile.component';
+import {
+  IProfileComponentContext,
+  ItemProperty,
+  IValuedPath,
+  PropertyCardinalityMax,
+  PropertyCardinalityMin,
+  PropertyComment,
+  PropertyConfLength, PropertyConstantValue,
+  PropertyLengthMax,
+  PropertyLengthMin,
+  PropertyUsage
+} from '../../shared/models/profile.component';
 import {IResource} from '../../shared/models/resource.interface';
-import {IChangeLog} from '../../shared/models/save-change';
+import {IChangeLog, PropertyType} from '../../shared/models/save-change';
 import {IField, ISegment} from '../../shared/models/segment.interface';
 import {IStructureElement, ISubStructElement} from '../../shared/models/structure-element.interface';
 import {BindingService} from '../../shared/services/binding.service';
@@ -37,7 +51,7 @@ export class PcTreeService {
 
   getTree(resource: IResource, pcContext: IProfileComponentContext, treeMode: PCTreeMode,  repository: AResourceRepositoryService, viewOnly: boolean, changeable: boolean, then?: (value: any) => void): Subscription {
 
-    const pathTree: IPath[] = this.generatePathTreeFromContext(pcContext);
+    const pathTree: IValuedPath[] = this.generatePathTreeFromContext(pcContext);
     switch (resource.type) {
       case Type.SEGMENT:
         return this.formatSegment(resource as ISegment, repository, pathTree, treeMode,  viewOnly, true).pipe(
@@ -51,14 +65,14 @@ export class PcTreeService {
         ).subscribe();
     }
   }
-  generatePathTreeFromContext(pcContext: IProfileComponentContext): IPath[] {
+  generatePathTreeFromContext(pcContext: IProfileComponentContext): IValuedPath[] {
     let ret = [];
     if (pcContext && pcContext.profileComponentItems && pcContext.profileComponentItems.length > 0) {
-      ret = pcContext.profileComponentItems.map((x) => x.path).map( (x) =>  this.pathService.getPathFromPathId(x));
+      ret = pcContext.profileComponentItems.map((x) =>  this.getPathFromPathId(x.path, x.itemProperties));
     }
     return ret;
   }
-  resolveReference(node: IHL7v2TreeNode, repository: AResourceRepositoryService, viewOnly: boolean, path: IPath[], treeMode: PCTreeMode,  then?: () => void, transform?: (children: IHL7v2TreeNode[]) => IHL7v2TreeNode[]): Subscription {
+  resolveReference(node: IHL7v2TreeNode, repository: AResourceRepositoryService, viewOnly: boolean, path: IValuedPath[], treeMode: PCTreeMode,  then?: () => void, transform?: (children: IHL7v2TreeNode[]) => IHL7v2TreeNode[]): Subscription {
     if (node.data.ref && node.$hl7V2TreeHelpers && (!node.$hl7V2TreeHelpers.treeChildrenSubscription || node.$hl7V2TreeHelpers.treeChildrenSubscription.closed)) {
       node.$hl7V2TreeHelpers.treeChildrenSubscription = node.data.ref.asObservable().pipe(
         filter((ref) => ref.type === Type.DATATYPE || ref.type === Type.SEGMENT),
@@ -107,6 +121,8 @@ export class PcTreeService {
     child: IStructureElement,
     changeable: boolean,
     viewOnly: boolean,
+    pathTree: IValuedPath[],
+    mappedValue: IMappedValue,
     parent?: IHL7v2TreeNode,
   ): IHL7v2TreeNodeData {
     const level = parent ? parent.data.level + 1 : 0;
@@ -125,7 +141,7 @@ export class PcTreeService {
       type: child.type,
       rootPath: parent ? this.pathService.straightConcatPath(parent.data.rootPath, { elementId: child.id }) : { elementId: child.id },
       usage: {
-        value: child.usage,
+        value: this.getValue(pathTree, PropertyType.USAGE) ? (this.getValue(pathTree, PropertyType.USAGE) as PropertyUsage).usage.toString() : child.usage,
       },
       oldUsage: child.oldUsage,
       text: {
@@ -133,8 +149,6 @@ export class PcTreeService {
       },
       custom: true,
       changeLog: {
-        ...child.changeLog,
-        ...this.getBindingsActiveChangeLog(elementBindings && elementBindings.values.changeLog ? elementBindings.values.changeLog : []),
       },
       changeable,
       viewOnly,
@@ -150,6 +164,8 @@ export class PcTreeService {
     child: IMsgStructElement,
     changeable: boolean,
     viewOnly: boolean,
+    pathTree: IValuedPath[],
+    mappedValue: IMappedValue,
     parent?: IHL7v2TreeNode,
   ): IHL7v2TreeNodeData {
     return {
@@ -159,13 +175,15 @@ export class PcTreeService {
         child,
         changeable,
         viewOnly,
+        pathTree,
+        mappedValue,
         parent,
       ),
       cardinality: {
-        min: child.min,
-        max: child.max,
+        min: mappedValue[PropertyType.CARDINALITYMIN] ? (mappedValue[PropertyType.CARDINALITYMIN] as PropertyCardinalityMin).min : child.min,
+        max: mappedValue[PropertyType.CARDINALITYMAX] ? (mappedValue[PropertyType.CARDINALITYMAX] as PropertyCardinalityMax).max : child.max,
       },
-      comments: child.comments || [],
+      comments: mappedValue[PropertyType.COMMENT] ? (mappedValue[PropertyType.COMMENT] as PropertyComment).comment : (child.comments || []),
     };
   }
 
@@ -176,6 +194,8 @@ export class PcTreeService {
     ref: IRefDataInfo,
     changeable: boolean,
     viewOnly: boolean,
+    pathTree: IValuedPath[],
+    mappedValue: IMappedValue,
     parent?: IHL7v2TreeNode,
   ): IHL7v2TreeNodeData {
     return {
@@ -185,14 +205,16 @@ export class PcTreeService {
         child,
         changeable,
         viewOnly,
+        pathTree,
+        mappedValue,
         parent,
       ),
       length: {
-        min: child.minLength,
-        max: child.maxLength,
+        min: mappedValue[PropertyType.LENGTHMIN] ? (mappedValue[PropertyType.LENGTHMIN] as PropertyLengthMin).min : child.minLength,
+        max: mappedValue[PropertyType.LENGTHMAX] ? (mappedValue[PropertyType.LENGTHMAX] as PropertyLengthMax).max : child.minLength,
       },
-      lengthType: child.lengthType,
-      confLength: child.confLength,
+      lengthType: LengthType.BOTH,
+      confLength:  mappedValue[PropertyType.CONFLENGTH] ? (mappedValue[PropertyType.CONFLENGTH] as PropertyConfLength).confLength : child.confLength,
       ref: this.createReference(ref, this.getChildRefType(child), child.ref.id),
     };
   }
@@ -203,8 +225,10 @@ export class PcTreeService {
     ref: IRefDataInfo,
     changeable: boolean,
     viewOnly: boolean,
+    pathTree: IValuedPath[],
     parent?: IHL7v2TreeNode,
   ): IHL7v2TreeNodeData {
+    const mappedValue: IMappedValue = this.getMappedValue(pathTree);
     return {
       ...this.formatSubStructureElement(
         resource,
@@ -213,16 +237,18 @@ export class PcTreeService {
         ref,
         changeable,
         viewOnly,
+        pathTree,
+        mappedValue,
         parent,
       ),
       valueSetBindingsInfo: this.valueSetBindingService.getBingdingInfo(ref.version, resource.name, ref.name, child.position, resource.type),
       cardinality: {
-        min: child.min,
-        max: child.max,
+        min: mappedValue[PropertyType.CARDINALITYMIN] ? (mappedValue[PropertyType.CARDINALITYMIN] as PropertyCardinalityMin).min : child.min,
+        max: mappedValue[PropertyType.CARDINALITYMAX] ? (mappedValue[PropertyType.CARDINALITYMAX] as PropertyCardinalityMax).max : child.max,
       },
-      comments: child.comments || [],
+      comments: mappedValue[PropertyType.COMMENT] ? (mappedValue[PropertyType.COMMENT] as PropertyComment).comment : (child.comments || []),
       constantValue: {
-        value: child.constantValue,
+        value: mappedValue[PropertyType.CONSTANTVALUE] ? (mappedValue[PropertyType.CONSTANTVALUE] as PropertyConstantValue).constantValue : child.constantValue,
       },
     };
   }
@@ -233,8 +259,10 @@ export class PcTreeService {
     ref: IRefDataInfo,
     changeable: boolean,
     viewOnly: boolean,
+    pathTree: IValuedPath[],
     parent?: IHL7v2TreeNode,
   ): IHL7v2TreeNodeData {
+    const mappedValue: IMappedValue = this.getMappedValue(pathTree);
     return {
       ...this.formatSubStructureElement(
         resource,
@@ -243,12 +271,14 @@ export class PcTreeService {
         ref,
         changeable,
         viewOnly,
+        pathTree,
+        mappedValue,
         parent,
       ),
       valueSetBindingsInfo: this.valueSetBindingService.getBingdingInfo(ref.version, resource.name, ref.name, child.position, resource.type),
       comments: child.comments || [],
       constantValue: {
-        value: child.constantValue,
+        value: mappedValue[PropertyType.CONSTANTVALUE] ? (mappedValue[PropertyType.CONSTANTVALUE] as PropertyConstantValue).constantValue : child.constantValue,
       },
     };
   }
@@ -260,8 +290,10 @@ export class PcTreeService {
     ref: IRefDataInfo,
     changeable: boolean,
     viewOnly: boolean,
+    pathTree: IValuedPath[],
     parent?: IHL7v2TreeNode,
   ): IHL7v2TreeNodeData {
+    const mappedValue: IMappedValue = this.getMappedValue(pathTree);
     return {
       ...this.formatMsgStructureElement(
         resource,
@@ -269,6 +301,8 @@ export class PcTreeService {
         child,
         changeable,
         viewOnly,
+        pathTree,
+        mappedValue,
         parent,
       ),
       ref: this.createReference(ref, this.getChildRefType(child), child.ref.id),
@@ -278,7 +312,7 @@ export class PcTreeService {
   formatSegment(
     segment: ISegment,
     repository: AResourceRepositoryService,
-    pathTree: IPath[],
+    pathTree: IValuedPath[],
     treeMode: PCTreeMode,
     viewOnly: boolean,
     changeable: boolean,
@@ -289,26 +323,28 @@ export class PcTreeService {
       take(1),
       map((refsData) => {
         return filterChildren.map((child) => {
+          const childPath = this.getChildPath(pathTree, child.position);
           const data: IHL7v2TreeNodeData = this.formatField(
             segment,
             child,
             refsData[child.ref.id],
             changeable,
             viewOnly,
+            childPath,
             parent,
           );
           const node: IHL7v2TreeNode = {
             data,
             parent,
-            selectable: this.getChildPath(pathTree, child.position).length <= 0,
-            leaf: this.getChildPath(pathTree, child.position).length > 0,
+            selectable: childPath.length <= 0,
+            leaf: childPath.length > 0,
             $hl7V2TreeHelpers: {
               ref$: data.ref.asObservable(),
               treeChildrenSubscription: undefined,
             },
           };
-          if (this.getChildPath(pathTree, child.position).length || treeMode === PCTreeMode.SELECT ) {
-            this.resolveReference(node, repository, viewOnly, this.getChildPath(pathTree, child.position).map( (x) => x.child), treeMode,  () => {
+          if (childPath.length || treeMode === PCTreeMode.SELECT ) {
+            this.resolveReference(node, repository, viewOnly, childPath.map( (x) => x.child), treeMode,  () => {
             }, (children: IHL7v2TreeNode[]) => {
               node.children = children;
               return children;
@@ -319,18 +355,18 @@ export class PcTreeService {
       }),
     );
   }
-  containsChild(pathTree: IPath[], position: number): boolean {
-    return pathTree.filter( (x) => x.elementId === position.toString()).length > 0;
+  containsChild(pathTree: IValuedPath[], position: number): boolean {
+    return pathTree.filter( (x) =>  x && x.elementId === position.toString()).length > 0;
   }
-  getChildPath(pathTree: IPath[], position: number): IPath[] {
-    const childPath = pathTree.filter( (x) => x.elementId === position.toString());
+  getChildPath(pathTree: IValuedPath[], position: number): IValuedPath[] {
+    const childPath = pathTree.filter( (x) => x && x.elementId === position.toString());
     return childPath;
   }
 
   formatDatatype(
     datatype: IDatatype,
     repository: AResourceRepositoryService,
-    pathTree: IPath[],
+    pathTree: IValuedPath[],
     treeMode: PCTreeMode,
     viewOnly: boolean,
     changeable: boolean,
@@ -341,25 +377,27 @@ export class PcTreeService {
       take(1),
       map((refsData) => {
         return components.map((child) => {
+          const childPath = this.getChildPath(pathTree, child.position);
           const data: IHL7v2TreeNodeData = this.formatComponent(
             datatype,
             child,
             refsData[child.ref.id],
             changeable,
             viewOnly,
+            childPath,
             parent,
           );
           const node: IHL7v2TreeNode = {
             data,
             parent,
-            leaf: this.getChildPath(pathTree, child.position).length > 0,
-            selectable: this.getChildPath(pathTree, child.position).length <= 0,
+            leaf: childPath.length > 0,
+            selectable: childPath.length <= 0,
             $hl7V2TreeHelpers: {
               ref$: data.ref.asObservable(),
               treeChildrenSubscription: undefined,
             },
           };
-          if (this.getChildPath(pathTree, child.position).length || treeMode === PCTreeMode.SELECT) {
+          if (childPath.length || treeMode === PCTreeMode.SELECT) {
             this.resolveReference(node, repository,  viewOnly, this.reducePath(pathTree, child.position), treeMode, () => {
             }, (children: IHL7v2TreeNode[]) => {
               node.children = children;
@@ -371,14 +409,14 @@ export class PcTreeService {
       }),
     );
   }
-  reducePath(pathTree: IPath[], position: number ): IPath[] {
+  reducePath(pathTree: IValuedPath[], position: number ): IValuedPath[] {
    return this.getChildPath(pathTree, position).filter( (x) => x.child).map( (x) => x.child );
   }
 
   formatConformanceProfile(
     confProfile: IConformanceProfile,
     repository: AResourceRepositoryService,
-    pathTree: IPath[],
+    pathTree: IValuedPath[],
     treeMode: PCTreeMode,
     viewOnly: boolean,
     changeable: boolean,
@@ -409,7 +447,7 @@ export class PcTreeService {
       }),
     );
   }
-  filterChildrenByDisplayMode(children: any[], treeMode: PCTreeMode, pathTree: IPath[]) {
+  filterChildrenByDisplayMode(children: any[], treeMode: PCTreeMode, pathTree: IValuedPath[]) {
     let ret = children;
     if (treeMode === PCTreeMode.DISPLAY) {
       ret = children.filter((x) => this.containsChild( pathTree, x.position));
@@ -424,7 +462,7 @@ export class PcTreeService {
     bindings: IStructureElementBinding[],
     structure: IMsgStructElement[],
     repository: AResourceRepositoryService,
-    pathTree: IPath[],
+    pathTree: IValuedPath[],
     treeMode: PCTreeMode,
     segments: { [id: string]: ISegment },
     refsData: IRefData,
@@ -434,6 +472,9 @@ export class PcTreeService {
     parent?: IHL7v2TreeNode): IHL7v2TreeNode[] {
     const filteredStructure = this.filterChildrenByDisplayMode(structure, treeMode, pathTree);
     return filteredStructure.map((child) => {
+      const childPath = this.getChildPath(pathTree, child.position);
+      const mappedValue: IMappedValue = this.getMappedValue(pathTree);
+
       if (child.type === Type.SEGMENTREF) {
         const segmentRef = child as ISegmentRef;
         const data = this.formatSegmentRef(
@@ -443,13 +484,14 @@ export class PcTreeService {
           refsData[segmentRef.ref.id],
           changeable,
           viewOnly,
+          childPath,
           parent,
         );
         data.name = segments[(child as ISegmentRef).ref.id].name;
         const node = {
           data,
-          leaf: this.getChildPath(pathTree, child.position).length > 0,
-          selectable: this.getChildPath(pathTree, child.position).length <= 0,
+          leaf: childPath.length > 0,
+          selectable: childPath.length <= 0,
           parent,
           $hl7V2TreeHelpers: {
             ref$: data.ref.asObservable(),
@@ -457,7 +499,7 @@ export class PcTreeService {
           },
           children: [],
         };
-        if (this.getChildPath(pathTree, child.position).length > 0 || treeMode === PCTreeMode.SELECT) {
+        if (childPath.length > 0 || treeMode === PCTreeMode.SELECT) {
           this.resolveReference(node, repository,  viewOnly, this.reducePath(pathTree, child.position), treeMode,  () => {
           }, (children: IHL7v2TreeNode[]) => {
             node.children = children;
@@ -473,12 +515,14 @@ export class PcTreeService {
           group,
           changeable,
           viewOnly,
+          childPath,
+          mappedValue,
           parent,
         );
         const node: IHL7v2TreeNode = {
           data,
-          leaf: this.getChildPath(pathTree, child.position).length > 0,
-          selectable: this.getChildPath(pathTree, child.position).length <= 0,
+          leaf: childPath.length > 0,
+          selectable: childPath.length <= 0,
           parent,
           expanded: true,
           $hl7V2TreeHelpers: {
@@ -487,8 +531,8 @@ export class PcTreeService {
           },
           children: [],
         };
-        if (this.getChildPath(pathTree, child.position).length) {
-          node.children = this.formatStructure([], group.children, repository, this.getChildPath(pathTree, group.position).map( (x) => x.child),  treeMode, segments, refsData, viewOnly, changeable, cp, node);
+        if (childPath.length) {
+          node.children = this.formatStructure([], group.children, repository, childPath.map( (x) => x.child),  treeMode, segments, refsData, viewOnly, changeable, cp, node);
         }
         return node;
       }
@@ -573,7 +617,44 @@ export class PcTreeService {
     return node ? (node.parent && node.parent.data.type === Type.COMPONENT) ? Type.SUBCOMPONENT : node.data.type : undefined;
   }
 
+  getPathFromPathId(pathId: string, values: ItemProperty[]): IValuedPath {
+    const elms = pathId.split('-');
+    const pathOf = (list: string[], props: ItemProperty[]): IValuedPath => {
+      if (list && list.length > 0) {
+        return {
+          elementId: list[0],
+          child: pathOf(list.slice(1), props),
+          values: list.length === 1 ? props : [],
+        };
+      } else {
+        return undefined;
+      }
+    };
+    return pathOf(elms, values);
+  }
+  getValue(paths: IValuedPath[], propertyType: PropertyType ): ItemProperty {
+    const array: ItemProperty[][] = paths.filter((x) => x.values).map((x) => x.values.filter(( itemProperty) => itemProperty.propertyKey === propertyType));
+    if (array && array.length) {
+      const flat =  ([] as ItemProperty[]).concat(...array);
+      if (flat && flat.length > 0) {
+        return flat[0];
+      }
+    }
+    return null;
+  }
+
+  private getMappedValue(paths: IValuedPath[]): IMappedValue {
+    const ret: IMappedValue = {};
+    paths.filter((x) => x.values).forEach( (x) => x.values.forEach((prop) =>  ret[prop.propertyKey] = prop ));
+    console.log(paths);
+    console.log(ret);
+    return ret;
+  }
 }
+
 export enum PCTreeMode {
   SELECT = 'SELECT', DISPLAY = 'DISPLAY',
+}
+export interface  IMappedValue {
+  [key: string]: ItemProperty;
 }

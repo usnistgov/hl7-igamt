@@ -6,7 +6,6 @@ import {combineLatest, Observable, of, ReplaySubject, Subscription, throwError} 
 import {catchError, concatMap, filter, flatMap, map, mergeMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
-import {selectProfileComponentById} from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import {selectSelectedProfileComponent} from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
@@ -14,7 +13,7 @@ import {getHl7ConfigState, selectBindingConfig} from '../../../../root-store/con
 import * as fromIgamtSelectors from '../../../../root-store/dam-igamt/igamt.selectors';
 import {selectDerived, selectValueSetsNodes} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import {Message} from '../../../dam-framework/models/messages/message.class';
+import {Message, MessageType} from '../../../dam-framework/models/messages/message.class';
 import {MessageService} from '../../../dam-framework/services/message.service';
 import {IStructureChanges} from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
 import {HL7v2TreeColumnType} from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -83,11 +82,12 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
         return vOnly || delta;
       }),
     );
-    this.derived$ = combineLatest(this.store.select(selectDerived), this.hasOrigin$).pipe(
-      map(([derivedIg, elmHadOrigin]) => {
-        return derivedIg && elmHadOrigin;
-      }),
-    );
+    // this.derived$ = combineLatest(this.store.select(selectDerived), this.hasOrigin$).pipe(
+    //   map(([derivedIg, elmHadOrigin]) => {
+    //     return derivedIg && elmHadOrigin;
+    //   }),
+    // );
+    this.derived$ = of(false);
     this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
         this.resourceSubject.next({ ...current.resource });
@@ -211,24 +211,18 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
       take(1),
       concatMap(([context, documentRef, pcId]) => {
         return this.pcService.saveContext(pcId, context).pipe(
-          mergeMap((message) => {
-            return this.pcService.getChildById(pcId, context.id).pipe(
-              flatMap((pcContext: IProfileComponentContext) => {
+          flatMap((ret) => {
                 this.changes.next({});
-                this.resourceSubject.next(pcContext as T);
+                this.resourceSubject.next(ret as T);
                 // new LoadResourceReferences({ resourceType: this.editor.resourceType, id }),
-                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource : pcContext }, updateDate: false }), new fromDam.SetValue({ selected: pcContext })];
+                return [this.messageService.messageToAction(new Message<any>(MessageType.SUCCESS, 'Context saved success!', null)), new fromDam.EditorUpdate({ value: { changes: {}, resource : ret }, updateDate: false }), new fromDam.SetValue({ selected: ret })];
               }),
-            );
-          }),
           catchError((error) => throwError(this.messageService.actionFromError(error))),
         );
       }),
     );
   }
 
-  abstract saveChanges(id: string, documentRef: IDocumentRef, pcId: string): Observable<Message>;
-  abstract getById(id: string): Observable<IProfileComponentContext>;
   abstract getResourceType(): Type;
 
   convert(changes: IStructureChanges): IChange[] {

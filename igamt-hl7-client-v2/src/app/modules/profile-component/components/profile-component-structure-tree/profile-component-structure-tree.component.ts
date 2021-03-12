@@ -68,11 +68,11 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
     this.resourceName = this._resource.name;
     this.resource$ = of(this._resource);
     this.close(this.s_resource);
-    this.s_resource = this.treeService.getTree(this._resource, this._profileComponentContext, PCTreeMode.DISPLAY, this.repository, this.viewOnly, true, (value: IHL7v2TreeNode[]) => {
-     console.log(value);
-     this.nodes = [...value];
-     this.recoverExpandState(this.nodes, this.treeExpandedNodes);
-    });
+    // this.s_resource = this.treeService.getTree(this._resource, this._profileComponentContext, PCTreeMode.DISPLAY, this.repository, this.viewOnly, true, (value: IHL7v2TreeNode[]) => {
+    //  console.log(value);
+    //  this.nodes = [...value];
+    //  this.recoverExpandState(this.nodes, this.treeExpandedNodes);
+    // });
   }
   @Input()
   set profileComponentContext(profileComponentContext: IProfileComponentContext) {

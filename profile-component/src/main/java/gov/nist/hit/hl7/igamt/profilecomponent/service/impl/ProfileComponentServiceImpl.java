@@ -25,15 +25,22 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDatatype;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyRef;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyValueSet;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContextNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 
 /**
@@ -51,6 +58,10 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Autowired
   private SegmentService segmentService;
+  @Autowired
+  private DatatypeService datatypeService;
+  @Autowired
+  private ValuesetService valuesetService;
 
 
 
@@ -156,7 +167,26 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
           ret.addAll(this.segmentService.getDependencies(s));
         }
       }
+      for(ProfileComponentItem item: profileComponentContext.getProfileComponentItems()) {
+        for(ItemProperty prop : item.getItemProperties()) {
+          if(prop instanceof PropertyDatatype) {
+            PropertyDatatype dt = (PropertyDatatype)prop;
+            Datatype d = this.datatypeService.findById(dt.getDatatypeId());
+            if(d != null) {
+              ret.addAll(this.datatypeService.getDependencies(d));
+            }
+          }
+          if(prop instanceof PropertyRef) {
+            PropertyRef ref = (PropertyRef)prop;
+            Segment segment = this.segmentService.findById(ref.getRef());
+            if(segment != null) {
+              ret.addAll(this.segmentService.getDependencies(segment));
+            }
+          } 
+        }
+      }
     }
+    
     return ret;
   }
 
@@ -172,7 +202,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     for(ProfileComponentContext ctx:  pc.getChildren()) {
       if(ctx.getId().equals(contextId)) {
         ctx.setProfileComponentItems(children);
-
+        break;
       }
     }
     this.save(pc);

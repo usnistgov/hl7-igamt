@@ -99,7 +99,7 @@ export interface IHL7v2TreeNode extends TreeNode {
   $hl7V2TreeHelpers?: {
     predicate$?: Observable<IPredicate>;
     ref$: Observable<IResourceRef>;
-    treeChildrenSubscription: Subscription;
+    treeChildrenSubscription?: Subscription;
   };
 }
 

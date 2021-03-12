@@ -92,13 +92,6 @@ export class MessageContextStructureEditorComponent extends ProfileComponentStru
         HL7v2TreeColumnType.COMMENT,
       ], treeService, pcService, dialog);
   }
-  saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {
-    return this.conformanceProfileService.saveChanges(id, documentRef, changes);
-  }
-
-  getById(id: string): Observable<IConformanceProfile> {
-    return this.conformanceProfileService.getById(id);
-  }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
     return fromIgamtDisplaySelectors.selectMessagesById;
