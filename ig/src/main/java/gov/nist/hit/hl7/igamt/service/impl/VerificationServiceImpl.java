@@ -1126,6 +1126,13 @@ public class VerificationServiceImpl implements VerificationService {
 		if (!this.isNotNullNotEmpty(value))
 			result.getErrors().add(new IgamtObjectError("Code_Value_Missing", c.getId(), Type.VALUESET,
 					new VSMetadata(valueset), "The value is missing.", null, "ERROR", "User"));
+		
+		if (this.containWhiteSpace(value))
+			result.getErrors().add(new IgamtObjectError("Code_Value_Whitespace", c.getId(), Type.VALUESET,
+					new VSMetadata(valueset), "In code: " + value + ", The code value has whitespace.", null, "WARNING", "User"));
+		
+		
+		
 		if (description == null)
 			result.getErrors()
 					.add(new IgamtObjectError("Code_Desc_Missing", c.getId(), Type.VALUESET, new VSMetadata(valueset),
@@ -1135,6 +1142,13 @@ public class VerificationServiceImpl implements VerificationService {
 					.add(new IgamtObjectError("Code_Codesys_Missing", c.getId(), Type.VALUESET,
 							new VSMetadata(valueset), "In code: " + value + ", the codesys is missing.", null, "ERROR",
 							"User"));
+		
+		if (this.containWhiteSpace(codeSystem))
+			result.getErrors()
+					.add(new IgamtObjectError("Code_Codesys_Whitespace", c.getId(), Type.VALUESET,
+							new VSMetadata(valueset), "In code: " + value + ", the codesys has whitespace.", null, "WARNING",
+							"User"));
+		
 		if (usage == null) {
 			result.getErrors()
 					.add(new IgamtObjectError("Code_Usage_Missing", valueset.getId(), Type.VALUESET,
@@ -1798,6 +1812,10 @@ public class VerificationServiceImpl implements VerificationService {
 
 	private boolean isNotNullNotEmpty(final String string) {
 		return string != null && !string.isEmpty();
+	}
+	
+	private boolean containWhiteSpace(final String string) {
+		return !string.matches("\\S+");
 	}
 
 	private boolean isInt(String s) {
