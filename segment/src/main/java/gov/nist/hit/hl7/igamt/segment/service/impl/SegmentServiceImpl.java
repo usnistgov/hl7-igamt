@@ -13,12 +13,18 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service.impl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.*;
-import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -30,17 +36,25 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Level;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
-import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
@@ -49,7 +63,6 @@ import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;
@@ -61,9 +74,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingType;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayValuesetBinding;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -86,6 +96,8 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
+import gov.nist.hit.hl7.resource.change.service.ApplyChange;
 
 /**
  *
@@ -101,9 +113,6 @@ public class SegmentServiceImpl implements SegmentService {
   @Autowired
   private InMemoryDomainExtentionService domainExtention;
 
-  // @Autowired
-  // private CoConstraintService coConstraintService;
-
   @Autowired
   private MongoTemplate mongoTemplate;
 
@@ -115,6 +124,8 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   ValuesetService valueSetService;
+  @Autowired
+  ApplyChange applyChange;
 
   @Override
   public Segment findById(String key) {
@@ -438,43 +449,6 @@ public class SegmentServiceImpl implements SegmentService {
     return null;
   }
 
-  @Override
-  public PreDef convertDomainToPredef(Segment segment) {
-    if (segment != null) {
-
-      PreDef result = new PreDef();
-      result.setId(segment.getId());
-      result.setScope(segment.getDomainInfo().getScope());
-      result.setVersion(segment.getDomainInfo().getVersion());
-      if (segment.getExt() != null) {
-        result.setLabel(segment.getName() + segment.getExt());
-      } else {
-        result.setLabel(segment.getName());
-      }
-      result.setPreDef(segment.getPreDef());
-      return result;
-    }
-    return null;
-  }
-
-  @Override
-  public PostDef convertDomainToPostdef(Segment segment) {
-    if (segment != null) {
-      PostDef result = new PostDef();
-      result.setId(segment.getId());
-      result.setScope(segment.getDomainInfo().getScope());
-      result.setVersion(segment.getDomainInfo().getVersion());
-      if (segment.getExt() != null) {
-        result.setLabel(segment.getName() + segment.getExt());
-      } else {
-        result.setLabel(segment.getName());
-      }
-      result.setPostDef(segment.getPreDef());
-      return result;
-    }
-    return null;
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -504,21 +478,6 @@ public class SegmentServiceImpl implements SegmentService {
 
     return mongoTemplate.find(qry, Segment.class);
   }
-
-  private void validateField(Field f) throws ValidationException {
-    if (f.getRef() == null || StringUtils.isEmpty(f.getRef().getId())) {
-      throw new SegmentValidationException("Datatype not found");
-    }
-    Datatype d = datatypeService.findById(f.getRef().getId());
-    if (d == null) {
-      throw new SegmentValidationException("Datatype not found");
-    }
-    ValidationUtil.validateUsage(f.getUsage(), f.getMin());
-    ValidationUtil.validateLength(f.getMinLength(), f.getMaxLength());
-    ValidationUtil.validateCardinality(f.getMin(), f.getMax(), f.getUsage());
-    ValidationUtil.validateConfLength(f.getConfLength());
-  }
-
   /**
    * TODO: anything more to validate ??
    */
@@ -601,51 +560,6 @@ public class SegmentServiceImpl implements SegmentService {
     if(cloneMode.equals(CloneMode.DERIVE)) {
       this.bindingService.lockConformanceStatements(elm.getBinding());
     }
-    // updateBindings(elm.getBinding(), valuesetsMap);
-  }
-
-  private void updateCoConstraint(Segment elm, Segment old, HashMap<String, String> valuesetsMap,
-      HashMap<String, String> datatypesMap, String username) {
-    // CoConstraintTable cc =
-    // coConstraintService.getCoConstraintForSegment(old.getId());
-    // if (cc != null) {
-    // CoConstraintTable cc_ = coConstraintService.clone(valuesetsMap, datatypesMap,
-    // elm.getId(), cc);
-    // coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
-    // }
-
-  }
-
-  /**
-   * @param elm
-   * @param valuesetsMap
-   */
-  private void updateBindings(ResourceBinding binding, HashMap<String, String> valuesetsMap) {
-    // TODO Auto-generated method stub
-    if (binding.getChildren() != null) {
-      for (StructureElementBinding child : binding.getChildren()) {
-        if (child.getValuesetBindings() != null) {
-          for (ValuesetBinding vs : child.getValuesetBindings()) {
-            if (vs.getValueSets() != null) {
-              for (String s : vs.getValueSets()) {
-                if (valuesetsMap.containsKey(s)) {
-                  if (!vs.getValueSets().contains(s)) {
-                    vs.getValueSets().add(valuesetsMap.get(s));
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  private void updateDynamicMapping(Segment elm, HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap, String username) {
-
-    DynamicMappingInfo dynmaicMapping = elm.getDynamicMappingInfo();
-
   }
 
   @Override
@@ -674,161 +588,6 @@ public class SegmentServiceImpl implements SegmentService {
         if (child.getElementId().equals(id))
           return child;
       }
-    }
-    return null;
-  }
-
-  /**
-   * @param s
-   * @param location
-   * @return
-   */
-  private void deleteConformanceStatementById(Segment s, String location) {
-    ConformanceStatement toBeDeleted = null;
-    for (ConformanceStatement cs : s.getBinding().getConformanceStatements()) {
-      if (cs.getId().equals(location)) {
-        toBeDeleted = cs;
-      }
-    }
-
-    if (toBeDeleted != null)
-      s.getBinding().getConformanceStatements().remove(toBeDeleted);
-  }
-
-  /**
-   * @param hashSet
-   * @return
-   */
-  private Set<ValuesetBinding> convertDisplayValuesetBinding(
-      HashSet<DisplayValuesetBinding> displayValuesetBindings) {
-    if (displayValuesetBindings != null) {
-      Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
-      for (DisplayValuesetBinding dvb : displayValuesetBindings) {
-        ValuesetBinding vb = new ValuesetBinding();
-        vb.setStrength(dvb.getStrength());
-        vb.setValueSets(dvb.getValueSets());
-
-        vb.setValuesetLocations(dvb.getValuesetLocations());
-        result.add(vb);
-      }
-      return result;
-    }
-    return null;
-  }
-
-  /**
-   * @param sebs
-   * @param location
-   * @return
-   */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(Segment s, String location) {
-    if (s.getBinding() == null) {
-      ResourceBinding binding = new ResourceBinding();
-      binding.setElementId(s.getId());
-      s.setBinding(binding);
-    }
-    return this.findAndCreateStructureElementBindingByIdPath(s.getBinding(), location);
-  }
-
-  /**
-   * @param binding
-   * @param location
-   * @return
-   */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(ResourceBinding binding,
-      String location) {
-    if (binding.getChildren() == null) {
-      if (location.contains("-")) {
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location.split("\\-")[0]);
-        binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb,
-            location.replace(location.split("\\-")[0] + "-", ""));
-      } else {
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location);
-        binding.addChild(seb);
-        return seb;
-      }
-    } else {
-      if (location.contains("-")) {
-        for (StructureElementBinding seb : binding.getChildren()) {
-          if (seb.getElementId().equals(location.split("\\-")[0]))
-            return this.findAndCreateStructureElementBindingByIdPath(seb,
-                location.replace(location.split("\\-")[0] + "-", ""));
-        }
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location.split("\\-")[0]);
-        binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb,
-            location.replace(location.split("\\-")[0] + "-", ""));
-      } else {
-        for (StructureElementBinding seb : binding.getChildren()) {
-          if (seb.getElementId().equals(location))
-            return seb;
-        }
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location);
-        binding.addChild(seb);
-        return seb;
-      }
-    }
-  }
-
-  /**
-   * @param seb
-   * @param replace
-   * @return
-   */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(StructureElementBinding binding,
-      String location) {
-    if (binding.getChildren() == null) {
-      if (location.contains("-")) {
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location.split("\\-")[0]);
-        binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb,
-            location.replace(location.split("\\-")[0] + "-", ""));
-      } else {
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location);
-        binding.addChild(seb);
-        return seb;
-      }
-    } else {
-      if (location.contains("-")) {
-        for (StructureElementBinding seb : binding.getChildren()) {
-          if (seb.getElementId().equals(location.split("\\-")[0]))
-            return this.findAndCreateStructureElementBindingByIdPath(seb,
-                location.replace(location.split("\\-")[0] + "-", ""));
-        }
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location.split("\\-")[0]);
-        binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb,
-            location.replace(location.split("\\-")[0] + "-", ""));
-      } else {
-        for (StructureElementBinding seb : binding.getChildren()) {
-          if (seb.getElementId().equals(location))
-            return seb;
-        }
-        StructureElementBinding seb = new StructureElementBinding();
-        seb.setElementId(location);
-        binding.addChild(seb);
-        return seb;
-      }
-    }
-  }
-
-  /**
-   * @param s
-   * @param location
-   * @return
-   */
-  private Field findFieldById(Segment s, String location) {
-    for (Field f : s.getChildren()) {
-      if (f.getId().equals(location))
-        return f;
     }
     return null;
   }
@@ -1293,26 +1052,6 @@ public class SegmentServiceImpl implements SegmentService {
     return segmentRepository.findByIdIn(ids);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#
-   * collectAvaliableConformanceStatements(java.lang.String, java.lang.String,
-   * java.lang.String)
-   */
-  @Override
-  public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String segmentId,
-      String segmentName) {
-    // Set<ConformanceStatement> found = this.conformanceStatementRepository
-    // .findByIgDocumentIdAndStructureId(documentId, segmentName);
-    // Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-    // for (ConformanceStatement cs : found) {
-    // if (!cs.getSourceIds().contains(segmentId))
-    // result.add(cs);
-    // }
-    return null;
-  }
-
   @Override
   public void collectResources(Segment seg, HashMap<String, Resource> used) {
     // TODO Auto-generated method stub
@@ -1351,30 +1090,6 @@ public class SegmentServiceImpl implements SegmentService {
     return ret;
   }
 
-  public void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem) {
-    if(structureElement.getChangeLog() == null) {
-      structureElement.setChangeLog(new HashMap<>());
-    }
-
-    if(changeItem.getChangeReason() != null) {
-      structureElement.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-    } else {
-      structureElement.getChangeLog().remove(changeItem.getPropertyType());
-    }
-  }
-
-  public void logChangeBinding(StructureElementBinding binding, ChangeItemDomain changeItem) {
-    if(binding.getChangeLog() == null) {
-      binding.setChangeLog(new HashMap<>());
-    }
-
-    if(changeItem.getChangeReason() != null) {
-      binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-    } else {
-      binding.getChangeLog().remove(changeItem.getPropertyType());
-    }
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -1382,250 +1097,103 @@ public class SegmentServiceImpl implements SegmentService {
    * updateSegmentByChangeItems(gov.nist.hit. hl7.igamt.segment.domain.Segment,
    * java.util.List)
    */
+
   @Override
-  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws Exception {
-    Collections.sort(cItems);
+  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+    //Resource part
+    Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
+    applyChange.applyResourceChanges(s, singlePropertyMap , documentId);
+    
+   if (singlePropertyMap.containsKey(PropertyType.EXT)) {
+      s.setExt((String) singlePropertyMap.get(PropertyType.EXT).getPropertyValue());
+   }
+    
+    Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
+    this.applyChildrenChange(map, s.getChildren(), documentId);
 
-    this.applyStructure(s, cItems);
+    applyChange.applyBindingChanges(map, s.getBinding(), documentId, Level.SEGMENT);
 
-    for (ChangeItemDomain item : cItems) {
-      if (item.getPropertyType().equals(PropertyType.PREDEF)) {
-        item.setOldPropertyValue(s.getPreDef());
-        s.setPreDef((String) item.getPropertyValue());
-
-      } else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
-        item.setOldPropertyValue(s.getPostDef());
-        s.setPostDef((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
-        item.setOldPropertyValue(s.getAuthorNotes());
-        s.setAuthorNotes((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
-        item.setOldPropertyValue(s.getUsageNotes());
-        s.setUsageNotes((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.EXT)) {
-        item.setOldPropertyValue(s.getExt());
-        s.setExt((String) item.getPropertyValue());
-      } 
-      else if (item.getPropertyType().equals(PropertyType.SHORTDESCRIPTION)) {
-        item.setOldPropertyValue(s.getShortDescription());
-        s.setShortDescription((String) item.getPropertyValue());
-      } 
-      else if (item.getPropertyType().equals(PropertyType.USAGE)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getUsage());
-          f.setUsage(Usage.valueOf((String) item.getPropertyValue()));
-          this.logChangeStructureElement(f, item);
-        }
-      }
-      else if (item.getPropertyType().equals(PropertyType.NAME)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getName());
-          f.setName(item.getPropertyValue().toString());
-          this.logChangeStructureElement(f, item);
-        }
-      }
-      else if (item.getPropertyType().equals(PropertyType.CARDINALITYMIN)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getMin());
-          if (item.getPropertyValue() == null) {
-            f.setMin(0);
-          } else {
-            f.setMin((Integer) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.CARDINALITYMAX)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getMax());
-          if (item.getPropertyValue() == null) {
-            f.setMax("NA");
-          } else {
-            f.setMax((String) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.LENGTHMIN)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getMinLength());
-          if (item.getPropertyValue() == null) {
-            f.setMinLength("NA");
-          } else {
-            f.setMinLength((String) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.LENGTHMAX)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getMaxLength());
-          if (item.getPropertyValue() == null) {
-            f.setMaxLength("NA");
-          } else {
-            f.setMaxLength((String) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.CONFLENGTH)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getConfLength());
-          if (item.getPropertyValue() == null) {
-            f.setConfLength("NA");
-          } else {
-            f.setConfLength((String) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.LENGTHTYPE)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getLengthType());
-          if (item.getPropertyValue() == null) {
-            f.setLengthType(LengthType.UNSET);
-          } else {
-            f.setLengthType(LengthType.valueOf((String) item.getPropertyValue()));
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.DATATYPE)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getRef());
-          ObjectMapper mapper = new ObjectMapper();
-          String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-          f.setRef(mapper.readValue(jsonInString, Ref.class));
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-        item.setOldPropertyValue(seb.getValuesetBindings());
-        seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
-            Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
-        if(s.getName().equals("OBX") && "2".equals(item.getLocation())){
-          this.restoreDefaultDynamicMapping(s);
-        }
-        this.logChangeBinding(seb, item);
-      } else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-        item.setOldPropertyValue(seb.getInternalSingleCode());
-        seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
-        this.logChangeBinding(seb, item);
-      } else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getConstantValue());
-          if (item.getPropertyValue() == null) {
-            f.setConstantValue(null);
-          } else {
-            f.setConstantValue((String) item.getPropertyValue());
-          }
-          this.logChangeStructureElement(f, item);
-        }
-      } else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getText());
-          if (item.getPropertyValue() == null) {
-            f.setText(null);
-          } else {
-            f.setText((String) item.getPropertyValue());
-          }
-        }
-      } else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        Field f = this.findFieldById(s, item.getLocation());
-        if (f != null) {
-          item.setOldPropertyValue(f.getComments());
-          f.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
-        }
-      } else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        if (item.getChangeType().equals(ChangeType.ADD)) {
-          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-          cs.addSourceId(s.getId());
-          cs.setStructureId(s.getName());
-          cs.setLevel(Level.SEGMENT);
-          cs.setId(new ObjectId().toString());
-          cs.setIgDocumentId(documentId);
-          s.getBinding().addConformanceStatement(cs);
-        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
-          item.setOldPropertyValue(item.getLocation());
-          this.deleteConformanceStatementById(s, item.getLocation());
-        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
-          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-          if(!cs.isLocked()) {
-            if (cs.getIdentifier() != null) {
-              this.deleteConformanceStatementById(s, cs.getId());
-            }
-            cs.addSourceId(s.getId());
-            cs.setStructureId(s.getName());
-            cs.setLevel(Level.SEGMENT);
-            cs.setIgDocumentId(documentId);
-            s.getBinding().addConformanceStatement(cs);
-          }
-        }
-      } else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-        if (item.getChangeType().equals(ChangeType.ADD)) {
-          Predicate cp = mapper.readValue(jsonInString, Predicate.class);
-          cp.addSourceId(s.getId());
-          cp.setStructureId(s.getName());
-          cp.setLevel(Level.SEGMENT);
-          cp.setIgDocumentId(documentId);
-          seb.setPredicate(cp);
-        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
-          item.setOldPropertyValue(item.getLocation());
-          if (seb.getPredicate() != null) {
-            item.setOldPropertyValue(seb.getPredicate());
-            seb.setPredicate(null);
-          }
-
-        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
-          Predicate cp = mapper.readValue(jsonInString, Predicate.class);
-          item.setOldPropertyValue(seb.getPredicate());
-          cp.addSourceId(s.getId());
-          cp.setStructureId(s.getName());
-          cp.setLevel(Level.SEGMENT);
-          cp.setIgDocumentId(documentId);
-          seb.setPredicate(cp);
-        }
-
-        this.logChangeBinding(seb, item);
-      } else if (item.getPropertyType().equals(PropertyType.DYNAMICMAPPINGITEM)) {
-        String value = (String)item.getPropertyValue();
-        String location = (String)item.getLocation();
-        if(s.getDynamicMappingInfo().getItems() ==null) {
-          s.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
-        }
-        if(item.getChangeType().equals(ChangeType.DELETE)) {
-          s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
-        }
-        else if(item.getChangeType().equals(ChangeType.ADD)) {
-
-          s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
-          s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
-        }else if(item.getChangeType().equals(ChangeType.UPDATE)) {
-          s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
-          s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
-        }
-      }
+    if(map.containsKey(PropertyType.DYNAMICMAPPINGITEM)) {
+      this.applyDynamicMappingChanges(map, s, documentId);
     }
     s.setBinding(this.makeLocationInfo(s));
     this.save(s);
   }
+
+  /**
+   * @param map
+   * @param children
+   * @param documentId
+   * @throws ApplyChangeException 
+   */
+  private void applyChildrenChange(Map<PropertyType, List<ChangeItemDomain>> map,
+      Set<Field> children, String documentId) throws ApplyChangeException {
+
+    applyChange.applySubstructureElementChanges(map, children, documentId, applyChange::findStructElementById);
+
+    if (map.containsKey(PropertyType.CARDINALITYMIN)) {
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMIN), children, documentId, this::applyCardMin, applyChange::findStructElementById);
+    }
+
+    if (map.containsKey(PropertyType.CARDINALITYMAX)) {
+      applyChange.applyAll(map.get(PropertyType.CARDINALITYMAX), children, documentId, this::applyCardMax, applyChange::findStructElementById);
+    } 
+  }
+
+  public void applyCardMin( ChangeItemDomain change, Field f, String documentId) {
+    change.setOldPropertyValue(f.getMin());
+    if (change.getPropertyValue() == null) {
+      f.setMin(0);
+    } else {
+      f.setMin((Integer) change.getPropertyValue());
+    }
+  }
+
+  public void applyCardMax( ChangeItemDomain change, Field f, String documentId) {
+    change.setOldPropertyValue(f.getMax());
+    if (change.getPropertyValue() == null) {
+      f.setMax("NA");
+    } else {
+      f.setMax((String) change.getPropertyValue());
+    }
+  }
+
+  /**
+   * @param map
+   * @param s
+   * @param documentId
+   */
+  private void applyDynamicMappingChanges(Map<PropertyType, List<ChangeItemDomain>> map, Segment s,
+      String documentId) {
+    // TODO Auto-generated method stub
+    for(ChangeItemDomain item: map.get(PropertyType.DYNAMICMAPPINGITEM)) {
+      String value = (String)item.getPropertyValue();
+      String location = (String)item.getLocation();
+      if(s.getDynamicMappingInfo().getItems() ==null) {
+        s.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
+      }
+      if(item.getChangeType().equals(ChangeType.DELETE)) {
+        s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
+      }
+      else if(item.getChangeType().equals(ChangeType.ADD)) {
+
+        s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
+        s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
+      }else if(item.getChangeType().equals(ChangeType.UPDATE)) {
+        s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
+        s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
+      } 
+    }
+
+    if(s.getName().equals("OBX")){
+      if(map.containsKey(PropertyType.VALUESET)) {
+        if( map.get(PropertyType.VALUESET).stream().anyMatch(x -> "2".equals(x.getLocation()))){
+          this.restoreDefaultDynamicMapping(s);
+        }
+      }
+    }
+  }
+
   public void applyStructure(Segment segment, List<ChangeItemDomain> cItems)
       throws Exception {
     ObjectMapper mapper = new ObjectMapper();
@@ -1683,12 +1251,6 @@ public class SegmentServiceImpl implements SegmentService {
     String valueSetId = findObx2VsId(segment);
     if (valueSetId !=null) {
       source = valueSetService.findById(valueSetId);
-//      if(source == null) {
-//        List<Valueset> vsList = valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(Scope.HL7STANDARD.toString(), segment.getDomainInfo().getVersion(), "HL70125");
-//        if(vsList != null && ! vsList.isEmpty()) {
-//          source = vsList.get(0);
-//        }
-//      }
     }
     segment.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
     if(source !=null) {
@@ -1721,4 +1283,5 @@ public class SegmentServiceImpl implements SegmentService {
     }
     return null;
   }
+
 }

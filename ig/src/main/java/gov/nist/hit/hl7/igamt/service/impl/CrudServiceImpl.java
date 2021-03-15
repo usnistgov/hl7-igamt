@@ -10,10 +10,14 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -38,8 +42,13 @@ import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 @Service
@@ -56,7 +65,8 @@ public class CrudServiceImpl implements CrudService {
 
 	@Autowired
 	ValuesetService valuesetService;
-
+	@Autowired
+	FhirHandlerService fhirHandlerService;
 
 	@Override
 	public AddMessageResponseObject addConformanceProfiles(Set<String> ids, Ig ig)
@@ -384,7 +394,6 @@ public class CrudServiceImpl implements CrudService {
 				.collect(Collectors.toList());
 
 		orderRegistry(ig.getSegmentRegistry(), ordredSegment);
-		System.out.println(ig.getDatatypeRegistry().getChildren().size());
 		List<AbstractDomain> ordredDatatypes = ret.getDatatypes().stream()
 				.sorted((Datatype t1, Datatype t2) -> t1.getName().compareTo(t2.getName()))
 				.collect(Collectors.toList());
@@ -413,6 +422,178 @@ public class CrudServiceImpl implements CrudService {
 		}
 	}
 
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.ig.service.CrudService#addValueSets(java.util.List, gov.nist.hit.hl7.igamt.ig.domain.Ig)
+   */
+  @Override
+  public AddValueSetResponseObject addValueSets(List<AddingInfo> toAdd, Ig ig, String username) throws AddingException {
+    // TODO Auto-generated method stub
+    Set<String> savedIds = new HashSet<String>();
+    for (AddingInfo elm : toAdd) {
+      if (elm.isFlavor()) {
+        addValueSetAsFlavor(elm, savedIds,ig, username );
+      } else {
+        addAsIs(elm, savedIds,ig, username);
+      }
+    }
+    AddValueSetResponseObject objects = this.addValueSets(savedIds, ig);
+    return objects;
+    
+  }
 
+  /**
+   * @param elm
+   * @param savedIds
+   * @param ig
+   * @param username
+   */
+  private void addAsIs(AddingInfo elm, Set<String> savedIds, Ig ig, String username) {
+    // TODO Auto-generated method stub
+    if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+      addPhinvadsAsIs(elm, savedIds,ig, username );
+    } else {
+      ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
+      savedIds.add(elm.getId());
+    }
+  }
+  
+  private void addPhinvadsAsIs(AddingInfo elm, Set<String> savedIds, Ig ig, String username) {
+    Valueset valueset = valuesetService.findExternalPhinvadsByOid(elm.getOid());
+
+    if(valueset == null) {
+      Valueset newValueset = new Valueset();
+      DomainInfo info = new DomainInfo();
+      info.setScope(Scope.PHINVADS);
+      info.setVersion(elm.getDomainInfo().getVersion());
+      newValueset.setDomainInfo(info);
+      newValueset.setSourceType(SourceType.EXTERNAL);
+      newValueset.setUsername(username);
+      newValueset.setBindingIdentifier(elm.getName());
+      newValueset.setUrl(elm.getUrl());
+      newValueset.setOid(elm.getOid());
+      newValueset.setFlavor(false);
+      newValueset.setExtensibility(Extensibility.Closed);
+      newValueset.setStability(Stability.Dynamic);
+      newValueset.setContentDefinition(ContentDefinition.Extensional);
+      Valueset saved = valuesetService.save(newValueset);
+      ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+      savedIds.add(saved.getId());
+    } else {
+      ig.getValueSetRegistry().getCodesPresence().put(valueset.getId(), elm.isIncludeChildren());
+      savedIds.add(valueset.getId());
+    }
+    
+  }
+
+  /**
+   * @param elm
+   * @param savedIds
+   * @param ig
+   * @param username
+   */
+  private void addValueSetAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig, String username) {
+    // TODO Auto-generated method stub
+    if (elm.getOriginalId() != null) {
+      Valueset valueset = valuesetService.findById(elm.getOriginalId());
+      if (valueset != null) {
+        Valueset clone = valueset.clone();
+        clone.getDomainInfo().setScope(Scope.USER);
+        if(valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
+          clone.setSourceType(SourceType.INTERNAL);
+          clone.setOrigin(valueset.getId());
+          Set<Code> vsCodes = fhirHandlerService.getValusetCodeForDynamicTable();
+          clone.setCodes(vsCodes);
+        }
+        clone.setUsername(username);
+        clone.setBindingIdentifier(elm.getName());
+        clone.setSourceType(elm.getSourceType());
+        clone = valuesetService.save(clone);
+        ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
+        savedIds.add(clone.getId());
+      }
+    } else {
+      if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+        importPhinvadsAsFlavor( elm, savedIds, ig, username);
+      } else {
+        createNewValueSet( elm, savedIds, ig, username);
+      }
+    }
+  }
+
+  /**
+   * @param elm
+   * @param savedIds
+   * @param ig
+   * @param username
+   */
+  private void importPhinvadsAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig,
+      String username) {
+    // TODO Auto-generated method stub
+    
+
+    Valueset valueset = new Valueset();
+    DomainInfo info = new DomainInfo();
+    info.setScope(Scope.PHINVADS);
+    info.setVersion(elm.getDomainInfo().getVersion());
+    valueset.setDomainInfo(info);
+    if (!elm.isIncludeChildren()) {
+      valueset.setSourceType(SourceType.EXTERNAL);
+      valueset.setCodes(new HashSet<Code>());
+      valueset.setExtensibility(Extensibility.Closed);
+      valueset.setStability(Stability.Dynamic);
+      valueset.setContentDefinition(ContentDefinition.Extensional);
+    } else {
+      valueset.setSourceType(SourceType.INTERNAL);
+      valueset.setExtensibility(Extensibility.Open);
+      valueset.setStability(Stability.Static);
+      valueset.setContentDefinition(ContentDefinition.Extensional);
+      // Get codes from vocab service
+      if (elm.getOid() != null) {
+        Set<Code> vsCodes = fhirHandlerService.getValusetCodes(elm.getOid());
+        valueset.setCodes(vsCodes);
+        valueset.setCodeSystems(valuesetService.extractCodeSystemsFromCodes(vsCodes));
+      }
+    }
+    valueset.setUsername(username);
+    valueset.setBindingIdentifier(elm.getName());
+    valueset.setName(elm.getDescription());
+    valueset.setUrl(elm.getUrl());
+    valueset.setOid(elm.getOid());
+    valueset.setFlavor(true);
+
+    Valueset saved = valuesetService.save(valueset);
+    ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+    savedIds.add(saved.getId());
+    
+  }
+
+  /**
+   * @param elm
+   * @param savedIds
+   * @param ig
+   * @param username
+   */
+  private void createNewValueSet(AddingInfo elm, Set<String> savedIds, Ig ig, String username) {
+    // TODO Auto-generated method stub
+    Valueset valueset = new Valueset();
+    DomainInfo info = new DomainInfo();
+    info.setScope(Scope.USER);
+    info.setVersion(null);
+    valueset.setDomainInfo(info);
+    if (!elm.isIncludeChildren()) {
+      valueset.setSourceType(SourceType.EXTERNAL);
+      valueset.setCodes(new HashSet<Code>());
+    } else {
+      valueset.setSourceType(SourceType.INTERNAL);
+    }
+    valueset.setUsername(username);
+    valueset.setBindingIdentifier(elm.getName());
+    valueset.setUrl(elm.getUrl());
+    Valueset saved = valuesetService.save(valueset);
+    ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+    savedIds.add(saved.getId());
+  }
+  
+  
 
 }

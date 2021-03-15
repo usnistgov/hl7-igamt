@@ -25,10 +25,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
@@ -59,15 +55,12 @@ public class ValuesetController extends BaseController {
 	CommonService commonService;
 
 	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
-	private static final String PREDEF_SAVED = "PREDEF_SAVED";
-	private static final String POSTDEF_SAVED = "POSTDEF_SAVED";
-	private static final String METADATA_SAVED = "METADATA_SAVED";
 
 	public ValuesetController() {
 	}
 
 	@RequestMapping(value = "/api/valuesets/{scope}/{version:.+}", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 	public @ResponseBody ResponseMessage<List<Valueset>> findDisplayFormatByScopeAndVersion(@PathVariable String version,
 			@PathVariable String scope, Authentication authentication) {
 		return new ResponseMessage<List<Valueset>>(Status.SUCCESS, "", "", null, false, null,
@@ -75,7 +68,7 @@ public class ValuesetController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/valuesets/{scope}/info", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 	public @ResponseBody ResponseMessage<List<Valueset>> findDisplayFormatByScope(
 			@PathVariable String scope, Authentication authentication) {
 		return new ResponseMessage<List<Valueset>>(Status.SUCCESS, "", "", null, false, null,
@@ -83,7 +76,7 @@ public class ValuesetController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/valuesets/{id}/resources", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 
 	public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) {
 		Valueset valueset = valuesetService.findById(id);
@@ -98,21 +91,21 @@ public class ValuesetController extends BaseController {
 		Valueset valueset = valuesetService.findById(id);
 		return valueset;
 	}
-	
+
 	@RequestMapping(value = "/api/valuesets/exportCSV/{id}", method = RequestMethod.POST, produces = "text/xml", consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-	  public void exportCSV(@PathVariable("id") String tableId, HttpServletRequest request,
-	      HttpServletResponse response) throws IOException, ValuesetNotFoundException {
-	    log.info("Export table " + tableId);
-	    Valueset valueset = findById(tableId);
+	public void exportCSV(@PathVariable("id") String tableId, HttpServletRequest request,
+			HttpServletResponse response) throws IOException, ValuesetNotFoundException {
+		log.info("Export table " + tableId);
+		Valueset valueset = findById(tableId);
 
-	    InputStream content = IOUtils.toInputStream(new TableCSVGenerator().generate(valueset), "UTF-8");
-	    response.setContentType("text/xml");
-	    response.setHeader("Content-disposition", "attachment;filename=" + valueset.getBindingIdentifier()
-	        + "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv");
-	    FileCopyUtils.copy(content, response.getOutputStream());
-	  }
+		InputStream content = IOUtils.toInputStream(new TableCSVGenerator().generate(valueset), "UTF-8");
+		response.setContentType("text/xml");
+		response.setHeader("Content-disposition", "attachment;filename=" + valueset.getBindingIdentifier()
+		+ "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv");
+		FileCopyUtils.copy(content, response.getOutputStream());
+	}
 
-	
+
 	private Valueset findById(String id) throws ValuesetNotFoundException {
 		Valueset valueset = valuesetService.findById(id);
 		if (valueset == null) {
@@ -126,7 +119,7 @@ public class ValuesetController extends BaseController {
 			@RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
 			Authentication authentication) throws ValuesetException, IOException, ForbiddenOperationException {
 		Valueset s = this.valuesetService.findById(id);
-        commonService.checkRight(authentication,s.getCurrentAuthor(), s.getUsername());
+		commonService.checkRight(authentication,s.getCurrentAuthor(), s.getUsername());
 
 		this.valuesetService.applyChanges(s, cItems, documentId);
 		EntityChangeDomain entityChangeDomain = new EntityChangeDomain();

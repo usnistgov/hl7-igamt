@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -27,7 +26,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
-import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
@@ -61,19 +59,9 @@ public class SegmentController extends BaseController {
 	SegmentService segmentService;
 	@Autowired
 	CommonService commonService;
-
-//	@Autowired
-//	CoConstraintService coconstraintService;
-
 	@Autowired
 	EntityChangeService entityChangeService;
 
-//	@Autowired
-//	CoConstraintService coConstraintService;
-
-
-	@Autowired
-	private ConformanceStatementRepository conformanceStatementRepository;
 
 	public SegmentController() {
 	}
@@ -115,38 +103,12 @@ public class SegmentController extends BaseController {
 				cfs.add(cs);
 			}
 		}
-
-		Set<ConformanceStatement> acs = this.segmentService.collectAvaliableConformanceStatements(did, segment.getId(),
-				segment.getName());
-
 		HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
 		this.segmentService.collectAssoicatedConformanceStatements(segment, associatedConformanceStatementMap);
 		conformanceStatementDisplay.complete(segment, SectionType.CONFORMANCESTATEMENTS,
-				getReadOnly(authentication, segment), cfs, acs, associatedConformanceStatementMap);
+				getReadOnly(authentication, segment), cfs, null, associatedConformanceStatementMap);
 		conformanceStatementDisplay.setType(Type.SEGMENT);
 		return conformanceStatementDisplay;
-	}
-
-
-	@RequestMapping(value = "/api/segments/{id}/metadata", method = RequestMethod.GET, produces = {
-			"application/json" })
-
-	public DisplayMetadataSegment getSegmentMetadata(@PathVariable("id") String id, Authentication authentication)
-			throws SegmentNotFoundException {
-		Segment segment = findById(id);
-		DisplayMetadataSegment display = new DisplayMetadataSegment();
-		display.complete(segment, SectionType.METADATA, getReadOnly(authentication, segment));
-		return display;
-
-	}
-
-	@RequestMapping(value = "/api/segments/{id}/predef", method = RequestMethod.GET, produces = { "application/json" })
-	public DefinitionDisplay getSegmentPredef(@PathVariable("id") String id, Authentication authentication)
-			throws SegmentNotFoundException {
-		Segment segment = findById(id);
-		DefinitionDisplay display = new DefinitionDisplay();
-		display.build(segment, SectionType.PREDEF, getReadOnly(authentication, segment));
-		return display;
 	}
 
 	private boolean getReadOnly(Authentication authentication, Segment segment) {
@@ -158,17 +120,6 @@ public class SegmentController extends BaseController {
 		}
 	}
 
-	@RequestMapping(value = "/api/segments/{id}/postdef", method = RequestMethod.GET, produces = { "application/json" })
-	public @ResponseBody DefinitionDisplay getSegmentPostdef(@PathVariable("id") String id,
-			Authentication authentication) throws SegmentNotFoundException {
-		Segment segment = findById(id);
-		DefinitionDisplay display = new DefinitionDisplay();
-		display.build(segment, SectionType.POSTDEF, getReadOnly(authentication, segment));
-
-		return display;
-
-	}
-
 	@RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.POST, produces = {
 			"application/json" })
 	public ResponseMessage saveDynamicMapping(@PathVariable("id") String id, Authentication authentication,
@@ -177,34 +128,6 @@ public class SegmentController extends BaseController {
 		Segment segment = segmentService.saveDynamicMapping(dynamicMapping);
 		return new ResponseMessage(Status.SUCCESS, DYNAMICMAPPING_SAVED, id, segment.getUpdateDate());
 	}
-
-//	@RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.GET, produces = {
-//			"application/json" })
-//	@ResponseBody
-//	public CoConstraintTableDisplay getCoConstraints(@PathVariable("id") String id, Authentication authentication)
-//			throws CoConstraintNotFoundException, SegmentNotFoundException {
-//
-//		CoConstraintTable table = this.coconstraintService.getCoConstraintForSegment(id);
-//
-//		Segment segment = findById(id);
-//		CoConstraintTableDisplay display = new CoConstraintTableDisplay();
-//		display.complete(display, segment, SectionType.COCONSTRAINTS, getReadOnly(authentication, segment));
-//		display.setData(table);
-//		return display;
-//
-//	}
-
-//	@RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.POST, produces = {
-//			"application/json" })
-//	@ResponseBody
-//	public ResponseMessage<CoConstraintTable> saveCoConstraints(@PathVariable("id") String id,
-//			@RequestBody CoConstraintTable table, Authentication authentication) throws CoConstraintSaveException {
-//		CoConstraintTable ccTable = this.coconstraintService.saveCoConstraintForSegment(id, table,
-//				authentication.getPrincipal().toString());
-//		return new ResponseMessage<CoConstraintTable>(Status.SUCCESS, "CoConstraint Table", "Saved Successfully",
-//				ccTable.getId(), false, new Date(), ccTable);
-//	}
-
 	@RequestMapping(value = "/api/segments/{scope}/{version:.+}", method = RequestMethod.GET, produces = {
 			"application/json" })
 	public @ResponseBody ResponseMessage<List<Segment>> find(@PathVariable String version, @PathVariable Scope scope,
@@ -253,26 +176,6 @@ public class SegmentController extends BaseController {
 			throw new SegmentException(e);
 		}
 	}
-
-//	@RequestMapping(value = "/api/segments/{id}/coconstraints/export", method = RequestMethod.GET)
-//	public void exportCoConstraintsToExcel(@PathVariable("id") String id, HttpServletResponse response)
-//			throws ExportException {
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		if (authentication != null) {
-//			String username = authentication.getPrincipal().toString();
-//			ByteArrayOutputStream excelFile = coConstraintService.exportToExcel(id);
-//			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-//			response.setHeader("Content-disposition", "attachment;filename=" + "CoConstraintsExcelFile.xlsx");
-//			try {
-//				response.getOutputStream().write(excelFile.toByteArray());
-//			} catch (IOException e) {
-//				throw new ExportException(e, "Error while sending back excel Document with id " + id);
-//			}
-//		} else {
-//			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-//		}
-//	}
-
 	@RequestMapping(value = "/api/segments/{id}/preDef", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
 	public ResponseMessage<?> SavePreDef(@PathVariable("id") String id,

@@ -29,6 +29,7 @@ import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureTreeModel;
@@ -85,15 +86,6 @@ public interface ConformanceProfileService {
 
   ConformanceProfile findDisplayFormat(String id);
 
-  public DisplayConformanceProfileMetadata convertDomainToMetadata(
-      ConformanceProfile conformanceProfile);
-
-  public DisplayConformanceProfilePreDef convertDomainToPredef(
-      ConformanceProfile conformanceProfile);
-
-  public DisplayConformanceProfilePostDef convertDomainToPostdef(
-      ConformanceProfile conformanceProfile);
-
   public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
       ConformanceProfile conformanceProfile, String documentId, boolean readOnly);
 
@@ -127,5 +119,6 @@ public interface ConformanceProfileService {
   List<ConformanceProfile> findByIdIn(Set<String> set);
   
   public Set<Resource> getDependencies(ConformanceProfile cp);
+
 
 }

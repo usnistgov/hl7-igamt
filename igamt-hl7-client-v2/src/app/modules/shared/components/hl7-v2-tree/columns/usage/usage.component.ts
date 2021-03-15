@@ -45,8 +45,6 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
   resource: Observable<IResource>;
   @Input()
   repository: AResourceRepositoryService;
-  @Input()
-  context: Type;
 
   @Input()
   set usages({ original, config }: { original: Usage, config: Hl7Config }) {

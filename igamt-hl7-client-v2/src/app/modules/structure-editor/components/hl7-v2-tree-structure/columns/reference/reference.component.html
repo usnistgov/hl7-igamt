@@ -22,7 +22,6 @@
 
     <div *ngIf="!editMode" style="display: flex; justify-content: space-between; align-items: center;">
       <div style="display: flex; align-items: center;">
-        <app-change-log-info style="margin-right: 5px" [sections]="changeDisplaySections" ></app-change-log-info>
         <div style="display: flex; align-items: center;">
           <ng-container *ngTemplateOutlet="display; context : { $implicit : selected }"></ng-container>
         </div>
@@ -35,7 +34,6 @@
   </div>
 
   <div *ngSwitchCase="true" style="display: flex; align-items: center;">
-    <app-change-log-info style="margin-right: 5px" [sections]="changeDisplaySections" ></app-change-log-info>
     <ng-container *ngIf="selected" style="display: flex; align-items: center;">
       <ng-container *ngTemplateOutlet="display; context : { $implicit : selected }"></ng-container>
     </ng-container>
