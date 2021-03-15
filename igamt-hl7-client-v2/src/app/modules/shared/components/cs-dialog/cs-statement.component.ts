@@ -8,7 +8,7 @@ import { IResource } from '../../models/resource.interface';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionType } from '../../services/tree-filter.service';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
-import { Statement, Token } from '../pattern-dialog/cs-pattern.domain';
+import { IToken, Statement } from '../pattern-dialog/cs-pattern.domain';
 
 export interface IStatementTokenPayload {
   effectiveTree: IHL7v2TreeNode[];
@@ -24,7 +24,7 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
   @Input()
   collapsed = false;
   @Input()
-  set token(token: Token<Statement, IStatementTokenPayload>) {
+  set token(token: IToken<Statement, IStatementTokenPayload>) {
     this._token = token;
     this.value = token.value.payload;
     // Listen to payload changes
@@ -69,7 +69,7 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
 
   res: IResource;
   _occurrenceType = OccurrenceType;
-  _token: Token<Statement, IStatementTokenPayload>;
+  _token: IToken<Statement, IStatementTokenPayload>;
   value: T;
   payloadSubscription: Subscription;
 
@@ -84,7 +84,7 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
 
   public abstract complete(): boolean;
   public abstract clearStatementTargetElements(): void;
-  public abstract initializeStatement(token: Token<Statement, IStatementTokenPayload>);
+  public abstract initializeStatement(token: IToken<Statement, IStatementTokenPayload>);
   public abstract change(): void;
 
   onOwnPayloadUpdate(payload: IStatementTokenPayload) {

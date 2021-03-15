@@ -7,7 +7,7 @@ import { PathService } from '../../services/path.service';
 import { StatementTarget } from '../../services/statement.service';
 import { RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { CsStatementComponent, IStatementTokenPayload } from '../cs-dialog/cs-statement.component';
-import { Statement, Token } from '../pattern-dialog/cs-pattern.domain';
+import { IToken, Statement } from '../pattern-dialog/cs-pattern.domain';
 
 @Component({
   selector: 'app-cs-subcontext',
@@ -60,7 +60,7 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
     this.subject = new StatementTarget(elementNamingService, pathService, this.occurences);
   }
 
-  initializeStatement(token: Token<Statement, IStatementTokenPayload>) {
+  initializeStatement(token: IToken<Statement, IStatementTokenPayload>) {
     this.subject.setSubject(token.value.payload as ISubject, token.payload.getValue().effectiveContext, this.res, this.repository).pipe(
       finalize(() => {
         this.updateTokenStatus();
@@ -69,7 +69,7 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
   }
 
   targetElement(event) {
-    this.subject.reset(this.token.payload.getValue().effectiveContext, this.pathService.trimPathRoot(event.path), this.res, this.repository, this.token.payload.getValue().effectiveTree, event.node).pipe(
+    this.subject.reset(this.token.payload.getValue().effectiveContext, this.pathService.trimPathRoot(event.path), this.res, this.repository, this.token.payload.getValue().effectiveTree, event.node, !!this.token.dependency).pipe(
       tap((s) => {
         this.change();
       }),
@@ -82,7 +82,7 @@ export class CsSubcontextComponent extends CsStatementComponent<ISubContext> {
   }
 
   change() {
-    this.subject.getDescription(this.res, this.repository).pipe(
+    this.subject.getDescription(this.res, this.repository, !!this.token.dependency).pipe(
       take(1),
       map((desc) => {
         Object.assign(this.value, {

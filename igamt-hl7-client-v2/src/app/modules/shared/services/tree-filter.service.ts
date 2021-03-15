@@ -176,7 +176,7 @@ export class TreeFilterService {
     if (node.data.cardinality.max === '*') {
       return true === value;
     }
-    if ((+node.data.cardinality.max - node.data.cardinality.min) > 0) {
+    if ((+node.data.cardinality.max - node.data.cardinality.min) > 1) {
       return true === value;
     }
     return false === value;

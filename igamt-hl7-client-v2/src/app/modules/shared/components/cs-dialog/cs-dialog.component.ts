@@ -18,7 +18,7 @@ import { PathService } from '../../services/path.service';
 import { StoreResourceRepositoryService } from '../../services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
-import { BinaryOperator, IfThenOperator, LeafStatementType, Pattern, Statement, Token, TokenType, StatementIdIndex } from '../pattern-dialog/cs-pattern.domain';
+import { BinaryOperator, IfThenOperator, IToken, LeafStatementType, Pattern, Statement, StatementIdIndex, TokenType } from '../pattern-dialog/cs-pattern.domain';
 import { PatternDialogComponent } from '../pattern-dialog/pattern-dialog.component';
 import { IAssertion } from './../../models/cs.interface';
 import { IStatementTokenPayload } from './cs-statement.component';
@@ -237,13 +237,13 @@ export class CsDialogComponent implements OnDestroy {
     return inner(this.context[0].children, fullPath);
   }
 
-  initializePayload(token: Token<Statement, IStatementTokenPayload>): Observable<Token<Statement, IStatementTokenPayload>> {
+  initializePayload(token: IToken<Statement, IStatementTokenPayload>): Observable<IToken<Statement, IStatementTokenPayload>> {
     // First resolve the token's dependency
     const pre = token.dependency ? this.initializePayload(token.dependency) : of(undefined);
 
     // If the token's payload is already set, then it's not initilized
     return !token.payload ? pre.pipe(
-      flatMap((dependencyNode: Token<Statement, IStatementTokenPayload>) => {
+      flatMap((dependencyNode: IToken<Statement, IStatementTokenPayload>) => {
         // Once dependency is resolved
         const dependency: IStatementTokenPayload = dependencyNode ? dependencyNode.payload.getValue() : undefined;
 
@@ -261,7 +261,7 @@ export class CsDialogComponent implements OnDestroy {
     ) : of(token);
   }
 
-  registerOnDependencyPayloadChange(token: Token<Statement, IStatementTokenPayload>) {
+  registerOnDependencyPayloadChange(token: IToken<Statement, IStatementTokenPayload>) {
     if (token.dependency && token.dependency.payload) {
       token.dependency.payload.pipe(
         skip(1),

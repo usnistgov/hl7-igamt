@@ -1,4 +1,4 @@
-import { ComparativeType, DeclarativeType, OccurrenceType, PropositionType, VerbType } from "../../models/conformance-statements.domain";
+import { ComparativeType, DeclarativeType, OccurrenceType, PropositionType, VerbType } from '../../models/conformance-statements.domain';
 
 export const OCCURRENCES = [
   { label: 'At least one occurrence of', value: OccurrenceType.AT_LEAST_ONE },

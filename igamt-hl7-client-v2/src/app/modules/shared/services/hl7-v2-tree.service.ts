@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, from, Observable, Subscription, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subscription } from 'rxjs';
 import { filter, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
 import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';

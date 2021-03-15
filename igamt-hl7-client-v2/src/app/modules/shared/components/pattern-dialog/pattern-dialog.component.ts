@@ -2,7 +2,7 @@ import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Assertion, BinaryOperator, NaryOperator, Operator, Pattern, Statement, UnaryOperator, SubContextOperator, OperatorType, LeafStatementType, IfThenOperator, StatementIdIndex } from './cs-pattern.domain';
+import { Assertion, BinaryOperator, IfThenOperator, LeafStatementType, NaryOperator, Operator, OperatorType, Pattern, Statement, StatementIdIndex, SubContextOperator, UnaryOperator } from './cs-pattern.domain';
 
 @Component({
   selector: 'app-pattern-dialog',

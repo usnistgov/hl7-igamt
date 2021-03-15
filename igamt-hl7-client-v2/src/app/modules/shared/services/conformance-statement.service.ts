@@ -6,10 +6,10 @@ import * as _ from 'lodash';
 import { combineLatest, Observable, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { IConformanceStatementEditorData, IDependantConformanceStatements, IEditableConformanceStatementGroup, IEditableListNode } from '../../core/components/conformance-statement-editor/conformance-statement-editor.component';
-import { Assertion, BinaryOperator, NaryOperator, Operator, Pattern, Statement, UnaryOperator, LeafStatementType, IfThenOperator, OperatorType, Position, SubContextOperator } from '../components/pattern-dialog/cs-pattern.domain';
+import { Assertion, BinaryOperator, IfThenOperator, LeafStatementType, NaryOperator, Operator, OperatorType, Pattern, Position, Statement, SubContextOperator, UnaryOperator } from '../components/pattern-dialog/cs-pattern.domain';
 import { Usage } from '../constants/usage.enum';
 import { IConformanceStatementList, IConformanceStatementsContainerMap, ICPConformanceStatementList } from '../models/cs-list.interface';
-import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, IPath, ISimpleAssertion, Operator as CsOperator, ISubContextAssertion, ISubContext } from '../models/cs.interface';
+import { AssertionMode, ConstraintType, IAssertion, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement, IIfThenAssertion, INotAssertion, IOperatorAssertion, IPath, ISimpleAssertion, ISubContext, ISubContextAssertion, Operator as CsOperator } from '../models/cs.interface';
 import { IDisplayElement } from '../models/display-element.interface';
 import { IAssertionPredicate, IFreeTextPredicate, IPredicate } from '../models/predicate.interface';
 import { IResource } from '../models/resource.interface';
@@ -244,6 +244,7 @@ export class ConformanceStatementService {
     };
   }
 
+  // tslint:disable-next-line: cognitive-complexity
   getCsDataAssertion(assertion: Assertion): IAssertionBag<IAssertion> {
     if (assertion instanceof Statement) {
       const simple = this.createSimpleAssertion();

@@ -29,12 +29,12 @@ export enum TokenType {
   TEXT = 'TEXT',
   STATEMENT = 'STATEMENT',
 }
-export interface Token<T, E> {
+export interface IToken<T, E> {
   type: TokenType;
   value: T;
   name?: string;
   valid?: boolean;
-  dependency?: Token<any, any>;
+  dependency?: IToken<any, any>;
   payload?: BehaviorSubject<E>;
 }
 
@@ -81,7 +81,7 @@ export abstract class Assertion implements TreeNode {
   // Get node leafs
   public abstract getLeafs(): Statement[];
 
-  public abstract tokenize(): Array<Token<any, any>>;
+  public abstract tokenize(): Array<IToken<any, any>>;
 }
 
 // -------------------- -------------------- --------------------
@@ -117,7 +117,7 @@ export class Statement extends Assertion {
     return [this];
   }
 
-  public tokenize(): Array<Token<Statement, any>> {
+  public tokenize(): Array<IToken<Statement, any>> {
     return [
       {
         type: TokenType.STATEMENT,
@@ -160,8 +160,8 @@ export class StatementIdIndex {
 export class Pattern {
   assertion: Assertion;
   leafs: Statement[];
-  tokens: Array<Token<any, any>>;
-  statements: Array<Token<any, any>>;
+  tokens: Array<IToken<any, any>>;
+  statements: Array<IToken<any, any>>;
 
   constructor(assertion: Assertion) {
     this.assertion = assertion;
@@ -231,7 +231,7 @@ export class UnaryOperator extends Operator {
     return this.data.type + ' ( ' + this.getOperand().write() + ' ) ';
   }
 
-  public tokenize(): Array<Token<any, any>> {
+  public tokenize(): Array<IToken<any, any>> {
     return [
       {
         type: TokenType.TEXT,
@@ -298,8 +298,8 @@ export class SubContextOperator extends UnaryOperator {
     return ' ( ' + this.getOperand().write() + ' ) IN ' + this.context.write();
   }
 
-  public tokenize(): Array<Token<any, any>> {
-    const context: Token<Statement, any> = {
+  public tokenize(): Array<IToken<any, any>> {
+    const context: IToken<Statement, any> = {
       type: TokenType.STATEMENT,
       value: this.context,
       name: this.context.name(),
@@ -401,7 +401,7 @@ export class BinaryOperator extends Operator {
     return ' ( ' + this.getLeft().write() + ' ) ' + this.data.type + ' ( ' + this.getRight().write() + ' ) ';
   }
 
-  public tokenize(): Array<Token<any, any>> {
+  public tokenize(): Array<IToken<any, any>> {
     return [
       {
         type: TokenType.TEXT,
@@ -460,7 +460,7 @@ export class IfThenOperator extends BinaryOperator {
   public write() {
     return ' IF ( ' + this.getLeft().write() + ' ) THEN ( ' + this.getRight().write() + ' ) ';
   }
-  public tokenize(): Array<Token<any, any>> {
+  public tokenize(): Array<IToken<any, any>> {
     return [
       {
         type: TokenType.TEXT,
@@ -559,7 +559,7 @@ export class NaryOperator extends Operator {
     return str + ' ) ';
   }
 
-  public tokenize(): Array<Token<any, any>> {
+  public tokenize(): Array<IToken<any, any>> {
     let children = [];
     for (const ls of this.children.map((c) => c.tokenize())) {
       children = [

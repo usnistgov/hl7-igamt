@@ -1,5 +1,4 @@
-import { NgForm } from '@angular/forms';
-import { EMPTY, Observable, of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { ICardinalityRange, IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
@@ -63,7 +62,7 @@ export class StatementTarget {
     };
   }
 
-  setSubject(subject: ISubject, context: IPath, resource: IResource, repository: AResourceRepositoryService) {
+  setSubject(subject: ISubject, context: IPath, resource: IResource, repository: AResourceRepositoryService, relativeName: boolean = false) {
     this.setValue(subject);
     this.name = '';
     this.valid = false;
@@ -73,7 +72,7 @@ export class StatementTarget {
 
     if (subject.path) {
       try {
-        return this.getNameFullPath(context, subject.path, resource, repository).pipe(
+        return this.getNameFullPath(context, subject.path, resource, repository, relativeName).pipe(
           take(1),
           map((info) => {
             this.setAttibutes(info, context);
@@ -108,10 +107,10 @@ export class StatementTarget {
     this.value.occurenceLocationStr = undefined;
   }
 
-  reset(context: IPath, target: IPath, resource: IResource, repository: AResourceRepositoryService, tree: IHL7v2TreeNode[], node: IHL7v2TreeNode): Observable<StatementTarget> {
+  reset(context: IPath, target: IPath, resource: IResource, repository: AResourceRepositoryService, tree: IHL7v2TreeNode[], node: IHL7v2TreeNode, relativeName: boolean = false): Observable<StatementTarget> {
     this.clear();
     try {
-      return this.getNameFullPath(context, target, resource, repository).pipe(
+      return this.getNameFullPath(context, target, resource, repository, relativeName).pipe(
         take(1),
         map((info) => {
           this.setAttibutes(info, context, tree, node);
@@ -182,14 +181,22 @@ export class StatementTarget {
     return this.getFieldFrom(node.parent);
   }
 
-  getNameFullPath(pre: IPath, post: IPath, resource: IResource, repository: AResourceRepositoryService): Observable<{
+  getNameFullPath(pre: IPath, post: IPath, resource: IResource, repository: AResourceRepositoryService, relativeName: boolean = false): Observable<{
     name: string;
     nodeInfo: IPathInfo;
   }> {
-    return this.getPathName(this.pathService.straightConcatPath(pre, post), resource, repository);
+    return this.getPathName(this.pathService.straightConcatPath(pre, post), resource, repository, relativeName ? post ? post.elementId : undefined : undefined);
   }
 
-  getPathName(path: IPath, resource: IResource, repository: AResourceRepositoryService): Observable<{ name: string, nodeInfo: IPathInfo }> {
+  getStartPathInfo(pathInfo: IPathInfo, from: string): IPathInfo {
+    if (pathInfo.type === Type.SEGMENTREF || pathInfo.id === from) {
+      return pathInfo;
+    } else {
+      return this.getStartPathInfo(pathInfo.child, from);
+    }
+  }
+
+  getPathName(path: IPath, resource: IResource, repository: AResourceRepositoryService, startFrom?: string): Observable<{ name: string, nodeInfo: IPathInfo }> {
     if (!path) {
       return of({ name: '', nodeInfo: undefined });
     }
@@ -197,7 +204,7 @@ export class StatementTarget {
     return this.elementNamingService.getPathInfoFromPath(resource, repository, path).pipe(
       take(1),
       map((pathInfo) => {
-        const name = this.elementNamingService.getStringNameFromPathInfo(pathInfo);
+        const name = this.elementNamingService.getStringNameFromPathInfo(startFrom ? this.getStartPathInfo(pathInfo, startFrom) : pathInfo);
         const nodeInfo = this.getLeaf(pathInfo);
         return {
           name,
@@ -215,8 +222,8 @@ export class StatementTarget {
     }
   }
 
-  getDescription(resource: IResource, repository: AResourceRepositoryService): Observable<string> {
-    return this.getNameFullPath(this.context, this.value.path, resource, repository).pipe(
+  getDescription(resource: IResource, repository: AResourceRepositoryService, relativeName: boolean = false): Observable<string> {
+    return this.getNameFullPath(this.context, this.value.path, resource, repository, relativeName).pipe(
       take(1),
       map((subject) => {
         const occurenceTarget = this.getOccurenceLiteral(this.value);

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
 import { TreeNode } from 'primeng/primeng';
-import { BehaviorSubject, Observable, of, Subscription, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import { flatMap, map, take } from 'rxjs/operators';
 import { LengthType } from '../../constants/length-type.enum';
 import { Type } from '../../constants/type.enum';

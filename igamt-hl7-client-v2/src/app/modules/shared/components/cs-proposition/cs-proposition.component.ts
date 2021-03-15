@@ -10,7 +10,7 @@ import { StatementTarget } from '../../services/statement.service';
 import { RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { CsStatementComponent, IStatementTokenPayload } from '../cs-dialog/cs-statement.component';
 import { COMPARATIVES, DECLARATIVES, OCCURRENCES, PROPOSITIONS, VERBS } from '../cs-dialog/cs-statement.constants';
-import { LeafStatementType, Statement, Token } from '../pattern-dialog/cs-pattern.domain';
+import { IToken, LeafStatementType, Statement } from '../pattern-dialog/cs-pattern.domain';
 
 @Component({
   selector: 'app-cs-proposition',
@@ -111,7 +111,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     this.map(this.proposition_statements);
   }
 
-  initializeStatement(token: Token<Statement, IStatementTokenPayload>) {
+  initializeStatement(token: IToken<Statement, IStatementTokenPayload>) {
     this.assertion = token.value.payload;
     if (Object.values(ComparativeType).includes(this.assertion.complement.complementKey as ComparativeType)) {
       this.statementType = StatementType.COMPARATIVE;
@@ -153,8 +153,8 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
 
   change() {
     combineLatest(
-      this.subject.getDescription(this.res, this.repository),
-      this.compare.getDescription(this.res, this.repository),
+      this.subject.getDescription(this.res, this.repository, !!this.token.dependency),
+      this.compare.getDescription(this.res, this.repository, !!this.token.dependency),
     ).pipe(
       take(1),
       map(([node, compNode]) => {
@@ -275,13 +275,13 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   }
 
   targetElement(event) {
-    this.subject.reset(this.token.payload.getValue().effectiveContext, this.pathService.trimPathRoot(event.path), this.res, this.repository, this.token.payload.getValue().effectiveTree, event.node).pipe(tap((s) => {
+    this.subject.reset(this.token.payload.getValue().effectiveContext, this.pathService.trimPathRoot(event.path), this.res, this.repository, this.token.payload.getValue().effectiveTree, event.node, !!this.token.dependency).pipe(tap((s) => {
       this.changeElement(this.subject, this.assertion.subject);
     })).subscribe();
   }
 
   comparativeElement(event) {
-    this.compare.reset(this.token.payload.getValue().effectiveContext, this.pathService.trimPathRoot(event.path), this.res, this.repository, this.token.payload.getValue().effectiveTree, event.node).pipe(tap((s) => {
+    this.compare.reset(this.token.payload.getValue().effectiveContext, this.pathService.trimPathRoot(event.path), this.res, this.repository, this.token.payload.getValue().effectiveTree, event.node, !!this.token.dependency).pipe(tap((s) => {
       this.changeElement(this.compare, this.assertion.complement);
     })).subscribe();
   }
