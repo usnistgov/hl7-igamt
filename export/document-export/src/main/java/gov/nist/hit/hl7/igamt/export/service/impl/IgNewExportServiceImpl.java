@@ -149,6 +149,10 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 			ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, Type.IGDOCUMENT);
 			exportConfiguration.setDeltaMode(false);
+			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(false);
+			exportConfiguration.getValueSetExportConfiguration().setDeltaMode(false);
+			exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(false);
+			exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(false);
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
 			String xmlContent =
 					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,null).toXML();
