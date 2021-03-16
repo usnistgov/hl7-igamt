@@ -12,27 +12,19 @@ public class Permutation {
 	}
 	
 	private String name;
-	private int position;
+	private String elementId;
 	private PermutationTarget target;
 	private Set<ItemProperty> items;
 	protected List<Permutation> permutations;
 	
-	public Permutation(String name, int position, PermutationTarget target, Set<ItemProperty> items,
+	public Permutation(String name, String elementId, PermutationTarget target, Set<ItemProperty> items,
 			List<Permutation> permutation) {
 		super();
 		this.name = name;
-		this.position = position;
+		this.elementId = elementId;
 		this.target = target;
 		this.items = items;
 		this.permutations = permutation;
-	}
-
-	public int getPosition() {
-		return position;
-	}
-
-	public void setPosition(int position) {
-		this.position = position;
 	}
 
 	public PermutationTarget getTarget() {
@@ -66,10 +58,17 @@ public class Permutation {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
-	
-	
-//	// ALL
+
+	public String getElementId() {
+		return elementId;
+	}
+
+	public void setElementId(String elementId) {
+		this.elementId = elementId;
+	}
+
+
+	//	// ALL
 //	USAGE
 //	// Group, Segment, Field
 //	CARDINALITY_MIN

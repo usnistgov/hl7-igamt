@@ -1,10 +1,10 @@
-import {Type} from '../constants/type.enum';
-import {Usage} from '../constants/usage.enum';
-import {IExternalSingleCode, IValuesetBinding} from './binding.interface';
-import {IComment} from './comment.interface';
-import {IResource} from './resource.interface';
-import {PropertyType} from './save-change';
-import {IDynamicMappingInfo} from './segment.interface';
+import { Type } from '../constants/type.enum';
+import { Usage } from '../constants/usage.enum';
+import { IExternalSingleCode, IValuesetBinding } from './binding.interface';
+import { IComment } from './comment.interface';
+import { IResource } from './resource.interface';
+import { PropertyType } from './save-change';
+import { IDynamicMappingInfo } from './segment.interface';
 
 export interface IProfileComponent extends IResource {
   children?: IProfileComponentContext;
@@ -15,104 +15,105 @@ export interface IProfileComponentContext {
   sourceId: string;
   structure: string;
   position: number;
-  profileComponentItems:  IProfileComponentItem[];
-}
-export interface IProfileComponentItem {
-  path: string;
-  itemProperties: ItemProperty[];
+  profileComponentItems: IProfileComponentItem[];
 }
 
-export class ItemProperty {
-  constructor(public propertyKey: PropertyType ) {
-  }
+export interface IProfileComponentItem {
+  path: string;
+  itemProperties: IItemProperty[];
 }
-export class PropertyCardinalityMax extends ItemProperty {
-  constructor( public max: string ) {
-    super(PropertyType.CARDINALITYMAX);
-  }
+
+export interface IItemProperty {
+  propertyKey: PropertyType;
 }
-export class PropertyCardinalityMin extends ItemProperty {
-  constructor( public min: number ) {
-    super(PropertyType.CARDINALITYMIN);
-  }
+
+export interface IPropertyCardinalityMax extends IItemProperty {
+  max: string,
+  propertyKey: PropertyType.CARDINALITYMAX,
 }
-export class PropertyComment extends ItemProperty {
-  constructor( public comment: IComment[] ) {
-    super(PropertyType.COMMENT);
-  }
+
+export interface IPropertyCardinalityMin extends IItemProperty {
+  min: number,
+  propertyKey: PropertyType.CARDINALITYMIN,
 }
-export class PropertyConfLength extends ItemProperty {
-  constructor( public confLength: string ) {
-    super(PropertyType.CONFLENGTH);
-  }
+
+export interface IPropertyComment extends IItemProperty {
+  comment: IComment[]
+  propertyKey: PropertyType.COMMENT,
 }
-export class PropertyConformanceStatement extends ItemProperty {
-  constructor( public constraintId: string, private description: string, private assertionScript: string ) {
-    super(PropertyType.STATEMENT);
-  }
+
+export interface IPropertyConfLength extends IItemProperty {
+  confLength: string,
+  propertyKey: PropertyType.CONFLENGTH,
 }
-export class PropertyConstantValue extends ItemProperty {
-  constructor( public constantValue: string ) {
-    super(PropertyType.CONSTANTVALUE);
-  }
+
+export interface IPropertyConformanceStatement extends IItemProperty {
+  constraintId: string,
+  description: string,
+  assertionScript: string,
+  propertyKey: PropertyType.STATEMENT,
 }
-export class PropertyDatatype extends ItemProperty {
-  constructor( public datatypeId: string ) {
-    super(PropertyType.DATATYPE);
-  }
+
+export interface IPropertyConstantValue extends IItemProperty {
+  constantValue: string,
+  propertyKey: PropertyType.CONSTANTVALUE,
 }
-export class PropertyDefinitionText extends ItemProperty {
-  constructor( public definitionText: string ) {
-    super(PropertyType.DEFINITIONTEXT);
-  }
+
+export interface IPropertyDatatype extends IItemProperty {
+  datatypeId: string,
+  propertyKey: PropertyType.DATATYPE,
 }
-export class PropertyDynamicMapping extends ItemProperty {
-  constructor( public dynamicMappingInfo: IDynamicMappingInfo ) {
-    super(PropertyType.DYNAMICMAPPINGITEM);
-  }
+export interface IPropertyDefinitionText extends IItemProperty {
+  definitionText: string,
+  propertyKey: PropertyType.DEFINITIONTEXT,
 }
-export class PropertyLengthMax extends ItemProperty {
-  constructor( public max: string ) {
-    super(PropertyType.LENGTHMAX);
-  }
+export interface IPropertyDynamicMapping extends IItemProperty {
+  dynamicMappingInfo: IDynamicMappingInfo,
+  propertyKey: PropertyType.DYNAMICMAPPINGITEM,
 }
-export class PropertyLengthMin extends ItemProperty {
-  constructor( public min: string ) {
-    super(PropertyType.LENGTHMIN);
-  }
+export interface IPropertyLengthMax extends IItemProperty {
+  max: string
+  propertyKey: PropertyType.LENGTHMAX,
 }
-export class PropertyName extends ItemProperty {
-  constructor( public name: string ) {
-    super(PropertyType.NAME);
-  }
+export interface IPropertyLengthMin extends IItemProperty {
+  min: string
+  propertyKey: PropertyType.LENGTHMIN,
 }
-export class PropertyPredicate extends ItemProperty {
-  constructor( public trueUsage: Usage, public falseUsage: Usage, public constraintTarget: string, public description: string, public assertion: string ) {
-    super(PropertyType.PREDICATE);
-  }
+
+export interface IPropertyName extends IItemProperty {
+  name: string
+  propertyKey: PropertyType.NAME,
 }
-export class PropertyRef extends ItemProperty {
-  constructor( public ref: string ) {
-    super(PropertyType.SEGMENTREF);
-  }
+export interface IPropertyPredicate extends IItemProperty {
+  trueUsage: Usage,
+  falseUsage: Usage,
+  constraintTarget: string,
+  description: string,
+  assertion: string,
+  PropertyType: PropertyType.PREDICATE,
+
 }
-export class PropertySingleCode extends ItemProperty {
-  constructor( public singleCodeId: string, public externalSingleCode: IExternalSingleCode ) {
-    super(PropertyType.SINGLECODE);
-  }
+export interface IPropertyRef extends IItemProperty {
+  ref: string,
+  propertyKey: PropertyType.SEGMENTREF,
 }
-export class PropertyUsage extends ItemProperty {
-  constructor( public usage: Usage ) {
-    super(PropertyType.USAGE);
-  }
+
+export interface IPropertySingleCode extends IItemProperty {
+  singleCodeId: string,
+  externalSingleCode: IExternalSingleCode,
+  propertyKey: PropertyType.SINGLECODE,
 }
-export class PropertyValueSet extends ItemProperty {
-  constructor( public valuesetBinding: IValuesetBinding[] ) {
-    super(PropertyType.VALUESET);
-  }
+export interface IPropertyUsage extends IItemProperty {
+  usage: Usage,
+  propertyKey: PropertyType.USAGE,
 }
+export interface IPropertyValueSet extends IItemProperty {
+  valuesetBinding: IValuesetBinding[],
+  propertyKey: PropertyType.VALUESET
+}
+
 export interface IValuedPath {
   elementId: string;
   child?: IValuedPath;
-  values?: ItemProperty[];
+  values?: IItemProperty[];
 }

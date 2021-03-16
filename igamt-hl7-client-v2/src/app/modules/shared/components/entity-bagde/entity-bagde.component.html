@@ -1,4 +1,4 @@
-<ng-container [ngSwitch]="type">
+<ng-container [ngSwitch]="type"> 
   <span *ngSwitchCase="'GROUP'" class="badge entity-badge-dark entity-badge-group">
     G
   </span>
@@ -6,7 +6,7 @@
     S
   </span>
   <span *ngSwitchCase="'SEGMENTCONTEXT'" class="badge entity-badge-dark entity-badge-segment">
-    S
+    <i class="fa fa-puzzle-piece entity-badge-profile-component-icon" aria-hidden="true"></i> S
   </span>
   <span *ngSwitchCase="'SEGMENTREF'" class="badge entity-badge-dark entity-badge-segment">
     S
@@ -36,12 +36,15 @@
     CP
   </span>
   <span *ngSwitchCase="'MESSAGECONTEXT'" class="badge entity-badge-dark entity-badge-conformance-profile">
-    CP
+    <i class="fa fa-puzzle-piece entity-badge-profile-component-icon" aria-hidden="true"></i> CP
   </span>
   <span *ngSwitchCase="'PREDICATE'" class="badge entity-badge-dark entity-badge-predicate">
     Pr
   </span>
   <span *ngSwitchCase="'COCONSTRAINTGROUP'" class="badge entity-badge-dark entity-badge-co-constraint-group">
     CCG
+  </span>
+  <span *ngSwitchCase="'PROFILECOMPONENT'" class="badge entity-badge-dark entity-badge-profile-component">
+    PC
   </span>
 </ng-container>

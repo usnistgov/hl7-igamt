@@ -185,7 +185,9 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
-         <span  [contextMenu]='pc' [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node">{{node.data.variableName}}</span>
+          <span  [contextMenu]='pc' [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node">
+           <app-entity-bagde [type]="'PROFILECOMPONENT'" ></app-entity-bagde> {{node.data.variableName}}
+          </span>
           <context-menu #pc [disabled]="viewOnly||delta">
             <ng-template (execute)="addPcContexts(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-plus"></i> Add Contexts
@@ -197,7 +199,7 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'MESSAGECONTEXT'">
-         <app-display-section  #msg="routerLinkActive" [element]="node.data"  [routerLink]="getPcElementUrl(node)" routerLinkActive></app-display-section>
+          <app-display-section  #msg="routerLinkActive" [element]="node.data"  [routerLink]="getPcElementUrl(node)" routerLinkActive></app-display-section>
           <app-toc-sub-menu [element]="node.data"  *ngIf="msg.isActive" [delta]="delta" [pcId]="node.parent.data.id" ></app-toc-sub-menu>
         </ng-container>
 

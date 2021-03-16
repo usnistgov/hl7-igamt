@@ -1,34 +1,34 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {Actions} from '@ngrx/effects';
-import {MemoizedSelectorWithProps, Store} from '@ngrx/store';
-import {Observable, of, ReplaySubject, Subscription} from 'rxjs';
-import {selectLoadedSegmentById} from '../../../../root-store/dam-igamt/igamt.loaded-resources.selectors';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Actions } from '@ngrx/effects';
+import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import { Observable, of, ReplaySubject, Subscription } from 'rxjs';
+import { selectLoadedSegmentById } from '../../../../root-store/dam-igamt/igamt.loaded-resources.selectors';
 import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
-import {LoadSegment} from '../../../../root-store/segment-edit/segment-edit.actions';
-import {Message} from '../../../dam-framework/models/messages/message.class';
-import {MessageService} from '../../../dam-framework/services/message.service';
-import {SegmentService} from '../../../segment/services/segment.service';
-import {HL7v2TreeColumnType} from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import {Type} from '../../../shared/constants/type.enum';
-import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {EditorID} from '../../../shared/models/editor.enum';
-import {IProfileComponentContext} from '../../../shared/models/profile.component';
-import {IResource} from '../../../shared/models/resource.interface';
-import {IChange} from '../../../shared/models/save-change';
-import { ISegment} from '../../../shared/models/segment.interface';
-import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
-import {PcTreeService} from '../../services/pc-tree.service';
-import {ProfileComponentService} from '../../services/profile-component.service';
-import {ProfileComponentStructureEditor} from '../profile-component-structure-editor/profile-component-structure-editor';
+import { LoadSegment } from '../../../../root-store/segment-edit/segment-edit.actions';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
+import { SegmentService } from '../../../segment/services/segment.service';
+import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { EditorID } from '../../../shared/models/editor.enum';
+import { IProfileComponentContext } from '../../../shared/models/profile.component';
+import { IResource } from '../../../shared/models/resource.interface';
+import { IChange } from '../../../shared/models/save-change';
+import { ISegment } from '../../../shared/models/segment.interface';
+import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
+import { ProfileComponentService } from '../../services/profile-component.service';
+import { ProfileComponentStructureEditor } from '../profile-component-structure-editor/profile-component-structure-editor';
+import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
 
 @Component({
   selector: 'app-segment-context-structure-editor',
   templateUrl: './segment-context-structure-editor.component.html',
   styleUrls: ['./segment-context-structure-editor.component.css'],
 })
-export class SegmentContextStructureEditorComponent extends ProfileComponentStructureEditor<IProfileComponentContext> implements OnDestroy, OnInit {
+export class SegmentContextStructureEditorComponent extends ProfileComponentStructureEditor<IProfileComponentContext> implements OnInit {
 
   type = Type;
   segment: ReplaySubject<ISegment>;
@@ -43,7 +43,7 @@ export class SegmentContextStructureEditorComponent extends ProfileComponentStru
     private segmentService: SegmentService,
     messageService: MessageService,
     actions$: Actions,
-    store: Store<any>, public pcTreeService: PcTreeService, public pcService: ProfileComponentService, public dialog: MatDialog,
+    store: Store<any>, public treeService: Hl7V2TreeService, public pcService: ProfileComponentService, public dialog: MatDialog,
   ) {
     super(
       repository,
@@ -90,7 +90,7 @@ export class SegmentContextStructureEditorComponent extends ProfileComponentStru
         HL7v2TreeColumnType.TEXT,
         HL7v2TreeColumnType.COMMENT,
       ],
-      pcTreeService, pcService, dialog);
+      treeService, pcService, dialog);
   }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
