@@ -37,6 +37,8 @@ public interface MessageStructureRepository  extends MongoRepository<MessageStru
     
     public List<MessageStructure> findByStructID(String messageType);
 
+    public List<MessageStructure> findByCustomTrue();
+
     public List<MessageStructure> findByDomainInfoVersion(String version);
 
     public List<MessageStructure> findByDomainInfoScope(String scope);

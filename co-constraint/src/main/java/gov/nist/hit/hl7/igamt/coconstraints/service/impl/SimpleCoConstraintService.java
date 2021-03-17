@@ -44,6 +44,11 @@ public class SimpleCoConstraintService implements CoConstraintService {
   }
 
   @Override
+  public void delete(CoConstraintGroup ccG) {
+    this.coConstraintGroupRepository.delete(ccG);
+  }
+
+  @Override
   public List<CoConstraintGroup> findByBaseSegmentAndDocumentIdAndUsername(String baseSegment, String documentId, String username) {
     return this.coConstraintGroupRepository.findByBaseSegmentAndDocumentIdAndUsername(baseSegment, documentId, username);
   }
@@ -78,9 +83,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
           return null;
         }
       }
-    }).filter((elm) -> {
-      return elm != null;
-    }).collect(Collectors.toList());
+    }).filter(Objects::nonNull).collect(Collectors.toList());
 
     CoConstraintTable clone = new CoConstraintTable();
     clone.setBaseSegment(table.getBaseSegment());
@@ -117,16 +120,13 @@ public class SimpleCoConstraintService implements CoConstraintService {
   @Override
   public CoConstraintGroup clone(String id, Map<String, String> datatypes, Map<String, String> valueSets) {
     CoConstraintGroup group = this.coConstraintGroupRepository.findById(id).get();
-    if(group != null) {
-      CoConstraintGroup clone = group.clone();
-      clone.getCoConstraints().forEach(cc -> {
-        cc.getCells().values().stream().forEach(cell -> {
-          this.cellIdSubstitution(cell.getType(), cell, datatypes, valueSets);
-        });
+    CoConstraintGroup clone = group.clone();
+    clone.getCoConstraints().forEach(cc -> {
+      cc.getCells().values().forEach(cell -> {
+        this.cellIdSubstitution(cell.getType(), cell, datatypes, valueSets);
       });
-      return clone;
-    }
-    return null;
+    });
+    return clone;
   }
 
   void datatypeCellIdSubstitution(DatatypeCell cell, Map<String, String> datatypes) {
@@ -135,7 +135,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
 
   void valueSetCellIdSubstitution(ValueSetCell cell, Map<String, String> valueSets) {
     cell.getBindings().forEach(binding -> {
-      binding.setValueSets(binding.getValueSets().stream().map(vs -> valueSets.get(vs)).collect(Collectors.toList()));
+      binding.setValueSets(binding.getValueSets().stream().map(valueSets::get).collect(Collectors.toList()));
     });
   }
 

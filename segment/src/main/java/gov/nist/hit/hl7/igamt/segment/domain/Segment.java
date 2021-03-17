@@ -88,7 +88,6 @@ public class Segment extends Resource {
   
   @Override
   public Segment clone() {
-
     Segment clone = new Segment();
     complete(clone);
     return clone;
@@ -100,6 +99,7 @@ public class Segment extends Resource {
 	 elm.dynamicMappingInfo = dynamicMappingInfo;
 	 elm.binding = binding;
 	 elm.children = children;
+	 elm.custom = custom;
  };
   
   

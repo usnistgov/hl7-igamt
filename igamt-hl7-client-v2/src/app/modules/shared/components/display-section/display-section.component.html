@@ -9,7 +9,7 @@
   <app-entity-bagde [type]="element.type" *ngIf="!hideBadge"></app-entity-bagde>
   <app-scope-badge [scope]="element.domainInfo.scope" [version]="element.domainInfo.version" [flavor]="element.flavor">
   </app-scope-badge>
-  <span> &nbsp;{{ getDisplayLabel() }}
+  <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"> &nbsp;{{ getDisplayLabel() }}
     <ng-container *ngIf=" !hideDescription && element.description">
          {{'-' + element.description }}
     </ng-container>

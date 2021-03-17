@@ -128,6 +128,7 @@
 		<module>ig</module>
 		<module>datatype</module>
 		<module>valueset</module>
+		<module>resource</module>
 		<module>conformance-profile</module>
 		<module>serialization</module>
 		<module>segment</module>

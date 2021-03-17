@@ -10,6 +10,7 @@ import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaExportConfigMode;
@@ -86,7 +87,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                 List<CoConstraintBinding> coConstraintDelta = null;
                 // Calculate conformanceProfile delta if the conformanceProfile has an origin
 
-                if (deltaMode && conformanceProfile.getOrigin() != null && conformanceProfileExportConfiguration.isDeltaMode()) {
+                if (deltaMode && conformanceProfile.isDerived() && conformanceProfileExportConfiguration.isDeltaMode()) {
                     ResourceDelta resourceDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
                     if (resourceDelta != null) {
                         List<StructureDelta> structureDelta = resourceDelta.getStructureDelta();
@@ -180,12 +181,15 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                     conformanceProfileElement.addAttribute(new Attribute("origin",conformanceProfile.getOrigin()));
                 }
 
+        	      Map<String, Boolean > bindedPaths = conformanceProfile.getChildren().stream().filter(  field  -> field != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), field.getUsage())).collect(Collectors.toMap( x -> x.getId(), x -> true ));
+
                 if (conformanceProfile.getBinding() != null) {
-                    Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), new HashMap<String, Boolean>());
+                    Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), bindedPaths);
                     if (bindingElement != null) {
                         conformanceProfileElement.appendChild(bindingElement);
                     }
                 }
+
 
 
                 if (conformanceProfile.getChildren() != null
@@ -231,7 +235,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
 //		            }
                     }
                 }
-                if (deltaMode && conformanceProfile.getOrigin() != null && conformanceProfileExportConfiguration.isDeltaMode() && coConstraintDelta != null && coConstraintDelta.size() > 0) {
+                if (deltaMode && conformanceProfile.isDerived() && conformanceProfileExportConfiguration.isDeltaMode() && coConstraintDelta != null && coConstraintDelta.size() > 0) {
                     Element coConstraintsBindingsElement = new Element("coConstraintsBindingsElement");
                     conformanceProfileElement.appendChild(coConstraintsBindingsElement);
                     if (conformanceProfileExportConfiguration.getDeltaConfig().getMode().equals(DeltaExportConfigMode.HIDE) ||
@@ -597,18 +601,41 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
         if (conformanceStatementDelta != null) {
             if (conformanceStatementDelta.getAction().equals(DeltaAction.DELETED) || conformanceStatementDelta.getAction().equals(DeltaAction.ADDED)) {
                 Element addedDesc = new Element("Change");
+                String value = "";
+                if(conformanceStatementDelta.getAction().equals(DeltaAction.DELETED)){
+                    value = conformanceStatementDelta.getIdentifier().getPrevious();
+                }
+                if(conformanceStatementDelta.getAction().equals(DeltaAction.ADDED)){
+                    value = conformanceStatementDelta.getIdentifier().getCurrent();
+                }
                 addedDesc.addAttribute(new Attribute("type", Type.CONFORMANCESTATEMENT.getValue()));
-                addedDesc.addAttribute(new Attribute("identifier", conformanceStatementDelta.getIdentifier().getCurrent()));
+                addedDesc.addAttribute(new Attribute("identifier", value));
                 addedDesc.addAttribute(new Attribute("action", conformanceStatementDelta.getAction().name()));
                 addedDesc.addAttribute(new Attribute("property", PropertyType.DESCRIPTION.name()));
-                changedElements.add(addedDesc);
 
                 Element addedId = new Element("Change");
                 addedId.addAttribute(new Attribute("type", Type.CONFORMANCESTATEMENT.getValue()));
-                addedId.addAttribute(new Attribute("identifier", conformanceStatementDelta.getIdentifier().getCurrent()));
+                addedId.addAttribute(new Attribute("identifier", value));
                 addedId.addAttribute(new Attribute("action", conformanceStatementDelta.getAction().name()));
                 addedId.addAttribute(new Attribute("property", PropertyType.IDENTIFIER.name()));
+
+                if(conformanceStatementDelta.getAction().equals(DeltaAction.DELETED) ){
+                    Element addedConf = new Element("Change");
+                    addedConf.addAttribute(new Attribute("type", Type.CONFORMANCESTATEMENT.getValue()));
+                    addedConf.addAttribute(new Attribute("identifier", value));
+                    addedConf.addAttribute(new Attribute("action", conformanceStatementDelta.getAction().name()));
+                    addedConf.addAttribute(new Attribute("property", Type.CONFORMANCESTATEMENT.getValue()));
+                    addedId.addAttribute(new Attribute("oldValue", conformanceStatementDelta.getIdentifier().getPrevious()));
+                    changedElements.add(addedConf);
+
+                    addedDesc.addAttribute(new Attribute("oldValue", conformanceStatementDelta.getDescription().getPrevious()));
+                    addedId.addAttribute(new Attribute("oldValue", conformanceStatementDelta.getIdentifier().getPrevious()));
+
+                }
+
+                changedElements.add(addedDesc);
                 changedElements.add(addedId);
+
 
             } else {
                 if (conformanceStatementDelta.getDescription() != null && !conformanceStatementDelta.getDescription().getAction().equals(DeltaAction.UNCHANGED)) {

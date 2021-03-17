@@ -161,7 +161,8 @@ export interface IBindingSelectorData {
   resources: IDisplayElement[];
   locationInfo: IBindingLocationInfo;
   excludeBindingStrength: boolean;
-  path: string;
+  path?: string;
+  obx2?: boolean;
   existingBindingType: IBindingType;
   selectedValueSetBinding: IValueSetBindingDisplay[];
   selectedSingleCode: ISingleCodeDisplay;

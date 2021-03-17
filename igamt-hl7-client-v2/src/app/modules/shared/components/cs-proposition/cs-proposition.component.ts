@@ -324,7 +324,7 @@ export class CsPropositionComponent implements OnInit {
 
     if (assertion.complement.path) {
       try {
-        this.getNameFullPath(context, assertion.subject.path).pipe(
+        this.getNameFullPath(context, assertion.complement.path).pipe(
           take(1),
           map((info) => {
             this.compare = {

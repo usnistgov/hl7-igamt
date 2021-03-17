@@ -21,6 +21,7 @@ import java.util.Set;
 public interface CoConstraintService {
 
     public CoConstraintGroup findById(String id) throws CoConstraintGroupNotFoundException;
+    public void delete(CoConstraintGroup ccGroup);
     List<CoConstraintGroup> findByBaseSegmentAndDocumentIdAndUsername(String baseSegment, String documentId, String username);
     public CoConstraintGroup saveCoConstraintGroup(CoConstraintGroup group);
     public CoConstraintTable resolveRefAndMerge(CoConstraintTable table);

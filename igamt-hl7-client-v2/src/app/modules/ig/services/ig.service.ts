@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import { Action } from '@ngrx/store';
 import { Observable, throwError } from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
-import {TableOfContentSave} from '../../../root-store/ig/ig-edit/ig-edit.actions';
+import { TableOfContentSave } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentCreationWrapper } from '../../document/models/document/document-creation.interface';
 import { MessageEventTreeNode } from '../../document/models/message-event/message-event.class';
@@ -234,6 +234,8 @@ export class IgService {
         return this.IG_END_POINT + documentId + '/segments/' + element.id + '/delete';
       case Type.VALUESET:
         return this.IG_END_POINT + documentId + '/valuesets/' + element.id + '/delete';
+      case Type.COCONSTRAINTGROUP:
+        return this.IG_END_POINT + documentId + '/co-constraint-group/' + element.id + '/delete';
       default: return null;
     }
   }

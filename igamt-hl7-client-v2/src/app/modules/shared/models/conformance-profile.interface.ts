@@ -26,7 +26,8 @@ export interface IHL7MessageProfile extends IResource {
   structID: string;
   profileType: ProfileType;
   role: Role;
-  profileIdentifier: IMessageProfileIdentifier[];
+  preCoordinatedMessageIdentifier: IMessageProfileIdentifier;
+  displayName: string;
   children: IMsgStructElement[];
   binding?: IResourceBinding;
 }
@@ -62,9 +63,9 @@ export enum ProfileType {
   Implementation = 'Implementation',
 }
 
-export interface IMessageProfileIdentifier {
-  entityIdentifier: string;
-  namespaceId: string;
-  universalId: string;
-  universalIdType: string;
+export class IMessageProfileIdentifier {
+  entityIdentifier?: string;
+  namespaceId?: string;
+  universalId?: string;
+  universalIdType?: string;
 }

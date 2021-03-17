@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
@@ -52,57 +53,112 @@ public class StructureServiceImpl implements StructureService {
     @Autowired
     ValuesetService valuesetService;
 
+    public void validate(Set<SegmentRefOrGroup> children) throws InvalidStructureException {
+        // Position 1 is MSH
+        Optional<SegmentRefOrGroup> HEAD = children.stream()
+                .filter((s -> s.getPosition() == 1))
+                .findFirst();
+
+        if(HEAD.isPresent()) {
+            if(HEAD.get() instanceof SegmentRef) {
+                SegmentRef ref = (SegmentRef) HEAD.get();
+                if(!ref.getName().equals("MSH")) {
+                    throw new InvalidStructureException("First structure element must be MSH");
+                }
+            } else {
+                throw new InvalidStructureException("First structure element must be MSH");
+            }
+        }
+
+        // Groups are valid
+        for(SegmentRefOrGroup refOrGroup: children) {
+            if(refOrGroup instanceof Group) {
+                this.checkGroup((Group) refOrGroup);
+            }
+        }
+
+    }
+
+    public void checkGroup(Group group) throws InvalidStructureException {
+        if(!this.groupNameIsValid(group.getName())) {
+            throw new InvalidStructureException("Group name " + group.getName() + " is invalid, only letters and underscores permitted");
+        }
+
+        if(group.getChildren() == null || group.getChildren().size() == 0) {
+            throw new InvalidStructureException("Group " + group.getName() + " can't be empty");
+        }
+
+        for(SegmentRefOrGroup refOrGroup: group.getChildren()) {
+            if(refOrGroup instanceof Group) {
+                this.checkGroup((Group) refOrGroup);
+            }
+        }
+    }
+
+    public boolean groupNameIsValid(String name) {
+        return !Strings.isNullOrEmpty(name) && name.matches("[a-zA-Z]+[a-zA-Z_]*");
+    }
+
     @Override
     public List<MessageStructure> getUserCustomMessageStructure(String user) {
         return this.messageStructureRepository.findByCustomTrueAndParticipantsContaining(user);
     }
 
     @Override
-    public MessageStructure saveMessageStructure(String id, String user, Set<SegmentRefOrGroup> children) {
+    public MessageStructure saveMessageStructure(String id, String user, Set<SegmentRefOrGroup> children) throws InvalidStructureException {
         MessageStructure messageStructure = this.messageStructureRepository.findByCustomTrueAndParticipantsContainingAndId(user, id);
-        if(messageStructure != null) {
+        if(messageStructure == null) {
+            throw new IllegalArgumentException("Can't save message structure, incorrect scope or user");
+        } else if(Status.PUBLISHED.equals(messageStructure.getStatus())) {
+            throw new IllegalArgumentException("Can't save message structure, locked");
+        } else {
+            this.validate(children);
             messageStructure.setChildren(children);
             return this.messageStructureRepository.save(messageStructure);
-        } else {
-            throw new IllegalArgumentException("Can't save message structure, incorrect scope or user");
         }
     }
 
     @Override
     public MessageStructure saveMessageMetadata(String id, String user, MessageStructureMetadata metadata) {
         MessageStructure messageStructure = this.messageStructureRepository.findByCustomTrueAndParticipantsContainingAndId(user, id);
-        if(messageStructure != null) {
+        if(messageStructure == null) {
+            throw new IllegalArgumentException("Can't save message metadata, message not found for user");
+        } else if(Status.PUBLISHED.equals(messageStructure.getStatus())) {
+            throw new IllegalArgumentException("Can't save message structure, locked");
+        } else {
             messageStructure.setStructID(metadata.getStructId());
             messageStructure.setMessageType(metadata.getMessageType());
             messageStructure.setDescription(metadata.getDescription());
             messageStructure.setEvents(metadata.getEvents());
             return this.messageStructureRepository.save(messageStructure);
-        } else {
-            throw new IllegalArgumentException("Can't save message metadata, message not found for user");
         }
     }
 
     @Override
     public Segment saveSegment(String id, String user, Set<Field> children) {
         Segment segment = this.segmentRepository.findByCustomTrueAndUsernameAndId(user, id);
-        if(segment != null) {
+        if(segment == null) {
+            throw new IllegalArgumentException("Can't save segment structure, segment not found for user");
+        } else if(Status.PUBLISHED.equals(segment.getStatus())) {
+            throw new IllegalArgumentException("Can't save segment structure, locked");
+        } else {
             segment.setChildren(children);
             return this.segmentRepository.save(segment);
-        } else {
-            throw new IllegalArgumentException("Can't save segment structure, segment not found for user");
         }
     }
 
     @Override
     public Segment saveSegmentMetadata(String id, String user, SegmentStructureMetadata metadata) {
         Segment segment = this.segmentRepository.findByCustomTrueAndUsernameAndId(user, id);
-        if(segment != null) {
+        if(segment == null) {
+            throw new IllegalArgumentException("Can't save segment structure, segment not found for user");
+        } else if(Status.PUBLISHED.equals(segment.getStatus())) {
+            throw new IllegalArgumentException("Can't save segment structure, locked");
+        } else {
             /// TODO Extension Unique
             segment.setExt(metadata.getIdentifier());
             segment.setDescription(metadata.getDescription());
             return this.segmentRepository.save(segment);
-        } else {
-            throw new IllegalArgumentException("Can't save segment structure, incorrect scope or user");
         }
     }
 

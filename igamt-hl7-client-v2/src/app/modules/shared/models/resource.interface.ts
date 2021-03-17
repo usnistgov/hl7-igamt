@@ -8,4 +8,5 @@ export interface IResource extends IAbstractDomain {
   shortDescription?: string;
   parentId: string;
   parentType: Type;
+  fixedExtension?: string;
 }

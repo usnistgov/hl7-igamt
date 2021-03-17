@@ -17,12 +17,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.resource.change.service.ApplyChange;
 
 /**
  *
@@ -31,14 +34,20 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 public class ConformanceProfile extends Resource {
 
   private String identifier;
+  private String messageStructureId;
+  private boolean custom;
   private String messageType; // Message/@Type
   private String event; // Message/@Event
   private String structID; // Message/@StructID private String identifier;
   private ProfileType profileType;
+  private String displayName;
   private Role role;
+  @Deprecated
   private List<MessageProfileIdentifier> profileIdentifier;
+  private MessageProfileIdentifier preCoordinatedMessageIdentifier;
   private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
-  private List<CoConstraintBinding> coConstraintsBindings;
+  private List<CoConstraintBinding> coConstraintsBindings; 
+
 
   private ResourceBinding binding;
 
@@ -125,6 +134,8 @@ public class ConformanceProfile extends Resource {
       elm.children = children;
       elm.binding = binding;
       elm.coConstraintsBindings= coConstraintsBindings;
+      elm.custom = custom;
+      elm.messageStructureId = messageStructureId;
   }
 
   public ConformanceProfile(MessageStructure elm, String event) {
@@ -134,6 +145,8 @@ public class ConformanceProfile extends Resource {
     this.event = event;
     this.structID = elm.getStructID();
     this.binding = elm.getBinding();
+    this.messageStructureId = elm.getId();
+    this.custom = elm.isCustom();
     this.setDomainInfo(elm.getDomainInfo());
   }
   
@@ -183,6 +196,28 @@ public String toString() {
 			+ profileIdentifier + ", children=" + children + ", coConstraintsBindings=" + coConstraintsBindings
 			+ ", binding=" + binding + "]";
 }
-  
-  
+
+public String getDisplayName() {
+  return displayName;
+}
+
+public void setDisplayName(String displayName) {
+  this.displayName = displayName;
+}
+
+public MessageProfileIdentifier getPreCoordinatedMessageIdentifier() {
+  return preCoordinatedMessageIdentifier;
+}
+
+public void setPreCoordinatedMessageIdentifier(MessageProfileIdentifier preCoordinatedMessageIdentifier) {
+  this.preCoordinatedMessageIdentifier = preCoordinatedMessageIdentifier;
+}
+
+  public String getMessageStructureId() {
+    return messageStructureId;
+  }
+
+  public void setMessageStructureId(String messageStructureId) {
+    this.messageStructureId = messageStructureId;
+  }
 }

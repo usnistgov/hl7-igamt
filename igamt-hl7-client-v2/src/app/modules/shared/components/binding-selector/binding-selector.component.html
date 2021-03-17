@@ -1,11 +1,15 @@
 <h2 mat-dialog-title>Edit Binding</h2>
 <div style="display: flex; flex-direction: column; justify-content: space-between;">
+
+  <div class="alert alert-warning" *ngIf="data.obx2">
+  <i class="fa fa-warning"></i>  This value set binding is used to define the dynamic mapping table. Any value set change would rebuild the dynamic mapping table
+  </div>
   <div *ngIf="locationInfo?.allowSingleCode && locationInfo?.allowValueSets"
        style="display: flex; flex-direction: row;justify-content: flex-end">
     <p-radioButton [(ngModel)]="selectedBindingType" label="Value set" name="vs" value="VALUESET"></p-radioButton>
 
     <p-radioButton [(ngModel)]="selectedBindingType" [style]="{'margin-left': '5px'}" label="Single code" name="sg"
-                   value="SINGLECODE"></p-radioButton>
+                   value="SINGLECODE" *ngIf="!data.obx2"></p-radioButton>
   </div>
   <div *ngIf="selectedBindingType=='VALUESET'" class="vs-binding">
     <table class="table table-sm">

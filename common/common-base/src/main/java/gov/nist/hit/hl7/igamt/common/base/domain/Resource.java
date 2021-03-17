@@ -11,7 +11,7 @@ public abstract class Resource extends AbstractDomain {
   protected Type parentType;
   private String purposeAndUse;
   private String shortDescription;
-  
+  private String fixedExtension;
 
   public Resource() {
     super();
@@ -51,6 +51,7 @@ public abstract class Resource extends AbstractDomain {
       elm.parentType = parentType;
       elm.shortDescription = shortDescription;
       elm.purposeAndUse = purposeAndUse;
+      elm.fixedExtension = fixedExtension;
       elm.setActiveInfo(new ActiveInfo());
   }
 
@@ -115,5 +116,15 @@ public abstract class Resource extends AbstractDomain {
       }
     }
     return s;
+  }
+
+
+  public String getFixedExtension() {
+    return fixedExtension;
+  }
+
+
+  public void setFixedExtension(String fixedExtension) {
+    this.fixedExtension = fixedExtension;
   }
 }

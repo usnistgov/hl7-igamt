@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.delta.service;
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.*;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
@@ -625,6 +626,15 @@ public class EntityDeltaServiceImpl {
           }
         }
       }
+    } else if(source == null && target != null){
+        if(target.getBindingType().equals(BindingType.VS)){
+            structure.setValueSetBinding(this.compareValueSetBinding(new HashSet<DisplayValuesetBinding>(), target.getValuesetBindings()));
+            structure.getValueSetBinding().setAction(DeltaAction.ADDED);
+
+        } else if(target.getBindingType().equals(BindingType.SC)){
+            structure.setInternalSingleCode(this.compareInternalSingleCodes(new InternalSingleCode() , target.getInternalSingleCode()));
+            structure.getInternalSingleCode().setAction(DeltaAction.ADDED);
+        }
     }
 
   }

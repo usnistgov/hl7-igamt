@@ -1,5 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import {MatSlider, MatSliderChange, MatSliderModule} from '@angular/material/slider';
+import * as _ from 'lodash';
+import {CardModule} from 'primeng/card';
+import {TabViewModule} from 'primeng/tabview';
 
 @Component({
   selector: 'app-font-export-configuration',
@@ -7,13 +12,15 @@ import {MatSlider, MatSliderChange, MatSliderModule} from '@angular/material/sli
   styleUrls: ['./font-export-configuration.component.css'],
 })
 export class FontExportConfigurationComponent implements OnInit {
-  constructor() { }
 
   value = 0;
+
   defaultFont: '\'Arial Narrow\',sans-serif';
   choosenFont: string;
-  fonts: string[] = ['\'Arial Narrow\',sans-serif', '\'Palatino Linotype\', \'Book Antiqua\', Palatino, serif', '\'Times New Roman\', Times, serif', 'Georgia, serif', '\'Comic Sans MS\', cursive, sans-serif', '\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif', 'Tahoma, Geneva, sans-serif', '\'Trebuchet MS\', Helvetica, sans-serif', 'Verdana, Geneva, sans-serif',
-    '\'Courier New\', Courier, monospace', '\'Lucida Console\', Monaco, monospace'];
+  fonts: string[] = ['\'Arial Narrow\',sans-serif', '\'Palatino Linotype\', \'Book Antiqua\', Palatino, serif',
+  '\'Times New Roman\', Times, serif', 'Georgia, serif', '\'Comic Sans MS\', cursive, sans-serif',
+  '\'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif', 'Tahoma, Geneva, sans-serif', '\'Trebuchet MS\', Helvetica, sans-serif', 'Verdana, Geneva, sans-serif', '\'Courier New\', Courier, monospace', '\'Lucida Console\', Monaco, monospace'];
+
   @Input()
   config: any;
 
@@ -37,7 +44,8 @@ export class FontExportConfigurationComponent implements OnInit {
 
   @Output()
   change: EventEmitter<MatSliderChange>;
-  formatLabel: any;
+
+  constructor() { }
 
   ngOnInit() {
     console.log('Is it ORIGINAL : ' + this.viewOnly);

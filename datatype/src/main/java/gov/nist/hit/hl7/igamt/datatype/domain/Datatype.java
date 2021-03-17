@@ -67,19 +67,26 @@ public class Datatype extends Resource {
    */
   @Override
   public String getLabel() {
-    if (this.ext != null && !this.ext.isEmpty()) {
-      return this.getName() + "_" + this.ext;
+    String entireExt = this.getEntireException();
+    if (entireExt != null && !entireExt.isEmpty()) {
+      return  this.getName()  + "_" + this.getEntireException();
     }
     return this.getName();
   }
 
+  public String getEntireException() {
+    if(this.getFixedExtension() !=null && !this.getFixedExtension().isEmpty()) {
+     return this.getFixedExtension()+ "_" + this.getExt();
+    }
+    return this.getExt();
+  }
+  
   @Override
   public Datatype clone() {
 
     Datatype clone = new Datatype();
     complete(clone);
     return clone;
-
   }
 
   public void complete(Datatype elm) {
@@ -97,7 +104,6 @@ public class Datatype extends Resource {
         return this.getLabel();
       }
     }
-    // TODO Auto-generated method stub
     return this.getName();
   }
 }

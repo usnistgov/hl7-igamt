@@ -1,6 +1,11 @@
 <div style="display: flex; justify-content: space-between; align-items: center;">
   <div>
-    <app-change-log-info style="margin-right: 5px;" [sections]="changeDisplaySections" ></app-change-log-info>
+    <app-change-log-info style="margin-right: 5px;"
+      [sections]="changeDisplaySections$ | async"
+      [context]="context"
+      [viewOnly]="globalViewOnly"
+      (editChange)="updateReasonForChange($event)"
+    ></app-change-log-info>
 
     <ng-container  [ngSwitch]="viewOnly">
       <ng-container *ngSwitchCase="false">

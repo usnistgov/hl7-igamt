@@ -44,7 +44,6 @@ import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
@@ -206,6 +205,8 @@ public class IGDocumentController extends BaseController {
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
   private static final String VALUESET_DELETE = "VALUESET_DELETE";
   private static final String CONFORMANCE_PROFILE_DELETE = "CONFORMANCE_PROFILE_DELETE";
+  private static final String CC_GROUP_DELETED = "COCONSTRAINT_GROUP_DELETE";
+
   private static final String TABLE_OF_CONTENT_UPDATED = "TABLE_OF_CONTENT_UPDATED";
   private static final String METATDATA_UPDATED = "METATDATA_UPDATED";
 
@@ -487,23 +488,6 @@ public class IGDocumentController extends BaseController {
     return null;
   }
 
-  /**
-   * @param child
-   * @param conformanceProfileRegistry
-   */
-  private void updateLibraryFromSection(TextSection child,
-      Registry reg) {
-
-    Map<String, Integer> positionMap = new HashMap<String, Integer>();
-    if(child.getChildren() != null) {
-      positionMap = child.getChildren().stream().collect(Collectors.toMap(TextSection::getId, TextSection::getPosition));
-    }
-    for(Link l : reg.getChildren()) {
-      if(positionMap.containsKey(l.getId())) {
-        l.setPosition(positionMap.get(l.getId()));
-      }
-    }
-  }
 
   @RequestMapping(value = "/api/igdocuments/{id}/updatemetadata", method = RequestMethod.POST, produces = {
   "application/json" })
@@ -592,14 +576,6 @@ public class IGDocumentController extends BaseController {
 
   }
 
-  public IgService getIgService() {
-    return igService;
-  }
-
-  public void setIgService(IgService igService) {
-    this.igService = igService;
-  }
-
   /**
    * 
    * @param id
@@ -667,72 +643,11 @@ public class IGDocumentController extends BaseController {
     return igService.findUsage(relations, type, elementId);
   }
 
-  private Set<RelationShip> findUsage(Set<RelationShip> relations, Type type, String elementId) {
-    // TODO Auto-generated method stub
-    relations.removeIf(x -> (!x.getChild().getId().equals(elementId) || !x.getChild().getType().equals(type)));
-    return relations;
-  }
-
-  private Set<RelationShip> buildRelationShip(Ig ig, Type type) {
-    // TODO Auto-generated method stub
-    Set<RelationShip> ret = new HashSet<RelationShip>();
-
-    switch (type) {
-      case DATATYPE:
-
-        addSegmentsRelations(ig, ret);
-        addDatatypesRelations(ig, ret);
-        return ret;
-
-      case SEGMENT:
-
-        addConformanceProfilesRelations(ig, ret);
-        return ret;
-
-      case VALUESET:
-        addConformanceProfilesRelations(ig, ret);
-        addSegmentsRelations(ig, ret);
-        addDatatypesRelations(ig, ret);
-        return ret;
-
-      default:
-        return ret;
-
-    }
-  }
-
-  private void addConformanceProfilesRelations(Ig ig, Set<RelationShip> ret) {
-    List<ConformanceProfile> profiles = conformanceProfileService
-        .findByIdIn(ig.getConformanceProfileRegistry().getLinksAsIds());
-    for (ConformanceProfile profile : profiles) {
-      ret.addAll(conformanceProfileService.collectDependencies(profile));
-    }
-  }
-
-  private void addSegmentsRelations(Ig ig, Set<RelationShip> ret) {
-    List<Segment> segments = segmentService.findByIdIn(ig.getSegmentRegistry().getLinksAsIds());
-    for (Segment s : segments) {
-      ret.addAll(segmentService.collectDependencies(s));
-    }
-
-  }
-
-  private void addDatatypesRelations(Ig ig, Set<RelationShip> ret) {
-    List<Datatype> datatypes = datatypeService.findByIdIn(ig.getDatatypeRegistry().getLinksAsIds());
-    for (Datatype dt : datatypes) {
-      ret.addAll(datatypeService.collectDependencies(dt));
-    }
-  }
 
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
   public ResponseMessage deleteDatatype(@PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
       Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
-    // Map<String, List<CrossRefsNode>> xreferences = findDatatypeCrossRef(id,
-    // datatypeId, authentication);
-    // if (xreferences != null && !xreferences.isEmpty()) {
-    // throw new XReferenceFoundException(datatypeId, xreferences);
-    // }
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
@@ -765,11 +680,6 @@ public class IGDocumentController extends BaseController {
   "application/json" })
   public ResponseMessage deleteSegment(@PathVariable("id") String id, @PathVariable("segmentId") String segmentId,
       Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException, ForbiddenOperationException {
-    // Map<String, List<CrossRefsNode>> xreferences = findSegmentCrossRef(id,
-    // segmentId, authentication);
-    // if (xreferences != null && !xreferences.isEmpty()) {
-    // throw new XReferenceFoundException(segmentId, xreferences);
-    // }
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
@@ -801,11 +711,6 @@ public class IGDocumentController extends BaseController {
   "application/json" })
   public ResponseMessage deleteValueSet(@PathVariable("id") String id, @PathVariable("valuesetId") String valuesetId,
       Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException {
-    // Map<String, List<CrossRefsNode>> xreferences = findValueSetCrossRef(id,
-    // valuesetId, authentication);
-    // if (xreferences != null && !xreferences.isEmpty()) {
-    // throw new XReferenceFoundException(valuesetId, xreferences);
-    // }
 
     Ig ig = findIgById(id);
     Link found = findLinkById(valuesetId, ig.getValueSetRegistry().getChildren());
@@ -932,6 +837,9 @@ public class IGDocumentController extends BaseController {
     }
     Datatype clone = datatype.clone();
     clone.setUsername(username);
+    if(datatype.getDomainInfo().getScope().equals(Scope.SDTF)) {
+      clone.setFixedExtension(datatype.getExt());
+    }
     clone.setId(new ObjectId().toString());
     clone.setExt(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
@@ -1034,7 +942,6 @@ public class IGDocumentController extends BaseController {
         if (segment != null) {
           Segment clone = segment.clone();
           clone.getDomainInfo().setScope(Scope.USER);
-
           clone.setUsername(username);
           clone.setName(segment.getName());
           clone.setExt(elm.getExt());
@@ -1062,7 +969,7 @@ public class IGDocumentController extends BaseController {
   public ResponseMessage<CoConstraintGroupCreateResponse> createCoConstraint(
       @PathVariable("id") String id,
       @RequestBody CoConstraintGroupCreateWrapper coConstraintGroupCreateWrapper,
-      Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, SegmentNotFoundException, ForbiddenOperationException {
+      Authentication authentication) throws IGNotFoundException, SegmentNotFoundException, ForbiddenOperationException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
@@ -1084,6 +991,35 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage<CoConstraintGroupCreateResponse>(Status.SUCCESS, "", "CoConstraint Group Created Successfully", ig.getId(), false,
         ig.getUpdateDate(), response);
   }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/co-constraint-group/{ccGroupId}/delete", method = RequestMethod.DELETE, produces = {
+          "application/json" })
+  public ResponseMessage deleteCoConstraintGroup(
+          @PathVariable("id") String id,
+          @PathVariable("ccGroupId") String ccGroupId,
+          Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
+    Link found = findLinkById(ccGroupId, ig.getCoConstraintGroupRegistry().getChildren());
+    if (found != null) {
+      ig.getCoConstraintGroupRegistry().getChildren().remove(found);
+    }
+    try {
+      CoConstraintGroup coConstraintGroup = this.coConstraintService.findById(ccGroupId);
+      if (coConstraintGroup != null) {
+        if (coConstraintGroup.getDomainInfo().getScope().equals(Scope.USER)) {
+          this.coConstraintService.delete(coConstraintGroup);
+        }
+      }
+    } catch (CoConstraintGroupNotFoundException e) {
+      e.printStackTrace();
+    }
+    igService.save(ig);
+    return new ResponseMessage(Status.SUCCESS, CC_GROUP_DELETED, ccGroupId, new Date());
+  }
+
+
 
   @RequestMapping(value = "/api/igdocuments/{documentId}/coconstraints/group/segment/{id}", method = RequestMethod.GET, produces = {"application/json" })
   public List<DisplayElement> getCoConstraintGroupForSegment(@PathVariable("id") String id,
@@ -1114,6 +1050,8 @@ public class IGDocumentController extends BaseController {
           clone.setExt(elm.getExt());
           clone = datatypeService.save(clone);
           savedIds.add(clone.getId());
+        }else {
+          throw new AddingException("Data type not found");
         }
       } else {
         savedIds.add(elm.getId());
@@ -1139,123 +1077,7 @@ public class IGDocumentController extends BaseController {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
-    Set<String> savedIds = new HashSet<String>();
-    for (AddingInfo elm : wrapper.getSelected()) {
-      if (elm.isFlavor()) {
-        if (elm.getOriginalId() != null) {
-          Valueset valueset = valuesetService.findById(elm.getOriginalId());
-          if (valueset != null) {
-            Valueset clone = valueset.clone();
-            clone.getDomainInfo().setScope(Scope.USER);
-            if (!elm.isIncludeChildren()) {
-              clone.setSourceType(SourceType.EXTERNAL);
-              clone.setCodes(new HashSet<Code>());
-            }
-            if(valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
-              clone.setSourceType(SourceType.INTERNAL);
-              clone.setOrigin(valueset.getId());
-              Set<Code> vsCodes = fhirHandlerService.getValusetCodeForDynamicTable();
-              clone.setCodes(vsCodes);
-            }
-            clone.setUsername(username);
-            clone.setBindingIdentifier(elm.getName());
-            clone.setSourceType(elm.getSourceType());
-            clone = valuesetService.save(clone);
-            ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
-            savedIds.add(clone.getId());
-          }
-        } else {
-          if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-            // Import phinvads as flavor
-            Valueset valueset = new Valueset();
-            DomainInfo info = new DomainInfo();
-            info.setScope(Scope.PHINVADS);
-            info.setVersion(elm.getDomainInfo().getVersion());
-            valueset.setDomainInfo(info);
-            if (!elm.isIncludeChildren()) {
-              valueset.setSourceType(SourceType.EXTERNAL);
-              valueset.setCodes(new HashSet<Code>());
-              valueset.setExtensibility(Extensibility.Closed);
-              valueset.setStability(Stability.Dynamic);
-              valueset.setContentDefinition(ContentDefinition.Extensional);
-            } else {
-              valueset.setSourceType(SourceType.INTERNAL);
-              valueset.setExtensibility(Extensibility.Open);
-              valueset.setStability(Stability.Static);
-              valueset.setContentDefinition(ContentDefinition.Extensional);
-              // Get codes from vocab service
-              if (elm.getOid() != null) {
-                Set<Code> vsCodes = fhirHandlerService.getValusetCodes(elm.getOid());
-                valueset.setCodes(vsCodes);
-                valueset.setCodeSystems(valuesetService.extractCodeSystemsFromCodes(vsCodes));
-              }
-            }
-            valueset.setUsername(username);
-            valueset.setBindingIdentifier(elm.getName());
-            valueset.setName(elm.getDescription());
-            valueset.setUrl(elm.getUrl());
-            valueset.setOid(elm.getOid());
-            valueset.setFlavor(true);
-
-            Valueset saved = valuesetService.save(valueset);
-            ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
-            savedIds.add(saved.getId());
-          } else {
-            // Create new valueset
-            Valueset valueset = new Valueset();
-            DomainInfo info = new DomainInfo();
-            info.setScope(Scope.USER);
-            info.setVersion(null);
-            valueset.setDomainInfo(info);
-            if (!elm.isIncludeChildren()) {
-              valueset.setSourceType(SourceType.EXTERNAL);
-              valueset.setCodes(new HashSet<Code>());
-            } else {
-              valueset.setSourceType(SourceType.INTERNAL);
-            }
-            valueset.setUsername(username);
-            valueset.setBindingIdentifier(elm.getName());
-            valueset.setUrl(elm.getUrl());
-            Valueset saved = valuesetService.save(valueset);
-            ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
-            savedIds.add(saved.getId());
-          }
-        }
-      } else {
-        if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
-          Valueset valueset = valuesetService.findExternalPhinvadsByOid(elm.getOid());
-
-          if(valueset == null) {
-            Valueset newValueset = new Valueset();
-            DomainInfo info = new DomainInfo();
-            info.setScope(Scope.PHINVADS);
-            info.setVersion(elm.getDomainInfo().getVersion());
-            newValueset.setDomainInfo(info);
-            newValueset.setSourceType(SourceType.EXTERNAL);
-            newValueset.setUsername(username);
-            newValueset.setBindingIdentifier(elm.getName());
-            newValueset.setUrl(elm.getUrl());
-            newValueset.setOid(elm.getOid());
-            newValueset.setFlavor(false);
-            newValueset.setExtensibility(Extensibility.Closed);
-            newValueset.setStability(Stability.Dynamic);
-            newValueset.setContentDefinition(ContentDefinition.Extensional);
-            Valueset saved = valuesetService.save(newValueset);
-            ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
-            savedIds.add(saved.getId());
-          } else {
-            ig.getValueSetRegistry().getCodesPresence().put(valueset.getId(), elm.isIncludeChildren());
-            savedIds.add(valueset.getId());
-          }
-
-        } else {
-          ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
-          savedIds.add(elm.getId());
-        }
-
-      }
-    }
-    AddValueSetResponseObject objects = crudService.addValueSets(savedIds, ig);
+    AddValueSetResponseObject objects = crudService.addValueSets(wrapper.getSelected(), ig, username);
     igService.save(ig);
     IGDisplayInfo info = new IGDisplayInfo();
     info.setIg(ig);
@@ -1325,7 +1147,6 @@ public class IGDocumentController extends BaseController {
         }else {
           if(ig.getSharedUsers() !=null && ig.getSharedUsers().contains(cUser)) {
             ig.setSharePermission(SharePermission.READ);
-
           }else {
             throw new ForbiddenOperationException("Access denied");
           }
@@ -1702,6 +1523,24 @@ public class IGDocumentController extends BaseController {
               this.visitSegment(s.getChildren(), selectedIg, all);
               if(s.getBinding() != null && s.getBinding().getChildren() != null) this.collectVS(s.getBinding().getChildren(), selectedIg, all);
             }
+            //For Dynamic Mapping
+            if (s != null && s.getDynamicMappingInfo() != null && s.getDynamicMappingInfo().getItems() != null) {
+            	s.getDynamicMappingInfo().getItems().forEach(item -> {
+            		Link link = all.getDatatypeRegistry().getLinkById(item.getDatatypeId());
+            		if(link != null) {
+            			selectedIg.getDatatypeRegistry().getChildren().add(link);
+            			Datatype dt = this.datatypeService.findById(link.getId());
+            			if (dt != null && dt instanceof ComplexDatatype) {
+            				ComplexDatatype cdt = (ComplexDatatype)dt;
+            	            if(cdt.getComponents() != null) {
+            	              this.visitDatatype(cdt.getComponents(), selectedIg, all);
+            	              if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+            	            }
+            			}
+            			
+            		}           		
+            	});
+            }
           }
         }
       }
@@ -1767,10 +1606,8 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/igTemplates", method = RequestMethod.GET, produces = { "application/json" })
-  public @ResponseBody  List<IgTemplate> igTemplates( Authentication authentication) throws Exception {      
-
+  public @ResponseBody  List<IgTemplate> igTemplates( Authentication authentication) throws Exception {
     List<IgTemplate> templates = this.igTemplateRepository.findAll();
-
     return templates;
   }
 
