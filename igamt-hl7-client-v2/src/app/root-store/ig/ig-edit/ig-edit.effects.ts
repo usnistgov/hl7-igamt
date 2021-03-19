@@ -8,16 +8,19 @@ import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import {catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
-import {CleanWorkspace, EditorReset} from 'src/app/modules/dam-framework/store/index';
+import {CleanWorkspace, EditorReset, selectWorkspaceCurrent} from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import {IWorkspaceCurrent} from '../../../modules/dam-framework';
 import { Message, MessageType, UserMessage } from '../../../modules/dam-framework/models/messages/message.class';
 import { RxjsStoreHelperService } from '../../../modules/dam-framework/services/rxjs-store-helper.service';
+import * as fromDam from '../../../modules/dam-framework/store';
 import { DamWidgetEffect } from '../../../modules/dam-framework/store/dam-widget-effect.class';
 import { LoadPayloadData } from '../../../modules/dam-framework/store/data/dam.actions';
 import { IG_EDIT_WIDGET_ID } from '../../../modules/ig/components/ig-edit-container/ig-edit-container.component';
 import { IDocumentDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import {Type} from '../../../modules/shared/constants/type.enum';
 import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
 import {
@@ -25,13 +28,19 @@ import {
   LoadResourceReferencesFailure,
   LoadResourceReferencesSuccess,
 } from '../../dam-igamt/igamt.loaded-resources.actions';
-import {selectSelectedResource} from '../../dam-igamt/igamt.selected-resource.selectors';
-import {selectLoadedDocumentInfo} from '../../dam-igamt/igamt.selectors';
+import {selectProfileComponentContext, selectSelectedResource} from '../../dam-igamt/igamt.selected-resource.selectors';
+import {selectLoadedDocumentInfo, selectWorkspaceActive} from '../../dam-igamt/igamt.selectors';
 import {
-  AddProfileComponentContext, AddProfileComponentContextFailure, AddProfileComponentContextSuccess,
+  AddProfileComponentContext,
+  AddProfileComponentContextFailure,
+  AddProfileComponentContextSuccess,
   CreateCoConstraintGroup,
   CreateCoConstraintGroupFailure,
-  CreateCoConstraintGroupSuccess, CreateProfileComponent, CreateProfileComponentFailure, CreateProfileComponentSuccess,
+  CreateCoConstraintGroupSuccess,
+  CreateProfileComponent,
+  CreateProfileComponentFailure,
+  CreateProfileComponentSuccess,
+  DeleteProfileComponentContext, DeleteProfileComponentContextFailure,
   OpenConformanceStatementSummaryEditorNode,
   UpdateSections,
 } from './ig-edit.actions';
@@ -332,20 +341,12 @@ export class IgEditEffects extends DamWidgetEffect {
   @Effect()
   deleteResourceSuccess$ = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteResourceSuccess),
-    concatMap((action: DeleteResourceSuccess) => {
-      return combineLatest(
-        this.store.select(selectLoadedDocumentInfo),
-        this.store.select(selectSelectedResource),
-      ).pipe(
-        take(1),
-        map(([igInfo, selected]) => {
-          if (selected && selected.id === action.payload.id) {
-            this.router.navigate(['/' + 'ig/' + igInfo.documentId] );
+    map((action: DeleteResourceSuccess) => {
+          if (action.redirect) {
+            this.router.navigate([action.url] );
           }
           return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Success', null));
         }),
-      );
-    }),
   );
 
   @Effect()
@@ -454,22 +455,29 @@ export class IgEditEffects extends DamWidgetEffect {
       }));
       return combineLatest(
         this.igService.deleteResource(action.payload.documentId,  action.payload.element),
-        this.store.select(selectSelectedResource),
+        this.store.select(selectWorkspaceActive),
         this.store.select(selectIgDocument).pipe(take(1))).pipe(
         take(1),
         flatMap(([response, selected, ig]) => {
-          if (selected && selected.id === action.payload.element.id) {
+          const url = '/' + 'ig/' + ig.id;
+
+          let redirect: boolean = selected && selected.display && selected.display.id === action.payload.element.id;
+            // tslint:disable-next-line:no-collapsible-if
+          if (action.payload.element.children && selected && selected.display && selected.display.id) {
+              redirect = redirect || action.payload.element.children.filter((x) => x.id === selected.display.id ).length > 0;
+          }
+          if (redirect) {
             return [
               new EditorReset(),
               new fromDAM.TurnOffLoader(),
               ...this.igService.deleteOneFromRepository(action.payload.element, ig),
-              new DeleteResourceSuccess(action.payload.element),
+              new DeleteResourceSuccess(action.payload.element, true, url),
             ];
           } else {
             return [
               new fromDAM.TurnOffLoader(),
               ...this.igService.deleteOneFromRepository(action.payload.element, ig),
-              new DeleteResourceSuccess(action.payload.element),
+              new DeleteResourceSuccess(action.payload.element, false, url),
             ];
           }
         }),
@@ -682,6 +690,56 @@ export class IgEditEffects extends DamWidgetEffect {
     );
   }
 
+  @Effect()
+  deleteProfileComponentContext = this.actions$.pipe(
+    ofType(IgEditActionTypes.DeleteProfileComponentContext),
+    switchMap((action: DeleteProfileComponentContext) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      return combineLatest(
+        this.igService.deleteContext(action.payload.documentId,  action.payload.element, action.payload.parent),
+        this.store.select(selectWorkspaceActive),
+        this.store.select(selectIgDocument).pipe(take(1))).pipe(
+        take(1),
+        flatMap(([response, selected, ig]) => {
+
+          const url = '/' + 'ig/' + ig.id + '/profilecomponent/' + response.id;
+          console.log(selected);
+          const redirect: boolean = selected && selected.display && selected.display.id === action.payload.element.id;
+
+          if (redirect) {
+            return [
+              new EditorReset(),
+              new fromDAM.TurnOffLoader(),
+              ...this.igService.insertRepositoryCopyResource( ig.profileComponentRegistry, response , ig ),
+              new DeleteResourceSuccess(action.payload.element, true, url),
+            ];
+          } else {
+            return [
+              new fromDAM.TurnOffLoader(),
+              ...this.igService.insertRepositoryCopyResource( ig.profileComponentRegistry, response , ig ),
+              new DeleteResourceSuccess(action.payload.element, false, url),
+            ];
+          }
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new DeleteProfileComponentContextFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  DeleteProfileComponentContextFailure$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.DeleteProfileComponentContextFailure),
+    map((action: DeleteProfileComponentContextFailure) => {
+      return this.message.actionFromError(action.error);
+    }),
+  );
   constructor(
     actions$: Actions<IgEditActions>,
     private igService: IgService,

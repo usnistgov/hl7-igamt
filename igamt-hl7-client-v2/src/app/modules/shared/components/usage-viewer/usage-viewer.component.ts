@@ -31,6 +31,8 @@ export class UsageViewerComponent implements OnInit {
       { label: 'Segments', value: Type.SEGMENT },
       { label: 'Conformance Profile', value: Type.CONFORMANCEPROFILE },
       { label: 'Co-Constraints Group', value: Type.COCONSTRAINTGROUP },
+      { label: 'Profile Component', value: Type.PROFILECOMPONENT },
+      { label: 'Composite Profile', value: Type.COMPOSITEPROFILE },
 
     ];
     this.usages = [

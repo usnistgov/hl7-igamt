@@ -17,6 +17,7 @@ export interface ICopyNode {
 export interface IDeleteNode {
   documentId: string;
   element: IDisplayElement;
+  parent?: IDisplayElement;
 }
 
 export interface ICopyResourceResponse {

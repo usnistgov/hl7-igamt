@@ -57,6 +57,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   delete = new EventEmitter<IDisplayElement>();
   @Output()
+  deleteContext = new EventEmitter<{child: IDisplayElement, parent: IDisplayElement}>();
+  @Output()
   deleteNarrative = new EventEmitter<string>();
   @Output()
   addChildren = new EventEmitter<IAddWrapper>();
@@ -231,5 +233,9 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   addPcContexts(node) {
     this.addPcChildren.emit(node.data);
+  }
+
+  deleteOneChild(child: IDisplayElement, parent: IDisplayElement) {
+    this.deleteContext.emit({child, parent});
   }
 }

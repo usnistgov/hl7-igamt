@@ -8,13 +8,22 @@ import {OpenEditorService} from '../../modules/core/services/open-editor.service
 import {MessageService} from '../../modules/dam-framework/services/message.service';
 import {SetValue} from '../../modules/dam-framework/store';
 import * as fromDAM from '../../modules/dam-framework/store';
+import * as fromDamActions from '../../modules/dam-framework/store/data/dam.actions';
 import * as fromRouterSelector from '../../modules/dam-framework/store/router/router.selectors';
 import {ProfileComponentService} from '../../modules/profile-component/services/profile-component.service';
 import {IProfileComponent, IProfileComponentContext} from '../../modules/shared/models/profile.component';
 import {ConformanceStatementService} from '../../modules/shared/services/conformance-statement.service';
 import {CrossReferencesService} from '../../modules/shared/services/cross-references.service';
 import {DeltaService} from '../../modules/shared/services/delta.service';
+import {
+  ConformanceProfileEditActionTypes,
+  OpenConformanceProfileMetadataEditor
+} from '../conformance-profile-edit/conformance-profile-edit.actions';
 import * as fromIgamtDisplaySelectors from '../dam-igamt/igamt.resource-display.selectors';
+import {
+  selectedResourceHasOrigin, selectedResourceMetadata,
+  selectSelectedProfileComponent
+} from '../dam-igamt/igamt.selected-resource.selectors';
 import * as fromIgamtSelectedSelectors from '../dam-igamt/igamt.selected-resource.selectors';
 import {
   LoadContext,
@@ -101,6 +110,7 @@ export class ProfileComponentEffects {
       return [
         new SetValue({
           profileComponent: action.profileComponent,
+          selected: action.profileComponent,
         }),
       ];
     }),
@@ -122,12 +132,36 @@ export class ProfileComponentEffects {
     }),
   );
 
+  // @Effect()
+  // openProfileComponentEditor$ = this.editorHelper.openMetadataEditor<OpenProfileComponentMetadataEditor>(
+  //   ProfileComponentActionTypes.OpenProfileComponentMetadataEditor,
+  //   fromIgamtDisplaySelectors.selectProfileComponentById,
+  //   this.store.select(selectedResourceMetadata),
+  //   'Profile Component not found',
+  // );
+
   @Effect()
-  openProfileComponentEditor$ = this.editorHelper.openMetadataEditor<OpenProfileComponentMetadataEditor>(
-    ProfileComponentActionTypes.OpenProfileComponentMetadataEditor,
-    fromIgamtDisplaySelectors.selectProfileComponentById,
-    this.store.select(fromIgamtSelectedSelectors.selectedProfileComponentMetadata),
-    'Profile Component not found',
+  openCpMetadataNode$ = this.actions$.pipe(
+    ofType(ProfileComponentActionTypes.OpenProfileComponentMetadataEditor),
+    switchMap((action: OpenProfileComponentMetadataEditor) => {
+      return this.store.select(fromIgamtSelectedSelectors.selectedProfileComponent)
+        .pipe(
+          take(1),
+          flatMap((pc) => {
+            return this.store.select(fromIgamtDisplaySelectors.selectProfileComponentById, { id: pc.id }).pipe(
+              take(1),
+              map((messageDisplay) => {
+                return new fromDamActions.OpenEditor({
+                  id: action.payload.id,
+                  display: messageDisplay,
+                  editor: action.payload.editor,
+                  initial: pc,
+                });
+              }),
+            );
+          }),
+        );
+    }),
   );
 
   @Effect()

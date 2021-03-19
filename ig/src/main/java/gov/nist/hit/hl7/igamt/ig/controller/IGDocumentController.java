@@ -124,6 +124,7 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.SharingService;
 import gov.nist.hit.hl7.igamt.ig.service.VerificationService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -613,26 +614,6 @@ public class IGDocumentController extends BaseController {
   /**
    * 
    * @param id
-   * @param datatypeId
-   * @param authentication
-   * @return
-   * @return
-   * @throws IGNotFoundException
-   * @throws XReferenceException
-   */
-  @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/crossref", method = RequestMethod.GET, produces = {
-  "application/json" })
-  public @ResponseBody List<RelationShip> findDatatypeCrossRef(@PathVariable("id") String id,
-      @PathVariable("datatypeId") String datatypeId, Authentication authentication)
-          throws IGNotFoundException, XReferenceException {
-
-    return this.relationShipService.findCrossReferences(datatypeId);
-
-  }
-
-  /**
-   * 
-   * @param id
    * @param elementId
    * @param authentication
    * @return
@@ -733,17 +714,6 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage(Status.SUCCESS, VALUESET_DELETE, valuesetId, new Date());
   }
 
-  /**
-   * 
-   * @param id
-   * @param conformanceProfileId
-   * @param authentication
-   * @return
-   * @throws IGNotFoundException
-   * @throws XReferenceFoundException
-   * @throws XReferenceException
-   * @throws ForbiddenOperationException 
-   */
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceprofileId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
   public ResponseMessage deleteConformanceProfile(@PathVariable("id") String id,
@@ -767,6 +737,36 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage(Status.SUCCESS, CONFORMANCE_PROFILE_DELETE, conformanceProfileId, new Date());
   }
 
+  @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/delete", method = RequestMethod.DELETE, produces = {
+  "application/json" })
+  public ResponseMessage deletProfileComponent(@PathVariable("id") String id,
+      @PathVariable("pcId") String pcId, Authentication authentication)
+          throws IGNotFoundException, ForbiddenOperationException {
+
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
+    Link found = findLinkById(pcId, ig.getProfileComponentRegistry().getChildren());
+    if (found != null) {
+      ig.getProfileComponentRegistry().getChildren().remove(found);
+    }
+    profileComponentService.delete(pcId);
+    ig = igService.save(ig);
+    return new ResponseMessage(Status.SUCCESS, "Profile Component deleted", pcId, new Date());
+  }
+  @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/removeContext", method = RequestMethod.POST, produces = {
+  "application/json" })
+  public DisplayElement deletProfileComponentContext(@PathVariable("id") String id,
+      @PathVariable("pcId") String pcId,  @RequestBody String contextId, Authentication authentication)
+          throws IGNotFoundException, ForbiddenOperationException, ProfileComponentNotFoundException {
+
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+    ProfileComponent pc = this.profileComponentService.deleteContextById(pcId, contextId );
+    profileComponentService.save(pc);
+    return this.displayInfoService.convertProfileComponent(pc);
+  
+  }
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
   public ResponseMessage<AddResourceResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("conformanceProfileId") String conformanceProfileId,
@@ -796,6 +796,40 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
         clone.getId(), false, clone.getUpdateDate(), response);
   }
+  
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/clone", method = RequestMethod.POST, produces = {"application/json"})
+  public ResponseMessage<AddResourceResponse> cloneProfileComponent(@RequestBody CopyWrapper wrapper,
+      @PathVariable("id") String id, @PathVariable("pcId") String pcId,
+      Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException {
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+    String username = authentication.getName();
+    ProfileComponent profileComponent = profileComponentService.findById(wrapper.getSelected().getOriginalId());
+    if (profileComponent == null) {
+      throw new CloneException("Cannot find profile component with id" + pcId);
+    }
+    ProfileComponent clone = profileComponent.clone();
+    clone.setUsername(username);
+    clone.setName(wrapper.getSelected().getExt());
+    clone.getDomainInfo().setScope(Scope.USER);
+    clone = profileComponentService.save(clone);
+
+    ig.getProfileComponentRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(),
+        ig.getProfileComponentRegistry().getChildren().size() + 1));
+    ig = igService.save(ig);
+
+    AddResourceResponse response = new AddResourceResponse();
+    response.setId(clone.getId());
+    response.setReg(ig.getProfileComponentRegistry());
+    response.setDisplay(displayInfoService.convertProfileComponent(clone));
+
+    return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
+        clone.getId(), false, clone.getUpdateDate(), response);
+  }
+ 
+  
+  
 
   @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })

@@ -12,11 +12,18 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.service;
 
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
@@ -53,5 +60,12 @@ public interface ProfileComponentService {
 
   ProfileComponentContext updateContext(String pcId, String contextId,
       Set<ProfileComponentItem> context) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
+
+  Link cloneProfileComponent(String string, HashMap<RealKey, String> newKeys, Link l,
+      String username, Scope user, CloneMode cloneMode);
+
+  Set<RelationShip> collectDependencies(ProfileComponent pc);
+
+  ProfileComponent deleteContextById(String pcId, String contextId) throws ProfileComponentNotFoundException;
 
 }

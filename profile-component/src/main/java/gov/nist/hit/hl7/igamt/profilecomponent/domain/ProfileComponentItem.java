@@ -20,7 +20,7 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
 public class ProfileComponentItem {
 
   private String path;
-  private Set<ItemProperty> itemProperties;
+  private Set<ItemProperty> itemProperties = new HashSet<ItemProperty>();
 
   public ProfileComponentItem() {
   }

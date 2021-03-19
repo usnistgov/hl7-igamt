@@ -11,14 +11,24 @@
  */
 package gov.nist.hit.hl7.igamt.compositeprofile.service.impl;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
-import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
 import gov.nist.hit.hl7.igamt.compositeprofile.repository.CompositeProfileStructureRepository;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 
@@ -46,8 +56,6 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
 
   @Override
   public CompositeProfileStructure save(CompositeProfileStructure compositeProfileStructure) {
-    // compositeProfileStructure
-    // .setId(CompositeKeyUtil.updateVersion(compositeProfileStructure.getId()));
     return compositeProfileStructureRepository.save(compositeProfileStructure);
   }
 
@@ -70,5 +78,80 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
   public void removeCollection() {
     compositeProfileStructureRepository.deleteAll();
 
+  }
+  
+  @Override
+  public Link cloneCompositeProfile(String newId, HashMap<RealKey, String> newKeys, Link l,
+      String username, Scope scope, CloneMode cloneMode) {
+  
+    CompositeProfileStructure old = this.findById(l.getId());
+    CompositeProfileStructure elm = old.clone();
+    elm.setId(newId);
+    elm.getDomainInfo().setScope(scope);
+    elm.setUsername(username);
+    elm.setOrigin(l.getId());
+    elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
+    Link newLink = new Link(elm);
+    updateDependencies(elm, newKeys, cloneMode);
+    this.save(elm);
+    return newLink;
+    
+  }
+
+  /**
+   * @param elm
+   * @param newKeys
+   * @param cloneMode
+   */
+  private void updateDependencies(CompositeProfileStructure elm, HashMap<RealKey, String> newKeys,
+      CloneMode cloneMode) {
+    if(elm.getConformanceProfileId() != null) {
+      RealKey key = new RealKey(elm.getConformanceProfileId(), Type.CONFORMANCEPROFILE);
+      if(newKeys.containsKey(key)){
+        elm.setConformanceProfileId(newKeys.get(key));
+      }
+    }
+    if(elm.getOrderedProfileComponents() != null) {
+      for(OrderedProfileComponentLink child: elm.getOrderedProfileComponents()) {
+        RealKey key = new RealKey(elm.getConformanceProfileId(), Type.PROFILECOMPONENT);
+        if(newKeys.containsKey(key)) {
+          child.setProfileComponentId(newKeys.get(key));
+        }
+      }
+    }
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService#findByIdIn(java.util.Set)
+   */
+  @Override
+  public List<CompositeProfileStructure> findByIdIn(Set<String> ids) {
+    // TODO Auto-generated method stub
+    return compositeProfileStructureRepository.findByIdIn(ids);
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService#collectDependencies(gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure)
+   */
+  @Override
+  public Set<RelationShip> collectDependencies(CompositeProfileStructure composite) {
+    Set<RelationShip> relations = new HashSet<RelationShip>();
+    if(composite.getConformanceProfileId() != null) {
+      RelationShip rel = new RelationShip(new ReferenceIndentifier(composite.getConformanceProfileId(), Type.CONFORMANCEPROFILE),
+          new ReferenceIndentifier(composite.getId(), Type.COMPOSITEPROFILE),
+                          null);
+      relations.add(rel);
+    }
+    
+    if(composite.getOrderedProfileComponents() != null) {
+      for(OrderedProfileComponentLink pc : composite.getOrderedProfileComponents()) {
+        RelationShip rel = new RelationShip(new ReferenceIndentifier(composite.getConformanceProfileId(), Type.PROFILECOMPONENT),
+            new ReferenceIndentifier(composite.getId(), Type.COMPOSITEPROFILE),
+            new ReferenceLocation(Type.PROFILECOMPONENT, pc.getPosition() + "", pc.getPosition() + "" )); 
+        relations.add(rel);
+      }
+    }
+    
+    return relations;
   }
 }

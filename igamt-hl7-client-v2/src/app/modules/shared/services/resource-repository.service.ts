@@ -7,7 +7,7 @@ import { LoadResourceReferences } from '../../../root-store/dam-igamt/igamt.load
 import {
   selectCoConstraintGroupsById,
   selectDatatypesById,
-  selectMessagesById,
+  selectMessagesById, selectProfileComponentById,
   selectSegmentsById,
   selectValueSetById,
 } from '../../../root-store/dam-igamt/igamt.resource-display.selectors';
@@ -146,6 +146,8 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
         return this.store.select(selectMessagesById, { id });
       case Type.COCONSTRAINTGROUP:
         return this.store.select(selectCoConstraintGroupsById, { id });
+      case Type.PROFILECOMPONENT:
+        return this.store.select(selectProfileComponentById, { id });
       default:
         return of(undefined);
     }

@@ -70,6 +70,10 @@ export enum IgEditActionTypes {
   AddProfileComponentContext = '[Ig Edit TOC] Add Profile Component Context',
   AddProfileComponentContextSuccess = '[Ig Edit TOC] Add Profile Component Context Success',
   AddProfileComponentContextFailure = '[Ig Edit TOC] Add Profile Component Context Failure',
+
+  DeleteProfileComponentContext = '[Ig Edit TOC] Delete Profile Component Context',
+  DeleteProfileComponentContextSuccess = '[Ig Edit TOC] Delete Profile Component Context Success',
+  DeleteProfileComponentContextFailure = '[Ig Edit TOC] Delete Profile Component Context Failure',
 }
 
 export class ClearIgEdit implements Action {
@@ -186,7 +190,7 @@ export class DeleteResource implements Action {
 }
 export class DeleteResourceSuccess implements Action {
   readonly type = IgEditActionTypes.DeleteResourceSuccess;
-  constructor(readonly payload: IDisplayElement) {
+  constructor(readonly payload: IDisplayElement, readonly redirect: boolean, readonly url) {
   }
 }
 export class DeleteResourceFailure implements Action {
@@ -314,6 +318,23 @@ export class AddProfileComponentContextSuccess implements Action {
 export class AddProfileComponentContextFailure implements Action {
   readonly type = IgEditActionTypes.AddProfileComponentContextFailure;
   constructor(readonly payload: HttpErrorResponse) {
+  }
+}
+
+export class DeleteProfileComponentContextFailure  implements Action {
+  readonly type = IgEditActionTypes.DeleteProfileComponentContextFailure;
+  constructor(readonly error: HttpErrorResponse) {
+  }
+}
+
+export class DeleteProfileComponentContext implements Action {
+  readonly type = IgEditActionTypes.DeleteProfileComponentContext;
+  constructor(readonly payload: IDeleteNode) {
+  }
+}
+export class DeleteProfileComponentContextSuccess implements Action {
+  readonly type = IgEditActionTypes.DeleteProfileComponentContextSuccess;
+  constructor(readonly payload: IDisplayElement) {
   }
 }
 export type IgEditActions =

@@ -65,9 +65,12 @@ public class CompositeProfileStructure extends Resource {
   }
 
 @Override
-public Resource clone() {
-	// TODO Auto-generated method stub
-	return null;
+public CompositeProfileStructure clone() {
+  CompositeProfileStructure clone = new CompositeProfileStructure();
+  complete(clone);
+  clone.setConformanceProfileId(conformanceProfileId);
+  clone.setOrderedProfileComponents(orderedProfileComponents);
+  return clone;
 }
 
 }

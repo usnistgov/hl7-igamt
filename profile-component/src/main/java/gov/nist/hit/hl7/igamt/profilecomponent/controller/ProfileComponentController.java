@@ -47,8 +47,6 @@ public class ProfileComponentController extends BaseController {
   SegmentService segmentService;
   @Autowired
   ConformanceProfileService conformanceProfileService;
- 
-  
   @Autowired
   ProfileComponentService profileComponentService;
     

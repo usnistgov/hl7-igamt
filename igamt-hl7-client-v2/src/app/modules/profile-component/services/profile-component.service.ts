@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {Message} from '../../dam-framework/models/messages/message.class';
 import {Usage} from '../../shared/constants/usage.enum';
+import {IDocumentRef} from '../../shared/models/abstract-domain.interface';
 import {IComment} from '../../shared/models/comment.interface';
 import {
   IProfileComponent,
@@ -117,6 +118,13 @@ export class ProfileComponentService {
         break;
     }
     return itemProperty;
+  }
+  saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<string>> {
+    return this.http.post<Message<string>>(this.URL + id, changes, {
+      params: {
+        dId: documentRef.documentId,
+      },
+    });
   }
   constructor(private http: HttpClient) { }
 }

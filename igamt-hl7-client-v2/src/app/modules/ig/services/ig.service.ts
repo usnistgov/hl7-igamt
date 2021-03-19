@@ -1,8 +1,9 @@
 import { LocationStrategy } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 import { Action } from '@ngrx/store';
-import { Observable, throwError } from 'rxjs';
+import {Observable, of, throwError} from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { TableOfContentSave } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
@@ -249,6 +250,10 @@ export class IgService {
         return this.IG_END_POINT + documentId + '/valuesets/' + element.id + '/delete';
       case Type.COCONSTRAINTGROUP:
         return this.IG_END_POINT + documentId + '/co-constraint-group/' + element.id + '/delete';
+      case Type.PROFILECOMPONENT:
+        return this.IG_END_POINT + documentId + '/profile-component/' + element.id + '/delete';
+      case Type.COMPOSITEPROFILE:
+        return this.IG_END_POINT + documentId + '/composite-profile/' + element.id + '/delete';
       default: return null;
     }
   }
@@ -401,5 +406,9 @@ export class IgService {
 
   addProfileComponentContext(request: IAddProfileComponentContext): Observable<Message<ICreateProfileComponentResponse>> {
     return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/profile-component/' + request.pcId + '/addChildren', request.added);
+  }
+
+  deleteContext(documentId: string, element: IDisplayElement, parent: IDisplayElement): Observable<IDisplayElement> {
+    return this.http.post<IDisplayElement>(this.IG_END_POINT + documentId + '/profile-component/' + parent.id + '/removeContext' , element.id);
   }
 }

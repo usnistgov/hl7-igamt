@@ -2,24 +2,19 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Actions} from '@ngrx/effects';
 import {MemoizedSelectorWithProps, Store} from '@ngrx/store';
-import {Observable, of} from 'rxjs';
 import {LoadConformanceProfile} from '../../../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import {
   selectLoadedMessageById,
 } from '../../../../root-store/dam-igamt/igamt.loaded-resources.selectors';
 import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import {ConformanceProfileService} from '../../../conformance-profile/services/conformance-profile.service';
-import {Message} from '../../../dam-framework/models/messages/message.class';
 import {MessageService} from '../../../dam-framework/services/message.service';
 import {HL7v2TreeColumnType} from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import {Type} from '../../../shared/constants/type.enum';
-import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
-import {IConformanceProfile} from '../../../shared/models/conformance-profile.interface';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {EditorID} from '../../../shared/models/editor.enum';
 import {IProfileComponentContext} from '../../../shared/models/profile.component';
 import {IResource} from '../../../shared/models/resource.interface';
-import {IChange} from '../../../shared/models/save-change';
 import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
 import {PcTreeService} from '../../services/pc-tree.service';
 import {ProfileComponentService} from '../../services/profile-component.service';

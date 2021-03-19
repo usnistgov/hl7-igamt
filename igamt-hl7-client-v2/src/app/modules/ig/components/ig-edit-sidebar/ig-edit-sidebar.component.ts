@@ -13,7 +13,7 @@ import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selector
 import {
   AddProfileComponentContext,
   CreateProfileComponent,
-  CreateProfileComponentFailure, CreateProfileComponentSuccess,
+  CreateProfileComponentFailure, CreateProfileComponentSuccess, DeleteProfileComponentContext,
   IgEditActionTypes,
   ImportResourceFromFile,
   ImportResourceFromFileSuccess,
@@ -41,6 +41,7 @@ import {AddProfileComponentContextComponent} from '../../../shared/components/ad
 import {AddProfileComponentComponent} from '../../../shared/components/add-profile-component/add-profile-component.component';
 import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
 import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
+import {getLabel} from '../../../shared/components/display-section/display-section.component';
 import { ImportCsvValuesetComponent } from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
 import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
 import { UsageDialogComponent } from '../../../shared/components/usage-dialog/usage-dialog.component';
@@ -447,5 +448,30 @@ export class IgEditSidebarComponent implements OnInit {
         ).subscribe();
       }),
     ).subscribe();
+  }
+
+  deleteOneChild($event: { child: IDisplayElement; parent: IDisplayElement }) {
+    this.documentRef$.pipe(
+      take(1),
+      tap((documentRef) => {
+
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          data: {
+            question: 'Are you sure you want to remove ' + getLabel($event.child.fixedName, $event.child.variableName) + ' from ' + getLabel($event.parent.fixedName, $event.parent.variableName) + ' ?',
+            action: 'Delete Profile Component Context',
+          },
+        });
+        dialogRef.afterClosed().subscribe(
+          (answer) => {
+            if (answer) {
+              this.store.dispatch(new DeleteProfileComponentContext({
+                documentId: documentRef.documentId,
+                element: $event.child,
+                parent: $event.parent,
+              }));
+            }
+          },
+        );
+      })).subscribe();
   }
 }
