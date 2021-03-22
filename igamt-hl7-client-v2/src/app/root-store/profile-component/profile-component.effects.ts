@@ -155,7 +155,7 @@ export class ProfileComponentEffects {
                   id: action.payload.id,
                   display: messageDisplay,
                   editor: action.payload.editor,
-                  initial: pc,
+                  initial: this.profileComponentService.profileComponentToMetadata(pc),
                 });
               }),
             );

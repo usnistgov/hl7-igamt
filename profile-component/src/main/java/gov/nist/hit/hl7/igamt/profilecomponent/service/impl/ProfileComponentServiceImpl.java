@@ -11,29 +11,41 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.service.impl;
 
+import java.io.IOException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageProfileIdentifier;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -54,6 +66,8 @@ import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
+import gov.nist.hit.hl7.resource.change.service.ApplyChange;
 
 
 /**
@@ -77,6 +91,15 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
   private ValuesetService valuesetService;
   @Autowired
   BindingService bindingService; 
+
+  @Autowired
+  EntityChangeService entityChangeService;
+
+  @Autowired 
+  CommonService commonService;
+
+  @Autowired
+  ApplyChange applyChange;
 
 
   @Override
@@ -402,6 +425,40 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     pc.getChildren().removeIf((x) -> x.getId().equals(contextId));
     return pc;
   }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#applyChanges(gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent, java.util.List, java.lang.String)
+   */
+  @Override
+  public void applyChanges(ProfileComponent pc, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+
+    Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
+    this.applyMetaData(pc, singlePropertyMap , documentId);
+    this.save(pc);
+  }
+
+  private void applyMetaData( ProfileComponent cp, Map<PropertyType, ChangeItemDomain> singlePropertyMap, String documentId) throws ApplyChangeException{
+
+    applyChange.applyResourceChanges(cp, singlePropertyMap , documentId);
+    ObjectMapper mapper = new ObjectMapper();
+
+    if (singlePropertyMap.containsKey(PropertyType.NAME)) {
+      singlePropertyMap.get(PropertyType.NAME).setOldPropertyValue(cp.getName());
+      cp.setName((String) singlePropertyMap.get(PropertyType.NAME).getPropertyValue());
+    }
+    if (singlePropertyMap.containsKey(PropertyType.PROFILEIDENTIFIER)) {
+      try {
+        String jsonInString = mapper.writeValueAsString(singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER).getPropertyValue());
+        singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER).setOldPropertyValue(cp.getPreCoordinatedMessageIdentifier());
+        MessageProfileIdentifier profileIdentifier= mapper.readValue(jsonInString, MessageProfileIdentifier.class);
+        cp.setPreCoordinatedMessageIdentifier(profileIdentifier);
+      } catch (IOException e) {
+        throw new ApplyChangeException(singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER));
+      }
+    } 
+
+  }
+
 
 
 }

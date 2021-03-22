@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.controller;
 
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -21,11 +23,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
+import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
@@ -45,10 +57,18 @@ public class ProfileComponentController extends BaseController {
   Logger log = LoggerFactory.getLogger(ProfileComponentController.class);
   @Autowired
   SegmentService segmentService;
+  
   @Autowired
   ConformanceProfileService conformanceProfileService;
+  
   @Autowired
   ProfileComponentService profileComponentService;
+  
+  @Autowired
+  EntityChangeService entityChangeService;
+
+  @Autowired 
+  CommonService commonService;
     
   @RequestMapping(value = "/api/profile-component/{id}", method = RequestMethod.GET, produces = {"application/json"})
   public ProfileComponent getProfileComponent(
@@ -81,7 +101,27 @@ public class ProfileComponentController extends BaseController {
       return profileComponentService.updateContext(pcId, contextId, children);
   }
   
-  
+
+  @RequestMapping(value = "/api/profile-component/{id}", method = RequestMethod.POST, produces = {
+          "application/json" })
+  @ResponseBody
+  public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
+                                         @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+                                         Authentication authentication) throws Exception {
+    
+      ProfileComponent cp = this.profileComponentService.findById(id);
+      commonService.checkRight(authentication, cp.getCurrentAuthor(), cp.getUsername());
+      this.profileComponentService.applyChanges(cp, cItems, documentId);
+      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
+      entityChangeDomain.setDocumentId(documentId);
+      entityChangeDomain.setDocumentType(DocumentType.IG);
+      entityChangeDomain.setTargetId(id);
+      entityChangeDomain.setTargetType(EntityType.PROFILECOMPONENT);
+      entityChangeDomain.setChangeItems(cItems);
+      entityChangeDomain.setTargetVersion(cp.getVersion());
+      entityChangeService.save(entityChangeDomain);
+      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, cp.getId(), new Date());
+  }
   
   private ProfileComponent findById(String id) throws ProfileComponentNotFoundException {
     ProfileComponent pc = profileComponentService.findById(id);

@@ -2,12 +2,14 @@ import {Type} from '../constants/type.enum';
 import {Usage} from '../constants/usage.enum';
 import {IExternalSingleCode, IValuesetBinding} from './binding.interface';
 import {IComment} from './comment.interface';
+import {IMessageProfileIdentifier} from './conformance-profile.interface';
 import {IResource} from './resource.interface';
 import {PropertyType} from './save-change';
 import {IDynamicMappingInfo} from './segment.interface';
 
 export interface IProfileComponent extends IResource {
   children?: IProfileComponentContext;
+  preCoordinatedMessageIdentifier?: IMessageProfileIdentifier;
 }
 export interface IProfileComponentContext {
   id: string;

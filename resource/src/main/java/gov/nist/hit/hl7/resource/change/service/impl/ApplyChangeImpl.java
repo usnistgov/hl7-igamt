@@ -156,6 +156,9 @@ public class ApplyChangeImpl implements ApplyChange {
 		if (map.containsKey(PropertyType.SHORTDESCRIPTION)) {
 			resource.setShortDescription((String) map.get(PropertyType.SHORTDESCRIPTION).getPropertyValue());
 		}
+		if (map.containsKey(PropertyType.DESCRIPTION)) {
+			resource.setDescription((String) map.get(PropertyType.DESCRIPTION).getPropertyValue());
+		}
 	}
 
 	@Override

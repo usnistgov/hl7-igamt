@@ -7,6 +7,7 @@ import {catchError, concatMap, flatMap, switchMap, take, tap} from 'rxjs/operato
 import {LoadConformanceProfile} from '../../../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import {IgEditResolverLoad} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import {LoadProfileComponent} from '../../../../root-store/profile-component/profile-component.actions';
 import {IConformanceProfileEditMetadata} from '../../../conformance-profile/components/metadata-editor/metadata-editor.component';
 import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import {Message} from '../../../dam-framework/models/messages/message.class';
@@ -28,7 +29,7 @@ import {ProfileComponentService} from '../../services/profile-component.service'
 })
 export class ProfileComponentMetadataComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
 
-  conformanceProfileMetadata: Observable<IConformanceProfileEditMetadata>;
+  profileComponentMetadata: Observable<IProfileComponentMetadata>;
   formGroup: FormGroup;
   froalaConfig: Observable<any>;
   s_workspace: Subscription;
@@ -51,11 +52,11 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
       actions$,
       store,
     );
-    this.conformanceProfileMetadata = this.currentSynchronized$;
+    this.profileComponentMetadata = this.currentSynchronized$;
     this.froalaConfig = this.froalaService.getConfig();
 
     this.s_workspace = this.currentSynchronized$.pipe(
-      tap((metadata: IProfileComponent) => {
+      tap((metadata: IProfileComponentMetadata) => {
 
         this.initFormGroup();
         this.formGroup.patchValue(metadata);
@@ -145,7 +146,7 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
         return this.profileComponentService.saveChanges(id, documentRef, this.getChanges(id, current.data, old)).pipe(
           flatMap((message) => {
             /// TODO handle libary case
-            return [this.messageService.messageToAction(message), new LoadConformanceProfile(id), new IgEditResolverLoad(documentRef.documentId)];
+            return [this.messageService.messageToAction(message), new LoadProfileComponent(id), new IgEditResolverLoad(documentRef.documentId)];
           }),
           catchError((error) => of(this.messageService.actionFromError(error), new fromDam.EditorSaveFailure())),
         );
@@ -181,4 +182,15 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
 
   }
 
+}
+export interface IProfileComponentMetadata {
+  name: string;
+  description: string;
+  displayName?: string;
+  profileIdentifier: {
+    entityIdentifier?: string,
+    namespaceId?: string,
+    universalId?: string,
+    universalIdType?: string,
+  };
 }

@@ -1,10 +1,12 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
+import {IConformanceProfileEditMetadata} from '../../conformance-profile/components/metadata-editor/metadata-editor.component';
 import {Message} from '../../dam-framework/models/messages/message.class';
 import {Usage} from '../../shared/constants/usage.enum';
 import {IDocumentRef} from '../../shared/models/abstract-domain.interface';
 import {IComment} from '../../shared/models/comment.interface';
+import {IConformanceProfile} from '../../shared/models/conformance-profile.interface';
 import {
   IProfileComponent,
   IProfileComponentContext,
@@ -18,6 +20,7 @@ import {
   PropertyUsage, PropertyValueSet,
 } from '../../shared/models/profile.component';
 import {IChange, PropertyType} from '../../shared/models/save-change';
+import {IProfileComponentMetadata} from '../components/profile-component-metadata/profile-component-metadata.component';
 
 @Injectable({
   providedIn: 'root',
@@ -125,6 +128,14 @@ export class ProfileComponentService {
         dId: documentRef.documentId,
       },
     });
+  }
+
+  profileComponentToMetadata(conformanceProfile: IProfileComponent): IProfileComponentMetadata {
+    return {
+      name: conformanceProfile.name,
+      description: conformanceProfile.description,
+      profileIdentifier:  conformanceProfile.preCoordinatedMessageIdentifier ? conformanceProfile.preCoordinatedMessageIdentifier : {},
+    };
   }
   constructor(private http: HttpClient) { }
 }
