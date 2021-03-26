@@ -1,0 +1,2 @@
+
+<app-pc-list [pcNodes]="pcNodes$ | async"  [coreProfile]="coreProfileDisplay$ | async" [availablePcs] = "availablePc$ | async" (append)="this.appendPCs($event)"></app-pc-list>

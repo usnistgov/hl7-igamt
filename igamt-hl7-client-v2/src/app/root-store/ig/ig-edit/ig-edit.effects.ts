@@ -36,7 +36,7 @@ import {
   AddProfileComponentContextSuccess,
   CreateCoConstraintGroup,
   CreateCoConstraintGroupFailure,
-  CreateCoConstraintGroupSuccess,
+  CreateCoConstraintGroupSuccess, CreateCompositeProfile, CreateCompositeProfileFailure, CreateCompositeProfileSuccess,
   CreateProfileComponent,
   CreateProfileComponentFailure,
   CreateProfileComponentSuccess,
@@ -740,6 +740,52 @@ export class IgEditEffects extends DamWidgetEffect {
       return this.message.actionFromError(action.error);
     }),
   );
+
+  @Effect()
+  igCreateCompositeProfile = this.actions$.pipe(
+    ofType(IgEditActionTypes.CreateCompositeProfile),
+    switchMap((action: CreateCompositeProfile) => {
+      this.store.dispatch(new fromDAM.TurnOnLoader({
+        blockUI: true,
+      }));
+      return combineLatest(
+        this.igService.createCompositeProfile(action.payload),
+        this.store.select(selectIgDocument).pipe(take(1))).pipe(
+        take(1),
+        flatMap(([response, ig]) => {
+          return [
+            new fromDAM.TurnOffLoader(),
+            ...this.igService.insertRepositoryCopyResource(response.data.registry, response.data.display, ig),
+            new CreateCompositeProfileSuccess(response.data),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new fromDAM.TurnOffLoader(),
+            new CreateCompositeProfileFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  igCreateCompositeProfileFailure$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.CreateCompositeProfileFailure),
+    map((action: CreateCompositeProfileFailure) => {
+      return this.message.actionFromError(action.payload);
+    }),
+  );
+
+  @Effect()
+  igCreateCompositeProfileSuccess$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.CreateCompositeProfileSuccess),
+    map((action: CreateProfileComponentSuccess) => {
+      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Composite profile Created Successfully', null));
+    }),
+  );
+
+
   constructor(
     actions$: Actions<IgEditActions>,
     private igService: IgService,

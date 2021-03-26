@@ -138,6 +138,10 @@ const routes: Routes = [
         path: 'profilecomponent',
         loadChildren: 'src/app/modules/profile-component/profile-component.module#ProfileComponentModule',
       },
+      {
+        path: 'compositeprofile',
+        loadChildren: 'src/app/modules/composite-profile/composite-profile.module#CompositeProfileModule',
+      },
     ],
   },
   {

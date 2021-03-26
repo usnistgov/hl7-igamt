@@ -76,6 +76,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItem;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileLabel;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileSelectItem;
@@ -1240,12 +1241,15 @@ public class IgServiceImpl implements IgService {
 
       case COCONSTRAINTGROUP:
         addConformanceProfilesRelations(ig, ret);
-        
+        return ret;
+
       case PROFILECOMPONENT:
         addComposoiteProfilesRelations(ig, ret);
+        return ret;
         
       case CONFORMANCEPROFILE:
         addComposoiteProfilesRelations(ig, ret);
+        return ret;
         
       default:
         return ret;
@@ -1421,6 +1425,28 @@ public class IgServiceImpl implements IgService {
     ig.getProfileComponentRegistry().getChildren().add(pcLink);
     this.profileComponentService.save(ret);
     this.save(ig);
+
+    return ret;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.ig.service.IgService#createCompositeProfileSercice(gov.nist.hit.hl7.igamt.ig.domain.Ig, gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper)
+   */
+  @Override
+  public CompositeProfileStructure createCompositeProfileSercice(Ig ig,
+      CompositeProfileCreationWrapper wrapper) {
+    
+    CompositeProfileStructure ret = new CompositeProfileStructure();
+    ret.setUsername(ig.getUsername());
+    ret.setCurrentAuthor(ig.getCurrentAuthor());
+    ret.setDomainInfo(new DomainInfo("*", Scope.USER));
+    ret.setName(wrapper.name);
+    ret.setConformanceProfileId(wrapper.conformanceProfileId);
+    ret.setOrderedProfileComponents(wrapper.orderedProfileComponents);
+    String id = new ObjectId().toString();
+    ret.setId(id);
+    Link pcLink = new Link(ret);
+    ig.getCompositeProfileRegistry().getChildren().add(pcLink);
 
     return ret;
   }

@@ -31,7 +31,6 @@ import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 public interface CompositeProfileStructureService {
   public CompositeProfileStructure findById(String id);
 
-
   public CompositeProfileStructure create(CompositeProfileStructure compositeProfileStructure);
 
   public CompositeProfileStructure save(CompositeProfileStructure compositeProfileStructure);

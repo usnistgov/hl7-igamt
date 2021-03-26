@@ -1,5 +1,6 @@
 import { Type } from '../../../shared/constants/type.enum';
 import { IAddingInfo } from '../../../shared/models/adding-info';
+import {IOrderedProfileComponentLink} from '../../../shared/models/composite-profile';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IRegistry } from '../../../shared/models/registry.interface';
 
@@ -65,4 +66,11 @@ export interface IAddResourceFromFile {
   id: string;
   reg: IRegistry;
   display: IDisplayElement;
+}
+
+export interface ICreateCompositeProfile {
+  documentId?: string;
+  name: string;
+  conformanceProfileId?: string;
+  orderedProfileComponents?: IOrderedProfileComponentLink[];
 }

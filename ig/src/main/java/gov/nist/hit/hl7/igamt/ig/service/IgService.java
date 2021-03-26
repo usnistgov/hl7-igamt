@@ -20,8 +20,10 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
@@ -100,6 +102,9 @@ public interface IgService {
   public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
   
   public ProfileComponent createProfileComponent(Ig ig, String name, List<DisplayElement> children);
+
+  public CompositeProfileStructure createCompositeProfileSercice(Ig ig,
+      CompositeProfileCreationWrapper wrapper);
 
 
 }

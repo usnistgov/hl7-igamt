@@ -1035,37 +1035,37 @@ public class BootstrapApplication implements CommandLineRunner {
     dynamicMappingFixer.addMissingDatatypesBasedOnDynamicMapping();
   }
   
-  @PostConstruct
-  void createPc() {
-    Ig ig= this.igRepo.findById("6021a5cb2ad88586c88eeb39").get();
-    ig.getProfileComponentRegistry().getChildren().add(new Link("PC_ID_1", new DomainInfo("*", Scope.USER),1));
-    
-    ProfileComponent p = new ProfileComponent();
-    p.setName("PC1");
-    p.setChildren(new HashSet<ProfileComponentContext>());
-    ProfileComponentContext c1 = new ProfileComponentContext();
-    ProfileComponentContext c2 = new ProfileComponentContext();
-    c1.setId("C1");
-    c2.setId("C2");
-    c1.setLevel(Type.SEGMENT);
-    c2.setLevel(Type.CONFORMANCEPROFILE);
-    c1.setId("HL7OBX-V2-7");
-    c1.setSourceId("HL7OBX-V2-7");
-
-    c2.setId("6021a5cb2ad88586c88ee412");
-    c2.setSourceId("6021a5cb2ad88586c88ee412");
-
-    p.getChildren().add(c1);
-    p.getChildren().add(c2);
-    p.setDomainInfo(new DomainInfo("*", Scope.USER));
-    p.setId("PC_ID_1");
-    profileComponentService.delete("PC_ID_1");
-    this.profileComponentService.save(p);
-    this.igRepo.save(ig);
-    
-    
-    
-   
-  }
+//  @PostConstruct
+//  void createPc() {
+//    Ig ig= this.igRepo.findById("6021a5cb2ad88586c88eeb39").get();
+//    ig.getProfileComponentRegistry().getChildren().add(new Link("PC_ID_1", new DomainInfo("*", Scope.USER),1));
+//    
+//    ProfileComponent p = new ProfileComponent();
+//    p.setName("PC1");
+//    p.setChildren(new HashSet<ProfileComponentContext>());
+//    ProfileComponentContext c1 = new ProfileComponentContext();
+//    ProfileComponentContext c2 = new ProfileComponentContext();
+//    c1.setId("C1");
+//    c2.setId("C2");
+//    c1.setLevel(Type.SEGMENT);
+//    c2.setLevel(Type.CONFORMANCEPROFILE);
+//    c1.setId("HL7OBX-V2-7");
+//    c1.setSourceId("HL7OBX-V2-7");
+//
+//    c2.setId("6021a5cb2ad88586c88ee412");
+//    c2.setSourceId("6021a5cb2ad88586c88ee412");
+//
+//    p.getChildren().add(c1);
+//    p.getChildren().add(c2);
+//    p.setDomainInfo(new DomainInfo("*", Scope.USER));
+//    p.setId("PC_ID_1");
+//    profileComponentService.delete("PC_ID_1");
+//    this.profileComponentService.save(p);
+//    this.igRepo.save(ig);
+//    
+//    
+//    
+//   
+//  }
   
 }

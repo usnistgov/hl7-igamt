@@ -12,7 +12,7 @@ import { MessageEventTreeNode } from '../../document/models/message-event/messag
 import {
   IAddNodes, IAddProfileComponentContext, IAddResourceFromFile, ICopyNode, ICopyResourceResponse,
   ICreateCoConstraintGroup,
-  ICreateCoConstraintGroupResponse, ICreateProfileComponent, ICreateProfileComponentResponse,
+  ICreateCoConstraintGroupResponse, ICreateCompositeProfile, ICreateProfileComponent, ICreateProfileComponentResponse,
 } from '../../document/models/toc/toc-operation.class';
 import { IgTOCNodeHelper } from '../../document/services/ig-toc-node-helper.service';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
@@ -410,5 +410,9 @@ export class IgService {
 
   deleteContext(documentId: string, element: IDisplayElement, parent: IDisplayElement): Observable<IDisplayElement> {
     return this.http.post<IDisplayElement>(this.IG_END_POINT + documentId + '/profile-component/' + parent.id + '/removeContext' , element.id);
+  }
+
+  createCompositeProfile(request: ICreateCompositeProfile): Observable<Message<ICreateProfileComponentResponse>> {
+    return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/composite-profile/create', request);
   }
 }

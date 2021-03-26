@@ -20,7 +20,9 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -62,6 +64,9 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 
   @Autowired
   SimpleCoConstraintService coConstraintService;
+  
+  @Autowired
+  CompositeProfileStructureService compositeProfileService;
 
   @Override
   public IGDisplayInfo covertIgToDisplay(Ig ig) {
@@ -81,11 +86,15 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
    * @param compositeProfileRegistry
    * @return
    */
-  private Set<DisplayElement> convertCompositeProfileRegistry(
+  @Override
+  public Set<DisplayElement> convertCompositeProfileRegistry(
       CompositeProfileRegistry registry) {
-    //Set<String> ids= this.gatherIds(registry.getChildren());
+    Set<String> ids= this.gatherIds(registry.getChildren());
     Set<DisplayElement> ret = new HashSet<DisplayElement>();
-    //TODO: generate composite profiles nodes
+    List<CompositeProfileStructure> cps = compositeProfileService.findByIdIn(ids);
+    for(CompositeProfileStructure cp: cps) {
+      ret.add(convertCompositeProfile(cp));
+    }
     return ret;
   }
 
@@ -345,7 +354,6 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 
   @Override
   public Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes) {
-    // TODO Auto-generated method stub
     Set<DisplayElement> ret = new HashSet<DisplayElement>();
     for(Datatype dt : datatypes ) {
       ret.add(this.convertDatatype(dt));
@@ -355,12 +363,31 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 
   @Override
   public Set<DisplayElement> convertSegments(Set<Segment> segments) {
-    // TODO Auto-generated method stub
     Set<DisplayElement> ret = new HashSet<DisplayElement>();
     for(Segment seg : segments ) {
       ret.add(this.convertSegment(seg));
     }
     return ret;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.display.service.DisplayInfoService#convertCompositeProfileRegistry(gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry)
+   */
+
+  @Override
+  public DisplayElement convertCompositeProfile(CompositeProfileStructure compositeProfile) {
+    DisplayElement displayElement= new DisplayElement();
+    displayElement.setId(compositeProfile.getId());
+    displayElement.setDomainInfo(compositeProfile.getDomainInfo());
+    displayElement.setDescription(compositeProfile.getName());
+    displayElement.setLeaf(false);
+    displayElement.setVariableName(compositeProfile.getName());
+    displayElement.setType(Type.COMPOSITEPROFILE);
+    displayElement.setOrigin(compositeProfile.getOrigin());
+    displayElement.setParentId(compositeProfile.getParentId());
+    displayElement.setParentType(compositeProfile.getParentType());
+    List<DisplayElement> children = new ArrayList<DisplayElement>();
+    return displayElement;
   }
 
 }

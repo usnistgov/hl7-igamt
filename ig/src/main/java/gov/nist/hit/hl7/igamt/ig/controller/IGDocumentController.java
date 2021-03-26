@@ -67,6 +67,8 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
@@ -93,6 +95,7 @@ import gov.nist.hit.hl7.igamt.display.model.IGMetaDataDisplay;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreateChildResponse;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CoConstraintGroupCreateWrapper;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CompositeProfileCreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ProfileComponentCreateWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
@@ -207,6 +210,9 @@ public class IGDocumentController extends BaseController {
   
   @Autowired
   ProfileComponentService profileComponentService;
+  
+  @Autowired
+  CompositeProfileStructureService compositeProfileService;
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
@@ -754,6 +760,25 @@ public class IGDocumentController extends BaseController {
     ig = igService.save(ig);
     return new ResponseMessage(Status.SUCCESS, "Profile Component deleted", pcId, new Date());
   }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/{cpId}/delete", method = RequestMethod.DELETE, produces = {
+  "application/json" })
+  public ResponseMessage deleteCompoisteProfile(@PathVariable("id") String id,
+      @PathVariable("cpId") String cpId, Authentication authentication)
+          throws IGNotFoundException, ForbiddenOperationException {
+
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
+    Link found = findLinkById(cpId, ig.getCompositeProfileRegistry().getChildren());
+    if (found != null) {
+      ig.getCompositeProfileRegistry().getChildren().remove(found);
+    }
+    compositeProfileService.delete(cpId);
+    ig = igService.save(ig);
+    return new ResponseMessage(Status.SUCCESS, "Composite Profile Deleted", cpId, new Date());
+  }
+
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/removeContext", method = RequestMethod.POST, produces = {
   "application/json" })
   public DisplayElement deletProfileComponentContext(@PathVariable("id") String id,
@@ -1080,6 +1105,27 @@ public class IGDocumentController extends BaseController {
         ig.getUpdateDate(), createChildResponse);
   }
   
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/create", method = RequestMethod.POST, produces = {
+  "application/json" })
+  public ResponseMessage<CreateChildResponse> createCompositeProfile(
+      @PathVariable("id") String id,
+      @RequestBody CompositeProfileCreationWrapper wrapper,
+      Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
+    String username = authentication.getPrincipal().toString();
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+
+    CompositeProfileStructure cp = this.igService.createCompositeProfileSercice(ig, wrapper);
+    cp.setUsername(username);
+    compositeProfileService.save(cp);
+
+    CreateChildResponse createChildResponse = new CreateChildResponse(cp.getId(), ig.getProfileComponentRegistry(), this.displayInfoService.convertCompositeProfile(cp));
+    this.igService.save(ig);
+
+    return new ResponseMessage<CreateChildResponse>(Status.SUCCESS, "", "Composite Profile Created Successfully", ig.getId(), false,
+        ig.getUpdateDate(), createChildResponse);
+  }
   
   
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/addChildren", method = RequestMethod.POST, produces = {

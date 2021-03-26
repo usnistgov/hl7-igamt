@@ -17,7 +17,6 @@ import {Type} from '../../../shared/constants/type.enum';
 import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {EditorID} from '../../../shared/models/editor.enum';
-import {IProfileComponent} from '../../../shared/models/profile.component';
 import {ChangeType, IChange, PropertyType} from '../../../shared/models/save-change';
 import {FroalaService} from '../../../shared/services/froala.service';
 import {ProfileComponentService} from '../../services/profile-component.service';

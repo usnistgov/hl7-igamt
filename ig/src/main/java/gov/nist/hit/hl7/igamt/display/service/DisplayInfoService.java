@@ -5,6 +5,8 @@ import java.util.Set;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupRegistry;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -25,6 +27,8 @@ public interface DisplayInfoService {
 	public Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
 	public Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
 	public Set<DisplayElement> convertCoConstraintGroupRegistry(CoConstraintGroupRegistry registry);
+	public Set<DisplayElement> convertCompositeProfileRegistry(CompositeProfileRegistry registry);
+
 	public DisplayElement convertDatatype(Datatype datatype);
 	public DisplayElement convertCoConstraintGroup(CoConstraintGroup group);
 	public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile, int position);
@@ -37,6 +41,8 @@ public interface DisplayInfoService {
     public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles,
       ConformanceProfileRegistry conformanceProfileRegistry);
     public DisplayElement convertProfileComponent(ProfileComponent pc);
+    public DisplayElement convertCompositeProfile(CompositeProfileStructure compositeProfile);
+
 
 	
 }

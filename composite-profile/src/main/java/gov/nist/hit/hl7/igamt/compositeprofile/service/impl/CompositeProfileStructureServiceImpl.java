@@ -139,15 +139,15 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
     if(composite.getConformanceProfileId() != null) {
       RelationShip rel = new RelationShip(new ReferenceIndentifier(composite.getConformanceProfileId(), Type.CONFORMANCEPROFILE),
           new ReferenceIndentifier(composite.getId(), Type.COMPOSITEPROFILE),
-                          null);
+          new ReferenceLocation(Type.PROFILECOMPONENT,"Core Profile","" ));
       relations.add(rel);
     }
     
     if(composite.getOrderedProfileComponents() != null) {
       for(OrderedProfileComponentLink pc : composite.getOrderedProfileComponents()) {
-        RelationShip rel = new RelationShip(new ReferenceIndentifier(composite.getConformanceProfileId(), Type.PROFILECOMPONENT),
+        RelationShip rel = new RelationShip(new ReferenceIndentifier(pc.getProfileComponentId(), Type.PROFILECOMPONENT),
             new ReferenceIndentifier(composite.getId(), Type.COMPOSITEPROFILE),
-            new ReferenceLocation(Type.PROFILECOMPONENT, pc.getPosition() + "", pc.getPosition() + "" )); 
+            new ReferenceLocation(Type.PROFILECOMPONENT, "Profile Component #"+ pc.getPosition(),  "" )); 
         relations.add(rel);
       }
     }

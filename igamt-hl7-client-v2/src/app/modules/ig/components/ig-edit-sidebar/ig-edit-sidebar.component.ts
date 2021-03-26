@@ -11,7 +11,7 @@ import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.r
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 
 import {
-  AddProfileComponentContext,
+  AddProfileComponentContext, CreateCompositeProfile,
   CreateProfileComponent,
   CreateProfileComponentFailure, CreateProfileComponentSuccess, DeleteProfileComponentContext,
   IgEditActionTypes,
@@ -37,6 +37,7 @@ import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-sto
 import {EditorReset, selectWorkspaceActive} from '../../../dam-framework/store/data';
 import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
 import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
+import {AddCompositeComponent} from '../../../shared/components/add-composite/add-composite.component';
 import {AddProfileComponentContextComponent} from '../../../shared/components/add-profile-component-context/add-profile-component-context.component';
 import {AddProfileComponentComponent} from '../../../shared/components/add-profile-component/add-profile-component.component';
 import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
@@ -316,6 +317,11 @@ export class IgEditSidebarComponent implements OnInit {
         break;
       case Type.PROFILECOMPONENT:
         this.addProfileComponent($event);
+        break;
+
+      case Type.COMPOSITEPROFILE:
+        this.addCompositeProfile($event);
+        break;
     }
   }
 
@@ -347,7 +353,37 @@ export class IgEditSidebarComponent implements OnInit {
         ).subscribe();
       }),
     ).subscribe();
+  }
 
+  addCompositeProfile(event: IAddNewWrapper) {
+    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllProfileComponents), this.store.select(selectAllMessages)).pipe(
+      take(1),
+      tap(([{ documentId, type }, profileComponents, messages]) => {
+        const dialogRef = this.dialog.open(AddCompositeComponent, {
+          data: {
+            messages,
+            profileComponents,
+          },
+        });
+        dialogRef.afterClosed().pipe(
+          filter((x) => x !== undefined),
+          take(1),
+          map((result) => {
+            if (result) {
+              RxjsStoreHelperService.listenAndReact(this.actions, {
+                [IgEditActionTypes.CreateProfileComponentSuccess]: {
+                  do: (action: CreateProfileComponentSuccess) => {
+                    this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
+                    return of();
+                  },
+                },
+              }).subscribe();
+              this.store.dispatch(new CreateCompositeProfile({ documentId, ...result }));
+            }
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
   }
 
   addCoConstraintGroup($event: IAddNewWrapper) {

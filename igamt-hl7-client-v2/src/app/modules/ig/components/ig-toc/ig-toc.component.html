@@ -50,9 +50,12 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
-          <div #compositePLib>
-            <span> {{node.data.path}} {{node.data.variableName}}</span>
-          </div>
+          <span  compositePLib [contextMenu]="CompositeProfileContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+          <context-menu #CompositeProfileContextMenu [disabled]="viewOnly||delta">
+            <ng-template (execute)="createNew(node.data, 'COMPOSITEPROFILE')" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-plus"></i> Create Profile Component
+            </ng-template>
+          </context-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
@@ -140,7 +143,13 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-          <span>{{node.variableName}}</span>
+          <span [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive="active-node">{{node.data.variableName}}</span>
+          <context-menu #cp [disabled]="viewOnly||delta">
+            <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
+          </context-menu>
+          <app-toc-sub-menu [element]="node.data"  [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'SEGMENT'">

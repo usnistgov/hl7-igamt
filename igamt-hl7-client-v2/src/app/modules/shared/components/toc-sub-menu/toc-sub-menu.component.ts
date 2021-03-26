@@ -35,6 +35,9 @@ export class TocSubMenuComponent implements OnInit {
     if (type === Type.COCONSTRAINTGROUP.toLowerCase()) {
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Table', Icons.TABLE));
     } else {
+      if (type === Type.COMPOSITEPROFILE.toLowerCase()) {
+        ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'composition', 'Composition', Icons.LIST));
+      }
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'metadata', 'Metadata', Icons.EDIT));
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'pre-def', 'Pre-definition', Icons.PRE));
       if (type !== Type.VALUESET.toLowerCase()) {
@@ -50,11 +53,13 @@ export class TocSubMenuComponent implements OnInit {
       if (type === Type.SEGMENT.toLocaleLowerCase() && this.element.fixedName === 'OBX') {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'dynamic-mapping', 'Dynamic Mapping', Icons.LIST));
       }
-      if (type === 'conformanceprofile') {
+      if (type === Type.CONFORMANCEPROFILE.toLowerCase() || type ===  Type.COMPOSITEPROFILE.toLowerCase()) {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'co-constraint', 'Co-Constraints', Icons.TABLE));
       }
     }
-    ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'cross-references', 'Cross references', Icons.LIST));
+    if ( type !== Type.COMPOSITEPROFILE.toLowerCase()) {
+      ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'cross-references', 'Cross references', Icons.LIST));
+    }
 
     if (this.element.origin) {
 

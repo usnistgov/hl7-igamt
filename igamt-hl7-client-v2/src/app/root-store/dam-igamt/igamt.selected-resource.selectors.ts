@@ -3,6 +3,7 @@ import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IResourceMetadata } from '../../modules/core/components/resource-metadata-editor/resource-metadata-editor.component';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.interface';
+import {ICompositeProfile} from '../../modules/shared/models/composite-profile';
 import { IConformanceProfile } from '../../modules/shared/models/conformance-profile.interface';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
 import {IProfileComponent, IProfileComponentContext} from '../../modules/shared/models/profile.component';
@@ -33,6 +34,16 @@ export const selectedProfileComponent = createSelector(
   (state: IResource): IProfileComponent => {
     if (state && state.type === Type.PROFILECOMPONENT) {
       return state as IProfileComponent;
+    } else {
+      return undefined;
+    }
+  },
+);
+export const selectedCompositeProfile = createSelector(
+  selectSelectedResource,
+  (state: IResource): ICompositeProfile => {
+    if (state && state.type === Type.COMPOSITEPROFILE) {
+      return state as ICompositeProfile;
     } else {
       return undefined;
     }
