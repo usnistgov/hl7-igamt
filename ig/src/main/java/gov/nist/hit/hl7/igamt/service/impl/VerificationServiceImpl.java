@@ -2307,7 +2307,8 @@ public class VerificationServiceImpl implements VerificationService {
 							"In segment Repository, segment : " + id + " is not accesable", null, "ERROR", "Internal"));
 				else {
 					String labelWithVersion = s.getLabel();
-					if (!s.getDomainInfo().getScope().equals(Scope.USER)) {
+					
+					if (!s.getDomainInfo().getScope().equals(Scope.USER) && !s.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
 						labelWithVersion = labelWithVersion + s.getDomainInfo().getVersion();
 					}
 					if (!segLabelSet.add(labelWithVersion))
