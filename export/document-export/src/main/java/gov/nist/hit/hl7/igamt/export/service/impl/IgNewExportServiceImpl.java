@@ -189,6 +189,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			decision.getSegmentFilterMap().put(l.getId(), false);
 		}
 		for (Link l : ig.getDatatypeRegistry().getChildren()) {
+			if(l.getId()==null) {
+//				System.out.println("NULL HERE :" + l.get);
+			}
 			decision.getDatatypesFilterMap().put(l.getId(), false);
 		}
 		for (Link l : ig.getValueSetRegistry().getChildren()) {
@@ -252,6 +255,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
           if(elm.getDelta().equals(DeltaAction.UPDATED)) {
             decision.getChanged().put(elm.getId(), true);
           }
+          if(elm.getId()==null) {
+        	  System.out.println("Look here for null1 : " + elm.getFixedName());
+          }
           decision.getDatatypesFilterMap().put(elm.getId(), true);
         }
       }
@@ -313,6 +319,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			if (child.getRef() != null && child.getRef().getId() != null) {
 				if (child.getUsage() != null && config.getSegmentExportConfiguration().getFieldsExport().isBinded(child.getUsage())) {
 					datatypesIds.add(child.getRef().getId());
+					if(child.getRef().getId()==null) {
+			        	  System.out.println("Look here for null2 : " + child.getName());
+			          }
 					decision.getDatatypesFilterMap().put(child.getRef().getId(), true);
 					bindedPaths.put(child.getId(), true);
 				}
@@ -342,6 +351,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			if (child.getRef() != null && child.getRef().getId() != null) {
 				if (child.getUsage() != null && config.getDatatypeExportConfiguration().getComponentExport().isBinded(child.getUsage())) {
 					datatypesIds.add(child.getRef().getId());
+					if(child.getRef().getId()==null) {
+			        	  System.out.println("Look here for null3 : " + child.getName());
+			          }
 					decision.getDatatypesFilterMap().put(child.getRef().getId(), true);
 					bindedPaths.put(child.getId(), true);
 				}
@@ -539,7 +551,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	      }
 	    }else if(cell instanceof DatatypeCell ) {
 	      DatatypeCell dtCell= (DatatypeCell)cell; 
-	      decision.getDatatypesFilterMap().put(dtCell.getDatatypeId(), true);
+	      if(dtCell.getDatatypeId()!=null) {
+		      decision.getDatatypesFilterMap().put(dtCell.getDatatypeId(), true);
+          }
 	    }else if(cell instanceof VariesCell) {
 	      VariesCell vrCell= (VariesCell)cell;
 	      if(vrCell.getCellValue() !=null) {

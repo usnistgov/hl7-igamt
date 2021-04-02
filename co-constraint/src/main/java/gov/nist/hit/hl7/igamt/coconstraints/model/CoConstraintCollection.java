@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "tableType", visible = true)
 @JsonSubTypes({
         @JsonSubTypes.Type(value = CoConstraintGroup.class, name = "GROUP"),
         @JsonSubTypes.Type(value = CoConstraintTable.class, name = "TABLE"),

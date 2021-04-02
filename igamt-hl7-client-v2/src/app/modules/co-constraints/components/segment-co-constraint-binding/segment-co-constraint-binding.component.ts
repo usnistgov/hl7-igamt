@@ -29,6 +29,9 @@ import { FormControl } from '@angular/forms';
 import { Validators } from '@angular/forms';
 import { FileUploadService } from '../../services/file-upload.service';
 import { flatMap } from 'lodash';
+import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
+import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import { UserMessage, MessageType } from '../../../dam-framework/models/messages/message.class';
 
 @Component({
   selector: 'app-segment-co-constraint-binding',
@@ -39,6 +42,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
 
   segment$: Observable<ISegment>;
   binding: ICoConstraintBindingSegment;
+  userMessage: UserMessage;
 
   formMap: {
     [id: number]: NgForm;
@@ -88,35 +92,49 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
 
   // OnClick of button Upload 
   onUpload() { 
-      this.loading = !this.loading; 
-      console.log(this.file); 
+          console.log(this.file); 
       this.conformanceProfile.pipe(
         take(1),
         mergeMap((cp) => {
           return this.fileUploadService.upload(this.file, this.binding.flavorId, cp.id,this.documentRef.documentId, this.context.pathId).pipe(
             map((v) => {
-
+              console.log(v.data );
+              this.store.dispatch(this.messageService.messageToAction(v));
+              this.binding.tables.push({ delta: undefined, value: v.data, condition: undefined });  
+              console.log(this.binding.tables);          
             })
           );
         })
     ).subscribe();
 
   }
-  // fileToUpload: File = null;
-  
-  // handleFileInput(files: FileList) {
-  //     this.fileToUpload = files.item(0);
-  //     this.uploadFileToActivity();
-  // }
 
-  // uploadFileToActivity() {
-  //   this.fileUploadService.postFile(this.fileToUpload).subscribe(data => {
-  //     // do something, if upload success
-  //     }, error => {
-  //       console.log(error);
-  //     });
-  // }
-  
+  openImportDialog(){
+    const dialogRef = this.dialog.open(ImportDialogComponent, {
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: {
+        fileUploadService: this.fileUploadService,
+        flavorId: this.binding.flavorId,
+        conformanceProfile: this.conformanceProfile,
+        documentId : this.documentRef.documentId,
+        pathId: this.context.pathId,
+
+      },
+    });
+    dialogRef.afterClosed().subscribe(
+      (coConstraintTable) => {
+        if(coConstraintTable) {
+          console.log("in segment class : ", coConstraintTable);
+
+          this.store.dispatch(this.messageService.userMessageToAction(new UserMessage<never>(MessageType.SUCCESS, "TABLE SAVED SUCCESSFULLY"))
+
+        );
+          this.binding.tables.push({ delta: undefined, value: coConstraintTable, condition: undefined });  
+          console.log(this.binding.tables);          }
+      },
+    ); 
+  }
 
   @Input()
   set value(binding: ICoConstraintBindingSegment) {
@@ -133,6 +151,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     protected store: Store<any>,
     public repository: StoreResourceRepositoryService,
     private fileUploadService: FileUploadService,
+    private messageService: MessageService,
     protected ccService: CoConstraintEntityService) {
     this.valueChange = new EventEmitter<ICoConstraintBindingSegment>();
     this.delete = new EventEmitter<boolean>();
@@ -201,14 +220,16 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
 
   openConditionDialog(context: any, conditional: ICoConstraintTableConditionalBinding) {
     const dialogRef = this.dialog.open(CsDialogComponent, {
-      maxWidth: '95vw',
-      maxHeight: '90vh',
+      maxWidth: '150vw',
+      maxHeight: '130vh',
       data: {
         title: 'Co-Constraint Table Conditional',
         assertionMode: true,
         context: context.path,
         assertion: conditional.condition,
         resource: this.conformanceProfile,
+
+        
         excludePaths: [this.binding.segment.pathId],
       },
     });
@@ -283,6 +304,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.binding);
   }
 
 }

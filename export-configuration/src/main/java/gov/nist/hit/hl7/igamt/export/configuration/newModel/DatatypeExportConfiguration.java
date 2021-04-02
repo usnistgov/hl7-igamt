@@ -23,6 +23,8 @@ public class DatatypeExportConfiguration extends ResourceExportConfiguration{
 	  private MetadataConfiguration metadataConfig;
 	  private boolean includeVaries = false;
 	  private CoConstraintExportMode coConstraintExportMode;
+	  private StructuredNarrative structuredNarrative;
+
 
 	  
 	  public DatatypeExportConfiguration(ExportConfiguration exportConfiguration) {
@@ -141,6 +143,14 @@ public class DatatypeExportConfiguration extends ResourceExportConfiguration{
 
 		public void setConstraintExportConfiguration(ConstraintExportConfiguration constraintExportConfiguration) {
 			this.constraintExportConfiguration = constraintExportConfiguration;
+		}
+
+		public StructuredNarrative getStructuredNarrative() {
+			return structuredNarrative;
+		}
+
+		public void setStructuredNarrative(StructuredNarrative structuredNarrative) {
+			this.structuredNarrative = structuredNarrative;
 		}
 
 

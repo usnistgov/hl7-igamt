@@ -213,8 +213,12 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                         }
                     }
 
-                    conformanceProfileElement.appendChild(commentsElement);
-                    conformanceProfileElement.appendChild(definitionTextsElement);
+                    if(conformanceProfileExportConfiguration.getStructuredNarrative().isComments()) {
+                        conformanceProfileElement.appendChild(commentsElement);
+                    }
+                    if(conformanceProfileExportConfiguration.getStructuredNarrative().isDefinitionText()) {
+                        conformanceProfileElement.appendChild(definitionTextsElement);
+                    }
 
 
                     List<MsgStructElement> msgStructElementList = conformanceProfile.getChildren().stream().sorted((e1, e2) ->

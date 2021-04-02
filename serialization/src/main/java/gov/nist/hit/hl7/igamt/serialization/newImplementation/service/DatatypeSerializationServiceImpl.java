@@ -198,8 +198,14 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 							component.getConstantValue() != null ? component.getConstantValue() : ""));
 					Element comments = new Element("Comments");
 			    	  Element definitionTextsElement = new Element("DefinitionTexts");
-			    	  datatypeElement.appendChild(definitionTextsElement);
-					datatypeElement.appendChild(comments);
+			    	  if(datatypeExportConfiguration.getStructuredNarrative().isComments()) {
+							datatypeElement.appendChild(comments);
+	                    }
+	                    if(datatypeExportConfiguration.getStructuredNarrative().isDefinitionText()) {
+	  			    	  datatypeElement.appendChild(definitionTextsElement);
+	                    }
+//			    	  datatypeElement.appendChild(definitionTextsElement);
+//					datatypeElement.appendChild(comments);
 					if(component.getComments() != null) {
 						for(Comment comment : component.getComments()) {
 							Element commentElement = new Element("Comment");

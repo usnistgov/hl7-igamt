@@ -5,6 +5,11 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 public class DatatypeCell extends CoConstraintCell {
     protected String value;
     protected String datatypeId;
+    
+    public DatatypeCell() {
+		super();
+		this.setType(ColumnType.DATATYPE);
+	}
 
     public String getValue() {
         return value;

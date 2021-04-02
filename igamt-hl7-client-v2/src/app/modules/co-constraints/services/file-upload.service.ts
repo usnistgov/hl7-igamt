@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core'; 
 import {HttpClient} from '@angular/common/http'; 
 import {Observable} from 'rxjs'; 
+import { Message } from '../../dam-framework/models/messages/message.class';
 @Injectable({ 
   providedIn: 'root'
 }) 
@@ -31,6 +32,6 @@ export class FileUploadService {
       // Make http post request over api 
       // with formData as req 
       console.log("in service file name is :", file.name);
-      return this.http.post(this.BackEndUploadEndPoint, formData) 
+      return this.http.post<Message<any>>(this.BackEndUploadEndPoint, formData) 
   } 
 } 

@@ -76,15 +76,15 @@
             	<xsl:text>Generated with </xsl:text>
             	<xsl:element name="a">
             		<xsl:attribute name="href">
-            			<xsl:text>https://hl7v2.igamt.nist.gov</xsl:text>
+            			<xsl:text>https://hl7v2.igamt-2.nist.gov/igamt/</xsl:text>
            			</xsl:attribute>
            			<xsl:attribute name="target">
            				<xsl:text>_blank</xsl:text>
            			</xsl:attribute>
-           			<xsl:text>IGAMT</xsl:text>
+           			<xsl:text>IGAMT-2</xsl:text>
         		</xsl:element>
-        		<xsl:value-of select="concat(' version ',$appVersion)"/>
-            </xsl:element>
+<!--         		<xsl:value-of select="concat(' version ',$appVersion)"/>
+ -->            </xsl:element>
         </xsl:element>
     </xsl:template>
 </xsl:stylesheet>

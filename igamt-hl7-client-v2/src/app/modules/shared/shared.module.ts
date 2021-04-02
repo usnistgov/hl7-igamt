@@ -98,6 +98,7 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { FileExcelInputComponent } from './components/file-excel-input/file-excel-input.component';
 
 @NgModule({
   declarations: [
@@ -173,6 +174,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeLogInfoComponent,
     DeactivatingDialogComponent,
     ResourceListComponent,
+    FileExcelInputComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -255,6 +257,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
     FileSelectInputComponent,
+    FileExcelInputComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
     ScopeBadgeComponent,

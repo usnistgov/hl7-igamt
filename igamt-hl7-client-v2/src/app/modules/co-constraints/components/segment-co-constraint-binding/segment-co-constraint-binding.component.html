@@ -30,7 +30,7 @@
         <i class="fa fa-trash"></i>
         Delete Segment
       </button>
-       <button *ngIf="!viewOnly" class="btn btn-sm btn-success" style="margin-left: 10px;" (click)="importAsExcel()" >
+       <button *ngIf="!viewOnly" class="btn btn-sm btn-success" style="margin-left: 10px;" (click)="openImportDialog()" >
         <i class="fa fa-download"></i>
         Import As Table Excel
       </button> 
@@ -41,7 +41,7 @@
                id="file"
                (change)="handleFileInput($event.target.files)">
     </div> -->
-<div *ngIf="excelImport && !viewOnly">
+<!-- <div *ngIf="excelImport && !viewOnly">
     <div class="text-center"> 
       <input class="form-control" type="file" 
               (change)="onChange($event)"> 
@@ -52,11 +52,10 @@
       </button> 
   </div>  
     
-  <!--Flag variable is used here-->
   <div class="container" *ngIf="loading"> 
       <h3>Loading ...</h3> 
   </div> 
-</div>
+</div> -->
     </div>
 
 

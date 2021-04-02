@@ -1,0 +1,117 @@
+<!-- <p>
+  import-dialog works!
+</p>
+
+<div class="text-center"> 
+  <input class="form-control" type="file" 
+          (change)="onChange($event)">  -->
+          <app-file-excel-input (resultFile)="handleFile($event)"></app-file-excel-input>
+     
+          <br><br>
+
+
+<div *ngIf="!isEmptyErrorList">
+    <mat-dialog-content>
+  
+      <!-- <div *ngIf="step === 1 && !reports">
+        <p-progressBar mode="indeterminate" *ngIf="!reports"></p-progressBar>
+      </div> -->
+      <!-- <div *ngIf="step === 1 && reports"> -->
+        <div *ngIf="hasErrors">
+            <span class="badge error-FATAL">
+             Table not imported </span>
+             <span> Errors have been detected while parsing excel spread sheet. User should fix errors and upload again
+              </span>
+              <br><br><br>
+        </div>
+         <div *ngIf="!hasErrors">
+            <span>
+             Table will be imported after closing dialog. Warnings or Informational have been detected.
+              </span>
+              <br><br><br>
+        </div> 
+          <div>
+        <label> <strong> Verification Reports </strong> </label>
+          <!-- <div><label><span class="badge error-FATAL">FATAL</span>: IGAMT cannot generate the XML profile; Downstream tools would not be able to process XML</label></div> -->
+          <div><label><span class="badge error-ERROR">ERROR</span>: IGAMT cannot generate the coconstraint table from the excel spread sheet, user should fix errors and upload again</label></div>
+          <!-- <div><label><span class="badge error-WARNING">WARNING</span>: User should consider providing correct values not necessary for downstream tools process.</label></div> -->
+          <div><label><span class="badge error-INFO">INFORMATIONAL</span>: User should consider changing the value.</label></div>
+    
+          <p-accordion>
+  
+            <!-- <p-accordionTab>
+              <p-header>
+                CoConstraint Excel Import Verification Report Results 
+              </p-header> -->
+
+              <!-- <ul *ngIf="detectionList">
+                  <li *ngFor="let error of detectionList">
+                    <span class="badge error-{{error.severity}}">{{error.severity}}</span>&nbsp;
+                    <span class="badge error-code">{{error.code}}</span>&nbsp;
+                    <span>{{error.description}}</span>
+                  </li>
+                </ul> -->
+
+              <p-tabView>
+                  <p-table #dt *ngIf="detectionList" [value]="detectionList" [paginator]="true" [rows]="10">
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th width="8%" [pSortableColumn]="'severity'">Severity
+                          <p-sortIcon [field]="'severity'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                        </th>
+                        <th width="16%" [pSortableColumn]="'code'" >Error Code
+                          <p-sortIcon [field]="'code'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                        </th>
+                        <!-- <th width="10%" [pSortableColumn]="'targetMeta.name'">Location
+                          <p-sortIcon [field]="'targetMeta.name'" ariaLabel="Activate to sort" ariaLabelDesc="Activate to sort in descending order" ariaLabelAsc="Activate to sort in ascending order"></p-sortIcon>
+                        </th> -->
+                        <th width="40%">Description</th>
+                        <th width="21%">Example </th>
+                      </tr>
+                      <!-- <tr>
+                        <th>
+                          <p-dropdown [options]="severities" [style]="{'width':'100%;'}" (onChange)="dt.filter($event.value, 'severity', 'equals')"></p-dropdown>
+                        </th>
+                        <th>
+                          <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'code', 'contains')">
+                        </th>
+                        <th>
+                          <input pInputText type="text" [style]="{'width':'100%'}" (input)="dt.filter($event.target.value, 'targetMeta.name', 'contains')">
+                        </th>
+                        <th></th> 
+                      </tr>-->
+                    </ng-template>
+                    <ng-template pTemplate="body" let-error>
+                      <tr>
+                        <td><span class="badge error-{{error.severity}}">{{error.severity}}</span></td>
+                        <td><span class="badge error-code">{{error.code}}</span></td>
+                        <!-- <td>
+                            <span>{{error.location}}</span>
+                          </td> -->
+                        <td><span>{{error.description}}</span></td>
+                        <td><span>{{error.target}}</span></td>
+
+                      </tr>
+                    </ng-template>
+                  </p-table>
+              </p-tabView>
+            <!-- </p-accordionTab> -->
+          </p-accordion>
+      </div>
+    </mat-dialog-content>
+  </div>
+  
+  <div align="center">     
+      <button [disabled]="!file || uploadClicked"  (click)="onUpload()"  
+          class="btn btn-success"> 
+          Upload 
+      </button> 
+      <button  (click)="close()"  
+          class="btn btn-danger"> 
+          Close 
+      </button> 
+      <!-- <button  (click)="cancel()"  
+          class="btn btn-success"> 
+          Cancel 
+      </button>  -->
+    </div>
