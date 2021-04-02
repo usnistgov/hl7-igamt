@@ -4,7 +4,6 @@ import * as _ from 'lodash';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { filter, take, tap } from 'rxjs/operators';
 import { IChange } from 'src/app/modules/shared/models/save-change';
-import { Type } from '../../../../constants/type.enum';
 import { Usage } from '../../../../constants/usage.enum';
 import { IDocumentRef } from '../../../../models/abstract-domain.interface';
 import { Hl7Config } from '../../../../models/config.class';
@@ -12,7 +11,6 @@ import { IAssertionPredicate, IPredicate } from '../../../../models/predicate.in
 import { IResource } from '../../../../models/resource.interface';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
 import { ElementNamingService } from '../../../../services/element-naming.service';
-import { Hl7V2TreeService } from '../../../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../../../services/resource-repository.service';
 import { IBinding, StructureElementBindingService } from '../../../../services/structure-element-binding.service';
 import { IChangeReasonDialogDisplay } from '../../../change-reason-dialog/change-reason-dialog.component';

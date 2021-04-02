@@ -1,0 +1,7 @@
+<ng-container *ngIf="value$ | async as locationInfo">
+  <app-entity-bagde [type]="locationInfo.pathInfo.type" ></app-entity-bagde>
+  {{locationInfo.name}}
+</ng-container>
+
+
+

@@ -1,10 +1,12 @@
 import { Type } from '../constants/type.enum';
 import { Usage } from '../constants/usage.enum';
-import { IExternalSingleCode, IValuesetBinding } from './binding.interface';
+import { IExternalSingleCode, IValuesetBinding, InternalSingleCode } from './binding.interface';
 import { IComment } from './comment.interface';
 import { IResource } from './resource.interface';
 import { PropertyType } from './save-change';
 import { IDynamicMappingInfo } from './segment.interface';
+import { LengthType } from '../constants/length-type.enum';
+import { IPredicate } from './predicate.interface';
 
 export interface IProfileComponent extends IResource {
   children?: IProfileComponentContext;
@@ -15,12 +17,23 @@ export interface IProfileComponentContext {
   sourceId: string;
   structure: string;
   position: number;
+  profileComponentBindings: IProfileComponentBinding;
   profileComponentItems: IProfileComponentItem[];
+}
+
+export interface IProfileComponentBinding {
+  contextBindings: IPropertyBinding[];
+  itemBindings: IProfileComponentItemBinding[];
 }
 
 export interface IProfileComponentItem {
   path: string;
   itemProperties: IItemProperty[];
+}
+
+export interface IProfileComponentItemBinding {
+  path: string;
+  bindings: IPropertyBinding[];
 }
 
 export interface IItemProperty {
@@ -84,31 +97,32 @@ export interface IPropertyName extends IItemProperty {
   name: string
   propertyKey: PropertyType.NAME,
 }
-export interface IPropertyPredicate extends IItemProperty {
-  trueUsage: Usage,
-  falseUsage: Usage,
-  constraintTarget: string,
-  description: string,
-  assertion: string,
-  PropertyType: PropertyType.PREDICATE,
-
+export interface IPropertyBinding extends IItemProperty {
+  target: string;
+}
+export interface IPropertyPredicate extends IPropertyBinding {
+  predicate: IPredicate;
+  propertyKey: PropertyType.PREDICATE,
 }
 export interface IPropertyRef extends IItemProperty {
   ref: string,
   propertyKey: PropertyType.SEGMENTREF,
 }
 
-export interface IPropertySingleCode extends IItemProperty {
-  singleCodeId: string,
-  externalSingleCode: IExternalSingleCode,
+export interface IPropertySingleCode extends IPropertyBinding {
+  internalSingleCode: InternalSingleCode,
   propertyKey: PropertyType.SINGLECODE,
 }
 export interface IPropertyUsage extends IItemProperty {
   usage: Usage,
   propertyKey: PropertyType.USAGE,
 }
-export interface IPropertyValueSet extends IItemProperty {
-  valuesetBinding: IValuesetBinding[],
+export interface IPropertyLengthType extends IItemProperty {
+  type: LengthType,
+  propertyKey: PropertyType.LENGTHTYPE,
+}
+export interface IPropertyValueSet extends IPropertyBinding {
+  valuesetBindings: IValuesetBinding[],
   propertyKey: PropertyType.VALUESET
 }
 

@@ -14,6 +14,7 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 import java.util.HashSet;
 import java.util.Set;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyBinding;
 
 /**
  * A profile component is an objects that contains all the changes between the source (a message or
@@ -30,9 +31,10 @@ public class ProfileComponentContext {
   private String structure;
   private int position;
   private Set<ProfileComponentItem> profileComponentItems;
+  private ProfileComponentBinding profileComponentBindings;
 
   public ProfileComponentContext(String id, Type level, String sourceId, String structure,
-      int position, Set<ProfileComponentItem> profileComponentItems) {
+      int position, Set<ProfileComponentItem> profileComponentItems, ProfileComponentBinding profileComponentBindings) {
     super();
     this.id = id;
     this.level = level;
@@ -40,6 +42,7 @@ public class ProfileComponentContext {
     this.structure = structure;
     this.position = position;
     this.profileComponentItems = profileComponentItems;
+    this.profileComponentBindings = profileComponentBindings;
   }
 
   public ProfileComponentContext() {
@@ -49,6 +52,14 @@ public class ProfileComponentContext {
 
   public enum Level {
     MESSAGE, SEGMENT
+  }
+
+  public ProfileComponentBinding getProfileComponentBindings() {
+    return profileComponentBindings;
+  }
+
+  public void setProfileComponentBindings(ProfileComponentBinding profileComponentBindings) {
+    this.profileComponentBindings = profileComponentBindings;
   }
 
   public Type getLevel() {

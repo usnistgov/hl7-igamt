@@ -78,9 +78,9 @@ public class ProfileComponentController extends BaseController {
   @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/update", method = RequestMethod.POST, produces = {"application/json"})
   @ResponseBody
   public ProfileComponentContext updateContext(
-          @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody Set<ProfileComponentItem> children,
+          @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody ProfileComponentContext ctx,
           Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
-      return profileComponentService.updateContext(pcId, contextId, children);
+      return profileComponentService.updateContext(pcId, contextId, ctx);
   }
   
   

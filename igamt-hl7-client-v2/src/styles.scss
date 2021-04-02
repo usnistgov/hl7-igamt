@@ -442,3 +442,13 @@ body .ui-dropdown-panel {
   text-decoration: line-through;
   font-style: italic;
 }
+
+.inactive-cell-dim {
+  opacity: 0.5;
+}
+
+.profile-component-cell-btn {
+  border-radius: 30px !important;
+  height: 30px;
+  width: 30px;
+}

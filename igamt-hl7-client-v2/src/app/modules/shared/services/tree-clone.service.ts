@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TreeNode } from 'primeng/primeng';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { ICardinalityRange, IHL7v2TreeNode, ILengthRange, IResourceRef, IStringValue } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { IComment } from '../models/comment.interface';
 
@@ -28,6 +28,7 @@ export class TreeCloneService {
         predicate$: helpers.predicate$,
         ref$: helpers.ref$,
         treeChildrenSubscription: undefined,
+        children$: helpers.children$,
       };
     } else {
       return undefined;
@@ -103,6 +104,7 @@ export class TreeCloneService {
       $hl7V2TreeHelpers: {
         ref$: ref.asObservable(),
         treeChildrenSubscription: undefined,
+        children$: new ReplaySubject<IHL7v2TreeNode[]>(1),
       },
     };
   }

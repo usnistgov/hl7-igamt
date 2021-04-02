@@ -23,8 +23,8 @@ export interface IStructureTreeSelect {
 export class StructureTreeComponent implements OnInit, OnDestroy {
 
   type: Type;
-  structure: TreeNode[];
   selectedNode: TreeNode | TreeNode[] = undefined;
+  structure: IHL7v2TreeNode[];
   treeSubscriptions: Subscription[] = [];
   s_resource: Subscription;
   _selectionMode: string = 'single';
@@ -108,7 +108,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
     };
 
     if (this.structure) {
-      this.doFilter(this.structure as IHL7v2TreeNode[]);
+      this.doFilter(this.structure);
     }
   }
 

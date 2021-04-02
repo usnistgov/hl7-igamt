@@ -104,7 +104,6 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
         this.initFormGroup();
         this.formGroup.patchValue(metadata);
         this.formGroup.valueChanges.subscribe((changed) => {
-          console.log(this.formGroup.getRawValue());
           this.editorChange(changed, this.formGroup.valid);
         });
 

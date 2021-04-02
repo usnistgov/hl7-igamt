@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
@@ -6,12 +6,10 @@ import { Observable, of, ReplaySubject, Subscription } from 'rxjs';
 import { selectLoadedSegmentById } from '../../../../root-store/dam-igamt/igamt.loaded-resources.selectors';
 import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import { LoadSegment } from '../../../../root-store/segment-edit/segment-edit.actions';
-import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { SegmentService } from '../../../segment/services/segment.service';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
-import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IProfileComponentContext } from '../../../shared/models/profile.component';
@@ -79,6 +77,7 @@ export class SegmentContextStructureEditorComponent extends ProfileComponentStru
         },
       ],
       [
+        HL7v2TreeColumnType.PATH,
         HL7v2TreeColumnType.NAME,
         HL7v2TreeColumnType.DATATYPE,
         HL7v2TreeColumnType.USAGE,
@@ -87,8 +86,6 @@ export class SegmentContextStructureEditorComponent extends ProfileComponentStru
         HL7v2TreeColumnType.CARDINALITY,
         HL7v2TreeColumnType.LENGTH,
         HL7v2TreeColumnType.CONFLENGTH,
-        HL7v2TreeColumnType.TEXT,
-        HL7v2TreeColumnType.COMMENT,
       ],
       treeService, pcService, dialog);
   }

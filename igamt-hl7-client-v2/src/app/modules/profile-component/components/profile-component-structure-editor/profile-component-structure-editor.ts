@@ -2,7 +2,7 @@ import { OnInit, Type as CoreType, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
+import { combineLatest, Observable, of, Subscription, throwError, BehaviorSubject } from 'rxjs';
 import { catchError, concatMap, filter, flatMap, map, take, tap, pluck } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
@@ -20,15 +20,16 @@ import { Type } from '../../../shared/constants/type.enum';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
-import { IProfileComponentContext, IItemProperty } from '../../../shared/models/profile.component';
+import { IProfileComponentContext, IProfileComponentItem, IPropertyBinding, IProfileComponentBinding } from '../../../shared/models/profile.component';
 import { IResource } from '../../../shared/models/resource.interface';
-import { IChange } from '../../../shared/models/save-change';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
 import { ProfileComponentService } from '../../services/profile-component.service';
 import { AddProfileComponentItemComponent } from '../add-profile-component-item/add-profile-component-item.component';
 import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
 import * as _ from 'lodash';
+import { ProfileComponentItemList } from '../../services/profile-component-item.object';
+import { IProfileComponentChange } from '../profile-component-structure-tree/profile-component-structure-tree.component';
 
 export type BindingLegend = Array<{
   label: string,
@@ -37,7 +38,7 @@ export type BindingLegend = Array<{
 
 export abstract class ProfileComponentStructureEditor<T extends IProfileComponentContext> extends AbstractEditorComponent implements OnInit, OnDestroy {
   type = Type;
-  profileComponentContext: T;
+  profileComponentContext$: BehaviorSubject<T>;
   public datatypes: Observable<IDisplayElement[]>;
   public segments: Observable<IDisplayElement[]>;
   public valueSets: Observable<IDisplayElement[]>;
@@ -50,8 +51,10 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
   derived$: Observable<boolean>;
   resource$: Observable<IResource>;
   nodes: IHL7v2TreeNode[];
-
+  itemList$: Observable<IHL7v2TreeNode[]>;
   profileComponentId$: Observable<string>;
+  profileComponentItemService: ProfileComponentItemList;
+  structureValue$: Observable<{ items: IProfileComponentItem[], bindings: IProfileComponentBinding }>
   constructor(
     readonly repository: StoreResourceRepositoryService,
     private messageService: MessageService,
@@ -74,7 +77,7 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
     this.valueSets = this.store.select(selectValueSetsNodes);
     this.username = this.store.select(fromAuth.selectUsername);
     this.bindingConfig = this.store.select(selectBindingConfig);
-
+    this.profileComponentContext$ = new BehaviorSubject(undefined);
     this._viewOnly$ = combineLatest(
       this.store.select(fromIgamtSelectors.selectViewOnly),
       this.store.select(fromIgamtSelectors.selectDelta)
@@ -90,8 +93,9 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
 
     this.workspace_s = this.currentSynchronized$.pipe(
       flatMap((current) => {
-        this.profileComponentContext = current.resource;
-        return this.store.select(this.resourceSelector(), { id: this.profileComponentContext.sourceId }).pipe(
+        this.profileComponentContext$.next(_.cloneDeep(current.resource));
+        this.resource$ = this.store.select(this.resourceSelector(), { id: current.resource.sourceId });
+        return this.resource$.pipe(
           take(1),
           tap((resource) => {
             this.hl7V2TreeService.getTree(resource, this.repository, true, true, (value) => {
@@ -110,10 +114,36 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
                 },
               ];
             });
+            this.profileComponentItemService = new ProfileComponentItemList(
+              this.profileComponentContext$.getValue(),
+              this.nodes,
+              resource,
+              this.repository,
+              this.pcService
+            );
+
+            this.structureValue$ = this.profileComponentItemService.context$.pipe(
+              map((context) => {
+                return {
+                  items: context.profileComponentItems,
+                  bindings: context.profileComponentBindings,
+                }
+              })
+            );
+            this.profileComponentItemService.change$.pipe(
+              map((val) => {
+                console.log(val);
+                this.change(val as T)
+              })
+            ).subscribe();
           })
         );
       }),
     ).subscribe();
+  }
+
+  removeItem(pathId: string) {
+    this.profileComponentItemService.removeItem(pathId);
   }
 
   addItems() {
@@ -123,41 +153,36 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
         data: {
           structure: this.nodes,
           repository: this.repository,
-          selectedPaths: this.profileComponentContext.profileComponentItems.map((elm) => {
-            return elm.path;
-          }),
+          selectedPaths: this.profileComponentItemService.context$.getValue().profileComponentItems
+            .map((elm) => {
+              return elm.path;
+            }),
         },
       }
     ).afterClosed().pipe(
       filter((x) => x !== undefined),
       tap((x: IHL7v2TreeNode[]) => {
-        this.profileComponentContext.profileComponentItems = [
-          ...this.profileComponentContext.profileComponentItems,
-          ...x.map((elm) => ({
-            path: elm.data.pathId,
-            itemProperties: [],
-          }))
-        ]
-
-        this.change();
+        this.profileComponentItemService.addItem(x.map((elm) => ({
+          path: elm.data.pathId,
+          itemProperties: [],
+        })))
       }),
     ).subscribe();
   }
 
-  changeItemProperty(change: IChange<IItemProperty>) {
-    this.pcService.applyChange(change, this.profileComponentContext)
-    this.change();
+  changeItemProperty(change: IProfileComponentChange) {
+    this.profileComponentItemService.applyPropertyChange(change);
   }
 
-  change() {
-    this.editorChange(_.cloneDeep(this.profileComponentContext), true);
+  change(value: T) {
+    this.editorChange(value, true);
   }
-
 
   onEditorSave(action: fromDam.EditorSave): Observable<Action> {
     return combineLatest(this.current$, this.documentRef$, this.profileComponentId$).pipe(
       take(1),
       concatMap(([current, documentRef, pcId]) => {
+        console.log(current);
         return this.pcService.saveContext(pcId, current.data).pipe(
           flatMap((value) => {
             return [
@@ -179,9 +204,7 @@ export abstract class ProfileComponentStructureEditor<T extends IProfileComponen
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
       concatMap((id) => {
-        return this.store.select(this.elementSelector(), { id }).pipe(
-          tap((x) => console.log(x)),
-        );
+        return this.store.select(this.elementSelector(), { id });
       }),
     );
   }

@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentBinding;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyBinding;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -1436,7 +1438,7 @@ public class IgServiceImpl implements IgService {
     for(int i=0; i < children.size(); i++) {
       DisplayElement elm = children.get(i);
       // TODO set struct ID 
-      ProfileComponentContext ctx = new ProfileComponentContext(elm.getId(), elm.getType(), elm.getId(), elm.getFixedName(), i+1, new HashSet<ProfileComponentItem>());
+      ProfileComponentContext ctx = new ProfileComponentContext(elm.getId(), elm.getType(), elm.getId(), elm.getFixedName(), i+1, new HashSet<ProfileComponentItem>(), new ProfileComponentBinding());
       ret.getChildren().add(ctx);
     }
     Link pcLink =   new Link(ret);

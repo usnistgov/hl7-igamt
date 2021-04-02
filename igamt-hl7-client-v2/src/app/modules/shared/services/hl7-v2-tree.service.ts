@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, from, Observable, Subscription } from 'rxjs';
-import { filter, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subscription, EMPTY, of } from 'rxjs';
+import { filter, map, mergeMap, switchMap, take, tap, toArray, flatMap } from 'rxjs/operators';
 import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { Usage } from '../constants/usage.enum';
@@ -16,6 +16,7 @@ import { BindingService } from './binding.service';
 import { PathService } from './path.service';
 import { AResourceRepositoryService, IRefData, IRefDataInfo } from './resource-repository.service';
 import { IBinding, IBindingContext, StructureElementBindingService } from './structure-element-binding.service';
+import { IPath } from '../models/cs.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -82,6 +83,43 @@ export class Hl7V2TreeService {
     return undefined;
   }
 
+  loadNodeChildren(node: IHL7v2TreeNode, repository: AResourceRepositoryService, refChange?: IResourceRef): Observable<IHL7v2TreeNode[]> {
+    const add = (nodes: IHL7v2TreeNode[]) => {
+      if (nodes && nodes.length > 0) {
+        node.children = nodes;
+        node.leaf = false;
+      } else {
+        node.children = [];
+        node.leaf = true;
+      }
+      return nodes;
+    }
+
+    return (refChange ? of(refChange) : node.data.ref).pipe(
+      take(1),
+      flatMap((ref) => {
+        return repository.fetchResource(ref.type, ref.id).pipe(
+          take(1),
+          mergeMap((resource) => {
+            switch (ref.type) {
+              case Type.DATATYPE:
+                return this.formatDatatype(resource as IDatatype, repository, true, false, node).pipe(
+                  take(1),
+                  map((ns) => add(ns)),
+                );
+              case Type.SEGMENT:
+                return this.formatSegment(resource as ISegment, repository, true, false, node).pipe(
+                  take(1),
+                  tap(() => node.data.name = (resource as ISegment).name),
+                  map((ns) => add(ns)),
+                );
+            }
+          }),
+        );
+      })
+    );
+  }
+
   addChildren(node: IHL7v2TreeNode, then?: () => void, transform?: (children: IHL7v2TreeNode[]) => IHL7v2TreeNode[]): (nodes: IHL7v2TreeNode[]) => void {
     return (nodes: IHL7v2TreeNode[]) => {
       if (nodes && nodes.length > 0) {
@@ -92,7 +130,8 @@ export class Hl7V2TreeService {
         node.expanded = true;
         node.leaf = true;
       }
-      then();
+      node.$hl7V2TreeHelpers.children$.next(node.children);
+      then ? then() : {};
     };
   }
 
@@ -327,6 +366,7 @@ export class Hl7V2TreeService {
             $hl7V2TreeHelpers: {
               ref$: data.ref.asObservable(),
               treeChildrenSubscription: undefined,
+              children$: new ReplaySubject<IHL7v2TreeNode[]>(1),
             },
           };
         }).sort((a, b) => a.data.position - b.data.position);
@@ -362,6 +402,7 @@ export class Hl7V2TreeService {
             $hl7V2TreeHelpers: {
               ref$: data.ref.asObservable(),
               treeChildrenSubscription: undefined,
+              children$: new ReplaySubject<IHL7v2TreeNode[]>(1),
             },
           };
         }).sort((a, b) => a.data.position - b.data.position);
@@ -457,6 +498,7 @@ export class Hl7V2TreeService {
           $hl7V2TreeHelpers: {
             ref$: data.ref.asObservable(),
             treeChildrenSubscription: undefined,
+            children$: new ReplaySubject<IHL7v2TreeNode[]>(1),
           },
           children: [],
         };
@@ -477,10 +519,12 @@ export class Hl7V2TreeService {
           $hl7V2TreeHelpers: {
             ref$: undefined,
             treeChildrenSubscription: undefined,
+            children$: new ReplaySubject<IHL7v2TreeNode[]>(1),
           },
           children: [],
         };
         node.children = this.formatStructure([], group.children, segments, refsData, viewOnly, changeable, cp, node);
+        node.$hl7V2TreeHelpers.children$.next(node.children);
         return node;
       }
     }).sort((a, b) => a.data.position - b.data.position);
@@ -563,5 +607,40 @@ export class Hl7V2TreeService {
   nodeType(node: IHL7v2TreeNode): Type {
     return node ? (node.parent && node.parent.data.type === Type.COMPONENT) ? Type.SUBCOMPONENT : node.data.type : undefined;
   }
+
+  getNodeByPath(children: IHL7v2TreeNode[], fullPath: IPath, repository: AResourceRepositoryService): Observable<IHL7v2TreeNode> {
+    const inner = (nodes: IHL7v2TreeNode[], path: IPath) => {
+      if (path) {
+        // Get current node based on current node in path's ID
+        const elm = nodes.filter((e: IHL7v2TreeNode) => e.data.id === path.elementId);
+        if (!elm || elm.length !== 1) {
+          // If no node found for current node in path then the path is unresolvable
+          return EMPTY;
+        } else {
+          const node = elm[0];
+          // if current node in path has children
+          if (path.child) {
+            // load tree node children
+            return this.loadNodeChildren(node, repository).pipe(
+              take(1),
+              flatMap((children) => {
+                // recursive call using the children list and the child path
+                return inner(children, path.child);
+              })
+            );
+          } else {
+            // If current node in path has no children, it means that we arrived at destination
+            // return the current node
+            return of(node);
+          }
+        }
+      } else {
+        // if path is empty then return nothing
+        return EMPTY;
+      }
+    };
+    return inner(children, fullPath);
+  }
+
 
 }

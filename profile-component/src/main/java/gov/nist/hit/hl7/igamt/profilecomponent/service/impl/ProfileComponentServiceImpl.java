@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentBinding;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +32,6 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDatatype;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyRef;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyValueSet;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContextNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
@@ -128,7 +126,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     for(int i=0; i < children.size(); i++) {
       DisplayElement elm = children.get(i);
       // TODO set struct ID 
-      ProfileComponentContext ctx = new ProfileComponentContext(elm.getId(), elm.getType(), elm.getId(), elm.getFixedName(), i+ pc.getChildren().size()+1, new HashSet<ProfileComponentItem>());
+      ProfileComponentContext ctx = new ProfileComponentContext(elm.getId(), elm.getType(), elm.getId(), elm.getFixedName(), i+ pc.getChildren().size()+1, new HashSet<ProfileComponentItem>(), new ProfileComponentBinding());
       pc.getChildren().add(ctx);
     }
     this.save(pc);
@@ -194,14 +192,14 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
    * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#updateContext(java.lang.String, java.lang.String, gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext)
    */
   @Override
-  public ProfileComponentContext updateContext(String pcId, String contextId,
-      Set<ProfileComponentItem> children) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
+  public ProfileComponentContext updateContext(String pcId, String contextId, ProfileComponentContext updated) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
     // TODO Auto-generated method stub
     boolean found = false;
     ProfileComponent pc = this.findById(pcId);
     for(ProfileComponentContext ctx:  pc.getChildren()) {
       if(ctx.getId().equals(contextId)) {
-        ctx.setProfileComponentItems(children);
+        ctx.setProfileComponentItems(updated.getProfileComponentItems());
+        ctx.setProfileComponentBindings(updated.getProfileComponentBindings());
         break;
       }
     }

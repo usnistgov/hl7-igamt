@@ -1,17 +1,17 @@
-<table class="table table-sm table-condensed table-striped">
+<table class="table table-sm table-condensed table-striped" *ngIf="token.payload | async as treeDisplay">
   <tr>
     <th><i [class]="'fa ' + (collapsed ? 'fa-chevron-right' : 'fa-chevron-down')" style="cursor: pointer;" (click)="collapsed = !collapsed"></i></th>
 
     <th *ngIf="csType === _csType.PROPOSITION"></th>
 
     <!-- Occurrence -->
-    <th style="white-space: nowrap;" *ngIf="(assertion.subject && assertion.subject.occurenceType) || subjectRepeatMax > 0" >Target Occurrence Declarative Statement <strong class="asteriks">*</strong></th>
+    <th style="white-space: nowrap;" *ngIf="(subject.value && subject.value.occurenceType) || subject.repeatMax > 0" >Target Occurrence Declarative Statement <strong class="asteriks">*</strong></th>
 
     <!-- Location -->
     <th style="white-space: nowrap;">Target Node Location  <strong class="asteriks">*</strong></th>
 
     <!-- Verb -->
-    <th *ngIf="csType === _csType.STATEMENT" style="white-space: nowrap;" >Verb  <strong class="asteriks">*</strong></th>
+    <th *ngIf="csType === _csType.DECLARATION" style="white-space: nowrap;" >Verb  <strong class="asteriks">*</strong></th>
 
     <!-- Statement -->
     <th style="white-space: nowrap;" [attr.colspan]="csType === _csType.PROPOSITION ? 2 : 1">
@@ -29,7 +29,7 @@
     </th>
 
     <!-- Comparison Occurrence -->
-    <th style="white-space: nowrap;" *ngIf="(assertion.complement && assertion.complement.occurenceType) || complementRepeatMax > 0" >Comparison Occurrence Declarative Statement  <strong class="asteriks">*</strong></th>
+    <th style="white-space: nowrap;" *ngIf="(assertion.complement && compare.value.occurenceType) || compare.repeatMax > 0" >Comparison Occurrence Declarative Statement  <strong class="asteriks">*</strong></th>
 
     <!-- Comparative Node -->
     <th style="white-space: nowrap;" *ngIf="statementType === _statementType.COMPARATIVE" >Comparison Node Location  <strong class="asteriks">*</strong></th>
@@ -38,7 +38,7 @@
   <tr class="values-row">
 
     <td>
-      <span [ngSwitch]="complete()">
+      <span [ngSwitch]="token.valid">
         <i *ngSwitchCase="false" class="fa fa-times-circle-o" style="color: red;"></i>
         <i *ngSwitchCase="true" class="fa fa-check" style="color: green;"></i>
       </span>
@@ -47,47 +47,47 @@
     <th *ngIf="csType === _csType.PROPOSITION"> If </th>
 
     <!-- Occurrence -->
-    <td style="white-space: nowrap;" *ngIf="(assertion.subject && assertion.subject.occurenceType) || subjectRepeatMax > 0" [ngClass]="{'invalid': !targetOccurenceValid()}">
-      <span class="value" *ngIf="!assertion.subject.occurenceType"> SELECT </span>
+    <td style="white-space: nowrap;" *ngIf="(subject.value && subject.value.occurenceType) || subject.repeatMax > 0" [ngClass]="{'invalid': !subject.occurenceValid()}">
+      <span class="value" *ngIf="!subject.value.occurenceType"> SELECT </span>
       <form #targetOccurenceValues="ngForm">
-        <ng-container [ngSwitch]="assertion.subject.occurenceType">
+        <ng-container [ngSwitch]="subject.value.occurenceType">
           <ng-container *ngSwitchCase="_occurrenceType.INSTANCE">
-            The <input #occ="ngModel" (ngModelChange)="change()" name="target-occurence" required type="number" [(ngModel)]="assertion.subject.occurenceValue" [min]="1" [appMinNumber]="1" [max]="min(8, subjectRepeatMax)" [appMaxNumber]="min(8, subjectRepeatMax)"> occurrence of
+            The <input #occ="ngModel" (ngModelChange)="change()" name="target-occurence" required type="number" [(ngModel)]="subject.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="min(8, subject.repeatMax)" [appMaxNumber]="min(8, subject.repeatMax)"> occurrence of
             <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
               <span *ngIf="occ.errors.min">
                   the minimum value is 1
               </span>
               <span *ngIf="occ.errors.max">
-                  the maximum value is {{  min(8, subjectRepeatMax)  }}
+                  the maximum value is {{  min(8, subject.repeatMax)  }}
               </span>
             </div>
           </ng-container>
           <ng-container *ngSwitchCase="_occurrenceType.COUNT">
-            <input #occ="ngModel" (ngModelChange)="change()" type="number" name="target-occurence" required [(ngModel)]="assertion.subject.occurenceValue" [min]="1" [appMinNumber]="1" [max]="subjectRepeatMax" [appMaxNumber]="subjectRepeatMax"> occurrence(s) of
+            <input #occ="ngModel" (ngModelChange)="change()" type="number" name="target-occurence" required [(ngModel)]="subject.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="subject.repeatMax" [appMaxNumber]="subject.repeatMax"> occurrence(s) of
             <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
               <span *ngIf="occ.errors.min">
                   the minimum value is 1
               </span>
               <span *ngIf="occ.errors.max">
-                  the maximum value is {{  subjectRepeatMax }}
+                  the maximum value is {{  subject.repeatMax }}
               </span>
             </div>
           </ng-container>
           <ng-container *ngSwitchDefault>
-            {{ labelsMap[assertion.subject.occurenceType] }}
+            {{ labelsMap[subject.value.occurenceType] }}
           </ng-container>
         </ng-container>
       </form>
     </td>
 
     <!-- Location -->
-    <td style="white-space: nowrap;" [ngClass]="{'invalid': !targetNodeValid()}">
-      <span class="value" *ngIf="!assertion.subject.path"> SELECT </span>
-      <span *ngIf="assertion.subject.path"> {{ subject.name }} </span>
+    <td style="white-space: nowrap;" [ngClass]="{'invalid': !subject.nodeValid()}">
+      <span class="value" *ngIf="!subject.value.path"> SELECT </span>
+      <span *ngIf="subject.value.path"> {{ subject.name }} </span>
     </td>
 
     <!-- Verb -->
-    <td style="white-space: nowrap;" *ngIf="csType === _csType.STATEMENT" [ngClass]="{'invalid': !verbValid()}">
+    <td style="white-space: nowrap;" *ngIf="csType === _csType.DECLARATION" [ngClass]="{'invalid': !verbValid()}">
       <span class="value" *ngIf="!assertion.verbKey"> SELECT </span>
       {{ labelsMap[assertion.verbKey] }}
     </td>
@@ -202,43 +202,43 @@
     </td>
 
     <!-- Occurrence -->
-    <td style="white-space: nowrap;" *ngIf="(assertion.complement && assertion.complement.occurenceType) || complementRepeatMax > 0" [ngClass]="{'invalid': !comparisonOccurenceValid()}">
-      <span class="value" *ngIf="!assertion.complement.occurenceType"> SELECT </span>
+    <td style="white-space: nowrap;" *ngIf="(assertion.complement && compare.value.occurenceType) || compare.repeatMax > 0" [ngClass]="{'invalid': !compare.occurenceValid()}">
+      <span class="value" *ngIf="!compare.value.occurenceType"> SELECT </span>
       <form #compOccurenceValues="ngForm">
-        <ng-container [ngSwitch]="assertion.complement.occurenceType">
+        <ng-container [ngSwitch]="compare.value.occurenceType">
           <ng-container *ngSwitchCase="_occurrenceType.INSTANCE">
-            the <input class="form-control" (change)="change()" #occ="ngModel"  name="comp-occurence" required type="number" [(ngModel)]="assertion.complement.occurenceValue" [min]="1" [appMinNumber]="1" [max]="min(8, complementRepeatMax)" [appMaxNumber]="min(8, complementRepeatMax)"> occurrence of
+            the <input class="form-control" (change)="change()" #occ="ngModel"  name="comp-occurence" required type="number" [(ngModel)]="compare.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="min(8, compare.repeatMax)" [appMaxNumber]="min(8, compare.repeatMax)"> occurrence of
             <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
               <span *ngIf="occ.errors.min">
                   the minimum value is 1
               </span>
               <span *ngIf="occ.errors.max">
-                  the maximum value is {{  min(8, complementRepeatMax) }}
+                  the maximum value is {{  min(8, compare.repeatMax) }}
               </span>
             </div>
           </ng-container>
           <ng-container *ngSwitchCase="_occurrenceType.COUNT">
-            <input class="form-control" (change)="change()" #occ="ngModel" type="number" name="comp-occurence" required [(ngModel)]="assertion.complement.occurenceValue" [min]="1" [appMinNumber]="1" [max]="complementRepeatMax" [appMaxNumber]="complementRepeatMax"> occurrence(s) of
+            <input class="form-control" (change)="change()" #occ="ngModel" type="number" name="comp-occurence" required [(ngModel)]="compare.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="compare.repeatMax" [appMaxNumber]="compare.repeatMax"> occurrence(s) of
             <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
               <span *ngIf="occ.errors.min">
                   the minimum value is 1
               </span>
               <span *ngIf="occ.errors.max">
-                  the maximum value is {{  complementRepeatMax }}
+                  the maximum value is {{  compare.repeatMax }}
               </span>
             </div>
           </ng-container>
           <ng-container *ngSwitchDefault>
-            {{ labelsMap[assertion.complement.occurenceType] }}
+            {{ labelsMap[compare.value.occurenceType] }}
           </ng-container>
         </ng-container>
       </form>
     </td>
 
     <!-- Comparative Node -->
-    <td style="white-space: nowrap;" *ngIf="statementType === _statementType.COMPARATIVE" [ngClass]="{'invalid': !comparisonNodeValid()}">
-      <span class="value" *ngIf="!assertion.complement.path"> SELECT </span>
-      <span *ngIf="assertion.complement.path"> {{ compare.name }} </span>
+    <td style="white-space: nowrap;" *ngIf="statementType === _statementType.COMPARATIVE" [ngClass]="{'invalid': !compare.nodeValid()}">
+      <span class="value" *ngIf="!compare.value.path"> SELECT </span>
+      <span *ngIf="compare.value.path"> {{ compare.name }} </span>
     </td>
 
     <th *ngIf="csType === _csType.PROPOSITION && !predicateMode"> then </th>
@@ -251,9 +251,9 @@
     <td *ngIf="csType === _csType.PROPOSITION"></td>
 
     <!-- Occurrence -->
-    <td *ngIf="(assertion.subject && assertion.subject.occurenceType) || subjectRepeatMax > 0" class="table-font">
+    <td *ngIf="(subject.value && subject.value.occurenceType) || subject.repeatMax > 0" class="table-font">
       <ng-container *ngFor="let occurence of occurences">
-        <input type="radio" [name]="id + 'target-occurences'" [value]="occurence.value" [(ngModel)]="assertion.subject.occurenceType" (ngModelChange)="change()"/> {{ occurence.label }}<br>
+        <input type="radio" [name]="id + 'target-occurences'" [value]="occurence.value" [(ngModel)]="subject.value.occurenceType" (ngModelChange)="changeOccurrenceType(subject)"/> {{ occurence.label }}<br>
       </ng-container>
     </td>
 
@@ -261,7 +261,7 @@
     <td>
       <div style="height: 200px; width: 250px;">
         <app-structure-tree
-          [tree]="tree"
+          [tree]="treeDisplay.effectiveTree"
           [filter]="treeFilter"
           [resourceType]="resourceType"
           [repository]="repository"
@@ -271,7 +271,7 @@
     </td>
 
     <!-- Verb -->
-    <td style="white-space: nowrap;" *ngIf="csType === _csType.STATEMENT" class="table-font">
+    <td style="white-space: nowrap;" *ngIf="csType === _csType.DECLARATION" class="table-font">
       <ng-container *ngFor="let verb of verbs">
         <input type="radio" [name]="id + 'verbs'" [value]="verb.value" [(ngModel)]="assertion.verbKey" (ngModelChange)="change()"/> {{ verb.label }}<br>
       </ng-container>
@@ -285,9 +285,9 @@
     </td>
 
     <!-- Occurrence -->
-    <td *ngIf="(assertion.complement && assertion.complement.occurenceType) || complementRepeatMax > 0" class="table-font">
+    <td *ngIf="(assertion.complement && compare.value.occurenceType) || compare.repeatMax > 0" class="table-font">
       <ng-container *ngFor="let occurence of occurences">
-        <input type="radio"  [name]="id + 'comp-occurences'" [value]="occurence.value" [(ngModel)]="assertion.complement.occurenceType" (ngModelChange)="change()"/> {{ occurence.label }}<br>
+        <input type="radio"  [name]="id + 'comp-occurences'" [value]="occurence.value" [(ngModel)]="compare.value.occurenceType" (ngModelChange)="changeOccurrenceType(compare)"/> {{ occurence.label }}<br>
       </ng-container>
     </td>
 
@@ -295,7 +295,7 @@
     <td *ngIf="statementType === _statementType.COMPARATIVE">
       <div style="height: 200px; width: 250px;">
         <app-structure-tree
-          [tree]="tree"
+          [tree]="treeDisplay.effectiveTree"
           [filter]="treeFilter"
           [resourceType]="resourceType"
           [repository]="repository"

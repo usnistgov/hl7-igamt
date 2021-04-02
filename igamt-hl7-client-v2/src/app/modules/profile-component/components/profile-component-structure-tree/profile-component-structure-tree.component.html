@@ -1,5 +1,16 @@
-<div *ngIf="nodes && nodes.length > 0">
-  <p-treeTable [value]="nodes" [columns]="selectedColumns" (onNodeExpand)="onNodeExpand($event)" (onNodeCollapse)="onNodeCollapse($event)" [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy">
+<div class="btn-group btn-group-toggle border-gray" name="radioBasic" ngbRadioGroup style="border-radius: 5px;">
+  <label class="btn-light no-focus" ngbButtonLabel>
+  <input [queryParams]="{ type : 'USER' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="USER">
+  Item View
+  </label>
+  <label class="btn-light no-focus" ngbButtonLabel>
+  <input [queryParams]="{ type : 'PUBLISHED' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PUBLISHED">
+  Tree View
+  </label>
+</div>
+
+<div>
+  <p-treeTable [value]="nodes" [columns]="selectedColumns" [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy">
     <ng-template pTemplate="caption">
       <div style="display: flex; justify-content: flex-start; align-items: flex-start;">
         <p-multiSelect
@@ -11,14 +22,18 @@
           defaultLabel="Choose Columns">
         </p-multiSelect>
       </div>
+
     </ng-template>
     <ng-template pTemplate="header" let-columns>
       <tr>
         <ng-container *ngFor="let col of columns" [ngSwitch]="col.field">
+          <th *ngSwitchCase="columnTypes.PATH" style="width: 80px;" ttReorderableColumn ttResizableColumn>
+            {{col.header}}
+          </th>
           <th *ngSwitchCase="columnTypes.NAME" style="width: 380px;" ttReorderableColumn ttResizableColumn>
             {{col.header}}
           </th>
-          <th *ngSwitchCase="columnTypes.USAGE" style="width: 300px;" ttReorderableColumn ttResizableColumn>
+          <th *ngSwitchCase="columnTypes.USAGE" style="width: 330px;" ttReorderableColumn ttResizableColumn>
             {{col.header}}
           </th>
           <th *ngSwitchCase="columnTypes.DATATYPE" style="width: 240px;" ttReorderableColumn ttResizableColumn>
@@ -36,10 +51,10 @@
           <th *ngSwitchCase="columnTypes.CONSTANTVALUE" style="width: 180px;" ttReorderableColumn ttResizableColumn>
             {{col.header}}
           </th>
-          <th *ngSwitchCase="columnTypes.CARDINALITY" style="width: 170px;" ttReorderableColumn ttResizableColumn>
+          <th *ngSwitchCase="columnTypes.CARDINALITY" style="width: 178px;" ttReorderableColumn ttResizableColumn>
             {{col.header}}
           </th>
-          <th *ngSwitchCase="columnTypes.LENGTH" style="width: 190px;" ttReorderableColumn ttResizableColumn>
+          <th *ngSwitchCase="columnTypes.LENGTH" style="width: 205px;" ttReorderableColumn ttResizableColumn>
             {{col.header}}
           </th>
           <th *ngSwitchCase="columnTypes.CONFLENGTH" style="width: 185px;" ttReorderableColumn ttResizableColumn>
@@ -57,242 +72,164 @@
         </ng-container>
       </tr>
     </ng-template>
-    <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+    <ng-template pTemplate="body" let-rowData="rowData" let-rowNode let-columns="columns">
       <tr>
-        <td  [ngSwitch]="col.field"  *ngFor="let col of columns; let i = index" [id]="i + '-' + rowNode.index" #anchor [ngStyle]="{'background-color': hasChange( rowData.pathId, col.field )? 'pink': 'inherit' }">
+        <td  [ngSwitch]="col.field"  *ngFor="let col of columns; let i = index" [ngClass]="{ 'inactive' : !columnActive(col.field, rowData.pathId) }" #anchor>
+          <ng-container *ngSwitchCase="columnTypes.PATH">
+            <div style="display: flex; justify-content: flex-start; align-items: center;">
+              <button *ngIf="!viewOnly" class="btn btn-sm btn-danger profile-component-cell-btn" style="background-color: red !important; margin-right: 5px;" (click)="clear(rowData.pathId)">
+                <i class="fa fa-trash"></i>
+              </button>
+              {{rowData.location.positionalPath}}
+            </div>
+          </ng-container>
           <ng-container *ngSwitchCase="columnTypes.NAME">
             <tbody>
-            <tr>
-              <td style="width: 30px;">
-                <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
-              </td>
-              <td style="white-space: normal;">
-                <app-name
-                  [viewOnly]="viewOnly || !rowData.changeable || !rowData.custom"
-                  [globalViewOnly]="viewOnly"
-                  [enforceChangeReason]="derived"
-                  [changeLog]="rowData.changeLog"
-                  [location]="rowData.pathId"
-                  [position]="rowData.position"
-                  [level]="rowData.level"
-                  (valueChange)="registerChange($event)"
-                  [type]="nodeType(rowNode.node)"
-                  [value]="{
-                            name: rowData.name,
-                            custom: rowData.custom
-                          }"
-                  [delete]="canDeleteNode(rowNode.node)"
-                  (add)="addToNode(rowNode)"
-                  (remove)="removeNode(rowNode.node)"
-                  [extendable]="nodeType(rowNode.node) !== 'GROUP'"
-                ></app-name>
-              </td>
-            </tr>
+              <tr>
+                <td style="width: 30px;">
+                  <p-treeTableToggler [rowNode]="rowNode" ></p-treeTableToggler>
+                </td>
+                <td style="white-space: normal;">
+                  <app-pp-name
+              [globalViewOnly]="viewOnly"
+              [location]="rowData.pathId"
+              [position]="rowData.position"
+              [level]="rowData.level"
+              [value]="rowData.location"
+              [context]="type"
+              [items]="itemsList.value[rowData.pathId]">
+            </app-pp-name>
+                </td>
+              </tr>
             </tbody>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.USAGE">
-            <app-usage
-              [changeEvent]="changes$"
-              [viewOnly]="false"
+            <app-pp-usage
               [globalViewOnly]="viewOnly"
-              [enforceChangeReason]="derived"
-              [changeLog]="rowData.changeLog"
-              [type]="rowData.type"
-              [name]="rowData.name"
-              [resource]="resource$"
               [location]="rowData.pathId"
-              [repository]="repository"
               [position]="rowData.position"
-              [value]="rowData.usage"
-              [usages]="{
-                      original : rowData.oldUsage,
-                      config: config
-                    }"
               [level]="rowData.level"
-              [anchor]="anchor"
               [context]="type"
-              [predicate]="{
-                      documentRef: documentRef,
-                      predicates: rowData.bindings?.values?.predicate
-                    }"
-              (valueChange)="registerChange($event)"
-            ></app-usage>
+              [resource]="resource"
+              [repository]="repository"
+              [payload]="{
+                usage: rowData.usage,
+                predicates: rowData.bindings?.values?.predicate
+              }"
+              [usages]="{
+                original : rowData.oldUsage,
+                config: config
+              }"
+              [tree]="tree"
+              [elementId]="rowData.id"
+              [type]="rowData.type"
+              [items]="itemsList.value[rowData.pathId]"
+              [anchor]="anchor"
+              (valueChange)="changeItem($event)">
+            </app-pp-usage>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.CARDINALITY">
-            <app-cardinality
-              [changeEvent]="changes$"
-              [viewOnly]="false"
+            <app-pp-cardinality
               [globalViewOnly]="viewOnly"
-              [enforceChangeReason]="derived"
-              [changeLog]="rowData.changeLog"
               [location]="rowData.pathId"
-              [usage]="rowData.usage.value"
-              [type]="rowData.type"
               [position]="rowData.position"
               [level]="rowData.level"
+              [context]="type"
               [value]="rowData.cardinality"
-              (valueChange)="registerChange($event)"
-            ></app-cardinality>
+              [items]="itemsList.value[rowData.pathId]"
+              (valueChange)="changeItem($event)">
+            </app-pp-cardinality>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.LENGTH">
-            <app-length
-              [changeEvent]="changes$"
+            <app-pp-length
               *ngIf="rowNode.node.leaf"
-              [viewOnly]="false"
               [globalViewOnly]="viewOnly"
-              [enforceChangeReason]="derived"
-              [changeLog]="rowData.changeLog"
-              [type]="rowData.type"
               [location]="rowData.pathId"
-              [level]="rowData.level"
               [position]="rowData.position"
+              [level]="rowData.level"
               [value]="{
-                      length: rowData.length,
-                      confLength: rowData.confLength,
-                      lengthType: rowData.lengthType
-                    }"
-              (updateLengthType)="updateLength($event, rowNode)"
-              (valueChange)="registerChange($event)"
-            ></app-length>
+                length: rowData.length,
+                lengthType: rowData.lengthType
+              }"
+              [items]="itemsList.value[rowData.pathId]"
+              [context]="type"
+              (valueChange)="changeItem($event)">
+            </app-pp-length>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.CONFLENGTH">
-            <app-conformance-length
-              [changeEvent]="changes$"
+            <app-pp-conf-length
               *ngIf="rowNode.node.leaf"
               [globalViewOnly]="viewOnly"
-              [viewOnly]="false"
-              [enforceChangeReason]="derived"
-              [changeLog]="rowData.changeLog"
               [location]="rowData.pathId"
-              [type]="rowData.type"
               [position]="rowData.position"
               [level]="rowData.level"
               [value]="{
-                      length: rowData.length,
-                      confLength: rowData.confLength,
-                      lengthType: rowData.lengthType
-                    }"
-              (updateLengthType)="updateLength($event, rowNode)"
-              (valueChange)="registerChange($event)"
-            ></app-conformance-length>
+                confLength: rowData.confLength,
+                lengthType: rowData.lengthType
+              }"
+              [items]="itemsList.value[rowData.pathId]"
+              [context]="type"
+              (valueChange)="changeItem($event)">
+            </app-pp-conf-length>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.DATATYPE">
             <ng-container *ngIf="rowNode.node.$hl7V2TreeHelpers.ref$ | async as reference">
-              <app-datatype
-                [changeEvent]="changes$"
-                *ngIf="reference.type === types.DATATYPE"
+              <app-pp-datatype
                 [globalViewOnly]="viewOnly"
-                [type]="rowData.type"
-                [viewOnly]="false"
-                [enforceChangeReason]="derived"
-                [changeLog]="rowData.changeLog"
                 [location]="rowData.pathId"
                 [position]="rowData.position"
-                [value]="reference"
-                [documentRef]="documentRef"
-                [documentType]=""
                 [level]="rowData.level"
+                [value]="reference"
+                [items]="itemsList.value[rowData.pathId]"
+                [context]="type"
+                (valueChange)="changeItem($event)"
+                *ngIf="reference.type === types.DATATYPE"
                 [options]="datatypes"
                 [anchor]="anchor"
-                (valueChange)="datatypeChange($event, rowNode)"
-              ></app-datatype>
+              ></app-pp-datatype>
             </ng-container>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.SEGMENT">
-            <ng-container *ngIf="rowNode.node.$hl7V2TreeHelpers.ref$ | async as reference">
-              <app-segment
-                [changeEvent]="changes$"
-                *ngIf="reference.type === types.SEGMENT"
-                [viewOnly]="false"
-                [type]="rowData.type"
-                [globalViewOnly]="viewOnly"
-                [enforceChangeReason]="derived"
-                [changeLog]="rowData.changeLog"
-                [location]="rowData.pathId"
-                [position]="rowData.position"
-                [value]="reference"
-                [documentRef]="documentRef"
-                [level]="rowData.level"
-                [anchor]="anchor"
-                [options]="segments"
-                (valueChange)="segmentChange($event, rowNode)"
-              ></app-segment>
-            </ng-container>
-          </ng-container>
-          <ng-container *ngSwitchCase="columnTypes.TEXT">
-            <app-text
-              [changeEvent]="changes$"
-              [viewOnly]="false"
-              [globalViewOnly]="viewOnly"
-              [type]="rowData.type"
-              [location]="rowData.pathId"
-              [position]="rowData.position"
-              [level]="rowData.level"
-              [value]="rowData.text"
-              (valueChange)="registerChange($event)">
-            </app-text>
+
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.VALUESET">
-            <app-valueset
-              [changeEvent]="changes$"
-              [viewOnly]="false"
-              [globalViewOnly]="viewOnly || documentRef.type =='DATATYPELIBRARY'"
-              [enforceChangeReason]="derived"
-              [changeLog]="rowData.changeLog"
-              [context]="type"
-              [type]="rowData.type"
-              [location]="rowData.pathId"
-              [position]="rowData.position"
-              [repository]="repository"
-              [resource] ="_resource"
-              [valueSets]= "valueSets"
-              [documentRef]="documentRef"
-              [level]="rowData.level"
-              [bindingInfo]= "rowData.valueSetBindingsInfo | async"
-              [value]="{
-                      valueSetBindings: rowData.bindings?.values?.valuesetBindings,
-                      singleCodeBindings: rowData.bindings?.values?.internalSingleCode
-                    }"
-              (valueChange)="registerChange($event)"
-            >
-            </app-valueset>
-          </ng-container>
-          <ng-container *ngSwitchCase="columnTypes.COMMENT">
-            <app-comments
-              [changeEvent]="changes$"
-              [viewOnly]="false"
+            <app-pp-valueset
               [globalViewOnly]="viewOnly"
-              [type]="rowData.type"
               [location]="rowData.pathId"
               [position]="rowData.position"
-              [username]="username"
               [level]="rowData.level"
-              [value]="rowData.comments"
-              (valueChange)="registerChange($event)">
-            </app-comments>
+              [context]="type"
+              [valueSets]="valueSets"
+              [resource]="resource"
+              [tree]="tree"
+              [repository]="repository"
+              [bindingInfo]= "rowData.valueSetBindingsInfo | async"
+              [payload]="{
+                valueSetBindings: rowData.bindings?.values?.valuesetBindings,
+                singleCodeBindings: rowData.bindings?.values?.internalSingleCode
+              }"
+              [elementId]="rowData.id"
+              [type]="rowData.type"
+              [items]="itemsList.value[rowData.pathId]"
+              [anchor]="anchor"
+              (valueChange)="changeItem($event)">
+            </app-pp-valueset>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.CONSTANTVALUE">
-            <app-constant-value
-              [changeEvent]="changes$"
-              [viewOnly]="false"
+            <app-pp-constant-value
               [globalViewOnly]="viewOnly"
-              [enforceChangeReason]="derived"
-              [changeLog]="rowData.changeLog"
-              [type]="rowData.type"
               [location]="rowData.pathId"
               [position]="rowData.position"
               [level]="rowData.level"
+              [context]="type"
               [value]="rowData.constantValue"
+              [items]="itemsList.value[rowData.pathId]"
               *ngIf="rowNode.node.leaf"
-              (valueChange)="registerChange($event)"
-            >
-            </app-constant-value>
+              (valueChange)="changeItem($event)">
+            </app-pp-constant-value>
           </ng-container>
         </td>
       </tr>
     </ng-template>
   </p-treeTable>
-</div>
-<div *ngIf="nodes && nodes.length === 0" style="text-align: center;">
-  <strong style="color: lightgray;"> Primitive Datatype </strong>
 </div>

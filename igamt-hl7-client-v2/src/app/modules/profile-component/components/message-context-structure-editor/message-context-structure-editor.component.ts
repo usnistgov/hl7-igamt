@@ -79,6 +79,7 @@ export class MessageContextStructureEditorComponent extends ProfileComponentStru
         },
       ],
       [
+        HL7v2TreeColumnType.PATH,
         HL7v2TreeColumnType.NAME,
         HL7v2TreeColumnType.DATATYPE,
         HL7v2TreeColumnType.SEGMENT,
@@ -88,8 +89,6 @@ export class MessageContextStructureEditorComponent extends ProfileComponentStru
         HL7v2TreeColumnType.CARDINALITY,
         HL7v2TreeColumnType.LENGTH,
         HL7v2TreeColumnType.CONFLENGTH,
-        HL7v2TreeColumnType.TEXT,
-        HL7v2TreeColumnType.COMMENT,
       ], treeService, pcService, dialog);
   }
 
