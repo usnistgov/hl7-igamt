@@ -1,6 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {IUsages} from '../../models/cross-reference';
+import {IDisplayElement} from '../../models/display-element.interface';
 
 @Component({
   selector: 'app-usage-dialog',
@@ -20,4 +21,5 @@ export interface IUsageDialogData {
   title: string;
   usages:  IUsages[];
   documentId: string;
+  element?: IDisplayElement;
 }

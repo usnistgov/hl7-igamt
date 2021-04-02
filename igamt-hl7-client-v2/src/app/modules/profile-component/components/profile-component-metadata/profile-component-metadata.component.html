@@ -8,11 +8,12 @@
                   placeholder="Description" label="Description" [viewOnly]="viewOnly$ | async">
   </app-form-input>
 
-
-  <strong> Profile Component Profile Identifier </strong>
-
   <div>
-    <table formGroupName="profileIdentifier"  class="table table-condensed table-sm">
+    <span>
+      <strong> Profile Component Identifier </strong>
+    </span>
+
+    <table formGroupName="profileIdentifier"  class="table table-bordered table-condensed table-sm" style="margin-top: 10px; ">
       <tr>
         <th style="text-align: center;">Entity Identifier</th>
         <th style="text-align: center;">Namespace ID</th>
@@ -36,10 +37,10 @@
     </table>
   </div>
 
-  <strong> Contexts</strong>
-  <div *ngIf="contexts && contexts.length>0">
-      <app-display-section *ngFor="let x of contexts" [element]="x"></app-display-section>
-  </div>
+<!--  <strong> Contexts</strong>-->
+<!--  <div *ngIf="contexts && contexts.length>0">-->
+<!--      <app-display-section *ngFor="let x of contexts" [element]="x"></app-display-section>-->
+<!--  </div>-->
 
 
 </form>

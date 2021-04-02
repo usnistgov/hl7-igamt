@@ -19,12 +19,14 @@ export class CompositeProfileService {
   getById(id: string): Observable<ICompositeProfile> {
     return this.http.get<ICompositeProfile>(this.URL + id);
   }
+  public save(compositeProfile: ICompositeProfile): Observable<ICompositeProfile>  {
+    return this.http.post<ICompositeProfile>(this.URL , compositeProfile);
+  }
   getConformanceStatements(id: string, documentRef: IDocumentRef): Observable<ICPConformanceStatementList> {
     return this.http.get<ICPConformanceStatementList>(this.URL + id + '/conformancestatement/' + documentRef.documentId);
   }
-
   getApplied(composite: ICompositeProfile, pcs: IDisplayElement[]): IDisplayElement[] {
-    const ret = composite.orderedProfileComponents.map((x) => pcs.find((y) => x.profileComponentId === y.id  ));
+    const ret = composite.orderedProfileComponents.sort((k, l) => k.position- l.position).map((x) => pcs.find((y) => x.profileComponentId === y.id  ));
     return ret;
   }
   getTree(coreProfile: IDisplayElement,  pcs: IDisplayElement[]): TreeNode[] {
@@ -56,8 +58,27 @@ export class CompositeProfileService {
 
   public addPcs(children: IOrderedProfileComponentLink[], added: IDisplayElement[], index: number): IOrderedProfileComponentLink[] {
     const addedLink: IOrderedProfileComponentLink[] = added.map((x) => ({position: index, profileComponentId:  x.id }) );
-
-    const ret: IOrderedProfileComponentLink[] = children.concat(addedLink);
+    const ret: IOrderedProfileComponentLink[] = [... children];
+    ret.splice(index, 0, ...addedLink);
+    this.updatePositions(ret);
     return ret;
+  }
+
+  public updatePositions(ret: IOrderedProfileComponentLink[]) {
+    for (let i = 0; i < ret.length; i++ ) {
+      ret[i].position = i + 1;
+    }
+  }
+
+  public delete(children: IOrderedProfileComponentLink[], index: number): IOrderedProfileComponentLink[] {
+    const ret: IOrderedProfileComponentLink[] = [... children];
+    ret.splice(index, 1);
+    this.updatePositions(ret);
+    return ret;
+  }
+
+  reorder(orderedProfileComponents: IOrderedProfileComponentLink[] | any, map: { [p: string]: number }): IOrderedProfileComponentLink[] {
+    const ret: IOrderedProfileComponentLink[] = [... orderedProfileComponents];
+    return ret.map((x) => ({...x, position: map[x.profileComponentId] }));
   }
 }

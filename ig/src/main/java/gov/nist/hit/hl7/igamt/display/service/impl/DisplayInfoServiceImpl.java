@@ -105,11 +105,11 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
   private Set<DisplayElement> convertPofileComponentRegistry(
       ProfileComponentRegistry registry) {
     // TODO Auto-generated method stub
-    Set<String> ids= this.gatherIds(registry.getChildren());
+    Map<String, Integer> positionMap= this.gatherIdsAndPositions(registry.getChildren());
     Set<DisplayElement> ret = new HashSet<DisplayElement>();
-    List<ProfileComponent> pcs = profileComponentService.findByIdIn(ids);
+    List<ProfileComponent> pcs = profileComponentService.findByIdIn(positionMap.keySet());
     for(ProfileComponent pc: pcs ) {
-      ret.add(convertProfileComponent(pc));
+      ret.add(convertProfileComponent(pc, positionMap.get(pc.getId())));
     }
     return ret;
   }
@@ -275,7 +275,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
   }
   
   @Override
-  public DisplayElement convertProfileComponent(ProfileComponent pc) {
+  public DisplayElement convertProfileComponent(ProfileComponent pc, int integer) {
     DisplayElement displayElement= new DisplayElement();
     displayElement.setId(pc.getId());
     displayElement.setDomainInfo(pc.getDomainInfo());
@@ -286,6 +286,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     displayElement.setOrigin(pc.getOrigin());
     displayElement.setParentId(pc.getParentId());
     displayElement.setParentType(pc.getParentType());
+    displayElement.setPosition(integer);
     List<DisplayElement> children = new ArrayList<DisplayElement>();
     if(pc.getChildren() !=null) {
       for(ProfileComponentContext context: pc.getChildren()) {

@@ -59,6 +59,9 @@ $delta_changed_light: #fff7e7;
 
 $deprecated-element: yellow;
 
+$entity-badge-profile-component: #AA11E6;
+$entity-badge-profile-component-jigg:#11e6b7;
+
 .entity-badge-ig {
   background-color: $ig_color !important;
 }
@@ -105,6 +108,12 @@ $deprecated-element: yellow;
 .entity-badge-profile-component {
   background-color: $entity-badge-profile-component !important;
 }
+.entity-badge-profile-component {
+  background-color: $entity-badge-profile-component !important;
+}
+.entity-badge-profile-component-icon {
+  color: $entity-badge-profile-component-jigg !important;
+}
 
 // Page Container
 %page-wrapper {
@@ -122,3 +131,4 @@ $deprecated-element: yellow;
 .button-badge{
   border-radius: 50% !important;
 }
+

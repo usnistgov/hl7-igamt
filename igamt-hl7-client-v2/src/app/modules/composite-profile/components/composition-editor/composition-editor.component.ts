@@ -2,9 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {Actions} from '@ngrx/effects';
 import {Action, Store} from '@ngrx/store';
 import {TreeNode} from 'primeng/api';
-import {combineLatest, from, Observable, ReplaySubject, Subscription} from 'rxjs';
-import {concatMap} from 'rxjs-compat/operator/concatMap';
-import {map, mergeMap, switchMap, take, toArray} from 'rxjs/operators';
+import {combineLatest, from, Observable, ReplaySubject, Subscription, throwError} from 'rxjs';
+import {catchError, concatMap, flatMap, map, mergeMap, switchMap, take, toArray} from 'rxjs/operators';
 import {
   selectCompositeProfileById,
   selectMessagesById, selectProfileComponentById,
@@ -13,7 +12,9 @@ import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/iga
 import {selectDerived} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import {IConformanceProfileEditMetadata} from '../../../conformance-profile/components/metadata-editor/metadata-editor.component';
 import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import {Message, MessageType} from '../../../dam-framework/models/messages/message.class';
 import {MessageService} from '../../../dam-framework/services/message.service';
+import * as fromDam from '../../../dam-framework/store';
 import {EditorSave} from '../../../dam-framework/store/data';
 import {IgService} from '../../../ig/services/ig.service';
 import {IStructureChanges} from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
@@ -37,8 +38,6 @@ export class CompositionEditorComponent extends AbstractEditorComponent implemen
   resourceSubject: ReplaySubject<ICompositeProfile>;
   workspace_s: Subscription;
   cpTree$: Observable<TreeNode[]>;
-
-
   appliedProfileComponentDisplay$: Observable<IDisplayElement[]>;
   pcNodes$:  Observable<TreeNode[]>;
 
@@ -100,7 +99,18 @@ export class CompositionEditorComponent extends AbstractEditorComponent implemen
   }
 
   onEditorSave(action: EditorSave): Observable<Action> {
-    return undefined;
+    return this.compositeProfile$.pipe(
+      take(1),
+      mergeMap((composite) => {
+        return this.compositeProfileService.save(composite).pipe(
+          flatMap((ret) => {
+            this.resourceSubject.next(ret);
+            return [this.messageService.messageToAction(new Message<any>(MessageType.SUCCESS, 'Composite profile save success!', null)), new fromDam.EditorUpdate({ value: { changes: {}, resource : ret }, updateDate: false }), new fromDam.SetValue({ selected: ret })];
+          }),
+          catchError((error) => throwError(this.messageService.actionFromError(error))),
+        );
+      }),
+    );
   }
   getAppliedProfileComponentsDisplay(orderedProfileComponents: IOrderedProfileComponentLink[]): Observable<IDisplayElement[]> {
     return from(orderedProfileComponents).pipe(
@@ -115,12 +125,34 @@ export class CompositionEditorComponent extends AbstractEditorComponent implemen
     this.compositeProfile$.pipe(
       take(1),
       map((composite) => {
-          const newComposite: ICompositeProfile = {...composite, orderedProfileComponents:  this.compositeProfileService.addPcs(composite.orderedProfileComponents, $event.pcs, $event.index)};
+          const newComposite: ICompositeProfile = {...composite, orderedProfileComponents: [... this.compositeProfileService.addPcs(composite.orderedProfileComponents, $event.pcs, $event.index)]};
           this.resourceSubject.next(newComposite);
-          this.editorChange({ composite }, true);
+          this.editorChange(newComposite, true);
+
+      }),
+    ).subscribe();
+  }
+  deleteByPosition(index: number) {
+    this.compositeProfile$.pipe(
+      take(1),
+      map((composite) => {
+        const newComposite: ICompositeProfile = {...composite, orderedProfileComponents: [...  this.compositeProfileService.delete(composite.orderedProfileComponents, index)]};
+        this.resourceSubject.next(newComposite);
+        this.editorChange(newComposite, true);
 
       }),
     ).subscribe();
   }
 
+  updatePositions($event: { [key: string]: number }) {
+    this.compositeProfile$.pipe(
+      take(1),
+      map((composite) => {
+        const newComposite: ICompositeProfile = {...composite, orderedProfileComponents: [... this.compositeProfileService.reorder(composite.orderedProfileComponents, $event)]};
+        this.resourceSubject.next(newComposite);
+        this.editorChange(newComposite, true);
+
+      }),
+    ).subscribe();
+  }
 }

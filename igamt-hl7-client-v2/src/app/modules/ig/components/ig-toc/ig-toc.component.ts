@@ -75,7 +75,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.options = {
       allowDrag: (node: TreeNode) => { return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
         node.data.type === Type.CONFORMANCEPROFILE ||
-        node.data.type === Type.PROFILE);
+        node.data.type === Type.PROFILE || node.data.type === Type.PROFILECOMPONENT || Type.COMPOSITEPROFILE);
       },
       actionMapping: {
         mouse: {
@@ -85,6 +85,14 @@ export class IgTocComponent implements OnInit, AfterViewInit {
               this.update();
             }
             if (from.data.type === Type.CONFORMANCEPROFILE && to.parent.data.type === Type.CONFORMANCEPROFILEREGISTRY) {
+              TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
+              this.update();
+            }
+            if (from.data.type === Type.PROFILECOMPONENT && to.parent.data.type === Type.PROFILECOMPONENTREGISTRY) {
+              TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
+              this.update();
+            }
+            if (from.data.type === Type.COMPOSITEPROFILE && to.parent.data.type === Type.COMPOSITEPROFILEREGISTRY) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }

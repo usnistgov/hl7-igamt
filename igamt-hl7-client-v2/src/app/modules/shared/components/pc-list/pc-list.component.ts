@@ -25,14 +25,17 @@ export class PcListComponent implements OnInit {
 
   @Output()
   append = new EventEmitter<{pcs: IDisplayElement[], index: number}>();
+  @Output()
+  remove = new EventEmitter<number>();
 
   @Output()
-  updateChildren = new EventEmitter<{pcs: IDisplayElement[], index: number}>();
+  reorder = new EventEmitter<{[key: string]: number} >();
   constructor(    private dialog: MatDialog,
   ) { }
 
   @Input()
   set pcNodes(pcNodes: TreeNode[]) {
+    console.log(pcNodes);
     this.pcNodes_ = pcNodes;
   }
 
@@ -47,6 +50,7 @@ export class PcListComponent implements OnInit {
       data: {positon: position, available: this.availablePcs_, selected: this.getSelectMap(this.pcNodes_) },
     });
     dialogRef.afterClosed().pipe(
+      filter((x) => x !== undefined),
       tap((result: IDisplayElement[]) => {
         this.addPcs(position, result);
       }),
@@ -55,6 +59,11 @@ export class PcListComponent implements OnInit {
 
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.pcNodes_, event.previousIndex, event.currentIndex);
+    const orderedMap: {[key: string]: number} = {};
+    for (let i = 0; i < this.pcNodes_.length; i++) {
+      orderedMap[this.pcNodes_[i].data.id] = i + 1;
+     }
+    this.reorder.emit(orderedMap);
   }
 
   private getSelectMap(pcNodes_: TreeNode[]) {
@@ -66,7 +75,9 @@ export class PcListComponent implements OnInit {
   private addPcs(position: number, result: IDisplayElement[]) {
     this.append.emit({pcs: result, index: position});
   }
-  // private update(position: number, result: IDisplayElement[]) {
-  //   this.addAppend.emit({pcs: result, index: position});
-  // }
+
+  delete(i: number) {
+    console.log("Removing"+ i);
+    this.remove.emit(i);
+  }
 }

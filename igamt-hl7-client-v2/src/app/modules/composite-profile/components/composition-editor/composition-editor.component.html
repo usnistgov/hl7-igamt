@@ -1,2 +1,1 @@
-
-<app-pc-list [pcNodes]="pcNodes$ | async"  [coreProfile]="coreProfileDisplay$ | async" [availablePcs] = "availablePc$ | async" (append)="this.appendPCs($event)"></app-pc-list>
+<app-pc-list [pcNodes]="pcNodes$ | async"  [coreProfile]="coreProfileDisplay$ | async" [availablePcs] = "availablePc$ | async" (append)="this.appendPCs($event)" (remove)="deleteByPosition($event)" (reorder)="updatePositions($event)"></app-pc-list>

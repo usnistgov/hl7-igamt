@@ -149,7 +149,7 @@
               <i class="fa fa-remove"></i> Delete
             </ng-template>
           </context-menu>
-          <app-toc-sub-menu [element]="node.data"  [delta]="delta"></app-toc-sub-menu>
+          <app-toc-sub-menu [element]="node.data"  *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'SEGMENT'">
@@ -198,6 +198,9 @@
           <context-menu #pc [disabled]="viewOnly||delta">
             <ng-template (execute)="addPcContexts(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-plus"></i> Add Contexts
+            </ng-template>
+            <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-copy"></i> Create Flavor
             </ng-template>
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-remove"></i> Delete

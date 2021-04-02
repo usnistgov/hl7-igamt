@@ -44,6 +44,7 @@ import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.SharePermission;
@@ -207,10 +208,10 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   CommonService commonService;
-  
+
   @Autowired
   ProfileComponentService profileComponentService;
-  
+
   @Autowired
   CompositeProfileStructureService compositeProfileService;
 
@@ -457,32 +458,43 @@ public class IGDocumentController extends BaseController {
   }
 
   private void updateAndClean(Set<TextSection> content, Ig ig) throws Exception {
-    TextSection registry  = findRegistryByType(Type.CONFORMANCEPROFILEREGISTRY, content);
-    if(registry == null ) {
-      throw new Exception("CONFORMANCEPROFILEREGISTRY not found");    
-    }else {
-      if(registry.getChildren() != null) {
-        Map<String, Integer> positionMap = new HashMap<String, Integer>();
-        positionMap = registry.getChildren().stream().collect(Collectors.toMap(TextSection::getId, TextSection::getPosition));
+    TextSection orderdMessages  = findRegistryByType(Type.CONFORMANCEPROFILEREGISTRY, content);
+    if(orderdMessages  != null ) {
+      updateRegistryPosition(orderdMessages,  ig.getConformanceProfileRegistry());
+    }
+    TextSection orderedPcs  = findRegistryByType(Type.PROFILECOMPONENTREGISTRY, content);
+    if(orderedPcs  != null ) {
+      updateRegistryPosition(orderedPcs,  ig.getProfileComponentRegistry());
+    }
+    TextSection orderdedComposites  = findRegistryByType(Type.COMPOSITEPROFILEREGISTRY, content);
+    if(orderdedComposites  != null ) {
+      updateRegistryPosition(orderdedComposites,  ig.getCompositeProfileRegistry());
+    }
+    TextSection profile  = findRegistryByType(Type.PROFILE, content);
+    if( profile !=null  && !profile.getChildren().isEmpty()) {
+      for(TextSection profileChild : profile.getChildren() ) {
+        profileChild.setChildren(new HashSet<TextSection>()); 
+      }
+    }
+    ig.setContent(content);
 
-        for(Link l : ig.getConformanceProfileRegistry().getChildren()) {
+  }
+
+
+  private void updateRegistryPosition(TextSection orderedSection,
+      Registry registry) {
+    if(orderedSection.getChildren() != null) {
+      Map<String, Integer> positionMap = new HashMap<String, Integer>();
+      positionMap = orderedSection.getChildren().stream().collect(Collectors.toMap(TextSection::getId, TextSection::getPosition));
+      if(registry.getChildren() != null) {
+        for(Link l : registry.getChildren()) {
           if(positionMap.containsKey(l.getId())) {
             l.setPosition(positionMap.get(l.getId()));
           }
         }
       }
-      TextSection profile  = findRegistryByType(Type.PROFILE, content);
-      if( profile !=null  && !profile.getChildren().isEmpty()) {
-        for(TextSection profileChild : profile.getChildren() ) {
-          profileChild.setChildren(new HashSet<TextSection>()); 
-        }
-      }
-      ig.setContent(content);
     }
   }
-
-
-
 
   /**
    * @param conformanceprofileregistry
@@ -760,7 +772,7 @@ public class IGDocumentController extends BaseController {
     ig = igService.save(ig);
     return new ResponseMessage(Status.SUCCESS, "Profile Component deleted", pcId, new Date());
   }
-  
+
   @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/{cpId}/delete", method = RequestMethod.DELETE, produces = {
   "application/json" })
   public ResponseMessage deleteCompoisteProfile(@PathVariable("id") String id,
@@ -788,9 +800,13 @@ public class IGDocumentController extends BaseController {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     ProfileComponent pc = this.profileComponentService.deleteContextById(pcId, contextId );
+    Link pcLink = ig.getProfileComponentRegistry().getLinkById(pcId);
+    if(pcLink == null) {
+      throw new ProfileComponentNotFoundException("Profile Component Link not found ") ;
+    }
     profileComponentService.save(pc);
-    return this.displayInfoService.convertProfileComponent(pc);
-  
+    return this.displayInfoService.convertProfileComponent(pc, pcLink.getPosition());
+
   }
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
   public ResponseMessage<AddResourceResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
@@ -821,8 +837,8 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
         clone.getId(), false, clone.getUpdateDate(), response);
   }
-  
-  
+
+
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/clone", method = RequestMethod.POST, produces = {"application/json"})
   public ResponseMessage<AddResourceResponse> cloneProfileComponent(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("pcId") String pcId,
@@ -847,14 +863,14 @@ public class IGDocumentController extends BaseController {
     AddResourceResponse response = new AddResourceResponse();
     response.setId(clone.getId());
     response.setReg(ig.getProfileComponentRegistry());
-    response.setDisplay(displayInfoService.convertProfileComponent(clone));
+    response.setDisplay(displayInfoService.convertProfileComponent(clone, ig.getProfileComponentRegistry().getChildren().size() + 1));
 
     return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
         clone.getId(), false, clone.getUpdateDate(), response);
   }
- 
-  
-  
+
+
+
 
   @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
@@ -1058,11 +1074,11 @@ public class IGDocumentController extends BaseController {
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/co-constraint-group/{ccGroupId}/delete", method = RequestMethod.DELETE, produces = {
-          "application/json" })
+  "application/json" })
   public ResponseMessage deleteCoConstraintGroup(
-          @PathVariable("id") String id,
-          @PathVariable("ccGroupId") String ccGroupId,
-          Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
+      @PathVariable("id") String id,
+      @PathVariable("ccGroupId") String ccGroupId,
+      Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
@@ -1084,8 +1100,8 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage(Status.SUCCESS, CC_GROUP_DELETED, ccGroupId, new Date());
   }
 
-  
-  
+
+
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/create", method = RequestMethod.POST, produces = {
   "application/json" })
@@ -1098,14 +1114,14 @@ public class IGDocumentController extends BaseController {
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     ProfileComponent pc = this.igService.createProfileComponent(ig, profileComponentCreateWrapper.name , profileComponentCreateWrapper.children);
-    CreateChildResponse createChildResponse = new CreateChildResponse(pc.getId(), ig.getProfileComponentRegistry(), this.displayInfoService.convertProfileComponent(pc));
+    CreateChildResponse createChildResponse = new CreateChildResponse(pc.getId(), ig.getProfileComponentRegistry(), this.displayInfoService.convertProfileComponent(pc, ig.getProfileComponentRegistry().getChildren().size() + 1));
     this.igService.save(ig);
 
     return new ResponseMessage<CreateChildResponse>(Status.SUCCESS, "", "Profile Component Created Successfully", ig.getId(), false,
         ig.getUpdateDate(), createChildResponse);
   }
-  
-  
+
+
   @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/create", method = RequestMethod.POST, produces = {
   "application/json" })
   public ResponseMessage<CreateChildResponse> createCompositeProfile(
@@ -1126,54 +1142,56 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage<CreateChildResponse>(Status.SUCCESS, "", "Composite Profile Created Successfully", ig.getId(), false,
         ig.getUpdateDate(), createChildResponse);
   }
-  
-  
+
+
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/addChildren", method = RequestMethod.POST, produces = {
   "application/json" })
   public ResponseMessage<CreateChildResponse> updatePcChildren(
       @PathVariable("id") String id,
       @PathVariable("pcId") String pcId,
       @RequestBody List<DisplayElement> children,
-      Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
+      Authentication authentication) throws IGNotFoundException, ForbiddenOperationException, ProfileComponentNotFoundException {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
-    
-    ProfileComponent pc = this.profileComponentService.addChildrenFromDisplayElement(pcId, children);
-    CreateChildResponse createChildResponse = new CreateChildResponse(pc.getId(), ig.getProfileComponentRegistry(), this.displayInfoService.convertProfileComponent(pc));
+    Link pcLink = ig.getProfileComponentRegistry().getLinkById(pcId);
+    if(pcLink == null) {
+      throw new ProfileComponentNotFoundException("Profile Component Link not found ") ;
+    }    ProfileComponent pc = this.profileComponentService.addChildrenFromDisplayElement(pcId, children);
+    CreateChildResponse createChildResponse = new CreateChildResponse(pc.getId(), ig.getProfileComponentRegistry(), this.displayInfoService.convertProfileComponent(pc, pcLink.getPosition()));
     this.igService.save(ig);
     return new ResponseMessage<CreateChildResponse>(Status.SUCCESS, "", "Profile Component updated Successfully", ig.getId(), false,
         ig.getUpdateDate(), createChildResponse);
   }
- 
-  
-//
-//  @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/delete", method = RequestMethod.DELETE, produces = {
-//          "application/json" })
-//  public ResponseMessage deleteProfileComponent(
-//          @PathVariable("id") String id,
-//          @PathVariable("pcIf") String pcId,
-//          Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
-//    Ig ig = findIgById(id);
-//    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
-//
-//    Link found = findLinkById(ccGroupId, ig.getCoConstraintGroupRegistry().getChildren());
-//    if (found != null) {
-//      ig.getCoConstraintGroupRegistry().getChildren().remove(found);
-//    }
-//    try {
-//      CoConstraintGroup coConstraintGroup = this.coConstraintService.findById(ccGroupId);
-//      if (coConstraintGroup != null) {
-//        if (coConstraintGroup.getDomainInfo().getScope().equals(Scope.USER)) {
-//          this.coConstraintService.delete(coConstraintGroup);
-//        }
-//      }
-//    } catch (CoConstraintGroupNotFoundException e) {
-//      e.printStackTrace();
-//    }
-//    igService.save(ig);
-//    return new ResponseMessage(Status.SUCCESS, CC_GROUP_DELETED, ccGroupId, new Date());
-//  }
-  
+
+
+  //
+  //  @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/delete", method = RequestMethod.DELETE, produces = {
+  //          "application/json" })
+  //  public ResponseMessage deleteProfileComponent(
+  //          @PathVariable("id") String id,
+  //          @PathVariable("pcIf") String pcId,
+  //          Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
+  //    Ig ig = findIgById(id);
+  //    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+  //
+  //    Link found = findLinkById(ccGroupId, ig.getCoConstraintGroupRegistry().getChildren());
+  //    if (found != null) {
+  //      ig.getCoConstraintGroupRegistry().getChildren().remove(found);
+  //    }
+  //    try {
+  //      CoConstraintGroup coConstraintGroup = this.coConstraintService.findById(ccGroupId);
+  //      if (coConstraintGroup != null) {
+  //        if (coConstraintGroup.getDomainInfo().getScope().equals(Scope.USER)) {
+  //          this.coConstraintService.delete(coConstraintGroup);
+  //        }
+  //      }
+  //    } catch (CoConstraintGroupNotFoundException e) {
+  //      e.printStackTrace();
+  //    }
+  //    igService.save(ig);
+  //    return new ResponseMessage(Status.SUCCESS, CC_GROUP_DELETED, ccGroupId, new Date());
+  //  }
+
 
   @RequestMapping(value = "/api/igdocuments/{documentId}/coconstraints/group/segment/{id}", method = RequestMethod.GET, produces = {"application/json" })
   public List<DisplayElement> getCoConstraintGroupForSegment(@PathVariable("id") String id,
@@ -1679,21 +1697,21 @@ public class IGDocumentController extends BaseController {
             }
             //For Dynamic Mapping
             if (s != null && s.getDynamicMappingInfo() != null && s.getDynamicMappingInfo().getItems() != null) {
-            	s.getDynamicMappingInfo().getItems().forEach(item -> {
-            		Link link = all.getDatatypeRegistry().getLinkById(item.getDatatypeId());
-            		if(link != null) {
-            			selectedIg.getDatatypeRegistry().getChildren().add(link);
-            			Datatype dt = this.datatypeService.findById(link.getId());
-            			if (dt != null && dt instanceof ComplexDatatype) {
-            				ComplexDatatype cdt = (ComplexDatatype)dt;
-            	            if(cdt.getComponents() != null) {
-            	              this.visitDatatype(cdt.getComponents(), selectedIg, all);
-            	              if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
-            	            }
-            			}
-            			
-            		}           		
-            	});
+              s.getDynamicMappingInfo().getItems().forEach(item -> {
+                Link link = all.getDatatypeRegistry().getLinkById(item.getDatatypeId());
+                if(link != null) {
+                  selectedIg.getDatatypeRegistry().getChildren().add(link);
+                  Datatype dt = this.datatypeService.findById(link.getId());
+                  if (dt != null && dt instanceof ComplexDatatype) {
+                    ComplexDatatype cdt = (ComplexDatatype)dt;
+                    if(cdt.getComponents() != null) {
+                      this.visitDatatype(cdt.getComponents(), selectedIg, all);
+                      if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+                    }
+                  }
+
+                }           		
+              });
             }
           }
         }

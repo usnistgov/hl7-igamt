@@ -8,9 +8,9 @@
     </button>
   </div>
 
-<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)" style="margin-bottom: 10px" style="display: flex; flex-direction: column; justify-content: space-between">
+<div cdkDropList class="pc-list" (cdkDropListDropped)="drop($event)" style="margin-bottom: 10px" style="display: flex; flex-direction: column; justify-content: space-between">
 
-  <div *ngFor="let item of pcNodes_"  cdkDrag>
+  <div *ngFor="let item of pcNodes_ ; let i=index"  class="pc-box" cdkDrag>
     <div style="display: flex; flex-direction: column; justify-content: space-between; cursor: move !important;">
       <div style="display: flex; flex-direction: row; justify-content: center">
 
@@ -18,13 +18,13 @@
 
       <ng-template let-node pTemplate="default">
         <span>
-          <app-display-section [element]="node.data"></app-display-section>
+          <app-display-section [element]="node.data" [hideDescription]="true"></app-display-section>
         </span>
       </ng-template>
     </p-tree>
         <div style="display: flex; flex-direction: column; justify-content: center; margin: 10px;">
 
-        <button class="btn btn-sm btn-danger">
+        <button class="btn btn-sm btn-danger" (click)="delete(i)">
             <i class="fa fa-remove"></i>
           </button>
         </div>
@@ -39,10 +39,12 @@
         </ng-template>
       </p-tree>
     </div>
+      <div class="pc-placeholder" *cdkDragPlaceholder>
+      </div>
 
     <div style="display: flex; flex-direction: row; justify-content: center; margin: 10px;">
-      <button class="btn-primary">
-        <i class="fa fa-plus"></i>
+      <button class="btn-primary" (click)="addPc(i+1)">
+        <i class="fa fa-plus" ></i>
       </button>
     </div>
     </div>

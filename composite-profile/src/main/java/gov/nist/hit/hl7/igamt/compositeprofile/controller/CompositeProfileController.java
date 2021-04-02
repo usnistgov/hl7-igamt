@@ -14,6 +14,7 @@ package gov.nist.hit.hl7.igamt.compositeprofile.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,16 +31,22 @@ import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructure
 public class CompositeProfileController {
   @Autowired 
   CommonService commonService;
-  
+
   @Autowired
   CompositeProfileStructureService compositeProfileService;
-  
-  
+
+
   @RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.GET,
       produces = {"application/json"})
 
-public CompositeProfileStructure getCompositeProfile(@PathVariable("id") String id, Authentication authentication) {
-  return compositeProfileService.findById(id);
-}
+  public CompositeProfileStructure getCompositeProfile(@PathVariable("id") String id, Authentication authentication) {
+    return compositeProfileService.findById(id);
+  }
 
+  @RequestMapping(value = "/api/composite-profile", method = RequestMethod.POST,
+      produces = {"application/json"})
+  public CompositeProfileStructure save(Authentication authentication, @RequestBody CompositeProfileStructure compositeProfileStructure) {
+    return compositeProfileService.save(compositeProfileStructure);
+  }
+  
 }
