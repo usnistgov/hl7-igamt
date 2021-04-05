@@ -1,11 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
-import { IHL7v2TreeFilter, RestrictionType, RestrictionCombinator } from 'src/app/modules/shared/services/tree-filter.service';
+import { IStructureTreeSelect } from 'src/app/modules/shared/components/structure-tree/structure-tree.component';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { IPath } from 'src/app/modules/shared/models/cs.interface';
-import { IStructureTreeSelect } from 'src/app/modules/shared/components/structure-tree/structure-tree.component';
+import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
+import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from 'src/app/modules/shared/services/tree-filter.service';
+import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 
 @Component({
   selector: 'app-add-profile-component-item',
@@ -37,7 +37,7 @@ export class AddProfileComponentItemComponent {
               excludeChildren: false,
             };
           }),
-        }
+        },
       ],
     };
     console.log(this.filter);

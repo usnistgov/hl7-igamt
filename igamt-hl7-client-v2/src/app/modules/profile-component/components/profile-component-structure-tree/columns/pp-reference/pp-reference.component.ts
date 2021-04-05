@@ -1,18 +1,18 @@
-import { OnInit, Input, TemplateRef } from '@angular/core';
-import { IResourceRef } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { GroupOptions } from 'src/app/modules/shared/components/hl7-v2-tree/columns/reference/reference.component';
-import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
-import { Subscription, BehaviorSubject, combineLatest } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
-import { PropertyType } from 'src/app/modules/shared/models/save-change';
+import { Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { BehaviorSubject, combineLatest, Subscription } from 'rxjs';
+import { map, tap } from 'rxjs/operators';
+import { GroupOptions } from 'src/app/modules/shared/components/hl7-v2-tree/columns/reference/reference.component';
+import { IResourceRef } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
+import { PropertyType } from 'src/app/modules/shared/models/save-change';
 import { PPColumn } from '../pp-column.component';
 
 export abstract class PpReferenceComponent extends PPColumn<IResourceRef> implements OnInit {
 
   ref: IResourceRef;
   _options: GroupOptions;
-  all: BehaviorSubject<IDisplayElement[]>
+  all: BehaviorSubject<IDisplayElement[]>;
   selected: IDisplayElement;
   _selection: Subscription;
   editMode: boolean;
@@ -76,6 +76,5 @@ export abstract class PpReferenceComponent extends PPColumn<IResourceRef> implem
 
   ngOnInit() {
   }
-
 
 }

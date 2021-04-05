@@ -1,18 +1,7 @@
-<div class="btn-group btn-group-toggle border-gray" name="radioBasic" ngbRadioGroup style="border-radius: 5px;">
-  <label class="btn-light no-focus" ngbButtonLabel>
-  <input [queryParams]="{ type : 'USER' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="USER">
-  Item View
-  </label>
-  <label class="btn-light no-focus" ngbButtonLabel>
-  <input [queryParams]="{ type : 'PUBLISHED' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PUBLISHED">
-  Tree View
-  </label>
-</div>
-
 <div>
-  <p-treeTable [value]="nodes" [columns]="selectedColumns" [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy">
+  <p-treeTable [value]="activeNodes$ | async" [columns]="selectedColumns" (onNodeExpand)="onNodeExpand($event)" [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy">
     <ng-template pTemplate="caption">
-      <div style="display: flex; justify-content: flex-start; align-items: flex-start;">
+      <div style="display: flex; justify-content: flex-start; align-items: center;">
         <p-multiSelect
           [options]="cols"
           [(ngModel)]="selectedColumns"
@@ -26,10 +15,11 @@
     </ng-template>
     <ng-template pTemplate="header" let-columns>
       <tr>
+        <th *ngIf="!treeView" style="width: 80px;" ttReorderableColumn ttResizableColumn>
+          Path
+        </th>
         <ng-container *ngFor="let col of columns" [ngSwitch]="col.field">
-          <th *ngSwitchCase="columnTypes.PATH" style="width: 80px;" ttReorderableColumn ttResizableColumn>
-            {{col.header}}
-          </th>
+
           <th *ngSwitchCase="columnTypes.NAME" style="width: 380px;" ttReorderableColumn ttResizableColumn>
             {{col.header}}
           </th>
@@ -74,42 +64,44 @@
     </ng-template>
     <ng-template pTemplate="body" let-rowData="rowData" let-rowNode let-columns="columns">
       <tr>
+        <td *ngIf="!treeView">
+          <div  style="display: flex; justify-content: flex-start; align-items: center;">
+            <button *ngIf="!viewOnly" class="btn btn-sm btn-danger profile-component-cell-btn" style="background-color: red !important; margin-right: 5px;" (click)="clear(rowData.pathId)">
+              <i class="fa fa-trash"></i>
+            </button>
+            {{rowData.location.positionalPath}}
+          </div>
+        </td>
         <td  [ngSwitch]="col.field"  *ngFor="let col of columns; let i = index" [ngClass]="{ 'inactive' : !columnActive(col.field, rowData.pathId) }" #anchor>
-          <ng-container *ngSwitchCase="columnTypes.PATH">
-            <div style="display: flex; justify-content: flex-start; align-items: center;">
-              <button *ngIf="!viewOnly" class="btn btn-sm btn-danger profile-component-cell-btn" style="background-color: red !important; margin-right: 5px;" (click)="clear(rowData.pathId)">
-                <i class="fa fa-trash"></i>
-              </button>
-              {{rowData.location.positionalPath}}
-            </div>
-          </ng-container>
           <ng-container *ngSwitchCase="columnTypes.NAME">
             <tbody>
               <tr>
-                <td style="width: 30px;">
+                <td style="width: 30px;" *ngIf="treeView">
                   <p-treeTableToggler [rowNode]="rowNode" ></p-treeTableToggler>
                 </td>
                 <td style="white-space: normal;">
                   <app-pp-name
-              [globalViewOnly]="viewOnly"
-              [location]="rowData.pathId"
-              [position]="rowData.position"
-              [level]="rowData.level"
-              [value]="rowData.location"
-              [context]="type"
-              [items]="itemsList.value[rowData.pathId]">
-            </app-pp-name>
+                    [globalViewOnly]="viewOnly || treeView"
+                    [node]="rowNode.node"
+                    [location]="rowData.pathId"
+                    [position]="rowData.position"
+                    [level]="rowData.level"
+                    [value]="rowData.location"
+                    [context]="context?.resource"
+                    [nameType]="treeView ? 'NAME' : 'PATH' "
+                    [items]="itemsList.value[rowData.pathId]">
+                  </app-pp-name>
                 </td>
               </tr>
             </tbody>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.USAGE">
             <app-pp-usage
-              [globalViewOnly]="viewOnly"
+              [globalViewOnly]="viewOnly || treeView"
               [location]="rowData.pathId"
               [position]="rowData.position"
               [level]="rowData.level"
-              [context]="type"
+              [context]="context?.resource"
               [resource]="resource"
               [repository]="repository"
               [payload]="{
@@ -130,11 +122,11 @@
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.CARDINALITY">
             <app-pp-cardinality
-              [globalViewOnly]="viewOnly"
+              [globalViewOnly]="viewOnly || treeView"
               [location]="rowData.pathId"
               [position]="rowData.position"
               [level]="rowData.level"
-              [context]="type"
+              [context]="context?.resource"
               [value]="rowData.cardinality"
               [items]="itemsList.value[rowData.pathId]"
               (valueChange)="changeItem($event)">
@@ -143,7 +135,7 @@
           <ng-container *ngSwitchCase="columnTypes.LENGTH">
             <app-pp-length
               *ngIf="rowNode.node.leaf"
-              [globalViewOnly]="viewOnly"
+              [globalViewOnly]="viewOnly || treeView"
               [location]="rowData.pathId"
               [position]="rowData.position"
               [level]="rowData.level"
@@ -152,14 +144,14 @@
                 lengthType: rowData.lengthType
               }"
               [items]="itemsList.value[rowData.pathId]"
-              [context]="type"
+              [context]="context?.resource"
               (valueChange)="changeItem($event)">
             </app-pp-length>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.CONFLENGTH">
             <app-pp-conf-length
               *ngIf="rowNode.node.leaf"
-              [globalViewOnly]="viewOnly"
+              [globalViewOnly]="viewOnly || treeView"
               [location]="rowData.pathId"
               [position]="rowData.position"
               [level]="rowData.level"
@@ -168,20 +160,20 @@
                 lengthType: rowData.lengthType
               }"
               [items]="itemsList.value[rowData.pathId]"
-              [context]="type"
+              [context]="context?.resource"
               (valueChange)="changeItem($event)">
             </app-pp-conf-length>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.DATATYPE">
             <ng-container *ngIf="rowNode.node.$hl7V2TreeHelpers.ref$ | async as reference">
               <app-pp-datatype
-                [globalViewOnly]="viewOnly"
+                [globalViewOnly]="viewOnly || treeView"
                 [location]="rowData.pathId"
                 [position]="rowData.position"
                 [level]="rowData.level"
                 [value]="reference"
                 [items]="itemsList.value[rowData.pathId]"
-                [context]="type"
+                [context]="context?.resource"
                 (valueChange)="changeItem($event)"
                 *ngIf="reference.type === types.DATATYPE"
                 [options]="datatypes"
@@ -190,15 +182,29 @@
             </ng-container>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.SEGMENT">
-
+            <ng-container *ngIf="rowNode.node.$hl7V2TreeHelpers.ref$ | async as reference">
+              <app-pp-segment
+                [globalViewOnly]="viewOnly || treeView"
+                [location]="rowData.pathId"
+                [position]="rowData.position"
+                [level]="rowData.level"
+                [value]="reference"
+                [items]="itemsList.value[rowData.pathId]"
+                [context]="context?.resource"
+                (valueChange)="changeItem($event)"
+                *ngIf="reference.type === types.SEGMENT"
+                [options]="segments"
+                [anchor]="anchor"
+              ></app-pp-segment>
+            </ng-container>
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.VALUESET">
             <app-pp-valueset
-              [globalViewOnly]="viewOnly"
+              [globalViewOnly]="viewOnly || treeView"
               [location]="rowData.pathId"
               [position]="rowData.position"
               [level]="rowData.level"
-              [context]="type"
+              [context]="context?.resource"
               [valueSets]="valueSets"
               [resource]="resource"
               [tree]="tree"
@@ -217,11 +223,11 @@
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.CONSTANTVALUE">
             <app-pp-constant-value
-              [globalViewOnly]="viewOnly"
+              [globalViewOnly]="viewOnly || treeView"
               [location]="rowData.pathId"
               [position]="rowData.position"
               [level]="rowData.level"
-              [context]="type"
+              [context]="context?.resource"
               [value]="rowData.constantValue"
               [items]="itemsList.value[rowData.pathId]"
               *ngIf="rowNode.node.leaf"

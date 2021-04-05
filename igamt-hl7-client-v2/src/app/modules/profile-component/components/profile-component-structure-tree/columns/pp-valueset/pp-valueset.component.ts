@@ -1,24 +1,24 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { IValueSetOrSingleCodeBindings, IValueSetOrSingleCode, IValueSetOrSingleCodeDisplay } from 'src/app/modules/shared/components/hl7-v2-tree/columns/valueset/valueset.component';
-import { PPColumn } from '../pp-column.component';
-import { PropertyType } from 'src/app/modules/shared/models/save-change';
-import { IItemProperty, IPropertyValueSet, IPropertySingleCode } from 'src/app/modules/shared/models/profile.component';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import * as _ from 'lodash';
+import { combineLatest, Observable, of } from 'rxjs';
+import { filter, flatMap, map, take, tap } from 'rxjs/operators';
+import { BindingSelectorComponent, IBindingLocationInfo, ISingleCodeDisplay, IValueSetBindingDisplay } from 'src/app/modules/shared/components/binding-selector/binding-selector.component';
+import { IValueSetOrSingleCode, IValueSetOrSingleCodeBindings, IValueSetOrSingleCodeDisplay } from 'src/app/modules/shared/components/hl7-v2-tree/columns/valueset/valueset.component';
+import { IHL7v2TreeNode } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { Type } from 'src/app/modules/shared/constants/type.enum';
+import { IBindingType, InternalSingleCode, IValuesetBinding } from 'src/app/modules/shared/models/binding.interface';
+import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
+import { IItemProperty, IPropertySingleCode, IPropertyValueSet } from 'src/app/modules/shared/models/profile.component';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { PropertyType } from 'src/app/modules/shared/models/save-change';
+import { BindingService } from 'src/app/modules/shared/services/binding.service';
+import { ElementNamingService } from 'src/app/modules/shared/services/element-naming.service';
 import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
 import { PathService } from 'src/app/modules/shared/services/path.service';
-import { ElementNamingService } from 'src/app/modules/shared/services/element-naming.service';
-import { StructureElementBindingService, IBinding, IBindingContext } from 'src/app/modules/shared/services/structure-element-binding.service';
-import { take, map, tap, flatMap, filter } from 'rxjs/operators';
-import { IBindingType, InternalSingleCode, IValuesetBinding } from 'src/app/modules/shared/models/binding.interface';
-import { BindingService } from 'src/app/modules/shared/services/binding.service';
 import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
-import { Observable, of, combineLatest } from 'rxjs';
-import { IBindingLocationInfo, IValueSetBindingDisplay, ISingleCodeDisplay, BindingSelectorComponent } from 'src/app/modules/shared/components/binding-selector/binding-selector.component';
-import { Type } from 'src/app/modules/shared/constants/type.enum';
-import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
-import { IHL7v2TreeNode } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { IResource } from 'src/app/modules/shared/models/resource.interface';
-import * as _ from 'lodash';
+import { IBinding, IBindingContext, StructureElementBindingService } from 'src/app/modules/shared/services/structure-element-binding.service';
+import { PPColumn } from '../pp-column.component';
 
 export interface IValueSetOrSingleCodeBinding extends IValueSetOrSingleCode {
   context: IBindingContext;
@@ -55,14 +55,13 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
     const top = bindings.active || bindings.frozen;
     this.value$.next(top ? {
       context: top.context,
-      ...top.value
+      ...top.value,
     } : undefined);
   }
 
   display$: Observable<IValueSetOrSingleCodeDisplay & {
-    context: IBindingContext
+    context: IBindingContext,
   }>;
-
 
   constructor(
     private treeService: Hl7V2TreeService,
@@ -83,7 +82,7 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
       this.applied$.next({
         context: this.bindingType(),
         type: IBindingType.VALUESET,
-        value: (values[PropertyType.VALUESET] as IPropertyValueSet).valuesetBindings
+        value: (values[PropertyType.VALUESET] as IPropertyValueSet).valuesetBindings,
       });
     }
 
@@ -134,7 +133,7 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
         target: to.target,
         propertyKey: PropertyType.VALUESET,
       },
-      PropertyType.VALUESET
+      PropertyType.VALUESET,
     );
   }
 
@@ -152,7 +151,7 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
         target: to.target,
         propertyKey: PropertyType.SINGLECODE,
       },
-      PropertyType.SINGLECODE
+      PropertyType.SINGLECODE,
     );
   }
 
@@ -169,7 +168,7 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
             this.changeSingleCode(display.value as ISingleCodeDisplay);
             break;
         }
-      })
+      }),
     ).subscribe();
   }
 
@@ -182,8 +181,8 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
           return node.$hl7V2TreeHelpers.ref$.pipe(
             take(1),
             map((ref) => ref.name),
-          )
-        })
+          );
+        }),
       );
     } else {
       return of(this.resource.name);
@@ -238,7 +237,7 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
             }
           }),
         );
-      })
+      }),
     ).subscribe();
   }
 
@@ -325,10 +324,10 @@ export class PpValuesetComponent extends PPColumn<IValueSetOrSingleCodeBinding> 
           this.display$ = of({
             context: this.bindingContext,
             type: IBindingType.VALUESET,
-            value: []
+            value: [],
           });
         }
-      })
+      }),
     ).subscribe();
   }
 

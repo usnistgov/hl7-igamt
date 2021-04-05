@@ -1,29 +1,28 @@
-import { Component, OnInit, Input, TemplateRef } from '@angular/core';
-import { PPColumn } from '../pp-column.component';
-import { IStringValue, IHL7v2TreeNode } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { IUsageOption } from 'src/app/modules/shared/components/hl7-v2-tree/columns/usage/usage.component';
-import { Observable, of } from 'rxjs';
-import { IBinding, StructureElementBindingService, IBindingContext } from 'src/app/modules/shared/services/structure-element-binding.service';
-import { IPredicate } from 'src/app/modules/shared/models/predicate.interface';
-import { IResource } from 'src/app/modules/shared/models/resource.interface';
-import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
-import { PropertyType } from 'src/app/modules/shared/models/save-change';
+import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { IItemProperty, IPropertyUsage, IPropertyPredicate } from 'src/app/modules/shared/models/profile.component';
+import * as _ from 'lodash';
+import { Observable, of } from 'rxjs';
+import { flatMap, take, tap } from 'rxjs/operators';
+import { CsDialogComponent } from 'src/app/modules/shared/components/cs-dialog/cs-dialog.component';
+import { IUsageOption } from 'src/app/modules/shared/components/hl7-v2-tree/columns/usage/usage.component';
+import { IHL7v2TreeNode, IStringValue } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { Usage } from 'src/app/modules/shared/constants/usage.enum';
 import { Hl7Config } from 'src/app/modules/shared/models/config.class';
-import { Type } from 'src/app/modules/shared/constants/type.enum';
-import { take, tap, flatMap } from 'rxjs/operators';
+import { IPredicate } from 'src/app/modules/shared/models/predicate.interface';
+import { IItemProperty, IPropertyPredicate, IPropertyUsage } from 'src/app/modules/shared/models/profile.component';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { PropertyType } from 'src/app/modules/shared/models/save-change';
 import { ElementNamingService } from 'src/app/modules/shared/services/element-naming.service';
 import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
 import { PathService } from 'src/app/modules/shared/services/path.service';
-import * as _ from 'lodash';
-import { CsDialogComponent } from 'src/app/modules/shared/components/cs-dialog/cs-dialog.component';
-
+import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
+import { IBinding, IBindingContext, StructureElementBindingService } from 'src/app/modules/shared/services/structure-element-binding.service';
+import { PPColumn } from '../pp-column.component';
 
 export interface IUsageAndPredicate {
-  usage: IStringValue,
-  predicate: IPredicate,
+  usage: IStringValue;
+  predicate: IPredicate;
 }
 
 @Component({
@@ -59,7 +58,6 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
       predicate: top ? top.value : undefined,
     });
   }
-
 
   @Input()
   set usages({ original, config }: { original: Usage, config: Hl7Config }) {
@@ -101,10 +99,10 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
           value: (values[PropertyType.USAGE] as IPropertyUsage).usage,
         },
         predicate: undefined,
-      }
+      };
 
       if (values[PropertyType.PREDICATE]) {
-        apply.predicate = (values[PropertyType.PREDICATE] as IPropertyPredicate).predicate
+        apply.predicate = (values[PropertyType.PREDICATE] as IPropertyPredicate).predicate;
       }
 
       this.applied$.next(apply);
@@ -116,15 +114,15 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
       usage: event.value as Usage,
       propertyKey: PropertyType.USAGE,
     },
-      PropertyType.USAGE
-    )
+      PropertyType.USAGE,
+    );
     const to = this.predicateBindingLocation;
     this.onChangeForBinding<IPropertyPredicate>(to.location, to.target, undefined, PropertyType.PREDICATE);
   }
 
   predicateBindingType(): IBindingContext {
     return this.context === Type.CONFORMANCEPROFILE && this.usage.value === Usage.C ? {
-      resource: Type.CONFORMANCEPROFILE
+      resource: Type.CONFORMANCEPROFILE,
     } : {
         resource: this.type === Type.FIELD ? Type.SEGMENT : Type.DATATYPE,
         element: this.type === Type.COMPONENT ? Type.FIELD : this.type === Type.SUBCOMPONENT ? Type.COMPONENT : undefined,
@@ -146,7 +144,7 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
       usage: this.usage.value as Usage,
       propertyKey: PropertyType.USAGE,
     },
-      PropertyType.USAGE
+      PropertyType.USAGE,
     );
     if (this.predicate) {
       this.onChangeForBinding<IPropertyPredicate>(
@@ -157,7 +155,7 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
           target: this.predicateBindingLocation.target,
           propertyKey: PropertyType.PREDICATE,
         },
-        PropertyType.PREDICATE
+        PropertyType.PREDICATE,
       );
     }
   }
@@ -172,11 +170,11 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
             take(1),
             flatMap((ref) => {
               return this.repository.fetchResource(ref.type, ref.id).pipe(
-                take(1)
+                take(1),
               );
-            })
-          )
-        })
+            }),
+          );
+        }),
       );
     } else {
       return of(this.resource);
@@ -191,8 +189,8 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
           tap((pathInfo) => {
             this.openDialog('Create Predicate for ' + this.elementNamingService.getStringNameFromPathInfo(pathInfo), resource, undefined);
           }),
-        )
-      })
+        );
+      }),
     ).subscribe();
   }
 
@@ -204,8 +202,8 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
           tap((path) => {
             this.openDialog('Edit Predicate for ' + this.elementNamingService.getStringNameFromPathInfo(path), resource, predicate);
           }),
-        )
-      })
+        );
+      }),
     ).subscribe();
   }
 
@@ -233,7 +231,7 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
               target: this.predicateBindingLocation.target,
               propertyKey: PropertyType.PREDICATE,
             },
-            PropertyType.PREDICATE
+            PropertyType.PREDICATE,
           );
         }
       },

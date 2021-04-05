@@ -1,12 +1,12 @@
-import { Input, Output, EventEmitter } from "@angular/core";
-import { Type } from "src/app/modules/shared/constants/type.enum";
-import { IDocumentRef } from "src/app/modules/shared/models/abstract-domain.interface";
-import { Observable, BehaviorSubject, combineLatest } from "rxjs";
-import { PropertyType } from "src/app/modules/shared/models/save-change";
-import { MatDialog } from "@angular/material";
-import { IItemProperty } from "src/app/modules/shared/models/profile.component";
-import { map } from "rxjs/operators";
-import { IProfileComponentChange } from "../profile-component-structure-tree.component";
+import { EventEmitter, Input, Output } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { Type } from 'src/app/modules/shared/constants/type.enum';
+import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
+import { IItemProperty } from 'src/app/modules/shared/models/profile.component';
+import { PropertyType } from 'src/app/modules/shared/models/save-change';
+import { IProfileComponentChange } from '../profile-component-structure-tree.component';
 
 export abstract class PPColumn<T> {
   @Input()
@@ -54,11 +54,11 @@ export abstract class PPColumn<T> {
     }
   }
 
-  active: boolean;
-
   get items() {
     return this._items;
   }
+
+  active: boolean;
 
   @Output()
   valueChange: EventEmitter<IProfileComponentChange>;
@@ -91,7 +91,7 @@ export abstract class PPColumn<T> {
       unset: !item,
       path: location,
       root: !location,
-      target: target,
+      target,
       binding: true,
       type: propertyType,
     });
@@ -104,8 +104,8 @@ export abstract class PPColumn<T> {
     ).pipe(
       map(([dynamic, applied]) => {
         return applied || dynamic;
-      })
-    )
+      }),
+    );
   }
 
   abstract apply(values: Record<PropertyType, IItemProperty>);

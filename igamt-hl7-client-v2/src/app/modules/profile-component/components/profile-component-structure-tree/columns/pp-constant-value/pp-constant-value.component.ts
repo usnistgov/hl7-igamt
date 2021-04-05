@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { PPColumn } from '../pp-column.component';
-import { IStringValue } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { PropertyType } from 'src/app/modules/shared/models/save-change';
-import { IItemProperty, IPropertyConstantValue } from 'src/app/modules/shared/models/profile.component';
 import { MatDialog } from '@angular/material';
+import { IStringValue } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { IItemProperty, IPropertyConstantValue } from 'src/app/modules/shared/models/profile.component';
+import { PropertyType } from 'src/app/modules/shared/models/save-change';
+import { PPColumn } from '../pp-column.component';
 
 @Component({
   selector: 'app-pp-constant-value',
   templateUrl: './pp-constant-value.component.html',
-  styleUrls: ['./pp-constant-value.component.scss']
+  styleUrls: ['./pp-constant-value.component.scss'],
 })
 export class PpConstantValueComponent extends PPColumn<IStringValue> implements OnInit {
 
@@ -36,14 +36,14 @@ export class PpConstantValueComponent extends PPColumn<IStringValue> implements 
       constantValue: this.constant.value,
       propertyKey: PropertyType.CONSTANTVALUE,
     },
-      PropertyType.CONSTANTVALUE
-    )
+      PropertyType.CONSTANTVALUE,
+    );
   }
 
   apply(values: Record<PropertyType, IItemProperty>) {
     if (values[PropertyType.CONSTANTVALUE]) {
       this.applied$.next({
-        value: (values[PropertyType.CONSTANTVALUE] as IPropertyConstantValue).constantValue
+        value: (values[PropertyType.CONSTANTVALUE] as IPropertyConstantValue).constantValue,
       });
     }
   }
@@ -53,8 +53,8 @@ export class PpConstantValueComponent extends PPColumn<IStringValue> implements 
       constantValue: this.constant.value,
       propertyKey: PropertyType.CONSTANTVALUE,
     },
-      PropertyType.CONSTANTVALUE
-    )
+      PropertyType.CONSTANTVALUE,
+    );
   }
 
   clear() {

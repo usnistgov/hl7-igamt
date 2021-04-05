@@ -1,14 +1,14 @@
-import { IProfileComponentItem, IProfileComponentContext } from "../../shared/models/profile.component";
-import { AResourceRepositoryService } from "../../shared/services/resource-repository.service";
-import { ProfileComponentService, IHL7v2TreeProfileComponentNode } from "./profile-component.service";
-import { IResource } from "../../shared/models/resource.interface";
-import { BehaviorSubject, combineLatest, Observable, Subject, of } from "rxjs";
-import { IHL7v2TreeNode } from "../../shared/components/hl7-v2-tree/hl7-v2-tree.component";
-import { take, tap, flatMap, map } from "rxjs/operators";
-import { PropertyType } from "../../shared/models/save-change";
-import * as _ from "lodash";
-import { IProfileComponentChange } from "../components/profile-component-structure-tree/profile-component-structure-tree.component";
-import { ProfileComponentRefChange } from "./profile-component-ref-change.object";
+import * as _ from 'lodash';
+import { BehaviorSubject, combineLatest, Observable, of, Subject } from 'rxjs';
+import { flatMap, map, take, tap } from 'rxjs/operators';
+import { IHL7v2TreeNode } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { IProfileComponentContext, IProfileComponentItem } from '../../shared/models/profile.component';
+import { IResource } from '../../shared/models/resource.interface';
+import { PropertyType } from '../../shared/models/save-change';
+import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
+import { IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
+import { ProfileComponentRefChange } from './profile-component-ref-change.object';
+import { IHL7v2TreeProfileComponentNode, ProfileComponentService } from './profile-component.service';
 
 export class ProfileComponentItemList {
   public items$: BehaviorSubject<IProfileComponentItem[]>;
@@ -36,15 +36,17 @@ export class ProfileComponentItemList {
       this.refChangeMap.value$,
     ).pipe(
       flatMap(([its, rc]) => {
-        return this.ppService.getHL7V2ProfileComponentNode(
+        return this.ppService.getHL7V2ProfileComponentItemNode(
           resource,
           repository,
-          this.nodes$.getValue()[0].children,
+          this.nodes$.getValue(),
+          its,
+          rc,
         ).pipe(
-          tap(() => this.nodeUpdate())
+          tap(() => this.nodeUpdate()),
         );
-      })
-    )
+      }),
+    );
   }
 
   private nodeUpdate() {
@@ -52,7 +54,7 @@ export class ProfileComponentItemList {
   }
 
   getContextValue(): IProfileComponentContext {
-    return _.cloneDeep(this.context$.getValue())
+    return _.cloneDeep(this.context$.getValue());
   }
 
   getItemsValue(): IProfileComponentItem[] {
@@ -69,7 +71,7 @@ export class ProfileComponentItemList {
         take(1),
         map((ref) => {
           this.refChangeMap.insert(change.path, ref);
-        })
+        }),
       ).subscribe();
     }
 
@@ -83,7 +85,7 @@ export class ProfileComponentItemList {
       ...this.getItemsValue(),
       ...items,
     ];
-    this.changeItemList(itemsList)
+    this.changeItemList(itemsList);
   }
 
   removeItem(path: string) {

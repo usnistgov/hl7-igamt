@@ -1,16 +1,15 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { LengthType } from 'src/app/modules/shared/constants/length-type.enum';
-import { ILengthRange } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { PPColumn } from '../pp-column.component';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
+import { ILengthRange } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { LengthType } from 'src/app/modules/shared/constants/length-type.enum';
+import { IItemProperty, IPropertyLengthMax, IPropertyLengthMin, IPropertyLengthType } from 'src/app/modules/shared/models/profile.component';
 import { PropertyType } from 'src/app/modules/shared/models/save-change';
-import { IPropertyLengthMin, IPropertyLengthMax, IPropertyLengthType, IItemProperty } from 'src/app/modules/shared/models/profile.component';
+import { PPColumn } from '../pp-column.component';
 
 export interface ILength {
   length: ILengthRange;
   lengthType: LengthType;
 }
-
 
 @Component({
   selector: 'app-pp-length',
@@ -28,7 +27,6 @@ export class PpLengthComponent extends PPColumn<ILength> implements OnInit {
       ...value,
     };
   }
-
 
   constructor(dialog: MatDialog) {
     super(
@@ -97,9 +95,9 @@ export class PpLengthComponent extends PPColumn<ILength> implements OnInit {
       const lengthType: LengthType = (values[PropertyType.LENGTHTYPE] as IPropertyLengthType).type;
       this.applied$.next({
         length: {
-          min, max
+          min, max,
         },
-        lengthType
+        lengthType,
       });
     }
   }
@@ -109,13 +107,13 @@ export class PpLengthComponent extends PPColumn<ILength> implements OnInit {
       min: this.val.length.min,
       propertyKey: PropertyType.LENGTHMIN,
     },
-      PropertyType.LENGTHMIN
+      PropertyType.LENGTHMIN,
     );
     this.onChange<IPropertyLengthMax>({
       max: this.val.length.max,
       propertyKey: PropertyType.LENGTHMAX,
     },
-      PropertyType.LENGTHMAX
+      PropertyType.LENGTHMAX,
     );
 
     if (!this.confLenghtIsActive()) {
@@ -123,7 +121,7 @@ export class PpLengthComponent extends PPColumn<ILength> implements OnInit {
         type: LengthType.Length,
         propertyKey: PropertyType.LENGTHTYPE,
       },
-        PropertyType.LENGTHTYPE
+        PropertyType.LENGTHTYPE,
       );
 
       this.applied$.next({

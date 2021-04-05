@@ -1,9 +1,9 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { PPColumn } from '../pp-column.component';
-import { PropertyType } from 'src/app/modules/shared/models/save-change';
-import { IItemProperty, IPropertyLengthType, IPropertyConfLength } from 'src/app/modules/shared/models/profile.component';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { LengthType } from 'src/app/modules/shared/constants/length-type.enum';
+import { IItemProperty, IPropertyConfLength, IPropertyLengthType } from 'src/app/modules/shared/models/profile.component';
+import { PropertyType } from 'src/app/modules/shared/models/save-change';
+import { PPColumn } from '../pp-column.component';
 
 export interface IConfLength {
   confLength: string;
@@ -85,7 +85,7 @@ export class PpConfLengthComponent extends PPColumn<IConfLength> implements OnIn
       const lengthType: LengthType = (values[PropertyType.LENGTHTYPE] as IPropertyLengthType).type;
       this.applied$.next({
         confLength,
-        lengthType
+        lengthType,
       });
     }
   }
@@ -95,7 +95,7 @@ export class PpConfLengthComponent extends PPColumn<IConfLength> implements OnIn
       confLength: this.val.confLength,
       propertyKey: PropertyType.CONFLENGTH,
     },
-      PropertyType.CONFLENGTH
+      PropertyType.CONFLENGTH,
     );
 
     if (!this.lenghtIsActive()) {
@@ -103,7 +103,7 @@ export class PpConfLengthComponent extends PPColumn<IConfLength> implements OnIn
         type: LengthType.ConfLength,
         propertyKey: PropertyType.LENGTHTYPE,
       },
-        PropertyType.LENGTHTYPE
+        PropertyType.LENGTHTYPE,
       );
 
       this.applied$.next({

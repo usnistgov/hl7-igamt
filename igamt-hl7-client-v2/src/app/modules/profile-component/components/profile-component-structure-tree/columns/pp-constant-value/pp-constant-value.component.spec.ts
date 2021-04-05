@@ -8,7 +8,7 @@ describe('PpConstantValueComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PpConstantValueComponent ]
+      declarations: [ PpConstantValueComponent ],
     })
     .compileComponents();
   }));

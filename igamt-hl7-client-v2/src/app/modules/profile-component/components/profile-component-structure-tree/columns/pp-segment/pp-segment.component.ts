@@ -1,24 +1,24 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { map, take } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 import { GroupOptions } from 'src/app/modules/shared/components/hl7-v2-tree/columns/reference/reference.component';
 import { ActiveStatus } from 'src/app/modules/shared/models/abstract-domain.interface';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
-import { IItemProperty, IPropertyDatatype } from 'src/app/modules/shared/models/profile.component';
+import { IItemProperty, IPropertyRef } from 'src/app/modules/shared/models/profile.component';
 import { PropertyType } from 'src/app/modules/shared/models/save-change';
-import { AResourceRepositoryService, StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
+import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { PpReferenceComponent } from '../pp-reference/pp-reference.component';
 
 @Component({
-  selector: 'app-pp-datatype',
+  selector: 'app-pp-segment',
   templateUrl: '../pp-reference/pp-reference.component.html',
   styleUrls: ['../pp-reference/pp-reference.component.scss'],
 })
-export class PpDatatypeComponent extends PpReferenceComponent implements OnInit {
+export class PpSegmentComponent extends PpReferenceComponent implements OnInit {
 
   constructor(dialog: MatDialog, private pcService: ProfileComponentService, private repository: StoreResourceRepositoryService) {
-    super(PropertyType.DATATYPE, dialog);
+    super(PropertyType.SEGMENTREF, dialog);
   }
 
   filter(opts: IDisplayElement[], selected: IDisplayElement): GroupOptions {
@@ -50,20 +50,20 @@ export class PpDatatypeComponent extends PpReferenceComponent implements OnInit 
   }
 
   referenceChanged(event: IDisplayElement) {
-    this.onChange<IPropertyDatatype>({
-      datatypeId: event.id,
-      propertyKey: PropertyType.DATATYPE,
+    this.onChange<IPropertyRef>({
+      ref: event.id,
+      propertyKey: PropertyType.SEGMENTREF,
     },
-      PropertyType.DATATYPE,
+      PropertyType.SEGMENTREF,
     );
     this.selected = event;
     this.toggleEdit();
   }
 
   apply(values: Record<PropertyType, IItemProperty>) {
-    if (values[PropertyType.DATATYPE]) {
-      const dt = values[PropertyType.DATATYPE] as IPropertyDatatype;
-      this.pcService.getResourceRef(dt, this.repository).pipe(
+    if (values[PropertyType.SEGMENTREF]) {
+      const sref = values[PropertyType.SEGMENTREF] as IPropertyRef;
+      this.pcService.getResourceRef(sref, this.repository).pipe(
         map((ref) => {
           this.applied$.next(ref);
         }),
@@ -72,16 +72,16 @@ export class PpDatatypeComponent extends PpReferenceComponent implements OnInit 
   }
 
   activate() {
-    this.onChange<IPropertyDatatype>({
-      datatypeId: this.selected.id,
-      propertyKey: PropertyType.DATATYPE,
+    this.onChange<IPropertyRef>({
+      ref: this.selected.id,
+      propertyKey: PropertyType.SEGMENTREF,
     },
-      PropertyType.DATATYPE,
+      PropertyType.SEGMENTREF,
     );
   }
 
   clear() {
-    this.onChange<IPropertyDatatype>(undefined, PropertyType.DATATYPE);
+    this.onChange<IPropertyRef>(undefined, PropertyType.SEGMENTREF);
     this.applied$.next(undefined);
   }
 

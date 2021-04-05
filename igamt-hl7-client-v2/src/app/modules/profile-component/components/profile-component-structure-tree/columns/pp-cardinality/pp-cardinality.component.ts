@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { PPColumn } from '../pp-column.component';
-import { PropertyType } from 'src/app/modules/shared/models/save-change';
 import { MatDialog } from '@angular/material';
 import { ICardinalityRange } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { IItemProperty, IPropertyCardinalityMax, IPropertyCardinalityMin } from 'src/app/modules/shared/models/profile.component';
+import { PropertyType } from 'src/app/modules/shared/models/save-change';
+import { PPColumn } from '../pp-column.component';
 
 @Component({
   selector: 'app-pp-cardinality',
@@ -32,7 +32,7 @@ export class PpCardinalityComponent extends PPColumn<ICardinalityRange> implemen
     if (values[PropertyType.CARDINALITYMIN] && values[PropertyType.CARDINALITYMAX]) {
       this.applied$.next({
         min: (values[PropertyType.CARDINALITYMIN] as IPropertyCardinalityMin).min,
-        max: (values[PropertyType.CARDINALITYMAX] as IPropertyCardinalityMax).max
+        max: (values[PropertyType.CARDINALITYMAX] as IPropertyCardinalityMax).max,
       });
     }
   }
@@ -42,15 +42,15 @@ export class PpCardinalityComponent extends PPColumn<ICardinalityRange> implemen
       max: this.range.max,
       propertyKey: PropertyType.CARDINALITYMAX,
     },
-      PropertyType.CARDINALITYMAX
+      PropertyType.CARDINALITYMAX,
     );
 
     this.onChange<IPropertyCardinalityMin>({
       min: this.range.min,
       propertyKey: PropertyType.CARDINALITYMIN,
     },
-      PropertyType.CARDINALITYMIN
-    )
+      PropertyType.CARDINALITYMIN,
+    );
   }
 
   clear() {
@@ -68,8 +68,8 @@ export class PpCardinalityComponent extends PPColumn<ICardinalityRange> implemen
       min: value,
       propertyKey: PropertyType.CARDINALITYMIN,
     },
-      PropertyType.CARDINALITYMIN
-    )
+      PropertyType.CARDINALITYMIN,
+    );
   }
 
   maxChange(value: string) {
@@ -77,10 +77,9 @@ export class PpCardinalityComponent extends PPColumn<ICardinalityRange> implemen
       max: value,
       propertyKey: PropertyType.CARDINALITYMAX,
     },
-      PropertyType.CARDINALITYMAX
-    )
+      PropertyType.CARDINALITYMAX,
+    );
   }
-
 
   ngOnInit() {
   }

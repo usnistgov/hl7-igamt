@@ -27,7 +27,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
   structure: IHL7v2TreeNode[];
   treeSubscriptions: Subscription[] = [];
   s_resource: Subscription;
-  _selectionMode: string = 'single';
+  _selectionMode = 'single';
   @Input()
   multiple = false;
   @Output()
@@ -48,7 +48,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
       this.selectedNode = [];
     }
     this._selectionMode = sm;
-  };
+  }
   get selectionMode() {
     return this._selectionMode;
   }

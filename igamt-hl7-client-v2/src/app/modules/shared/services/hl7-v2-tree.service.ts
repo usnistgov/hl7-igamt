@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subscription, EMPTY, of } from 'rxjs';
-import { filter, map, mergeMap, switchMap, take, tap, toArray, flatMap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, EMPTY, from, Observable, of, ReplaySubject, Subscription } from 'rxjs';
+import { filter, flatMap, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
 import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { Usage } from '../constants/usage.enum';
 import { IStructureElementBinding } from '../models/binding.interface';
 import { IConformanceProfile, IGroup, IHL7MessageProfile, IMessageStructure, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
+import { IPath } from '../models/cs.interface';
 import { IComponent, IDatatype } from '../models/datatype.interface';
 import { IResource } from '../models/resource.interface';
 import { IChangeLog, ILocationChangeLog } from '../models/save-change';
@@ -16,7 +17,6 @@ import { BindingService } from './binding.service';
 import { PathService } from './path.service';
 import { AResourceRepositoryService, IRefData, IRefDataInfo } from './resource-repository.service';
 import { IBinding, IBindingContext, StructureElementBindingService } from './structure-element-binding.service';
-import { IPath } from '../models/cs.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -84,6 +84,10 @@ export class Hl7V2TreeService {
   }
 
   loadNodeChildren(node: IHL7v2TreeNode, repository: AResourceRepositoryService, refChange?: IResourceRef): Observable<IHL7v2TreeNode[]> {
+    if (!node.data.ref) {
+      return of(node.children);
+    }
+
     const add = (nodes: IHL7v2TreeNode[]) => {
       if (nodes && nodes.length > 0) {
         node.children = nodes;
@@ -93,7 +97,7 @@ export class Hl7V2TreeService {
         node.leaf = true;
       }
       return nodes;
-    }
+    };
 
     return (refChange ? of(refChange) : node.data.ref).pipe(
       take(1),
@@ -116,7 +120,7 @@ export class Hl7V2TreeService {
             }
           }),
         );
-      })
+      }),
     );
   }
 
@@ -131,7 +135,9 @@ export class Hl7V2TreeService {
         node.leaf = true;
       }
       node.$hl7V2TreeHelpers.children$.next(node.children);
-      then ? then() : {};
+      if (then) {
+        then();
+      }
     };
   }
 
@@ -623,10 +629,10 @@ export class Hl7V2TreeService {
             // load tree node children
             return this.loadNodeChildren(node, repository).pipe(
               take(1),
-              flatMap((children) => {
+              flatMap((elms) => {
                 // recursive call using the children list and the child path
-                return inner(children, path.child);
-              })
+                return inner(elms, path.child);
+              }),
             );
           } else {
             // If current node in path has no children, it means that we arrived at destination
@@ -641,6 +647,5 @@ export class Hl7V2TreeService {
     };
     return inner(children, fullPath);
   }
-
 
 }

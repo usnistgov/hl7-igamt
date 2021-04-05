@@ -14,6 +14,7 @@ import { PpConstantValueComponent } from './components/profile-component-structu
 import { PpDatatypeComponent } from './components/profile-component-structure-tree/columns/pp-datatype/pp-datatype.component';
 import { PpLengthComponent } from './components/profile-component-structure-tree/columns/pp-length/pp-length.component';
 import { PpNameComponent } from './components/profile-component-structure-tree/columns/pp-name/pp-name.component';
+import { PpSegmentComponent } from './components/profile-component-structure-tree/columns/pp-segment/pp-segment.component';
 import { PpUsageComponent } from './components/profile-component-structure-tree/columns/pp-usage/pp-usage.component';
 import { PpValuesetComponent } from './components/profile-component-structure-tree/columns/pp-valueset/pp-valueset.component';
 import { ProfileComponentStructureTreeComponent } from './components/profile-component-structure-tree/profile-component-structure-tree.component';
@@ -21,7 +22,7 @@ import { SegmentContextStructureEditorComponent } from './components/segment-con
 import {ProfileComponentRoutingModule} from './profile-component-routing.module';
 
 @NgModule({
-  declarations: [ ProfileComponentMetadataComponent, SegmentContextStructureEditorComponent, MessageContextStructureEditorComponent, AddProfileComponentItemComponent, ProfileComponentStructureTreeComponent, PpNameComponent, PpUsageComponent, PpConstantValueComponent, PpCardinalityComponent, PpLengthComponent, PpConfLengthComponent, PpDatatypeComponent, PpValuesetComponent],
+  declarations: [ ProfileComponentMetadataComponent, SegmentContextStructureEditorComponent, MessageContextStructureEditorComponent, AddProfileComponentItemComponent, ProfileComponentStructureTreeComponent, PpNameComponent, PpUsageComponent, PpConstantValueComponent, PpCardinalityComponent, PpLengthComponent, PpConfLengthComponent, PpDatatypeComponent, PpValuesetComponent, PpSegmentComponent],
   imports: [
     CommonModule,
     ProfileComponentRoutingModule,

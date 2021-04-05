@@ -1,22 +1,25 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import * as _ from 'lodash';
-import { Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subscription } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { IPathInfo } from 'src/app/modules/shared/services/element-naming.service';
+import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
 import {
   ColumnOptions,
   HL7v2TreeColumnType,
-  IHL7v2TreeNodeData,
   IHL7v2TreeNode,
+  IHL7v2TreeNodeData,
 } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IItemProperty, IProfileComponentItem, IPropertyBinding, IProfileComponentBinding } from '../../../shared/models/profile.component';
+import { IItemProperty, IProfileComponentBinding, IProfileComponentItem, IPropertyBinding } from '../../../shared/models/profile.component';
 import { IChange, PropertyType } from '../../../shared/models/save-change';
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
-import { IPathInfo } from 'src/app/modules/shared/services/element-naming.service';
-import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { ProfileComponentRefChange } from '../../services/profile-component-ref-change.object';
 import { ProfileComponentStructureTreeItemMap } from '../../services/profile-component-structure-tree-item-map.object';
 
 export interface IHL7V2ProfileComponentItemNode {
@@ -25,7 +28,7 @@ export interface IHL7V2ProfileComponentItemNode {
     name: string;
     positionalPath: string;
     pathInfo: IPathInfo;
-  }
+  };
   data: IHL7v2TreeNodeData;
 }
 
@@ -107,10 +110,34 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   }
 
   @Input()
-  tree: IHL7v2TreeNode[];
+  set treeView(tv: boolean) {
+    this.treeView$.next(tv);
+  }
+
+  get treeView() {
+    return this.treeView$.getValue();
+  }
 
   @Input()
-  nodes: IHL7V2ProfileComponentItemNode[];
+  set tree(tree: IHL7v2TreeNode[]) {
+    this.tree$.next(tree);
+  }
+
+  get tree() {
+    return this.tree$.getValue();
+  }
+
+  @Input()
+  refChangeMap: ProfileComponentRefChange;
+
+  @Input()
+  set nodes(nodes: IHL7V2ProfileComponentItemNode[]) {
+    this.nodes$.next(nodes);
+  }
+
+  get nodes() {
+    return this.nodes$.getValue();
+  }
 
   @Output()
   changes: EventEmitter<IProfileComponentChange>;
@@ -118,7 +145,6 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   removeItem: EventEmitter<string>;
 
   changes$: Observable<IChange>;
-  type: Type;
   cols: ColumnOptions;
   _resource: IResource;
   selectedColumns: ColumnOptions;
@@ -126,16 +152,37 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   context: IBindingContext;
   treeSubscriptions: Subscription[];
   itemsList: ProfileComponentStructureTreeItemMap;
+  activeNodes$: Observable<Array<IHL7V2ProfileComponentItemNode | IHL7v2TreeNode>>;
+  nodes$: BehaviorSubject<IHL7V2ProfileComponentItemNode[]>;
+  tree$: BehaviorSubject<IHL7v2TreeNode[]>;
+  treeView$: BehaviorSubject<boolean>;
 
   readonly trackBy = (index, item) => {
     return item.id;
   }
 
-  constructor() {
+  constructor(
+    private treeService: Hl7V2TreeService,
+  ) {
     this.treeSubscriptions = [];
     this.treeExpandedNodes = [];
     this.changes = new EventEmitter<IProfileComponentChange>();
     this.removeItem = new EventEmitter<string>();
+    this.activeNodes$ = new BehaviorSubject([]);
+    this.nodes$ = new BehaviorSubject([]);
+    this.tree$ = new BehaviorSubject([]);
+    this.treeView$ = new BehaviorSubject(false);
+
+    this.activeNodes$ = combineLatest([
+      this.treeView$,
+      this.tree$,
+      this.nodes$,
+    ]).pipe(
+      map(([tv, tree, nodes]) => {
+        if (tv) { return tree[0].children; }
+        return this.prune(nodes);
+      }),
+    );
   }
 
   columnActive(type: HL7v2TreeColumnType, location: string) {
@@ -158,6 +205,8 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
         return this.itemsList.has(location, PropertyType.DATATYPE);
       case HL7v2TreeColumnType.VALUESET:
         return this.itemsList.has(location, PropertyType.VALUESET) || this.itemsList.has(location, PropertyType.SINGLECODE);
+      case HL7v2TreeColumnType.SEGMENT:
+        return this.itemsList.has(location, PropertyType.SEGMENTREF);
       default:
         return false;
     }
@@ -170,6 +219,21 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
 
   clear(pathId: string) {
     this.removeItem.next(pathId);
+  }
+
+  onNodeExpand({ node }: { node: IHL7v2TreeNode }) {
+    console.log(this.refChangeMap.value$, node.data.pathId);
+    const ref = this.refChangeMap ? this.refChangeMap.getPath(node.data.pathId) : node.data.ref.getValue();
+    this.treeService.loadNodeChildren(node, this.repository, ref).pipe(
+      take(1),
+    ).subscribe();
+  }
+
+  prune(nodes: Array<IHL7V2ProfileComponentItemNode | IHL7v2TreeNode>) {
+    return (nodes || []).map((n) => ({
+      ...n,
+      children: [],
+    }));
   }
 
   ngOnDestroy() {

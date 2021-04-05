@@ -1,29 +1,28 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, combineLatest, of, throwError, EMPTY } from 'rxjs';
+import * as _ from 'lodash';
+import { combineLatest, EMPTY, Observable, of } from 'rxjs';
+import { flatMap, map, take } from 'rxjs/operators';
+import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { Type } from '../../shared/constants/type.enum';
+import { IPath } from '../../shared/models/cs.interface';
 import {
-  IProfileComponent,
-  IProfileComponentContext,
   IItemProperty,
+  IProfileComponent,
+  IProfileComponentBinding,
+  IProfileComponentContext,
   IProfileComponentItem,
+  IPropertyBinding,
   IPropertyDatatype,
   IPropertyRef,
-  IPropertyBinding,
-  IProfileComponentBinding,
 } from '../../shared/models/profile.component';
-import { PropertyType } from '../../shared/models/save-change';
-import * as _ from 'lodash';
 import { IResource } from '../../shared/models/resource.interface';
-import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { PropertyType } from '../../shared/models/save-change';
+import { ElementNamingService, IPathInfo } from '../../shared/services/element-naming.service';
 import { Hl7V2TreeService } from '../../shared/services/hl7-v2-tree.service';
 import { PathService } from '../../shared/services/path.service';
-import { ElementNamingService, IPathInfo } from '../../shared/services/element-naming.service';
 import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
-import { map, flatMap, take, mapTo, tap, finalize } from 'rxjs/operators';
-import { Type } from '../../shared/constants/type.enum';
-import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
 import { IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
-import { IPath } from '../../shared/models/cs.interface';
 import { ITreeStructureProfileComponentPermutation } from './profile-component-ref-change.object';
 
 export interface IHL7v2TreeProfileComponentNode extends IHL7v2TreeNode {
@@ -68,12 +67,23 @@ export class ProfileComponentService {
 
   applyChange(change: IProfileComponentChange, context: IProfileComponentContext) {
     if (change.binding) {
+      // --- Initialize lists
       if (!context.profileComponentBindings) {
         context.profileComponentBindings = {
           contextBindings: [],
           itemBindings: [],
-        }
+        };
       }
+
+      if (!context.profileComponentBindings.contextBindings) {
+        context.profileComponentBindings.contextBindings = [];
+      }
+
+      if (!context.profileComponentBindings.itemBindings) {
+        context.profileComponentBindings.itemBindings = [];
+      }
+      // ---
+
       return this.applyBindingChange(change, context.profileComponentBindings);
     }
     return this.applyItemChange(change, context.profileComponentItems);
@@ -89,7 +99,7 @@ export class ProfileComponentService {
     if (!item) {
       item = {
         path: change.path,
-        bindings: []
+        bindings: [],
       };
       binding.itemBindings.push(item);
     }
@@ -101,7 +111,7 @@ export class ProfileComponentService {
     const propId = list.findIndex((elm) => elm.target === change.target);
     // Remove
     if (propId !== -1) {
-      list.splice(propId, 1)
+      list.splice(propId, 1);
     }
 
     // Add
@@ -118,19 +128,19 @@ export class ProfileComponentService {
   applyItemChange(change: IProfileComponentChange, items: IProfileComponentItem[]) {
     const item = items.find((elm) => elm.path === change.path);
     // If no item found, it can't be changed
-    if (!item) return;
+    if (!item) { return; }
     const propId = item.itemProperties.findIndex((prop) => prop.propertyKey === change.type);
 
     // Remove
     if (propId !== -1) {
-      item.itemProperties.splice(propId, 1)
+      item.itemProperties.splice(propId, 1);
     }
 
     // Add
     if (!change.unset) {
       item.itemProperties = [
         ...item.itemProperties,
-        change.property
+        change.property,
       ];
     }
   }
@@ -147,11 +157,12 @@ export class ProfileComponentService {
           id,
           name: refData[id].name,
           version: refData[id].version,
-        }
-      })
+        };
+      }),
     );
   }
 
+  // tslint:disable-next-line:cognitive-complexity
   getNodeByPathAndRef(children: IHL7v2TreeNode[], fullPath: IPath, repository: AResourceRepositoryService, structPermutations?: Record<string, ITreeStructureProfileComponentPermutation>): Observable<IHL7v2TreeNode> {
     const inner = (nodes: IHL7v2TreeNode[], path: IPath, changeRef?: ITreeStructureProfileComponentPermutation) => {
       if (path) {
@@ -167,10 +178,10 @@ export class ProfileComponentService {
             // load tree node children
             return this.treeService.loadNodeChildren(node, repository, changeRef ? changeRef.ref : undefined).pipe(
               take(1),
-              flatMap((children) => {
+              flatMap((elms) => {
                 // recursive call using the children list and the child path
-                return inner(children, path.child, changeRef && changeRef.children ? changeRef.children[path.child.elementId] : undefined);
-              })
+                return inner(elms, path.child, changeRef && changeRef.children ? changeRef.children[path.child.elementId] : undefined);
+              }),
             );
           } else {
             // If current node in path has no children, it means that we arrived at destination
@@ -186,52 +197,16 @@ export class ProfileComponentService {
     return inner(children, fullPath, structPermutations ? structPermutations[fullPath.elementId] : undefined);
   }
 
-  getHL7V2ProfileComponentNode(
-    resource: IResource,
-    repository: AResourceRepositoryService,
-    nodes: IHL7v2TreeNode[],
-  ): Observable<IHL7v2TreeProfileComponentNode[]> {
-    return combineLatest(
-      nodes.map((node) => {
-        const path = this.pathService.getPathFromPathId(node.data.pathId);
-        return this.elementNamingService.getPathInfoFromPath(resource, repository, path).pipe(
-          take(1),
-          map((pathInfo) => {
-            const name = this.elementNamingService.getStringNameFromPathInfo(pathInfo);
-            return {
-              ...node,
-              data: {
-                ...node.data,
-                location: {
-                  name,
-                  positionalPath: this.getPositionalPath(pathInfo.child),
-                  pathInfo: this.getLeaf(pathInfo),
-                }
-              }
-            };
-          })
-        );
-      })
-    ).pipe(
-      map((list) => {
-        list.sort((a, b) => {
-          return this.comparePositionalId(a.data.location.positionalPath, b.data.location.positionalPath);
-        })
-        return list;
-      })
-    );
-  }
-
   getHL7V2ProfileComponentItemNode(
     resource: IResource,
     repository: AResourceRepositoryService,
     nodes: IHL7v2TreeNode[],
     items: IProfileComponentItem[],
-    refChanges: Record<string, ITreeStructureProfileComponentPermutation>
+    refChanges: Record<string, ITreeStructureProfileComponentPermutation>,
   ): Observable<IHL7v2TreeProfileComponentNode[]> {
     return items.length > 0 ? combineLatest(
       items.map((item) => {
-        const path = this.pathService.getPathFromPathId(item.path)
+        const path = this.pathService.getPathFromPathId(item.path);
         return this.getNodeByPathAndRef(
           nodes[0].children,
           path,
@@ -239,7 +214,6 @@ export class ProfileComponentService {
           refChanges,
         ).pipe(
           flatMap((node) => {
-            const path = this.pathService.getPathFromPathId(node.data.pathId);
             return this.elementNamingService.getPathInfoFromPath(resource, repository, path).pipe(
               take(1),
               map((pathInfo) => {
@@ -252,26 +226,27 @@ export class ProfileComponentService {
                       name,
                       positionalPath: this.getPositionalPath(pathInfo.child),
                       pathInfo: this.getLeaf(pathInfo),
-                    }
-                  }
+                    },
+                  },
                 };
-              })
+              }),
             );
-          })
+          }),
         );
-      })
+      }),
     ).pipe(
       map((list) => {
         list.sort((a, b) => {
           return this.comparePositionalId(a.data.location.positionalPath, b.data.location.positionalPath);
-        })
+        });
         return list;
-      })
+      }),
     ) : of([]);
   }
 
   getPositionalPath(pathInfo: IPathInfo): string {
-    return `${pathInfo.position}${pathInfo.child ? `.${this.getPositionalPath(pathInfo.child)}` : ''}`;
+    const child = pathInfo.child ? `.${this.getPositionalPath(pathInfo.child)}` : '';
+    return `${pathInfo.position}${child}`;
   }
 
   getLeaf(pathInfo: IPathInfo): IPathInfo {
@@ -283,16 +258,16 @@ export class ProfileComponentService {
   }
 
   comparePositionalId(p1: string, p2: string): number {
-    const p1List = p1.split(".").map(Number);
-    const p2List = p2.split(".").map(Number);
+    const p1List = p1.split('.').map(Number);
+    const p2List = p2.split('.').map(Number);
     const size = Math.min(p1List.length, p2.length);
     for (let i = 0; i < size; i++) {
-      if (p1List[i] > p2List[i]) return 1;
-      if (p1List[i] < p2List[i]) return -1;
+      if (p1List[i] > p2List[i]) { return 1; }
+      if (p1List[i] < p2List[i]) { return -1; }
     }
 
-    if (p1List.length > p2List.length) return 1;
-    if (p1List.length < p2List.length) return -1;
+    if (p1List.length > p2List.length) { return 1; }
+    if (p1List.length < p2List.length) { return -1; }
     return 0;
   }
 }
