@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.nist.hit.hl7.auth.util.requests.AdminUserRequest;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
 import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
 import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage.Status;
@@ -112,7 +113,19 @@ public class AuthenticationController {
 
     return authService.getCurrentUser(username, req);
   }
-
+  
+  @RequestMapping(value = "api/adminUpdate", method = RequestMethod.POST)
+  public ConnectionResponseMessage<UserResponse> updatePendingAdmin(@RequestBody AdminUserRequest requestPara, HttpServletRequest req)
+      throws AuthenticationException {
+    try {
+      return authService.updatePendingAdmin(requestPara, req);
+    } catch (AuthenticationException e) {
+      throw e;
+    } catch (Exception e) {
+      throw e;
+    }
+  }
+  
   @RequestMapping(value = "/api/user", method = RequestMethod.POST)
   public ConnectionResponseMessage<UserResponse> update(@RequestBody RegistrationRequest user, HttpServletRequest req)
       throws AuthenticationException {
@@ -131,12 +144,12 @@ public class AuthenticationController {
   @RequestMapping(value = "api/password/reset", method = RequestMethod.POST)
   @ResponseBody
   public ConnectionResponseMessage<PasswordResetTokenResponse> resetPaswordRequest(
-      HttpServletRequest req, HttpServletResponse res, @RequestBody String email)
+      HttpServletRequest req, HttpServletResponse res, @RequestBody String username)
       throws AuthenticationException {
     try {
 
       ConnectionResponseMessage<PasswordResetTokenResponse> response =
-          authService.requestPasswordChange(email);
+          authService.requestPasswordChange(username);
       if (response.getData() instanceof PasswordResetTokenResponse) {
         PasswordResetTokenResponse responseData = (PasswordResetTokenResponse) (response.getData());
         emailService.sendResetTokenUrl(responseData.getFullName(), responseData.getUsername(),

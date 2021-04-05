@@ -15,8 +15,10 @@ export class UserManagementHeaderComponent implements OnInit {
 
   loggedIn: Observable<boolean>;
   username: Observable<string>;
+  isAdmin: Observable<boolean>;
 
   constructor(private store: Store<IAuthenticationState>, private router: Router) {
+    this.isAdmin = store.select(fromAuth.selectIsAdmin);
     this.loggedIn = store.select(fromAuth.selectIsLoggedIn);
     this.username = store.select(fromAuth.selectUsername);
   }
@@ -27,6 +29,10 @@ export class UserManagementHeaderComponent implements OnInit {
 
   userProfile() {
     this.router.navigateByUrl('user-profile');
+  }
+
+  userManagement() {
+    this.router.navigateByUrl('user-management');
   }
 
   ngOnInit() {
