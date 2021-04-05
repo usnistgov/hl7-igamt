@@ -55,4 +55,13 @@ public class SubContext {
     public void setDescription(String description) {
         this.description = description;
     }
+
+	@Override
+	public String toString() {
+		return "SubContext [path=" + path + ", occurenceType=" + occurenceType + ", occurenceValue=" + occurenceValue
+				+ ", occurenceIdPath=" + occurenceIdPath + ", occurenceLocationStr=" + occurenceLocationStr
+				+ ", description=" + description + "]";
+	}
+    
+    
 }
