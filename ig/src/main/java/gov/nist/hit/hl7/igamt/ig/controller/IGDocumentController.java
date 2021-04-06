@@ -1342,7 +1342,7 @@ public class IGDocumentController extends BaseController {
 
     Ig ig = findIgById(id);
     String cUser = authentication.getPrincipal().toString();
-    if(ig.getUsername() != null) {
+    if(ig.getUsername() != null || this.commonService.isAdmin(authentication)) {
 
       if(!ig.getUsername().equals(cUser)) {
         if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(cUser)) {
