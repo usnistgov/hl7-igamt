@@ -8,7 +8,7 @@ describe('FileExcelInputComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FileExcelInputComponent ]
+      declarations: [ FileExcelInputComponent ],
     })
     .compileComponents();
   }));

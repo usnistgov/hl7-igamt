@@ -8,7 +8,7 @@ describe('IgGeneralDisplayConfigurationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IgGeneralDisplayConfigurationComponent ]
+      declarations: [ IgGeneralDisplayConfigurationComponent ],
     })
     .compileComponents();
   }));

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { ImportDialogComponent } from 'src/app/modules/co-constraints/components/import-dialog/import-dialog.component';
 import { CoConstraintGroupEditEffects } from '../../root-store/co-constraint-group-edit/co-constraint-group-edit.effects';
 import { SegmentService } from '../segment/services/segment.service';
 import { SharedModule } from '../shared/shared.module';
@@ -17,7 +18,6 @@ import { DataHeaderDialogComponent } from './components/data-header-dialog/data-
 import { NarrativeHeaderDialogComponent } from './components/narrative-header-dialog/narrative-header-dialog.component';
 import { SegmentCoConstraintBindingComponent } from './components/segment-co-constraint-binding/segment-co-constraint-binding.component';
 import { CoConstraintGroupService } from './services/co-constraint-group.service';
-import { ImportDialogComponent } from 'src/app/modules/co-constraints/components/import-dialog/import-dialog.component';
 
 @NgModule({
   declarations: [ImportDialogComponent, CoConstraintTableComponent, DataHeaderDialogComponent, NarrativeHeaderDialogComponent, CoConstraintGroupEditorComponent, CoConstraintBindingDialogComponent, CoConstraintGroupSelectorComponent, SegmentCoConstraintBindingComponent, ContextCoConstraintBindingComponent, CoConstraintCrossRefComponent, CoConstraintGroupDeltaEditorComponent],

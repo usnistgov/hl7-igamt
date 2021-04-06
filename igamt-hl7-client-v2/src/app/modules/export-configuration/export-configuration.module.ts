@@ -12,11 +12,11 @@ import { DeltaExportConfigurationComponent } from './components/delta-export-con
 import { ExportConfigurationDialogComponent } from './components/export-configuration-dialog/export-configuration-dialog.component';
 import { ExportDialogComponent } from './components/export-dialog/export-dialog.component';
 import { FontExportConfigurationComponent } from './components/font-export-configuration/font-export-configuration.component';
+import { IgGeneralDisplayConfigurationComponent } from './components/ig-general-display-configuration/ig-general-display-configuration.component';
 import { SegmentExportConfigurationComponent } from './components/segment-export-configuration/segment-export-configuration.component';
 import { ValueSetExportConfigurationComponent } from './components/value-set-export-configuration/value-set-export-configuration.component';
 import { ExportConfigurationRoutingModule } from './export-configuration-routing.module';
 import { ExportConfigurationService } from './services/export-configuration.service';
-import { IgGeneralDisplayConfigurationComponent } from './components/ig-general-display-configuration/ig-general-display-configuration.component';
 
 @NgModule({
   declarations: [

@@ -105,7 +105,7 @@ export class CoConstraintTableComponent implements OnInit {
     }
 
     if (this._value && datatype) {
-      console.log(this.coconstraintEntity.getCoConstraintRowList(this._value))
+      console.log(this.coconstraintEntity.getCoConstraintRowList(this._value));
       this.initVariesOptionList(this.coconstraintEntity.getCoConstraintRowList(this._value), datatype);
     }
 
@@ -231,8 +231,8 @@ export class CoConstraintTableComponent implements OnInit {
       this.bindingsService.getBingdingInfo(header.elementInfo.version, header.elementInfo.parent, header.elementInfo.datatype, header.elementInfo.location, header.elementInfo.type).pipe(
         take(1),
         map((bindingsInfo) => {
-          if(header.key === '3') {
-            console.log("-------");
+          if (header.key === '3') {
+            console.log('-------');
             console.log(header.elementInfo.version, header.elementInfo.parent, header.elementInfo.datatype, header.elementInfo.location, header.elementInfo.type);
             console.log(bindingsInfo.allowedBindingLocations);
           }

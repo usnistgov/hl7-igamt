@@ -41,8 +41,6 @@ export class CoConstraintEntityService {
 
   constructor(private binding: BindingService) { }
 
-
-
   exportAsExcel(table: ICoConstraintTable) {
     const form = document.createElement('form');
     form.action = '/api/export/coconstraintTable';

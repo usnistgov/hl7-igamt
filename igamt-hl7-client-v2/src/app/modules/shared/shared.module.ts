@@ -47,6 +47,7 @@ import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.com
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
+import { FileExcelInputComponent } from './components/file-excel-input/file-excel-input.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
 import { CardinalityComponent } from './components/hl7-v2-tree/columns/cardinality/cardinality.component';
@@ -98,7 +99,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { FileExcelInputComponent } from './components/file-excel-input/file-excel-input.component';
 
 @NgModule({
   declarations: [

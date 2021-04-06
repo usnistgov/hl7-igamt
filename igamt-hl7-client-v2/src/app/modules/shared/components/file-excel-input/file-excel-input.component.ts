@@ -3,10 +3,10 @@ import { HostListener } from '@angular/core';
 import { ElementRef } from '@angular/core';
 import { Input } from '@angular/core';
 import { ViewChild } from '@angular/core';
-import { ControlValueAccessor } from '@angular/forms';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Output } from '@angular/core';
 import { EventEmitter } from '@angular/core';
+import { ControlValueAccessor } from '@angular/forms';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-file-excel-input',
@@ -21,7 +21,6 @@ import { EventEmitter } from '@angular/core';
   ],
 })
 export class FileExcelInputComponent implements  OnInit {
-
 
   onChange: (files: File) => void;
   onTouched: () => void;
@@ -38,11 +37,10 @@ export class FileExcelInputComponent implements  OnInit {
 
   @HostListener('change', ['$event.target.files']) emitFiles(event: FileList) {
     const file = event && event.item(0);
-    // this.onChange(file);
     this.file = file;
     this.resultFile.emit(file);
-    console.log("emmited ");
-    console.log("file name : " + file.name );
+    console.log('emmited ');
+    console.log('file name : ' + file.name );
     const reader = new FileReader();
 
     reader.onloadend = (e) => {
@@ -75,8 +73,6 @@ export class FileExcelInputComponent implements  OnInit {
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
   }
-
- 
 
   ngOnInit() {
   }

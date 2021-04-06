@@ -6,7 +6,7 @@ import { EventEmitter } from '@angular/core';
 @Component({
   selector: 'app-ig-general-display-configuration',
   templateUrl: './ig-general-display-configuration.component.html',
-  styleUrls: ['./ig-general-display-configuration.component.css']
+  styleUrls: ['./ig-general-display-configuration.component.css'],
 })
 export class IgGeneralDisplayConfigurationComponent implements OnInit {
 
@@ -18,7 +18,6 @@ export class IgGeneralDisplayConfigurationComponent implements OnInit {
 
   @Input()
   derived: boolean;
-
 
   @Input()
   origin = null;
