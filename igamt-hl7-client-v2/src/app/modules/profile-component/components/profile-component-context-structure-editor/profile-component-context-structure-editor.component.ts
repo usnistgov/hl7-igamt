@@ -47,6 +47,7 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
 
   username: Observable<string>;
   workspace_s: Subscription;
+  tree_s: Subscription;
   hasOrigin$: Observable<boolean>;
   resourceType: Type;
   derived$: Observable<boolean>;
@@ -109,15 +110,19 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
 
     this.workspace_s = this.currentSynchronized$.pipe(
       flatMap((current) => {
-
         // Initialize workspace
         this.treeView = false;
         this.resource$ = this.store.select(this.resourceSelector(), { id: current.resource.sourceId });
 
         return this.resource$.pipe(
           take(1),
-          switchMap((resource) => {
-            this.hl7V2TreeService.getTree(resource, this.repository, true, true, (value) => {
+          flatMap((resource) => {
+
+            if (this.tree_s) {
+              this.tree_s.unsubscribe();
+            }
+
+            this.tree_s = this.hl7V2TreeService.getTree(resource, this.repository, true, true, (value) => {
               this.nodes = [
                 {
                   data: {
@@ -234,6 +239,9 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
   }
 
   ngOnDestroy() {
+    if (this.tree_s) {
+      this.tree_s.unsubscribe();
+    }
     if (this.workspace_s) {
       this.workspace_s.unsubscribe();
     }
