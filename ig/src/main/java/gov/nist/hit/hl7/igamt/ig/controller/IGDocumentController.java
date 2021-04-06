@@ -1351,7 +1351,7 @@ public class IGDocumentController extends BaseController {
           if(ig.getSharedUsers() !=null && ig.getSharedUsers().contains(cUser)) {
             ig.setSharePermission(SharePermission.READ);
           }else {
-            throw new ForbiddenOperationException("Access denied");
+           // throw new ForbiddenOperationException("Access denied");
           }
         }    	
       }

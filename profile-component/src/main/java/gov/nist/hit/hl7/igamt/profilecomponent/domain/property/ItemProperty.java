@@ -44,8 +44,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
         @JsonSubTypes.Type(value = PropertySingleCode.class, name = "SINGLECODE"),    
         @JsonSubTypes.Type(value = PropertyUsage.class, name = "USAGE"),
         @JsonSubTypes.Type(value = PropertyValueSet.class, name = "VALUESET"),
-        
-        
+        @JsonSubTypes.Type(value = PropertyLengthType.class, name = "LENGTHTYPE"),
 })
 public abstract class ItemProperty {
 

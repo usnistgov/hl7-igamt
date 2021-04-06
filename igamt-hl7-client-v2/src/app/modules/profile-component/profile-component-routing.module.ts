@@ -50,7 +50,7 @@ const routes: Routes = [
           action: OpenProfileComponentMetadataEditor,
           idKey: 'pcId',
         },
-         // canDeactivate: [EditorDeactivateGuard],
+          canDeactivate: [EditorDeactivateGuard],
       },
       {
         path: '',
@@ -78,7 +78,7 @@ const routes: Routes = [
                     path: 'structure',
                     component: SegmentContextStructureEditorComponent,
                     canActivate: [EditorActivateGuard],
-                    // canDeactivate: [EditorDeactivateGuard],
+                    canDeactivate: [EditorDeactivateGuard],
                     data: {
                       editorMetadata: {
                         id: EditorID.SEGMENT_STRUCTURE,
@@ -120,7 +120,7 @@ const routes: Routes = [
                     path: 'structure',
                     component: MessageContextStructureEditorComponent,
                     canActivate: [EditorActivateGuard],
-                    // canDeactivate: [EditorDeactivateGuard],
+                    canDeactivate: [EditorDeactivateGuard],
                     data: {
                       editorMetadata: {
                         id: EditorID.CONFP_STRUCTURE,

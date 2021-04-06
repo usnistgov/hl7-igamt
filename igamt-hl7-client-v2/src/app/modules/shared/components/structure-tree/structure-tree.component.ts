@@ -10,6 +10,11 @@ import { TreeCloneService } from '../../services/tree-clone.service';
 import { IHL7v2TreeFilter, TreeFilterService } from '../../services/tree-filter.service';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 
+export interface IStructureTreeSelect {
+  node: IHL7v2TreeNode;
+  path: IPath;
+}
+
 @Component({
   selector: 'app-structure-tree',
   templateUrl: './structure-tree.component.html',
@@ -18,17 +23,17 @@ import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 export class StructureTreeComponent implements OnInit, OnDestroy {
 
   type: Type;
-  structure: TreeNode[];
-  selectedNode: TreeNode;
+  selectedNode: TreeNode | TreeNode[] = undefined;
+  structure: IHL7v2TreeNode[];
   treeSubscriptions: Subscription[] = [];
   s_resource: Subscription;
+  _selectionMode = 'single';
   @Input()
   multiple = false;
   @Output()
-  selection = new EventEmitter<{
-    node: IHL7v2TreeNode,
-    path: IPath,
-  }>();
+  selection = new EventEmitter<IStructureTreeSelect>();
+  @Output()
+  unselect = new EventEmitter<IStructureTreeSelect>();
 
   @Input()
   configuration: {
@@ -36,7 +41,18 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
     usage: boolean,
   };
   @Input()
-  selectionMode = 'single';
+  set selectionMode(sm: string) {
+    if (sm === 'single') {
+      this.selectedNode = undefined;
+    } else {
+      this.selectedNode = [];
+    }
+    this._selectionMode = sm;
+  }
+  get selectionMode() {
+    return this._selectionMode;
+  }
+
   @Input()
   repository: AResourceRepositoryService;
 
@@ -80,9 +96,6 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
 
   @Input()
   set tree(str: TreeNode[]) {
-    console.log(str);
-    console.log('str');
-
     const clone = this.treeCloneService.cloneViewTree(str);
     this.doFilter(clone as IHL7v2TreeNode[]);
   }
@@ -95,7 +108,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
     };
 
     if (this.structure) {
-      this.doFilter(this.structure as IHL7v2TreeNode[]);
+      this.doFilter(this.structure);
     }
   }
 
@@ -148,13 +161,17 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
   }
 
   nodeSelected(event) {
-    if (event.node) {
-      this.selectedNode = event.node;
-      this.selection.emit({
-        node: event.node,
-        path: this.processPath(event.node),
-      });
-    }
+    this.selection.emit({
+      node: event.node,
+      path: this.processPath(event.node),
+    });
+  }
+
+  nodeUnselected(event) {
+    this.unselect.emit({
+      node: event.node,
+      path: this.processPath(event.node),
+    });
   }
 
   ngOnDestroy() {

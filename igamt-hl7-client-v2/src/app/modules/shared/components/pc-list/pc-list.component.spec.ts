@@ -8,7 +8,7 @@ describe('PcListComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PcListComponent ]
+      declarations: [ PcListComponent ],
     })
     .compileComponents();
   }));

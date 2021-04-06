@@ -27,7 +27,7 @@ export class StructureEditorResourceRepositoryService extends StoreResourceRepos
       take(1),
       mergeMap((resource) => {
         if (!resource || !resource.type || resource.type !== type) {
-          this.store.dispatch(new LoadResourceReferences({ resourceType: type, id, display: true }));
+          this.store.dispatch(new LoadResourceReferences({ resourceType: type, id, insert: true, display: true }));
           return this.getResource(type, id);
         } else {
           return of(resource as T);

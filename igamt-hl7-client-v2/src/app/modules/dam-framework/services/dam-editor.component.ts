@@ -2,7 +2,7 @@ import { TemplateRef, ViewChild } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { distinctUntilChanged, filter, map, tap, withLatestFrom } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, takeWhile, tap, withLatestFrom } from 'rxjs/operators';
 import { IWorkspaceCurrent } from 'src/app/modules/dam-framework';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
@@ -44,6 +44,9 @@ export abstract class DamAbstractEditorComponent {
     this.current$ = this.store.select<IWorkspaceCurrent>(fromDam.selectWorkspaceCurrent);
     this.payload$ = this.store.select(fromDAM.selectPayloadData);
     this.currentSynchronized$ = this.current$.pipe(
+      withLatestFrom(this.active$),
+      takeWhile(([, active]) => active.editor.id === this.editor.id),
+      map(([current]) => current),
       filter((current) => {
         return !current || !current.time || (current.time.getTime() !== this.changeTime.getTime());
       }),

@@ -79,7 +79,6 @@ import {
 @Injectable()
 export class IgEditEffects extends DamWidgetEffect {
 
-
   constructor(
     actions$: Actions<IgEditActions>,
     private igService: IgService,

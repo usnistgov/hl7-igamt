@@ -1,5 +1,4 @@
 import { Type } from '../constants/type.enum';
-import {IProfileComponentItem, ItemProperty} from './profile.component';
 
 export interface IConformanceStatement {
   id?: string;
@@ -44,6 +43,11 @@ export interface INotAssertion extends IAssertion {
   child: IAssertion;
 }
 
+export interface ISubContextAssertion extends IAssertion {
+  context: ISubContext;
+  child: IAssertion;
+}
+
 export interface IOperatorAssertion extends IAssertion {
   operator: Operator;
   assertions: IAssertion[];
@@ -53,6 +57,7 @@ export enum AssertionMode {
   SIMPLE = 'SIMPLE',
   IFTHEN = 'IFTHEN',
   ANDOR = 'ANDOR',
+  SUBCONTEXT = 'SUBCONTEXT',
   NOT = 'NOT',
 }
 
@@ -88,6 +93,15 @@ export interface IComplement {
   codesyses?: string[];
   desc?: string;
   codesys?: string;
+}
+
+export interface ISubContext {
+  path: IPath;
+  occurenceIdPath: string;
+  occurenceLocationStr: string;
+  occurenceValue?: any;
+  occurenceType: string;
+  description: string;
 }
 
 export interface IPath {

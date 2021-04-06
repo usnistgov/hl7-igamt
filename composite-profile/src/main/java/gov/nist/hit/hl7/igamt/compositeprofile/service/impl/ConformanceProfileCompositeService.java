@@ -160,14 +160,14 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 	}
 	
 	// Get Element at postion P
-    public SegmentRefOrGroup get(Set<SegmentRefOrGroup> structure, int p){
-    	return structure.stream().filter(x -> x.getPosition() == p).findFirst().orElse(null);
+    public SegmentRefOrGroup get(Set<SegmentRefOrGroup> structure, String id){
+    	return structure.stream().filter(x -> x.getId().equals(id)).findFirst().orElse(null);
     }
-    public Field get(Segment segment, int p){
-    	return  segment.getChildren().stream().filter(x -> x.getPosition() == p).findFirst().orElse(null);
+    public Field get(Segment segment, String id){
+    	return  segment.getChildren().stream().filter(x -> x.getId().equals(id)).findFirst().orElse(null);
     }
-    public Component get(Datatype dt, int p){
-    	return  dt instanceof ComplexDatatype ? ((ComplexDatatype) dt).getComponents().stream().filter(x -> x.getPosition() == p)
+    public Component get(Datatype dt, String id){
+    	return  dt instanceof ComplexDatatype ? ((ComplexDatatype) dt).getComponents().stream().filter(x -> x.getId().equals(id))
     			.findFirst().orElse(null) : null;
     }
 	
@@ -176,7 +176,7 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 		ConformanceProfile confProfile = repo.cloneAndAddIfNotPresent(target, ConformanceProfile.class);
 		
 		for(Permutation p : permutation.getPermutations()) {
-			SegmentRefOrGroup refOrGrp = get(confProfile.getChildren(), p.getPosition());
+			SegmentRefOrGroup refOrGrp = get(confProfile.getChildren(), p.getElementId());
 			if(refOrGrp != null) {
 				if(refOrGrp instanceof SegmentRef) {
 					this.evaluate(((SegmentRef) refOrGrp), p, repo);
@@ -193,7 +193,7 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
     // Evaluate permutation at Group Level
 	void evaluate(Group target, Permutation permutation, DataExtention repo) {
 		for(Permutation p : permutation.getPermutations()) {
-			SegmentRefOrGroup refOrGrp = get(target.getChildren(), p.getPosition());
+			SegmentRefOrGroup refOrGrp = get(target.getChildren(), p.getElementId());
 			if(refOrGrp != null) {
 				if(refOrGrp instanceof SegmentRef) {
 					this.evaluate(((SegmentRef) refOrGrp), p, repo);
@@ -215,7 +215,7 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 		
 		// Handle Children
 		for(Permutation p : permutation.getPermutations()) {
-			Field field = get(segment, p.getPosition());
+			Field field = get(segment, p.getElementId());
 			if(field != null) {
 				this.evaluate(field, p, repo);
 			}
@@ -271,7 +271,7 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 		
 		// Handle Children
 		for(Permutation p : permutation.getPermutations()) {
-			Component component = get(datatype, p.getPosition());
+			Component component = get(datatype, p.getElementId());
 			if(component != null) {
 				this.evaluate(component, p, repo);
 			}

@@ -60,8 +60,7 @@ public interface ProfileComponentService {
 
   Set<Resource> getDependencies(String pcId, String contextId) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
 
-  ProfileComponentContext updateContext(String pcId, String contextId,
-      Set<ProfileComponentItem> context) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
+  ProfileComponentContext updateContext(String pcId, String contextId, ProfileComponentContext context) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
 
   Link cloneProfileComponent(String string, HashMap<RealKey, String> newKeys, Link l,
       String username, Scope user, CloneMode cloneMode);

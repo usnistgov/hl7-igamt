@@ -1035,11 +1035,11 @@ public class BootstrapApplication implements CommandLineRunner {
     dynamicMappingFixer.addMissingDatatypesBasedOnDynamicMapping();
   }
   
-//  @PostConstruct
-//  void createPc() {
+  @PostConstruct
+  void createPc() {
 //    Ig ig= this.igRepo.findById("6021a5cb2ad88586c88eeb39").get();
 //    ig.getProfileComponentRegistry().getChildren().add(new Link("PC_ID_1", new DomainInfo("*", Scope.USER),1));
-//    
+//
 //    ProfileComponent p = new ProfileComponent();
 //    p.setName("PC1");
 //    p.setChildren(new HashSet<ProfileComponentContext>());
@@ -1062,10 +1062,6 @@ public class BootstrapApplication implements CommandLineRunner {
 //    profileComponentService.delete("PC_ID_1");
 //    this.profileComponentService.save(p);
 //    this.igRepo.save(ig);
-//    
-//    
-//    
-//   
-//  }
+  }
   
 }

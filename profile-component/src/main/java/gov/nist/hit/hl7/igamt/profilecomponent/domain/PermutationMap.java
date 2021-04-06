@@ -14,7 +14,7 @@ public class PermutationMap extends Permutation {
 	public Type type;
 
 	public PermutationMap(ProfileComponentContext pc) {
-		super(pc.getId(), 0, null, new HashSet<>(), new ArrayList<>());
+		super(pc.getId(), "", null, new HashSet<>(), new ArrayList<>());
 		this.targetId = pc.getSourceId();
 		this.type = pc.getLevel();
 		for(ProfileComponentItem item : pc.getProfileComponentItems()) {
@@ -22,18 +22,18 @@ public class PermutationMap extends Permutation {
 		}
 	}
 	
-	void compute(Stack<Integer> path, String id, List<Permutation> permutationsList, ProfileComponentItem item) {
+	void compute(Stack<String> path, String id, List<Permutation> permutationsList, ProfileComponentItem item) {
 		if(!path.isEmpty()) {
-			int i = path.pop();
-			String nId = id+"_"+i;
-			Permutation existing = permutationsList.stream().filter(p -> p.getPosition() == i).findAny().orElse(null);
+			String elementId = path.pop();
+			String nId = id+"_"+elementId;
+			Permutation existing = permutationsList.stream().filter(p -> p.getElementId().equals(elementId)).findAny().orElse(null);
 			
 			if(path.size() == 0) {
 				
 				if(existing != null) {
 					existing.getItems().addAll(item.getItemProperties());
 				} else {
-					Permutation permutation = new Permutation(nId, i, null, item.getItemProperties(), new ArrayList<>());
+					Permutation permutation = new Permutation(nId, elementId, null, item.getItemProperties(), new ArrayList<>());
 					permutationsList.add(permutation);
 				}
 				
@@ -43,7 +43,7 @@ public class PermutationMap extends Permutation {
 					this.compute(path, nId, existing.getPermutations(), item);
 				} else {
 					List<Permutation> permutations = new ArrayList<>();
-					Permutation permutation = new Permutation(nId, i, null, new HashSet<>(), permutations);
+					Permutation permutation = new Permutation(nId, elementId, null, new HashSet<>(), permutations);
 					this.compute(path, nId, permutations, item);
 					permutationsList.add(permutation);
 				}
@@ -53,11 +53,11 @@ public class PermutationMap extends Permutation {
 		}
 	}
 	
-	private Stack<Integer> pathToStack(String path) {
-		String[] nodes = path.split("\\.");
-		Stack<Integer> stack = new Stack<>();
+	private Stack<String> pathToStack(String path) {
+		String[] nodes = path.split("-");
+		Stack<String> stack = new Stack<>();
 		for(int i = nodes.length - 1; i >= 0; i--) {
-			stack.push(Integer.parseInt(nodes[i]));
+			stack.push(nodes[i]);
 		}
 		return stack;
 	}

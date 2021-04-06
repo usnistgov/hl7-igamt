@@ -1,0 +1,54 @@
+<div style="display: flex; justify-content: space-between; align-items: center;">
+  <div [ngClass]="{'inactive-cell-dim' : !active }" style="flex-grow: 1; margin-right: 5px;" *ngIf="ref" [ngSwitch]="globalViewOnly || !active">
+    <ng-container *ngSwitchCase="false">
+      <div *ngIf="editMode" style="display: flex; justify-content: space-between;">
+        <p-dropdown  [options]="_options" [appendTo]="anchor" dataKey="id" [(ngModel)]="ref" (ngModelChange)="referenceChanged($event)" [group]="true" [filter]="true" filterBy="value.fixedName,value.variableName">
+          <ng-template let-item pTemplate="selectedItem">
+            <ng-container *ngIf="item.value">
+              <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
+              <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
+              <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
+            </ng-container>
+          </ng-template>
+          <ng-template let-item pTemplate="item">
+            <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
+            <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
+            <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
+          </ng-template>
+        </p-dropdown>
+        <button class="btn btn-sm btn-danger" (click)="toggleEdit()">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+
+      <div *ngIf="!editMode" style="display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; align-items: center;">
+          <div style="display: flex; align-items: center;">
+            <ng-container *ngTemplateOutlet="display; context : { $implicit : selected }"></ng-container>
+          </div>
+        </div>
+
+        <button class="btn btn-sm btn-primary" (click)="toggleEdit()">
+          <i class="fa fa-pencil"></i>
+        </button>
+      </div>
+    </ng-container>
+
+    <div *ngSwitchCase="true" style="display: flex; align-items: center;">
+      <ng-container *ngIf="selected" style="display: flex; align-items: center;">
+        <ng-container *ngTemplateOutlet="display; context : { $implicit : selected }"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <button *ngIf="!globalViewOnly && !active" class="btn btn-sm btn-primary profile-component-cell-btn" (click)="activate()">
+    <i class="fa fa-plus"></i>
+  </button>
+  <button *ngIf="!globalViewOnly && active" class="btn btn-sm btn-danger profile-component-cell-btn" style="background-color: red !important;" (click)="clear()">
+    <i class="fa fa-trash"></i>
+  </button>
+</div>
+
+<ng-template #display let-selected >
+  <app-display-ref [element]="selected" [hideDescription]="true"></app-display-ref>
+</ng-template>

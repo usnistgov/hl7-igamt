@@ -23,7 +23,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
  *
  * @author Maxence Lefort on Feb 23, 2018.
  */
-public class PropertyValueSet extends ItemProperty {
+public class PropertyValueSet extends PropertyBinding {
 
   private Set<ValuesetBinding> valuesetBindings;
 

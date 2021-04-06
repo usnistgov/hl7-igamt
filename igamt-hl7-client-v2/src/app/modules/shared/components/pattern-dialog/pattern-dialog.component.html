@@ -1,4 +1,4 @@
-<div style="width: 700px; height: 100%; margin: auto; background-color: white;" >
+<div style="width: 800px; height: 100%; margin: auto; background-color: white;" >
   <div style="display: flex; justify-content: space-between; align-items: center;">
     <strong>Drag Operators     <i class="fa fa-hand-o-right" aria-hidden="true" style="font-size: 1.2em;"></i></strong>
     <div class="btn-group" role="group" >
@@ -11,7 +11,7 @@
 
     </div>
   </div>
-  <p-organizationChart [style]="{'width' : '100%', 'background-color' : 'white', 'padding' : '20px', 'min-height' : '500px;', 'overflow' : 'scroll'}" [value]="[ pattern.assertion ]" styleClass="pattern" *ngIf="pattern && pattern.assertion" >
+  <p-organizationChart [style]="{'width' : '100%', 'background-color' : 'white', 'padding' : '20px', 'min-height' : '500px', 'max-height' : '65vh', 'overflow' : 'scroll'}" [value]="[ assertion ]" styleClass="pattern" *ngIf="assertion" >
 
     <ng-template let-node pTemplate="statement">
       <div class="operator-drop-area" pDroppable="operator"  (onDrop)="dropOp($event, node)">
@@ -29,6 +29,9 @@
       <div class="node-content" >
         <div>{{node.data.type}}</div>
       </div>
+      <div class="node-content" style="background-color: lemonchiffon;" *ngIf="node.data.type === 'SUBCONTEXT'" >
+          <strong [ngStyle]="{ color : node.context.data.color}">{{ node.context.name() }}</strong>
+      </div>
       <div style="width: 100%; text-align: right; padding-right: 5px;">
         <i *ngIf="isNary(node)" class="fa fa-plus" style="color: lightgreen; right: 5px; cursor: pointer;" (click)="add(node)"></i>
       </div>
@@ -41,7 +44,7 @@
       <strong>Assertion Canonical Form</strong>
     </div>
     <div disabled="true" style="text-align: center; overflow: scroll;">
-      <strong *ngIf="pattern && pattern.assertion" [innerHTML]="html(pattern.assertion.write())"></strong>
+      <strong *ngIf="assertion" [innerHTML]="html(assertion.write())"></strong>
     </div>
   </div>
 
