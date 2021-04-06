@@ -851,15 +851,19 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         for (ConformanceStatement cs : segModel.getConformanceStatements()) {
         	
         	String script = this.generateAssertionScript(cs, segModel.getModel().getId());
+
         	
         	if(script != null) {
-                Element elm_Constraint = new Element("Constraint");
-                elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
-                Element elm_Description = new Element("Description");
-                elm_Description.appendChild(cs.generateDescription());
-                elm_Constraint.appendChild(elm_Description);
-                elm_Constraint.appendChild(this.innerXMLHandler(script));
-                elm_ByID.appendChild(elm_Constraint);        		
+            	Node scriptNode = this.innerXMLHandler(script);
+            	if(scriptNode != null) {
+            		Element elm_Constraint = new Element("Constraint");
+                    elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
+                    Element elm_Description = new Element("Description");
+                    elm_Description.appendChild(cs.generateDescription());
+                    elm_Constraint.appendChild(elm_Description);
+                    elm_Constraint.appendChild(this.innerXMLHandler(script));
+                    elm_ByID.appendChild(elm_Constraint);      	
+            	}  		
         	}
         }
       }
@@ -994,7 +998,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   }
 
   private Node innerXMLHandler(String xml) {
-    if (xml != null) {
+    if (xml != null && !xml.equals("")) {
     	xml = xml.replace("&", "&amp;");
       Builder builder = new Builder(new NodeFactory());
       try {
@@ -1225,7 +1229,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       }
 
       // DynamicMapping
-      if (sModel.getModel().getName().equals("OBX")) {
+      if (sModel.getModel().getName().equals("OBX") 
+    		  && sModel.getModel().getDynamicMappingInfo() != null 
+    		  && sModel.getModel().getDynamicMappingInfo().getItems() != null
+    		  && sModel.getModel().getDynamicMappingInfo().getItems().size() > 0) {
         Element elmDynamicMapping = new Element("DynamicMapping");
         Element elmMapping = new Element("Mapping");
         elmMapping.addAttribute(new Attribute("Position", "5"));
@@ -1236,6 +1243,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         if (sModel.getModel().getDynamicMappingInfo() != null
             && sModel.getModel().getDynamicMappingInfo().getItems() != null) {
           for (DynamicMappingItem item : sModel.getModel().getDynamicMappingInfo().getItems()) {
+        	  
             Element elmCase = new Element("Case");
             elmCase.addAttribute(new Attribute("Value", item.getValue()));
 
@@ -1255,11 +1263,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                 elmCase.addAttribute(
                     new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
               }
+              elmMapping.appendChild(elmCase);
             } else {
               // throw new SegmentSerializationException("Datatype not found");
             }
-
-            elmMapping.appendChild(elmCase);
           }
         }
 
@@ -1565,10 +1572,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     try {
       Element elmMessage = new Element("Message");
       elmMessage.addAttribute(new Attribute("ID", cpModel.getModel().getId()));
-      if (cpModel.getModel().getIdentifier() != null
-          && !cpModel.getModel().getIdentifier().equals(""))
+      if (cpModel.getModel().getDisplayName() != null
+          && !cpModel.getModel().getDisplayName().equals(""))
         elmMessage.addAttribute(
-            new Attribute("Identifier", this.str(cpModel.getModel().getIdentifier())));
+            new Attribute("Identifier", this.str(cpModel.getModel().getDisplayName())));
       if (cpModel.getModel().getName() != null && !cpModel.getModel().getName().equals(""))
         elmMessage.addAttribute(new Attribute("Name", this.str(cpModel.getModel().getName())));
       elmMessage.addAttribute(new Attribute("Type", this.str(cpModel.getModel().getMessageType())));
@@ -1621,19 +1628,21 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       Map<Integer, SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels =
           new HashMap<Integer, SegmentRefOrGroupDataModel>();
 
-      for (SegmentRefOrGroupDataModel child : segmentRefOrGroupDataModel.getChildren()) {
-        segmentRefOrGroupDataModels.put(child.getModel().getPosition(), child);
-      }
+      if(segmentRefOrGroupDataModel.getChildren() != null) {
+          for (SegmentRefOrGroupDataModel child : segmentRefOrGroupDataModel.getChildren()) {
+              segmentRefOrGroupDataModels.put(child.getModel().getPosition(), child);
+            }
 
-      for (int i = 1; i < segmentRefOrGroupDataModels.size() + 1; i++) {
-        SegmentRefOrGroupDataModel childModel = segmentRefOrGroupDataModels.get(i);
-        if (childModel.getType().equals(Type.SEGMENTREF)) {
-          elmGroup.appendChild(serializeSegmentRef(childModel, igModel, defaultHL7Version));
-        } else if (childModel.getType().equals(Type.GROUP)) {
-          elmGroup.appendChild(serializeGroup(childModel, igModel, defaultHL7Version, messageId));
-        }
+            for (int i = 1; i < segmentRefOrGroupDataModels.size() + 1; i++) {
+              SegmentRefOrGroupDataModel childModel = segmentRefOrGroupDataModels.get(i);
+              if (childModel.getType().equals(Type.SEGMENTREF)) {
+                elmGroup.appendChild(serializeSegmentRef(childModel, igModel, defaultHL7Version));
+              } else if (childModel.getType().equals(Type.GROUP)) {
+                elmGroup.appendChild(serializeGroup(childModel, igModel, defaultHL7Version, messageId));
+              }
+            }    	  
       }
-
+      
       return elmGroup;
     } catch (Exception e) {
       e.printStackTrace();
@@ -1751,8 +1760,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         List<String> pathList = new LinkedList<String>(Arrays.asList(key.split("\\.")));
 
         if (pathList.size() > 1) {
-          ComponentDataModel cModel =
-              dtModel.findComponentDataModelByPosition(Integer.parseInt(pathList.remove(0)));
+          ComponentDataModel cModel = dtModel.findComponentDataModelByPosition(Integer.parseInt(pathList.remove(0)));
 
           DatatypeDataModel childDtModel = igModel.findDatatype(cModel.getDatatype().getId());
           if (childDtModel == null)
@@ -1789,15 +1797,13 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           int randumNum = new SecureRandom().nextInt(100000);
           copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
           String ext = childDtModel.getModel().getExt();
-          if (ext == null)
-            ext = "";
+          if (ext == null) ext = "";
           copyDtModel.getModel().setExt(ext + "_A" + randumNum);
           toBeAddedDTs.put(copyDtModel.getModel().getId(), copyDtModel);
           fModel.getDatatype().setId(copyDtModel.getModel().getId());
           fModel.getDatatype().setExt(ext + "_A" + randumNum);
 
-          updateChildDatatype(pathList, copyDtModel, igModel, segModel.getValuesetMap().get(key),
-              toBeAddedDTs);
+          updateChildDatatype(pathList, copyDtModel, igModel, segModel.getValuesetMap().get(key), toBeAddedDTs);
         }
       }
     }
@@ -1947,7 +1953,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       AssertionPredicate cp = (AssertionPredicate) p;
       if (cp.getAssertion() != null)
         return "<Condition>" + this
-            .generateAssertionScript(cp.getAssertion(), cp.getLevel(), targetId, cp.getContext())
+            .generateAssertionScript(cp.getAssertion(), cp.getLevel(), targetId, cp.getContext(), true)
             .replace("\n", "").replace("\r", "") + "</Condition>";
     }
     return null;
@@ -1963,23 +1969,23 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       AssertionConformanceStatement cs = (AssertionConformanceStatement) c;
       if (cs.getAssertion() != null)
         return "<Assertion>" + this
-            .generateAssertionScript(cs.getAssertion(), cs.getLevel(), targetId, cs.getContext())
+            .generateAssertionScript(cs.getAssertion(), cs.getLevel(), targetId, cs.getContext(), false)
             .replace("\n", "").replace("\r", "") + "</Assertion>";
     }
     return null;
   }
 
   private String generateAssertionScript(Assertion assertion, Level level, String targetId,
-		  InstancePath context) {
+		  InstancePath context, boolean presenceCheckOn) {
     if (assertion instanceof NotAssertion) {
       return "<NOT>" + this.generateAssertionScript(((NotAssertion) assertion).getChild(), level,
-          targetId, context) + "</NOT>";
+          targetId, context, presenceCheckOn) + "</NOT>";
     } else if (assertion instanceof IfThenAssertion) {
       return "<IMPLY>"
           + this.generateAssertionScript(((IfThenAssertion) assertion).getIfAssertion(), level,
-              targetId, context)
+              targetId, context, true)
           + this.generateAssertionScript(((IfThenAssertion) assertion).getThenAssertion(), level,
-              targetId, context)
+              targetId, context, true)
           + "</IMPLY>";
     } else if (assertion instanceof OperatorAssertion) {
       OperatorAssertion oAssertion = (OperatorAssertion) assertion;
@@ -1987,13 +1993,13 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         if (oAssertion.getAssertions().size() == 2) {
           String script = "<AND>";
           for (Assertion a : oAssertion.getAssertions()) {
-            script = script + this.generateAssertionScript(a, level, targetId, context);
+            script = script + this.generateAssertionScript(a, level, targetId, context, presenceCheckOn);
           }
           return script + "</AND>";
         } else if (oAssertion.getAssertions().size() > 2) {
           String script = "<FORALL>";
           for (Assertion a : oAssertion.getAssertions()) {
-            script = script + this.generateAssertionScript(a, level, targetId, context);
+            script = script + this.generateAssertionScript(a, level, targetId, context, presenceCheckOn);
           }
           return script + "</FORALL>";
         }
@@ -2002,13 +2008,13 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         if (oAssertion.getAssertions().size() == 2) {
           String script = "<OR>";
           for (Assertion a : oAssertion.getAssertions()) {
-            script = script + this.generateAssertionScript(a, level, targetId, context);
+            script = script + this.generateAssertionScript(a, level, targetId, context, presenceCheckOn);
           }
           return script + "</OR>";
         } else if (oAssertion.getAssertions().size() > 2) {
           String script = "<EXIST>";
           for (Assertion a : oAssertion.getAssertions()) {
-            script = script + this.generateAssertionScript(a, level, targetId, context);
+            script = script + this.generateAssertionScript(a, level, targetId, context, presenceCheckOn);
           }
           return script + "</EXIST>";
         }
@@ -2016,7 +2022,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         if (oAssertion.getAssertions().size() == 2) {
           String script = "<XOR>";
           for (Assertion a : oAssertion.getAssertions()) {
-            script = script + this.generateAssertionScript(a, level, targetId, context);
+            script = script + this.generateAssertionScript(a, level, targetId, context, presenceCheckOn);
           }
           return script + "</XOR>";
         }
@@ -2024,7 +2030,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
     } else if (assertion instanceof SingleAssertion) {
       return this.generateSingleAssertionScript((SingleAssertion) assertion, level, targetId,
-          context);
+          context, presenceCheckOn);
     }
 
     return null;
@@ -2045,7 +2051,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
    * @return
    */
   private String generateSingleAssertionScript(SingleAssertion assertion, Level level,
-      String targetId, InstancePath context) {
+      String targetId, InstancePath context, boolean presenceCheckOn) {
     Complement complement = assertion.getComplement();
     ComplementKey key = complement.getComplementKey();
     boolean notAssertion = assertion.getVerbKey().contains("NOT");
@@ -2058,6 +2064,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     if (complement.getPath() != null) {
       cPathStr = this.generatePath(complement.getPath(), targetId, level, context);
     }
+    
+    String notPresentBehaviorStr;
+    if(presenceCheckOn) notPresentBehaviorStr = "FAIL";
+    else notPresentBehaviorStr = "PASS";
 
 
     if (assertion.getSubject().getOccurenceType() != null) {
@@ -2086,126 +2096,182 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         result = "<NOT><Presence Path=\"" + sPathStr + "\"/></NOT>";
         break;
       case containValue:
-        result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
-            + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
-            + "\" NotPresentBehavior=\"" + "FAIL" 
-            + "\"/>";
-        break;
+    	  result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getEscapeXml()
+          + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
+          + "\" NotPresentBehavior=\"" + notPresentBehaviorStr 
+          + "\"/>";
+    	  break;
       case notContainValue:
-        result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+        result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getEscapeXml()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
-            + "\" NotPresentBehavior=\"" + "FAIL" 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
             + "\"/></NOT>";
         break;
       case containValueDesc:
-        result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+        result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getEscapeXml()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
-            + "\" NotPresentBehavior=\"" + "FAIL" 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr 
             + "\"/>";
         break;
       case notContainValueDesc:
-        result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+        result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getEscapeXml()
             + "\" IgnoreCase=\"" + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce
-            + "\" NotPresentBehavior=\"" + "FAIL" 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
             + "\"/></NOT>";
         break;
       case containListValues:
         result = "<StringList Path=\"" + sPathStr + "\" CSV=\""
             + String.join(",", complement.getValues()) + "\" IgnoreCase=\""
-            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case notContainListValues:
         result = "<NOT><StringList Path=\"" + sPathStr + "\" CSV=\""
             + String.join(",", complement.getValues()) + "\" IgnoreCase=\""
-            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
+            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/></NOT>";
         break;
       case containListValuesDesc:
         result = "<StringList Path=\"" + sPathStr + "\" CSV=\""
             + String.join(",", complement.getValues()) + "\" IgnoreCase=\""
-            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case notContainListValuesDesc:
         result = "<NOT><StringList Path=\"" + sPathStr + "\" CSV=\""
             + String.join(",", complement.getValues()) + "\" IgnoreCase=\""
-            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
+            + complement.isIgnoreCase() + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/></NOT>";
         break;
       case containCode:
-        result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+        result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getEscapeXml()
             + "\" IgnoreCase=\"" + false + "\" AtLeastOnce=\"" + atLeastOnce 
-            + "\" NotPresentBehavior=\"" + "FAIL" 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr 
             + "\"/>";
         break;
+      case containCodeDesc:
+          result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue()
+              + "\" IgnoreCase=\"" + false + "\" AtLeastOnce=\"" + atLeastOnce 
+              + "\" NotPresentBehavior=\"" + notPresentBehaviorStr 
+              + "\"/>";
+          break;
       case containListCodes:
         result = "<StringList Path=\"" + sPathStr + "\" CSV=\""
             + String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + false
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
+        
+      case containListCodesDesc:
+          result = "<StringList Path=\"" + sPathStr + "\" CSV=\""
+              + String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + false
+              + "\" AtLeastOnce=\"" + atLeastOnce 
+              + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+              + "\"/>";
+          break;
       case regex:
         result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + complement.getValue()
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case positiveInteger:
         result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + "^[1-9]\\d*$"
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case LOINC:
         result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "LOINC"
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case SNOMED:
         result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "SNOMED"
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case sequentially:
         result = "<SetID Path=\"" + sPathStr + "\"/>";
         break;
       case iso:
         result = "<Format Path=\"" + sPathStr + "\" Regex=\"" + "[0-2](\\.(0|[1-9][0-9]*))*"
-            + "\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+            + "\" AtLeastOnce=\"" + atLeastOnce 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cEarlier:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LT" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cEarlierEquivalent:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LE" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cEquivalent:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cEquivalentLater:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GE" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cIdentical:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cLater:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GT" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cTruncatedEarlier:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LT" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cTruncatedEarlierEquivalent:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LE" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cTruncatedEquivalent:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cTruncatedEquivalentLater:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GE" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       case cTruncatedLater:
         result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GT" + "\" Path2=\""
-            + cPathStr + "\"/>";
+            + cPathStr 
+            + "\" NotPresentBehavior=\"" + notPresentBehaviorStr
+            + "\"/>";
         break;
       default:
         break;

@@ -49,7 +49,13 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
       map(([selectedResource, name, existing, ref, admin]) => {
         return {
           viewOnly: this.viewOnly$,
-          data: this.currentSynchronized$,
+          data: this.currentSynchronized$.pipe(map((x) => {
+            if (x.fixedExtension) {
+            return {...x , name: x.name + '_' + x.fixedExtension};
+          } else {
+              return x;
+            }
+          })),
           model: {
             name: {
               label: 'Identifier',
@@ -240,6 +246,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
 export interface IResourceMetadata {
   name: string;
   ext?: string;
+  fixedExtension?: string;
   bindingIdentifier?: string;
   description?: string;
   authorNotes?: string;

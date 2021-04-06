@@ -2,7 +2,7 @@
   <div style="position: relative;">
     <img height="45px" src="../../../../../assets/nist_logo.png">
     <a class="navbar-brand toolbar-name"> Implementation Guide Authoring and Management Tool
-      <span class="toolname-abbrv">(IGAMT) v1.4.2-beta</span>
+      <span class="toolname-abbrv">(IGAMT) v1.5.3-beta</span>
 
     </a>
   </div>
@@ -63,13 +63,13 @@
       </li>
 
       <li [ngClass]="{'active': isConfig | async }" class="nav-item" ngbDropdown>
-        <span class="nav-link" ngbDropdownToggle>Configurarion</span>
+        <span class="nav-link" ngbDropdownToggle>Configuration</span>
         <div ngbDropdownMenu>
-          <button [routerLink]="[ '/configuration']" [queryParams]="{type: 'DATATYPELIBRARY'}" ngbDropdownItem routerLinkActive="active-dropdown">
-            Datatype Library Export Configuration
-          </button>
           <button [routerLink]="[ '/configuration']" [queryParams]="{type: 'IGDOCUMENT'}" ngbDropdownItem routerLinkActive="active-dropdown">
             Implementation Guide Export Configuration
+          </button>
+          <button [routerLink]="[ '/configuration']" [queryParams]="{type: 'DATATYPELIBRARY'}" ngbDropdownItem routerLinkActive="active-dropdown">
+            Datatype Library Export Configuration
           </button>
         </div>
       </li>

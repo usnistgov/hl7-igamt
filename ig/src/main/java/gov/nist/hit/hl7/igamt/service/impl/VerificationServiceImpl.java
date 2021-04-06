@@ -1061,12 +1061,17 @@ public class VerificationServiceImpl implements VerificationService {
 					result);
 			this.checkCardinalityVerificationError(conformanceProfile.getId(), conformanceProfile.getType(),
 					new CPMetadata(conformanceProfile), usage, min, max, positionPath, path, result);
+			
 
-			if (group.getChildren() != null) {
+			if (group.getChildren() != null && group.getChildren().size() > 0) {
 				for (SegmentRefOrGroup child : group.getChildren()) {
 					this.checkingSegmentRefOrGroup(conformanceProfile, child, result, positionPath, path,
 							this.findSEB(sebs, child.getId()), needDeep);
 				}
+			} else {
+				result.getErrors()
+				.add(new IgamtObjectError("Child_Missing", conformanceProfile.getId(), conformanceProfile.getType(),
+						new CPMetadata(conformanceProfile), "Group: " + path + ", child is missing", positionPath + "", "ERROR", "User"));
 			}
 		}
 	}
@@ -1121,6 +1126,13 @@ public class VerificationServiceImpl implements VerificationService {
 		if (!this.isNotNullNotEmpty(value))
 			result.getErrors().add(new IgamtObjectError("Code_Value_Missing", c.getId(), Type.VALUESET,
 					new VSMetadata(valueset), "The value is missing.", null, "ERROR", "User"));
+		
+		if (this.containWhiteSpace(value))
+			result.getErrors().add(new IgamtObjectError("Code_Value_Whitespace", c.getId(), Type.VALUESET,
+					new VSMetadata(valueset), "In code: " + value + ", The code value has whitespace.", null, "WARNING", "User"));
+		
+		
+		
 		if (description == null)
 			result.getErrors()
 					.add(new IgamtObjectError("Code_Desc_Missing", c.getId(), Type.VALUESET, new VSMetadata(valueset),
@@ -1130,6 +1142,13 @@ public class VerificationServiceImpl implements VerificationService {
 					.add(new IgamtObjectError("Code_Codesys_Missing", c.getId(), Type.VALUESET,
 							new VSMetadata(valueset), "In code: " + value + ", the codesys is missing.", null, "ERROR",
 							"User"));
+		
+		if (this.containWhiteSpace(codeSystem))
+			result.getErrors()
+					.add(new IgamtObjectError("Code_Codesys_Whitespace", c.getId(), Type.VALUESET,
+							new VSMetadata(valueset), "In code: " + value + ", the codesys has whitespace.", null, "WARNING",
+							"User"));
+		
 		if (usage == null) {
 			result.getErrors()
 					.add(new IgamtObjectError("Code_Usage_Missing", valueset.getId(), Type.VALUESET,
@@ -1794,6 +1813,10 @@ public class VerificationServiceImpl implements VerificationService {
 	private boolean isNotNullNotEmpty(final String string) {
 		return string != null && !string.isEmpty();
 	}
+	
+	private boolean containWhiteSpace(final String string) {
+		return !string.matches("\\S+");
+	}
 
 	private boolean isInt(String s) {
 		try {
@@ -1847,7 +1870,7 @@ public class VerificationServiceImpl implements VerificationService {
 						.add(new IgamtObjectError("DM_Valueset_Missing", segment.getId(), segment.getType(),
 								new DTSegMetadata(segment),
 								"The Segment " + segment.getLabel()
-										+ " should have Valueset on OBX-2 for Dynamic Mapping.",
+										+ " should have Valueset binding on OBX-2 for Dynamic Mapping.",
 								segment.getLabel(), "ERROR", "User"));
 			else {
 
@@ -1862,26 +1885,24 @@ public class VerificationServiceImpl implements VerificationService {
 							.add(new IgamtObjectError("DM_DTBaseName_NotDefined", segment.getId(), segment.getType(),
 									new DTSegMetadata(segment),
 									"In DynamicMapping Definition, " + code.getValue()
-											+ " is not defined.",
-											code.getValue(), "WARNING", "User"));
+											+ " is not defined, but " + code.getValue() + " is a code of " + vs.getLabel() + " of OBX-2.",
+											code.getValue(), "ERROR", "User"));
 						}
 					}
 					
 					for (DynamicMappingItem item : dynamicMappingInfo.getItems()) {
-						if (this.isNotNullNotEmptyNotWhiteSpaceOnly(item.getValue())) {
+						if (!this.isNotNullNotEmptyNotWhiteSpaceOnly(item.getValue())) {
 							result.getErrors()
 							.add(new IgamtObjectError("DM_DTBaseName_Missing", segment.getId(), segment.getType(),
 									new DTSegMetadata(segment),
-									"In " + item.getValue()
-											+ ", DTBaseName is missing for segment Dynamic Mapping Item",
+									"In " + item.getValue() + ", DT Name of mapping item is missing.",
 									item.getValue(), "ERROR", "User"));
 						} else {
 							if(!vs.contains(item.getValue())) {
 								result.getErrors()
 								.add(new IgamtObjectError("DM_DTBaseName_NotRegistered", segment.getId(), segment.getType(),
 										new DTSegMetadata(segment),
-										"In DynamicMapping Definition, " + item.getValue()
-												+ " is missing in the list of codes of Valueset (OBX-2)",
+										"In DynamicMapping Definition, " + item.getValue() + " is not a code of Valueset of OBX-2.",
 										item.getValue(), "WARNING", "User"));
 							}
 						}
@@ -1891,7 +1912,7 @@ public class VerificationServiceImpl implements VerificationService {
 							result.getErrors()
 									.add(new IgamtObjectError("DM_DT_Missing", segment.getId(), segment.getType(),
 											new DTSegMetadata(segment),
-											"In " + item.getValue() + ", DT is missing for segment Dynamic Mapping Item",
+											"In the Dynamic Definition, there is no Datatype selected for " + item.getValue()+ ".",
 											item.getValue(), "ERROR", "User"));
 						else {
 							Datatype dt = this.datatypeService.findById(datatypeId);
@@ -1900,7 +1921,7 @@ public class VerificationServiceImpl implements VerificationService {
 										.add(new IgamtObjectError("DM_DT_NotAccessable", segment.getId(), segment.getType(),
 												new DTSegMetadata(segment),
 												"In " + item.getValue()
-														+ ", DT is not accessable for segment Dynamic Mapping Item",
+														+ ", DT of Dynamic mapping is not accessible in the Datatype Registry of IG.",
 												item.getValue(), "ERROR", "Internal"));
 						}
 					}
@@ -1908,9 +1929,8 @@ public class VerificationServiceImpl implements VerificationService {
 					result.getErrors()
 					.add(new IgamtObjectError("DM_Definition_Missing", segment.getId(), segment.getType(),
 							new DTSegMetadata(segment),
-							"The Segment " + segment.getLabel()
-									+ " should have DynamicMapping Definition",
-							segment.getLabel(), "WARNING", "User"));
+							"The Segment " + segment.getLabel() + " should have DynamicMapping Definition",
+							segment.getLabel(), "ERROR", "User"));
 				}
 			}
 
@@ -2305,7 +2325,8 @@ public class VerificationServiceImpl implements VerificationService {
 							"In segment Repository, segment : " + id + " is not accesable", null, "ERROR", "Internal"));
 				else {
 					String labelWithVersion = s.getLabel();
-					if (!s.getDomainInfo().getScope().equals(Scope.USER)) {
+					
+					if (!s.getDomainInfo().getScope().equals(Scope.USER) && !s.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
 						labelWithVersion = labelWithVersion + s.getDomainInfo().getVersion();
 					}
 					if (!segLabelSet.add(labelWithVersion))

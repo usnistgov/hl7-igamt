@@ -15,17 +15,14 @@ package gov.nist.hit.hl7.igamt.datatype.service.impl;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +32,17 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Level;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
@@ -48,18 +53,16 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
-import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
-import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -76,9 +79,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItem;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayValuesetBinding;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
@@ -86,6 +86,8 @@ import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
+import gov.nist.hit.hl7.resource.change.service.ApplyChange;
 
 /**
  *
@@ -111,6 +113,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 	@Autowired
 	BindingService bindingService;
+	
+	@Autowired
+	ApplyChange applyChange;
 
 	@Override
 	public Datatype findById(String key) {
@@ -231,61 +236,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 		return datatypes;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#
-	 * convertDomainToMetadata(gov.nist.hit. hl7.igamt.datatype.domain.Datatype)
-	 */
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see
-	 * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToPredef
-	 * (gov.nist.hit.hl7. igamt.datatype.domain.Datatype)
-	 */
-	@Override
-	public PreDef convertDomainToPredef(Datatype datatype) {
-		if (datatype != null) {
-			PreDef result = new PreDef();
-			result.setId(datatype.getId());
-			result.setScope(datatype.getDomainInfo().getScope());
-			result.setVersion(datatype.getDomainInfo().getVersion());
-			if (datatype.getExt() != null) {
-				result.setLabel(datatype.getName() + "_" + datatype.getExt());
-			} else {
-				result.setLabel(datatype.getName());
-			}
-			result.setPreDef(datatype.getPreDef());
-			return result;
-		}
-		return null;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#
-	 * convertDomainToPostdef(gov.nist.hit.hl7 .igamt.datatype.domain.Datatype)
-	 */
-	@Override
-	public PostDef convertDomainToPostdef(Datatype datatype) {
-		if (datatype != null) {
-			PostDef result = new PostDef();
-			result.setId(datatype.getId());
-			result.setScope(datatype.getDomainInfo().getScope());
-			result.setVersion(datatype.getDomainInfo().getVersion());
-			if (datatype.getExt() != null) {
-				result.setLabel(datatype.getName() + "_" + datatype.getExt());
-			} else {
-				result.setLabel(datatype.getName());
-			}
-			result.setPostDef(datatype.getPostDef());
-			return result;
-		}
-		return null;
-	}
 
 	@Override
 	public List<Datatype> findDisplayFormatByScopeAndVersion(String scope, String version) {
@@ -864,264 +814,72 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 		return label;
 	}
-
-	public void logChangeStructureElement(StructureElement structureElement, ChangeItemDomain changeItem) {
-		if(structureElement.getChangeLog() == null) {
-			structureElement.setChangeLog(new HashMap<>());
-		}
-
-		if(changeItem.getChangeReason() != null) {
-			structureElement.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-		} else {
-			structureElement.getChangeLog().remove(changeItem.getPropertyType());
-		}
-	}
-
-	public void logChangeBinding(StructureElementBinding binding, ChangeItemDomain changeItem) {
-		if(binding.getChangeLog() == null) {
-			binding.setChangeLog(new HashMap<>());
-		}
-
-		if(changeItem.getChangeReason() != null) {
-			binding.getChangeLog().put(changeItem.getPropertyType(), changeItem.getChangeReason());
-		} else {
-			binding.getChangeLog().remove(changeItem.getPropertyType());
-		}
-	}
-
+	
 	@Override
-	public void applyChanges(Datatype d, List<ChangeItemDomain> cItems, String documentId)
-			throws JsonProcessingException, IOException {
-		Collections.sort(cItems);
-		for (ChangeItemDomain item : cItems) {
-		    if (item.getPropertyType().equals(PropertyType.DTMSTRUC)) {
-		      DateTimeDatatype dtd;
-		      if(d instanceof DateTimeDatatype){
-		        dtd = (DateTimeDatatype)d;
-		      }else {
-		        dtd = new DateTimeDatatype();
-		        dtd.setAuthorNotes(d.getAuthorNotes());
-		        dtd.setAuthors(d.getAuthors());
-		        dtd.setBinding(d.getBinding());
-		        dtd.setComment(d.getComment());
-		        dtd.setCreatedFrom(d.getComment());
-		        dtd.setCreationDate(d.getCreationDate());
-		        dtd.setDerived(d.isDerived());
-		        dtd.setDescription(d.getDescription());
-		        dtd.setDomainInfo(d.getDomainInfo());
-		        dtd.setExt(d.getExt());
-		        dtd.setFrom(d.getFrom());
-		        dtd.setId(d.getId());
-		        dtd.setName(d.getName());
-		        dtd.setOrganization(d.getOrganization());
-		        dtd.setOrigin(d.getOrigin());
-		        dtd.setPostDef(d.getPostDef());
-		        dtd.setPreDef(d.getPreDef());
-		        dtd.setPublicationInfo(d.getPublicationInfo());
-		        dtd.setPurposeAndUse(d.getPurposeAndUse());
-		        dtd.setStatus(d.getStatus());
-		        dtd.setType(d.getType());
-		        dtd.setUpdateDate(d.getUpdateDate());
-		        dtd.setUsageNotes(d.getUsageNotes());
-		        dtd.setUsername(d.getUsername());
-		        dtd.setVersion(d.getVersion());
-		        
-		        d = (Datatype)dtd;
-		      }
-		      
-		      item.setOldPropertyValue(dtd.getDateTimeConstraints());
-              ObjectMapper mapper = new ObjectMapper();
-              String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-              mapper.readValue(jsonInString, DateTimeConstraints.class);
-		      dtd.setDateTimeConstraints(mapper.readValue(jsonInString, DateTimeConstraints.class));
-		    }  else if (item.getPropertyType().equals(PropertyType.PREDEF)) {
-				item.setOldPropertyValue(d.getPreDef());
-				d.setPreDef((String) item.getPropertyValue());
+	public void applyChanges(Datatype d, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+		Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
+		applyChange.applyResourceChanges(d, singlePropertyMap , documentId);
 
-			} else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
-				item.setOldPropertyValue(d.getPostDef());
-				d.setPostDef((String) item.getPropertyValue());
-			} else if (item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
-				item.setOldPropertyValue(d.getAuthorNotes());
-				d.setAuthorNotes((String) item.getPropertyValue());
+		if (singlePropertyMap.containsKey(PropertyType.EXT)) {
+		  d.setExt((String) singlePropertyMap.get(PropertyType.EXT).getPropertyValue());
+	   }
 
-			} else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
-				item.setOldPropertyValue(d.getUsageNotes());
-				d.setUsageNotes((String) item.getPropertyValue());
-			}
-			 else if (item.getPropertyType().equals(PropertyType.SHORTDESCRIPTION)) {
-               item.setOldPropertyValue(d.getShortDescription());
-               d.setShortDescription((String) item.getPropertyValue());
-           } 
-		
-			else if (item.getPropertyType().equals(PropertyType.EXT)) {
-				item.setOldPropertyValue(d.getExt());
-				d.setExt((String) item.getPropertyValue());
-			} else if (item.getPropertyType().equals(PropertyType.USAGE)) {
-				Component c = this.findComponentById(d, item.getLocation());
-				if (c != null) {
-					item.setOldPropertyValue(c.getUsage());
-					c.setUsage(Usage.valueOf((String) item.getPropertyValue()));
-					this.logChangeStructureElement(c, item);
-				}
-			} else if (item.getPropertyType().equals(PropertyType.LENGTHMIN)) {
-				Component c = this.findComponentById(d, item.getLocation());
-				if (c != null) {
-					item.setOldPropertyValue(c.getMinLength());
-					if (item.getPropertyValue() == null) {
-						c.setMinLength("NA");
-					} else {
-						c.setMinLength((String) item.getPropertyValue());
-					}
-					this.logChangeStructureElement(c, item);
-				}
-			} else if (item.getPropertyType().equals(PropertyType.LENGTHMAX)) {
-				Component c = this.findComponentById(d, item.getLocation());
-				if (c != null) {
-					item.setOldPropertyValue(c.getMaxLength());
-					if (item.getPropertyValue() == null) {
-						c.setMaxLength("NA");
-					} else {
-						c.setMaxLength((String) item.getPropertyValue());
-					}
-					this.logChangeStructureElement(c, item);
-				}
-			} else if (item.getPropertyType().equals(PropertyType.CONFLENGTH)) {
-				Component c = this.findComponentById(d, item.getLocation());
-				if (c != null) {
-					item.setOldPropertyValue(c.getConfLength());
-					if (item.getPropertyValue() == null) {
-						c.setConfLength("NA");
-					} else {
-						c.setConfLength((String) item.getPropertyValue());
-					}
-					this.logChangeStructureElement(c, item);
-				}
-			} else if (item.getPropertyType().equals(PropertyType.LENGTHTYPE)) {
-				Component c = this.findComponentById(d, item.getLocation());
-				if (c != null) {
-					item.setOldPropertyValue(c.getLengthType());
-					if (item.getPropertyValue() == null) {
-						c.setLengthType(LengthType.UNSET);
-					} else {
-						c.setLengthType(LengthType.valueOf((String) item.getPropertyValue()));
-					}
-					this.logChangeStructureElement(c, item);
-				}
-			}
-		    else if (item.getPropertyType().equals(PropertyType.DATATYPE)) {
-				Component c = this.findComponentById(d, item.getLocation());
-				if (c != null) {
-					item.setOldPropertyValue(c.getRef());
-					ObjectMapper mapper = new ObjectMapper();
-					String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-					c.setRef(mapper.readValue(jsonInString, Ref.class));
-					this.logChangeStructureElement(c, item);
-				}
-			} else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
-				ObjectMapper mapper = new ObjectMapper();
-				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
-				item.setOldPropertyValue(seb.getValuesetBindings());
-				seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
-						Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
-				this.logChangeBinding(seb, item);
-			} else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
-				ObjectMapper mapper = new ObjectMapper();
-				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
-				item.setOldPropertyValue(seb.getInternalSingleCode());
-				seb.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
-				this.logChangeBinding(seb, item);
-			} else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-				Component c = this.findComponentById(d, item.getLocation());
-				if (c != null) {
-					item.setOldPropertyValue(c.getConstantValue());
-					if (item.getPropertyValue() == null) {
-						c.setConstantValue(null);
-					} else {
-						c.setConstantValue((String) item.getPropertyValue());
-					}
-					this.logChangeStructureElement(c, item);
-				}
-			} else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
-				Component f = this.findComponentById(d, item.getLocation());
-				if (f != null) {
-					item.setOldPropertyValue(f.getText());
-					if (item.getPropertyValue() == null) {
-						f.setText(null);
-					} else {
-						f.setText((String) item.getPropertyValue());
-					}
-				}
-			} else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
-				ObjectMapper mapper = new ObjectMapper();
-				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-				Component c = this.findComponentById(d, item.getLocation());
-				if (c != null) {
-					item.setOldPropertyValue(c.getComments());
-					c.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
-				}
-			} else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
-				ObjectMapper mapper = new ObjectMapper();
-				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-				if (item.getChangeType().equals(ChangeType.ADD)) {
-					ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-					cs.setId(new ObjectId().toString());
-					cs.addSourceId(d.getId());
-					cs.setStructureId(d.getName());
-					cs.setLevel(Level.DATATYPE);
-					cs.setIgDocumentId(documentId);
-					d.getBinding().addConformanceStatement(cs);
-				} else if (item.getChangeType().equals(ChangeType.DELETE)) {
-					item.setOldPropertyValue(item.getLocation());
-					this.deleteConformanceStatementById(d, item.getLocation());
-				} else if (item.getChangeType().equals(ChangeType.UPDATE)) {
-					ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-					if(!cs.isLocked()) {
-					if (cs.getIdentifier() != null) {
-						this.deleteConformanceStatementById(d, cs.getId());
-					}
-					cs.addSourceId(d.getId());
-					cs.setStructureId(d.getName());
-					cs.setLevel(Level.DATATYPE);
-					cs.setIgDocumentId(documentId);
-					d.getBinding().addConformanceStatement(cs);
-					}
-				}
-			} else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
-				ObjectMapper mapper = new ObjectMapper();
-				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
-				if (item.getChangeType().equals(ChangeType.ADD)) {
-					Predicate cp = mapper.readValue(jsonInString, Predicate.class);
-					cp.addSourceId(d.getId());
-					cp.setStructureId(d.getName());
-					cp.setLevel(Level.DATATYPE);
-					cp.setIgDocumentId(documentId);
-					seb.setPredicate(cp);
-				} else if (item.getChangeType().equals(ChangeType.DELETE)) {
-					item.setOldPropertyValue(item.getLocation());
-					if (seb.getPredicate() != null) {
-						item.setOldPropertyValue(seb.getPredicate());
-						seb.setPredicate(null);
-					}
-				} else if (item.getChangeType().equals(ChangeType.UPDATE)) {
-					Predicate cp = mapper.readValue(jsonInString, Predicate.class);
-					item.setOldPropertyValue(seb.getPredicate());
-					cp.addSourceId(d.getId());
-					cp.setStructureId(d.getName());
-					cp.setLevel(Level.DATATYPE);
-					cp.setIgDocumentId(documentId);
-					seb.setPredicate(cp);
-				}
-				this.logChangeBinding(seb, item);
-			}
+		Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
+		if(d instanceof ComplexDatatype) {
+		  this.applyChildrenChange(map, ((ComplexDatatype)d).getComponents(), documentId);
+		} else if(d instanceof DateTimeDatatype) {
+		  this.applyDTMChange(map, ((DateTimeDatatype)d), documentId);
 		}
+		applyChange.applyBindingChanges(map, d.getBinding(), documentId, Level.DATATYPE);
 		d.setBinding(this.makeLocationInfo(d));
 		this.save(d);
 	}
+	
 
+	/**
+   * @param map
+   * @param dateTimeDatatype
+   * @param documentId
+	 * @throws ApplyChangeException 
+   */
+  private void applyDTMChange(Map<PropertyType, List<ChangeItemDomain>> map,
+      DateTimeDatatype dateTimeDatatype, String documentId) throws ApplyChangeException {
+
+    if (map.containsKey(PropertyType.DTMSTRUC)) {
+      for(ChangeItemDomain change: map.get(PropertyType.DTMSTRUC)) {
+        
+        change.setOldPropertyValue(dateTimeDatatype.getDateTimeConstraints());
+        change.setOldPropertyValue(dateTimeDatatype.getDateTimeConstraints());
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonInString;
+        try {
+          jsonInString = mapper.writeValueAsString(change.getPropertyValue());
+          mapper.readValue(jsonInString, DateTimeConstraints.class);
+          dateTimeDatatype.setDateTimeConstraints(mapper.readValue(jsonInString, DateTimeConstraints.class));
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+         throw new ApplyChangeException(change);
+        }
+
+      }
+    }
+  }
+
+  /**
+   * @param map
+   * @param components
+   * @param documentId
+   */
+  private void applyChildrenChange(
+  		Map<PropertyType, List<ChangeItemDomain>> map,
+		Set<Component> components,
+		String documentId
+  ) throws ApplyChangeException {
+    applyChange.applySubstructureElementChanges(map, components, documentId, applyChange::findStructElementById);
+  }
+
+
+  //@Override
 	private void deleteConformanceStatementById(Datatype d, String location) {
 		ConformanceStatement toBeDeleted = null;
 		for (ConformanceStatement cs : d.getBinding().getConformanceStatements()) {
@@ -1257,22 +1015,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 		}
 	}
 
-	/**
-	 * @param s
-	 * @param location
-	 * @return
-	 */
-	private Component findComponentById(Datatype d, String location) {
-		if (d instanceof ComplexDatatype) {
-			for (Component c : ((ComplexDatatype) d).getComponents()) {
-				if (c.getId().equals(location))
-					return c;
-			}
-		}
-
-		return null;
-	}
-
 	@Override
 	public Set<RelationShip> collectDependencies(Datatype elm) {
 
@@ -1401,18 +1143,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 	 * collectAvaliableConformanceStatements( java.lang.String, java.lang.String,
 	 * java.lang.String)
 	 */
-	@Override
-	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String datatypeId,
-			String datatypeName) {
-//		Set<ConformanceStatement> found = this.conformanceStatementRepository
-//				.findByIgDocumentIdAndStructureId(documentId, datatypeName);
-//		Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-//		for (ConformanceStatement cs : found) {
-//			if (!cs.getSourceIds().contains(datatypeId))
-//				result.add(cs);
-//		}
-		return null;
-	}
 
 
 	@Override

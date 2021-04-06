@@ -29,6 +29,7 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
   }
 
   initializeForm(model: MetadataModel<any>) {
+    console.log(model);
     const formGroup = new FormGroup({});
     this.model = [];
     for (const field of Object.keys(model)) {

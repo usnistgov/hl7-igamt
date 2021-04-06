@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.core.Authentication;
 
+import gov.nist.hit.hl7.auth.util.requests.AdminUserRequest;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
 import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
@@ -36,7 +37,7 @@ public interface AuthenticationService {
   public ConnectionResponseMessage<UserResponse> register(RegistrationRequest user)
       throws AuthenticationException;
 
-  ConnectionResponseMessage<PasswordResetTokenResponse> requestPasswordChange(String email)
+  ConnectionResponseMessage<PasswordResetTokenResponse> requestPasswordChange(String username)
       throws AuthenticationException;
 
   boolean validateToken(String token) throws AuthenticationException;
@@ -51,5 +52,7 @@ public interface AuthenticationService {
 
   public ConnectionResponseMessage<UserResponse> update(RegistrationRequest user, HttpServletRequest req)
       throws AuthenticationException;
+
+	public ConnectionResponseMessage<UserResponse>  updatePendingAdmin(AdminUserRequest requestPara, HttpServletRequest req) throws AuthenticationException;
 
 }

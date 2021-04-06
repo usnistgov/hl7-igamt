@@ -1039,7 +1039,7 @@ public class IgServiceImpl implements IgService {
     if(vs.getBindingIdentifier().equals("HL70396") && vs.getSourceType().equals(SourceType.EXTERNAL)) {
       vs.setCodes(fhirHandlerService.getValusetCodeForDynamicTable());
     }
-    if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
+    if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null) {
       if(vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
         Config conf = this.configService.findOne();
         if(conf !=null) {
@@ -1059,6 +1059,7 @@ public class IgServiceImpl implements IgService {
         vs.setIncludeCodes(true);
       }
     }
+    vs.getCodes().removeIf((x) -> x.isDeprecated());
     return vs;
   }
 
@@ -1291,6 +1292,7 @@ public class IgServiceImpl implements IgService {
 
     }
   }
+
 
   /**
    * @param ig

@@ -17,6 +17,14 @@
     placeholder="Name" label="Name" [viewOnly]="viewOnly$ | async">
   </app-form-input>
 
+  <app-form-input formControlName="description" id="description" name="description"
+                  placeholder="Description" label="Description" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <app-form-input formControlName="displayName" id="displayName" name="displayName"
+                  placeholder="Display Name" label="Display Name" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
   <div class="form-group">
     <label for="hl7Version" class="form-label-lg"> HL7 Version </label>
     <div><span class="badge badge-secondary">{{ formGroup.controls.hl7Version.value }}</span></div>
@@ -56,24 +64,14 @@
   <strong> Message Profile Identifier </strong>
 
   <div>
-    <table formArrayName="profileIdentifier"  class="table table-condensed table-sm">
+    <table formGroupName="profileIdentifier"  class="table table-condensed table-sm">
       <tr>
-        <th>
-          <button *ngIf="!(viewOnly$ | async)" class="btn btn-sm btn-primary" (click)="addIdentifier(formGroup.get('profileIdentifier'))">
-            <i class="fa fa-plus"></i>
-          </button>
-        </th>
         <th style="text-align: center;">Entity Identifier</th>
         <th style="text-align: center;">Namespace ID</th>
         <th style="text-align: center;">Universal ID</th>
         <th style="text-align: center;">Universal ID Type</th>
       </tr>
-      <tr *ngFor="let item of getArray().controls; let i = index;" [formGroupName]="i" >
-        <td>
-          <button *ngIf="!(viewOnly$ | async)" class="btn btn-sm btn-danger" (click)="removeIdentifier(formGroup.get('profileIdentifier'), i)">
-            <i class="fa fa-minus"></i>
-          </button>
-        </td>
+      <tr>
         <td>
           <input class="form-control" formControlName="entityIdentifier" id="EntityIdentifier" name="EntityIdentifier" placeholder="Entity Identifier" label="Entity Identifier" [disabled]="viewOnly$ | async">
         </td>

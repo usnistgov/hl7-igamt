@@ -33,7 +33,7 @@
                                         <xsl:call-template name="ConstraintContent">
 
                                             <xsl:with-param name="changeClass"
-                                                            select="../../Changes/Change[@identifier=$changedIdentifier]"/>
+                                                            select="../../Changes/Change[@identifier=$changedIdentifier and @type = 'CONFORMANCESTATEMENT']"/>
                                             <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor"/>
                                             <xsl:with-param name="addedColor" select="../../Changes/@addedColor"/>
                                             <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor"/>
@@ -48,11 +48,11 @@
                                         </xsl:call-template>
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:if test="../../Changes/Change[@identifier=$changedIdentifier]">
+                                        <xsl:if test="../../Changes/Change[@identifier=$changedIdentifier  and @type = 'CONFORMANCESTATEMENT']">
                                             <xsl:call-template name="ConstraintContent">
 
                                                 <xsl:with-param name="changeClass"
-                                                                select="../../Changes/Change[@identifier=$changedIdentifier]"/>
+                                                                select="../../Changes/Change[@identifier=$changedIdentifier  and @type = 'CONFORMANCESTATEMENT']"/>
                                                 <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor"/>
                                                 <xsl:with-param name="addedColor" select="../../Changes/@addedColor"/>
                                                 <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor"/>
@@ -79,7 +79,7 @@
                                 <xsl:choose>
                                     <xsl:when test="not(../../Changes/@mode) or ../../Changes/@mode = 'HIGHLIGHT' or ../../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
                                         <xsl:call-template name="ConstraintContent">
-                                            <xsl:with-param name="changeClass" select="../../Changes/Change[@identifier=$changedPosition and @action=$action]"  />
+                                            <xsl:with-param name="changeClass" select="../../Changes/Change[@identifier=$changedPosition  and @type = 'CONFORMANCESTATEMENT' and @action=$action]"  />
                                             <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
                                             <xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
                                             <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
@@ -96,9 +96,9 @@
 
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:if test="../../Changes/Change[@identifier=$changedPosition]">
+                                        <xsl:if test="../../Changes/Change[@identifier=$changedPosition  and @type = 'CONFORMANCESTATEMENT' and @action=$action]">
                                             <xsl:call-template name="ConstraintContent">
-                                                <xsl:with-param name="changeClass" select="../../Changes/Change[@identifier=$changedPosition]"  />
+                                                <xsl:with-param name="changeClass" select="../../Changes/Change[@identifier=$changedPosition  and @type = 'CONFORMANCESTATEMENT' and @action=$action]"  />
                                                 <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
                                                 <xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
                                                 <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
@@ -171,12 +171,13 @@
                             <xsl:for-each select="Changes/Change[@type='PREDICATE' and @property='PREDICATE']">
                                 <xsl:sort select="./@position" data-type="text" order="ascending"/>
                                 <xsl:variable name="changedPosition" select="./@position"/>
+                                <xsl:variable name="action" select="./@action"/>
 
 
                                 <xsl:choose>
                                     <xsl:when test="not(../../Changes/@mode) or ../../Changes/@mode = 'HIGHLIGHT' or ../../Changes/@mode = 'HIGHLIGHT_WITH_OLD_VALUES'">
                                         <xsl:call-template name="ConstraintContent">
-                                            <xsl:with-param name="changeClass" select="../../Changes/Change[@position=$changedPosition]"  />
+                                            <xsl:with-param name="changeClass" select="../../Changes/Change[@position=$changedPosition and @type='PREDICATE' and @action=$action]"  />
                                             <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
                                             <xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
                                             <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />
@@ -193,9 +194,9 @@
 
                                     </xsl:when>
                                     <xsl:otherwise>
-                                        <xsl:if test="../../Changes/Change[@position=$changedPosition]">
+                                        <xsl:if test="../../Changes/Change[@position=$changedPosition and @type='PREDICATE' and @action=$action]">
                                             <xsl:call-template name="ConstraintContent">
-                                                <xsl:with-param name="changeClass" select="../../Changes/Change[@position=$changedPosition]"  />
+                                                <xsl:with-param name="changeClass" select="../../Changes/Change[@position=$changedPosition and @type='PREDICATE' and @action=$action]"  />
                                                 <xsl:with-param name="updatedColor" select="../../Changes/@updatedColor" />
                                                 <xsl:with-param name="addedColor" select="../../Changes/@addedColor" />
                                                 <xsl:with-param name="deletedColor" select="../../Changes/@deletedColor" />

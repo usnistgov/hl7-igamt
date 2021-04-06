@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {
   LoadSegment,
   OpenSegmentConformanceStatementEditor,
-  OpenSegmentCrossRefEditor,
+  OpenSegmentCrossRefEditor, OpenSegmentDynamicMappingEditor,
   OpenSegmentMetadataEditor,
   OpenSegmentPostDefEditor,
   OpenSegmentPreDefEditor,
@@ -19,6 +19,7 @@ import { EditorID } from '../shared/models/editor.enum';
 import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';
 import { SegmentCrossRefsComponent } from './components/cross-refs/segment-cross-refs.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
+import {DynamicMappingEditorComponent} from './components/dynamic-mapping-editor/dynamic-mapping-editor.component';
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -160,26 +161,25 @@ const routes: Routes = [
           idKey: 'segmentId',
         },
       },
-
-      // {
-      //   path: 'dynamic-mapping',
-      //   component: DynamicMappingEditorComponent,
-      //   canActivate: [EditorActivateGuard],
-      //   canDeactivate: [EditorDeactivateGuard],
-      //   data: {
-      //     editorMetadata: {
-      //       id: EditorID.DYNAMIC_MAPPING,
-      //       title: 'Dynamic mapping',
-      //       resourceType: Type.SEGMENT,
-      //     },
-      //     onLeave: {
-      //       saveEditor: true,
-      //       saveTableOfContent: true,
-      //     },
-      //     action: OpenSegmentDynamicMappingEditor,
-      //     idKey: 'segmentId',
-      //   },
-      // },
+      {
+        path: 'dynamic-mapping',
+        component: DynamicMappingEditorComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.DYNAMIC_MAPPING,
+            title: 'Dynamic mapping',
+            resourceType: Type.SEGMENT,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenSegmentDynamicMappingEditor,
+          idKey: 'segmentId',
+        },
+      },
       {
         path: 'cross-references',
         component: SegmentCrossRefsComponent,

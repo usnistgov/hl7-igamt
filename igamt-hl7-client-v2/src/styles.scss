@@ -60,6 +60,9 @@ body {
 .fill_height {
   height: 100%;
 }
+.fill_width {
+  width: 100%;
+}
 
 .form-label-lg {
   font-weight: 700;
@@ -300,6 +303,7 @@ body .ui-panel .ui-panel-titlebar .ui-panel-titlebar-icon {
 
 .notice {
   background-color: pink !important;
+  width: 100%;
 }
 
 .custom-card-title {

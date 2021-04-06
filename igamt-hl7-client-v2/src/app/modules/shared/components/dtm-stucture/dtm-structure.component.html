@@ -20,13 +20,13 @@
                                 <div *ngIf="item.usage === 'X'"><del>{{item.format}}</del></div>
                             </td>
                             <td *ngIf="item.position === 1">
-                                <p-selectButton [options]="usageOptions" [(ngModel)]="item.usage" disabled=""></p-selectButton>
+                                <p-selectButton [options]="usageOptions" [(ngModel)]="item.usage" [disabled]="true"></p-selectButton>
                             </td>
                             <td *ngIf="item.position !== 1 && item.position !== 11">
-                                <p-selectButton [options]="usageOptions" [(ngModel)]="item.usage" (onChange)="usageChange($event, item.name, item)" [disabled] = "viewOnly" ></p-selectButton>
+                                <p-selectButton [options]="usageOptions" [(ngModel)]="item.usage" (onChange)="usageChange($event, item.name, item)" [disabled] ="viewOnly"></p-selectButton>
                             </td>
                             <td *ngIf="item.position === 11">
-                                <p-selectButton [options]="usageOptions" [(ngModel)]="item.usage" (onChange)="timeZoneUsageChange($event, item.name, item)" [disabled] = "viewOnly" ></p-selectButton>
+                                <p-selectButton [options]="usageOptions" [(ngModel)]="item.usage" (onChange)="timeZoneUsageChange($event, item.name, item)" [disabled] ="viewOnly" ></p-selectButton>
                             </td>
                         </tr>
                     </ng-template>

@@ -727,7 +727,9 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
             for (CoConstraint coConstraint : coConstraints) {
                 position += 1;
                 Element rowElement = serializeRowCompactDelta(coConstraint, headersList, position, conformanceProfileExportConfiguration);
-                tableContent.appendChild(rowElement);
+                if(rowElement != null){
+                    tableContent.appendChild(rowElement);
+                }
             }
         }
 

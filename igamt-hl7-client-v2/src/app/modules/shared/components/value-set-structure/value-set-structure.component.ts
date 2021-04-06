@@ -91,7 +91,7 @@ export class ValueSetStructureComponent implements OnInit {
       return codeSys != null && codeSystem.toLowerCase() !== codeSys.toLowerCase() ;
     });
     for (const code of this.valueSet.codes) {
-      if (code.codeSystem.toLowerCase() === codeSystem.toLowerCase()) {
+      if (code.codeSystem && code.codeSystem.toLowerCase() === codeSystem.toLowerCase()) {
         code.codeSystem = null;
       }
     }

@@ -80,6 +80,8 @@ export class DeltaExportConfigurationComponent implements OnInit {
   active: any;
   @Input()
   config: any;
+  @Input()
+  viewOnly: boolean;
   @Output()
   updateDelta: EventEmitter<any>;
 

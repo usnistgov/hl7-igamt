@@ -160,7 +160,7 @@
             <span style="margin-right: 5px;"> [ </span>
             <div *ngFor="let str of list; let i = index; trackBy: trackByFn" style="margin-right: 5px;" >
               <div class="input-group">
-                <input class="form-control" [name]="'str' + i" [id]="'str' + i" type="text" [(ngModel)]="list[i]" required placeholder="value" (change)="change()" style="width: 120px !important;" >
+                <input class="form-control" pattern="^[^,]*$" [name]="'str' + i" [id]="'str' + i" type="text" [(ngModel)]="list[i]" required placeholder="value" (change)="change()" style="width: 120px !important;" >
                 <div class="input-group-append">
                   <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="removeStr(list, i)">
                     <i class="fa fa-minus" style="color: red;"></i>
@@ -181,7 +181,7 @@
             <span style="margin-right: 5px;"> [ </span>
             <div *ngFor="let str of list; let i = index; trackBy: trackByFn" style="margin-right: 5px;">
               <div class="input-group">
-                <input class="form-control" [name]="'str' + i" [id]="'str' + i" type="text" [(ngModel)]="list[i]" required placeholder="value" style="width: 120px !important;"  (change)="change()">
+                <input class="form-control" pattern="^[^,]*$" [name]="'str' + i" [id]="'str' + i" type="text" [(ngModel)]="list[i]" required placeholder="value" style="width: 120px !important;"  (change)="change()">
                 <input class="form-control" [name]="'desc' + i" [id]="'desc' + i" type="text" [(ngModel)]="descs[i]" required placeholder="description" style="width: 120px !important;" (change)="change()">
                 <div class="input-group-append">
                   <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="removeStrDesc(list, descs, i)">

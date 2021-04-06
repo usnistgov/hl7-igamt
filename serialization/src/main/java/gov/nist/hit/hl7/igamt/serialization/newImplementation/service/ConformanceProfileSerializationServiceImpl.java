@@ -87,7 +87,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                 List<CoConstraintBinding> coConstraintDelta = null;
                 // Calculate conformanceProfile delta if the conformanceProfile has an origin
 
-                if (deltaMode && conformanceProfile.getOrigin() != null && conformanceProfileExportConfiguration.isDeltaMode()) {
+                if (deltaMode && conformanceProfile.isDerived() && conformanceProfileExportConfiguration.isDeltaMode()) {
                     ResourceDelta resourceDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
                     if (resourceDelta != null) {
                         List<StructureDelta> structureDelta = resourceDelta.getStructureDelta();
@@ -237,7 +237,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
 //		            }
                     }
                 }
-                if (deltaMode && conformanceProfile.getOrigin() != null && conformanceProfileExportConfiguration.isDeltaMode() && coConstraintDelta != null && coConstraintDelta.size() > 0) {
+                if (deltaMode && conformanceProfile.isDerived() && conformanceProfileExportConfiguration.isDeltaMode() && coConstraintDelta != null && coConstraintDelta.size() > 0) {
                     Element coConstraintsBindingsElement = new Element("coConstraintsBindingsElement");
                     conformanceProfileElement.appendChild(coConstraintsBindingsElement);
                     if (conformanceProfileExportConfiguration.getDeltaConfig().getMode().equals(DeltaExportConfigMode.HIDE) ||
@@ -614,14 +614,30 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                 addedDesc.addAttribute(new Attribute("identifier", value));
                 addedDesc.addAttribute(new Attribute("action", conformanceStatementDelta.getAction().name()));
                 addedDesc.addAttribute(new Attribute("property", PropertyType.DESCRIPTION.name()));
-                changedElements.add(addedDesc);
 
                 Element addedId = new Element("Change");
                 addedId.addAttribute(new Attribute("type", Type.CONFORMANCESTATEMENT.getValue()));
                 addedId.addAttribute(new Attribute("identifier", value));
                 addedId.addAttribute(new Attribute("action", conformanceStatementDelta.getAction().name()));
                 addedId.addAttribute(new Attribute("property", PropertyType.IDENTIFIER.name()));
+
+                if(conformanceStatementDelta.getAction().equals(DeltaAction.DELETED) ){
+                    Element addedConf = new Element("Change");
+                    addedConf.addAttribute(new Attribute("type", Type.CONFORMANCESTATEMENT.getValue()));
+                    addedConf.addAttribute(new Attribute("identifier", value));
+                    addedConf.addAttribute(new Attribute("action", conformanceStatementDelta.getAction().name()));
+                    addedConf.addAttribute(new Attribute("property", Type.CONFORMANCESTATEMENT.getValue()));
+                    addedId.addAttribute(new Attribute("oldValue", conformanceStatementDelta.getIdentifier().getPrevious()));
+                    changedElements.add(addedConf);
+
+                    addedDesc.addAttribute(new Attribute("oldValue", conformanceStatementDelta.getDescription().getPrevious()));
+                    addedId.addAttribute(new Attribute("oldValue", conformanceStatementDelta.getIdentifier().getPrevious()));
+
+                }
+
+                changedElements.add(addedDesc);
                 changedElements.add(addedId);
+
 
             } else {
                 if (conformanceStatementDelta.getDescription() != null && !conformanceStatementDelta.getDescription().getAction().equals(DeltaAction.UNCHANGED)) {
