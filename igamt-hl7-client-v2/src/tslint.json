@@ -24,6 +24,9 @@
     "max-classes-per-file": [
       false,
       1
+    ],
+    "parameters-max-number" : [
+      false
     ]
   }
 }

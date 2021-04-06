@@ -79,6 +79,18 @@ import {
 @Injectable()
 export class IgEditEffects extends DamWidgetEffect {
 
+
+  constructor(
+    actions$: Actions<IgEditActions>,
+    private igService: IgService,
+    private store: Store<any>,
+    private message: MessageService,
+    private router: Router,
+    private activeRoute: ActivatedRoute,
+  ) {
+    super(IG_EDIT_WIDGET_ID, actions$);
+  }
+
   @Effect()
   UpdateSections$ = this.actions$.pipe(
     ofType(IgEditActionTypes.UpdateSections),
@@ -650,46 +662,6 @@ export class IgEditEffects extends DamWidgetEffect {
     }),
   );
 
-  finalizeAdd(toDoo: Observable<Action>) {
-    return combineLatest(
-      this.store.select(selectTableOfContentChanged),
-      this.store.select(selectIgDocument)).pipe(
-      take(1),
-      mergeMap(([changed, ig]) => {
-        if (changed) {
-          this.store.dispatch(new TableOfContentSave({
-            sections: ig.content,
-            id: ig.id,
-          }));
-
-          return RxjsStoreHelperService.listenAndReact(this.actions$, {
-            [IgEditActionTypes.TableOfContentSaveSuccess]: {
-              do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
-                return toDoo;
-              },
-              filter: (tocSaveSuccess: TableOfContentSaveSuccess) => {
-                return tocSaveSuccess.igId === ig.id;
-              },
-            },
-            [IgEditActionTypes.TableOfContentSaveFailure]: {
-              do: (tocSaveFailure: TableOfContentSaveFailure) => {
-                return of(
-                  new fromDAM.TurnOffLoader(),
-                  this.message.userMessageToAction(new UserMessage(MessageType.FAILED, 'Could not add resources due to failure to save table of content')),
-                );
-              },
-              filter: (tocSaveSuccess: TableOfContentSaveFailure) => {
-                return tocSaveSuccess.igId === ig.id;
-              },
-            },
-          });
-        } else {
-          return toDoo;
-        }
-      }),
-    );
-  }
-
   @Effect()
   deleteProfileComponentContext = this.actions$.pipe(
     ofType(IgEditActionTypes.DeleteProfileComponentContext),
@@ -785,16 +757,44 @@ export class IgEditEffects extends DamWidgetEffect {
     }),
   );
 
+  finalizeAdd(toDoo: Observable<Action>) {
+    return combineLatest(
+      this.store.select(selectTableOfContentChanged),
+      this.store.select(selectIgDocument)).pipe(
+      take(1),
+      mergeMap(([changed, ig]) => {
+        if (changed) {
+          this.store.dispatch(new TableOfContentSave({
+            sections: ig.content,
+            id: ig.id,
+          }));
 
-  constructor(
-    actions$: Actions<IgEditActions>,
-    private igService: IgService,
-    private store: Store<any>,
-    private message: MessageService,
-    private router: Router,
-    private activeRoute: ActivatedRoute,
-  ) {
-    super(IG_EDIT_WIDGET_ID, actions$);
+          return RxjsStoreHelperService.listenAndReact(this.actions$, {
+            [IgEditActionTypes.TableOfContentSaveSuccess]: {
+              do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                return toDoo;
+              },
+              filter: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                return tocSaveSuccess.igId === ig.id;
+              },
+            },
+            [IgEditActionTypes.TableOfContentSaveFailure]: {
+              do: (tocSaveFailure: TableOfContentSaveFailure) => {
+                return of(
+                  new fromDAM.TurnOffLoader(),
+                  this.message.userMessageToAction(new UserMessage(MessageType.FAILED, 'Could not add resources due to failure to save table of content')),
+                );
+              },
+              filter: (tocSaveSuccess: TableOfContentSaveFailure) => {
+                return tocSaveSuccess.igId === ig.id;
+              },
+            },
+          });
+        } else {
+          return toDoo;
+        }
+      }),
+    );
   }
 
 }

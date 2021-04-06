@@ -145,6 +145,9 @@
         <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
           <span [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive="active-node">{{node.data.variableName}}</span>
           <context-menu #cp [disabled]="viewOnly||delta">
+            <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-copy"></i> Create Flavor
+            </ng-template>
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-remove"></i> Delete
             </ng-template>
@@ -230,7 +233,6 @@
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [pcId]="node.parent.data.id" ></app-toc-sub-menu>
 
         </ng-container>
-
       </ng-container>
     </ng-template>
 

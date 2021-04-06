@@ -81,7 +81,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
   @Input()
   set tree(str: TreeNode[]) {
     console.log(str);
-    console.log("str");
+    console.log('str');
 
     const clone = this.treeCloneService.cloneViewTree(str);
     this.doFilter(clone as IHL7v2TreeNode[]);

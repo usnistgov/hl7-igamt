@@ -15,15 +15,7 @@ import {IProfileComponent, IProfileComponentContext} from '../../modules/shared/
 import {ConformanceStatementService} from '../../modules/shared/services/conformance-statement.service';
 import {CrossReferencesService} from '../../modules/shared/services/cross-references.service';
 import {DeltaService} from '../../modules/shared/services/delta.service';
-import {
-  ConformanceProfileEditActionTypes,
-  OpenConformanceProfileMetadataEditor
-} from '../conformance-profile-edit/conformance-profile-edit.actions';
 import * as fromIgamtDisplaySelectors from '../dam-igamt/igamt.resource-display.selectors';
-import {
-  selectedResourceHasOrigin, selectedResourceMetadata,
-  selectSelectedProfileComponent
-} from '../dam-igamt/igamt.selected-resource.selectors';
 import * as fromIgamtSelectedSelectors from '../dam-igamt/igamt.selected-resource.selectors';
 import {
   LoadContext,
@@ -131,14 +123,6 @@ export class ProfileComponentEffects {
       return this.message.actionFromError(action.error);
     }),
   );
-
-  // @Effect()
-  // openProfileComponentEditor$ = this.editorHelper.openMetadataEditor<OpenProfileComponentMetadataEditor>(
-  //   ProfileComponentActionTypes.OpenProfileComponentMetadataEditor,
-  //   fromIgamtDisplaySelectors.selectProfileComponentById,
-  //   this.store.select(selectedResourceMetadata),
-  //   'Profile Component not found',
-  // );
 
   @Effect()
   openCpMetadataNode$ = this.actions$.pipe(

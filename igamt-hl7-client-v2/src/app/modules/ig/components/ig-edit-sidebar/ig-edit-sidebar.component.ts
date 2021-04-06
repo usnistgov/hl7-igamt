@@ -32,7 +32,7 @@ import {
 import * as config from '../../../../root-store/config/config.reducer';
 import {
   CreateCoConstraintGroup,
-  CreateCoConstraintGroupSuccess
+  CreateCoConstraintGroupSuccess,
 } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
 import {ClearResource, LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';

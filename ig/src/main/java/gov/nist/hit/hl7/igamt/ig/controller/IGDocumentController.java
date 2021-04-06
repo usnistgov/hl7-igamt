@@ -69,6 +69,7 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
@@ -837,6 +838,36 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
         clone.getId(), false, clone.getUpdateDate(), response);
   }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/{compositeProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
+  public ResponseMessage<AddResourceResponse> cloneProfileComposite(@RequestBody CopyWrapper wrapper,
+      @PathVariable("id") String id, @PathVariable("compositeProfileId") String compositeProfileId,
+      Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException {
+    Ig ig = findIgById(id);
+    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
+    String username = authentication.getName();
+    CompositeProfileStructure cp = this.compositeProfileService.findById(wrapper.getSelected().getOriginalId());
+    if (cp == null) {
+      throw new CloneException("Failed to build composite profile tree structure");
+    }
+    CompositeProfileStructure clone = cp.clone();
+    clone.setUsername(username);
+    clone.setName(wrapper.getSelected().getExt());
+    clone.getDomainInfo().setScope(Scope.USER);
+    clone = compositeProfileService.save(clone);
+    int position = ig.getCompositeProfileRegistry().getChildren().size() + 1;
+    ig.getCompositeProfileRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(),
+        position));
+    ig = igService.save(ig);
+
+    AddResourceResponse response = new AddResourceResponse();
+    response.setId(clone.getId());
+    response.setReg(ig.getConformanceProfileRegistry());
+    response.setDisplay(displayInfoService.convertCompositeProfile(clone,ig.getConformanceProfileRegistry().getChildren().size()+1));
+
+    return new ResponseMessage<AddResourceResponse>(Status.SUCCESS, "", "Conformance profile clone Success",
+        clone.getId(), false, clone.getUpdateDate(), response);
+  }
 
 
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/clone", method = RequestMethod.POST, produces = {"application/json"})
@@ -1136,7 +1167,7 @@ public class IGDocumentController extends BaseController {
     cp.setUsername(username);
     compositeProfileService.save(cp);
 
-    CreateChildResponse createChildResponse = new CreateChildResponse(cp.getId(), ig.getProfileComponentRegistry(), this.displayInfoService.convertCompositeProfile(cp));
+    CreateChildResponse createChildResponse = new CreateChildResponse(cp.getId(), ig.getProfileComponentRegistry(), this.displayInfoService.convertCompositeProfile(cp, ig.getProfileComponentRegistry().getChildren().size()+1));
     this.igService.save(ig);
 
     return new ResponseMessage<CreateChildResponse>(Status.SUCCESS, "", "Composite Profile Created Successfully", ig.getId(), false,
@@ -1311,7 +1342,7 @@ public class IGDocumentController extends BaseController {
 
     Ig ig = findIgById(id);
     String cUser = authentication.getPrincipal().toString();
-    if(ig.getUsername() != null || this.commonService.isAdmin(authentication)) {
+    if(ig.getUsername() != null) {
 
       if(!ig.getUsername().equals(cUser)) {
         if(ig.getCurrentAuthor() != null && ig.getCurrentAuthor().equals(cUser)) {

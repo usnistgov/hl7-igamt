@@ -91,9 +91,10 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
       CompositeProfileRegistry registry) {
     Set<String> ids= this.gatherIds(registry.getChildren());
     Set<DisplayElement> ret = new HashSet<DisplayElement>();
-    List<CompositeProfileStructure> cps = compositeProfileService.findByIdIn(ids);
+    Map<String, Integer> positionMap= this.gatherIdsAndPositions(registry.getChildren());
+    List<CompositeProfileStructure> cps = compositeProfileService.findByIdIn(positionMap.keySet());
     for(CompositeProfileStructure cp: cps) {
-      ret.add(convertCompositeProfile(cp));
+      ret.add(convertCompositeProfile(cp, positionMap.get(cp.getId())));
     }
     return ret;
   }
@@ -376,11 +377,12 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
    */
 
   @Override
-  public DisplayElement convertCompositeProfile(CompositeProfileStructure compositeProfile) {
+  public DisplayElement convertCompositeProfile(CompositeProfileStructure compositeProfile, int position) {
     DisplayElement displayElement= new DisplayElement();
     displayElement.setId(compositeProfile.getId());
     displayElement.setDomainInfo(compositeProfile.getDomainInfo());
     displayElement.setDescription(compositeProfile.getName());
+    displayElement.setPosition(position);
     displayElement.setLeaf(false);
     displayElement.setVariableName(compositeProfile.getName());
     displayElement.setType(Type.COMPOSITEPROFILE);

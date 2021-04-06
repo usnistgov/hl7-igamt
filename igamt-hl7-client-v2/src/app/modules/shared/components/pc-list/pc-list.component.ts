@@ -77,7 +77,7 @@ export class PcListComponent implements OnInit {
   }
 
   delete(i: number) {
-    console.log("Removing"+ i);
+    console.log('Removing' + i);
     this.remove.emit(i);
   }
 }

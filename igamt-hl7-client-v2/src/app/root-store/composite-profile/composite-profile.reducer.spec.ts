@@ -1,4 +1,4 @@
-import { reducer, initialState } from './composite-profile.reducer';
+import { initialState, reducer } from './composite-profile.reducer';
 
 describe('CompositeProfile Reducer', () => {
   describe('an unknown action', () => {

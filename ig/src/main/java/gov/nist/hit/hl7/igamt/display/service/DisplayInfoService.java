@@ -40,7 +40,7 @@ public interface DisplayInfoService {
 	public Set<DisplayElement> convertSegments(Set<Segment> segments);
     public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles,
       ConformanceProfileRegistry conformanceProfileRegistry);
-    public DisplayElement convertCompositeProfile(CompositeProfileStructure compositeProfile);
+    public DisplayElement convertCompositeProfile(CompositeProfileStructure compositeProfile,  int integer);
     public DisplayElement convertProfileComponent(ProfileComponent pc, int integer);
 
 

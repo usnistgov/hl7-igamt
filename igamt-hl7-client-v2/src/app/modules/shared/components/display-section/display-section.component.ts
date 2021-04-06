@@ -34,6 +34,8 @@ export class DisplaySectionComponent implements OnInit {
         return this.element.fixedName + ' - ' + this.element.variableName;
       case Type.PROFILECOMPONENT:
         return this.element.variableName;
+      case Type.COMPOSITEPROFILE:
+        return this.element.variableName;
       default:
         return getLabel(this.element.fixedName, this.element.variableName);
     }

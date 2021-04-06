@@ -234,6 +234,10 @@ export class IgService {
         return this.IG_END_POINT + payload.documentId + '/segments/' + payload.selected.originalId + '/clone';
       case Type.VALUESET:
         return this.IG_END_POINT + payload.documentId + '/valuesets/' + payload.selected.originalId + '/clone';
+      case Type.PROFILECOMPONENT:
+        return this.IG_END_POINT + payload.documentId + '/' + 'profile-component/' + payload.selected.originalId + '/clone';
+      case Type.COMPOSITEPROFILE:
+        return this.IG_END_POINT + payload.documentId + '/composite-profile/' + payload.selected.originalId + '/clone';
       default: return null;
     }
   }
@@ -251,6 +255,7 @@ export class IgService {
       case Type.COCONSTRAINTGROUP:
         return this.IG_END_POINT + documentId + '/co-constraint-group/' + element.id + '/delete';
       case Type.PROFILECOMPONENT:
+        // tslint:disable-next-line:no-duplicate-string
         return this.IG_END_POINT + documentId + '/profile-component/' + element.id + '/delete';
       case Type.COMPOSITEPROFILE:
         return this.IG_END_POINT + documentId + '/composite-profile/' + element.id + '/delete';

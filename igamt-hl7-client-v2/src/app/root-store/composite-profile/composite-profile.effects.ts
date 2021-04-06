@@ -95,7 +95,6 @@ export class CompositeProfileEffects {
     }),
   );
 
-  ConfPNotFound = 'Could not find composite profile with ID ';
   constructor(
     private actions$: Actions<CompositeProfileActions>,
     private store: Store<IState>,

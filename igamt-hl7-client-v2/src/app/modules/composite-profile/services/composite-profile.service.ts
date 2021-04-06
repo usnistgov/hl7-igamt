@@ -26,8 +26,8 @@ export class CompositeProfileService {
     return this.http.get<ICPConformanceStatementList>(this.URL + id + '/conformancestatement/' + documentRef.documentId);
   }
   getApplied(composite: ICompositeProfile, pcs: IDisplayElement[]): IDisplayElement[] {
-    const ret = composite.orderedProfileComponents.sort((k, l) => k.position- l.position).map((x) => pcs.find((y) => x.profileComponentId === y.id  ));
-    return ret;
+    const sorted =  composite.orderedProfileComponents.sort((k, l) => k.position - l.position);
+    return sorted.map((x) => pcs.find((y) => x.profileComponentId === y.id  ));
   }
   getTree(coreProfile: IDisplayElement,  pcs: IDisplayElement[]): TreeNode[] {
 

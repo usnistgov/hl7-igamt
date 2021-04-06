@@ -49,7 +49,7 @@ export class AddCompositeComponent implements OnInit {
   }
 
   getOrderedPc(profileComponents: IDisplayElement[]): IOrderedProfileComponentLink[] {
-    const ret: IOrderedProfileComponentLink[] = []
+    const ret: IOrderedProfileComponentLink[] = [];
     // tslint:disable-next-line:prefer-for-of
     for ( let i = 0; i < profileComponents.length; i++ ) {
       ret.push({profileComponentId: profileComponents[i].id, position: i + 1 });

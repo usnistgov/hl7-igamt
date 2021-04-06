@@ -71,6 +71,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
+  // tslint:disable-next-line:cognitive-complexity
   constructor(private nodeHelperService: NodeHelperService, private valueSetService: ValueSetService, private cd: ChangeDetectorRef, private router: Router, private activatedRoute: ActivatedRoute) {
     this.options = {
       allowDrag: (node: TreeNode) => { return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||

@@ -1,9 +1,9 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {Actions} from '@ngrx/effects';
 import {Action, MemoizedSelectorWithProps, Store} from '@ngrx/store';
 import {combineLatest, Observable, of, Subscription} from 'rxjs';
-import {catchError, concatMap, flatMap, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, concatMap, flatMap, map, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {LoadConformanceProfile} from '../../../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import {IgEditResolverLoad} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
@@ -53,10 +53,8 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
     );
     this.profileComponentMetadata = this.currentSynchronized$;
     this.froalaConfig = this.froalaService.getConfig();
-
     this.s_workspace = this.currentSynchronized$.pipe(
       tap((metadata: IProfileComponentMetadata) => {
-
         this.initFormGroup();
         this.formGroup.patchValue(metadata);
         this.formGroup.valueChanges.subscribe((changed) => {
@@ -73,7 +71,7 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
 
   initFormGroup() {
     this.formGroup = this.formBuilder.group({
-      name: [''],
+      name: new FormControl('', [Validators.required, Validators.minLength(2)]),
       description: [''],
       profileIdentifier: this.formBuilder.group({
         entityIdentifier: [''],

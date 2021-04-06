@@ -1,5 +1,5 @@
-<div *ngFor="let elm of conformanceProfiles" class="form-inline" >
-  <p-checkbox [style]= "{'margin-right': '5px'}" [name]="elm.id" [value]="elm.id"  [(ngModel)]="ids.conformanceProfilesId" [inputId]="elm.id" (ngModelChange)="emit()"></p-checkbox>
+<div *ngFor="let elm of resources" class="form-inline" >
+  <p-checkbox [style]= "{'margin-right': '5px'}" [name]="elm.id" [value]="elm.id"  [(ngModel)]="ids" [inputId]="elm.id" (ngModelChange)="emit()"></p-checkbox>
   <app-display-section  [element]="elm">
   </app-display-section>
 </div>

@@ -221,7 +221,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   getCompositeProfies(): Observable<IDisplayElement[]> {
-    return of([]);
+    return this.store.select(fromIgDocumentEdit.selectCompositeProfilesNodes);
   }
 
   ngOnInit() {
