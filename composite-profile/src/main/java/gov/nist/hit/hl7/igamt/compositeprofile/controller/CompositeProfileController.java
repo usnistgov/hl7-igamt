@@ -11,6 +11,10 @@
  */
 package gov.nist.hit.hl7.igamt.compositeprofile.controller;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtentionServiceImpl;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +26,10 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Abdelghani El Ouakili
@@ -35,6 +43,8 @@ public class CompositeProfileController {
   @Autowired
   CompositeProfileStructureService compositeProfileService;
 
+  @Autowired
+  ConformanceProfileCompositeService compose;
 
   @RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -48,5 +58,16 @@ public class CompositeProfileController {
   public CompositeProfileStructure save(Authentication authentication, @RequestBody CompositeProfileStructure compositeProfileStructure) {
     return compositeProfileService.save(compositeProfileStructure);
   }
-  
+
+  @RequestMapping(value = "/api/composite-profile/compose/{id}", method = RequestMethod.GET,
+          produces = {"application/json"})
+  public List<Resource> eval(@PathVariable("id") String id, Authentication authentication) {
+    InMemoryDomainExtentionServiceImpl.DataFragment<ConformanceProfile>  df = compose.create(compositeProfileService.findById(id));
+
+    return Stream.concat(
+            df.getContext().getResources().stream(),
+            Stream.of(df.getPayload())
+    ).collect(Collectors.toList());
+  }
+
 }

@@ -35,6 +35,8 @@ $comformance_profile_color: rgb(167, 90, 1);
 $predicate_color: rgb(85, 173, 255);
 $co_constraint_group_color: rgb(240, 159, 53);
 $entity-badge-profile-component: #aa11e6;
+$entity-badge-composite-profile: #11c6e6;
+
 $entity-badge-profile-component-jigg:#11e6b7;
 
 // Scope Badge Colors
@@ -107,8 +109,14 @@ $deprecated-element: yellow;
 .entity-badge-profile-component {
   background-color: $entity-badge-profile-component !important;
 }
+.entity-badge-composite-profile {
+  background-color: $entity-badge-composite-profile !important;
+}
 .entity-badge-profile-component-icon {
   color: $entity-badge-profile-component-jigg !important;
+}
+.entity-badge-composite-profile-icon {
+  color: $entity-badge-profile-component !important;
 }
 
 // Page Container

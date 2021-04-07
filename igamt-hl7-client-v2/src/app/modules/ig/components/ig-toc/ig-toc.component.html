@@ -50,10 +50,10 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
-          <span  compositePLib [contextMenu]="CompositeProfileContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+          <span  #cmppLib [contextMenu]="CompositeProfileContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
           <context-menu #CompositeProfileContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="createNew(node.data, 'COMPOSITEPROFILE')" contextMenuItem [enabled]="!viewOnly&&!delta">
-              <i class="fa fa-plus"></i> Create Profile Component
+              <i class="fa fa-plus"></i> Create Composite Profile
             </ng-template>
           </context-menu>
         </ng-container>
@@ -143,7 +143,10 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-          <span [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive="active-node">{{node.data.variableName}}</span>
+          <span [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive>
+            <app-entity-bagde [type]="'COMPOSITEPROFILE'" ></app-entity-bagde>
+            {{node.data.variableName}}
+          </span>
           <context-menu #cp [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-copy"></i> Create Flavor

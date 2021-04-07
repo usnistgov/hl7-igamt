@@ -20,6 +20,17 @@ public class PermutationMap extends Permutation {
 		for(ProfileComponentItem item : pc.getProfileComponentItems()) {
 			this.compute(this.pathToStack(item.getPath()), pc.getId(), permutations, item);
 		}
+		if(pc.getProfileComponentBindings() != null) {
+			if(pc.getProfileComponentBindings().getContextBindings() != null) {
+				this.getItems().addAll(pc.getProfileComponentBindings().getContextBindings());
+			}
+			if(pc.getProfileComponentBindings().getItemBindings() != null) {
+				for(ProfileComponentItemBinding item : pc.getProfileComponentBindings().getItemBindings()) {
+					this.compute(this.pathToStack(item.getPath()), pc.getId(), permutations, item);
+				}
+			}
+		}
+
 	}
 	
 	void compute(Stack<String> path, String id, List<Permutation> permutationsList, ProfileComponentItem item) {
@@ -50,6 +61,38 @@ public class PermutationMap extends Permutation {
 				
 			}
 			
+		}
+	}
+
+	void compute(Stack<String> path, String id, List<Permutation> permutationsList, ProfileComponentItemBinding item) {
+		if(!path.isEmpty()) {
+			String elementId = path.pop();
+			String nId = id+"_"+elementId;
+			Permutation existing = permutationsList.stream().filter(p -> p.getElementId().equals(elementId)).findAny().orElse(null);
+
+			if(path.size() == 0) {
+
+				if(existing != null) {
+					existing.getItems().addAll(item.getBindings());
+				} else {
+
+					Permutation permutation = new Permutation(nId, elementId, null, new HashSet<>(item.getBindings()), new ArrayList<>());
+					permutationsList.add(permutation);
+				}
+
+			} else {
+
+				if(existing != null) {
+					this.compute(path, nId, existing.getPermutations(), item);
+				} else {
+					List<Permutation> permutations = new ArrayList<>();
+					Permutation permutation = new Permutation(nId, elementId, null, new HashSet<>(), permutations);
+					this.compute(path, nId, permutations, item);
+					permutationsList.add(permutation);
+				}
+
+			}
+
 		}
 	}
 	

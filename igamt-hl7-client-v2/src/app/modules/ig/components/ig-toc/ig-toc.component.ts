@@ -13,8 +13,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { SelectItem } from 'primeng/api';
-import {IAddNewWrapper, IAddWrapper} from '../../../document/models/document/add-wrapper.class';
-import {IClickInfo} from '../../../document/models/toc/click-info.interface';
+import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
+import { IClickInfo } from '../../../document/models/toc/click-info.interface';
 import { Scope } from '../../../shared/constants/scope.enum';
 import { Type } from '../../../shared/constants/type.enum';
 import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
@@ -39,6 +39,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild('ccgLib') ccgLib: ElementRef;
   @ViewChild('top') top: ElementRef;
   @ViewChild('pcLib') pcLib: ElementRef;
+  @ViewChild('cmppLib') cmppLib: ElementRef;
 
   // TODO set type
   options;
@@ -57,7 +58,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   delete = new EventEmitter<IDisplayElement>();
   @Output()
-  deleteContext = new EventEmitter<{child: IDisplayElement, parent: IDisplayElement}>();
+  deleteContext = new EventEmitter<{ child: IDisplayElement, parent: IDisplayElement }>();
   @Output()
   deleteNarrative = new EventEmitter<string>();
   @Output()
@@ -74,9 +75,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   // tslint:disable-next-line:cognitive-complexity
   constructor(private nodeHelperService: NodeHelperService, private valueSetService: ValueSetService, private cd: ChangeDetectorRef, private router: Router, private activatedRoute: ActivatedRoute) {
     this.options = {
-      allowDrag: (node: TreeNode) => { return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
-        node.data.type === Type.CONFORMANCEPROFILE ||
-        node.data.type === Type.PROFILE || node.data.type === Type.PROFILECOMPONENT || Type.COMPOSITEPROFILE);
+      allowDrag: (node: TreeNode) => {
+        return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
+          node.data.type === Type.CONFORMANCEPROFILE ||
+          node.data.type === Type.PROFILE || node.data.type === Type.PROFILECOMPONENT || Type.COMPOSITEPROFILE);
       },
       actionMapping: {
         mouse: {
@@ -185,6 +187,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
       this.ccgLib.nativeElement.scrollIntoView();
     } else if (type === 'profilecomponents') {
       this.pcLib.nativeElement.scrollIntoView();
+    } else if (type === 'composites') {
+      this.cmppLib.nativeElement.scrollIntoView();
     }
   }
 
@@ -230,12 +234,12 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     let url = this.getElementUrl(treeNode.parent.data);
     if (treeNode.parent && treeNode.parent.data) {
       // tslint:disable-next-line:no-collapsible-if
-     if (treeNode.data.type === Type.SEGMENTCONTEXT ) {
-       url = url + '/segment/' + treeNode.data.id;
-     }
-     if (treeNode.data.type === Type.MESSAGECONTEXT ) {
-       url = url + '/message/' + treeNode.data.id;
-     }
+      if (treeNode.data.type === Type.SEGMENTCONTEXT) {
+        url = url + '/segment/' + treeNode.data.id;
+      }
+      if (treeNode.data.type === Type.MESSAGECONTEXT) {
+        url = url + '/message/' + treeNode.data.id;
+      }
     }
     return url;
   }
@@ -245,6 +249,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   deleteOneChild(child: IDisplayElement, parent: IDisplayElement) {
-    this.deleteContext.emit({child, parent});
+    this.deleteContext.emit({ child, parent });
   }
 }

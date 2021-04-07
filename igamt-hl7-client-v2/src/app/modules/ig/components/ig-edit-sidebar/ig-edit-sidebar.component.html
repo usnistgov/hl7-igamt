@@ -25,10 +25,14 @@
 </div>
 <div class="sidebar-controls">
   <app-dam-side-bar-toggle></app-dam-side-bar-toggle>
-  <div class="btn-group mr-2" role="group">
+  <div class="btn-group mr-2" role="group" style="margin-left: 10px;">
 
     <button (click)="scrollTo('profilecomponents')" class="btn btn-text btn-sm entity-badge-profile-component" type="button">
       PC
+    </button>
+    <button (click)="scrollTo('composites')" class="btn btn-text btn-sm btn-w-icon entity-badge-composite-profile" type="button">
+      <i class="fa fa-sitemap entity-badge-composite-profile-icon" style="margin-right: 5px;"></i>
+      CP
     </button>
     <button (click)="scrollTo('messages')" class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
       CP

@@ -43,9 +43,9 @@ export class MessageContextStructureEditorComponent extends ProfileComponentCont
       actions$,
       store,
       {
-        id: EditorID.CONFP_STRUCTURE,
+        id: EditorID.PC_CONFP_CTX_STRUCTURE,
         title: 'Structure',
-        resourceType: Type.CONFORMANCEPROFILE,
+        resourceType: Type.MESSAGECONTEXT,
       },
       LoadConformanceProfile,
       [

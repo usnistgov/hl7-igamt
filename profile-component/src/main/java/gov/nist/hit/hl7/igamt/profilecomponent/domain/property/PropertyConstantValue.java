@@ -11,13 +11,14 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class PropertyConstantValue extends ItemProperty {
+public class PropertyConstantValue extends ItemProperty implements ApplySubStructElement {
 
   private String constantValue;
 
@@ -37,5 +38,10 @@ public class PropertyConstantValue extends ItemProperty {
   public void setConstantValue(String constantValue) {
     this.constantValue = constantValue;
   };
+
+  @Override
+  public void onSubStructElement(SubStructElement subStruct) {
+    subStruct.setConstantValue(constantValue);
+  }
 
 }

@@ -11,13 +11,14 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class PropertyLengthMax extends ItemProperty {
+public class PropertyLengthMax extends ItemProperty implements ApplySubStructElement{
 
   private String max;
 
@@ -37,5 +38,9 @@ public class PropertyLengthMax extends ItemProperty {
   public void setMax(String max) {
     this.max = max;
   }
-  
+
+  @Override
+  public void onSubStructElement(SubStructElement subStruct) {
+    subStruct.setMaxLength(max);
+  }
 }

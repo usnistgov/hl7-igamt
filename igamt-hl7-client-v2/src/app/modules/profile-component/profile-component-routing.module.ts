@@ -3,18 +3,15 @@ import { RouterModule, Routes } from '@angular/router';
 import {
   LoadContext,
   LoadProfileComponent,
-  LoadProfileComponentFailure,
-  LoadProfileComponentSuccess,
   OpenContextStructureEditor, OpenProfileComponentMetadataEditor,
   ProfileComponentActionTypes,
 } from '../../root-store/profile-component/profile-component.actions';
-import {LoadSegment, SegmentEditActionTypes} from '../../root-store/segment-edit/segment-edit.actions';
-import {DataLoaderGuard, EditorActivateGuard, EditorDeactivateGuard} from '../dam-framework';
-import {Type} from '../shared/constants/type.enum';
-import {EditorID} from '../shared/models/editor.enum';
-import {MessageContextStructureEditorComponent} from './components/message-context-structure-editor/message-context-structure-editor.component';
-import {ProfileComponentMetadataComponent} from './components/profile-component-metadata/profile-component-metadata.component';
-import {SegmentContextStructureEditorComponent} from './components/segment-context-structure-editor/segment-context-structure-editor.component';
+import { DataLoaderGuard, EditorActivateGuard, EditorDeactivateGuard } from '../dam-framework';
+import { Type } from '../shared/constants/type.enum';
+import { EditorID } from '../shared/models/editor.enum';
+import { MessageContextStructureEditorComponent } from './components/message-context-structure-editor/message-context-structure-editor.component';
+import { ProfileComponentMetadataComponent } from './components/profile-component-metadata/profile-component-metadata.component';
+import { SegmentContextStructureEditorComponent } from './components/segment-context-structure-editor/segment-context-structure-editor.component';
 
 const routes: Routes = [
   {
@@ -28,11 +25,11 @@ const routes: Routes = [
     },
     canActivate: [DataLoaderGuard],
     children: [
-       {
-         path: '',
-         redirectTo: 'metadata',
-         pathMatch: 'full',
-       },
+      {
+        path: '',
+        redirectTo: 'metadata',
+        pathMatch: 'full',
+      },
       {
         path: 'metadata',
         component: ProfileComponentMetadataComponent,
@@ -81,7 +78,7 @@ const routes: Routes = [
                     canDeactivate: [EditorDeactivateGuard],
                     data: {
                       editorMetadata: {
-                        id: EditorID.SEGMENT_STRUCTURE,
+                        id: EditorID.PC_SEGMENT_CTX_STRUCTURE,
                         title: 'Structure',
                         resourceType: Type.SEGMENTCONTEXT,
                       },
@@ -123,7 +120,7 @@ const routes: Routes = [
                     canDeactivate: [EditorDeactivateGuard],
                     data: {
                       editorMetadata: {
-                        id: EditorID.CONFP_STRUCTURE,
+                        id: EditorID.PC_CONFP_CTX_STRUCTURE,
                         title: 'Structure',
                         resourceType: Type.MESSAGECONTEXT,
                       },
@@ -141,7 +138,8 @@ const routes: Routes = [
           },
         ],
       },
-    ]}];
+    ],
+  }];
 
 @NgModule({
   imports: [

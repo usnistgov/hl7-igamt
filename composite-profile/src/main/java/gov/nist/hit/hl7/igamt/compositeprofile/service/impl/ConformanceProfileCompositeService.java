@@ -1,11 +1,12 @@
 package gov.nist.hit.hl7.igamt.compositeprofile.service.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,12 +29,6 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.Permutation;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.PermutationMap;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext.Level;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ApplyDatatype;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ApplyField;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ApplyMsgStructElement;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ApplySegment;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ApplyStructureElement;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ApplySubStructElement;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -50,18 +45,21 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 	DatatypeService datatypeService;
 	@Autowired
 	SegmentService segmentService;
+	@Autowired
+	BindingService bindingService;
 	
 	// Create a PermutationMap from List of profile components
 	List<PermutationMap> profileComponentLinksToPermutationMap(Set<OrderedProfileComponentLink> structure) {
 		ArrayList<OrderedProfileComponentLink> links = new ArrayList<>(structure);
 		Collections.sort(links);
 		
-//		List<PermutationMap> pmList = links.stream().map(l -> this.profileComponentService.findById(l.getProfileComponentId()))
-//		.map(x ->  x != null ? new PermutationMap(x) : null)
-//		.filter(x -> x != null)
-//		.collect(Collectors.toList());
+		List<PermutationMap> pmList = links.stream().map(l -> this.profileComponentService.findById(l.getProfileComponentId()))
+		.flatMap(x -> x.getChildren().stream())
+		.map(x ->  x != null ? new PermutationMap(x) : null)
+		.filter(Objects::nonNull)
+		.collect(Collectors.toList());
 		
-		return null;
+		return pmList;
 	}
 
 	// Create a ConformanceProfile from Composite
@@ -94,7 +92,7 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 		ConformanceProfile continueOn = target;
 		
 		for(PermutationMap pm: pmL) {
-			if(pm.type.equals(Level.MESSAGE) && target.getId().equals(pm.targetId)) {
+			if(pm.type.equals(Type.CONFORMANCEPROFILE) && target.getId().equals(pm.targetId)) {
 				continueOn = this.evaluate(continueOn, pm, repo);
 			}
 		}
@@ -136,7 +134,7 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 		Segment continueOn = target;
 		
 		for(PermutationMap pm: pmL) {
-			if(pm.type.equals(Level.SEGMENT) && continueOn.getId().equals(pm.targetId)) {
+			if(pm.type.equals(Type.SEGMENT) && continueOn.getId().equals(pm.targetId)) {
 				continueOn = this.evaluate(continueOn, pm, repo);
 			}
 		}
@@ -186,7 +184,11 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 				}
 			}
 		}
-		
+		// Apply
+		permutation.getItems().stream().filter(x -> x instanceof ApplyConformanceProfile)
+				.forEach(x -> ((ApplyConformanceProfile) x).onConformanceProfile(confProfile));
+		permutation.getItems().stream().filter(x -> x instanceof ApplyResourceBinding)
+				.forEach(x -> ((ApplyResourceBinding) x).onResourceBinding(confProfile.getBinding(), this.bindingService));
 		return confProfile;
 	}
 	
@@ -207,6 +209,10 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 	
     // Evaluate permutation at Segment Level
 	Segment evaluate(Segment target, Permutation permutation, DataExtention repo) {
+		if(this.exit(permutation, this::segmentGuard)) {
+			return target;
+		}
+
 		Segment segment = repo.cloneAndAddIfNotPresent(target, Segment.class);
 		if(!segment.getId().equals(target.getId())) {
 			segment.setExt(permutation.getName());
@@ -224,7 +230,8 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 		// Apply
 		permutation.getItems().stream().filter(x -> x instanceof ApplySegment)
 		.forEach(x -> ((ApplySegment) x).onSegment(segment));
-		
+		permutation.getItems().stream().filter(x -> x instanceof ApplyResourceBinding)
+		.forEach(x -> ((ApplyResourceBinding) x).onResourceBinding(segment.getBinding(), this.bindingService));
 		return segment;
 	}
 	
@@ -263,6 +270,10 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 	
     // Evaluate permutation at Datatype Level
 	Datatype evaluate(Datatype target, Permutation permutation, DataExtention repo) {
+		if(this.exit(permutation, this::datatypeGuard)) {
+			return target;
+		}
+
 		Datatype datatype = repo.cloneAndAddIfNotPresent(target, Datatype.class);
 		if(!datatype.getId().equals(target.getId())) {
 			datatype.setExt(permutation.getName());
@@ -280,7 +291,8 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 		// Apply
 		permutation.getItems().stream().filter(x -> x instanceof ApplyDatatype)
 		.forEach(x -> ((ApplyDatatype) x).onDatatype(datatype));
-		
+		permutation.getItems().stream().filter(x -> x instanceof ApplyResourceBinding)
+		.forEach(x -> ((ApplyResourceBinding) x).onResourceBinding(datatype.getBinding(), this.bindingService));
 		return datatype;
 	}
 	
@@ -298,5 +310,21 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 		.forEach(x -> ((ApplySubStructElement) x).onSubStructElement(field));
 		permutation.getItems().stream().filter(x -> x instanceof ApplyStructureElement)
 		.forEach(x -> ((ApplyStructureElement) x).onStructureElement(field));
+	}
+
+	boolean guard(Permutation permutation) {
+		return permutation.getPermutations().size() > 0;
+	}
+
+	boolean datatypeGuard(Permutation permutation) {
+		return permutation.getItems().stream().anyMatch((i) -> i instanceof ApplyDatatype || i instanceof  ApplyResourceBinding);
+	}
+
+	boolean segmentGuard(Permutation permutation) {
+		return permutation.getItems().stream().anyMatch((i) -> i instanceof ApplySegment || i instanceof  ApplyResourceBinding);
+	}
+
+	boolean exit(Permutation permutation, Function<Permutation, Boolean> guard) {
+		return !(this.guard(permutation)) && !guard.apply(permutation);
 	}
 }

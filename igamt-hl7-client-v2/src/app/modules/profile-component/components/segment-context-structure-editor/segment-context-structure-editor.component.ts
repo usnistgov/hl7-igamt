@@ -35,9 +35,9 @@ export class SegmentContextStructureEditorComponent extends ProfileComponentCont
       actions$,
       store,
       {
-        id: EditorID.SEGMENT_STRUCTURE,
+        id: EditorID.PC_SEGMENT_CTX_STRUCTURE,
         title: 'Structure',
-        resourceType: Type.SEGMENT,
+        resourceType: Type.SEGMENTCONTEXT,
       },
       LoadSegment,
       [

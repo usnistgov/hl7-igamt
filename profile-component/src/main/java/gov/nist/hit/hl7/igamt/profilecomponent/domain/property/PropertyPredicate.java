@@ -14,6 +14,9 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 
@@ -21,7 +24,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
  *
  * @author Maxence Lefort on Feb 22, 2018.
  */
-public class PropertyPredicate extends PropertyBinding {
+public class PropertyPredicate extends PropertyBinding implements ApplyResourceBinding {
 
   private Predicate predicate;
 
@@ -35,5 +38,11 @@ public class PropertyPredicate extends PropertyBinding {
 
   public void setPredicate(Predicate predicate) {
     this.predicate = predicate;
+  }
+
+  @Override
+  public void onResourceBinding(ResourceBinding resourceBinding, BindingService bindingService) {
+    StructureElementBinding structureElementBinding = this.getStructureBinding(resourceBinding, this.target, bindingService);
+    structureElementBinding.setPredicate(predicate);
   }
 }

@@ -46,3 +46,14 @@
 .example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
+
+.back-0 {
+  background-color: aliceblue;
+}
+
+.plus-btn {
+  position: absolute;
+  top: -15px;
+  right: 95px;
+  z-index: 9;
+}

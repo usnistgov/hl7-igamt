@@ -1,10 +1,6 @@
 package gov.nist.hit.hl7.igamt.common.base.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
@@ -62,6 +58,10 @@ public class InMemoryDomainExtentionServiceImpl implements InMemoryDomainExtenti
 				this.resources.get(as).add(clone);
 				return clone;
 			}
+		}
+
+		public List<Resource> getResources() {
+			return this.resources.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
 		}
 		
 	}

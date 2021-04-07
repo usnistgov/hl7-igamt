@@ -12,9 +12,10 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.LengthType;
+import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
-public class PropertyLengthType extends ItemProperty {
+public class PropertyLengthType extends ItemProperty implements ApplySubStructElement {
 
   private LengthType type;
 
@@ -33,5 +34,10 @@ public class PropertyLengthType extends ItemProperty {
 
   public void setType(LengthType type) {
     this.type = type;
+  }
+
+  @Override
+  public void onSubStructElement(SubStructElement subStruct) {
+    subStruct.setLengthType(type);
   }
 }

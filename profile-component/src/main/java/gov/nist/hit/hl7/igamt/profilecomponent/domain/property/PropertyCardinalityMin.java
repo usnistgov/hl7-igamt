@@ -11,13 +11,15 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class PropertyCardinalityMin extends ItemProperty {
+public class PropertyCardinalityMin extends ItemProperty implements ApplyMsgStructElement, ApplyField{
 
   private int min;
 
@@ -38,4 +40,13 @@ public class PropertyCardinalityMin extends ItemProperty {
     this.min = min;
   }
 
+  @Override
+  public void onField(Field elm) {
+    elm.setMin(min);
+  }
+
+  @Override
+  public void onMsgStructElement(MsgStructElement elm) {
+    elm.setMin(min);
+  }
 }
