@@ -28,6 +28,7 @@ public class ValueSetExportConfiguration extends ResourceExportConfiguration{
 	  private boolean contentDefinition;
 	  private boolean uRL;
 	  private boolean vsType;
+	  private boolean comments;
 	  
 
 	  public ValueSetExportConfiguration(ExportConfiguration exportConfiguration) {
@@ -214,6 +215,14 @@ public class ValueSetExportConfiguration extends ResourceExportConfiguration{
 	  public void setMaxCodeNumber(int maxCodeNumber) {
 	    this.maxCodeNumber = maxCodeNumber;
 	  }
+
+	public boolean isComments() {
+		return comments;
+	}
+
+	public void setComments(boolean comments) {
+		this.comments = comments;
+	}
 
 
 }

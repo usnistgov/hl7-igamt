@@ -66,9 +66,10 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
             throws RegistrySerializationException {
         Element serializedSection = null;
         if(documentStructureDataModel instanceof IgDataModel) {
-        if (Type.TEXT.equals(section.getType())) {
+        if (Type.TEXT.equals(section.getType()) && !exportConfiguration.getIgGeneralConfiguration().isNotMessageInfrastructure()) {
             serializedSection = SerializeTextSection((TextSection) section, level, (IgDataModel) documentStructureDataModel, exportConfiguration);
-        } else if (Type.PROFILE.equals(section.getType())) {
+        } else
+        	if (Type.PROFILE.equals(section.getType())) {
             serializedSection = SerializeProfile((TextSection) section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
                     exportFilterDecision);
         } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {

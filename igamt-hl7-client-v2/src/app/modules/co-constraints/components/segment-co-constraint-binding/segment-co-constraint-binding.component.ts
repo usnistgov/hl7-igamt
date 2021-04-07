@@ -1,11 +1,17 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { NgForm } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
+import { FormControl } from '@angular/forms';
+import { Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import * as _ from 'lodash';
+import { flatMap } from 'lodash';
 import { Observable } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
+import { map, mergeMap, take, tap } from 'rxjs/operators';
+import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import { MessageType, UserMessage } from '../../../dam-framework/models/messages/message.class';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
@@ -22,8 +28,10 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { ISegment } from '../../../shared/models/segment.interface';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
+import { FileUploadService } from '../../services/file-upload.service';
 import { CoConstraintGroupSelectorComponent } from '../co-constraint-group-selector/co-constraint-group-selector.component';
 import { CoConstraintAction, CoConstraintTableComponent } from '../co-constraint-table/co-constraint-table.component';
+import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
 
 @Component({
   selector: 'app-segment-co-constraint-binding',
@@ -34,6 +42,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
 
   segment$: Observable<ISegment>;
   binding: ICoConstraintBindingSegment;
+  userMessage: UserMessage;
 
   formMap: {
     [id: number]: NgForm;
@@ -67,6 +76,64 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   delete: EventEmitter<boolean>;
   display$: Observable<IDisplayElement>;
 
+  excelImport = false;
+
+  // Variable to store shortLink from api response
+  shortLink = '';
+  loading = false; // Flag variable
+  file: File = null; // Variable to store file
+
+  // On file Select
+  onChange(event) {
+      this.file = event.target.files[0];
+  }
+
+  // OnClick of button Upload
+  onUpload() {
+          console.log(this.file);
+          this.conformanceProfile.pipe(
+        take(1),
+        mergeMap((cp) => {
+          return this.fileUploadService.upload(this.file, this.binding.flavorId, cp.id, this.documentRef.documentId, this.context.pathId).pipe(
+            map((v) => {
+              console.log(v.data );
+              this.store.dispatch(this.messageService.messageToAction(v));
+              this.binding.tables.push({ delta: undefined, value: v.data, condition: undefined });
+              console.log(this.binding.tables);
+            }),
+          );
+        }),
+    ).subscribe();
+
+  }
+
+  openImportDialog() {
+    const dialogRef = this.dialog.open(ImportDialogComponent, {
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      data: {
+        fileUploadService: this.fileUploadService,
+        flavorId: this.binding.flavorId,
+        conformanceProfile: this.conformanceProfile,
+        documentId : this.documentRef.documentId,
+        pathId: this.context.pathId,
+
+      },
+    });
+    dialogRef.afterClosed().subscribe(
+      (coConstraintTable) => {
+        if (coConstraintTable) {
+          console.log('in segment class : ', coConstraintTable);
+
+          this.store.dispatch(this.messageService.userMessageToAction(new UserMessage<never>(MessageType.SUCCESS, 'TABLE SAVED SUCCESSFULLY')),
+
+        );
+          this.binding.tables.push({ delta: undefined, value: coConstraintTable, condition: undefined });
+          console.log(this.binding.tables);          }
+      },
+    );
+  }
+
   @Input()
   set value(binding: ICoConstraintBindingSegment) {
     this.binding = {
@@ -81,6 +148,8 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     private dialog: MatDialog,
     protected store: Store<any>,
     public repository: StoreResourceRepositoryService,
+    private fileUploadService: FileUploadService,
+    private messageService: MessageService,
     protected ccService: CoConstraintEntityService) {
     this.valueChange = new EventEmitter<ICoConstraintBindingSegment>();
     this.delete = new EventEmitter<boolean>();
@@ -90,7 +159,10 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   exportAsExcel(table: ICoConstraintTable) {
     this.ccService.exportAsExcel(table);
   }
-
+  importAsExcel() {
+    console.log('Button import excel working');
+    this.excelImport = true;
+  }
   triggerRemove() {
     this.delete.emit(true);
   }
@@ -146,14 +218,15 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
 
   openConditionDialog(context: any, conditional: ICoConstraintTableConditionalBinding) {
     const dialogRef = this.dialog.open(CsDialogComponent, {
-      maxWidth: '95vw',
-      maxHeight: '90vh',
+      maxWidth: '150vw',
+      maxHeight: '130vh',
       data: {
         title: 'Co-Constraint Table Conditional',
         assertionMode: true,
         context: context.path,
         assertion: conditional.condition,
         resource: this.conformanceProfile,
+
         excludePaths: [this.binding.segment.pathId],
       },
     });
@@ -228,6 +301,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.binding);
   }
 
 }

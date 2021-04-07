@@ -151,8 +151,13 @@ public class SerializeCoconstraintTableToExcel {
 			
 			Cell cardinalityHeaderCell = headerRow.createCell(headerCellNumber++);
 			cardinalityHeaderCell.setCellStyle(usageAndCardinalityStyle);
-			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
+//			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
 			cardinalityHeaderCell.setCellValue("Cardinality");
+			Cell cardinalityHeaderCell2 = headerRow2.createCell(headerCellNumber);
+			cardinalityHeaderCell2.setCellStyle(usageAndCardinalityStyle);
+			cardinalityHeaderCell2.setCellValue("Cardinality");
+			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
+
 			headerCellNumber++;
 			
 			Cell ifCell = headerRow.createCell(headerCellNumber);
@@ -277,8 +282,9 @@ public class SerializeCoconstraintTableToExcel {
 				cardinalityCell2
 				.setCellValue("  "+coConstraintTableGroup.getRequirement().getCardinality().getMax()+"  ");
 				cardinalityCell2.setCellStyle(headerGroupStyle);
-				Cell groupNameCell = headerGroupRow.createCell(cellNumber++);
+				Cell groupNameCell = headerGroupRow.createCell(cellNumber++);			
 				groupNameCell.setCellValue("Group name : " + ((CoConstraintGroupBindingContained) coConstraintTableGroup).getName());
+				groupNameCell.setCellValue(((CoConstraintGroupBindingContained) coConstraintTableGroup).getName());
 				groupNameCell.setCellStyle(headerGroupStyle);
 				sheet.addMergedRegion(new CellRangeAddress(rowNumber-1,rowNumber-1,cellNumber-1,cellNumber+headerCount-2));
 				for (CoConstraint coConstraintTableRow : ((CoConstraintGroupBindingContained) coConstraintTableGroup).getCoConstraints()) {
@@ -524,7 +530,7 @@ public class SerializeCoconstraintTableToExcel {
 					location = location + "or" + i;
 				}
 			}
-			cellValue = "Code: " + codeCell.getCode() + ",  " + "Code System: " + codeCell.getCodeSystem() + ",  " + "location: " + location;
+			cellValue = "Code:" + codeCell.getCode() + ",  " + "Code System:" + codeCell.getCodeSystem() + ",  " + "Location:" + location;
 			break;
 
 		case VALUE:

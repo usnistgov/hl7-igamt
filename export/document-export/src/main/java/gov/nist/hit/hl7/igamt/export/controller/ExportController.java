@@ -5,21 +5,30 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -31,6 +40,8 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.DocumentStructureService;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
@@ -52,11 +63,17 @@ import gov.nist.hit.hl7.igamt.ig.controller.FormData;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.ExcelImportService;
 import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.SerializeCoconstraintTableToExcel;
+import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.parser.ParserResults;
 
 @RestController
 public class ExportController {
+	
+	@Autowired
+	ExcelImportService excelImportService;
 
 	@Autowired
 	DlNewExportService dlNewExportService;
@@ -79,6 +96,10 @@ public class ExportController {
 	@Autowired
 	DatatypeLibraryService datatypeLibraryService;
 
+	List<String> files = new ArrayList<String>();
+	Path source = Paths.get(this.getClass().getResource("/").getPath());
+	private final Path rootLocation = Paths.get(source.toAbsolutePath() + "/newFolder/");
+//	   private final Path rootLocation = Paths.get("_Path_To_Save_The_File");
 
 	@RequestMapping(value = "/api/export/{document}/{igId}/configuration/{configId}/{format}", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	public @ResponseBody void exportIgDocument(@PathVariable("igId") String igId,
@@ -293,6 +314,73 @@ public class ExportController {
 		}
 
 	}
+	
+//	@RequestMapping(value = "/api/import/coconstraintTable", method = RequestMethod.POST, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+//	public @ResponseBody void importCoconstraintTable(FormData formData, HttpServletResponse response) throws ExportException, JsonParseException, JsonMappingException, IOException {
+//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//		System.out.println("BEfore IF");
+//		if(formData.getJson() != null) {
+//			System.out.println("formDATA not null");
+//			ObjectMapper mapper = new ObjectMapper();
+//			mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//			CoConstraintTable coConstraintTable = mapper.readValue(formData.getJson(), CoConstraintTable.class);
+//			if (authentication != null) {
+//				String username = authentication.getPrincipal().toString();
+//				ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(coConstraintTable);
+//				response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+//				response.setHeader("Content-disposition",
+//						"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
+//				try {
+//					response.getOutputStream().write(excelFile.toByteArray());
+//				} catch (IOException e) {
+//					throw new ExportException(e, "Error while sending back excel Document for coconstraintTable with id " + coConstraintTable.getId());
+//				}
+//			} else {
+//				throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+//			}
+//		} else {
+//			System.out.println("formDATA GRAVE null");
+//
+//		}
+//
+//	}
+
+	@RequestMapping(value="/api/import/coconstraintTable", method=RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@ResponseBody
+	   public ParserResults handleFileUpload(@RequestPart("file") MultipartFile file,
+			   @RequestParam("segmentID") String segmentID,
+			   @RequestParam("conformanceProfileID") String conformanceProfileID,
+			   @RequestParam("igID") String igID,
+			   @RequestParam("pathID") String pathID) throws IOException{
+	      String message;
+	      System.out.println("file name : " + 	        	 segmentID);
+	      System.out.println("file name : " + 	        	 conformanceProfileID);
+	      System.out.println("file name : " + 	        	 igID);
+	      
+	      InputStream stream = file.getInputStream();
+	      try {
+	    	  ParserResults parserResults = excelImportService.readFromExcel(stream, segmentID, conformanceProfileID, igID, pathID );
+//			return new ResponseMessage(Status.SUCCESS, "Table imported succesfully", conformanceProfileID, parserResults, new Date());
+	    	  Optional<IgamtObjectError> match =  parserResults.getVerificationResult().getErrors().stream().filter((error) ->
+	    	  { 
+	    		  return error.getSeverity().equals("ERROR");
+	    	
+	    	  }).findFirst();
+				if(match.isPresent()) {
+					parserResults.setCoConstraintTable(null);
+					}
+				
+				
+				
+
+	    	  return parserResults;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+//			return new ResponseMessage(Status.FAILED, e.getLocalizedMessage(), conformanceProfileID,  new Date());
+			return null;
+		}
+	   }
 
 	@RequestMapping(value = "/api/export/ig/{igId}/quickWord", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 	public @ResponseBody void exportIgDocumentWord(@PathVariable("igId") String igId,

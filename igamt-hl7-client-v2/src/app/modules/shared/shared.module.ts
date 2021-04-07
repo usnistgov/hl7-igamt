@@ -6,7 +6,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule, MatRadioModule, MatSelectModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
-import { MatSliderModule } from '@angular/material/slider';
+import {MatSliderModule} from '@angular/material/slider';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
@@ -42,12 +42,12 @@ import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.
 import { DisplayRefComponent } from './components/display-ref/display-ref.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { DtmStructureComponent } from './components/dtm-stucture/dtm-structure.component';
-import { AddMappingDialgComponent } from './components/dynamic-mapping/add-mapping-dialg/add-mapping-dialg.component';
 import { DynamicMappingComponent } from './components/dynamic-mapping/dynamic-mapping.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
+import { FileExcelInputComponent } from './components/file-excel-input/file-excel-input.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
 import { CardinalityComponent } from './components/hl7-v2-tree/columns/cardinality/cardinality.component';
@@ -174,7 +174,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeLogInfoComponent,
     DeactivatingDialogComponent,
     ResourceListComponent,
-    AddMappingDialgComponent,
+    FileExcelInputComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -257,6 +257,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
     FileSelectInputComponent,
+    FileExcelInputComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
     ScopeBadgeComponent,
@@ -355,7 +356,6 @@ import { MinNumberDirective } from './validators/min-number.directive';
     FieldAddDialogComponent,
     ChangeReasonDialogComponent,
     DeactivatingDialogComponent,
-    AddMappingDialgComponent,
   ],
 })
 export class SharedModule {
