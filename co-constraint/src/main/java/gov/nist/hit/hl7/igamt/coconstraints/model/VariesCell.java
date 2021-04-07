@@ -3,6 +3,11 @@ package gov.nist.hit.hl7.igamt.coconstraints.model;
 public class VariesCell extends CoConstraintCell {
     protected ColumnType cellType;
     protected CoConstraintCell cellValue;
+    
+    public VariesCell() {
+		super();
+		this.setType(ColumnType.VARIES);
+	}
 
     public ColumnType getCellType() {
         return cellType;

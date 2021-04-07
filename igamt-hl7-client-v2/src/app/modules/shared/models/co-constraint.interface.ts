@@ -35,7 +35,7 @@ export interface ICoConstraintTableConditionalBinding {
 
 export interface ICoConstraintTable {
   id?: string;
-  type: CoConstraintMode;
+  tableType: CoConstraintMode;
   baseSegment: string;
   headers: ICoConstraintHeaders;
   coConstraints: ICoConstraint[];

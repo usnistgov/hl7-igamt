@@ -26,6 +26,19 @@
           </li>
         </ul>
       </div>
+
+      <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+        <h5 class="card-title title-text custom-card-title">Structured Narrative</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="Definition Text" binary="true" [(ngModel)]="config.structuredNarrative.definitionText" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Comments" binary="true" [(ngModel)]="config.structuredNarrative.comments" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox></li>
+        </ul>
+      </div>
+
+
+
       <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;">
         <h5 class="card-title title-text custom-card-title">Metadata</h5>
         <ul class="list-group list-group-flush">
@@ -34,8 +47,8 @@
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Author" binary="true" [(ngModel)]="config.metadataConfig.author" (onChange)="triggerChange()"></p-checkbox></li>
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Type" binary="true" [(ngModel)]="config.metadataConfig.type" (onChange)="triggerChange()"></p-checkbox></li>
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Role" binary="true" [(ngModel)]="config.metadataConfig.role" (onChange)="triggerChange()"></p-checkbox></li>
-          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox></li>
-          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox></li>
+
+
           <!-- <li class="list-group-item"><p-checkbox label="Usage Notes " binary="true" [(ngModel)]="config.usageNotes" (onChange)="triggerChange()"></p-checkbox></li>
           <li class="list-group-item"><p-checkbox label="Author Notes" binary="true" [(ngModel)]="config.authorNotes" (onChange)="triggerChange()"></p-checkbox></li> -->
         </ul>
@@ -64,6 +77,8 @@
           <li class="list-group-item"><p-radioButton [disabled]="viewOnly" label="Don't Export" value="NOEXPORT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
         </ul>
       </div>
+
+      
 
       
       </div>

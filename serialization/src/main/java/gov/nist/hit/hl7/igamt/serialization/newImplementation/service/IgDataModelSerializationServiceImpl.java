@@ -52,7 +52,9 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 			// startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
 			int startLevel = 1;
 			Element sectionElement = sectionSerializationService.SerializeSection(section, startLevel, documentStructureDataModel, exportConfiguration, exportFilterDecision);
-			igDocumentElement.appendChild(sectionElement);
+			if (sectionElement != null) {
+				igDocumentElement.appendChild(sectionElement);
+			}
 		}
 		return igDocumentElement;
 	}

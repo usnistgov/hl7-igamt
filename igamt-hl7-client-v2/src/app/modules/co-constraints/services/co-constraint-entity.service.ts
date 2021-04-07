@@ -92,7 +92,7 @@ export class CoConstraintEntityService {
 
   createOBXCoConstraintTable(segment: ISegment, repository: AResourceRepositoryService): Observable<ICoConstraintTable> {
     const table: ICoConstraintTable = {
-      type: CoConstraintMode.TABLE,
+      tableType: CoConstraintMode.TABLE,
       baseSegment: segment.id,
       headers: {
         selectors: [],
@@ -153,7 +153,7 @@ export class CoConstraintEntityService {
 
   createEmptyCoConstraintTable(segment: ISegment): ICoConstraintTable {
     return {
-      type: CoConstraintMode.TABLE,
+      tableType: CoConstraintMode.TABLE,
       baseSegment: segment.id,
       headers: {
         selectors: [],

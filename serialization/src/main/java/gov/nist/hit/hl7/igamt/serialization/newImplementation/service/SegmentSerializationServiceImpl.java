@@ -124,6 +124,12 @@ private SerializationTools serializationTools;
 	      if (segment.getChildren() != null) {
 	    	  Element commentsElement = new Element("Comments");
 	    	  Element definitionTextsElement = new Element("DefinitionTexts");
+	    	  if(segmentExportConfiguration.getStructuredNarrative().isComments()) {
+	    		  segmentElement.appendChild(commentsElement);
+              }
+              if(segmentExportConfiguration.getStructuredNarrative().isDefinitionText()) {
+            	  segmentElement.appendChild(definitionTextsElement);
+              }
 	    	  for(Field field : segment.getChildren()) {
 	    	    if(bindedPaths.containsKey(field.getId())) {
 	    		  if(field.getComments() != null) {
@@ -150,8 +156,8 @@ private SerializationTools serializationTools;
 	    		  }
 	    	  }
 	    	  }
-			segmentElement.appendChild(commentsElement);
-			segmentElement.appendChild(definitionTextsElement);
+//			segmentElement.appendChild(commentsElement);
+//			segmentElement.appendChild(definitionTextsElement);
 	        Element fieldsElement = this.serializeFields(segment.getChildren(),igDataModel,segmentDataModel, segmentExportConfiguration);
 	        if (fieldsElement != null) {
 	          segmentElement.appendChild(fieldsElement);

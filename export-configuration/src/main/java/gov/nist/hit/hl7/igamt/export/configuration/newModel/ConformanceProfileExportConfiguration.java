@@ -29,6 +29,7 @@ public class ConformanceProfileExportConfiguration extends ResourceExportConfigu
 	  private MetadataConfiguration metadataConfig;
 	  private ConstraintExportConfiguration constraintExportConfiguration;
 	  private CoConstraintExportMode coConstraintExportMode;
+	  private StructuredNarrative structuredNarrative;
 
 
 
@@ -189,6 +190,18 @@ public class ConformanceProfileExportConfiguration extends ResourceExportConfigu
 
 	public void setConstraintExportConfiguration(ConstraintExportConfiguration constraintExportConfiguration) {
 		this.constraintExportConfiguration = constraintExportConfiguration;
+	}
+
+
+
+	public StructuredNarrative getStructuredNarrative() {
+		return structuredNarrative;
+	}
+
+
+
+	public void setStructuredNarrative(StructuredNarrative structuredNarrative) {
+		this.structuredNarrative = structuredNarrative;
 	}
 
 
