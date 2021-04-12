@@ -1,6 +1,6 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Type} from '../../constants/type.enum';
-import {IDisplayElement} from '../../models/display-element.interface';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Type } from '../../constants/type.enum';
+import { IDisplayElement } from '../../models/display-element.interface';
 
 @Component({
   selector: 'app-select-profile-component-context',
@@ -11,7 +11,7 @@ export class SelectProfileComponentContextComponent implements OnInit {
 
   @Input()
   selectedType = Type.CONFORMANCEPROFILE;
-  availableContexts_:  IDisplayElement[] = [];
+  availableContexts_: IDisplayElement[] = [];
   table: IDisplayElement[] = [];
   @Input()
   selectedMap = {};
@@ -19,7 +19,7 @@ export class SelectProfileComponentContextComponent implements OnInit {
   @Input()
   set availableContexts($event) {
     this.availableContexts_ = $event;
-    this.table = $event.filter( (x) => x.type === this.selectedType);
+    this.table = $event.filter((x) => x.type === this.selectedType);
   }
   @Input()
   children: IDisplayElement[] = [];
@@ -32,12 +32,12 @@ export class SelectProfileComponentContextComponent implements OnInit {
 
   selectType($event) {
     this.selectedType = $event;
-    this.table = this.availableContexts_.filter( (x) => x.type === this.selectedType);
+    this.table = this.availableContexts_.filter((x) => x.type === this.selectedType);
   }
 
   selectElement(elm: IDisplayElement) {
     this.children.push(elm);
-    this.selectedMap[elm.id] = true;
+    // this.selectedMap[elm.id] = true;
     this.selected.emit(this.children);
 
   }

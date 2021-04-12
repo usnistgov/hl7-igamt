@@ -6,10 +6,11 @@ import {CompositeProfileEffects} from '../../root-store/composite-profile/compos
 import {CoConstraintsModule} from '../co-constraints/co-constraints.module';
 import {SharedModule} from '../shared/shared.module';
 import { CompositionEditorComponent } from './components/composition-editor/composition-editor.component';
+import { StructureEditorComponent } from './components/structure-editor/structure-editor.component';
 import {CompositeProfileRoutingModule} from './composite-profile-routing.module';
 
 @NgModule({
-  declarations: [CompositionEditorComponent],
+  declarations: [CompositionEditorComponent, StructureEditorComponent],
   imports: [
     CommonModule,
     CompositeProfileRoutingModule,

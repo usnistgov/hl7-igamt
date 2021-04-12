@@ -1,6 +1,6 @@
 import { Dictionary } from '@ngrx/entity';
 import { Type } from '../../shared/constants/type.enum';
-import {IDocumentRef} from '../../shared/models/abstract-domain.interface';
+import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IRegistry } from '../../shared/models/registry.interface';
@@ -60,7 +60,7 @@ export class IgTOCNodeHelper {
           case Type.COCONSTRAINTGROUPREGISTRY:
             retChild.children = coConstraintGroupNodes;
             break;
-          case Type.PROFILECOMPONENTREGISTRY :
+          case Type.PROFILECOMPONENTREGISTRY:
             retChild.children = profileComponentNodes;
             break;
           case Type.COMPOSITEPROFILEREGISTRY:
@@ -74,6 +74,7 @@ export class IgTOCNodeHelper {
   }
 
   static buildTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[], profileComponentNodes: IDisplayElement[], compositeProfileNodes: IDisplayElement[]) {
+    console.log(structure);
     const ret: IDisplayElement[] = [];
     for (const section of structure) {
       switch (section.type) {
@@ -130,10 +131,10 @@ export class IgTOCNodeHelper {
         const retChild = this.initializeIDisplayElement(child, ret.path + '.' + child.position);
         switch (child.type) {
           case Type.DATATYPEREGISTRY:
-            retChild.children = datatypesNodes.filter((dt: IDisplayElement) => this.isPartOfLib(dt, documentRef.documentId ) );
+            retChild.children = datatypesNodes.filter((dt: IDisplayElement) => this.isPartOfLib(dt, documentRef.documentId));
             break;
           case Type.DERIVEDDATATYPEREGISTRY:
-            retChild.children = datatypesNodes.filter((dt: IDisplayElement) =>  !this.isPartOfLib(dt, documentRef.documentId )  );
+            retChild.children = datatypesNodes.filter((dt: IDisplayElement) => !this.isPartOfLib(dt, documentRef.documentId));
             break;
         }
         ret.children.push(retChild);
@@ -147,7 +148,7 @@ export class IgTOCNodeHelper {
     const ret: IDisplayElement[] = [];
     for (const section of structure) {
       if (section.type === Type.PROFILE) {
-        ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, [], [], section.position + '' ));
+        ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, [], [], section.position + ''));
       }
     }
     return this.sort(ret);
@@ -207,11 +208,15 @@ export class IgTOCNodeHelper {
     }
   }
   static sortRegistryByName(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
-    return Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement) => this.compare(a, b));
+    return registry.children
+      .map((link) => elements[link.id])
+      .sort((a: IDisplayElement, b: IDisplayElement) => this.compare(a, b));
   }
 
   static sortRegistryByPosition(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
-    return Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
+    return registry.children
+      .map((link) => elements[link.id])
+      .sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
   }
   static getFullName(node: IDisplayElement): string {
     if (node.fixedName && node.fixedName.length) {
@@ -235,11 +240,11 @@ export class IgTOCNodeHelper {
   }
 
   static isPartOfLib(dt: IDisplayElement, documentId: string) {
-    if (!dt.parentId ) {
+    if (!dt.parentId) {
       return false;
     } else if (documentId === dt.parentId) {
       return true;
-    } else if (dt.libraryReferences && dt.libraryReferences.length > 0 ) {
+    } else if (dt.libraryReferences && dt.libraryReferences.length > 0) {
       return dt.libraryReferences.indexOf(documentId) > -1;
     }
     return false;

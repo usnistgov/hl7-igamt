@@ -3,9 +3,9 @@ package gov.nist.hit.hl7.igamt.common.base.service;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtentionServiceImpl.DataExtention;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.DataExtension;
 
-public interface InMemoryDomainExtentionService {
+public interface InMemoryDomainExtensionService {
 	
 	// --- Used by repositories
 	<T extends Resource> T findById(String id, Class<T> as);
@@ -15,6 +15,6 @@ public interface InMemoryDomainExtentionService {
 	String getToken();
 	<T extends Resource> void put(String token, List<T> resource);
 	void clear(String token);
-	String put(DataExtention extention);
+	String put(DataExtension extension);
 
 }

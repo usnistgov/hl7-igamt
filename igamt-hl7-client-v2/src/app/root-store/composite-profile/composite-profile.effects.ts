@@ -1,19 +1,19 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import {Store} from '@ngrx/store';
+import { Store } from '@ngrx/store';
 
-import {EMPTY, of} from 'rxjs';
-import {catchError, concatMap, flatMap, map, switchMap, take} from 'rxjs/operators';
-import {CompositeProfileService} from '../../modules/composite-profile/services/composite-profile.service';
-import {OpenEditorService} from '../../modules/core/services/open-editor.service';
-import {MessageService} from '../../modules/dam-framework/services/message.service';
-import {SetValue} from '../../modules/dam-framework/store';
+import { EMPTY, of } from 'rxjs';
+import { catchError, concatMap, flatMap, map, switchMap, take } from 'rxjs/operators';
+import { CompositeProfileService } from '../../modules/composite-profile/services/composite-profile.service';
+import { OpenEditorService } from '../../modules/core/services/open-editor.service';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { SetValue } from '../../modules/dam-framework/store';
 import * as fromDAM from '../../modules/dam-framework/store';
 import * as fromDamActions from '../../modules/dam-framework/store/data/dam.actions';
-import {ICompositeProfile} from '../../modules/shared/models/composite-profile';
-import {ConformanceStatementService} from '../../modules/shared/services/conformance-statement.service';
-import {IState} from '../conformance-profile-edit/conformance-profile-edit.reducer';
+import { ICompositeProfile } from '../../modules/shared/models/composite-profile';
+import { ConformanceStatementService } from '../../modules/shared/services/conformance-statement.service';
+import { IState } from '../conformance-profile-edit/conformance-profile-edit.reducer';
 import * as fromIgamtDisplaySelectors from '../dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from '../dam-igamt/igamt.selected-resource.selectors';
 import {
@@ -95,6 +95,8 @@ export class CompositeProfileEffects {
     }),
   );
 
+
+
   constructor(
     private actions$: Actions<CompositeProfileActions>,
     private store: Store<IState>,
@@ -102,5 +104,11 @@ export class CompositeProfileEffects {
     private conformanceStatementService: ConformanceStatementService,
     private compositeProfileService: CompositeProfileService,
     private editorHelper: OpenEditorService) { }
+
+  @Effect()
+  openCompositeProfileStructureEditor$ = this.editorHelper.openCompositeProfileStructureEditor(
+    this.store.select(fromIgamtSelectedSelectors.selectedCompositeProfile),
+    this.compositeProfileService.getGeneratedCompositeProfile,
+  )
 
 }

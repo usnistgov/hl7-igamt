@@ -42,13 +42,12 @@ import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
-import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
-import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
+import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
@@ -111,7 +110,7 @@ public class SegmentServiceImpl implements SegmentService {
   private SegmentRepository segmentRepository;
 
   @Autowired
-  private InMemoryDomainExtentionService domainExtention;
+  private InMemoryDomainExtensionService domainExtention;
 
   @Autowired
   private MongoTemplate mongoTemplate;

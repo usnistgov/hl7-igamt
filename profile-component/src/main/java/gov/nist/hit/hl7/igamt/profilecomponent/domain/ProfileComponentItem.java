@@ -22,6 +22,11 @@ public class ProfileComponentItem {
   private String path;
   private Set<ItemProperty> itemProperties = new HashSet<ItemProperty>();
 
+  public ProfileComponentItem(String path, Set<ItemProperty> itemProperties) {
+    this.path = path;
+    this.itemProperties = itemProperties;
+  }
+
   public ProfileComponentItem() {
   }
 
