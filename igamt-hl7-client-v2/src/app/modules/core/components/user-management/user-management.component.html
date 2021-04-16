@@ -56,7 +56,7 @@
                   ></p-sortIcon>
                 </th>
                 <th style="width:110px" [pSortableColumn]="'pending'">
-                  Pending
+                  Active
                   <p-sortIcon
                     [field]="'pending'"
                     ariaLabel="Activate to sort"
@@ -73,7 +73,6 @@
                     ariaLabelAsc="Activate to sort in ascending order"
                   ></p-sortIcon>
                 </th>
-                <th style="width:110px">Password</th>
               </tr>
               <tr>
                 <th>
@@ -118,7 +117,6 @@
                 </th>
                 <th></th>
                 <th></th>
-                <th></th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-user>
@@ -140,11 +138,6 @@
                     [binary]="true"
                     (onChange) = "rawChange(user)"
                   ></p-checkbox>
-                </td>
-                <td>
-                    <button class="btn btn-sm btn-danger" (click)="resetPassword(user)">
-                        <i class="fa fa-pencil"></i> Reset
-                      </button>
                 </td>
               </tr>
             </ng-template>

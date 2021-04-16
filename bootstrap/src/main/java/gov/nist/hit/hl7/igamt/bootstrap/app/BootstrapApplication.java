@@ -1,6 +1,8 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementFixer;
+import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DynamicMappingFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
@@ -114,8 +117,8 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   IgTemplateRepository igTemplateRepository;
   //
-  //  @Autowired
-  //  DataFixer dataFixer;
+    @Autowired
+    DataFixer dataFixer;
 
   @Autowired
   private PathFixes pathFixes;
@@ -339,8 +342,7 @@ public class BootstrapApplication implements CommandLineRunner {
   void fixSegmentduplicatedBinding() throws ValidationException {
     tableFixes.removeSegmentsDuplicatedBinding();
   }
-
-  //   @PostConstruct
+  @PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
@@ -1025,7 +1027,17 @@ public class BootstrapApplication implements CommandLineRunner {
   void fixIgWithDynamicMapping() throws AddingException {
     dynamicMappingFixer.addMissingDatatypesBasedOnDynamicMapping();
   }
-  
+ // @PostConstruct
+  void shiftBinding() {
+    
+    this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "ADJ", "6", "2", 1);
+    this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.8",  "2.8.1",  "2.8.2")), "CDO", "4", "2", 1);
+    this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "PSL", "12", "2", 1);
+    this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1", "2.4", "2.5", "2.5.1", "2.6")), "QRD", "7", "2", 1);
+    this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.4", "2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "RCP", "2", "2", 1);
+
+
+  }
   
   
 }

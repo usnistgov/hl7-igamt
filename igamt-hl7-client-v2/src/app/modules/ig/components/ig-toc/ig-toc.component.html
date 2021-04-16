@@ -139,7 +139,7 @@
 
         <ng-container *ngSwitchCase="'SEGMENT'">
           <app-display-section  [contextMenu]='segmentContextMenu' [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true"></app-display-section>
           <context-menu #segmentContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-copy"></i> Create Flavor

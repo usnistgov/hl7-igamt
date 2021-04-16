@@ -15,6 +15,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -50,7 +51,7 @@ public class DataFixer {
 
   @Autowired
   ValuesetService valueSetService;
-  
+
 
 
   public void readCsv() throws ValidationException {
@@ -131,6 +132,65 @@ public class DataFixer {
       }
     }
   }
-  
+
+  public void shiftBinding(List<String> versions, String segmentName, String fieldPosition, String newPosition, int defaultLocation) {
+    for(String v: versions) {
+      List<Segment> segments = this.segmentsService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), v, segmentName);
+      if(segments  != null) {
+        for(Segment seg: segments) {
+          shiftBinding(seg, fieldPosition, newPosition, defaultLocation );
+          this.segmentsService.save(seg);
+        }
+      }
+    }
+
+  }
+
+
+  /**
+   * @param seg
+   * @param fieldPosition
+   * @param fieldPosition2
+   * @param defaultLocation
+   */
+  private void shiftBinding(Segment seg, String position, String childPosition,
+      int defaultLocation) {
+    if(seg.getBinding() !=null && !seg.getBinding().getChildren().isEmpty()) {
+      for( StructureElementBinding binding: seg.getBinding().getChildren()) {
+        if(binding.getElementId().equals(position)) {
+          if(binding.getChildren() == null) {
+            binding.setChildren(new HashSet<StructureElementBinding>());
+          }
+          StructureElementBinding child = new StructureElementBinding();
+          child.setElementId(childPosition);
+          child.setLocationInfo(new LocationInfo(LocationType.COMPONENT, Integer.valueOf(childPosition),null));
+          child.setValuesetBindings(cloneValueSetBinding(binding.getValuesetBindings(), defaultLocation)); 
+          binding.addChild(child);
+          binding.setValuesetBindings(null);
+        }
+      }
+    }
+
+  }
+
+
+  /**
+   * @param valuesetBindings
+   * @param defaultLocation 
+   * @return
+   */
+  private Set<ValuesetBinding> cloneValueSetBinding(Set<ValuesetBinding> valuesetBindings, int location) {
+    // TODO Auto-generated method stub
+    Set<ValuesetBinding> vsBindings = new  HashSet<ValuesetBinding>();
+    for(ValuesetBinding vs: valuesetBindings) {
+      ValuesetBinding newVs = new ValuesetBinding();
+      newVs.setStrength(vs.getStrength());
+      newVs.setValueSets(vs.getValueSets());
+      newVs.addValuesetLocation(location);
+      vsBindings.add(newVs);
+    }
+    return vsBindings;
+  }
+
 
 }
