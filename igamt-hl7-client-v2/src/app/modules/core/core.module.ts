@@ -6,6 +6,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { CardModule } from 'primeng/card';
 import { ProgressBarModule } from 'primeng/progressbar';
+import {TableModule} from 'primeng/table';
 import { RegistrationEffects } from '../../root-store/registration/registration.effects';
 import { UserProfileEffects} from '../../root-store/user-profile/user-profile.effects';
 import { DamAuthenticationModule, DamMessagesModule } from '../dam-framework/dam-framework.module';
@@ -18,6 +19,7 @@ import { NewPasswordComponent } from './components/new-password/new-password.com
 import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordRequestComponent } from './components/reset-password-request/reset-password-request.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
+import { UserManagementComponent } from './components/user-management/user-management.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +28,7 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     RegisterComponent,
     ResetPasswordRequestComponent,
     UserProfileComponent,
+    UserManagementComponent,
     NewPasswordComponent,
     HomeComponent,
     ErrorPageComponent,
@@ -34,6 +37,7 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     CommonModule,
     HttpClientModule,
     CardModule,
+    TableModule,
     ProgressBarModule,
     StoreModule,
     MatProgressBarModule,
@@ -60,6 +64,7 @@ import { UserProfileComponent } from './components/user-profile/user-profile.com
     FooterComponent,
     RegisterComponent,
     UserProfileComponent,
+    UserManagementComponent,
     SharedModule,
     ProgressBarModule,
     HomeComponent,

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { ImportDialogComponent } from 'src/app/modules/co-constraints/components/import-dialog/import-dialog.component';
 import { CoConstraintGroupEditEffects } from '../../root-store/co-constraint-group-edit/co-constraint-group-edit.effects';
 import { SegmentService } from '../segment/services/segment.service';
 import { SharedModule } from '../shared/shared.module';
@@ -19,7 +20,7 @@ import { SegmentCoConstraintBindingComponent } from './components/segment-co-con
 import { CoConstraintGroupService } from './services/co-constraint-group.service';
 
 @NgModule({
-  declarations: [CoConstraintTableComponent, DataHeaderDialogComponent, NarrativeHeaderDialogComponent, CoConstraintGroupEditorComponent, CoConstraintBindingDialogComponent, CoConstraintGroupSelectorComponent, SegmentCoConstraintBindingComponent, ContextCoConstraintBindingComponent, CoConstraintCrossRefComponent, CoConstraintGroupDeltaEditorComponent],
+  declarations: [ImportDialogComponent, CoConstraintTableComponent, DataHeaderDialogComponent, NarrativeHeaderDialogComponent, CoConstraintGroupEditorComponent, CoConstraintBindingDialogComponent, CoConstraintGroupSelectorComponent, SegmentCoConstraintBindingComponent, ContextCoConstraintBindingComponent, CoConstraintCrossRefComponent, CoConstraintGroupDeltaEditorComponent],
   imports: [
     CommonModule,
     SharedModule,
@@ -32,6 +33,6 @@ import { CoConstraintGroupService } from './services/co-constraint-group.service
     CoConstraintGroupService,
   ],
   exports: [CoConstraintTableComponent, DataHeaderDialogComponent, NarrativeHeaderDialogComponent, CoConstraintBindingDialogComponent, CoConstraintGroupSelectorComponent, SegmentCoConstraintBindingComponent, ContextCoConstraintBindingComponent],
-  entryComponents: [DataHeaderDialogComponent, NarrativeHeaderDialogComponent, CoConstraintBindingDialogComponent, CoConstraintGroupSelectorComponent],
+  entryComponents: [ImportDialogComponent, DataHeaderDialogComponent, NarrativeHeaderDialogComponent, CoConstraintBindingDialogComponent, CoConstraintGroupSelectorComponent],
 })
 export class CoConstraintsModule { }

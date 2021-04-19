@@ -2,6 +2,11 @@ package gov.nist.hit.hl7.igamt.coconstraints.model;
 
 public class ValueCell extends CoConstraintCell {
     protected String value;
+    
+    public ValueCell() {
+		super();
+		this.setType(ColumnType.VALUE);
+	}
 
     public String getValue() {
         return value;

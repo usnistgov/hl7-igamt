@@ -105,6 +105,7 @@ export class CoConstraintTableComponent implements OnInit {
     }
 
     if (this._value && datatype) {
+      console.log(this.coconstraintEntity.getCoConstraintRowList(this._value));
       this.initVariesOptionList(this.coconstraintEntity.getCoConstraintRowList(this._value), datatype);
     }
 
@@ -230,6 +231,11 @@ export class CoConstraintTableComponent implements OnInit {
       this.bindingsService.getBingdingInfo(header.elementInfo.version, header.elementInfo.parent, header.elementInfo.datatype, header.elementInfo.location, header.elementInfo.type).pipe(
         take(1),
         map((bindingsInfo) => {
+          if (header.key === '3') {
+            console.log('-------');
+            console.log(header.elementInfo.version, header.elementInfo.parent, header.elementInfo.datatype, header.elementInfo.location, header.elementInfo.type);
+            console.log(bindingsInfo.allowedBindingLocations);
+          }
           header.elementInfo.bindingInfo = bindingsInfo;
         }),
       ).subscribe();
@@ -671,7 +677,7 @@ export class CoConstraintTableComponent implements OnInit {
       delete cc.cells[header.key];
     });
 
-    if (this.value.type === CoConstraintMode.TABLE) {
+    if (this.value.tableType === CoConstraintMode.TABLE) {
       const table = this.value as ICoConstraintTable;
       table.groups.forEach((group) => {
         if (group.type === CoConstraintGroupBindingType.CONTAINED) {

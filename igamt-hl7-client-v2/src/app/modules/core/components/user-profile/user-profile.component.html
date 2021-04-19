@@ -3,5 +3,9 @@
   <div class="register-card">
     <h5 class="page-title">User Profile Form</h5>
     <app-user-profile-form (submitEvent)="onSubmitApplication($event)"></app-user-profile-form>
+
+    <button class="btn btn-sm btn-danger" (click)="resetPassword()" style="float: right">
+      <i class="fa fa-pencil"></i> Password Reset Request
+    </button>
   </div>
 </div>

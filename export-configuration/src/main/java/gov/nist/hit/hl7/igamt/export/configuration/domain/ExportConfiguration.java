@@ -31,8 +31,10 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfig
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeLibraryExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ResourceExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.SegmentExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.StructuredNarrative;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ValueSetExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.IgGeneralConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.PositionAndPresence;
 
 
@@ -58,6 +60,8 @@ public class ExportConfiguration {
   private ResourceExportConfiguration resourceExportConfiguration;
   private DocumentMetadataConfiguration DocumentMetadataConfiguration;
   private ExportFontConfiguration exportFontConfiguration;
+  private IgGeneralConfiguration igGeneralConfiguration;
+
 
 
   boolean defaultType = false;
@@ -76,7 +80,7 @@ public class ExportConfiguration {
   private boolean includeValuesetsTable = true;
   private boolean includeCompositeProfileTable = true;
   private boolean includeProfileComponentTable = true;
-  private boolean deltaMode = true;
+  private boolean deltaMode = false;
 
   private boolean greyOutOBX2FlavorColumn = false;
 
@@ -126,9 +130,24 @@ public class ExportConfiguration {
 
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue, Type type) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();
+    
+    // Setting IgGeneralConfiguration
+    IgGeneralConfiguration igGeneralConfiguration = new IgGeneralConfiguration();
+    igGeneralConfiguration.setNotMessageInfrastructure(false);
+    defaultConfiguration.setIgGeneralConfiguration(igGeneralConfiguration);
+    
+    // Setting structureNarrative
+	   StructuredNarrative structuredNarrative = new StructuredNarrative();
+	   structuredNarrative.setComments(true);
+	   structuredNarrative.setDefinitionText(true);
+	   structuredNarrative.setPostDefinition(true);
+	   structuredNarrative.setPreDefinition(true);
+    
     //setting font
-    ExportFontConfiguration exportFontConfiguration = ExportFontConfiguration.getDefault();
-    defaultConfiguration.setExportFontConfiguration(exportFontConfiguration);
+     ExportFontConfiguration exportFontConfiguration = ExportFontConfiguration.getDefault();
+     defaultConfiguration.setExportFontConfiguration(exportFontConfiguration);
+     
+     
     defaultConfiguration.setType(type);
     defaultConfiguration.setConfigName("");
     defaultConfiguration.setOriginal(false);
@@ -295,6 +314,7 @@ public class ExportConfiguration {
     datatypeExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
     datatypeExportConfiguration.setDeltaMode(true);
     datatypeExportConfiguration.setDeltaConfig(deltaConfiguration);
+    datatypeExportConfiguration.setStructuredNarrative(structuredNarrative);
 
     // Setting SegmentExportConfiguration
     SegmentExportConfiguration segmentExportConfiguration = new SegmentExportConfiguration(defaultConfiguration);
@@ -303,6 +323,8 @@ public class ExportConfiguration {
     segmentExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
     segmentExportConfiguration.setDeltaMode(true);
     segmentExportConfiguration.setDeltaConfig(deltaConfiguration);
+    segmentExportConfiguration.setStructuredNarrative(structuredNarrative);
+
 
     // Setting ConformanceProfileExportConfiguration
     ConformanceProfileExportConfiguration conformanceProfileExportConfiguration = new ConformanceProfileExportConfiguration(defaultConfiguration);
@@ -317,12 +339,16 @@ public class ExportConfiguration {
     conformanceProfileExportConfiguration.setListedColumns(listedColumns);
     //    conformanceProfileExportConfiguration.getMetadataConfig().setType(false);
     //    conformanceProfileExportConfiguration.getMetadataConfig().setRole(false);
+    conformanceProfileExportConfiguration.setStructuredNarrative(structuredNarrative);
+
 
 
     // Setting ValueSetExportConfiguration
     ValueSetExportConfiguration valueSetExportConfiguration = new ValueSetExportConfiguration(defaultConfiguration);
     valueSetExportConfiguration.setDeltaMode(true);
     valueSetExportConfiguration.setDeltaConfig(deltaConfiguration);
+    valueSetExportConfiguration.setComments(false);
+    
 //    defaultConfiguration.setDatatypeLibraryExportConfiguration(datatypeLibraryExportConfiguration);
     defaultConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
     defaultConfiguration.setConformamceProfileExportConfiguration(conformanceProfileExportConfiguration);
@@ -331,6 +357,7 @@ public class ExportConfiguration {
     defaultConfiguration.setAbstractDomainExportConfiguration(abstractDomainExportConfiguration);
     defaultConfiguration.setDeltaMode(true);
     defaultConfiguration.setDeltaConfig(deltaConfiguration);
+    
 
 
     return defaultConfiguration;
@@ -984,6 +1011,14 @@ public ExportFontConfiguration getExportFontConfiguration() {
 
 public void setExportFontConfiguration(ExportFontConfiguration exportFontConfiguration) {
 	this.exportFontConfiguration = exportFontConfiguration;
+}
+
+public IgGeneralConfiguration getIgGeneralConfiguration() {
+	return igGeneralConfiguration;
+}
+
+public void setIgGeneralConfiguration(IgGeneralConfiguration igGeneralConfiguration) {
+	this.igGeneralConfiguration = igGeneralConfiguration;
 }
   
 

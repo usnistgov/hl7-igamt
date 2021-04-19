@@ -269,7 +269,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
                 }
                 td1.appendChild("Code : " + codeCell.getCode());
                 td2.appendChild("Code System : " + codeCell.getCodeSystem());
-                td3.appendChild("location : " + location);
+                td3.appendChild("Location : " + location);
                 tdCell.appendChild(table);
                 break;
 
@@ -309,11 +309,11 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
                         tdV2.appendChild("Location: " + valuesetBinding.getValuesetLocations().toString());
                         tdV3.appendChild("Valuesets : " + generateValuesetNames(valuesetBinding.getValueSets()));
 //				table3.appendChild(trTable);
+                        tdCell.appendChild(table3);
                     }
                 } else {
                     table3 = null;
                 }
-                tdCell.appendChild(table3);
 //				tdCell.appendChild(table3);
                 break;
 
@@ -346,8 +346,8 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
                 trD1.appendChild(tdD1);
                 trD2.appendChild(tdD2);
                 DatatypeCell datatypeCell = (DatatypeCell) coConstraintTableCell;
-                Datatype datatype = datatypeService.findById(datatypeCell.getDatatypeId());
-                if (datatype != null) {
+                if (datatypeCell.getDatatypeId() != null) {
+                    Datatype datatype = datatypeService.findById(datatypeCell.getDatatypeId());
                     tdD1.appendChild("Value : " + datatype.getName());
                     tdD2.appendChild("Flavor : " + datatype.getLabel());
                 } else {
@@ -572,8 +572,11 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
             for (CoConstraintHeader header : headersList) {
                 if (coConstraintTableRow.getCells().containsKey(header.getKey())) {
                     CoConstraintCell coConstraintTableCell = coConstraintTableRow.getCells().get(header.getKey());
+                    // I added this if close because it throws an error in a context outside of Delta where coConstraintTableCell is null
+                    if(coConstraintTableCell != null) {
                     Element tdCell = serializeCellCompact(coConstraintTableCell, coConstraintTableCell.getType());
                     tr.appendChild(tdCell);
+                    }
                     if (header.getType().equals(HeaderType.DATAELEMENT)) {
                         if (((DataElementHeader) header).isCardinality()) {
                             Element tdCard = new Element("td");
@@ -615,8 +618,11 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
         for (CoConstraintHeader header : headersList) {
             if (coConstraintTableRow.getCells().containsKey(header.getKey())) {
                 CoConstraintCell coConstraintTableCell = coConstraintTableRow.getCells().get(header.getKey());
+                if(coConstraintTableCell != null) {
+                
                 Element tdCell = serializeCellCompact(coConstraintTableCell, coConstraintTableCell.getType());
                 tr.appendChild(tdCell);
+                }
                 if (header.getType().equals(HeaderType.DATAELEMENT)) {
                     if (((DataElementHeader) header).isCardinality()) {
                         Element tdCard = new Element("td");
@@ -1026,7 +1032,9 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
         if (ids != null) {
             for (String id : ids) {
                 Valueset vs = valuesetService.findById(id);
+                if(vs != null) {
                 valuesetBindings.add(vs.getBindingIdentifier());
+            }
             }
         }
         return valuesetBindings.toString();
@@ -1106,59 +1114,5 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
     }
 
 
-//	public String toStringACell(CoConstraintTableCell coConstraintTableCell) {
-//		String value = "";
-//		switch (coConstraintTableCell.getType()) {
-//		case CONTAINED:
-//			CodeCell codeCell = (CodeCell) coConstraintTableCell;
-//			String location = "";
-//			for (String s : codeCell.getLocation()) {
-//				if (codeCell.getLocation().size() == 1) {
-//					location = codeCell.getLocation().get(0);
-//				} else if (codeCell.getLocation().size() == 2) {
-//					location = codeCell.getLocation().get(0) + " or " + codeCell.getLocation().get(1);
-//				} else if (codeCell.getLocation().size() == 3) {
-//					location = codeCell.getLocation().get(0) + " or " + codeCell.getLocation().get(1) + " or "
-//							+ codeCell.getLocation().get(2);
-//				} else {
-//					location = location + "or" + s;
-//				}
-//			}
-//			value = location;
-//			break;
-//
-//		case VALUE:
-//			DataCell dataCell = (DataCell) coConstraintTableCell;
-//			value = dataCell.getValue();
-//			break;
-//
-//		case VALUESET:
-//			VSCell vSCell = (VSCell) coConstraintTableCell;
-//			String tdVsCellContent = "";
-//			for (VSValue vSValue : vSCell.getVs()) {
-//				tdVsCellContent = tdVsCellContent + " " + vSValue.getName();
-//			}
-//			value = tdVsCellContent;
-//			break;
-//
-//		case textArea:
-//			TextAreaCell textAreaCell = (TextAreaCell) coConstraintTableCell;
-//			value = textAreaCell.getValue();
-//			break;
-//
-//		case DATATYPE:
-//			IgnoreCell ignoreCell = (IgnoreCell) coConstraintTableCell;
-//			String datatypeName;
-//			if (datatypesMap.containsKey(ignoreCell.getValue())) {
-//				Datatype datatype = datatypesMap.get(ignoreCell.getValue());
-//				datatypeName = datatype.getName() + "-" + datatype.getDescription();
-//				value = datatypeName;
-//			} else {
-//				value = ignoreCell.getValue();
-//			}
-//			break;
-//		}
-//		return value;
-//	}
 
 }
