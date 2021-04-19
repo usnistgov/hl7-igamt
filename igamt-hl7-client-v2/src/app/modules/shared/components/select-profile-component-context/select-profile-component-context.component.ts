@@ -37,10 +37,9 @@ export class SelectProfileComponentContextComponent implements OnInit {
 
   selectElement(elm: IDisplayElement) {
     this.children.push(elm);
-    // this.selectedMap[elm.id] = true;
     this.selected.emit(this.children);
-
   }
+
   removeElement(elm: IDisplayElement) {
     const index = this.children.indexOf(elm, 0);
     if (index > -1) {

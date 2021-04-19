@@ -74,7 +74,6 @@ export class IgTOCNodeHelper {
   }
 
   static buildTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[], profileComponentNodes: IDisplayElement[], compositeProfileNodes: IDisplayElement[]) {
-    console.log(structure);
     const ret: IDisplayElement[] = [];
     for (const section of structure) {
       switch (section.type) {
@@ -208,16 +207,13 @@ export class IgTOCNodeHelper {
     }
   }
   static sortRegistryByName(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
-    return registry.children
-      .map((link) => elements[link.id])
-      .sort((a: IDisplayElement, b: IDisplayElement) => this.compare(a, b));
+    return Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement) => this.compare(a, b));
   }
 
   static sortRegistryByPosition(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
-    return registry.children
-      .map((link) => elements[link.id])
-      .sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
+    return Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
   }
+
   static getFullName(node: IDisplayElement): string {
     if (node.fixedName && node.fixedName.length) {
       if (node.variableName && node.variableName.length) {

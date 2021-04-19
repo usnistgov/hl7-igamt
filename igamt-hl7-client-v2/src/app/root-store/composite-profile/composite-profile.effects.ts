@@ -95,8 +95,6 @@ export class CompositeProfileEffects {
     }),
   );
 
-
-
   constructor(
     private actions$: Actions<CompositeProfileActions>,
     private store: Store<IState>,
@@ -109,6 +107,6 @@ export class CompositeProfileEffects {
   openCompositeProfileStructureEditor$ = this.editorHelper.openCompositeProfileStructureEditor(
     this.store.select(fromIgamtSelectedSelectors.selectedCompositeProfile),
     this.compositeProfileService.getGeneratedCompositeProfile,
-  )
+  );
 
 }

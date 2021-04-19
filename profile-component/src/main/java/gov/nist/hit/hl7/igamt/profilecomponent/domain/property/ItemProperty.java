@@ -54,4 +54,11 @@ public abstract class ItemProperty {
     this.propertyKey = propertyKey;
   }
 
+  public PropertyType getPropertyKey() {
+    return propertyKey;
+  }
+
+  public void setPropertyKey(PropertyType propertyKey) {
+    this.propertyKey = propertyKey;
+  }
 }

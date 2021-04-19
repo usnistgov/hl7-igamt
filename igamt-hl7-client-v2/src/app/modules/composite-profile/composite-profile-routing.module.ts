@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {
   CompositeProfileActionTypes,
-  LoadCompositeProfile, OpenCompositionEditor, OpenCompositeProfileStructureEditor,
+  LoadCompositeProfile, OpenCompositeProfileStructureEditor, OpenCompositionEditor,
 } from '../../root-store/composite-profile/composite-profile.actions';
 import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';

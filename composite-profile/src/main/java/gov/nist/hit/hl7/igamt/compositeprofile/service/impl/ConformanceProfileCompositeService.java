@@ -1,17 +1,17 @@
 package gov.nist.hit.hl7.igamt.compositeprofile.service.impl;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluationResult;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
@@ -68,44 +68,47 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 
 	// Create a ConformanceProfile from Composite
 	@Override
-	public DataFragment<ConformanceProfile> create(CompositeProfileStructure structure) {
+	public ProfileComponentsEvaluationResult<ConformanceProfile> create(CompositeProfileStructure structure) {
 		ConformanceProfile target = this.confProfileService.findById(structure.getConformanceProfileId());
 		if(target != null) {
 			CompositeProfileDataExtension extension = new CompositeProfileDataExtension();
 			List<FlavorCreationDirective> flavorCreationDirectives = this.profileComponentLinksToPermutationMap(structure.getOrderedProfileComponents());
-			flavorCreationDirectives.forEach((fcd) -> {
-				this.browse(target, fcd, extension);
-			});
+			ConformanceProfile continueOn = target;
+			for(FlavorCreationDirective fcd: flavorCreationDirectives) {
+				continueOn = this.browse(continueOn, fcd, extension);
+			}
 			String ext = "DMO";
 			extension.prune(ext);
 			target.setId(structure.getId() + '_' + ext);
 			target.setName(structure.getName());
-			return new DataFragment<>(target, extension);
+			return new ProfileComponentsEvaluationResult<>(new DataFragment<>(continueOn, extension), extension.generatedResourceMetadataList);
 		}
 		return null;
 	}
 
 	// Create a Segment from ProfileComponents
 	@Override
-	public DataFragment<Segment> create(Segment target, Set<OrderedProfileComponentLink> structure) {
+	public ProfileComponentsEvaluationResult<Segment> create(Segment target, Set<OrderedProfileComponentLink> structure) {
 		if(target != null) {
 			CompositeProfileDataExtension extension = new CompositeProfileDataExtension();
 			List<FlavorCreationDirective> flavorCreationDirectives = this.profileComponentLinksToPermutationMap(structure);
 			flavorCreationDirectives.forEach((fcd) -> {
 				this.browse(target, fcd, extension);
 			});
-			return new DataFragment<>(target, extension);
+			return new ProfileComponentsEvaluationResult<>(new DataFragment<>(target, extension), extension.generatedResourceMetadataList);
 		}
 		return null;
 	}
 	
 	// Fast forward in (Message Structure) until candidate for permutation found
 	ConformanceProfile browse(ConformanceProfile target, FlavorCreationDirective fcd, CompositeProfileDataExtension repo) {
+		ConformanceProfile continueOn = target;
 		if(fcd.getType().equals(Type.CONFORMANCEPROFILE) && fcd.getTargetId().equals(target.getId())) {
-			this.evaluate(target, fcd, repo);
+			continueOn = repo.swap(fcd.getProfileComponentSourceId(), fcd.getDirectiveId(), target);
+			this.evaluate(continueOn, fcd, repo);
 		}
-		this.browse(target.getChildren(), fcd, repo);
-		return target;
+		this.browse(continueOn.getChildren(), fcd, repo);
+		return continueOn;
 	}
 	
 	// Fast forward in (Group Structure) until candidate for permutation found
@@ -169,26 +172,25 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 	
     // Evaluate permutation at ConformanceProfile Level
 	ConformanceProfile evaluate(ConformanceProfile target, ElementChangeDirective permutation, CompositeProfileDataExtension repo) {
-		this.evaluate(target.getChildren(), permutation, repo);
+		this.evaluate(target.getChildren(), target, permutation, repo);
 
 		// Apply
-		permutation.getItems().stream().filter(x -> x instanceof ApplyConformanceProfile)
-				.forEach(x -> ((ApplyConformanceProfile) x).onConformanceProfile(target));
-		permutation.getItems().stream().filter(x -> x instanceof ApplyResourceBinding)
-				.forEach(x -> ((ApplyResourceBinding) x).onResourceBinding(target.getBinding(), this.bindingService));
+		if(this.applyConformanceProfile(target, permutation.getItems())) {
+			repo.setChanges(target, "", permutation.getItems());
+		}
 		return target;
 	}
 
 	// Evaluate permutation at Message or Group Structure
-	void evaluate(Set<SegmentRefOrGroup> structure, ElementChangeDirective permutation, CompositeProfileDataExtension repo) {
+	void evaluate(Set<SegmentRefOrGroup> structure, ConformanceProfile cp, ElementChangeDirective permutation, CompositeProfileDataExtension repo) {
 		for(ElementChangeDirective p : permutation.getChildren()) {
 			SegmentRefOrGroup refOrGrp = get(structure, p.getTargetElementId());
 			if(refOrGrp != null) {
 				if(refOrGrp instanceof SegmentRef) {
-					this.evaluate(((SegmentRef) refOrGrp), p, repo);
+					this.evaluate(((SegmentRef) refOrGrp), cp, p, repo);
 				}
 				else if(refOrGrp instanceof Group) {
-					this.evaluate((Group) refOrGrp, p, repo);
+					this.evaluate((Group) refOrGrp, cp, p, repo);
 				}
 			}
 		}
@@ -206,26 +208,24 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 		for(ElementChangeDirective p : permutation.getChildren()) {
 			Field field = get(segment, p.getTargetElementId());
 			if(field != null) {
-				this.evaluate(field, p, repo);
+				this.evaluate(field, segment, p, repo);
 			}
 		}
-		
+
 		// Apply
-		permutation.getItems().stream().filter(x -> x instanceof ApplySegment)
-		.forEach(x -> ((ApplySegment) x).onSegment(segment));
-		permutation.getItems().stream().filter(x -> x instanceof ApplyResourceBinding)
-		.forEach(x -> ((ApplyResourceBinding) x).onResourceBinding(segment.getBinding(), this.bindingService));
+		if(this.applySegment(segment, permutation.getItems())) {
+			repo.setChanges(segment, "", permutation.getItems());
+		}
+
 		return segment;
 	}
 	
     // Evaluate permutation at SegmentRef Level
-	void evaluate(SegmentRef target, ElementChangeDirective permutation, CompositeProfileDataExtension repo) {
+	void evaluate(SegmentRef target, ConformanceProfile cp, ElementChangeDirective permutation, CompositeProfileDataExtension repo) {
 		// Apply
-		permutation.getItems().stream().filter(x -> x instanceof ApplyMsgStructElement)
-				.forEach(x -> ((ApplyMsgStructElement) x).onMsgStructElement(target));
-		permutation.getItems().stream().filter(x -> x instanceof ApplyStructureElement)
-				.forEach(x -> ((ApplyStructureElement) x).onStructureElement(target));
-
+		if(this.applyMsgStructureElement(target, permutation.getItems())) {
+			repo.setChanges(cp, target.getId(), permutation.getItems());
+		}
 
 		// Evaluate Children
 		Segment segment = this.findSegmentById(target.getRef().getId(), repo);
@@ -237,26 +237,22 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 	}
 
 	// Evaluate permutation at Group Level
-	void evaluate(Group target, ElementChangeDirective permutation, CompositeProfileDataExtension repo) {
+	void evaluate(Group target, ConformanceProfile cp, ElementChangeDirective permutation, CompositeProfileDataExtension repo) {
 		// Apply
-		permutation.getItems().stream().filter(x -> x instanceof ApplyMsgStructElement)
-				.forEach(x -> ((ApplyMsgStructElement) x).onMsgStructElement(target));
-		permutation.getItems().stream().filter(x -> x instanceof ApplyStructureElement)
-				.forEach(x -> ((ApplyStructureElement) x).onStructureElement(target));
+		if(this.applyMsgStructureElement(target, permutation.getItems())) {
+			repo.setChanges(cp, target.getId(), permutation.getItems());
+		}
 
 		// Evaluate Children
-		this.evaluate(target.getChildren(), permutation, repo);
+		this.evaluate(target.getChildren(), cp, permutation, repo);
 	}
 	
     // Evaluate permutation at Field Level
-	void evaluate(Field field, ElementChangeDirective permutation, CompositeProfileDataExtension repo) {
+	void evaluate(Field field, Segment parent, ElementChangeDirective permutation, CompositeProfileDataExtension repo) {
 		// Apply
-		permutation.getItems().stream().filter(x -> x instanceof ApplyField)
-				.forEach(x -> ((ApplyField) x).onField(field));
-		permutation.getItems().stream().filter(x -> x instanceof ApplySubStructElement)
-				.forEach(x -> ((ApplySubStructElement) x).onSubStructElement(field));
-		permutation.getItems().stream().filter(x -> x instanceof ApplyStructureElement)
-				.forEach(x -> ((ApplyStructureElement) x).onStructureElement(field));
+		if(this.applyField(field, permutation.getItems())) {
+			repo.setChanges(parent, field.getId(), permutation.getItems());
+		}
 
 		// Evaluate Children
 		Datatype datatype = this.findDatatypeById(field.getRef().getId(), repo);
@@ -279,25 +275,25 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 		for(ElementChangeDirective p : permutation.getChildren()) {
 			Component component = get(datatype, p.getTargetElementId());
 			if(component != null) {
-				this.evaluate(component, p, repo);
+				this.evaluate(component, datatype, p, repo);
 			}
 		}
 		
 		// Apply
-		permutation.getItems().stream().filter(x -> x instanceof ApplyDatatype)
-		.forEach(x -> ((ApplyDatatype) x).onDatatype(datatype));
-		permutation.getItems().stream().filter(x -> x instanceof ApplyResourceBinding)
-		.forEach(x -> ((ApplyResourceBinding) x).onResourceBinding(datatype.getBinding(), this.bindingService));
+		if(this.applyDatatype(datatype, permutation.getItems())) {
+			repo.setChanges(datatype, "", permutation.getItems());
+		}
+
 		return datatype;
 	}
 	
     // Evaluate permutation at Component Level
-	void evaluate(Component field, ElementChangeDirective permutation, CompositeProfileDataExtension repo) {
+	void evaluate(Component field, Datatype parent, ElementChangeDirective permutation, CompositeProfileDataExtension repo) {
 		// Apply
-		permutation.getItems().stream().filter(x -> x instanceof ApplySubStructElement)
-				.forEach(x -> ((ApplySubStructElement) x).onSubStructElement(field));
-		permutation.getItems().stream().filter(x -> x instanceof ApplyStructureElement)
-				.forEach(x -> ((ApplyStructureElement) x).onStructureElement(field));
+		if(this.applyComponent(field, permutation.getItems())) {
+			repo.setChanges(parent, field.getId(), permutation.getItems());
+		}
+
 
 		// Evaluate Children
 		Datatype datatype = this.findDatatypeById(field.getRef().getId(), repo);
@@ -323,6 +319,104 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 			return this.segmentService.findById(id);
 		}
 	}
+
+	boolean applyConformanceProfile(ConformanceProfile conformanceProfile, Set<ItemProperty> props) {
+		AtomicBoolean exist = new AtomicBoolean(false);
+		props.stream()
+				.filter(x -> x instanceof ApplyConformanceProfile)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplyConformanceProfile) x).onConformanceProfile(conformanceProfile));
+
+		props.stream()
+				.filter(x -> x instanceof ApplyResourceBinding)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplyResourceBinding) x).onResourceBinding(conformanceProfile.getBinding(), this.bindingService));
+
+		return exist.get();
+	}
+
+	boolean applySegment(Segment segment, Set<ItemProperty> props) {
+		AtomicBoolean exist = new AtomicBoolean(false);
+		props.stream()
+				.filter(x -> x instanceof ApplySegment)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplySegment) x).onSegment(segment));
+
+		props.stream()
+				.filter(x -> x instanceof ApplyResourceBinding)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplyResourceBinding) x).onResourceBinding(segment.getBinding(), this.bindingService));
+
+		return exist.get();
+	}
+
+	boolean applyDatatype(Datatype datatype, Set<ItemProperty> props) {
+		AtomicBoolean exist = new AtomicBoolean(false);
+		props.stream()
+				.filter(x -> x instanceof ApplyDatatype)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplyDatatype) x).onDatatype(datatype));
+
+		props.stream()
+				.filter(x -> x instanceof ApplyResourceBinding)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplyResourceBinding) x).onResourceBinding(datatype.getBinding(), this.bindingService));
+
+		return exist.get();
+	}
+
+
+	boolean applyMsgStructureElement(SegmentRefOrGroup ref, Set<ItemProperty> props) {
+		AtomicBoolean exist = new AtomicBoolean(false);
+		props.stream()
+				.filter(x -> x instanceof ApplyMsgStructElement)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplyMsgStructElement) x).onMsgStructElement(ref));
+
+		props.stream()
+				.filter(x -> x instanceof ApplyStructureElement)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplyStructureElement) x).onStructureElement(ref));
+
+		return exist.get();
+	}
+
+	boolean applyField(Field field, Set<ItemProperty> props) {
+		AtomicBoolean exist = new AtomicBoolean(false);
+		props.stream()
+				.filter(x -> x instanceof ApplyField)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplyField) x).onField(field));
+
+		props.stream()
+				.filter(x -> x instanceof ApplySubStructElement)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplySubStructElement) x).onSubStructElement(field));
+
+		props.stream()
+				.filter(x -> x instanceof ApplyStructureElement)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplyStructureElement) x).onStructureElement(field));
+
+		return exist.get();
+	}
+
+	boolean applyComponent(Component component, Set<ItemProperty> props) {
+		AtomicBoolean exist = new AtomicBoolean(false);
+
+		props.stream()
+				.filter(x -> x instanceof ApplySubStructElement)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplySubStructElement) x).onSubStructElement(component));
+
+		props.stream()
+				.filter(x -> x instanceof ApplyStructureElement)
+				.peek((e) -> { exist.set(true); })
+				.forEach(x -> ((ApplyStructureElement) x).onStructureElement(component));
+
+		return exist.get();
+	}
+
 
 	boolean guard(ElementChangeDirective permutation) {
 		return permutation.getChildren().size() > 0;

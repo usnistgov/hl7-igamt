@@ -21,28 +21,23 @@ import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 
 public interface DisplayInfoService {
 
-	public IGDisplayInfo covertIgToDisplay(Ig ig);
-	public Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry);
-	public Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry);
-	public Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
-	public Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
-	public Set<DisplayElement> convertCoConstraintGroupRegistry(CoConstraintGroupRegistry registry);
-	public Set<DisplayElement> convertCompositeProfileRegistry(CompositeProfileRegistry registry);
+	IGDisplayInfo covertIgToDisplay(Ig ig);
+	Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry);
+	Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry);
+	Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
+	Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
+	Set<DisplayElement> convertCoConstraintGroupRegistry(CoConstraintGroupRegistry registry);
+	Set<DisplayElement> convertCompositeProfileRegistry(CompositeProfileRegistry registry);
+	DisplayElement convertDatatype(Datatype datatype);
+	DisplayElement convertCoConstraintGroup(CoConstraintGroup group);
+	DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile, int position);
+	DisplayElement convertSegment(Segment segment);
+	DisplayElement convertValueSet(Valueset valueset);
+	Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
+	Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes);
+	Set<DisplayElement> convertSegments(Set<Segment> segments);
+	Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles, ConformanceProfileRegistry conformanceProfileRegistry);
+	DisplayElement convertCompositeProfile(CompositeProfileStructure compositeProfile,  int integer);
+	DisplayElement convertProfileComponent(ProfileComponent pc, int integer);
 
-	public DisplayElement convertDatatype(Datatype datatype);
-	public DisplayElement convertCoConstraintGroup(CoConstraintGroup group);
-	public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile, int position);
-	public DisplayElement convertSegment(Segment segment);
-	public DisplayElement convertValueSet(Valueset valueset);
-	public Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
-//	public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles);
-	public Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes);
-	public Set<DisplayElement> convertSegments(Set<Segment> segments);
-    public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles,
-      ConformanceProfileRegistry conformanceProfileRegistry);
-    public DisplayElement convertCompositeProfile(CompositeProfileStructure compositeProfile,  int integer);
-    public DisplayElement convertProfileComponent(ProfileComponent pc, int integer);
-
-
-	
 }

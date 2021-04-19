@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.compositeprofile.domain;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -10,6 +11,7 @@ public class CompositeProfileState {
     ResourceAndDisplay<ConformanceProfile> conformanceProfile;
     List<ResourceAndDisplay<Datatype>> datatypes;
     List<ResourceAndDisplay<Segment>> segments;
+    List<Resource> references;
 
     public ResourceAndDisplay<ConformanceProfile> getConformanceProfile() {
         return conformanceProfile;
@@ -33,5 +35,13 @@ public class CompositeProfileState {
 
     public void setSegments(List<ResourceAndDisplay<Segment>> segments) {
         this.segments = segments;
+    }
+
+    public List<Resource> getReferences() {
+        return references;
+    }
+
+    public void setReferences(List<Resource> references) {
+        this.references = references;
     }
 }

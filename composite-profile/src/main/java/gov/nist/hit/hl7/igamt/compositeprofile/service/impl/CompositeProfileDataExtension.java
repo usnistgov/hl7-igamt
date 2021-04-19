@@ -3,9 +3,11 @@ package gov.nist.hit.hl7.igamt.compositeprofile.service.impl;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.DataExtension;
-import gov.nist.hit.hl7.igamt.common.base.service.impl.GeneratedResourceMetadata;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.GeneratedResourceMetadata;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 
 import java.io.IOException;
@@ -42,6 +44,32 @@ public class CompositeProfileDataExtension extends DataExtension {
 
     void setSegmentExt(Segment segment, String ext) {
         segment.setExt(ext);
+    }
+
+    public <T extends Resource> void setChanges(T source, String elementId, Set<ItemProperty> properties) {
+        this.generatedResourceMetadataList
+                .stream()
+                .filter((elm) -> elm.getGeneratedResourceId().equals(source.getId()))
+                .findFirst()
+                .map((elm) -> {
+                    Map<String, Map<PropertyType, ItemProperty>> changes = elm.getChanges();
+                    if(changes == null) {
+                        changes = new HashMap<>();
+                    }
+                    Map<PropertyType, ItemProperty> props = properties
+                            .stream()
+                            .collect(Collectors
+                            .groupingBy(ItemProperty::getPropertyKey, Collectors.reducing(null, (a, b) -> b)));
+
+                    changes.merge(elementId, props, (ov, nv) -> {
+                        ov.putAll(nv);
+                        return ov;
+                    });
+
+                    elm.setChanges(changes);
+
+                    return elm;
+                });
     }
 
     public <T extends Resource> boolean isGeneratedFrom(T source, String id) {

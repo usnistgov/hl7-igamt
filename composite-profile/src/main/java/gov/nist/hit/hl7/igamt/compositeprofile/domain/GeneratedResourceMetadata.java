@@ -1,22 +1,32 @@
-package gov.nist.hit.hl7.igamt.common.base.service.impl;
+package gov.nist.hit.hl7.igamt.compositeprofile.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import gov.nist.hit.hl7.igamt.common.base.domain.GenerationDirective;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class GeneratedResourceMetadata<T extends Resource> {
     private String profileComponentId;
     private boolean resourceRoot;
     private String sourceId;
+    @JsonIgnore
     private Class<T> type;
     private String generatedResourceId;
     private Set<GenerationDirective> generatedUsing;
     private int useCount;
     private String directiveId;
-//    private Map<String, List<ItemProperty>>
+    private Map<String, Map<PropertyType, ItemProperty>> changes;
+
+    public GeneratedResourceMetadata() {
+    }
 
     public GeneratedResourceMetadata(
             String profileComponentId,
@@ -42,7 +52,24 @@ public class GeneratedResourceMetadata<T extends Resource> {
             this.generatedUsing.add(new GenerationDirective(profileComponentId, 1, Type.PROFILECOMPONENT));
         }
         this.directiveId = directiveId;
+        this.changes = from != null ? this.cloneChanges(from.getChanges()) : new HashMap<>();
     }
+
+    Map<String, Map<PropertyType, ItemProperty>> cloneChanges(Map<String, Map<PropertyType, ItemProperty>> map) {
+        if(map != null) {
+            return map.entrySet().stream()
+                    .collect(
+                            Collectors.toMap(Map.Entry::getKey, e -> e.getValue().entrySet().stream()
+                                    .collect(
+                                        Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)
+                                    )
+                            )
+                    );
+        } else {
+            return null;
+        }
+    }
+
 
     public String getDirectiveId() {
         return directiveId;
@@ -106,5 +133,13 @@ public class GeneratedResourceMetadata<T extends Resource> {
 
     public void setUseCount(int useCount) {
         this.useCount = useCount;
+    }
+
+    public Map<String, Map<PropertyType, ItemProperty>> getChanges() {
+        return changes;
+    }
+
+    public void setChanges(Map<String, Map<PropertyType, ItemProperty>> changes) {
+        this.changes = changes;
     }
 }

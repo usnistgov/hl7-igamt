@@ -4,7 +4,7 @@ import { ITreeNode } from 'angular-tree-component/dist/defs/api';
 import { TreeNode } from 'primeng/api';
 import { Observable } from 'rxjs';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
-import { ICompositeProfile, IOrderedProfileComponentLink, ICompositeProfileState } from '../../shared/models/composite-profile';
+import { ICompositeProfile, ICompositeProfileState, IOrderedProfileComponentLink } from '../../shared/models/composite-profile';
 import { ICPConformanceStatementList } from '../../shared/models/cs-list.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 
@@ -84,6 +84,6 @@ export class CompositeProfileService {
   }
 
   getGeneratedCompositeProfile = (composite: ICompositeProfile): Observable<ICompositeProfileState> => {
-    return this.http.get<ICompositeProfileState>(this.URL + 'compose/' + composite.id);
+    return this.http.get<ICompositeProfileState>(this.URL + composite.id + '/compose');
   }
 }

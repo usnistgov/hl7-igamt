@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1191,4 +1192,50 @@ public class DatatypeServiceImpl implements DatatypeService {
     return datatypeRepository.findByParentId(id);
     
   }
+
+	@Override
+	public Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes) {
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(Datatype dt : datatypes ) {
+			ret.add(this.convertDatatype(dt));
+		}
+		return ret;
+	}
+
+	@Override
+	public DisplayElement convertDatatype(Datatype datatype) {
+		DisplayElement displayElement= new DisplayElement();
+		displayElement.setId(datatype.getId());
+		displayElement.setDomainInfo(datatype.getDomainInfo());
+		displayElement.setFixedName(datatype.getName());
+		if(!datatype.getDomainInfo().getScope().equals(Scope.SDTF)) {
+			displayElement.setFixedName(datatype.getName());
+			if(datatype.getFixedExtension() !=null && !datatype.getFixedExtension().isEmpty()) {
+				displayElement.setFixedName(datatype.getName() + "_"+ datatype.getFixedExtension());
+			}
+			displayElement.setVariableName(datatype.getExt());
+		}else {
+			displayElement.setFixedName(datatype.getLabel());
+		}
+		displayElement.setDescription(datatype.getDescription());
+		displayElement.setDifferantial(datatype.getOrigin() !=null);
+		displayElement.setActiveInfo(datatype.getActiveInfo());
+		displayElement.setLeaf(!(datatype instanceof ComplexDatatype));
+		displayElement.setType(Type.DATATYPE);
+		displayElement.setOrigin(datatype.getOrigin());
+		displayElement.setParentId(datatype.getParentId());
+		displayElement.setParentType(datatype.getParentType());
+		return displayElement;
+	}
+
+	@Override
+	public Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry) {
+		Set<String> ids= registry.getChildren().stream().map(Link::getId).collect(Collectors.toSet());
+		List<Datatype> datatypes= this.findByIdIn(ids);
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(Datatype dt : datatypes) {
+			ret.add(convertDatatype(dt));
+		}
+		return ret;
+	}
 }

@@ -3,7 +3,9 @@ import { Actions, ofType } from '@ngrx/effects';
 import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, pluck, switchMap, take } from 'rxjs/operators';
-import { OpenEditor, OpenEditorBase, OpenEditorFailure, InsertResourcesInRepostory } from 'src/app/modules/dam-framework/store/index';
+import { InsertResourcesInRepostory, OpenEditor, OpenEditorBase, OpenEditorFailure } from 'src/app/modules/dam-framework/store/index';
+import { CompositeProfileActionTypes, OpenCompositeProfileStructureEditor } from 'src/app/root-store/composite-profile/composite-profile.actions';
+import { selectCompositeProfileById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import {
   IgamtLoadedResourcesActionTypes,
   LoadResourceReferences,
@@ -19,6 +21,7 @@ import * as fromDAM from '../../dam-framework/store';
 import * as fromRouterSelector from '../../dam-framework/store/router/router.selectors';
 import { Type } from '../../shared/constants/type.enum';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
+import { ICompositeProfile, ICompositeProfileState } from '../../shared/models/composite-profile';
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
 import { IUsages } from '../../shared/models/cross-reference';
 import { IDelta } from '../../shared/models/delta';
@@ -27,9 +30,6 @@ import { IProfileComponentContext } from '../../shared/models/profile.component'
 import { IResource } from '../../shared/models/resource.interface';
 import { ResourceService } from '../../shared/services/resource.service';
 import { IResourceMetadata } from '../components/resource-metadata-editor/resource-metadata-editor.component';
-import { OpenCompositeProfileStructureEditor, CompositeProfileActionTypes } from 'src/app/root-store/composite-profile/composite-profile.actions';
-import { selectCompositeProfileById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
-import { ICompositeProfileState, ICompositeProfile } from '../../shared/models/composite-profile';
 
 @Injectable({
   providedIn: 'root',
@@ -137,14 +137,14 @@ export class OpenEditorService {
                   return of(new InsertResourcesInRepostory({
                     collections: [{
                       key: 'datatypes',
-                      values: [...cps.datatypes.map((dr) => dr.display)]
+                      values: [...cps.datatypes.map((dr) => dr.display)],
                     }, {
                       key: 'segments',
-                      values: [...cps.segments.map((dr) => dr.display)]
+                      values: [...cps.segments.map((dr) => dr.display)],
                     }, {
                       key: 'resources',
-                      values: [...[...cps.datatypes, ...cps.segments].map((dr) => dr.resource)]
-                    }]
+                      values: [...[...cps.datatypes, ...cps.segments].map((dr) => dr.resource), ...cps.references],
+                    }],
                   }), openEditor);
                 },
               },
@@ -154,7 +154,7 @@ export class OpenEditorService {
                 },
               },
             });
-          })
+          }),
         );
       },
     );

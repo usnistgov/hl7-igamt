@@ -1,7 +1,7 @@
 <div style="display: flex; justify-content: space-between; align-items: center;">
   <div [ngClass]="{'inactive-cell-dim' : !active }" class="tt-cell">
     <strong *ngIf="globalViewOnly || !active" style="text-align: center; flex-grow: 1;">{{constant?.value}}</strong>
-    <input  *ngIf="active" style="margin-right: 5px;" type="text" class="form-control" placeholder="value" (ngModelChange)="change($event)" [(ngModel)]="constant.value" [ngModelOptions]="{updateOn: 'blur'}">
+    <input  *ngIf="!globalViewOnly && active" style="margin-right: 5px;" type="text" class="form-control" placeholder="value" (ngModelChange)="change($event)" [(ngModel)]="constant.value" [ngModelOptions]="{updateOn: 'blur'}">
   </div>
   <button *ngIf="!globalViewOnly && !active" class="btn btn-sm btn-primary profile-component-cell-btn" (click)="activate()">
     <i class="fa fa-plus"></i>

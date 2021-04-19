@@ -82,10 +82,6 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     return ret;
   }
 
-  /**
-   * @param compositeProfileRegistry
-   * @return
-   */
   @Override
   public Set<DisplayElement> convertCompositeProfileRegistry(
       CompositeProfileRegistry registry) {
@@ -99,10 +95,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     return ret;
   }
 
-  /**
-   * @param profileComponentRegistry
-   * @return
-   */
+
   private Set<DisplayElement> convertPofileComponentRegistry(
       ProfileComponentRegistry registry) {
     // TODO Auto-generated method stub
@@ -118,46 +111,22 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 
   @Override
   public Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry) {
-    Set<String> ids= this.gatherIds(registry.getChildren());
-    List<Datatype> datatypes= datatypeService.findByIdIn(ids);
-    Set<DisplayElement> ret = new HashSet<DisplayElement>();
-    for(Datatype dt : datatypes) {
-      ret.add(convertDatatype(dt));
-    }
-    return ret;
+    return this.datatypeService.convertDatatypeRegistry(registry);
   }
 
   @Override
   public Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry) {
-    Map<String, Integer> positionMap= this.gatherIdsAndPositions(registry.getChildren());
-    List<ConformanceProfile> conformanceProfiles = this.conformanceProfileService.findByIdIn(positionMap.keySet());
-    Set<DisplayElement> ret = new HashSet<DisplayElement>();
-    for(ConformanceProfile cf : conformanceProfiles) {
-      ret.add(convertConformanceProfile(cf, positionMap.get(cf.getId())));
-    }
-    return ret;
+    return this.conformanceProfileService.convertConformanceProfileRegistry(registry);
   }
 
   @Override
   public Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry) {
-    Set<String> ids= this.gatherIds(registry.getChildren());
-    List<Segment> segments = this.segmentService.findByIdIn(ids);
-    Set<DisplayElement> ret = new HashSet<DisplayElement>();
-    for(Segment seg : segments) {
-      ret.add(convertSegment(seg));
-    }
-    return ret;
+    return this.segmentService.convertSegmentRegistry(registry);
   }
 
   @Override
   public Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry) {
-    Set<String> ids= this.gatherIds(registry.getChildren());
-    List<Valueset> valueSets= this.valuesetService.findByIdIn(ids);
-    Set<DisplayElement> ret = new HashSet<DisplayElement>();
-    for(Valueset vs : valueSets) {
-      ret.add(convertValueSet(vs));
-    }
-    return ret; 
+    return this.valuesetService.convertValueSetRegistry(registry);
   }
 
   @Override
@@ -179,29 +148,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 
   @Override
   public DisplayElement convertDatatype(Datatype datatype) {
-
-    DisplayElement displayElement= new DisplayElement();
-    displayElement.setId(datatype.getId());
-    displayElement.setDomainInfo(datatype.getDomainInfo());
-    displayElement.setFixedName(datatype.getName());
-    if(!datatype.getDomainInfo().getScope().equals(Scope.SDTF)) {
-      displayElement.setFixedName(datatype.getName());
-      if(datatype.getFixedExtension() !=null && !datatype.getFixedExtension().isEmpty()) {
-        displayElement.setFixedName(datatype.getName() + "_"+ datatype.getFixedExtension());
-      }
-      displayElement.setVariableName(datatype.getExt());
-    }else {
-      displayElement.setFixedName(datatype.getLabel());
-    }
-    displayElement.setDescription(datatype.getDescription());
-    displayElement.setDifferantial(datatype.getOrigin() !=null);
-    displayElement.setActiveInfo(datatype.getActiveInfo());
-    displayElement.setLeaf(!(datatype instanceof ComplexDatatype));
-    displayElement.setType(Type.DATATYPE);
-    displayElement.setOrigin(datatype.getOrigin());
-    displayElement.setParentId(datatype.getParentId());
-    displayElement.setParentType(datatype.getParentType());
-    return displayElement;
+    return this.datatypeService.convertDatatype(datatype);
   }
 
 
@@ -224,55 +171,17 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 
   @Override
   public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile, int position) {
-    DisplayElement displayElement= new DisplayElement();
-    displayElement.setId(conformanceProfile.getId());
-    displayElement.setDomainInfo(conformanceProfile.getDomainInfo());
-    displayElement.setDescription(conformanceProfile.getDescription());
-    displayElement.setDifferantial(conformanceProfile.getOrigin() !=null);
-    displayElement.setLeaf(false);
-    displayElement.setPosition(position);
-    displayElement.setVariableName(conformanceProfile.getName());
-    displayElement.setType(Type.CONFORMANCEPROFILE);
-    displayElement.setOrigin(conformanceProfile.getOrigin());
-    displayElement.setParentId(conformanceProfile.getParentId());
-    displayElement.setParentType(conformanceProfile.getParentType());
-    return displayElement;
-
+    return this.conformanceProfileService.convertConformanceProfile(conformanceProfile, position);
   }
 
   @Override
   public DisplayElement convertSegment(Segment segment) {
-    DisplayElement displayElement= new DisplayElement();
-    displayElement.setId(segment.getId());
-    displayElement.setDomainInfo(segment.getDomainInfo());
-    displayElement.setDescription(segment.getDescription());
-    displayElement.setFixedName(segment.getName());
-    displayElement.setDifferantial(segment.getOrigin() !=null);
-    displayElement.setLeaf(false);
-    displayElement.setVariableName(segment.getExt());
-    displayElement.setType(Type.SEGMENT);
-    displayElement.setOrigin(segment.getOrigin());
-    displayElement.setParentId(segment.getParentId());
-    displayElement.setParentType(segment.getParentType());
-    displayElement.setStatus(segment.getStatus());
-    return displayElement;
+    return this.segmentService.convertSegment(segment);
   }
 
   @Override
   public DisplayElement convertValueSet(Valueset valueset) {
-    DisplayElement displayElement= new DisplayElement();
-    displayElement.setId(valueset.getId());
-    displayElement.setDomainInfo(valueset.getDomainInfo());
-    displayElement.setDescription(valueset.getName());
-    displayElement.setDifferantial(valueset.getOrigin() !=null);
-    displayElement.setLeaf(false);
-    displayElement.setVariableName(valueset.getBindingIdentifier());
-    displayElement.setType(Type.VALUESET);
-    displayElement.setOrigin(valueset.getOrigin());
-    displayElement.setFlavor(valueset.isFlavor());
-    displayElement.setParentId(valueset.getParentId());
-    displayElement.setParentType(valueset.getParentType());
-    return displayElement;
+    return this.valuesetService.convertValueSet(valueset);
   }
   
   @Override
@@ -335,41 +244,22 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 
   @Override
   public Set<DisplayElement> convertValueSets(Set<Valueset> valueSets) {
-    Set<DisplayElement> ret = new HashSet<DisplayElement>();
-    for(Valueset vs : valueSets) {
-      ret.add(this.convertValueSet(vs));
-    }
-    return ret;
-
+    return this.valuesetService.convertValueSets(valueSets);
   }
 
   @Override
   public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles, ConformanceProfileRegistry registry) {
-    Set<DisplayElement> ret = new HashSet<DisplayElement>();
-
-    Map<String, Integer> positionsMap= gatherIdsAndPositions(registry.getChildren());
-    for(ConformanceProfile cp : conformanceProfiles) {
-      ret.add(this.convertConformanceProfile(cp, positionsMap.get(cp.getId())));
-    }
-    return ret;
+    return this.conformanceProfileService.convertConformanceProfiles(conformanceProfiles, registry);
   }
 
   @Override
   public Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes) {
-    Set<DisplayElement> ret = new HashSet<DisplayElement>();
-    for(Datatype dt : datatypes ) {
-      ret.add(this.convertDatatype(dt));
-    }
-    return ret;
+   return this.datatypeService.convertDatatypes(datatypes);
   }
 
   @Override
   public Set<DisplayElement> convertSegments(Set<Segment> segments) {
-    Set<DisplayElement> ret = new HashSet<DisplayElement>();
-    for(Segment seg : segments ) {
-      ret.add(this.convertSegment(seg));
-    }
-    return ret;
+    return this.segmentService.convertSegments(segments);
   }
 
   /* (non-Javadoc)

@@ -1,5 +1,5 @@
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
@@ -25,7 +25,7 @@ import { CompositeProfileService } from '../../services/composite-profile.servic
   templateUrl: './composition-editor.component.html',
   styleUrls: ['./composition-editor.component.css'],
 })
-export class CompositionEditorComponent extends AbstractEditorComponent implements OnInit {
+export class CompositionEditorComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
   coreProfileDisplay$: Observable<IDisplayElement>;
   compositeProfile$: Observable<ICompositeProfile>;
   availablePc$: Observable<IDisplayElement[]>;
@@ -209,6 +209,12 @@ export class CompositionEditorComponent extends AbstractEditorComponent implemen
   }
 
   ngOnInit() {
+  }
+
+  ngOnDestroy() {
+    if (this.workspace_s) {
+      this.workspace_s.unsubscribe();
+    }
   }
 
   onDeactivate(): void {

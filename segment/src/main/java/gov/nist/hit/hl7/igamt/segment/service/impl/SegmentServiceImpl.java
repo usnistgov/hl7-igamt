@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -1262,6 +1263,44 @@ public class SegmentServiceImpl implements SegmentService {
         }
       }
     }
+  }
+
+  @Override
+  public Set<DisplayElement> convertSegments(Set<Segment> segments) {
+    Set<DisplayElement> ret = new HashSet<DisplayElement>();
+    for(Segment seg : segments ) {
+      ret.add(this.convertSegment(seg));
+    }
+    return ret;
+  }
+
+  @Override
+  public DisplayElement convertSegment(Segment segment) {
+    DisplayElement displayElement= new DisplayElement();
+    displayElement.setId(segment.getId());
+    displayElement.setDomainInfo(segment.getDomainInfo());
+    displayElement.setDescription(segment.getDescription());
+    displayElement.setFixedName(segment.getName());
+    displayElement.setDifferantial(segment.getOrigin() !=null);
+    displayElement.setLeaf(false);
+    displayElement.setVariableName(segment.getExt());
+    displayElement.setType(Type.SEGMENT);
+    displayElement.setOrigin(segment.getOrigin());
+    displayElement.setParentId(segment.getParentId());
+    displayElement.setParentType(segment.getParentType());
+    displayElement.setStatus(segment.getStatus());
+    return displayElement;
+  }
+
+  @Override
+  public Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry) {
+    Set<String> ids= registry.getChildren().stream().map(Link::getId).collect(Collectors.toSet());
+    List<Segment> segments = this.findByIdIn(ids);
+    Set<DisplayElement> ret = new HashSet<DisplayElement>();
+    for(Segment seg : segments) {
+      ret.add(convertSegment(seg));
+    }
+    return ret;
   }
 
 
