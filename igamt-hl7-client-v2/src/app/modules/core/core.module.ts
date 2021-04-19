@@ -18,8 +18,8 @@ import { HomeComponent } from './components/home/home.component';
 import { NewPasswordComponent } from './components/new-password/new-password.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordRequestComponent } from './components/reset-password-request/reset-password-request.component';
-import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { UserManagementComponent } from './components/user-management/user-management.component';
+import { UserProfileComponent } from './components/user-profile/user-profile.component';
 
 @NgModule({
   declarations: [

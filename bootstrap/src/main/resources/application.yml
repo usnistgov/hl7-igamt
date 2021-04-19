@@ -30,7 +30,7 @@ db:
 key: 
   public: /usr/local/etc/hit/auth/publicKey.txt
 auth:
-  url: http://localhost:8091
+  url: http://localhost:8090
    
 email:
    port: 25
