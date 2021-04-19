@@ -16,6 +16,7 @@ public class GeneratedResourceMetadata<T extends Resource> {
     private Set<GenerationDirective> generatedUsing;
     private int useCount;
     private String directiveId;
+//    private Map<String, List<ItemProperty>>
 
     public GeneratedResourceMetadata(
             String profileComponentId,
