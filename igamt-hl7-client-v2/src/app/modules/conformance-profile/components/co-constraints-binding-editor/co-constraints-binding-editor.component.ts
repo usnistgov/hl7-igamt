@@ -415,7 +415,7 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
           mergeMap((message) => {
             return this.conformanceProfileService.getById(id).pipe(
               flatMap((resource) => {
-                return [this.messageService.messageToAction(message), new LoadResourceReferences({ resourceType: this.editor.resourceType, id }), new fromDam.EditorUpdate({ value: { value: resource.coConstraintsBindings, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
+                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { value: resource.coConstraintsBindings, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
               }),
             );
           }),
@@ -442,7 +442,6 @@ export class CoConstraintsBindingEditorComponent extends AbstractEditorComponent
   }
 
   onDeactivate(): void {
-    this.ngOnDestroy();
   }
 
   ngOnInit() {

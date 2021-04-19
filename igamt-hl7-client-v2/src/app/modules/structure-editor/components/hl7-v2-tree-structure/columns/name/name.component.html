@@ -1,5 +1,12 @@
 <span [contextMenu]="elmCtxMenu">
   <div style="display: flex; align-items: center; justify-content: space-between;">
+    <div style="margin-right: 10px;">
+      <button class="btn btn-sm btn-primary" *ngIf="!viewOnly && (type === 'FIELD' || type === 'GROUP') && !editMode" (click)="toggleEdit()"><i class="fa fa-pencil"></i></button>
+      <!-- DELETE -->
+      <button *ngIf="!viewOnly && !editMode && !required" class="btn btn-sm btn-danger" (click)="btnRemove()" style="margin-left: 2px;">
+        <i class="fa fa-trash"></i>
+      </button>
+    </div>
     <div style="display: flex; align-items: center;">
       <app-entity-bagde [type]="type" ></app-entity-bagde>
       <span style="margin-left: 5px;"> {{position}}. </span>
@@ -14,14 +21,6 @@
       </div>
 
       <span *ngIf="!editMode" style="margin-left: 5px;"> {{nname}}</span>
-    </div>
-
-    <div>
-      <button class="btn btn-sm btn-primary" style="margin-left: 20px;" *ngIf="!viewOnly && (type === 'FIELD' || type === 'GROUP') && !editMode" (click)="toggleEdit()"><i class="fa fa-pencil"></i></button>
-      <!-- DELETE -->
-      <button *ngIf="!viewOnly && !editMode && !required" class="btn btn-sm btn-danger" (click)="btnRemove()" style="margin-left: 5px;">
-        <i class="fa fa-trash"></i>
-      </button>
     </div>
 
   </div>

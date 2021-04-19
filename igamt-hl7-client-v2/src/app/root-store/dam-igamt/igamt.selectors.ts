@@ -1,7 +1,7 @@
 import { createSelector } from '@ngrx/store';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IWorkspace } from '../../modules/dam-framework/models/data/workspace';
-import {IgDocument} from '../../modules/ig/models/ig/ig-document.class';
+import { IgDocument } from '../../modules/ig/models/ig/ig-document.class';
 import { Scope } from '../../modules/shared/constants/scope.enum';
 import {
   IAbstractDomain,
@@ -10,7 +10,7 @@ import {
   Status,
 } from '../../modules/shared/models/abstract-domain.interface';
 import { IHL7WorkspaceActive } from '../../modules/shared/models/editor.class';
-import {selectIgDocument} from '../ig/ig-edit/ig-edit.selectors';
+import { selectIgDocument } from '../ig/ig-edit/ig-edit.selectors';
 
 export const selectWorkspaceActive = createSelector(
   fromDAM.selectWorkspace,

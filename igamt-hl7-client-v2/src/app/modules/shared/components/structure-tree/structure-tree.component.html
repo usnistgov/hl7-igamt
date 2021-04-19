@@ -1,4 +1,12 @@
-<p-tree [style]="{'width':'100%', 'height': '100%'}" [value]="structure" (onNodeExpand)="onNodeExpand($event)" (onNodeSelect)="nodeSelected($event)" selectionMode="single" [(selection)]="selectedNode">
+<p-tree [style]="{'width':'100%', 'height': '100%'}" 
+  [value]="structure" 
+  (onNodeExpand)="onNodeExpand($event)" 
+  (onNodeSelect)="nodeSelected($event)"
+  (onNodeUnselect)="nodeUnselected($event)" 
+  [selectionMode]="selectionMode" 
+  [propagateSelectionUp]="false" 
+  [propagateSelectionDown]="false"
+  [(selection)]="selectedNode">
   <ng-template let-node pTemplate="default">
     <app-entity-bagde [type]="node.data.type" ></app-entity-bagde>
     <span [ngClass]="{'disabled-tree-item': !node.selectable}"><span *ngIf="node.data.position"> {{node.data.position}}.</span> {{node.data.name}}</span>

@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { UserMessage } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { Message, MessageType } from '../../dam-framework/models/messages/message.class';
 import { Scope } from '../constants/scope.enum';
@@ -50,6 +50,9 @@ export class ResourceService {
     } else {
       return throwError(new UserMessage(MessageType.FAILED, 'Unrecognized resource type'));
     }
+  }
+  getProfileComponentContextResources(pcId: string, id: string): Observable<IResource[]> {
+    return this.http.get<IResource[]>('api/profile-component/' + pcId + '/context/' + id + this.resource);
   }
 
   private getResourcesUrl(type: Type, id: string, documentId: string): string {

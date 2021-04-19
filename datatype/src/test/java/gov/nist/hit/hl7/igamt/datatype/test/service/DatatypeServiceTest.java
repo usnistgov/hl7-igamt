@@ -24,16 +24,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
-import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
+import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
-import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatype.service.impl.DatatypeServiceImpl;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -49,7 +47,7 @@ public class DatatypeServiceTest {
   @Mock
   private DatatypeRepository datatypeRepository;
   @Mock
-  private InMemoryDomainExtentionService domainExtention;
+  private InMemoryDomainExtensionService domainExtention;
   @Mock
   CommonService commonService;
   @Mock

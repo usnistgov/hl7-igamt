@@ -1,0 +1,36 @@
+<div *ngIf="val && val.length" style="display: flex; justify-content: space-between; align-items: center;">
+
+  <div [ngClass]="{'inactive-cell-dim' : !active }"  class="tt-cell" style="display: flex; align-items: center;">
+    <ng-container [ngSwitch]="globalViewOnly || !active">
+      <ng-container *ngSwitchCase="false" [ngSwitch]="activeLength()">
+        <ng-container  *ngSwitchCase="true">
+          <div style="display: flex; width: 100%;">
+            <input [ngModelOptions]="{updateOn: 'blur'}" class="range-input" style="margin-right: 5px;" type="text" [name]="location + 'min-length'" [id]="location + 'min-length'" placeholder="Min" min="0" [(ngModel)]="val.length.min" (ngModelChange)="minChange($event)">
+            <span style="margin-right: 5px;"> .. </span>
+            <input [ngModelOptions]="{updateOn: 'blur'}" class="range-input" type="text" [name]="location + 'max-length'" [id]="location + 'max-length'" placeholder="Max" [(ngModel)]="val.length.max" (ngModelChange)="maxChange($event)">
+          </div>
+          <button  *ngIf="confLenghtIsActive()" class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="clearType()">
+            <i class="fa fa-times"></i>
+          </button>
+        </ng-container>
+        <div *ngSwitchCase="false">
+          <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: false }"></ng-container>
+        </div>
+      </ng-container>
+      <ng-container *ngSwitchCase="true">
+        <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: activeLength() }"></ng-container>
+      </ng-container>
+    </ng-container>
+  </div>
+
+  <button *ngIf="!globalViewOnly && !active" class="btn btn-sm btn-primary profile-component-cell-btn" (click)="activate()">
+    <i class="fa fa-plus"></i>
+  </button>
+  <button *ngIf="!globalViewOnly && active" class="btn btn-sm btn-danger profile-component-cell-btn" style="background-color: red !important; margin-left: 5px;" (click)="clear()">
+    <i class="fa fa-trash"></i>
+  </button>
+</div>
+
+<ng-template #display let-val let-active="active">
+  <strong [ngClass]="{ 'treetable-light': !active }" >[{{val.length.min}} .. {{val.length.max}}]</strong>
+</ng-template>

@@ -3,7 +3,7 @@
 <mat-dialog-content>
   <div *ngIf="step === 0">
     <label> <strong> Select Conformance Profiles </strong> </label>
-    <app-select-resource-ids [conformanceProfiles]="data.conformanceProfiles" (selected)="matchId($event)"></app-select-resource-ids>
+    <app-select-resource-ids [resources]="data.conformanceProfiles" (selected)="matchProfileIds($event)"></app-select-resource-ids>
   </div>
   <div *ngIf="step === 1 && !reports">
     <p-progressBar mode="indeterminate" *ngIf="!reports"></p-progressBar>

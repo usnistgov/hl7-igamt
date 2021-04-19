@@ -1,53 +1,66 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Actions } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
-import { SelectItem } from 'primeng/api';
-import { combineLatest, Observable, of } from 'rxjs';
-import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {MatDialog} from '@angular/material';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Actions} from '@ngrx/effects';
+import {Store} from '@ngrx/store';
+import {SelectItem} from 'primeng/api';
+import {combineLatest, Observable, of} from 'rxjs';
+import {concatMap, filter, map, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import {selectAllMessages} from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 
+import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
+  AddProfileComponentContext,
+  CopyResource,
+  CopyResourceSuccess,
+  CreateCompositeProfile,
+  CreateProfileComponent,
+  CreateProfileComponentSuccess,
+  DeleteProfileComponentContext,
+  DeleteResource,
   IgEditActionTypes,
+  IgEditTocAddResource,
   ImportResourceFromFile,
   ImportResourceFromFileSuccess,
-} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {
-  CopyResource, CopyResourceSuccess,
-  DeleteResource,
-  IgEditTocAddResource, selectDerived,
+  selectDerived,
+  selectIgId,
+  ToggleDelta,
   UpdateSections,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { selectIgId } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { ToggleDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
-import { CreateCoConstraintGroup, CreateCoConstraintGroupSuccess } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import {
+  CreateCoConstraintGroup,
+  CreateCoConstraintGroupSuccess,
+} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
-import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
+import {ClearResource, LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
-import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
-import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
+import {ConfirmDialogComponent} from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import {RxjsStoreHelperService} from '../../../dam-framework/services/rxjs-store-helper.service';
 import {EditorReset, selectWorkspaceActive} from '../../../dam-framework/store/data';
-import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
-import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
-import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
-import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
-import { ImportCsvValuesetComponent } from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
-import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
-import { UsageDialogComponent } from '../../../shared/components/usage-dialog/usage-dialog.component';
-import { Scope } from '../../../shared/constants/scope.enum';
-import { Type } from '../../../shared/constants/type.enum';
-import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
-import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
-import { IUsages } from '../../../shared/models/cross-reference';
-import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
-import { CrossReferencesService } from '../../../shared/services/cross-references.service';
-import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
-import { IgTocComponent } from '../ig-toc/ig-toc.component';
+import {IAddNewWrapper, IAddWrapper} from '../../../document/models/document/add-wrapper.class';
+import {AddCoConstraintGroupComponent} from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
+import {AddCompositeComponent} from '../../../shared/components/add-composite/add-composite.component';
+import {AddProfileComponentContextComponent} from '../../../shared/components/add-profile-component-context/add-profile-component-context.component';
+import {AddProfileComponentComponent} from '../../../shared/components/add-profile-component/add-profile-component.component';
+import {AddResourceComponent} from '../../../shared/components/add-resource/add-resource.component';
+import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
+import {getLabel} from '../../../shared/components/display-section/display-section.component';
+import {ImportCsvValuesetComponent} from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
+import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
+import {UsageDialogComponent} from '../../../shared/components/usage-dialog/usage-dialog.component';
+import {Scope} from '../../../shared/constants/scope.enum';
+import {Type} from '../../../shared/constants/type.enum';
+import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
+import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
+import {IUsages} from '../../../shared/models/cross-reference';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {IResourcePickerData} from '../../../shared/models/resource-picker-data.interface';
+import {CrossReferencesService} from '../../../shared/services/cross-references.service';
+import {IDocumentDisplayInfo, IgDocument} from '../../models/ig/ig-document.class';
+import {IgTocComponent} from '../ig-toc/ig-toc.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -128,7 +141,6 @@ export class IgEditSidebarComponent implements OnInit {
   }
 
   addChildren(event: IAddWrapper) {
-    console.log(event);
     const subscription = this.hl7Version$.pipe(
       withLatestFrom(this.version$),
       take(1),
@@ -245,6 +257,7 @@ export class IgEditSidebarComponent implements OnInit {
                 data: {
                   title: 'Cross References found',
                   usages,
+                  element: $event,
                   documentId: documentRef.documentId,
                 },
               });
@@ -287,6 +300,10 @@ export class IgEditSidebarComponent implements OnInit {
         return 'Conformance Profiles';
       case Type.VALUESET:
         return 'Value Sets';
+      case Type.PROFILECOMPONENT:
+        return 'Profile Component';
+      case Type.COMPOSITEPROFILE:
+        return 'Composite Profile';
       default:
         return '';
     }
@@ -307,7 +324,74 @@ export class IgEditSidebarComponent implements OnInit {
       case Type.COCONSTRAINTGROUP:
         this.addCoConstraintGroup($event);
         break;
+      case Type.PROFILECOMPONENT:
+        this.addProfileComponent($event);
+        break;
+      case Type.COMPOSITEPROFILE:
+        this.addCompositeProfile($event);
+        break;
     }
+  }
+
+  addProfileComponent(event: IAddNewWrapper) {
+    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllSegments), this.store.select(selectAllMessages)).pipe(
+      take(1),
+      tap(([{ documentId, type }, segments, messages]) => {
+        const dialogRef = this.dialog.open(AddProfileComponentComponent, {
+          data: {
+            children: segments.concat(messages),
+          },
+        });
+        dialogRef.afterClosed().pipe(
+          filter((x) => x !== undefined),
+          take(1),
+          map((result) => {
+            if (result) {
+              RxjsStoreHelperService.listenAndReact(this.actions, {
+                [IgEditActionTypes.CreateProfileComponentSuccess]: {
+                  do: (action: CreateProfileComponentSuccess) => {
+                    this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
+                    return of();
+                  },
+                },
+              }).subscribe();
+              this.store.dispatch(new CreateProfileComponent({ documentId, ...result }));
+            }
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
+  }
+
+  addCompositeProfile(event: IAddNewWrapper) {
+    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllProfileComponents), this.store.select(selectAllMessages)).pipe(
+      take(1),
+      tap(([{ documentId, type }, profileComponents, messages]) => {
+        const dialogRef = this.dialog.open(AddCompositeComponent, {
+          data: {
+            messages,
+            profileComponents,
+          },
+        });
+        dialogRef.afterClosed().pipe(
+          filter((x) => x !== undefined),
+          take(1),
+          map((result) => {
+            if (result) {
+              RxjsStoreHelperService.listenAndReact(this.actions, {
+                [IgEditActionTypes.CreateProfileComponentSuccess]: {
+                  do: (action: CreateProfileComponentSuccess) => {
+                    this.router.navigate(['./' + action.payload.display.type.toLowerCase() + '/' + action.payload.display.id], { relativeTo: this.activeRoute });
+                    return of();
+                  },
+                },
+              }).subscribe();
+              this.store.dispatch(new CreateCompositeProfile({ documentId, ...result }));
+            }
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
   }
 
   addCoConstraintGroup($event: IAddNewWrapper) {
@@ -384,5 +468,54 @@ export class IgEditSidebarComponent implements OnInit {
         }
     }),
     ).subscribe();
+  }
+
+  onAddPcChildren($event: IDisplayElement) {
+    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllSegments), this.store.select(selectAllMessages)).pipe(
+      take(1),
+      tap(([{ documentId, type }, segments, messages]) => {
+        const dialogRef = this.dialog.open(AddProfileComponentContextComponent, {
+          data: {
+            available: segments.concat(messages),
+            pc: $event,
+          },
+        });
+        dialogRef.afterClosed().pipe(
+          filter((x) => x !== undefined),
+          take(1),
+          map((result) => {
+            if (result) {
+              console.log(result);
+              this.store.dispatch(new AddProfileComponentContext({ documentId, pcId: $event.id, added: result }));
+            }
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
+  }
+
+  deleteOneChild($event: { child: IDisplayElement; parent: IDisplayElement }) {
+    this.documentRef$.pipe(
+      take(1),
+      tap((documentRef) => {
+
+        const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          data: {
+            question: 'Are you sure you want to remove ' + getLabel($event.child.fixedName, $event.child.variableName) + ' from ' + getLabel($event.parent.fixedName, $event.parent.variableName) + ' ?',
+            action: 'Delete Profile Component Context',
+          },
+        });
+        dialogRef.afterClosed().subscribe(
+          (answer) => {
+            if (answer) {
+              this.store.dispatch(new DeleteProfileComponentContext({
+                documentId: documentRef.documentId,
+                element: $event.child,
+                parent: $event.parent,
+              }));
+            }
+          },
+        );
+      })).subscribe();
   }
 }

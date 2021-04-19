@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.common.base.domain.display;
 
+import java.util.List;
 import java.util.Set;
 
 import gov.nist.diff.domain.DeltaAction;
@@ -30,7 +31,7 @@ public class DisplayElement {
   private Type parentType;
   private String parentId;
   private Set<String> libraryReferences;
-
+  private List<DisplayElement> children;
 
   public DeltaAction getDelta() {
     return delta;
@@ -181,6 +182,14 @@ public class DisplayElement {
 
   public void setLibraryReferences(Set<String> libraryReferences) {
     this.libraryReferences = libraryReferences;
+  }
+
+  public List<DisplayElement> getChildren() {
+    return children;
+  }
+
+  public void setChildren(List<DisplayElement> children) {
+    this.children = children;
   }
 
 

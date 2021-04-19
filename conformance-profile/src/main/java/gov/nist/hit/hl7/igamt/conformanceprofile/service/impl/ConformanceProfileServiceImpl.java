@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -430,10 +431,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
   }
 
-  /**
-   * @param elm
-   * @param valuesetsMap
-   */
   private void processAndSubstitute(ConformanceProfile cp, HashMap<RealKey, String> newKeys) {
     // TODO Auto-generated method stub
     for (MsgStructElement segOrgroup : cp.getChildren()) {
@@ -852,11 +849,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     return result;
   }
 
-  /**
-   * @param parentSeb
-   * @param id
-   * @return
-   */
   private StructureElementBinding findStructureElementBindingByIdFromBinding(Binding binding, String id) {
     if (binding != null && binding.getChildren() != null) {
       for (StructureElementBinding child : binding.getChildren()) {
@@ -1036,11 +1028,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       }
     }
   }
-  /**
-   * @param children
-   * @param location
-   * @return
-   */
 
   public <T extends StructureElement> T findSegmentRefOrGroupByIdAsStructureElement(Set<T> children, String idPath) {
     return  (T) this.findSegmentRefOrGroupById(children.stream().map(x -> (SegmentRefOrGroup) x).collect(Collectors.toSet()), idPath);
@@ -1236,12 +1223,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     return result;
   }
 
-  /**
-   * @param map
-   * @param groupStructureTreeModel
-   * @param groupDisplayModel
-   * @param sog
-   */
   private void updateChild(GroupStructureTreeModel parentStructureTreeModel, GroupDisplayModel parentDisplayModel,
       SegmentRefOrGroup parent, HashMap<String, ConformanceStatementsContainer> segMap,
       HashMap<String, ConformanceStatementsContainer> dtMap) {
@@ -1412,6 +1393,44 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       this.segmentService.collectResources(seg, usedDatatypes);
     }
     ret.addAll(usedDatatypes.values());
+    return ret;
+  }
+
+  @Override
+  public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile, int position) {
+    DisplayElement displayElement= new DisplayElement();
+    displayElement.setId(conformanceProfile.getId());
+    displayElement.setDomainInfo(conformanceProfile.getDomainInfo());
+    displayElement.setDescription(conformanceProfile.getDescription());
+    displayElement.setDifferantial(conformanceProfile.getOrigin() !=null);
+    displayElement.setLeaf(false);
+    displayElement.setPosition(position);
+    displayElement.setVariableName(conformanceProfile.getName());
+    displayElement.setType(Type.CONFORMANCEPROFILE);
+    displayElement.setOrigin(conformanceProfile.getOrigin());
+    displayElement.setParentId(conformanceProfile.getParentId());
+    displayElement.setParentType(conformanceProfile.getParentType());
+    return displayElement;
+  }
+
+  @Override
+  public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles, ConformanceProfileRegistry registry) {
+    Set<DisplayElement> ret = new HashSet<DisplayElement>();
+    Map<String, Integer> positionsMap = registry.getChildren().stream().collect(Collectors.toMap(Link::getId, Link::getPosition));
+    for(ConformanceProfile cp : conformanceProfiles) {
+      ret.add(this.convertConformanceProfile(cp, positionsMap.get(cp.getId())));
+    }
+    return ret;
+  }
+
+  @Override
+  public Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry) {
+    Map<String, Integer> positionMap = registry.getChildren().stream().collect(Collectors.toMap(Link::getId, Link::getPosition));
+    List<ConformanceProfile> conformanceProfiles = this.findByIdIn(positionMap.keySet());
+    Set<DisplayElement> ret = new HashSet<DisplayElement>();
+    for(ConformanceProfile cf : conformanceProfiles) {
+      ret.add(convertConformanceProfile(cf, positionMap.get(cf.getId())));
+    }
     return ret;
   }
 

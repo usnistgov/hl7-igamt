@@ -24,6 +24,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
@@ -36,6 +37,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfi
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
@@ -72,13 +74,11 @@ public interface ConformanceProfileService {
 
   public List<ConformanceProfile> findByDomainInfoScope(String scope);
 
-  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersion(String scope,
-      String verion);
+  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
 
   public List<ConformanceProfile> findByName(String name);
 
-  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope,
-      String version, String name);
+  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
 
   public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name);
 
@@ -86,30 +86,18 @@ public interface ConformanceProfileService {
 
   ConformanceProfile findDisplayFormat(String id);
 
-  public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
-      ConformanceProfile conformanceProfile, String documentId, boolean readOnly);
+  public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(ConformanceProfile conformanceProfile, String documentId, boolean readOnly);
 
+  public void validate(DisplayConformanceProfileMetadata metadata) throws ConformanceProfileValidationException;
 
-  public void validate(DisplayConformanceProfileMetadata metadata)
-      throws ConformanceProfileValidationException;
+  public Link cloneConformanceProfile(String key, HashMap<RealKey, String> newKeys, Link l, String username, Scope scope, CloneMode clone);
 
-  public Link cloneConformanceProfile(String key, HashMap<RealKey, String> newKeys, Link l,
-      String username, Scope scope, CloneMode clone);
-
-  /**
-   * @param conformanceProfile
-   * @return
-   */
   public ConformanceProfileStructureDisplay convertDomainToDisplayStructure(ConformanceProfile conformanceProfile, boolean readOnly);
   
   public ConformanceProfileStructureDisplay convertDomainToDisplayStructureFromContext(ConformanceProfile conformanceProfile, String contextId, boolean readOnly);
   
   public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems, String documentId) throws Exception;
 
-  /**
-   * @param conformanceProfile
-   * @return
-   */
   public ConformanceProfileStructureTreeModel convertDomainToContextStructure(ConformanceProfile conformanceProfile, HashMap<String, ConformanceStatementsContainer> segMap, HashMap<String, ConformanceStatementsContainer> dtMap);
 
   public Binding makeLocationInfo(ConformanceProfile cp);
@@ -119,6 +107,11 @@ public interface ConformanceProfileService {
   List<ConformanceProfile> findByIdIn(Set<String> set);
   
   public Set<Resource> getDependencies(ConformanceProfile cp);
+
+  DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile, int position);
+  Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles, ConformanceProfileRegistry conformanceProfileRegistry);
+  Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry);
+
 
 
 }

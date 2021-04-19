@@ -9,6 +9,7 @@
     "aot": "ng build --source-map=false --aot",
     "test": "ng test",
     "lint": "ng lint",
+    "lint-fix": "ng lint --fix",
     "test-headless": "ng test --watch=false --browsers=ChromeHeadless",
     "e2e": "ng e2e"
   },

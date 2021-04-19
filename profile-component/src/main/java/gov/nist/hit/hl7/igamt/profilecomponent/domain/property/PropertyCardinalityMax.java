@@ -11,21 +11,25 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
+
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class PropertyCardinalityMax extends ItemProperty {
+public class PropertyCardinalityMax extends ItemProperty implements ApplyMsgStructElement, ApplyField {
 
   private String max;
 
   public PropertyCardinalityMax(String max) {
-    super(PropertyKey.CARDINALITY_MAX);
+    super(PropertyType.CARDINALITYMAX);
     this.max = max;
   }
   
   public PropertyCardinalityMax() {
-    super(PropertyKey.CARDINALITY_MAX);
+    super(PropertyType.CARDINALITYMAX);
   }
 
   public String getMax() {
@@ -35,5 +39,14 @@ public class PropertyCardinalityMax extends ItemProperty {
   public void setMax(String max) {
     this.max = max;
   }
-  
+
+  @Override
+  public void onField(Field elm) {
+    elm.setMax(max);
+  }
+
+  @Override
+  public void onMsgStructElement(MsgStructElement elm) {
+    elm.setMax(max);
+  }
 }

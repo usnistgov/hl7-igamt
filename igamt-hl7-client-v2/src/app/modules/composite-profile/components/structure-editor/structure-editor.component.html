@@ -1,0 +1,65 @@
+<ng-template #headerTitle let-active let-defaultTemplate="defaultTemplate">
+  <div style="display: flex; align-items: center; justify-content: center;">
+    <h5 style="display: inline;" class="title-text">
+      <app-entity-bagde [type]="active.display.type"></app-entity-bagde>
+      {{active.display.variableName}}
+    </h5>
+    <ng-container *ngIf="selected" >
+      <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>
+      <h5 class="title-text">
+        <app-display-section [element]="selected.display" [hideDescription]="true" [inline]="true" ></app-display-section>
+      </h5>
+      <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>
+      <h5 style="display: inline;" class="title-text"> {{active.editor.title}} </h5>
+    </ng-container>
+  </div>
+</ng-template>
+<div>
+  <ng-container *ngIf="resource$ | async as resources">
+    <strong style="margin-right: 10px;"> Select Generated Structure </strong>
+    <div style="display: inline;">
+      <p-dropdown [options]="resources" [(ngModel)]="selected" (ngModelChange)="selectItem($event)" [group]="true" [filter]="true" filterBy="value.fixedName,value.variableName">
+        <ng-template let-item pTemplate="selectedItem">
+          <ng-container *ngIf="item.value">
+            <app-display-section [element]="item.value.display" [hideDescription]="true" [inline]="true" ></app-display-section>
+          </ng-container>
+        </ng-template>
+        <ng-template let-item pTemplate="item">
+          <ng-container *ngIf="item.value">
+            <app-display-section [element]="item.value.display" [hideDescription]="true" [inline]="true" ></app-display-section>
+          </ng-container>
+        </ng-template>
+      </p-dropdown>
+    </div><br>
+
+    <ng-container *ngIf="selected">
+      <strong>Binding Context Legend : </strong>
+      <div style="display: flex; flex-direction: row; align-items: center;">
+        <div *ngFor="let item of legend" style="display: flex; flex-direction: row; align-items: center; margin-right: 5px;">
+          <app-binding-badge [context]="item.context"></app-binding-badge>
+          <span style="margin-left: 5px;">{{ item.label }}</span>
+        </div>
+      </div>
+
+      <app-hl7-v2-tree
+        [columns]="columns"
+        [documentRef]="documentRef$ | async"
+        [derived]="false"
+        [datatypes]="datatypes | async"
+        [segments]="segments | async"
+        [valueSets]="valueSets | async"
+        [repository]="repository"
+        [viewOnly]="true"
+        (changes)="change($event)"
+        [resource]="selected.resource"
+        [config]="config | async"
+        [bindingConfig]= "bindingConfig | async"
+        [username]="username | async">
+      </app-hl7-v2-tree>
+    </ng-container>
+
+
+  </ng-container>
+
+</div>
+

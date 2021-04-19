@@ -14,74 +14,35 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 
 /**
  *
  * @author Maxence Lefort on Feb 22, 2018.
  */
-public class PropertyPredicate extends ItemProperty {
+public class PropertyPredicate extends PropertyBinding implements ApplyResourceBinding {
 
-  private Usage trueUsage;
-  private Usage falseUsage;
-  private String constraintTarget;
-  private String description;
-  private String assertion;
-
+  private Predicate predicate;
 
   public PropertyPredicate() {
-    super(PropertyKey.PREDICATE);
+    super(PropertyType.PREDICATE);
   }
 
-
-  public Usage getTrueUsage() {
-    return trueUsage;
+  public Predicate getPredicate() {
+    return predicate;
   }
 
-
-  public void setTrueUsage(Usage trueUsage) {
-    this.trueUsage = trueUsage;
+  public void setPredicate(Predicate predicate) {
+    this.predicate = predicate;
   }
 
-
-  public Usage getFalseUsage() {
-    return falseUsage;
+  @Override
+  public void onResourceBinding(ResourceBinding resourceBinding, BindingService bindingService) {
+    StructureElementBinding structureElementBinding = this.getStructureBinding(resourceBinding, this.target, bindingService);
+    structureElementBinding.setPredicate(predicate);
   }
-
-
-  public void setFalseUsage(Usage falseUsage) {
-    this.falseUsage = falseUsage;
-  }
-
-
-  public String getConstraintTarget() {
-    return constraintTarget;
-  }
-
-
-  public void setConstraintTarget(String constraintTarget) {
-    this.constraintTarget = constraintTarget;
-  }
-
-
-  public String getDescription() {
-    return description;
-  }
-
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-
-  public String getAssertion() {
-    return assertion;
-  }
-
-
-  public void setAssertion(String assertion) {
-    this.assertion = assertion;
-  }
-
-
-
 }

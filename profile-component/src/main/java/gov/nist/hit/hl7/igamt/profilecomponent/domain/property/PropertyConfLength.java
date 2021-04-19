@@ -13,21 +13,24 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+
 /**
  *
  * @author Maxence Lefort on Feb 23, 2018.
  */
-public class PropertyConfLength extends ItemProperty {
+public class PropertyConfLength extends ItemProperty implements ApplySubStructElement {
 
   private String confLength;
 
   public PropertyConfLength(String confLength) {
-    super(PropertyKey.CONF_LENGTH);
+    super(PropertyType.CONFLENGTH);
     this.confLength = confLength;
   }
 
   public PropertyConfLength() {
-    super(PropertyKey.CONF_LENGTH);
+    super(PropertyType.CONFLENGTH);
   }
 
   public String getConfLength() {
@@ -38,4 +41,8 @@ public class PropertyConfLength extends ItemProperty {
     this.confLength = confLength;
   }
 
+  @Override
+  public void onSubStructElement(SubStructElement subStruct) {
+    subStruct.setConfLength(confLength);
+  }
 }

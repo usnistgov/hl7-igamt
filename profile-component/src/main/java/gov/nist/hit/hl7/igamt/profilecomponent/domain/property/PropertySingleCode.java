@@ -14,35 +14,36 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 /**
  *
  * @author Maxence Lefort on Feb 23, 2018.
  */
-public class PropertySingleCode extends ItemProperty {
+public class PropertySingleCode extends PropertyBinding implements ApplyResourceBinding {
 
-  private String singleCodeId;
-  private ExternalSingleCode externalSingleCode;
+  private InternalSingleCode internalSingleCode;
 
 
   public PropertySingleCode() {
-    super(PropertyKey.SINGLECODE);
+    super(PropertyType.SINGLECODE);
   }
 
-  public String getSingleCodeId() {
-    return singleCodeId;
+  public InternalSingleCode getInternalSingleCode() {
+    return internalSingleCode;
   }
 
-  public void setSingleCodeId(String singleCodeId) {
-    this.singleCodeId = singleCodeId;
+  public void setInternalSingleCode(InternalSingleCode internalSingleCode) {
+    this.internalSingleCode = internalSingleCode;
   }
 
-  public ExternalSingleCode getExternalSingleCode() {
-    return externalSingleCode;
+  @Override
+  public void onResourceBinding(ResourceBinding resourceBinding, BindingService bindingService) {
+    StructureElementBinding structureElementBinding = this.getStructureBinding(resourceBinding, this.target, bindingService);
+    structureElementBinding.setInternalSingleCode(internalSingleCode);
   }
-
-  public void setExternalSingleCode(ExternalSingleCode externalSingleCode) {
-    this.externalSingleCode = externalSingleCode;
-  }
-
 }

@@ -3,14 +3,19 @@ import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { IResourceMetadata } from '../../modules/core/components/resource-metadata-editor/resource-metadata-editor.component';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { ICoConstraintGroup } from '../../modules/shared/models/co-constraint.interface';
+import {ICompositeProfile} from '../../modules/shared/models/composite-profile';
 import { IConformanceProfile } from '../../modules/shared/models/conformance-profile.interface';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
+import {IProfileComponent, IProfileComponentContext} from '../../modules/shared/models/profile.component';
 import { IResource } from '../../modules/shared/models/resource.interface';
-import { ISegment } from '../../modules/shared/models/segment.interface';
+import {ISegment} from '../../modules/shared/models/segment.interface';
 import { IValueSet } from '../../modules/shared/models/value-set.interface';
 
 // SELECT 'SELECTED' attribute from DAM state
 export const selectSelectedResource = fromDAM.selectValue<IResource>('selected');
+export const selectSelectedProfileComponent = fromDAM.selectValue<IResource>('profileComponent');
+
+export const selectProfileComponentContext = fromDAM.selectValue<IProfileComponentContext>('context');
 
 // SELECTED RESOURCE GETTERS
 export const selectedConformanceProfile = createSelector(
@@ -18,6 +23,27 @@ export const selectedConformanceProfile = createSelector(
   (state: IResource): IConformanceProfile => {
     if (state && state.type === Type.CONFORMANCEPROFILE) {
       return state as IConformanceProfile;
+    } else {
+      return undefined;
+    }
+  },
+);
+
+export const selectedProfileComponent = createSelector(
+  selectSelectedResource,
+  (state: IResource): IProfileComponent => {
+    if (state && state.type === Type.PROFILECOMPONENT) {
+      return state as IProfileComponent;
+    } else {
+      return undefined;
+    }
+  },
+);
+export const selectedCompositeProfile = createSelector(
+  selectSelectedResource,
+  (state: IResource): ICompositeProfile => {
+    if (state && state.type === Type.COMPOSITEPROFILE) {
+      return state as ICompositeProfile;
     } else {
       return undefined;
     }
@@ -85,6 +111,24 @@ export const selectedResourcePreDef = createSelector(
 
 export const selectedResourceMetadata = createSelector(
   selectSelectedResource,
+  (state: any): IResourceMetadata => {
+    return {
+      name: state.name,
+      bindingIdentifier: state.bindingIdentifier,
+      ext: (state.type === Type.DATATYPE ? (state as IDatatype).ext : state.type === Type.SEGMENT) ? (state as ISegment).ext : undefined,
+      description: state.description,
+      authorNotes: state.authorNotes,
+      usageNotes: state.usageNotes,
+      compatibilityVersions: state.compatibilityVersions,
+      shortDescription: state.shortDescription,
+      fixedExtension: state.fixedExtension,
+    };
+  },
+);
+
+export const selectedProfileComponentMetadata = createSelector(
+  selectSelectedProfileComponent,
+  // tslint:disable-next-line:no-identical-functions
   (state: any): IResourceMetadata => {
     return {
       name: state.name,
