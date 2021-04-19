@@ -61,12 +61,12 @@
             <tr>
               <td  [ngSwitch]="col.field" class="text-cell" *ngFor="let col of columns; let i = index" [id]="i + '-' + rowNode.index" #anchor>
                 <ng-container *ngSwitchCase="columnTypes.NAME">
-                  <tbody style="width: 100%;">
+                  <tbody>
                     <tr>
                       <td style="width: 30px;">
                         <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
                       </td>
-                      <td style="white-space: normal; width: 100%;">
+                      <td style="white-space: normal;">
                         <app-name-simplified
                           [viewOnly]="viewOnly || !rowData.changeable"
                           [structure]="_resource"
@@ -117,7 +117,6 @@
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [globalViewOnly]="viewOnly"
                     [structure]="_resource"
-
                     [location]="rowData.pathId"
                     [usage]="rowData.usage.value"
                     [type]="rowData.type"

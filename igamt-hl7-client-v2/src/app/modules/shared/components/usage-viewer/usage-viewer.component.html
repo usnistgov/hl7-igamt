@@ -22,19 +22,14 @@
     <th>
       Location
     </th>
-    <th>
-      Usage
-    </th>
   </tr>
-
     <tr>
-      <th>
+      <th colspan="2">
         <p-multiSelect  [style]="{'width': '100%'}" [options]="types" defaultLabel="Show only" (onChange)="filterByType($event.value)"></p-multiSelect>
       </th>
-      <th>
-      <th>
-        <p-multiSelect [style]="{'width': '100%'}" [options]="usages" defaultLabel="Show only" (onChange)="filterByUsages($event.value)"></p-multiSelect>
-      </th>
+<!--      <th>-->
+<!--&lt;!&ndash;        <p-multiSelect [style]="{'width': '100%'}" [options]="usages" defaultLabel="Show only" (onChange)="filterByUsages($event.value)"></p-multiSelect>&ndash;&gt;-->
+<!--      </th>-->
     </tr>
 
   </ng-template>
@@ -45,15 +40,11 @@
       </td>
       <td>
         <span *ngIf="rowData.element.type!=='COCONSTRAINTGROUP'">
-                 <app-entity-bagde [type]="rowData.location.type"></app-entity-bagde>
+          <app-entity-bagde [type]="rowData.location.type"></app-entity-bagde>
           {{rowData.location.path}}
           <span *ngIf="rowData.location.label">
-        .{{rowData.location.label}}
+        .{{rowData.location.label}}</span>
         </span>
-        </span>
-      </td>
-      <td>
-        {{rowData.usage}}
       </td>
     </tr>
   </ng-template>

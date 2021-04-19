@@ -11,9 +11,16 @@
  */
 package gov.nist.hit.hl7.igamt.compositeprofile.service;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 
@@ -23,7 +30,6 @@ import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
  */
 public interface CompositeProfileStructureService {
   public CompositeProfileStructure findById(String id);
-
 
   public CompositeProfileStructure create(CompositeProfileStructure compositeProfileStructure);
 
@@ -36,4 +42,12 @@ public interface CompositeProfileStructureService {
   public void delete(String id);
 
   public void removeCollection();
+
+  public Link cloneCompositeProfile(String string, HashMap<RealKey, String> newKeys, Link l,
+      String username, Scope user, CloneMode cloneMode);
+
+  public List<CompositeProfileStructure> findByIdIn(Set<String> ids);
+
+  public Set<RelationShip> collectDependencies(CompositeProfileStructure composite);
+
 }

@@ -140,7 +140,7 @@ public class Link implements Serializable, Comparable{
     this.origin = origin;
   }
   public boolean isUser(){
-    return this.domainInfo.getScope() !=null &&  this.domainInfo.getScope().equals(Scope.USER);
+    return this.domainInfo !=null && this.domainInfo.getScope() !=null &&  this.domainInfo.getScope().equals(Scope.USER);
   }
   
   public Type getParentType() {

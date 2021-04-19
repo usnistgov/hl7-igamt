@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
+import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import { ClearAll } from 'src/app/modules/dam-framework/store/messages/messages.actions';
 import { UserProfileRequest } from '../../../../root-store/user-profile/user-profile.actions';
 import { IUserProfile } from '../../../dam-framework/models/authentication/user-profile.class';
 import {ResetPasswordRequest} from '../../../dam-framework/store/authentication/authentication.actions';
-import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 
 @Component({
   selector: 'app-userprofile',
@@ -25,7 +25,7 @@ export class UserProfileComponent implements OnInit {
   }
 
   resetPassword(): void {
-    this.store.select(fromAuth.selectUsername).subscribe(u => {
+    this.store.select(fromAuth.selectUsername).subscribe((u) => {
       this.store.dispatch(new ResetPasswordRequest(u));
     });
   }

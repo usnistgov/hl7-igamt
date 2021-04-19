@@ -17,22 +17,26 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 /**
  *
  * @author Maxence Lefort on Feb 23, 2018.
  */
-public class PropertyValueSet extends ItemProperty {
+public class PropertyValueSet extends PropertyBinding implements ApplyResourceBinding {
 
   private Set<ValuesetBinding> valuesetBindings;
 
   public PropertyValueSet(Set<ValuesetBinding> valuesetBindings) {
-    super(PropertyKey.VALUESET);
+    super(PropertyType.VALUESET);
     this.valuesetBindings = valuesetBindings;
   }
 
   public PropertyValueSet() {
-    super(PropertyKey.VALUESET);
+    super(PropertyType.VALUESET);
   }
 
   public Set<ValuesetBinding> getValuesetBindings() {
@@ -49,4 +53,9 @@ public class PropertyValueSet extends ItemProperty {
     this.valuesetBindings.add(vb);
   }
 
+  @Override
+  public void onResourceBinding(ResourceBinding resourceBinding, BindingService bindingService) {
+    StructureElementBinding structureElementBinding = this.getStructureBinding(resourceBinding, this.target, bindingService);
+    structureElementBinding.setValuesetBindings(valuesetBindings);
+  }
 }

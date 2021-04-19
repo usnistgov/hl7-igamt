@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { Icons } from '../../constants/icons.enum';
-import { Type } from '../../constants/type.enum';
-import { IDisplayElement } from '../../models/display-element.interface';
-import { SubMenu } from '../../models/sub-menu.class';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {Icons} from '../../constants/icons.enum';
+import {Type} from '../../constants/type.enum';
+import {IDisplayElement} from '../../models/display-element.interface';
+import {SubMenu} from '../../models/sub-menu.class';
 
 @Component({
   selector: 'app-toc-sub-menu',
@@ -14,6 +14,7 @@ export class TocSubMenuComponent implements OnInit {
   @Input() element: IDisplayElement;
 
   @Input() delta: boolean;
+  @Input() pcId: string;
   items: SubMenu[];
   constructor() {
   }
@@ -21,6 +22,9 @@ export class TocSubMenuComponent implements OnInit {
   ngOnInit() {
     if (this.element.type) {
       this.items = this.getMenuItems();
+    }
+    if (this.pcId) {
+      this.items = this.getProfileComponentMenuItems();
     }
   }
 
@@ -31,6 +35,9 @@ export class TocSubMenuComponent implements OnInit {
     if (type === Type.COCONSTRAINTGROUP.toLowerCase()) {
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Table', Icons.TABLE));
     } else {
+      if (type === Type.COMPOSITEPROFILE.toLowerCase()) {
+        ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'composition', 'Composition', Icons.LIST));
+      }
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'metadata', 'Metadata', Icons.EDIT));
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'pre-def', 'Pre-definition', Icons.PRE));
       if (type !== Type.VALUESET.toLowerCase()) {
@@ -46,11 +53,13 @@ export class TocSubMenuComponent implements OnInit {
       if (type === Type.SEGMENT.toLocaleLowerCase() && this.element.fixedName === 'OBX') {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'dynamic-mapping', 'Dynamic Mapping', Icons.LIST));
       }
-      if (type === 'conformanceprofile') {
+      if (type === Type.CONFORMANCEPROFILE.toLowerCase() || type ===  Type.COMPOSITEPROFILE.toLowerCase()) {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'co-constraint', 'Co-Constraints', Icons.TABLE));
       }
     }
-    ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'cross-references', 'Cross references', Icons.LIST));
+    if ( type !== Type.COMPOSITEPROFILE.toLowerCase()) {
+      ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'cross-references', 'Cross references', Icons.LIST));
+    }
 
     if (this.element.origin) {
 
@@ -64,5 +73,28 @@ export class TocSubMenuComponent implements OnInit {
   }
   isDateAndTime() {
     return this.element.fixedName === 'DT' || this.element.fixedName === 'TM' || this.element.fixedName === 'DTM' ;
+  }
+
+  private getProfileComponentMenuItems() {
+    const ret: SubMenu[] = [];
+
+    let url = './profilecomponent/' + this.pcId + '/';
+    if (this.element.type === Type.SEGMENTCONTEXT ) {
+      url = url + 'segment/';
+    }
+    if (this.element.type === Type.MESSAGECONTEXT ) {
+      url = url + 'message/';
+    }
+    url = url + this.element.id;
+
+    ret.push(new SubMenu(url + '/structure', 'Structure', Icons.TABLE));
+    ret.push(new SubMenu(url + '/conformance-statement', 'Conformance statements', Icons.TABLE));
+    if (this.element.type === Type.SEGMENTCONTEXT.toLocaleLowerCase() && this.element.fixedName === 'OBX') {
+      ret.push(new SubMenu(url + '/dynamic-mapping', 'Dynamic Mapping', Icons.LIST));
+    }
+    if (this.element.type === Type.MESSAGECONTEXT) {
+      ret.push(new SubMenu(url + '/co-constraint', 'Co-Constraints', Icons.TABLE));
+    }
+    return ret;
   }
 }

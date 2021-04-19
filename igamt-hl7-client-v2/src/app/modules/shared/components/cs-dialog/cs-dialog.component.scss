@@ -2,3 +2,25 @@ input.ng-invalid {
   background-color: #ffe9ec;
   border-left: 5px solid red;
 }
+
+.statement-btn {
+  font-weight: bold;
+  border: 1px solid black;
+  display: inline-flex;
+  align-items: center;
+}
+
+.statement-btn:disabled {
+  color: gray !important;
+  background-color: lightgray;
+}
+
+.btn-statement-selected {
+  -webkit-box-shadow: inset 1px 1px 10px #808080;
+  -moz-box-shadow:    inset 1px 1px 10px #808080;
+  box-shadow:         inset 1px 1px 10px #808080;
+}
+
+.hide {
+  display: none;
+}

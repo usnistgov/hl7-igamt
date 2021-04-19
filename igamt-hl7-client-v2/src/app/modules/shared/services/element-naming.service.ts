@@ -38,7 +38,9 @@ export interface IPathInfo {
 })
 export class ElementNamingService {
 
-  constructor(private pathService: PathService) { }
+  constructor(
+    private pathService: PathService,
+  ) { }
 
   getSeparator(node: IPathInfo): string {
     if (node.child) {

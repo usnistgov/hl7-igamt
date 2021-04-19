@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
 import { TreeNode } from 'primeng/primeng';
-import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
+import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
 import { flatMap, map, take } from 'rxjs/operators';
 import { LengthType } from '../../constants/length-type.enum';
 import { Type } from '../../constants/type.enum';
@@ -37,6 +37,7 @@ export enum HL7v2TreeColumnType {
   COMMENT = 'Comment',
   TEXT = 'Definition Text',
   CONSTANTVALUE = 'Constant Value',
+  PATH = 'Path',
   Format = 'Format',
 }
 
@@ -100,6 +101,7 @@ export interface IHL7v2TreeNode extends TreeNode {
     predicate$?: Observable<IPredicate>;
     ref$: Observable<IResourceRef>;
     treeChildrenSubscription: Subscription;
+    children$: Subject<IHL7v2TreeNode[]>;
   };
 }
 

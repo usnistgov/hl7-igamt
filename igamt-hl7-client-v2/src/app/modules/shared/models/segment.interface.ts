@@ -1,7 +1,10 @@
+import {IAddProfileComponentContext} from '../../document/models/toc/toc-operation.class';
+import {Type} from '../constants/type.enum';
 import { IResourceBinding } from './binding.interface';
 import { IComment } from './comment.interface';
 import { IDisplayElement } from './display-element.interface';
 import { IResource } from './resource.interface';
+import {PropertyType} from './save-change';
 import { ISubStructElement } from './structure-element.interface';
 
 export interface IField extends ISubStructElement {

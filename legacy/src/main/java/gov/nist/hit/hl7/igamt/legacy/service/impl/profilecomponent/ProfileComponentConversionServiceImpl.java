@@ -42,7 +42,7 @@ import gov.nist.hit.hl7.igamt.legacy.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent.Level;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext.Level;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCardinalityMax;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCardinalityMin;
@@ -90,7 +90,7 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
     for (ProfileComponent oldProfileComponent : oldProfileComponents) {
       this.convertProfileComponents(oldProfileComponent);
     }
-    List<gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent> profileComponents =
+    List<gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext> profileComponents =
         convertedProfileComponentService.findAll();
     System.out.println(oldProfileComponents.size() + " will be coverted!");
     System.out.println(profileComponents.size() + " have be coverted!");
@@ -101,8 +101,8 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
    * @return
    */
   private void convertProfileComponents(ProfileComponent oldProfileComponent) {
-    gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent convertedProfileComponent =
-        new gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent();
+    gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext convertedProfileComponent =
+        new gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext();
     convertedProfileComponent.setId(oldProfileComponent.getId());
 
     for (SubProfileComponent spc : oldProfileComponent.getChildren()) {

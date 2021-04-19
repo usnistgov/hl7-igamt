@@ -9,13 +9,10 @@ import {IDisplayElement} from '../../models/display-element.interface';
 export class SelectResourceIdsComponent implements OnInit {
 
   @Input()
-  conformanceProfiles: IDisplayElement[];
-  compositeProfiles: IDisplayElement[];
-  @Input()
-  datatypes: IDisplayElement[];
+  resources: IDisplayElement[];
   @Output()
-  selected: EventEmitter<ISelectedIds> = new EventEmitter<ISelectedIds>();
-  ids: ISelectedIds = {};
+  selected: EventEmitter<string[]> = new EventEmitter<string[]>();
+  ids: string[] = [];
   constructor() { }
 
   ngOnInit() {

@@ -13,8 +13,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { SelectItem } from 'primeng/api';
-import {IAddNewWrapper, IAddWrapper} from '../../../document/models/document/add-wrapper.class';
-import {IClickInfo} from '../../../document/models/toc/click-info.interface';
+import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
+import { IClickInfo } from '../../../document/models/toc/click-info.interface';
 import { Scope } from '../../../shared/constants/scope.enum';
 import { Type } from '../../../shared/constants/type.enum';
 import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
@@ -38,6 +38,9 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild('cpLib') cpLib: ElementRef;
   @ViewChild('ccgLib') ccgLib: ElementRef;
   @ViewChild('top') top: ElementRef;
+  @ViewChild('pcLib') pcLib: ElementRef;
+  @ViewChild('cmppLib') cmppLib: ElementRef;
+
   // TODO set type
   options;
   _nodes: TreeNode[];
@@ -55,6 +58,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   delete = new EventEmitter<IDisplayElement>();
   @Output()
+  deleteContext = new EventEmitter<{ child: IDisplayElement, parent: IDisplayElement }>();
+  @Output()
   deleteNarrative = new EventEmitter<string>();
   @Output()
   addChildren = new EventEmitter<IAddWrapper>();
@@ -62,14 +67,18 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   addChild = new EventEmitter<IAddNewWrapper>();
   @Output()
   addVSFromCSV = new EventEmitter<any>();
+  @Output()
+  addPcChildren = new EventEmitter<IDisplayElement>();
 
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
+  // tslint:disable-next-line:cognitive-complexity
   constructor(private nodeHelperService: NodeHelperService, private valueSetService: ValueSetService, private cd: ChangeDetectorRef, private router: Router, private activatedRoute: ActivatedRoute) {
     this.options = {
-      allowDrag: (node: TreeNode) => { return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
-        node.data.type === Type.CONFORMANCEPROFILE ||
-        node.data.type === Type.PROFILE);
+      allowDrag: (node: TreeNode) => {
+        return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
+          node.data.type === Type.CONFORMANCEPROFILE ||
+          node.data.type === Type.PROFILE || node.data.type === Type.PROFILECOMPONENT || Type.COMPOSITEPROFILE);
       },
       actionMapping: {
         mouse: {
@@ -79,6 +88,14 @@ export class IgTocComponent implements OnInit, AfterViewInit {
               this.update();
             }
             if (from.data.type === Type.CONFORMANCEPROFILE && to.parent.data.type === Type.CONFORMANCEPROFILEREGISTRY) {
+              TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
+              this.update();
+            }
+            if (from.data.type === Type.PROFILECOMPONENT && to.parent.data.type === Type.PROFILECOMPONENTREGISTRY) {
+              TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
+              this.update();
+            }
+            if (from.data.type === Type.COMPOSITEPROFILE && to.parent.data.type === Type.COMPOSITEPROFILEREGISTRY) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
@@ -168,6 +185,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
       this.vsLib.nativeElement.scrollIntoView();
     } else if (type === 'coConstraintGroups') {
       this.ccgLib.nativeElement.scrollIntoView();
+    } else if (type === 'profilecomponents') {
+      this.pcLib.nativeElement.scrollIntoView();
+    } else if (type === 'composites') {
+      this.cmppLib.nativeElement.scrollIntoView();
     }
   }
 
@@ -207,5 +228,27 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   filterByDelta($event: string[]) {
     this.tree.treeModel.filterNodes((node) => node.data.delta != null && $event.indexOf(node.data.delta) > -1 && node.data.Type !== Type.TEXT);
+  }
+
+  getPcElementUrl(treeNode: TreeNode) {
+    let url = this.getElementUrl(treeNode.parent.data);
+    if (treeNode.parent && treeNode.parent.data) {
+      // tslint:disable-next-line:no-collapsible-if
+      if (treeNode.data.type === Type.SEGMENTCONTEXT) {
+        url = url + '/segment/' + treeNode.data.id;
+      }
+      if (treeNode.data.type === Type.MESSAGECONTEXT) {
+        url = url + '/message/' + treeNode.data.id;
+      }
+    }
+    return url;
+  }
+
+  addPcContexts(node) {
+    this.addPcChildren.emit(node.data);
+  }
+
+  deleteOneChild(child: IDisplayElement, parent: IDisplayElement) {
+    this.deleteContext.emit({ child, parent });
   }
 }

@@ -13,10 +13,14 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.repository;
 
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 
 /**
  *
@@ -25,5 +29,7 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 @Repository
 public interface ProfileComponentRepository
     extends MongoRepository<ProfileComponent, String> {
+
+  public List<ProfileComponent> findByIdIn(Set<String> ids);
 
 }

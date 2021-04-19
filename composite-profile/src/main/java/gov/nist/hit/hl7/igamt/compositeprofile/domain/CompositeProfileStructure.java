@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 
 
@@ -29,6 +30,7 @@ public class CompositeProfileStructure extends Resource {
 
   public CompositeProfileStructure() {
     super();
+    this.setType(Type.COMPOSITEPROFILE);
   }
 
   public String getConformanceProfileId() {
@@ -65,9 +67,12 @@ public class CompositeProfileStructure extends Resource {
   }
 
 @Override
-public Resource clone() {
-	// TODO Auto-generated method stub
-	return null;
+public CompositeProfileStructure clone() {
+  CompositeProfileStructure clone = new CompositeProfileStructure();
+  complete(clone);
+  clone.setConformanceProfileId(conformanceProfileId);
+  clone.setOrderedProfileComponents(orderedProfileComponents);
+  return clone;
 }
 
 }
