@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.parser.Part.IgnoreCaseType;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -1320,9 +1321,13 @@ public class IGDocumentController extends BaseController {
         }
 
         reader.close();
-        newVS = this.valuesetService.save(newVS);
         newVS.getDomainInfo().setScope(Scope.USER);
         newVS.setUsername(ig.getUsername());
+        newVS.setCurrentAuthor(ig.getCurrentAuthor());
+        newVS.setSharedUsers(ig.getSharedUsers());
+        newVS.setSharePermission(ig.getSharePermission());
+        newVS = this.valuesetService.save(newVS);
+   
 
 
         ig.getValueSetRegistry().getChildren()
