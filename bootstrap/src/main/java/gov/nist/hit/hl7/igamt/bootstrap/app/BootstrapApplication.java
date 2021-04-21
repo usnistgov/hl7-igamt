@@ -1024,7 +1024,7 @@ public class BootstrapApplication implements CommandLineRunner {
   void fixIgWithDynamicMapping() throws AddingException {
     dynamicMappingFixer.addMissingDatatypesBasedOnDynamicMapping();
   }
-  @PostConstruct
+  //@PostConstruct
   void shiftBinding() {
     
     this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "ADJ", "6", "2", 1);
@@ -1033,7 +1033,7 @@ public class BootstrapApplication implements CommandLineRunner {
     this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1", "2.4", "2.5", "2.5.1", "2.6")), "QRD", "7", "2", 1);
     this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.4", "2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "RCP", "2", "2", 1);
   }
-  @PostConstruct
+ // @PostConstruct
   void updateSegmentDatatype() {
    this.dataFixer.changeHL7SegmentDatatype("OMC", "9", "ID", "2.8.2");
 
