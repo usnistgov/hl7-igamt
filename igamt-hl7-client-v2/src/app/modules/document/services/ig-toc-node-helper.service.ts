@@ -207,11 +207,11 @@ export class IgTOCNodeHelper {
     }
   }
   static sortRegistryByName(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
-    return Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement) => this.compare(a, b));
+    return registry.children.map((x) => elements[x.id]).sort((a: IDisplayElement, b: IDisplayElement) => this.compare(a, b));
   }
 
   static sortRegistryByPosition(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
-    return Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
+    return registry.children.map((x) => elements[x.id]).sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
   }
 
   static getFullName(node: IDisplayElement): string {

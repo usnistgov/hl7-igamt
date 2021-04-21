@@ -1,8 +1,12 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import { ResetPasswordRequest } from '../../../dam-framework/store/authentication/authentication.actions';
+import { IAuthenticationState } from '../../../dam-framework/models/authentication/state';
+import { IUserProfile } from '../../../dam-framework/models/authentication/user-profile.class';
+import * as fromAuth from '../../../dam-framework/store/authentication';
+import {ResetPasswordRequest} from '../../../dam-framework/store/authentication/authentication.actions';
 
 @Component({
   selector: 'app-user-management',
@@ -33,7 +37,10 @@ export class UserManagementComponent implements OnInit {
     requestPara.username = user.username;
     requestPara.pending = user.pending;
     requestPara.admin = user.admin;
-    this.http.post<any>('api/adminUpdate', requestPara).subscribe();
+    console.log(requestPara);
+    this.http.post<any>('api/adminUpdate', requestPara).subscribe((data) => {
+      console.log(data);
+    });
   }
 
   resetPassword(user: any): void {

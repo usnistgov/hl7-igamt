@@ -114,8 +114,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     console.log(this.nodes);
   }
 
-  print() {
-    console.log(document.getElementById('toc-container'));
+  print(elm) {
+    console.log(elm);
   }
 
   addSectionToNode(node) {
