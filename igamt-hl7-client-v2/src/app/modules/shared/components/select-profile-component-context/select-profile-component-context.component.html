@@ -44,7 +44,7 @@
           <app-display-section [element]="rowData"></app-display-section>
         </td>
         <td width="20%">
-          <button class="btn btn-sm btn-primary" (click)="selectElement(rowData)" ><i class="fa fa-plus"></i> Add</button>
+          <button class="btn btn-sm btn-primary" (click)="selectElement(rowData)" [disabled]="selectedMap[rowData.id]" ><i class="fa fa-plus"></i> Add</button>
         </td>
       </tr>
     </ng-template>

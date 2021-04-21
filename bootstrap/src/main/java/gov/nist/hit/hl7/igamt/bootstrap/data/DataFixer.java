@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.bson.types.ObjectId;
 import org.hibernate.engine.jdbc.spi.TypeSearchability;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +34,10 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
+import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -48,9 +53,15 @@ public class DataFixer {
 
   @Autowired
   SegmentService segmentsService;
+  
+  @Autowired
+  DatatypeService datatypeService;
 
   @Autowired
   ValuesetService valueSetService;
+  
+  @Autowired
+  MessageStructureRepository  messageStructureRepository;
 
 
 
@@ -192,5 +203,35 @@ public class DataFixer {
     return vsBindings;
   }
 
+  public void changeHL7SegmentDatatype(String segmentName, String location, String newDatatype, String version) {
+    
+    List<Segment> segments = this.segmentsService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), version, segmentName);
+    if(segments != null) {
+      for (Segment s: segments) {
+        for(Field f: s.getChildren()) {
+          if(f.getId().equals(location)) {
+            List<Datatype> datatypes = this.datatypeService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), version, newDatatype);
+            if(datatypes != null && !datatypes.isEmpty() ) {
+              f.getRef().setId(datatypes.get(0).getId());
+              this.segmentsService.save(s);
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  public void publishStructure(String id) {
+    MessageStructure msg = this.messageStructureRepository.findOneById(id);
+    if(msg != null) {
+      msg.getDomainInfo().setScope(Scope.HL7STANDARD); 
+      msg.setParticipants(null);
+      msg.setCustom(false);
+      msg.setId(new ObjectId().toString());
+      messageStructureRepository.insert(msg);
+    }
+    
+  }
 
 }
