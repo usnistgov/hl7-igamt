@@ -67,6 +67,7 @@ public class ApplyChangeImpl implements ApplyChange {
 			PropertyType.LENGTHMIN,
 			PropertyType.CONFLENGTH,
 			PropertyType.DATATYPE,
+			PropertyType.SEGMENTREF,
 			PropertyType.LENGTHTYPE,
 			PropertyType.CONSTANTVALUE
 	));

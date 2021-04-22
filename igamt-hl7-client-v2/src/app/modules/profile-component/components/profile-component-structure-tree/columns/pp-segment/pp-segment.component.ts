@@ -36,7 +36,7 @@ export class PpSegmentComponent extends PpReferenceComponent implements OnInit {
 
     return [
       {
-        label: 'Same base',
+        label: 'Segments',
         items: same_base.map(itemize).sort(this.sort),
       },
     ];
