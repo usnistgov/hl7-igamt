@@ -1476,7 +1476,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
     this.applyChildrenChange(map, conformanceProfile.getChildren(), documentId);
     if (map.containsKey(PropertyType.COCONSTRAINTBINDINGS)) {
-    this.applyCoConstraintsBindingChanges(conformanceProfile, map.get(PropertyType.COCONSTRAINTBINDINGS) , documentId);
+      this.applyCoConstraintsBindingChanges(conformanceProfile, map.get(PropertyType.COCONSTRAINTBINDINGS) , documentId);
     }
     applyChange.applyBindingChanges(map, conformanceProfile.getBinding(), documentId, Level.CONFORMANCEPROFILE);
     conformanceProfile.setBinding(this.makeLocationInfo(conformanceProfile));

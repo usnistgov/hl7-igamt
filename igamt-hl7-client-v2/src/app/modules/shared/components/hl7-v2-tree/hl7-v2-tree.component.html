@@ -88,10 +88,6 @@
                             custom: rowData.custom
                           }"
                           [context]="type"
-                          [delete]="canDeleteNode(rowNode.node)"
-                          (add)="addToNode(rowNode)"
-                          (remove)="removeNode(rowNode.node)"
-                          [extendable]="nodeType(rowNode.node) !== 'GROUP'"
                         ></app-name>
                       </td>
                     </tr>

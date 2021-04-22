@@ -36,7 +36,7 @@ export class PpDatatypeComponent extends PpReferenceComponent implements OnInit 
 
     return [
       {
-        label: 'Same base',
+        label: 'Datatypes',
         items: same_base.map(itemize).sort(this.sort),
       },
     ];
