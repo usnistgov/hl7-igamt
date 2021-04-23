@@ -1,10 +1,14 @@
 package gov.nist.hit.hl7.igamt.ig.controller;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -20,9 +25,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileState;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluationResult;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.ResourceAndDisplay;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
@@ -73,6 +90,19 @@ public class GVTConnectController extends BaseController {
   
   @Autowired
   IgService igService;
+  
+  @Autowired
+  CompositeProfileStructureService compositeProfileService;
+  
+  @Autowired
+  InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
+  
+  @Autowired
+  ConformanceProfileCompositeService compose;
+
+
+private String token;
+
 
   @RequestMapping(value = "/api/testing/login", method = RequestMethod.GET, produces = {"application/json"})
   public boolean validCredentials(@RequestHeader("target-auth") String authorization, @RequestHeader("target-url") String host) throws GVTLoginException {
@@ -117,11 +147,13 @@ public class GVTConnectController extends BaseController {
       Ig ig = findIgById(id);
 
   	  if (ig != null)  {
-  		  Ig selectedIg = this.makeSelectedIg(ig, reqIds);
+  		  CompositeProfileState cps = null;
+  		  Ig selectedIg = this.makeSelectedIg(ig, reqIds, cps);
   		  IgDataModel igModel = this.igService.generateDataModel(selectedIg);	
   	      InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
   	      ResponseEntity<?> rsp = gvtService.send(content, authorization, url, domain);
   	      Map<String, Object> res = (Map<String, Object>) rsp.getBody();
+  	      this.inMemoryDomainExtensionService.clear(this.token);
   	      return res;
   	  }
       return null;
@@ -129,6 +161,23 @@ public class GVTConnectController extends BaseController {
       throw new GVTExportException(e);
     }
   }
+  
+  /*
+   ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
+    Ig ig = findIgById(id);
+    if (ig != null)  {
+      CompositeProfileState cps = null;
+      Ig selectedIg = this.makeSelectedIg(ig, reqIds, cps);
+      IgDataModel igModel = this.igService.generateDataModel(selectedIg, this.inMemoryDomainExtensionService);	
+      InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
+      response.setContentType("application/zip");
+      response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
+      FileCopyUtils.copy(content, response.getOutputStream());
+      this.inMemoryDomainExtensionService.clear(this.token);
+    }
+   */
   
   private Ig findIgById(String id) throws IGNotFoundException {
     Ig ig = igService.findById(id);
@@ -138,7 +187,7 @@ public class GVTConnectController extends BaseController {
     return ig;
   }
   
-  private Ig makeSelectedIg(Ig ig, ReqId reqIds) {
+  private Ig makeSelectedIg(Ig ig, ReqId reqIds, CompositeProfileState cps) {
 	  Ig selectedIg = new Ig();
 	  selectedIg.setId(ig.getId());
 	  selectedIg.setDomainInfo(ig.getDomainInfo());
@@ -158,8 +207,37 @@ public class GVTConnectController extends BaseController {
 		  }
 	  }
 	  
+	  for(String id : reqIds.getCompositeProfilesId()) {
+	    	Link l = ig.getCompositeProfileRegistry().getLinkById(id);
+	    	
+	    	if(l != null) {
+//	    		selectedIg.getCompositeProfileRegistry().getChildren().add(l);
+	    		cps = this.eval(l.getId());
+	            this.visitSegmentRefOrGroup(cps.getConformanceProfile().getResource().getChildren(), selectedIg, ig);
+	            l.setId(cps.getConformanceProfile().getResource().getId());
+	            selectedIg.getConformanceProfileRegistry().getChildren().add(l);
+	    	}
+	    }
+	  
 	  return selectedIg;
 }
+  
+  private CompositeProfileState eval(String id) {
+	  ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = compose.create(compositeProfileService.findById(id));
+	  DataFragment<ConformanceProfile> df = profileComponentsEvaluationResult.getResources();
+	  this.token = this.inMemoryDomainExtensionService.put(df.getContext());
+	  Stream<Datatype> datatypes = df.getContext().getResources().stream().filter((r) -> r instanceof Datatype).map((r) -> (Datatype) r);
+	  Stream<Segment> segments = df.getContext().getResources().stream().filter((r) -> r instanceof Segment).map((r) -> (Segment) r);
+	  CompositeProfileState state = new CompositeProfileState();
+	  state.setConformanceProfile(new ResourceAndDisplay<>(this.conformanceProfileService.convertConformanceProfile(df.getPayload(), 0), df.getPayload()));
+	  state.setDatatypes(datatypes.map((dt) -> new ResourceAndDisplay<>(this.datatypeService.convertDatatype(dt), dt)).collect(Collectors.toList()));
+	  state.setSegments(segments.map((sg) -> new ResourceAndDisplay<>(this.segmentService.convertSegment(sg), sg)).collect(Collectors.toList()));
+	  Map<PropertyType, Set<String>> refChanges = profileComponentsEvaluationResult.getChangedReferences();
+	  List<Datatype> refDatatype = this.datatypeService.findByIdIn(refChanges.get(PropertyType.DATATYPE));
+	  List<Segment> refSegment = this.segmentService.findByIdIn(refChanges.get(PropertyType.SEGMENTREF));
+	  state.setReferences(Stream.concat(refDatatype.stream(), refSegment.stream()).collect(Collectors.toList()));
+	  return state;
+  }
 
   private void visitSegmentRefOrGroup(Set<SegmentRefOrGroup> srgs, Ig selectedIg, Ig all) {
 	  srgs.forEach(srg -> {
@@ -171,9 +249,14 @@ public class GVTConnectController extends BaseController {
 			  
 			  if(sr != null && sr.getId() != null && sr.getRef() != null) {
 				  Link l = all.getSegmentRegistry().getLinkById(sr.getRef().getId());
+				  if(l == null) {
+		        	  Segment s = this.inMemoryDomainExtensionService.findById(sr.getRef().getId(), Segment.class);
+		        	  if( s != null) l = new Link(s);
+		          }
 				  if(l != null) {
 					  selectedIg.getSegmentRegistry().getChildren().add(l);
 					  Segment s = this.segmentService.findById(l.getId());
+					  if(s == null) s = this.inMemoryDomainExtensionService.findById(l.getId(), Segment.class);
 					  if (s != null && s.getChildren() != null) {
 						  this.visitSegment(s.getChildren(), selectedIg, all);
 						  if(s.getBinding() != null && s.getBinding().getChildren() != null) this.collectVS(s.getBinding().getChildren(), selectedIg, all);
@@ -182,7 +265,6 @@ public class GVTConnectController extends BaseController {
 			  }
 		  }
 	  });
-		
   }
   
   private void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all) {
@@ -207,9 +289,14 @@ public class GVTConnectController extends BaseController {
 	  fields.forEach(f -> {
 		  if(f.getRef() != null && f.getRef().getId() != null) {
 			  Link l = all.getDatatypeRegistry().getLinkById(f.getRef().getId());
+			  if(l == null) {
+		        	Datatype dt = this.inMemoryDomainExtensionService.findById(f.getRef().getId(), ComplexDatatype.class);
+		        	if(dt != null) l = new Link(dt);
+		      }
 			  if(l != null) {
 				  selectedIg.getDatatypeRegistry().getChildren().add(l);
 				  Datatype dt = this.datatypeService.findById(l.getId());
+				  if(dt == null) dt = this.inMemoryDomainExtensionService.findById(l.getId(), ComplexDatatype.class);
 				  if (dt != null && dt instanceof ComplexDatatype) {
 					  ComplexDatatype cdt = (ComplexDatatype)dt;
 					  if(cdt.getComponents() != null) {
@@ -227,9 +314,14 @@ public class GVTConnectController extends BaseController {
 	  components.forEach(c -> {
 		  if(c.getRef() != null && c.getRef().getId() != null) {
 			  Link l = all.getDatatypeRegistry().getLinkById(c.getRef().getId());
+			  if(l == null) {
+		        	Datatype dt = this.inMemoryDomainExtensionService.findById(c.getRef().getId(), ComplexDatatype.class);
+		        	if(dt != null) l = new Link(dt);
+		      }
 			  if(l != null) {
 				  selectedIg.getDatatypeRegistry().getChildren().add(l);
 				  Datatype dt = this.datatypeService.findById(l.getId());
+				  if(dt == null) dt = this.inMemoryDomainExtensionService.findById(l.getId(), ComplexDatatype.class);
 				  if (dt != null && dt instanceof ComplexDatatype) {
 					  ComplexDatatype cdt = (ComplexDatatype)dt;
 					  if(cdt.getComponents() != null) {
