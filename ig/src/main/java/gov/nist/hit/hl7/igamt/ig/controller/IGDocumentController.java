@@ -1344,7 +1344,6 @@ public class IGDocumentController extends BaseController {
     Ig ig = findIgById(id);
     String cUser = authentication.getPrincipal().toString();
     
-    //this.commonService.isAdmin(authentication)
     if ( ig.getUsername() == null || ig.getStatus() !=null && ig.getStatus().equals(gov.nist.hit.hl7.igamt.common.base.domain.Status.PUBLISHED)) {
       ig.setSharePermission(SharePermission.READ);  
     } else {
@@ -1355,7 +1354,7 @@ public class IGDocumentController extends BaseController {
           if((ig.getSharedUsers() !=null && ig.getSharedUsers().contains(cUser)) || this.commonService.isAdmin(authentication)) {
             ig.setSharePermission(SharePermission.READ);
           }else {
-           // throw new ForbiddenOperationException("Access denied");
+            throw new ForbiddenOperationException("Access denied");
           }
         }    	
       }

@@ -17,15 +17,19 @@ import { IState } from '../conformance-profile-edit/conformance-profile-edit.red
 import * as fromIgamtDisplaySelectors from '../dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from '../dam-igamt/igamt.selected-resource.selectors';
 import {
+  OpenProfileComponentMetadataEditor,
+  ProfileComponentActionTypes,
+} from '../profile-component/profile-component.actions';
+import {
   OpenSegmentMetadataEditor, OpenSegmentPostDefEditor,
   OpenSegmentPreDefEditor,
-  SegmentEditActionTypes
+  SegmentEditActionTypes,
 } from '../segment-edit/segment-edit.actions';
 import {
   CompositeProfileActions,
   CompositeProfileActionTypes,
   LoadCompositeProfile, LoadCompositeProfileFailure,
-  LoadCompositeProfileSuccess, OpenCompositionEditor,
+  LoadCompositeProfileSuccess, OpenCompositeProfileMetadataEditor, OpenCompositionEditor,
 } from './composite-profile.actions';
 
 @Injectable()
@@ -110,13 +114,28 @@ export class CompositeProfileEffects {
   );
 
   @Effect()
-  openSegmentMetadataEditor$ = this.editorHelper.openMetadataEditor<OpenSegmentMetadataEditor>(
-    SegmentEditActionTypes.OpenSegmentMetadataEditor,
-    fromIgamtDisplaySelectors.selectSegmentsById,
-    this.store.select(fromIgamtSelectedSelectors.selectedResourceMetadata),
-    this.CompositeProfileNotFound,
+  openCpMetadataNode$ = this.actions$.pipe(
+    ofType(CompositeProfileActionTypes.OpenCompositeProfileMetadataEditor),
+    switchMap((action: OpenCompositeProfileMetadataEditor) => {
+      return this.store.select(fromIgamtSelectedSelectors.selectedCompositeProfile)
+        .pipe(
+          take(1),
+          flatMap((pc) => {
+            return this.store.select(fromIgamtDisplaySelectors.selectCompositeProfileById, { id: pc.id }).pipe(
+              take(1),
+              map((messageDisplay) => {
+                return new fromDamActions.OpenEditor({
+                  id: action.payload.id,
+                  display: messageDisplay,
+                  editor: action.payload.editor,
+                  initial: this.compositeProfileService.compositeProfileToMetadata(pc),
+                });
+              }),
+            );
+          }),
+        );
+    }),
   );
-
   @Effect()
   openSegmentPostDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenSegmentPostDefEditor>(
     CompositeProfileActionTypes.OpenCompositeProfilePostDefEditor,

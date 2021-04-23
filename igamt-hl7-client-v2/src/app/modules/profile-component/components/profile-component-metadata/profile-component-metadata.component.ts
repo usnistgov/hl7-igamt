@@ -4,7 +4,6 @@ import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { catchError, concatMap, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
-import { LoadConformanceProfile } from '../../../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { LoadProfileComponent } from '../../../../root-store/profile-component/profile-component.actions';

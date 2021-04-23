@@ -1,4 +1,4 @@
-import { IConformanceProfile } from './conformance-profile.interface';
+import {IConformanceProfile, IMessageProfileIdentifier} from './conformance-profile.interface';
 import { IDatatype } from './datatype.interface';
 import { IDisplayElement } from './display-element.interface';
 import { IResource } from './resource.interface';
@@ -12,6 +12,9 @@ export interface IOrderedProfileComponentLink {
 export interface ICompositeProfile extends IResource {
   conformanceProfileId: string;
   orderedProfileComponents: IOrderedProfileComponentLink[];
+  preCoordinatedMessageIdentifier?: IMessageProfileIdentifier;
+  flavorsExtension: string;
+
 }
 
 export interface ICompositeProfileState {

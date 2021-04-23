@@ -16,6 +16,7 @@ import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageProfileIdentifier;
 
 
 
@@ -27,6 +28,8 @@ public class CompositeProfileStructure extends Resource {
 
   private String conformanceProfileId;
   private Set<OrderedProfileComponentLink> orderedProfileComponents;
+  private MessageProfileIdentifier preCoordinatedMessageIdentifier;
+  private String flavorsExtension;
 
   public CompositeProfileStructure() {
     super();
@@ -66,13 +69,29 @@ public class CompositeProfileStructure extends Resource {
     return this.getName();
   }
 
-@Override
-public CompositeProfileStructure clone() {
-  CompositeProfileStructure clone = new CompositeProfileStructure();
-  complete(clone);
-  clone.setConformanceProfileId(conformanceProfileId);
-  clone.setOrderedProfileComponents(orderedProfileComponents);
-  return clone;
-}
+  @Override
+  public CompositeProfileStructure clone() {
+    CompositeProfileStructure clone = new CompositeProfileStructure();
+    complete(clone);
+    clone.setConformanceProfileId(conformanceProfileId);
+    clone.setOrderedProfileComponents(orderedProfileComponents);
+    return clone;
+  }
+
+  public MessageProfileIdentifier getPreCoordinatedMessageIdentifier() {
+    return preCoordinatedMessageIdentifier;
+  }
+
+  public void setPreCoordinatedMessageIdentifier(MessageProfileIdentifier preCoordinatedMessageIdentifier) {
+    this.preCoordinatedMessageIdentifier = preCoordinatedMessageIdentifier;
+  }
+
+  public String getFlavorsExtension() {
+    return flavorsExtension;
+  }
+
+  public void setFlavorsExtension(String flavorsExtension) {
+    this.flavorsExtension = flavorsExtension;
+  }
 
 }
