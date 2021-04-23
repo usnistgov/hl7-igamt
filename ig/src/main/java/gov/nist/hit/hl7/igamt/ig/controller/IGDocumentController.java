@@ -1183,7 +1183,7 @@ private String token;
     cp.setUsername(username);
     compositeProfileService.save(cp);
 
-    CreateChildResponse createChildResponse = new CreateChildResponse(cp.getId(), ig.getProfileComponentRegistry(), this.displayInfoService.convertCompositeProfile(cp, ig.getProfileComponentRegistry().getChildren().size()+1));
+    CreateChildResponse createChildResponse = new CreateChildResponse(cp.getId(), ig.getCompositeProfileRegistry(), this.displayInfoService.convertCompositeProfile(cp, ig.getProfileComponentRegistry().getChildren().size()+1));
     this.igService.save(ig);
 
     return new ResponseMessage<CreateChildResponse>(Status.SUCCESS, "", "Composite Profile Created Successfully", ig.getId(), false,
