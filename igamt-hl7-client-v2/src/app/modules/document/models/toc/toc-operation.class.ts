@@ -72,5 +72,6 @@ export interface ICreateCompositeProfile {
   documentId?: string;
   name: string;
   conformanceProfileId?: string;
+  flavorsExtension?: string;
   orderedProfileComponents?: IOrderedProfileComponentLink[];
 }

@@ -77,7 +77,7 @@ public class ConformanceProfileCompositeService implements ConformanceProfileCre
 			for(FlavorCreationDirective fcd: flavorCreationDirectives) {
 				continueOn = this.browse(continueOn, fcd, extension);
 			}
-			String ext = "DMO";
+			String ext = structure.getFlavorsExtension();
 			extension.prune(ext);
 			target.setId(structure.getId() + '_' + ext);
 			target.setName(structure.getName());

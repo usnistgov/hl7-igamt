@@ -1460,6 +1460,7 @@ public class IgServiceImpl implements IgService {
     ret.setUsername(ig.getUsername());
     ret.setCurrentAuthor(ig.getCurrentAuthor());
     ret.setDomainInfo(new DomainInfo("*", Scope.USER));
+    ret.setFlavorsExtension(wrapper.flavorsExtension);
     ret.setName(wrapper.name);
     ret.setConformanceProfileId(wrapper.conformanceProfileId);
     ret.setOrderedProfileComponents(wrapper.orderedProfileComponents);

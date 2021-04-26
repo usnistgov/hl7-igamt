@@ -1,33 +1,35 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Actions } from '@ngrx/effects';
-import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import { catchError, concatMap, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Actions} from '@ngrx/effects';
+import {Action, MemoizedSelectorWithProps, Store} from '@ngrx/store';
+import {combineLatest, Observable, of, Subscription} from 'rxjs';
+import {catchError, concatMap, flatMap, switchMap, take, tap} from 'rxjs/operators';
+import {LoadCompositeProfile} from '../../../../root-store/composite-profile/composite-profile.actions';
 import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
-import { IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { LoadProfileComponent } from '../../../../root-store/profile-component/profile-component.actions';
-import { IConformanceProfileEditMetadata } from '../../../conformance-profile/components/metadata-editor/metadata-editor.component';
-import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import { Message } from '../../../dam-framework/models/messages/message.class';
-import { MessageService } from '../../../dam-framework/services/message.service';
+import {IgEditResolverLoad} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import {LoadProfileComponent} from '../../../../root-store/profile-component/profile-component.actions';
+import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import {Message} from '../../../dam-framework/models/messages/message.class';
+import {MessageService} from '../../../dam-framework/services/message.service';
 import * as fromDam from '../../../dam-framework/store';
-import { Type } from '../../../shared/constants/type.enum';
-import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
-import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { EditorID } from '../../../shared/models/editor.enum';
-import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
-import { FroalaService } from '../../../shared/services/froala.service';
-import { ProfileComponentService } from '../../services/profile-component.service';
+import {Scope} from '../../../shared/constants/scope.enum';
+import {Type} from '../../../shared/constants/type.enum';
+import {validateConvention} from '../../../shared/functions/convention-factory';
+import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {EditorID} from '../../../shared/models/editor.enum';
+import {ChangeType, IChange, PropertyType} from '../../../shared/models/save-change';
+import {FroalaService} from '../../../shared/services/froala.service';
+import {CompositeProfileService} from '../../services/composite-profile.service';
 
 @Component({
-  selector: 'app-profile-component-metadata',
-  templateUrl: './profile-component-metadata.component.html',
-  styleUrls: ['./profile-component-metadata.component.css'],
+  selector: 'app-composite-profile-metadata-editor',
+  templateUrl: './composite-profile-metadata-editor.component.html',
+  styleUrls: ['./composite-profile-metadata-editor.component.css'],
 })
-export class ProfileComponentMetadataComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
+export class CompositeProfileMetadataEditorComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
 
-  profileComponentMetadata: Observable<IProfileComponentMetadata>;
+  compositeProfileMetadata: Observable<ICompositeProfileMetadata>;
   formGroup: FormGroup;
   froalaConfig: Observable<any>;
   s_workspace: Subscription;
@@ -38,22 +40,22 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
     protected actions$: Actions,
     protected formBuilder: FormBuilder,
     protected store: Store<any>,
-    protected profileComponentService: ProfileComponentService,
+    protected compositeProfileService: CompositeProfileService,
     private froalaService: FroalaService,
     private messageService: MessageService,
   ) {
     super({
-      id: EditorID.PC_METADATA,
-      title: 'Metadata',
-      resourceType: Type.PROFILECOMPONENT,
-    },
+        id: EditorID.COMPOSITE_PROFILE_METADATA,
+        title: 'Metadata',
+        resourceType: Type.COMPOSITEPROFILE,
+      },
       actions$,
       store,
     );
-    this.profileComponentMetadata = this.currentSynchronized$;
+    this.compositeProfileMetadata = this.currentSynchronized$;
     this.froalaConfig = this.froalaService.getConfig();
     this.s_workspace = this.currentSynchronized$.pipe(
-      tap((metadata: IProfileComponentMetadata) => {
+      tap((metadata: ICompositeProfileMetadata) => {
         this.initFormGroup();
         this.formGroup.patchValue(metadata);
         this.formGroup.valueChanges.subscribe((changed) => {
@@ -64,13 +66,13 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
     ).subscribe();
 
     this.s_children = this.editorDisplayNode().subscribe((x) => this.contexts = x.children);
-
   }
 
   initFormGroup() {
     this.formGroup = this.formBuilder.group({
       name: new FormControl('', [Validators.required, Validators.minLength(2)]),
       description: [''],
+      flavorsExtension: ['', [validateConvention(Scope.USER, Type.SEGMENT, Type.IGDOCUMENT, false), Validators.required]],
       profileIdentifier: this.formBuilder.group({
         entityIdentifier: [''],
         namespaceId: [''],
@@ -80,24 +82,7 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
     });
   }
 
-  getArray(): FormArray {
-    return this.formGroup.get('profileIdentifier') as FormArray;
-  }
-
-  addIdentifier(profileIdentifier: FormArray) {
-    profileIdentifier.push(this.formBuilder.group({
-      entityIdentifier: [''],
-      namespaceId: [''],
-      universalId: [''],
-      universalIdType: [''],
-    }));
-  }
-
-  removeIdentifier(profileIdentifier: FormArray, i: number) {
-    profileIdentifier.removeAt(i);
-  }
-
-  getChanges(elementId: string, current: IConformanceProfileEditMetadata, old: IConformanceProfileEditMetadata): IChange[] {
+  getChanges(elementId: string, current: ICompositeProfileMetadata, old: ICompositeProfileMetadata): IChange[] {
     const changes: IChange[] = [];
 
     if (current.name !== old.name) {
@@ -121,6 +106,17 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
       });
     }
 
+    if (current.flavorsExtension !== old.flavorsExtension) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.flavorsExtension,
+        propertyValue: current.flavorsExtension,
+        propertyType: PropertyType.FLAVORSEXTENSION,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
+
     if (current.profileIdentifier !== old.profileIdentifier) {
       changes.push({
         location: elementId,
@@ -139,10 +135,10 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
     return combineLatest(this.elementId$, this.initial$, this.current$, this.documentRef$).pipe(
       take(1),
       concatMap(([id, old, current, documentRef]) => {
-        return this.profileComponentService.saveChanges(id, documentRef, this.getChanges(id, current.data, old)).pipe(
+        return this.compositeProfileService.saveChanges(id, documentRef, this.getChanges(id, current.data, old)).pipe(
           flatMap((message) => {
             /// TODO handle libary case
-            return [this.messageService.messageToAction(message), new LoadProfileComponent(id), new IgEditResolverLoad(documentRef.documentId)];
+            return [this.messageService.messageToAction(message), new LoadCompositeProfile(id), new IgEditResolverLoad(documentRef.documentId)];
           }),
           catchError((error) => of(this.messageService.actionFromError(error), new fromDam.EditorSaveFailure())),
         );
@@ -151,17 +147,17 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
   }
 
   saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {
-    return this.profileComponentService.saveChanges(id, documentRef, changes);
+    return this.compositeProfileService.saveChanges(id, documentRef, changes);
   }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
-    return fromIgamtDisplaySelectors.selectProfileComponentById;
+    return fromIgamtDisplaySelectors.selectCompositeProfileById;
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {
     return this.elementId$.pipe(
       switchMap((elementId) => {
-        return this.store.select(fromIgamtDisplaySelectors.selectProfileComponentById, { id: elementId });
+        return this.store.select(fromIgamtDisplaySelectors.selectCompositeProfileById, { id: elementId });
       }),
     );
   }
@@ -179,10 +175,11 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
   }
 
 }
-export interface IProfileComponentMetadata {
+export interface ICompositeProfileMetadata {
   name: string;
   description: string;
   displayName?: string;
+  flavorsExtension: string;
   profileIdentifier: {
     entityIdentifier?: string,
     namespaceId?: string,

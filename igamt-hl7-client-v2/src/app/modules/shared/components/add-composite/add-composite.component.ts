@@ -16,6 +16,7 @@ export class AddCompositeComponent implements OnInit {
     name: '',
     coreProfile: null,
     profileComponents: [],
+    flavorsExtension: '',
   };
   messages: IDisplayElement[];
   profileComponents: IDisplayElement[];
@@ -44,6 +45,7 @@ export class AddCompositeComponent implements OnInit {
     return {
       name: this.model.name,
       conformanceProfileId: this.coreProfile.id,
+      flavorsExtension: this.model.flavorsExtension,
       orderedProfileComponents: this.getOrderedPc(this.model.profileComponents),
     };
   }
@@ -65,5 +67,6 @@ export class AddCompositeComponent implements OnInit {
 export interface IAddCompositeComponentModel {
   name: string;
   coreProfile: IDisplayElement;
+  flavorsExtension?: string;
   profileComponents: IDisplayElement[];
 }

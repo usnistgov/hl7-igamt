@@ -32,7 +32,6 @@ public class ProfileComponent extends Resource {
 
   private Set<ProfileComponentContext> children = new HashSet<ProfileComponentContext>();
 
-
   /**
    * 
    */

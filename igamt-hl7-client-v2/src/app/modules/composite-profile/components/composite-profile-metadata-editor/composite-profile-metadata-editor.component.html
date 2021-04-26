@@ -8,9 +8,13 @@
                   placeholder="Description" label="Description" [viewOnly]="viewOnly$ | async">
   </app-form-input>
 
+  <app-form-input formControlName="flavorsExtension" id="flavorsExtension" name="flavorsExtension"
+                  placeholder="Auto generated flavors Extension" label="flavors Extension" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
   <div>
     <span>
-      <strong> Profile Component Identifier </strong>
+      <strong> Composite Profile Identifier </strong>
     </span>
 
     <table formGroupName="profileIdentifier"  class="table table-bordered table-condensed table-sm" style="margin-top: 10px; ">

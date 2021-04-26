@@ -14,10 +14,17 @@ package gov.nist.hit.hl7.igamt.compositeprofile.controller;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileState;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluationResult;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.ResourceAndDisplay;
@@ -27,6 +34,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -37,12 +45,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -81,6 +92,9 @@ public class CompositeProfileController {
 
   @Autowired
   BindingService bindingService;
+  
+  @Autowired
+  EntityChangeService entityChangeService;
 
   @RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -119,5 +133,27 @@ public class CompositeProfileController {
     this.inMemoryDomainExtensionService.clear(token);
     return state;
   }
+  
+  
+  @RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.POST, produces = {
+  "application/json" })
+@ResponseBody
+public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
+                                 @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+                                 Authentication authentication) throws Exception {
+
+      CompositeProfileStructure cp = this.compositeProfileService.findById(id);
+      commonService.checkRight(authentication, cp.getCurrentAuthor(), cp.getUsername());
+      this.compositeProfileService.applyChanges(cp, cItems, documentId);
+      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
+      entityChangeDomain.setDocumentId(documentId);
+      entityChangeDomain.setDocumentType(DocumentType.IG);
+      entityChangeDomain.setTargetId(id);
+      entityChangeDomain.setTargetType(EntityType.COMPOSITEPROFILE);
+      entityChangeDomain.setChangeItems(cItems);
+      entityChangeDomain.setTargetVersion(cp.getVersion());
+      entityChangeService.save(entityChangeDomain);
+      return new ResponseMessage(Status.SUCCESS, "Composite Profile Saved", cp.getId(), new Date());
+}
 
 }

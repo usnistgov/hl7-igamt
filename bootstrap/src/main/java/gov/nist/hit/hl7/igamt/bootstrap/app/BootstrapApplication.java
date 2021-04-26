@@ -339,6 +339,7 @@ public class BootstrapApplication implements CommandLineRunner {
   void fixSegmentduplicatedBinding() throws ValidationException {
     tableFixes.removeSegmentsDuplicatedBinding();
   }
+  
   @PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
