@@ -11,13 +11,17 @@
  */
 package gov.nist.hit.hl7.igamt.compositeprofile.service.impl;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
@@ -27,10 +31,17 @@ import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
+import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.repository.CompositeProfileStructureRepository;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageProfileIdentifier;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
+import gov.nist.hit.hl7.resource.change.service.ApplyChange;
 
 
 /**
@@ -42,6 +53,8 @@ import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructure
 public class CompositeProfileStructureServiceImpl implements CompositeProfileStructureService {
   @Autowired
   CompositeProfileStructureRepository compositeProfileStructureRepository;
+  @Autowired
+  ApplyChange applyChange;
 
   @Override
   public CompositeProfileStructure findById(String id) {
@@ -153,5 +166,40 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
     }
     
     return relations;
+  }
+  
+  @Override
+  public void applyChanges(CompositeProfileStructure pc, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+
+    Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
+    this.applyMetaData(pc, singlePropertyMap , documentId);
+    this.save(pc);
+  }
+
+  private void applyMetaData( CompositeProfileStructure cp, Map<PropertyType, ChangeItemDomain> singlePropertyMap, String documentId) throws ApplyChangeException{
+
+    applyChange.applyResourceChanges(cp, singlePropertyMap , documentId);
+    ObjectMapper mapper = new ObjectMapper();
+
+    if (singlePropertyMap.containsKey(PropertyType.NAME)) {
+      singlePropertyMap.get(PropertyType.NAME).setOldPropertyValue(cp.getName());
+      cp.setName((String) singlePropertyMap.get(PropertyType.NAME).getPropertyValue());
+    }
+    
+    if (singlePropertyMap.containsKey(PropertyType.FLAVORSEXTENSION)) {
+      singlePropertyMap.get(PropertyType.FLAVORSEXTENSION).setOldPropertyValue(cp.getName());
+      cp.setFlavorsExtension((String) singlePropertyMap.get(PropertyType.FLAVORSEXTENSION).getPropertyValue());
+    }
+    if (singlePropertyMap.containsKey(PropertyType.PROFILEIDENTIFIER)) {
+      try {
+        String jsonInString = mapper.writeValueAsString(singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER).getPropertyValue());
+        singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER).setOldPropertyValue(cp.getPreCoordinatedMessageIdentifier());
+        MessageProfileIdentifier profileIdentifier= mapper.readValue(jsonInString, MessageProfileIdentifier.class);
+        cp.setPreCoordinatedMessageIdentifier(profileIdentifier);
+      } catch (IOException e) {
+        throw new ApplyChangeException(singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER));
+      }
+    } 
+
   }
 }

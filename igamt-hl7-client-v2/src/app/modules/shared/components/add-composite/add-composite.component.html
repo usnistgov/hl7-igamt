@@ -2,13 +2,27 @@
 <mat-dialog-content>
   <form #form='ngForm'>
     <div class="form-group">
-      <label for="groupName" style="font-weight: bold;"> Composite Profile Name : </label>
+      <label for="groupName" style="font-weight: bold;"> Composite Profile Name </label>
       <input [(ngModel)]="model.name" class="form-control" id="groupName" name="name" required style="width: 100%"
              type="text" type="text"/>
       <div *ngIf="form.controls['name'] && form.controls['name'].errors"
            style="color:red; font-size: 11px">
         <div *ngIf="form.controls['name'].errors.required">
           <span>*Composite Profile Name name is required</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="groupName" style="font-weight: bold;"> Flavors Extension </label>
+      <span class="badge" style="background: black; color: white; margin-left: 5px;"><i #tooltip="matTooltip"
+                                                                                        matTooltip="Used to identify the auto-generated segments and data types belonging to this composite profile"
+                                                                                        matTooltipHideDelay="100000" class="fa fa-info"> </i></span>
+      <input [(ngModel)]="model.flavorsExtension" class="form-control" id="flavorsExtension" name="flavorsExtension" required style="width: 100%"
+             type="text" type="text"/>
+      <div *ngIf="form.controls['flavorsExtension'] && form.controls['flavorsExtension'].errors"
+           style="color:red; font-size: 11px">
+        <div *ngIf="form.controls['flavorsExtension'].errors.required">
+          <span>*Flavors Extension is required </span>
         </div>
       </div>
     </div>
@@ -39,7 +53,7 @@
         <ng-template let-item pTemplate="item">
           <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
           <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
-          <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
+          <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ item.value.variableName}}</span>
         </ng-template>
       </p-dropdown>
     </div>

@@ -8,6 +8,6 @@ class ForwardingController {
 
     @RequestMapping(value = "/**/{path:[^.]*}")       
     public String redirect() {
-        return "forward:/error";
+        return "forward:/";
     }
 }

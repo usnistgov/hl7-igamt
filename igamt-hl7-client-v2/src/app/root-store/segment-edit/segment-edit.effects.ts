@@ -94,17 +94,6 @@ export class SegmentEditEffects {
   );
 
   @Effect()
-  openSegmentCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenSegmentCrossRefEditor>(
-    SegmentEditActionTypes.OpenSegmentCrossRefEditor,
-    fromIgamtDisplaySelectors.selectSegmentsById,
-    Type.IGDOCUMENT,
-    Type.SEGMENT,
-    fromIgamtSelectors.selectLoadedDocumentInfo,
-    this.crossReferenceService.findUsagesDisplay,
-    this.SegmentNotFound,
-  );
-
-  @Effect()
   openSegmentMetadataEditor$ = this.editorHelper.openMetadataEditor<OpenSegmentMetadataEditor>(
     SegmentEditActionTypes.OpenSegmentMetadataEditor,
     fromIgamtDisplaySelectors.selectSegmentsById,
@@ -117,6 +106,17 @@ export class SegmentEditEffects {
     SegmentEditActionTypes.OpenSegmentPostDefEditor,
     fromIgamtDisplaySelectors.selectSegmentsById,
     this.store.select(fromIgamtSelectedSelectors.selectedResourcePostDef),
+    this.SegmentNotFound,
+  );
+
+  @Effect()
+  openSegmentCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenSegmentCrossRefEditor>(
+    SegmentEditActionTypes.OpenSegmentCrossRefEditor,
+    fromIgamtDisplaySelectors.selectSegmentsById,
+    Type.IGDOCUMENT,
+    Type.SEGMENT,
+    fromIgamtSelectors.selectLoadedDocumentInfo,
+    this.crossReferenceService.findUsagesDisplay,
     this.SegmentNotFound,
   );
 

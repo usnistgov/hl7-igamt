@@ -18,13 +18,14 @@ import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -95,7 +96,7 @@ public class SegmentDataModel implements Serializable, Comparable {
 	 * @param conformanceStatementRepository
 	 * @param predicateRepository
 	 */
-	public void putModel(Segment s, DatatypeService datatypeService, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
+	public void putModel(Segment s, DatatypeService datatypeService, InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService,  Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
 		this.model = s;
 
 		if (s.getBinding() != null){
@@ -107,15 +108,16 @@ public class SegmentDataModel implements Serializable, Comparable {
 			if (s.getBinding().getChildren() != null) {
 				this.popPathBinding(s.getName(), s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
 			}
-
 		}
-
 
 		if(s.getChildren() != null) {
 			s.getChildren().forEach(f -> {
 				String key = f.getPosition() + "";
 				if(f.getRef() != null && f.getRef().getId() != null){
 					Datatype childDt = datatypeService.findById(f.getRef().getId());
+					if(childDt == null) {
+						childDt = inMemoryDomainExtensionService.findById(f.getRef().getId(), ComplexDatatype.class);
+					}
 					if(childDt != null) {
 						this.fieldDataModels.add(new FieldDataModel(
 								f, 

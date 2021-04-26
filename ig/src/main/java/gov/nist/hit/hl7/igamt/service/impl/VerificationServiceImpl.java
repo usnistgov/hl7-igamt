@@ -44,6 +44,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
@@ -112,6 +113,9 @@ public class VerificationServiceImpl implements VerificationService {
 
 	@Autowired
 	private ValuesetService valuesetService;
+	
+	@Autowired
+	  InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
 
 //  @Autowired
 //  private PredicateRepository predicateRepository;
@@ -499,6 +503,8 @@ public class VerificationServiceImpl implements VerificationService {
 							positionPath + "", "FATAL", "Internal"));
 		else {
 			segment = this.segmentService.findById(ref.getId());
+			if(segment == null) segment = this.inMemoryDomainExtensionService.findById(ref.getId(), Segment.class);
+			
 			// DATA Acessability check
 			if (segment == null)
 				result.getErrors().add(new IgamtObjectError("Ref_NotAccessable", conformanceProfile.getId(),
@@ -1224,6 +1230,7 @@ public class VerificationServiceImpl implements VerificationService {
 
 			if (ref != null && ref.getId() != null) {
 				Datatype childDt = this.datatypeService.findById(ref.getId());
+				if(childDt == null) childDt = this.inMemoryDomainExtensionService.findById(ref.getId(), ComplexDatatype.class);
 				if (childDt == null)
 					result.getErrors()
 							.add(new IgamtObjectError("Ref_NotAccessable", cDt.getId(), cDt.getType(),
@@ -1317,6 +1324,7 @@ public class VerificationServiceImpl implements VerificationService {
 
 			if (ref != null && ref.getId() != null) {
 				Datatype childDt = this.datatypeService.findById(ref.getId());
+				if(childDt == null) childDt = this.inMemoryDomainExtensionService.findById(ref.getId(), ComplexDatatype.class);
 				if (childDt == null)
 					result.getErrors()
 							.add(new IgamtObjectError("Ref_NotAccessable", segment.getId(), segment.getType(),
@@ -2213,6 +2221,8 @@ public class VerificationServiceImpl implements VerificationService {
 
 	@Override
 	public VerificationReport verifyIg(Ig ig, boolean needDeep) {
+		//TODO need to verify ProfileCompoenent
+		
 		parentComplianceMap = new HashMap<String, ComplianceObject>();
 		childComplianceMap = new HashMap<String, ComplianceObject>();
 		VerificationReport report = new VerificationReport();
@@ -2273,6 +2283,9 @@ public class VerificationServiceImpl implements VerificationService {
 				String id = l.getId();
 
 				Datatype dt = this.datatypeService.findById(id);
+				
+				if (dt == null) dt = inMemoryDomainExtensionService.findById(id, ComplexDatatype.class);
+				
 				if (dt == null)
 					result.getErrors()
 							.add(new IgamtObjectError("Link_NotAccessable", id, Type.DATATYPE, null,
@@ -2319,6 +2332,8 @@ public class VerificationServiceImpl implements VerificationService {
 				String id = l.getId();
 
 				Segment s = this.segmentService.findById(id);
+				
+				if (s == null) s = inMemoryDomainExtensionService.findById(id, Segment.class);
 
 				if (s == null)
 					result.getErrors().add(new IgamtObjectError("Link_NotAccessable", id, Type.SEGMENT, null,
@@ -2361,6 +2376,8 @@ public class VerificationServiceImpl implements VerificationService {
 				String id = l.getId();
 
 				ConformanceProfile cp = this.conformanceProfileService.findById(id);
+				
+				if (cp == null) cp = inMemoryDomainExtensionService.findById(id, ConformanceProfile.class);
 
 				if (cp == null)
 					result.getErrors().add(new IgamtObjectError("Link_NotAccessable", id, Type.CONFORMANCEPROFILE, null,
