@@ -76,6 +76,7 @@ import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileState;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluationResult;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.ResourceAndDisplay;
+import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -1709,7 +1710,7 @@ private String token;
     return null;
   }
 
-  private Ig makeSelectedIg(Ig ig, ReqId reqIds, CompositeProfileState cps) {
+  private Ig makeSelectedIg(Ig ig, ReqId reqIds, CompositeProfileState cps) throws IOException {
     Ig selectedIg = new Ig();
     selectedIg.setId(ig.getId());
     selectedIg.setDomainInfo(ig.getDomainInfo());
@@ -1736,6 +1737,7 @@ private String token;
     		cps = this.eval(l.getId());
             this.visitSegmentRefOrGroup(cps.getConformanceProfile().getResource().getChildren(), selectedIg, ig);
             Link newLink = new Link(cps.getConformanceProfile().getResource());
+            this.inMemoryDomainExtensionService.put(newLink.getId(), cps.getConformanceProfile().getResource());
             selectedIg.getConformanceProfileRegistry().getChildren().add(newLink);
     	}
     }
