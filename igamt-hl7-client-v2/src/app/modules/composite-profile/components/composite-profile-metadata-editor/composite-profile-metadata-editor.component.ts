@@ -4,6 +4,7 @@ import {Actions} from '@ngrx/effects';
 import {Action, MemoizedSelectorWithProps, Store} from '@ngrx/store';
 import {combineLatest, Observable, of, Subscription} from 'rxjs';
 import {catchError, concatMap, flatMap, switchMap, take, tap} from 'rxjs/operators';
+import {LoadCompositeProfile} from '../../../../root-store/composite-profile/composite-profile.actions';
 import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import {IgEditResolverLoad} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {LoadProfileComponent} from '../../../../root-store/profile-component/profile-component.actions';
@@ -137,7 +138,7 @@ export class CompositeProfileMetadataEditorComponent extends AbstractEditorCompo
         return this.compositeProfileService.saveChanges(id, documentRef, this.getChanges(id, current.data, old)).pipe(
           flatMap((message) => {
             /// TODO handle libary case
-            return [this.messageService.messageToAction(message), new LoadProfileComponent(id), new IgEditResolverLoad(documentRef.documentId)];
+            return [this.messageService.messageToAction(message), new LoadCompositeProfile(id), new IgEditResolverLoad(documentRef.documentId)];
           }),
           catchError((error) => of(this.messageService.actionFromError(error), new fromDam.EditorSaveFailure())),
         );

@@ -25,5 +25,6 @@ public class CompositeProfileCreationWrapper {
   public String documentId;
   public String name;
   public String conformanceProfileId;
+  public String flavorsExtension;
   public Set<OrderedProfileComponentLink> orderedProfileComponents;
 }
