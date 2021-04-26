@@ -131,9 +131,14 @@ export class ExportXmlDialogComponent implements OnInit {
   submit() {
     this.dialogRef.close(this.ids);
   }
-  matchProfileIds($event: string[]) {
+  matchConformanceProfileIds($event: string[]) {
     this.ids = {...this.ids, conformanceProfilesId: $event };
   }
+
+  matchCompositeProfileIds($event: string[]) {
+    this.ids = {...this.ids, compositeProfilesId: $event };
+  }
+
   isSelected(): boolean {
     return (this.ids.conformanceProfilesId && this.ids.conformanceProfilesId.length > 0) || ( this.ids.compositeProfilesId && this.ids.compositeProfilesId.length > 0);
   }

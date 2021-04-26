@@ -13,10 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipOutputStream;
 
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentBinding;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyBinding;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -54,24 +53,31 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileState;
 //import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 //import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluationResult;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.ResourceAndDisplay;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItem;
@@ -97,10 +103,12 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentBinding;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentLabel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
@@ -167,6 +175,12 @@ public class IgServiceImpl implements IgService {
 
   @Autowired
   CommonService commonService;
+  
+  @Autowired
+  CompositeProfileStructureService compositeProfileService;
+
+  @Autowired
+  InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
 
   @Override
   public Ig findById(String id) {
@@ -1029,11 +1043,9 @@ public class IgServiceImpl implements IgService {
 
     Set<DatatypeDataModel> datatypes = new HashSet<DatatypeDataModel>();
     Set<SegmentDataModel> segments = new HashSet<SegmentDataModel>();
-    Set<ConformanceProfileDataModel> conformanceProfiles =
-        new HashSet<ConformanceProfileDataModel>();
+    Set<ConformanceProfileDataModel> conformanceProfiles = new HashSet<ConformanceProfileDataModel>();
     Set<ValuesetDataModel> valuesets = new HashSet<ValuesetDataModel>();
-    Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap =
-        new HashMap<String, ValuesetBindingDataModel>();
+    Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap = new HashMap<String, ValuesetBindingDataModel>();
 
     for (Link link : ig.getValueSetRegistry().getChildren()) {
       Valueset vs = this.getValueSetInIg(ig.getId(), link.getId());
@@ -1048,20 +1060,24 @@ public class IgServiceImpl implements IgService {
 
     for (Link link : ig.getDatatypeRegistry().getChildren()) {
       Datatype d = this.datatypeService.findById(link.getId());
+      if(d == null) {
+    	  d = inMemoryDomainExtensionService.findById(link.getId(), ComplexDatatype.class);
+      }
       if (d != null) {
         DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
-        datatypeDataModel.putModel(d, this.datatypeService, valuesetBindingDataModelMap,
+        datatypeDataModel.putModel(d, this.datatypeService, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
             this.conformanceStatementRepository, this.predicateRepository);
         datatypes.add(datatypeDataModel);
       }
-      else throw new Exception("Datatype is missing.");
+      else throw new Exception("Datatype is missing:::" + link.toString());
     }
 
     for (Link link : ig.getSegmentRegistry().getChildren()) {
       Segment s = this.segmentService.findById(link.getId());
+      if(s == null) s = inMemoryDomainExtensionService.findById(link.getId(), Segment.class);
       if (s != null) {
         SegmentDataModel segmentDataModel = new SegmentDataModel();
-        segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
+        segmentDataModel.putModel(s, this.datatypeService, inMemoryDomainExtensionService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
         // CoConstraintTable coConstraintTable =
         // this.coConstraintService.getCoConstraintForSegment(s.getId());
         // segmentDataModel.setCoConstraintTable(coConstraintTable);
@@ -1072,23 +1088,25 @@ public class IgServiceImpl implements IgService {
 
     for (Link link : ig.getConformanceProfileRegistry().getChildren()) {
       ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
+      if(cp == null) cp = inMemoryDomainExtensionService.findById(link.getId(), ConformanceProfile.class);
       if (cp != null) {
         ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
-        conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap,
+        conformanceProfileDataModel.putModel(cp, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
             this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
         conformanceProfiles.add(conformanceProfileDataModel);
       } else
         throw new Exception("ConformanceProfile is missing.");
     }
+    
 
     igDataModel.setDatatypes(datatypes);
     igDataModel.setSegments(segments);
     igDataModel.setConformanceProfiles(conformanceProfiles);
     igDataModel.setValuesets(valuesets);
 
-
     return igDataModel;
   }
+  
 
   @Override
   public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds,

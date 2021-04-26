@@ -19,6 +19,7 @@ import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -81,7 +82,7 @@ public class DatatypeDataModel implements Serializable, Comparable {
 	 * @param conformanceStatementRepository
 	 * @param predicateRepository
 	 */
-	public void putModel(Datatype d, DatatypeService dataytpeService, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
+	public void putModel(Datatype d, DatatypeService dataytpeService, InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
 		this.model = d;
 
 		if (d.getBinding() != null){
@@ -104,6 +105,9 @@ public class DatatypeDataModel implements Serializable, Comparable {
 					String key = c.getPosition() + "";
 					if(c.getRef() != null && c.getRef().getId() != null){
 						Datatype childDt = dataytpeService.findById(c.getRef().getId());
+						if(childDt == null) {
+							childDt = inMemoryDomainExtensionService.findById(c.getRef().getId(), ComplexDatatype.class);
+						}
 						if(childDt != null) {
 							this.componentDataModels.add(new ComponentDataModel(
 									c, 
