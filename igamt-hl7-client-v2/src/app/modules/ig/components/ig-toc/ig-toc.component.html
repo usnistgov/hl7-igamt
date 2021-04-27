@@ -214,13 +214,23 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'MESSAGECONTEXT'">
-          <app-display-section  #msg="routerLinkActive" [element]="node.data"  [routerLink]="getPcElementUrl(node)" routerLinkActive></app-display-section>
+          <app-display-section [contextMenu]='msgContext'  #msg="routerLinkActive" [element]="node.data"  [routerLink]="getPcElementUrl(node)" routerLinkActive></app-display-section>
           <app-toc-sub-menu [element]="node.data"  *ngIf="msg.isActive" [delta]="delta" [pcId]="node.parent.data.id" ></app-toc-sub-menu>
+          <context-menu #msgContext [disabled]="viewOnly||delta">
+            <ng-template (execute)="deleteOneChild(node.data, node.parent.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
+          </context-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'SEGMENTCONTEXT'">
-          <app-display-section  #rla="routerLinkActive"  [element]="node.data" [routerLink]="getPcElementUrl(node)" routerLinkActive></app-display-section>
+          <app-display-section [contextMenu]='segContext' #rla="routerLinkActive"  [element]="node.data" [routerLink]="getPcElementUrl(node)" routerLinkActive></app-display-section>
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [pcId]="node.parent.data.id" ></app-toc-sub-menu>
+          <context-menu #segContext [disabled]="viewOnly||delta">
+            <ng-template (execute)="deleteOneChild(node.data, node.parent.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
+          </context-menu>
         </ng-container>
 
       </ng-container>
