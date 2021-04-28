@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.ig.controller;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -187,7 +188,7 @@ private String token;
     return ig;
   }
   
-  private Ig makeSelectedIg(Ig ig, ReqId reqIds, CompositeProfileState cps) {
+  private Ig makeSelectedIg(Ig ig, ReqId reqIds, CompositeProfileState cps) throws IOException {
 	  Ig selectedIg = new Ig();
 	  selectedIg.setId(ig.getId());
 	  selectedIg.setDomainInfo(ig.getDomainInfo());
@@ -211,11 +212,11 @@ private String token;
 	    	Link l = ig.getCompositeProfileRegistry().getLinkById(id);
 	    	
 	    	if(l != null) {
-//	    		selectedIg.getCompositeProfileRegistry().getChildren().add(l);
-	    		cps = this.eval(l.getId());
+	            cps = this.eval(l.getId());
 	            this.visitSegmentRefOrGroup(cps.getConformanceProfile().getResource().getChildren(), selectedIg, ig);
-	            l.setId(cps.getConformanceProfile().getResource().getId());
-	            selectedIg.getConformanceProfileRegistry().getChildren().add(l);
+	            Link newLink = new Link(cps.getConformanceProfile().getResource());
+	            this.inMemoryDomainExtensionService.put(newLink.getId(), cps.getConformanceProfile().getResource());
+	            selectedIg.getConformanceProfileRegistry().getChildren().add(newLink);
 	    	}
 	    }
 	  

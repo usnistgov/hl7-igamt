@@ -1095,7 +1095,7 @@ public class IgServiceImpl implements IgService {
             this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
         conformanceProfiles.add(conformanceProfileDataModel);
       } else
-        throw new Exception("ConformanceProfile is missing.");
+        throw new Exception("ConformanceProfile is missing::::" + link.getId());
     }
     
 
