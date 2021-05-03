@@ -1,11 +1,11 @@
-import { Component, Input, OnInit, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit } from '@angular/core';
+import { TreeNode } from 'angular-tree-component';
 import { OverlayPanel } from 'primeng/overlaypanel';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
 import { DeltaAction, IDelta, IDeltaNode, IDeltaReference, IDeltaTreeNode } from '../../models/delta';
 import { ColumnOptions, HL7v2TreeColumnType, IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
-import { TreeNode } from 'angular-tree-component';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-delta-tree',
@@ -24,7 +24,7 @@ export class DeltaTreeComponent implements OnInit {
   selectedColumns: ColumnOptions;
   delta$: BehaviorSubject<IDelta<IDeltaTreeNode[]>>;
   treeView$: BehaviorSubject<boolean>;
-  treeView: boolean = false;
+  treeView = false;
   nodes$: Observable<IDeltaTreeNode[]>;
 
   styleClasses = {
@@ -33,7 +33,6 @@ export class DeltaTreeComponent implements OnInit {
     deleted: 'delta-deleted',
     updated: 'delta-updated',
   };
-
 
   @Input()
   set columns(cols: HL7v2TreeColumnType[]) {
@@ -60,8 +59,8 @@ export class DeltaTreeComponent implements OnInit {
     ).pipe(
       map(([elms, treeView]) => {
         return treeView ? elms.delta : this.filter(elms.delta);
-      })
-    )
+      }),
+    );
   }
 
   toggleTreeView(val) {

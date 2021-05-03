@@ -138,12 +138,6 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
           })),
         } : undefined;
         this.selected = confP.items[0].value;
-        console.log([
-          ...(confP ? [confP] : []),
-          ...(segments ? [segments] : []),
-          ...(datatypes ? [datatypes] : []),
-        ]);
-
         this.resourceSubject.next([
           ...(confP ? [confP] : []),
           ...(segments ? [segments] : []),

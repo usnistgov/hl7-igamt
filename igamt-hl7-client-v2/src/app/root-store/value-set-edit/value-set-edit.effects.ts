@@ -66,7 +66,6 @@ export class ValueSetEditEffects {
     }),
   );
 
-
   @Effect()
   loadValueSetFailure$ = this.actions$.pipe(
     ofType(ValueSetEditActionTypes.LoadValueSetFailure),

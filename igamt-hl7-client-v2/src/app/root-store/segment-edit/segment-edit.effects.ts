@@ -66,7 +66,6 @@ export class SegmentEditEffects {
     }),
   );
 
-
   @Effect()
   LoadSegmentFailure$ = this.actions$.pipe(
     ofType(SegmentEditActionTypes.LoadSegmentFailure),

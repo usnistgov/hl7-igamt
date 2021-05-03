@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { selectDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { combineLatest, Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { Observable, combineLatest } from 'rxjs';
 import { selectSelectedResource } from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import { selectDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 
 @Injectable({ providedIn: 'root' })
 export class DeltaRouteGuard implements CanActivate {
@@ -17,7 +17,7 @@ export class DeltaRouteGuard implements CanActivate {
 
     return combineLatest(
       this.store.select(selectDelta),
-      this.store.select(selectSelectedResource)
+      this.store.select(selectSelectedResource),
     ).pipe(
       take(1),
       map(([delta, resource]) => {
@@ -30,7 +30,7 @@ export class DeltaRouteGuard implements CanActivate {
         } else {
           return this.router.parseUrl(state.url + '/' + redirectTo);
         }
-      })
+      }),
     );
   }
 }
