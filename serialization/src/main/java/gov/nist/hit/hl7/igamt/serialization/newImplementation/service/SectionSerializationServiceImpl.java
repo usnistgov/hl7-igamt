@@ -72,7 +72,11 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
         	if (Type.PROFILE.equals(section.getType())) {
             serializedSection = SerializeProfile((TextSection) section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
                     exportFilterDecision);
-        } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
+        } else if (Type.PROFILECOMPONENT.equals(section.getType())) {
+            serializedSection = SerializeProfile((TextSection) section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
+                    exportFilterDecision);
+        } else 
+        	if (Type.DATATYPEREGISTRY.equals(section.getType())) {
             serializedSection = SerializeDatatypeRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
                     exportFilterDecision);
         } else if (Type.SEGMENTREGISTRY.equals(section.getType())) {
