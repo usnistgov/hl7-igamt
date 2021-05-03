@@ -1,38 +1,42 @@
-<h2 mat-dialog-title>Export GVT</h2>
+<h2 mat-dialog-title>Export To GVT</h2>
 
 <mat-dialog-content style="min-width: 500px; min-height: 200px">
   <form #loginForm='ngForm'>
     <ng-container *ngIf="step === 0">
-    <p-dropdown [options]="data.tools" [(ngModel)]="tool" optionLabel="label" placeholder="Select tool" required name="tool" id="tool" [style]="{'minWidth':'100%', 'margin-bottom': '20px'}"></p-dropdown>
-    <div class="alerts">
-      <app-dam-alerts-container></app-dam-alerts-container>
-    </div>
-    <div class="form-group">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text" style="width: 40px;"> <i class="fa fa-user"></i> </span>
-        </div>
-        <input class="form-control" [disabled]="!tool" id="username"  name="username" placeholder="Username" [(ngModel)]="username"  type="username">
+      <p-dropdown [options]="data.tools" [(ngModel)]="tool" optionLabel="label" placeholder="Select tool" required name="tool" id="tool" [style]="{'minWidth':'100%', 'margin-bottom': '20px'}"></p-dropdown>
+      <div class="alerts">
+        <app-dam-alerts-container></app-dam-alerts-container>
       </div>
-    </div>
-    <div class="form-group">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text" style="width: 40px;"> <i class="fa fa-key"></i> </span>
+      <div class="form-group">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text" style="width: 40px;"> <i class="fa fa-user"></i> </span>
+          </div>
+          <input class="form-control" [disabled]="!tool" id="username"  name="username" placeholder="Username" [(ngModel)]="username"  type="username">
         </div>
-        <input class="form-control" id="password" [disabled]="!tool"  name="password" [(ngModel)]="password" placeholder="password" type="password">
       </div>
-    </div>
+      <div class="form-group">
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text" style="width: 40px;"> <i class="fa fa-key"></i> </span>
+          </div>
+          <input class="form-control" id="password" [disabled]="!tool"  name="password" [(ngModel)]="password" placeholder="password" type="password">
+        </div>
+      </div>
     </ng-container>
-   </form>
+  </form>
 
   <ng-container *ngIf="step === 1">
+    <p-dropdown [options]="domains" required (onChange)="selectDomain($event)" optionLabel="name" placeholder="Select Tool Scopes" [style]="{'minWidth':'100%', 'margin-bottom': '10px;'}"></p-dropdown>
 
-    <p-dropdown [options]="domains" required (onChange)="selectDomain($event)" optionLabel="name" placeholder="select tool scopes" [style]="{'minWidth':'100%'}"></p-dropdown>
-
+    <div class="alert alert-danger" *ngIf="!selectedDomain"> Tool Scope is required</div>
     <p-accordion [multiple]="true">
       <p-accordionTab header="Conformance profiles" [selected]="true">
-        <app-select-resource-ids [conformanceProfiles]="data.conformanceProfiles" (selected)="matchId($event)">
+        <app-select-resource-ids [resources]="data.conformanceProfiles" (selected)="matchConformanceProfileIds($event)">
+        </app-select-resource-ids>
+      </p-accordionTab>
+      <p-accordionTab header="Composite profiles" [selected]="true">
+        <app-select-resource-ids [resources]="data.compositeProfiles" (selected)="matchCompositeProfiles($event)">
         </app-select-resource-ids>
       </p-accordionTab>
     </p-accordion>
@@ -449,7 +453,7 @@
   <button (click)="hasDomains=false; step = step - 1;" *ngIf="step !== 0" class="btn btn-sm btn-info" style="margin-right: 5px;">Back</button>
   <button (click)="loadDomain()" *ngIf="step === 0" [disabled]="!loginForm.valid" class="btn btn-sm btn-success" type="submit">Login</button>
   <button *ngIf="step === 1" (click)="verify()" [disabled]="!isSelected()" class="btn btn-sm btn-success">Next</button>
-  <button *ngIf="step === 2 && isProcessable()" (click)="submit()" [disabled]="!isSelected()" class="btn btn-sm btn-success">Next</button>
+  <button *ngIf="step === 2 && isProcessable()" (click)="submit()" [disabled]="!isSelected()" class="btn btn-sm btn-success"> Next </button>
   <button *ngIf="step === 2 && !isProcessable()" (click)="submit()" [disabled]="!isSelected()" class="btn btn-sm btn-success">Proceed anyway</button>
   <button *ngIf="step === 3" (click)="cancel()" class="btn btn-sm btn-success">Close</button>
 </mat-dialog-actions>

@@ -53,6 +53,7 @@ import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -234,83 +235,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
     return nodes;
   }
-
-
-
-  private List<TreeNode> createCompositeProfileNodes(Set<Link> children) {
-
-    // TODO Auto-generated method stub
-    List<TreeNode> nodes = new ArrayList<TreeNode>();
-    // TODO Auto-generated method stub
-    for (Link l : children) {
-      CompositeProfileStructure compositeProfile = compositeProfileServie.findById(l.getId());
-      if (compositeProfile != null) {
-        nodes.add(createCompositeProfileNode(compositeProfile, l.getPosition()));
-      }
-    }
-    nodes.sort((h1, h2) -> h1.compareTo(h2));
-
-    return nodes;
-  }
-
-  /**
-   * @param node
-   * @return
-   */
-  @Override
-  public TreeNode createCompositeProfileNode(CompositeProfileStructure compositeProfile,
-      int position) {
-    // TODO Auto-generated method stub
-    TreeNode node = new TreeNode();
-    ElementTreeData data = new ElementTreeData();
-    data.setLabel(compositeProfile.getName());
-    data.setDescription(compositeProfile.getDescription());
-    data.setDomainInfo(compositeProfile.getDomainInfo());
-    data.setId(compositeProfile.getId());
-    data.setPosition(position);
-    data.setType(Type.COMPOSITEPROFILE);
-    node.setData(data);
-    node.setId(compositeProfile.getId());
-    return node;
-  }
-
-
-
-  private List<TreeNode> createPcsNodes(Set<Link> children) {
-    // TODO Auto-generated method stub
-    List<TreeNode> Nodes = new ArrayList<TreeNode>();
-    // TODO Auto-generated method stub
-    for (Link l : children) {
-      ProfileComponent profileComponent = profileComponentService.findById(l.getId());
-      if (profileComponent != null) {
-
-        Nodes.add(createPcNode(profileComponent, l.getPosition()));
-      }
-    }
-    Nodes.sort((h1, h2) -> h1.compareTo(h2));
-
-    return Nodes;
-  }
-
-  /**
-   * @param profileComponent
-   * @return
-   */
-  @Override
-  public TreeNode createPcNode(ProfileComponent profileComponent, int position) {
-    // TODO Auto-generated method stub
-    TreeNode node = new TreeNode();
-    ElementTreeData data = new ElementTreeData();
-    data.setLabel(profileComponent.getName());
-    data.setPosition(position);
-    data.setDescription(profileComponent.getName());
-    data.setDomainInfo(profileComponent.getDomainInfo());
-    data.setId(profileComponent.getId());
-    data.setType(Type.COMPOSITEPROFILE);
-    node.setData(data);
-    return node;
-  }
-
 
 
   private List<TreeNode> createValueSetsNodes(Set<Link> children, Map<String, Valueset> map) throws ResourceNotFoundException {
@@ -566,61 +490,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     return node;
   }
 
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService#getCompositeProfileNodes(java.util.
-   * Set)
-   */
-  @Override
-  public List<TreeNode> getCompositeProfileNodes(Set<CompositeProfile> compositeProfiles) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService#getProfileCompoenents(java.util.Set)
-   */
-  @Override
-  public List<TreeNode> getProfileCompoenents(Set<ProfileComponent> profileComponents) {
-    // TODO Auto-generated method stub
-    // TODO Auto-generated method stub
-    List<TreeNode> Nodes = new ArrayList<TreeNode>();
-    // TODO Auto-generated method stub
-    for (ProfileComponent elm : profileComponents) {
-
-      Nodes.add(addProfileComponentNode(elm));
-    }
-
-
-    return Nodes;
-  }
-
-
-
-  /**
-   * @param elm
-   * @return
-   */
-  private TreeNode addProfileComponentNode(ProfileComponent elm) {
-    // TODO Auto-generated method stub
-    TreeNode node = new TreeNode();
-    ElementTreeData data = new ElementTreeData();
-    data.setLabel(elm.getName());
-    data.setDescription(elm.getName());
-    data.setDomainInfo(elm.getDomainInfo());
-    data.setId(elm.getId());
-    data.setType(Type.COMPOSITEPROFILE);
-    node.setData(data);
-    return node;
-  }
 
 
 

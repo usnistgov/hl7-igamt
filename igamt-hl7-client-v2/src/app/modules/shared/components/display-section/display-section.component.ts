@@ -32,6 +32,10 @@ export class DisplaySectionComponent implements OnInit {
     switch (this.element.type) {
       case Type.COCONSTRAINTGROUP:
         return this.element.fixedName + ' - ' + this.element.variableName;
+      case Type.PROFILECOMPONENT:
+        return this.element.variableName;
+      case Type.COMPOSITEPROFILE:
+        return this.element.variableName;
       default:
         return getLabel(this.element.fixedName, this.element.variableName);
     }

@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.common.binding.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +18,7 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -112,16 +114,32 @@ public class BindingServiceImpl implements BindingService {
       for (StructureElementBinding child : binding.getChildren()) {
 
         if (child.getValuesetBindings() != null) {
-          for (ValuesetBinding vs : child.getValuesetBindings()) {
-            if(vs.getValueSets() !=null) {
-              for(String s: vs.getValueSets()) {
-                vauleSetIds.add(s);
-              }
-            }
-          }
+          vauleSetIds.addAll(processValueSetBinding(child.getValuesetBindings()));
         }
         if (child.getChildren() != null && !child.getChildren().isEmpty()) {
           processStructureElementBinding(child, vauleSetIds);
+        }
+      }
+    }
+    return vauleSetIds;
+  }
+  
+
+  
+
+  /**
+   * @param valuesetBindings
+   * @return
+   */
+  @Override
+  public Set<String> processValueSetBinding(
+      Set<ValuesetBinding> valuesetBindings) {
+    Set<String> vauleSetIds = new HashSet<String>();
+
+    for (ValuesetBinding vs : valuesetBindings) {
+      if(vs.getValueSets() !=null) {
+        for(String s: vs.getValueSets()) {
+          vauleSetIds.add(s);
         }
       }
     }
@@ -154,16 +172,6 @@ public class BindingServiceImpl implements BindingService {
    */
   @Override
   public void substitute(ResourceBinding binding, HashMap<RealKey, String> newKeys) {
-//	  if (binding.getConformanceStatementIds() != null) {
-//		  Set<String> newIds = new HashSet<String>();
-//		  
-//		  for(String oldId:binding.getConformanceStatementIds()) {
-//			  String newId = newKeys.get(new RealKey(oldId,Type.CONFORMANCESTATEMENT));
-//			  if(newId != null) newIds.add(newId);
-//		  }
-//		  
-//		  binding.setConformanceStatementIds(newIds);
-//	  }
 	  if(binding.getChildren() !=null ) {
 		  for (StructureElementBinding child : binding.getChildren() ) {
 			  processAndSubstitute(child, newKeys);
@@ -177,41 +185,51 @@ public class BindingServiceImpl implements BindingService {
    */
   private void processAndSubstitute(StructureElementBinding elm, HashMap<RealKey, String> newKeys) {
     // TODO Auto-generated method stub
-    if(elm.getValuesetBindings() !=null) {
-      for(ValuesetBinding vs: elm.getValuesetBindings()) {
-        if(vs.getValueSets() !=null) {
-          List<String> newVs = new ArrayList<String>();
-          for (String s : vs.getValueSets() ) {
-            RealKey realKey= new RealKey(s, Type.VALUESET);
-            if( newKeys.containsKey(realKey)) {
-              newVs.add(newKeys.get(realKey));
-            }else {
-              newVs.add(s);
-            }
-          }
-          vs.setValueSets(newVs);
-
-        }
-      }     
+    if(elm.getValuesetBindings() !=null ) {
+      this.processAndSubstitute(elm.getValuesetBindings(), newKeys);
     }
     if(elm.getInternalSingleCode() !=null) {
-      if(elm.getInternalSingleCode().getValueSetId() !=null) {
-        RealKey realKey= new RealKey(elm.getInternalSingleCode().getValueSetId(), Type.VALUESET);
-        if(newKeys.containsKey(realKey)) {
-          elm.getInternalSingleCode().setValueSetId(newKeys.get(realKey));
-        }
-      }
+      this.processAndSubstitute(elm.getInternalSingleCode(), newKeys);
     }
-//    if(elm.getPredicateId() != null) {
-//    	if(newKeys.containsKey(new RealKey(elm.getPredicateId(), Type.PREDICATE))) {
-//    		elm.setPredicateId(newKeys.get(new RealKey(elm.getPredicateId(), Type.PREDICATE)));
-//    	}
-//    }
     if(elm.getChildren() !=null) { 
       for (StructureElementBinding child: elm.getChildren()) {
         processAndSubstitute(child, newKeys);
       }
     }
+  }
+
+
+  /**
+   * @param internalSingleCode
+   * @param newKeys
+   */
+  @Override
+  public void processAndSubstitute(InternalSingleCode internalSingleCode,
+      HashMap<RealKey, String> newKeys) {
+    if(internalSingleCode.getValueSetId() !=null) {
+      RealKey realKey= new RealKey(internalSingleCode.getValueSetId(), Type.VALUESET);
+      if(newKeys.containsKey(realKey)) {
+        internalSingleCode.setValueSetId(newKeys.get(realKey));
+      }
+    }
+  }
+  @Override
+  public void processAndSubstitute(Set<ValuesetBinding> valuesetBindings,
+      HashMap<RealKey, String> newKeys) {
+    for(ValuesetBinding vs: valuesetBindings) {
+      if(vs.getValueSets() !=null) {
+        List<String> newVs = new ArrayList<String>();
+        for (String s : vs.getValueSets() ) {
+          RealKey realKey= new RealKey(s, Type.VALUESET);
+          if( newKeys.containsKey(realKey)) {
+            newVs.add(newKeys.get(realKey));
+          }else {
+            newVs.add(s);
+          }
+        }
+        vs.setValueSets(newVs);
+      }
+    } 
   }
 
   /* (non-Javadoc)

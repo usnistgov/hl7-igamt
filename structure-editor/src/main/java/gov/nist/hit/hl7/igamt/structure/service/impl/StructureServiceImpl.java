@@ -293,7 +293,7 @@ public class StructureServiceImpl implements StructureService {
 
     @Override
     public List<Segment> getUserCustomSegment(String user) {
-        return this.segmentRepository.findByCustomTrueAndUsername(user);
+        return this.segmentRepository.findByCustomTrueAndUsernameAndDomainInfoScope(user, Scope.USERCUSTOM);
     }
 
     @Override

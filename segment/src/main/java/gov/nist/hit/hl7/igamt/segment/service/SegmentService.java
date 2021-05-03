@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
@@ -41,6 +42,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
+import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -53,93 +55,76 @@ import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
  */
 public interface SegmentService extends ResourceService {
 
-	public Segment findById(String id);
+	 Segment findById(String id);
 
-	public Segment create(Segment segment);
+	 Segment create(Segment segment);
 
-	public Segment save(Segment segment);
+	 Segment save(Segment segment);
 
-	public List<Segment> findAll();
+	 List<Segment> findAll();
 
-	public void delete(Segment segment);
+	 void delete(Segment segment);
 
-	public void removeCollection();
+	 void removeCollection();
 
-	public List<Segment> findByDomainInfoVersion(String version);
+	 List<Segment> findByDomainInfoVersion(String version);
 
-	public List<Segment> findByDomainInfoScope(String scope);
+	 List<Segment> findByDomainInfoScope(String scope);
 
-	public List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+	 List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
 
-	public List<Segment> findByName(String name);
+	 List<Segment> findByName(String name);
 
-	public List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
+	 List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
 
-	public List<Segment> findByDomainInfoVersionAndName(String version, String name);
+	 List<Segment> findByDomainInfoVersionAndName(String version, String name);
 
-	public List<Segment> findByDomainInfoScopeAndName(String scope, String name);
+	 List<Segment> findByDomainInfoScopeAndName(String scope, String name);
 
-	public List<Segment> findDisplayFormatByScopeAndVersion(Scope scope, String version, String username);
+	 List<Segment> findDisplayFormatByScopeAndVersion(Scope scope, String version, String username);
 
-	public Link cloneSegment(String id, HashMap<RealKey, String> newKeys, Link l, String username, Scope user, CloneMode cloneMode);
+	 Link cloneSegment(String id, HashMap<RealKey, String> newKeys, Link l, String username, Scope user, CloneMode cloneMode);
 
 	List<Valueset> getDependentValueSets(Set<Segment> resources);
 
-	public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
+	 Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
 			throws SegmentNotFoundException, SegmentValidationException;
-
-	/**
-	 * @param dynamicMapping
-	 * @throws SegmentValidationException
-	 */
+	
 	void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
 
-	/**
-	 * @param segment
-	 * @return
-	 */
-	public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly);
-
-	/**
-	 * @param s
-	 * @param cItems
-	 * @return
-	 * @throws JsonProcessingException
-	 * @throws IOException
-	 */
-
-	public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId)
+	 SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly);
+	
+	 void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId)
             throws ApplyChangeException;
+	
+	 Set<?> convertSegmentStructurForMessage(Segment segment, String idPath, String path);
 
-	/**
-	 * @param datatype
-	 * @param idPath
-	 * @param path
-	 * @return
-	 */
-	public Set<?> convertSegmentStructurForMessage(Segment segment, String idPath, String path);
+	 List<SegmentSelectItemGroup> getSegmentFlavorsOptions(Set<String> ids, Segment s, String scope);
 
-	public List<SegmentSelectItemGroup> getSegmentFlavorsOptions(Set<String> ids, Segment s, String scope);
+	 List<Segment> findFlavors(Set<String> ids, String id, String name);
 
-	public List<Segment> findFlavors(Set<String> ids, String id, String name);
+	 List<Segment> findNonFlavor(Set<String> ids, String id, String name);
 
-	public List<Segment> findNonFlavor(Set<String> ids, String id, String name);
+	 Set<RelationShip> collectDependencies(Segment elm);
 
-	public Set<RelationShip> collectDependencies(Segment elm);
-
-	public void collectAssoicatedConformanceStatements(Segment segment,
+	 void collectAssoicatedConformanceStatements(Segment segment,
 			HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
 
-	public Binding makeLocationInfo(Segment s);
+	 Binding makeLocationInfo(Segment s);
 
-	public LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
+	 LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
 
-	public List<Segment> findByIdIn(Set<String> linksAsIds);
+	 List<Segment> findByIdIn(Set<String> linksAsIds);
 
-	public void collectResources(Segment seg, HashMap<String, Resource> used);
+	 void collectResources(Segment seg, HashMap<String, Resource> used);
 
-	public Set<Resource> getDependencies(Segment segment);
+	 Set<Resource> getDependencies(Segment segment);
 	
-	public void restoreDefaultDynamicMapping(Segment segment);
+	 void restoreDefaultDynamicMapping(Segment segment);
+
+	Set<DisplayElement> convertSegments(Set<Segment> segments);
+	DisplayElement convertSegment(Segment segment);
+	Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
+
 
 }

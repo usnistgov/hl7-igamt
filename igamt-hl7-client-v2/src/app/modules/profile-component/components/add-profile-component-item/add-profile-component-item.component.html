@@ -1,0 +1,17 @@
+<h5 mat-dialog-title> Select Profile Component Target </h5>
+<mat-dialog-content>
+  <div style="width: 300px; height: 400px;">
+    <app-structure-tree
+      [tree]="structure"
+      [repository]="repository"
+      [selectionMode]="'checkbox'"
+      [filter]="filter"
+      (selection)="select($event)"
+      (unselect)="unselect($event)"
+    ></app-structure-tree>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button  class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="cancel()">Cancel</button>
+  <button  class="btn btn-sm btn-success" (click)="submit()">Add</button>
+</mat-dialog-actions>

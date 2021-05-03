@@ -24,15 +24,6 @@ public class Registry implements Serializable{
   public Registry() {
 
   }
-
-  /**
-   * @return
-   */
-  public Type getType() {
-    // TODO Auto-generated method stub
-    return type;
-  }
-
   
   public Set<String> getLinksAsIds(){
 	  
@@ -56,6 +47,14 @@ public class Registry implements Serializable{
 		  if(l.getId().equals(id)) return l;
 	  }
 	  return null;
+  }
+
+  /**
+   * @return
+   */
+  public Type getType() {
+    // TODO Auto-generated method stub
+    return type;
   }
 
 }

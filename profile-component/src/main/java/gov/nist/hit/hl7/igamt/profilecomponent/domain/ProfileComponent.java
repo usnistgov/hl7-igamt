@@ -13,85 +13,71 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-
-
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageProfileIdentifier;
 
 /**
- * A profile component is an objects that contains all the changes between the source (a message or
- * a segment) and the targeted composite profile.
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ * @author Abdelghani El Ouakili
+ *
  */
+@Document
 public class ProfileComponent extends Resource {
+  
+  private MessageProfileIdentifier preCoordinatedMessageIdentifier;
 
-  private Level level;
-  private String sourceId;
-  private String structure;
-  private Set<ProfileComponentItem> profileComponentItems;
+  private Set<ProfileComponentContext> children = new HashSet<ProfileComponentContext>();
 
-
+  /**
+   * 
+   */
   public ProfileComponent() {
     super();
+    super.setType(Type.PROFILECOMPONENT);
+  }
+
+  /**
+   * @param preDef
+   * @param postDef
+   */
+  public ProfileComponent(String preDef, String postDef) {
+    super(preDef, postDef);
     // TODO Auto-generated constructor stub
   }
 
-  public enum Level {
-    MESSAGE, SEGMENT
+  public Set<ProfileComponentContext> getChildren() {
+    return children;
   }
 
-  public Level getLevel() {
-    return level;
+  public void setChildren(Set<ProfileComponentContext> children) {
+    this.children = children;
   }
 
-  public void setLevel(Level level) {
-    this.level = level;
-  }
 
-  public String getSourceId() {
-    return sourceId;
-  }
-
-  public void setSourceId(String sourceId) {
-    this.sourceId = sourceId;
-  }
-
-  public String getStructure() {
-    return structure;
-  }
-
-  public void setStructure(String structure) {
-    this.structure = structure;
-  }
-
-  public Set<ProfileComponentItem> getProfileComponentItems() {
-    return profileComponentItems;
-  }
-
-  public void setProfileComponentItems(Set<ProfileComponentItem> profileComponentItems) {
-    this.profileComponentItems = profileComponentItems;
-  }
-
-  public void addProfileComponentItem(ProfileComponentItem item) {
-    if (this.profileComponentItems == null)
-      this.profileComponentItems = new HashSet<ProfileComponentItem>();
-    this.profileComponentItems.add(item);
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
-   */
   @Override
   public String getLabel() {
     return this.getName();
   }
+  
+  @Override
+  public ProfileComponent clone() {
 
-	@Override
-	public ProfileComponent clone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    ProfileComponent clone = new ProfileComponent();
+    complete(clone);
+    clone.setChildren(children);
+    return clone;
+  }
+
+  public MessageProfileIdentifier getPreCoordinatedMessageIdentifier() {
+    return preCoordinatedMessageIdentifier;
+  }
+
+  public void setPreCoordinatedMessageIdentifier(MessageProfileIdentifier preCoordinatedMessageIdentifier) {
+    this.preCoordinatedMessageIdentifier = preCoordinatedMessageIdentifier;
+  }
+    
 }

@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.segment.repository;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -51,6 +52,7 @@ public interface SegmentRepository extends MongoRepository<Segment, String> {
   Segment findByCustomTrueAndUsernameAndId(String username, String id);
 
   List<Segment> findByCustomTrueAndUsername(String username);
+  List<Segment> findByCustomTrueAndUsernameAndDomainInfoScope(String username, Scope scope);
 
   List<Segment> findByDerived(boolean derived);
 

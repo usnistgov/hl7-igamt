@@ -49,6 +49,9 @@ export class CoConstraintGroupEditEffects {
         flatMap((ccGroup: ICoConstraintGroup) => {
           return [
             new fromDAM.TurnOffLoader(),
+            new SetValue({
+              selected: ccGroup,
+            }),
             new LoadCoConstraintGroupSuccess(ccGroup),
           ];
         }),
@@ -59,18 +62,6 @@ export class CoConstraintGroupEditEffects {
           );
         }),
       );
-    }),
-  );
-
-  @Effect()
-  loadCoConstraintGroupSuccess$ = this.actions$.pipe(
-    ofType(CoConstraintGroupEditActionTypes.LoadCoConstraintGroupSuccess),
-    flatMap((action: LoadCoConstraintGroupSuccess) => {
-      return [
-        new SetValue({
-          selected: action.payload,
-        }),
-      ];
     }),
   );
 

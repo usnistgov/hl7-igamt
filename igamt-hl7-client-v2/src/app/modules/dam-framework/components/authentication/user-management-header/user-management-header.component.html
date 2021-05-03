@@ -7,12 +7,13 @@
   </li>
 </ul>
 <ul *ngIf="(loggedIn | async) && (username | async)" class="navbar-nav username-label">
-  <li class="nav-item" ngbDropdown>
-    <span class="nav-link" href="#" ngbDropdownToggle><i class="fa fa-user"></i> {{username | async}} </span>
-    <div ngbDropdownMenu>
-      <button (click)="userProfile()" ngbDropdownItem><i class="fa fa-pencil"></i> My Profile</button>
-      <button (click)="userManagement()" *ngIf="isAdmin | async" ngbDropdownItem><i class="fa fa-pencil"></i> User Management</button>
-      <button (click)="logout()" ngbDropdownItem><i class="fa fa-sign-out"></i> Logout</button>
-    </div>
+  <li class="nav-item">
+    <span class="nav-link" (click)="userManagement()" *ngIf="isAdmin | async" ngbDropdownItem><i class="fa fa-cog"></i> User Management </span>
+  </li>
+  <li class="nav-item">
+    <span class="nav-link" (click)="userProfile()"><i class="fa fa-user"></i> {{username | async}} </span>
+  </li>
+  <li class="nav-item"  (click)="logout()" >
+    <span class="nav-link"> <i class="nav-link" class="fa fa-sign-out"></i> Logout</span>
   </li>
 </ul>

@@ -21,6 +21,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
@@ -33,6 +34,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 
 
@@ -116,4 +118,11 @@ public interface DatatypeService {
 	public Set<Resource> getDependencies(Datatype datatype);
 
     List<Datatype> findByParentId(String id);
+
+	Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes);
+
+	DisplayElement convertDatatype(Datatype datatype);
+
+	Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry);
+
 }

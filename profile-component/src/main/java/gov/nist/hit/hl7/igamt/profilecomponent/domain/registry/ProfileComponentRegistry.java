@@ -26,5 +26,4 @@ public class ProfileComponentRegistry extends Registry {
     // TODO Auto-generated constructor stub
   }
 
-
 }

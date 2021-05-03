@@ -16,8 +16,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -322,4 +326,42 @@ public class ValuesetServiceImpl implements ValuesetService {
         Valueset valueSet = mongoTemplate.findOne(qry, Valueset.class);
         return valueSet;
     }
+
+    @Override
+    public Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry) {
+        Set<String> ids= registry.getChildren().stream().map(Link::getId).collect(Collectors.toSet());
+        List<Valueset> valueSets= this.findByIdIn(ids);
+        Set<DisplayElement> ret = new HashSet<DisplayElement>();
+        for(Valueset vs : valueSets) {
+            ret.add(convertValueSet(vs));
+        }
+        return ret;
+    }
+
+    @Override
+    public DisplayElement convertValueSet(Valueset valueset) {
+        DisplayElement displayElement= new DisplayElement();
+        displayElement.setId(valueset.getId());
+        displayElement.setDomainInfo(valueset.getDomainInfo());
+        displayElement.setDescription(valueset.getName());
+        displayElement.setDifferantial(valueset.getOrigin() !=null);
+        displayElement.setLeaf(false);
+        displayElement.setVariableName(valueset.getBindingIdentifier());
+        displayElement.setType(Type.VALUESET);
+        displayElement.setOrigin(valueset.getOrigin());
+        displayElement.setFlavor(valueset.isFlavor());
+        displayElement.setParentId(valueset.getParentId());
+        displayElement.setParentType(valueset.getParentType());
+        return displayElement;
+    }
+
+    @Override
+    public Set<DisplayElement> convertValueSets(Set<Valueset> valueSets) {
+        Set<DisplayElement> ret = new HashSet<DisplayElement>();
+        for(Valueset vs : valueSets) {
+            ret.add(this.convertValueSet(vs));
+        }
+        return ret;
+    }
+
 }

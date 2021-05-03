@@ -14,11 +14,11 @@ import {ResetPasswordRequest} from '../../../dam-framework/store/authentication/
   styleUrls: ['./user-management.component.css'],
 })
 export class UserManagementComponent implements OnInit {
-  users:any[];
+  users: any[];
   constructor(private http: HttpClient, private store: Store<any>) {
-    this.getAllUsers().subscribe(data => {
-      data.users.forEach(element => {
-        if(element.authorities.includes('ADMIN')) {
+    this.getAllUsers().subscribe((data) => {
+      data.users.forEach((element) => {
+        if (element.authorities.includes('ADMIN')) {
           element.admin = true;
         } else {
           element.admin = false;
@@ -33,12 +33,12 @@ export class UserManagementComponent implements OnInit {
   }
 
   rawChange(user: any): void {
-    let requestPara:any = {};
+    const requestPara: any = {};
     requestPara.username = user.username;
     requestPara.pending = user.pending;
     requestPara.admin = user.admin;
     console.log(requestPara);
-    this.http.post<any>('api/adminUpdate', requestPara).subscribe(data => {
+    this.http.post<any>('api/adminUpdate', requestPara).subscribe((data) => {
       console.log(data);
     });
   }

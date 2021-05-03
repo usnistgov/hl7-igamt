@@ -197,9 +197,7 @@ public class StructureDelta {
         this.children = children;
         boolean hasChange = children
                 .stream()
-                .filter((child) -> !child.getAction().equals(DeltaAction.UNCHANGED))
-                .findFirst()
-                .isPresent();
+                .anyMatch((child) -> !child.getAction().equals(DeltaAction.UNCHANGED));
         if(hasChange) {
             this.setAction(DeltaAction.UPDATED);
         }

@@ -67,6 +67,7 @@ public class ApplyChangeImpl implements ApplyChange {
 			PropertyType.LENGTHMIN,
 			PropertyType.CONFLENGTH,
 			PropertyType.DATATYPE,
+			PropertyType.SEGMENTREF,
 			PropertyType.LENGTHTYPE,
 			PropertyType.CONSTANTVALUE
 	));
@@ -155,6 +156,9 @@ public class ApplyChangeImpl implements ApplyChange {
 		} 
 		if (map.containsKey(PropertyType.SHORTDESCRIPTION)) {
 			resource.setShortDescription((String) map.get(PropertyType.SHORTDESCRIPTION).getPropertyValue());
+		}
+		if (map.containsKey(PropertyType.DESCRIPTION)) {
+			resource.setDescription((String) map.get(PropertyType.DESCRIPTION).getPropertyValue());
 		}
 	}
 
@@ -469,6 +473,7 @@ public class ApplyChangeImpl implements ApplyChange {
 				elm.setPredicate(cp);
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			throw new ApplyChangeException(change);
 		}
 	}

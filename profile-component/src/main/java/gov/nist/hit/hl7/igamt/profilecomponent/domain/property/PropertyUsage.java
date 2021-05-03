@@ -13,23 +13,25 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 /**
  *
  * @author Maxence Lefort on Feb 21, 2018.
  */
-public class PropertyUsage extends ItemProperty {
+public class PropertyUsage extends ItemProperty implements ApplyStructureElement {
 
   private Usage usage;
 
   public PropertyUsage(Usage usage) {
-    super(PropertyKey.USAGE);
+    super(PropertyType.USAGE);
     this.usage = usage;
   }
 
   public PropertyUsage() {
-    super(PropertyKey.USAGE);
+    super(PropertyType.USAGE);
   }
 
   public Usage getUsage() {
@@ -40,4 +42,8 @@ public class PropertyUsage extends ItemProperty {
     this.usage = usage;
   }
 
+  @Override
+  public void onStructureElement(StructureElement elm) {
+    elm.setUsage(usage);
+  }
 }

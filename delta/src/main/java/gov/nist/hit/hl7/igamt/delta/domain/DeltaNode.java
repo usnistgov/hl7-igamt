@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.delta.domain;
 
 import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 
 public class DeltaNode<T> {
     /**
@@ -14,6 +15,7 @@ public class DeltaNode<T> {
     private T previous;
     private T current;
     private DeltaAction action;
+    private ChangeReason changeReason;
 
     public T getPrevious() {
         return previous;
@@ -49,5 +51,13 @@ public class DeltaNode<T> {
 
     public void setAction(DeltaAction action) {
         this.action = action;
+    }
+
+    public ChangeReason getChangeReason() {
+        return changeReason;
+    }
+
+    public void setChangeReason(ChangeReason changeReason) {
+        this.changeReason = changeReason;
     }
 }

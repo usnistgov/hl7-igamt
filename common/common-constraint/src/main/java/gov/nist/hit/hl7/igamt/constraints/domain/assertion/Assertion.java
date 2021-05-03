@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({@JsonSubTypes.Type(value = SingleAssertion.class, name = "SIMPLE"),
     @JsonSubTypes.Type(value = IfThenAssertion.class, name = "IFTHEN"),
     @JsonSubTypes.Type(value = NotAssertion.class, name = "NOT"),
+    @JsonSubTypes.Type(value = SubContextAssertion.class, name = "SUBCONTEXT"),
     @JsonSubTypes.Type(value = OperatorAssertion.class, name = "ANDOR")})
 public abstract class Assertion {
   private AssertionMode mode;

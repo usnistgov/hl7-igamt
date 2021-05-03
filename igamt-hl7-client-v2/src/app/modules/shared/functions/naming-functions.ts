@@ -25,9 +25,8 @@ export function validConvention(scope: Scope, type: Type, ext: string, documentT
        } else if (ext.length > 8) {
          return {valid: false, error: 'User extension is too long'};
        }
+      }
      }
-     }
-
    }
    return initial;
 }

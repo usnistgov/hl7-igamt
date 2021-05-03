@@ -1,0 +1,16 @@
+<ng-container [ngSwitch]="nameType">
+  <div *ngSwitchCase="'NAME'">
+    <app-entity-bagde [type]="nodeType(node)" ></app-entity-bagde>
+    <span style="margin-left: 5px;"> {{node.data.position}}. </span>
+    <span style="margin-left: 5px;"> {{node.data.name}} </span>
+  </div>
+  <div *ngSwitchCase="'PATH'">
+    <ng-container *ngIf="value$ | async as locationInfo">
+      <app-entity-bagde [type]="locationInfo.pathInfo.type" ></app-entity-bagde>
+      {{locationInfo.name}}
+    </ng-container>
+  </div>
+</ng-container>
+
+
+

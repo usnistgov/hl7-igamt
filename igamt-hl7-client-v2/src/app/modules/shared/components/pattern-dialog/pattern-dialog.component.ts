@@ -2,7 +2,7 @@ import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Assertion, BinaryOperator, NaryOperator, Operator, Pattern, Statement, UnaryOperator } from './cs-pattern.domain';
+import { Assertion, BinaryOperator, IfThenOperator, LeafStatementType, NaryOperator, Operator, OperatorType, Pattern, Statement, StatementIdIndex, SubContextOperator, UnaryOperator } from './cs-pattern.domain';
 
 @Component({
   selector: 'app-pattern-dialog',
@@ -14,18 +14,20 @@ export class PatternDialogComponent implements OnInit {
 
   dragOp: Operator;
   dragSta: Statement;
-  pattern: Pattern = null;
-  backUp: Pattern;
+  assertion: Assertion;
+  backUp: Assertion;
   condition: boolean;
   operatorList = [
-    new BinaryOperator('D', 'OR', null, 0),
-    new BinaryOperator('D', 'AND', null, 0),
-    new BinaryOperator('D', 'XOR', null, 0),
-    new UnaryOperator('D', 'NOT', null, 0),
-    new NaryOperator('D', 'ALL', null, 0),
-    new NaryOperator('D', 'EXISTS', null, 0),
-    new BinaryOperator('D', 'IF-THEN', null, 0),
+    new BinaryOperator(LeafStatementType.DECLARATION, OperatorType.OR, null, 0),
+    new BinaryOperator(LeafStatementType.DECLARATION, OperatorType.AND, null, 0),
+    new BinaryOperator(LeafStatementType.DECLARATION, OperatorType.XOR, null, 0),
+    new UnaryOperator(LeafStatementType.DECLARATION, OperatorType.NOT, null, 0),
+    new SubContextOperator(LeafStatementType.DECLARATION, null, 0),
+    new NaryOperator(LeafStatementType.DECLARATION, OperatorType.ALL, null, 0),
+    new NaryOperator(LeafStatementType.DECLARATION, OperatorType.EXISTS, null, 0),
+    new IfThenOperator(LeafStatementType.DECLARATION, null, 0),
   ];
+  statementIndex = new StatementIdIndex();
 
   constructor(
     private sanitizer: DomSanitizer,
@@ -33,16 +35,21 @@ export class PatternDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any) {
     this.condition = data.condition;
     if (!data.pattern) {
-      this.initPattern();
+      this.initAssertion();
     } else {
-      this.pattern = data.pattern;
+      this.setAssertion(data.pattern.assertion);
     }
 
-    this.backUp = this.pattern.clone();
+    this.backUp = this.assertion.clone(null);
+  }
+
+  setAssertion(assertion: Assertion) {
+    this.assertion = assertion.clone(null);
+    this.statementIndex.alignIds(this.assertion);
   }
 
   reset() {
-    this.pattern = this.backUp.clone();
+    this.setAssertion(this.backUp);
   }
 
   cancel() {
@@ -50,18 +57,11 @@ export class PatternDialogComponent implements OnInit {
   }
 
   finish() {
-    const leafs = [];
-    if (this.pattern.assertion instanceof Statement) {
-      this.pattern.leafs = [this.pattern.assertion];
-    } else {
-      this.pattern.leafs = this.getLeafs(this.pattern.assertion as Operator);
-    }
-    this.dialogRef.close(this.pattern);
+    this.dialogRef.close(new Pattern(this.assertion));
   }
 
-  initPattern() {
-    const statement = new Statement(this.condition ? 'P' : 'D', 0, null, 0);
-    this.pattern = new Pattern(statement);
+  initAssertion() {
+    this.setAssertion(new Statement(this.condition ? LeafStatementType.PROPOSITION : LeafStatementType.DECLARATION, 0, null, 0));
   }
 
   ngOnInit() {
@@ -73,48 +73,46 @@ export class PatternDialogComponent implements OnInit {
   }
 
   add(node: NaryOperator) {
-    const statements = this.pattern.leafs;
-    const st = new Statement('D', statements.length, node, node.children.length);
-    statements.push(st);
+    const st = new Statement(LeafStatementType.DECLARATION, this.statementIndex.useNextAvailableId(), node, node.children.length);
     node.putOne(st, node.children.length);
   }
 
-  dragStartOp(event, op: Operator) {
+  dragStartOp(_, op: Operator) {
     this.dragOp = op;
   }
 
-  dragStartSta(event, sta: Statement) {
+  dragStartSta(_, sta: Statement) {
     this.dragSta = sta;
   }
 
-  dropOp(event, node: Statement) {
+  dropOp(event, dropZone: Statement) {
+    const dropNode = this.dragOp;
 
     // -- Can't drop an IF-THEN in a preposition
-    if (node.data.type === 'P' && this.dragOp.data.type === 'IF-THEN') {
+    if (dropZone.data.branch === LeafStatementType.PROPOSITION && dropNode.data.type === OperatorType.IF_THEN) {
       return;
     }
 
-    const that = node;
-    const positionInParent = that.data.position;
-    const op = this.dragOp.clone(that.parent);
-    op.data.branch = this.condition ? 'P' : node.data.type;
+    const positionInParent = dropZone.data.position;
+    const dropOp = this.dragOp.clone(dropZone.parent);
+    dropOp.data.branch = this.condition ? LeafStatementType.PROPOSITION : dropZone.data.branch;
+    const dropZoneClone = dropZone.clone(dropOp);
 
-    const cloneOfThis = that.clone(op);
-    if (op.data.type === 'IF-THEN') {
-      cloneOfThis.data.type = 'P';
+    if (dropOp.data.type === OperatorType.IF_THEN) {
+      dropZoneClone.data.branch = LeafStatementType.PROPOSITION;
     }
 
-    op.putOne(cloneOfThis, 0);
-    op.complete(this.pattern.leafs);
+    dropOp.putOne(dropZoneClone, 0);
+    dropOp.complete(this.statementIndex);
 
-    if (that.parent) {
-      that.parent.putOne(op, positionInParent);
+    if (dropZone.parent) {
+      dropZone.parent.putOne(dropOp, positionInParent);
     } else {
-      this.pattern.assertion = op;
+      this.assertion = dropOp;
     }
   }
 
-  dropSta(event, node: Assertion) {
+  dropSta(_, node: Assertion) {
     const destination_parent = node.parent;
     const d_i = node.data.position;
     const d = this.dragSta.clone(destination_parent);
@@ -128,46 +126,23 @@ export class PatternDialogComponent implements OnInit {
 
   remove(node: any) {
     if (node.parent) {
-      node.parent.children.splice(node.data.position);
-      this.removeLeafs(this.pattern, node);
-      node.parent.complete(this.pattern.leafs);
+      node.parent.resetOne(node.data.position, this.statementIndex);
+      this.statementIndex.alignIds(this.assertion);
     } else {
-      this.initPattern();
+      this.initAssertion();
     }
   }
 
-  dragEndOp(event) {
+  dragEndOp(_) {
     this.dragOp = null;
   }
 
-  dragEndSta(event) {
+  dragEndSta(_) {
     this.dragSta = null;
   }
 
   public html(str: string) {
     return this.sanitizer.bypassSecurityTrustHtml(str);
-  }
-
-  removeLeafs(pattern: Pattern, node: Operator) {
-    const rmLeafs = this.getLeafs(node);
-    for (const leaf of rmLeafs) {
-      const i = pattern.leafs.indexOf(leaf);
-      if (i !== -1) {
-        pattern.leafs.splice(i);
-      }
-    }
-  }
-
-  getLeafs(op: Operator) {
-    const leafs = [];
-    for (const child of op.children) {
-      if (child instanceof Statement) {
-        leafs.push(child);
-      } else {
-        leafs.push.apply(leafs, this.getLeafs(child));
-      }
-    }
-    return leafs;
   }
 
 }

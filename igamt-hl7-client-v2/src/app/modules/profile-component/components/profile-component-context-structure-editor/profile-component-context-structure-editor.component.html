@@ -1,0 +1,57 @@
+<ng-template *ngIf="profileComponentDisplay$ | async as pc" #headerTitle let-active let-defaultTemplate="defaultTemplate">
+  <div style="display: flex; align-items: center; justify-content: center;">
+    <h5 style="display: inline;" class="title-text">
+      <app-entity-bagde [type]="pc.type"></app-entity-bagde>
+      {{pc.variableName}}
+    </h5>
+    <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>
+    <ng-container *ngTemplateOutlet="defaultTemplate; context : { $implicit : active }"></ng-container>
+    <div [ngClass]="{ 'active-tree-view' : treeView }" style="display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+      padding: 3px 5px;
+      border: 1px solid darkgray;
+      ">
+      <p-inputSwitch [ngStyle]=" { height: '25px' }" [(ngModel)]="treeView"></p-inputSwitch>
+      <span style="margin-left: 10px;">Tree View (Read Only)</span>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #headerControls>
+  <button class="btn btn-success btn-sm" (click)="addItems()" *ngIf="!(viewOnly$ | async) && !treeView">
+    <i class="fa fa-plus"></i> Add Profile Component Items
+  </button>
+</ng-template>
+
+<strong>Binding Context Legend : </strong>
+<div style="display: flex; flex-direction: row; align-items: center;">
+  <div *ngFor="let item of legend" style="display: flex; flex-direction: row; align-items: center; margin-right: 5px;">
+    <app-binding-badge [context]="item.context"></app-binding-badge>
+    <span style="margin-left: 5px;">{{ item.label }}</span>
+  </div>
+</div>
+
+<app-profile-component-structure-tree
+  *ngIf="payload$ | async as value"
+  [columns]="columns"
+  [value]="value"
+  [treeView]="treeView"
+  [tree]="profileComponentItemList.nodes$ | async"
+  [refChangeMap]="profileComponentItemList.refChangeMap"
+  [nodes]="profileComponentItemList.itemList$ | async"
+  [resource]="resource$ | async"
+  [documentRef]="documentRef$ | async"
+  [derived]="derived$ | async"
+  [datatypes]="datatypes | async"
+  [segments]="segments | async"
+  [valueSets]="valueSets | async"
+  [repository]="repository"
+  [viewOnly]="viewOnly$ | async"
+  (changes)="changeItemProperty($event)"
+  (removeItem)="removeItem($event)"
+  [config]="config | async"
+  [bindingConfig]= "bindingConfig | async"
+  [username]="username | async">
+</app-profile-component-structure-tree>

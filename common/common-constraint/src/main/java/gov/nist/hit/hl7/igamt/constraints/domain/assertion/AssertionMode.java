@@ -16,5 +16,5 @@ package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
  *
  */
 public enum AssertionMode {
-  SIMPLE, IFTHEN, ANDOR, NOT
+  SIMPLE, IFTHEN, ANDOR, NOT, SUBCONTEXT
 }

@@ -3,9 +3,11 @@ import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { flatMap, map, take, tap } from 'rxjs/operators';
+import { IUsageOption } from 'src/app/modules/shared/components/hl7-v2-tree/columns/usage/usage.component';
 import { IHL7v2TreeNode, IResourceRef } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { LengthType } from 'src/app/modules/shared/constants/length-type.enum';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
+import { Usage } from 'src/app/modules/shared/constants/usage.enum';
 import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
 import { Hl7Config, IValueSetBindingConfigMap } from 'src/app/modules/shared/models/config.class';
 import { IGroup, ISegmentRef } from 'src/app/modules/shared/models/conformance-profile.interface';
@@ -72,11 +74,19 @@ export class Hl7V2TreeStructureComponent implements OnInit, OnDestroy {
   @Input()
   username: string;
   @Input()
-  config: Hl7Config;
+  set config(conf: Hl7Config) {
+    this._config = conf;
+    this.usageOptions = Hl7Config.getUsageOptions(conf.usages, false, false).filter((u) => u.value !== Usage.CAB);
+  }
+
+  get config() {
+    return this._config;
+  }
   resource$: Observable<IResource>;
   treeExpandedNodes: string[];
   resourceName: string;
   _resource: IResource;
+  _config: Hl7Config;
 
   @Input()
   set resource(resource: IResource) {
@@ -126,6 +136,7 @@ export class Hl7V2TreeStructureComponent implements OnInit, OnDestroy {
   context: IBindingContext;
   treeSubscriptions: Subscription[];
   nodeType = this.treeService.nodeType;
+  usageOptions: IUsageOption[];
 
   readonly trackBy = (index, item) => {
     return item.node.data.id;
@@ -217,7 +228,7 @@ export class Hl7V2TreeStructureComponent implements OnInit, OnDestroy {
             type: this.type,
             path: parent ? parent.data.id : undefined,
             size: nodes.length,
-            usages: Hl7Config.getUsageOptions(this.config.usages, false, false),
+            usages: this.usageOptions,
           },
         }).afterClosed();
       },
@@ -239,7 +250,7 @@ export class Hl7V2TreeStructureComponent implements OnInit, OnDestroy {
             type: parent ? parent.data.type : Type.MESSAGESTRUCT,
             path: parent ? parent.data.id : undefined,
             size: nodes.length,
-            usages: Hl7Config.getUsageOptions(this.config.usages, false, false),
+            usages: this.usageOptions,
           },
         }).afterClosed();
       },
@@ -261,7 +272,7 @@ export class Hl7V2TreeStructureComponent implements OnInit, OnDestroy {
             type: parent ? parent.data.type : Type.MESSAGESTRUCT,
             path: parent ? parent.data.id : undefined,
             size: nodes.length,
-            usages: Hl7Config.getUsageOptions(this.config.usages, false, false),
+            usages: this.usageOptions,
           },
         }).afterClosed();
       },

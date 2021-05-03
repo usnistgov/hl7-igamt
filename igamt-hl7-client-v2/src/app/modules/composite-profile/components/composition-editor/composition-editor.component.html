@@ -1,0 +1,85 @@
+<ng-template #headerTitle let-active let-defaultTemplate="defaultTemplate">
+  <div style="display: flex; align-items: center; justify-content: center;">
+    <h5 style="display: inline;" class="title-text">
+      <app-entity-bagde [type]="active.display.type"></app-entity-bagde>
+      {{active.display.variableName}}
+    </h5>
+    <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>
+    <h5 style="display: inline;" class="title-text"> {{active.editor.title}} </h5>
+  </div>
+</ng-template>
+
+
+<div style="display: flex; flex-direction: column; justify-content: space-between; padding: 20px">
+  <table class="table table-borderless">
+    <tbody>
+      <tr>
+        <td colspan="3" style="border: 1px solid #dee2e6;">
+          <div style="width: 100%; display: flex; align-items: center; justify-content: start;">
+            <strong style="margin-right: 50px;"> Core Profile </strong>
+            <app-display-section [element]="coreProfileDisplay$ | async"></app-display-section>
+          </div>
+        </td>
+      </tr>
+      <tr *ngIf="!(viewOnly$ | async)">
+        <td colspan="3" style="position: relative; padding: 0;">
+          <button class="btn btn-sm btn-primary profile-component-cell-btn plus-btn" (click)="addProfileComponent(0)">
+            <i class="fa fa-plus"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+    <tbody *ngIf="pcNodes$ | async as nodes" cdkDropList [cdkDropListData]="nodes" (cdkDropListDropped)="drop($event)" >
+      <ng-container *ngFor="let item of nodes; let i=index" >
+        <tr cdkDrag>
+          <div *cdkDragPreview style="padding: 10px; background-color: lightcoral; display: flex; align-items: center; justify-content: center;">
+            <app-entity-bagde [type]="item.data.type"></app-entity-bagde>
+            <span style="margin-left: 5px;">{{ item.data.variableName }}</span>
+          </div>
+          <td style="width: 50px;"></td>
+          <td colspan="2"
+            [ngClass]="{ 'back-0' : i % 2 === 0 }"
+            style="position: relative;
+            border-right: 1px solid #dee2e6;
+            border-left: 1px solid #dee2e6;
+            border-bottom: 1px solid #dee2e6;
+            border-top: 1px solid #dee2e6;">
+            <div style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; justify-content: center;">
+                <i class="fa fa-bars" style="font-size: 1.3em; margin-right: 50px;"></i>
+                <strong style="margin-right: 50px;"> Profile Component </strong>
+                <app-entity-bagde [type]="item.data.type"></app-entity-bagde>
+                <span style="margin-left: 5px;">{{ item.data.variableName }}</span>
+              </div>
+              <div *ngIf="!(viewOnly$ | async)">
+                <button class="btn btn-sm btn-primary" style="margin-right: 5px" (click)="toggleShow(i)">
+                  <i *ngIf="!show[i]" class="fa fa-eye"></i>
+                  <i *ngIf="show[i]" class="fa fa-eye-slash"></i>
+                </button>
+                <button class="btn btn-sm btn-danger" (click)="deleteByPosition(i)">
+                  <i class="fa fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+        <ng-container *ngIf="show[i]">
+          <tr *ngFor="let child of item.children" >
+            <td style="width: 50px;"></td>
+            <td style="width: 50px;"></td>
+            <td [ngClass]="{ 'back-0' : i % 2 === 0 }" style="border-right: 1px solid #dee2e6; border-left: 1px solid #dee2e6; border-bottom: 1px solid #dee2e6;" >
+              <app-display-section [element]="child.data" [hideDescription]="true"></app-display-section>
+            </td>
+          </tr>
+        </ng-container>
+        <tr *ngIf="!(viewOnly$ | async)">
+          <td colspan="3" style="position: relative; padding: 0;">
+            <button class="btn btn-sm btn-primary profile-component-cell-btn plus-btn" (click)="addProfileComponent(i + 1)">
+              <i class="fa fa-plus"></i>
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+
+  </table>

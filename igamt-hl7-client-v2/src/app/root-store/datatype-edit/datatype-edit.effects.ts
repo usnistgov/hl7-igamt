@@ -47,6 +47,9 @@ export class DatatypeEditEffects {
         flatMap((Datatype: IDatatype) => {
           return [
             new fromDAM.TurnOffLoader(),
+            new SetValue({
+              selected: Datatype,
+            }),
             new LoadDatatypeSuccess(Datatype),
           ];
         }),
@@ -57,18 +60,6 @@ export class DatatypeEditEffects {
           );
         }),
       );
-    }),
-  );
-
-  @Effect()
-  LoadDatatypeSuccess$ = this.actions$.pipe(
-    ofType(DatatypeEditActionTypes.LoadDatatypeSuccess),
-    flatMap((action: LoadDatatypeSuccess) => {
-      return [
-        new SetValue({
-          selected: action.Datatype,
-        }),
-      ];
     }),
   );
 

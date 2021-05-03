@@ -12,9 +12,25 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.service;
 
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
+import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContextNotFoundException;
+import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
+import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 
 /**
  * 
@@ -35,5 +51,24 @@ public interface ProfileComponentService {
   void delete(String compositeKey);
 
   public void removeCollection();
+
+  public List<ProfileComponent> findByIdIn(Set<String> ids);
+
+  ProfileComponent addChildrenFromDisplayElement(String id, List<DisplayElement> children);
+
+  ProfileComponentContext findContextById(String pcId, String contextId) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
+
+  Set<Resource> getDependencies(String pcId, String contextId) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
+
+  ProfileComponentContext updateContext(String pcId, String contextId, ProfileComponentContext context) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
+
+  Link cloneProfileComponent(String string, HashMap<RealKey, String> newKeys, Link l,
+      String username, Scope user, CloneMode cloneMode);
+
+  Set<RelationShip> collectDependencies(ProfileComponent pc);
+
+  ProfileComponent deleteContextById(String pcId, String contextId) throws ProfileComponentNotFoundException;
+
+  void applyChanges(ProfileComponent pc, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException;
 
 }
