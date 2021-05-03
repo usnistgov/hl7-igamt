@@ -5,6 +5,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
+import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,10 +26,17 @@ public class CoConstraintSpreadSheetParser {
 	private final int MIN_CARD = 1;
 	private final int MAX_CARD = 2;
 	private List<Integer> groupHeader = new ArrayList<>();
+	
+	private List<IgamtObjectError> errors = new ArrayList<IgamtObjectError>();
+
 
 	public boolean wrongHeaderStructure = false;
+	public boolean emptyCellInRow = false;
 
 	public CoConstraintSpreadSheetParser(Sheet sheet) {
+		boolean foundNarrative = false;
+		boolean foundIf = false;
+		boolean foundThen = false;
 		int numberMergedCells = sheet.getNumMergedRegions();
 		if(numberMergedCells == 0) {
 			this.wrongHeaderStructure = true;
@@ -49,10 +58,12 @@ public class CoConstraintSpreadSheetParser {
 					this.if_end = region.getLastColumn();
 					break;
 				case "THEN" :
+					foundThen = true;
 					this.then_start = region.getFirstColumn();
 					this.then_end = region.getLastColumn();
 					break;
 				case "NARRATIVES" :
+					foundNarrative = true;
 					this.narratives_start = region.getFirstColumn();
 					this.narratives_end = region.getLastColumn();
 					break;
@@ -61,11 +72,17 @@ public class CoConstraintSpreadSheetParser {
 				}
 			}
 		}
+		Row row1 = sheet.getRow(0);
+		int numberofcells1 = row1.getPhysicalNumberOfCells();
+		Row row2 = sheet.getRow(1);
+		int numberofcells2 = row2.getPhysicalNumberOfCells();
+		
+
 		if(this.then_end == 0) {
 			this.then_start = this.if_end+1;
 			this.then_end = this.if_end+1;
 		}
-		if(this.narratives_end == 0) {
+		if(this.narratives_end == 0 && this.then_end+1 < sheet.getRow(0).getPhysicalNumberOfCells() ) {
 			this.narratives_start = this.then_end+1;
 			this.narratives_end = this.then_end+1;
 		}
@@ -88,6 +105,7 @@ public class CoConstraintSpreadSheetParser {
 		}
 
 		// Parse Table
+		if(this.emptyCellInRow == false) {
 		for (int i = CC_ROW_START; i <= sheet.getLastRowNum(); i++) {
 
 			//Parse Group
@@ -102,13 +120,18 @@ public class CoConstraintSpreadSheetParser {
 				table.getParsedCoConstraints().add(coConstraint);
 			}
 		}
+		}
 		return table;
 	}
 
 	public Map<Integer, String> parseHeader(Row row, int start, int end) {
 		Map<Integer, String> header = new HashMap<>();
 		for(int i = start; i <= end; i++) {
-			header.put(i, row.getCell(i).getStringCellValue());
+			if(row.getCell(i) != null) {
+				header.put(i, row.getCell(i).getStringCellValue());
+			} else {
+//				this.emptyCellInRow = true;
+			}
 		}
 		return header;
 	}
