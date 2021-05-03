@@ -45,6 +45,9 @@ export class ConformanceProfileEditEffects {
         flatMap((conformanceProfile: IConformanceProfile) => {
           return [
             new fromDAM.TurnOffLoader(),
+            new SetValue({
+              selected: conformanceProfile,
+            }),
             new LoadConformanceProfileSuccess(conformanceProfile),
           ];
         }),
@@ -55,18 +58,6 @@ export class ConformanceProfileEditEffects {
           );
         }),
       );
-    }),
-  );
-
-  @Effect()
-  loadConformanceProfileSuccess$ = this.actions$.pipe(
-    ofType(ConformanceProfileEditActionTypes.LoadConformanceProfileSuccess),
-    flatMap((action: LoadConformanceProfileSuccess) => {
-      return [
-        new SetValue({
-          selected: action.payload,
-        }),
-      ];
     }),
   );
 

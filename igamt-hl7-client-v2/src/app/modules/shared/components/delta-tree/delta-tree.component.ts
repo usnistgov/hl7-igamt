@@ -1,8 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, EventEmitter } from '@angular/core';
 import { OverlayPanel } from 'primeng/overlaypanel';
 import { Type } from '../../constants/type.enum';
 import { DeltaAction, IDelta, IDeltaNode, IDeltaReference, IDeltaTreeNode } from '../../models/delta';
 import { ColumnOptions, HL7v2TreeColumnType, IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
+import { TreeNode } from 'angular-tree-component';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-delta-tree',
@@ -14,15 +17,23 @@ export class DeltaTreeComponent implements OnInit {
   columnTypes = HL7v2TreeColumnType;
   selectedPredicate: any;
   @Input()
-  compare: IDelta<IDeltaTreeNode[]>;
+  set compare(nodes: IDelta<IDeltaTreeNode[]>) {
+    this.delta$.next(nodes);
+  }
   cols: ColumnOptions;
   selectedColumns: ColumnOptions;
+  delta$: BehaviorSubject<IDelta<IDeltaTreeNode[]>>;
+  treeView$: BehaviorSubject<boolean>;
+  treeView: boolean = false;
+  nodes$: Observable<IDeltaTreeNode[]>;
+
   styleClasses = {
     unchanged: 'delta-unchanged',
     added: 'delta-added',
     deleted: 'delta-deleted',
     updated: 'delta-updated',
   };
+
 
   @Input()
   set columns(cols: HL7v2TreeColumnType[]) {
@@ -39,7 +50,39 @@ export class DeltaTreeComponent implements OnInit {
     return item.node.data.id;
   }
 
-  constructor() { }
+  constructor() {
+    this.treeView$ = new BehaviorSubject(this.treeView);
+    this.delta$ = new BehaviorSubject(undefined);
+
+    this.nodes$ = combineLatest(
+      this.delta$,
+      this.treeView$.asObservable(),
+    ).pipe(
+      map(([elms, treeView]) => {
+        return treeView ? elms.delta : this.filter(elms.delta);
+      })
+    )
+  }
+
+  toggleTreeView(val) {
+    this.treeView$.next(val);
+  }
+
+  filter(tree: IDeltaTreeNode[]): IDeltaTreeNode[] {
+    if (tree) {
+      return tree.filter((node) => {
+        return node.data.action !== 'UNCHANGED';
+      }).map((node) => {
+        return {
+          ...node,
+          children: this.filter(node.children),
+          expanded: true,
+        };
+      });
+    } else {
+      return [];
+    }
+  }
 
   isApplicable(node: IDeltaNode<string>): boolean {
     return node && (node.current !== node.previous || node.current !== 'NA');

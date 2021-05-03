@@ -50,6 +50,9 @@ export class SegmentEditEffects {
         flatMap((segment: ISegment) => {
           return [
             new fromDAM.TurnOffLoader(),
+            new SetValue({
+              selected: segment,
+            }),
             new LoadSegmentSuccess(segment),
           ];
         }),
@@ -63,17 +66,6 @@ export class SegmentEditEffects {
     }),
   );
 
-  @Effect()
-  LoadSegmentSuccess$ = this.actions$.pipe(
-    ofType(SegmentEditActionTypes.LoadSegmentSuccess),
-    flatMap((action: LoadSegmentSuccess) => {
-      return [
-        new SetValue({
-          selected: action.segment,
-        }),
-      ];
-    }),
-  );
 
   @Effect()
   LoadSegmentFailure$ = this.actions$.pipe(

@@ -13,6 +13,7 @@ package gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement;
 
 import java.util.Arrays;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.text.StringEscapeUtils;
 
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
@@ -98,7 +99,8 @@ public class Complement {
 	public String getValue() {
 		return value;
 	}
-	
+
+	@JsonIgnore
 	public String getEscapeXml() {
 		return StringEscapeUtils.escapeXml11(value);
 	}

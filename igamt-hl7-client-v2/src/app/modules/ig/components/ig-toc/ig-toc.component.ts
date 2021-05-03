@@ -167,13 +167,9 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   getElementUrl(elm): string {
     const type = elm.type.toLowerCase();
-    const path = './' + type + '/' + elm.id;
-    if (!this.delta || !elm.origin) {
-      return path;
-    } else {
-      return path + '/' + 'delta';
-    }
+    return './' + type + '/' + elm.id;
   }
+
   scroll(type: string) {
     if (type === 'messages') {
       this.cpLib.nativeElement.scrollIntoView();

@@ -25,7 +25,6 @@ import gov.nist.diff.service.DeltaProcessor;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -43,7 +42,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class DeltaServiceImpl implements DeltaService {
@@ -83,14 +81,14 @@ public class DeltaServiceImpl implements DeltaService {
       
       DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
       DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
-      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
       if (target instanceof DateTimeDatatype && source instanceof DateTimeDatatype) {
         
         List<StructureDelta> structure = entityDeltaService.compareDateAndTimeDatatypes((DateTimeDatatype) source,(DateTimeDatatype) target);
         return new Delta(sourceInfo, targetInfo, structure,conformanceStatements);
       } else {
-        List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+        List<StructureDelta> structure = entityDeltaService.compareDatatype(sourceDisplay, targetDisplay);
         return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
       } 
 
@@ -106,8 +104,8 @@ public class DeltaServiceImpl implements DeltaService {
       DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), source.getExt(), source.getDescription(), source.getId());
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), target.getExt(), target.getDescription(), target.getId());
 
-      List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
-      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+      List<StructureDelta> structure = entityDeltaService.compareSegment(sourceDisplay, targetDisplay);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
       return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
 
@@ -133,8 +131,8 @@ public class DeltaServiceImpl implements DeltaService {
       DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), null, source.getDescription(), source.getId());
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), null, target.getDescription(), target.getId());
 
-      List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
-      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+      List<StructureDelta> structure = entityDeltaService.compareConformanceProfile(sourceDisplay, targetDisplay);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
       List<CoConstraintBinding> sourceBindings = source.getCoConstraintsBindings() != null ? source.getCoConstraintsBindings() : new ArrayList<>();
       List<CoConstraintBinding> targetBindings = target.getCoConstraintsBindings() != null ? target.getCoConstraintsBindings() : new ArrayList<>();
@@ -166,7 +164,7 @@ public class DeltaServiceImpl implements DeltaService {
       DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), null, source.getDescription(), source.getId());
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), null, target.getDescription(), target.getId());
 
-      ValuesetDelta valuesetDelta = entityDeltaService.valueset(source, target);
+      ValuesetDelta valuesetDelta = entityDeltaService.compareValueSet(source, target);
 
       return new Delta(sourceInfo, targetInfo, valuesetDelta);
     }
@@ -288,7 +286,7 @@ public class DeltaServiceImpl implements DeltaService {
 
       DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
       DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
-      List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+      List<StructureDelta> structure = entityDeltaService.compareDatatype(sourceDisplay, targetDisplay);
       return structure;
 
     } else if(type.equals(Type.SEGMENT)) {
@@ -298,7 +296,7 @@ public class DeltaServiceImpl implements DeltaService {
 
       SegmentStructureDisplay sourceDisplay = this.segmentService.convertDomainToDisplayStructure(source, true);
       SegmentStructureDisplay targetDisplay = this.segmentService.convertDomainToDisplayStructure(target, true);
-      List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
+      List<StructureDelta> structure = entityDeltaService.compareSegment(sourceDisplay, targetDisplay);
 
       return structure;
 
@@ -310,7 +308,7 @@ public class DeltaServiceImpl implements DeltaService {
       ConformanceProfileStructureDisplay sourceDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(source, true);
       ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
 
-      List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
+      List<StructureDelta> structure = entityDeltaService.compareConformanceProfile(sourceDisplay, targetDisplay);
       return structure;
     }
     return null;
@@ -397,8 +395,8 @@ public class DeltaServiceImpl implements DeltaService {
 
         ConformanceProfileStructureDisplay sourceDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(source, true);
         ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
-        List<ConformanceStatementDelta> cfs = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
-        List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
+        List<ConformanceStatementDelta> cfs = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+        List<StructureDelta> structure = entityDeltaService.compareConformanceProfile(sourceDisplay, targetDisplay);
 
         List<CoConstraintBinding> sourceBindings = source.getCoConstraintsBindings() != null ? source.getCoConstraintsBindings() : new ArrayList<>();
         List<CoConstraintBinding> targetBindings = target.getCoConstraintsBindings() != null ? target.getCoConstraintsBindings() : new ArrayList<>();
@@ -422,9 +420,9 @@ public class DeltaServiceImpl implements DeltaService {
         if (target instanceof DateTimeDatatype && source instanceof DateTimeDatatype) {
            structure = entityDeltaService.compareDateAndTimeDatatypes((DateTimeDatatype) source,(DateTimeDatatype) target);
         }else {
-           structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+           structure = entityDeltaService.compareDatatype(sourceDisplay, targetDisplay);
         }
-        List<ConformanceStatementDelta> cfs = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+        List<ConformanceStatementDelta> cfs = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
         DisplayElement elm= this.displayInfoService.convertDatatype(target);
         elm.setDelta(summarize(structure, cfs, null));
         return elm;
@@ -437,9 +435,9 @@ public class DeltaServiceImpl implements DeltaService {
 
         SegmentStructureDisplay sourceDisplay = this.segmentService.convertDomainToDisplayStructure(source, true);
         SegmentStructureDisplay targetDisplay = this.segmentService.convertDomainToDisplayStructure(target, true);
-        List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
+        List<StructureDelta> structure = entityDeltaService.compareSegment(sourceDisplay, targetDisplay);
         DisplayElement elm= this.displayInfoService.convertSegment(target);
-        List<ConformanceStatementDelta> cfs = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+        List<ConformanceStatementDelta> cfs = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
         elm.setDelta(summarize(structure,cfs, null));
         return elm;
       }
@@ -451,7 +449,7 @@ public class DeltaServiceImpl implements DeltaService {
         DisplayElement elm= this.displayInfoService.convertValueSet(target);
         
         
-        ValuesetDelta valuesetDelta = entityDeltaService.compareValuesetMetadata(source, target);
+        ValuesetDelta valuesetDelta = entityDeltaService.compareValueSetMetadata(source, target);
         
         if(valuesetDelta.getAction() !=null && !valuesetDelta.getAction().equals(DeltaAction.UPDATED)) {
           List<CodeDelta> codeDeltas = entityDeltaService.compareCodes(source.getCodes(), target.getCodes());
@@ -517,8 +515,8 @@ public class DeltaServiceImpl implements DeltaService {
       Datatype source = this.datatypeService.findById(target.getOrigin());
       DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
       DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
-      List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
-      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+      List<StructureDelta> structure = entityDeltaService.compareDatatype(sourceDisplay, targetDisplay);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
       ResourceDelta rd = new ResourceDelta();
       rd.setStructureDelta(structure);
       rd.setConformanceStatementDelta(conformanceStatements);
@@ -529,9 +527,9 @@ public class DeltaServiceImpl implements DeltaService {
       Segment source = this.segmentService.findById(target.getOrigin());
       SegmentStructureDisplay sourceDisplay = this.segmentService.convertDomainToDisplayStructure(source, true);
       SegmentStructureDisplay targetDisplay = this.segmentService.convertDomainToDisplayStructure(target, true);
-      List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
+      List<StructureDelta> structure = entityDeltaService.compareSegment(sourceDisplay, targetDisplay);
 
-      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
       ResourceDelta rd = new ResourceDelta();
       rd.setStructureDelta(structure);
@@ -545,8 +543,8 @@ public class DeltaServiceImpl implements DeltaService {
       ConformanceProfileStructureDisplay sourceDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(source, true);
       ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
 
-      List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
-      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.conformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+      List<StructureDelta> structure = entityDeltaService.compareConformanceProfile(sourceDisplay, targetDisplay);
+      List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
       List<CoConstraintBinding> sourceBindings = source.getCoConstraintsBindings() != null ? source.getCoConstraintsBindings() : new ArrayList<>();
       List<CoConstraintBinding> targetBindings = target.getCoConstraintsBindings() != null ? target.getCoConstraintsBindings() : new ArrayList<>();
@@ -568,7 +566,7 @@ public class DeltaServiceImpl implements DeltaService {
 @Override
 public ValuesetDelta valuesetDelta(Valueset valueset) {
 	Valueset source = this.valuesetService.findById(valueset.getOrigin());
-	ValuesetDelta vsDelta = entityDeltaService.valueset(source, valueset);
+	ValuesetDelta vsDelta = entityDeltaService.compareValueSet(source, valueset);
 	return vsDelta;
 }
   

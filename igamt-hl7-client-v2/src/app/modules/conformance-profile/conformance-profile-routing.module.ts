@@ -14,6 +14,7 @@ import { DeltaEditorComponent } from './components/delta-editor/delta-editor.com
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
+import { DeltaRouteGuard } from '../shared/guards/delta-route.guard';
 
 const routes: Routes = [
   {
@@ -29,8 +30,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'structure',
         pathMatch: 'full',
+        canActivate: [DeltaRouteGuard]
       },
       {
         path: 'conformance-statement',
@@ -51,7 +52,7 @@ const routes: Routes = [
           idKey: 'conformanceProfileId',
         },
       },
-      {path: 'cross-references'},
+      { path: 'cross-references' },
       {
         path: 'co-constraint',
         component: CoConstraintsBindingEditorComponent,

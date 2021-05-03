@@ -48,6 +48,9 @@ export class ValueSetEditEffects {
             flatMap((valueSet: IValueSet) => {
               return [
                 new fromDAM.TurnOffLoader(),
+                new SetValue({
+                  selected: valueSet,
+                }),
                 new LoadValueSetSuccess(valueSet),
               ];
             }),
@@ -62,17 +65,7 @@ export class ValueSetEditEffects {
       );
     }),
   );
-  @Effect()
-  loadValueSetSuccess = this.actions$.pipe(
-    ofType(ValueSetEditActionTypes.LoadValueSetSuccess),
-    flatMap((action: LoadValueSetSuccess) => {
-      return [
-        new SetValue({
-          selected: action.valueSet,
-        }),
-      ];
-    }),
-  );
+
 
   @Effect()
   loadValueSetFailure$ = this.actions$.pipe(

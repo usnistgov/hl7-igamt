@@ -29,7 +29,6 @@ export abstract class EntityDeltaEditorComponent extends AbstractEditorComponent
   delta$: Observable<IDelta<IDeltaTreeNode[]>>;
   activeTab: EntityDeltaNavigationPills;
   TABS = EntityDeltaNavigationPills;
-
   public resource: Observable<IResource>;
   public segments: Observable<IDisplayElement[]>;
   public datatypes: Observable<IDisplayElement[]>;
@@ -54,7 +53,6 @@ export abstract class EntityDeltaEditorComponent extends AbstractEditorComponent
         if (delta) {
           return {
             ...delta,
-            delta: this.prepare(delta.delta),
             coConstraintBindings: this.filterBindings(delta.coConstraintBindings),
           };
         }
@@ -107,22 +105,6 @@ export abstract class EntityDeltaEditorComponent extends AbstractEditorComponent
         return cgb;
       }
     });
-  }
-
-  prepare(tree: TreeNode[]) {
-    if (tree) {
-      return tree.filter((node) => {
-        return node.data.action !== 'UNCHANGED';
-      }).map((node) => {
-        return {
-          ...node,
-          children: this.prepare(node.children),
-          expanded: true,
-        };
-      });
-    } else {
-      return [];
-    }
   }
 
   get type(): Type {

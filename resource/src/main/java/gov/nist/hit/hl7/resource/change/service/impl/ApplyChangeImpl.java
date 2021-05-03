@@ -473,6 +473,7 @@ public class ApplyChangeImpl implements ApplyChange {
 				elm.setPredicate(cp);
 			}
 		} catch (IOException e) {
+			e.printStackTrace();
 			throw new ApplyChangeException(change);
 		}
 	}
