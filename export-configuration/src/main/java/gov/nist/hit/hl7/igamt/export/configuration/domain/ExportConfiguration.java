@@ -46,12 +46,13 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.PositionAndPresence;
 public class ExportConfiguration {
 
   private String configName;
-  private Type type;
+
+  private ExportType type;
   @Id
   private String id;
   private boolean original; // true if it is the first time config
-  
-//  private DatatypeLibraryExportConfiguration datatypeLibraryExportConfiguration;
+
+  //  private DatatypeLibraryExportConfiguration datatypeLibraryExportConfiguration;
   private DatatypeExportConfiguration datatypeExportConfiguration;
   private SegmentExportConfiguration segmentExportConfiguration;
   private ConformanceProfileExportConfiguration conformamceProfileExportConfiguration;
@@ -128,26 +129,26 @@ public class ExportConfiguration {
     return exportConfiguration;
   }
 
-  public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue, Type type) {
+  public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue, ExportType type) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();
-    
+
     // Setting IgGeneralConfiguration
     IgGeneralConfiguration igGeneralConfiguration = new IgGeneralConfiguration();
     igGeneralConfiguration.setNotMessageInfrastructure(false);
     defaultConfiguration.setIgGeneralConfiguration(igGeneralConfiguration);
-    
+
     // Setting structureNarrative
-	   StructuredNarrative structuredNarrative = new StructuredNarrative();
-	   structuredNarrative.setComments(true);
-	   structuredNarrative.setDefinitionText(true);
-	   structuredNarrative.setPostDefinition(true);
-	   structuredNarrative.setPreDefinition(true);
-    
+    StructuredNarrative structuredNarrative = new StructuredNarrative();
+    structuredNarrative.setComments(true);
+    structuredNarrative.setDefinitionText(true);
+    structuredNarrative.setPostDefinition(true);
+    structuredNarrative.setPreDefinition(true);
+
     //setting font
-     ExportFontConfiguration exportFontConfiguration = ExportFontConfiguration.getDefault();
-     defaultConfiguration.setExportFontConfiguration(exportFontConfiguration);
-     
-     
+    ExportFontConfiguration exportFontConfiguration = ExportFontConfiguration.getDefault();
+    defaultConfiguration.setExportFontConfiguration(exportFontConfiguration);
+
+
     defaultConfiguration.setType(type);
     defaultConfiguration.setConfigName("");
     defaultConfiguration.setOriginal(false);
@@ -161,12 +162,12 @@ public class ExportConfiguration {
     defaultConfiguration.setIncludeValuesetsTable(true);
     defaultConfiguration.setIncludeCompositeProfileTable(true);
     defaultConfiguration.setIncludeProfileComponentTable(true);
-//    // CoConstraints config
-//    CoConstraintExportMode coConstraintExportMode;
-//    coConstraintExportMode.setCompact(true);
-//    coConstraintExportMode.setVerbose(false);
-//    coConstraintExportMode.setNoExport(false);
-//    defaultConfiguration.setCoConstraintExportMode(coConstraintExportMode);
+    //    // CoConstraints config
+    //    CoConstraintExportMode coConstraintExportMode;
+    //    coConstraintExportMode.setCompact(true);
+    //    coConstraintExportMode.setVerbose(false);
+    //    coConstraintExportMode.setNoExport(false);
+    //    defaultConfiguration.setCoConstraintExportMode(coConstraintExportMode);
     // Default Usages
     UsageConfiguration displayAll = new UsageConfiguration();
     UsageConfiguration displaySelectives = new UsageConfiguration();
@@ -348,8 +349,8 @@ public class ExportConfiguration {
     valueSetExportConfiguration.setDeltaMode(true);
     valueSetExportConfiguration.setDeltaConfig(deltaConfiguration);
     valueSetExportConfiguration.setComments(false);
-    
-//    defaultConfiguration.setDatatypeLibraryExportConfiguration(datatypeLibraryExportConfiguration);
+
+    //    defaultConfiguration.setDatatypeLibraryExportConfiguration(datatypeLibraryExportConfiguration);
     defaultConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
     defaultConfiguration.setConformamceProfileExportConfiguration(conformanceProfileExportConfiguration);
     defaultConfiguration.setValueSetExportConfiguration(valueSetExportConfiguration);
@@ -357,7 +358,7 @@ public class ExportConfiguration {
     defaultConfiguration.setAbstractDomainExportConfiguration(abstractDomainExportConfiguration);
     defaultConfiguration.setDeltaMode(true);
     defaultConfiguration.setDeltaConfig(deltaConfiguration);
-    
+
 
 
     return defaultConfiguration;
@@ -523,16 +524,16 @@ public class ExportConfiguration {
 
 
 
-//  public DatatypeLibraryExportConfiguration getDatatypeLibraryExportConfiguration() {
-//	return datatypeLibraryExportConfiguration;
-//}
-//
-//public void setDatatypeLibraryExportConfiguration(
-//		DatatypeLibraryExportConfiguration datatypeLibraryExportConfiguration) {
-//	this.datatypeLibraryExportConfiguration = datatypeLibraryExportConfiguration;
-//}
+  //  public DatatypeLibraryExportConfiguration getDatatypeLibraryExportConfiguration() {
+  //	return datatypeLibraryExportConfiguration;
+  //}
+  //
+  //public void setDatatypeLibraryExportConfiguration(
+  //		DatatypeLibraryExportConfiguration datatypeLibraryExportConfiguration) {
+  //	this.datatypeLibraryExportConfiguration = datatypeLibraryExportConfiguration;
+  //}
 
-public void setUnboundCustom(boolean unboundCustom) {
+  public void setUnboundCustom(boolean unboundCustom) {
     this.unboundCustom = unboundCustom;
   }
 
@@ -997,31 +998,30 @@ public void setUnboundCustom(boolean unboundCustom) {
     this.original = original;
   }
 
-public Type getType() {
-	return type;
-}
+  public ExportFontConfiguration getExportFontConfiguration() {
+    return exportFontConfiguration;
+  }
 
-public void setType(Type type) {
-	this.type = type;
-}
+  public void setExportFontConfiguration(ExportFontConfiguration exportFontConfiguration) {
+    this.exportFontConfiguration = exportFontConfiguration;
+  }
 
-public ExportFontConfiguration getExportFontConfiguration() {
-	return exportFontConfiguration;
-}
+  public IgGeneralConfiguration getIgGeneralConfiguration() {
+    return igGeneralConfiguration;
+  }
 
-public void setExportFontConfiguration(ExportFontConfiguration exportFontConfiguration) {
-	this.exportFontConfiguration = exportFontConfiguration;
-}
+  public void setIgGeneralConfiguration(IgGeneralConfiguration igGeneralConfiguration) {
+    this.igGeneralConfiguration = igGeneralConfiguration;
+  }
 
-public IgGeneralConfiguration getIgGeneralConfiguration() {
-	return igGeneralConfiguration;
-}
+  public ExportType getType() {
+    return type;
+  }
 
-public void setIgGeneralConfiguration(IgGeneralConfiguration igGeneralConfiguration) {
-	this.igGeneralConfiguration = igGeneralConfiguration;
-}
-  
+  public void setType(ExportType type) {
+    this.type = type;
+  }
 
-  
+
 
 }

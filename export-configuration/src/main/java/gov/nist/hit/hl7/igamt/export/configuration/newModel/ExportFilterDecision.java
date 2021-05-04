@@ -10,6 +10,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 public class ExportFilterDecision {
 
 
+
   //	private Map<String, Boolean> datatypesLibraryFilterMap = new HashMap<String, Boolean>();
   //	private Map<String, DatatypeLibraryExportConfiguration> OveriddedDatatypesLibraryMap = new HashMap<String, DatatypeLibraryExportConfiguration>();
   private Map<String, Boolean> datatypesFilterMap = new HashMap<String, Boolean>();
@@ -23,6 +24,12 @@ public class ExportFilterDecision {
 
   private Map<String, Boolean> valueSetFilterMap = new HashMap<String, Boolean>();
   private Map<String, ValueSetExportConfiguration> OveriddedValueSetMap = new HashMap<String, ValueSetExportConfiguration>();
+  
+  private Map<String, Boolean> ProfileComponentFilterMap = new HashMap<String, Boolean>();
+  private Map<String, ProfileComponentExportConfiguration> OveriddedProfileComponentSetMap = new HashMap<String, ProfileComponentExportConfiguration>();
+  
+  private Map<String, Boolean> compositeProfileFilterMap = new HashMap<String, Boolean>();
+  private Map<String, CompositeProfileExportConfiguration> OveriddedCompositeProfileMap = new HashMap<String, CompositeProfileExportConfiguration>();
 
   boolean delta;
   private Map<String, Boolean> added = new HashMap<String, Boolean>();
@@ -144,6 +151,41 @@ public class ExportFilterDecision {
   public void setOveriddedValueSetMap(Map<String, ValueSetExportConfiguration> overiddedValueSetMap) {
     OveriddedValueSetMap = overiddedValueSetMap;
   }
+  
+  public Map<String, Boolean> getProfileComponentFilterMap() {
+    return ProfileComponentFilterMap;
+  }
+
+  public void setProfileComponentFilterMap(Map<String, Boolean> profileComponentFilterMap) {
+    ProfileComponentFilterMap = profileComponentFilterMap;
+  }
+
+  public Map<String, ProfileComponentExportConfiguration> getOveriddedProfileComponentSetMap() {
+    return OveriddedProfileComponentSetMap;
+  }
+
+  public void setOveriddedProfileComponentSetMap(
+      Map<String, ProfileComponentExportConfiguration> overiddedProfileComponentSetMap) {
+    OveriddedProfileComponentSetMap = overiddedProfileComponentSetMap;
+  }
+
+  public Map<String, Boolean> getCompositeProfileFilterMap() {
+    return compositeProfileFilterMap;
+  }
+
+  public void setCompositeProfileFilterMap(Map<String, Boolean> compositeProfileFilterMap) {
+    this.compositeProfileFilterMap = compositeProfileFilterMap;
+  }
+
+  public Map<String, CompositeProfileExportConfiguration> getOveriddedCompositeProfileMap() {
+    return OveriddedCompositeProfileMap;
+  }
+
+  public void setOveriddedCompositeProfileMap(
+      Map<String, CompositeProfileExportConfiguration> overiddedCompositeProfileMap) {
+    OveriddedCompositeProfileMap = overiddedCompositeProfileMap;
+  }
+  
 
   public Map<String, Boolean> getAdded() {
     return added;

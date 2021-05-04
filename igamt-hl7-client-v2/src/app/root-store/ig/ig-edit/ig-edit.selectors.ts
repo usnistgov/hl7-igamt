@@ -214,15 +214,19 @@ export const selectProfileTree = createSelector(
   selectSegmentsNodes,
   selectDatatypesNodes,
   selectValueSetsNodes,
-  selectCoConstraintGroupNodes, (
+  selectCoConstraintGroupNodes,
+  selectProfileComponentsNodes,
+  selectCompositeProfilesNodes, (
     structure: IContent[],
     messageNodes: IDisplayElement[],
     segmentsNodes: IDisplayElement[],
     datatypesNodes: IDisplayElement[],
     valueSetsNodes: IDisplayElement[],
     coConstraintGroupNodes: IDisplayElement[],
+    profileComponentsNodes: IDisplayElement[],
+    compositeProfilesNodes: IDisplayElement[],
 ) => {
-  return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes);
+  return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, profileComponentsNodes, compositeProfilesNodes);
 },
 );
 

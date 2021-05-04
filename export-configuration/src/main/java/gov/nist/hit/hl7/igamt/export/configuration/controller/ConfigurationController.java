@@ -14,12 +14,7 @@
 package gov.nist.hit.hl7.igamt.export.configuration.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import javax.naming.OperationNotSupportedException;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -30,26 +25,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.export.configuration.display.ExportFontConfigurationDisplay;
-import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.CompositeProfileTableOptionsDisplay;
-import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.ConformanceProfileTableOptionsDisplay;
-import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.DatatypeTableOptionsDisplay;
-import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.ProfileComponentTableOptionsDisplay;
-import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.SegmentTableOptionsDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.TableOptionsDisplay;
-import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.ValuesetTableOptionsDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportConfigurationForFrontEnd;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontConfigurationService;
-
-
 
 
 /**
@@ -103,12 +89,7 @@ public class ConfigurationController {
   public @ResponseBody List<ExportConfigurationForFrontEnd> getAllGeneralConfigurations( Authentication authentication,
 			@PathVariable("type") String type) {
     String username =  authentication.getPrincipal().toString();
-    Type docType = Type.IGDOCUMENT;
-    if(type.equals("IGDOCUMENT")) {
-     docType = Type.IGDOCUMENT;
-    } else if(type.equals("DATATYPELIBRARY")) {
-         docType = Type.DATATYPELIBRARY;
-    }
+    ExportType docType = ExportType.fromString(type);
     List<ExportConfiguration> configList = new ArrayList<ExportConfiguration>();
     List<ExportConfiguration> original = exportConfigurationRepository.findByOriginalAndType(true, docType);
     if(original !=null ) {
@@ -262,7 +243,7 @@ public class ConfigurationController {
     }
   }
 
-  private ExportConfiguration findExportConfigurationServiceByAuthentication(Type type) {
+  private ExportConfiguration findExportConfigurationServiceByAuthentication(ExportType type) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       return this.findExportConfigurationServiceByAuthentication(authentication);

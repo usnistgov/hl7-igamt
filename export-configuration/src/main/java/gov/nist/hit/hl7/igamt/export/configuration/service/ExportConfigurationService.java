@@ -17,9 +17,8 @@ import java.util.List;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 
 /**
  *
@@ -29,18 +28,18 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 public interface ExportConfigurationService {
 
   public ExportConfiguration getExportConfiguration(String id);
-  public ExportConfiguration getExportConfigurationWithType(String id, Type type);
+  public ExportConfiguration getExportConfigurationWithType(String id, ExportType type);
 
   public List<ExportConfiguration> getAllExportConfiguration(String username);
 //  public List<ExportConfiguration> getAllExportConfigurationWithType(String username, String type);
-  public List<ExportConfiguration> getAllExportConfigurationWithType(String username, Type type);
+  public List<ExportConfiguration> getAllExportConfigurationWithType(String username, ExportType type);
   public ExportConfiguration save(ExportConfiguration exportConfiguration, Authentication authentication);
   public void delete(ExportConfiguration exportConfiguration);
   public void deleteById(String id);
   public ExportConfiguration create(String username, String type);
   public ExportConfiguration getDefaultConfig(boolean defaultConfig, String username);
   public ExportConfiguration getOriginalConfig(boolean isOriginal);
-  public ExportConfiguration getOriginalConfigWithType(boolean isOriginal,Type type);
+  public ExportConfiguration getOriginalConfigWithType(boolean isOriginal,ExportType type);
 
   
   /**

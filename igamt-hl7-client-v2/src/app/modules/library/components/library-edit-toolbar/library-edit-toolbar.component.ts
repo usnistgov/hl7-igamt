@@ -7,6 +7,7 @@ import {PublishLibrary, ToggleDeltaFailure} from 'src/app/root-store/library/lib
 import * as fromLibrayEdit from 'src/app/root-store/library/library-edit/library-edit.index';
 import { selectExternalTools } from '../../../../root-store/config/config.reducer';
 import { ExportDialogComponent } from '../../../export-configuration/components/export-dialog/export-dialog.component';
+import {ExportTypes} from '../../../export-configuration/models/export-types';
 import { ExportConfigurationService } from '../../../export-configuration/services/export-configuration.service';
 import {IDocumentDisplayInfo} from '../../../ig/models/ig/ig-document.class';
 import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
@@ -47,7 +48,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
   exportWord() {
     combineLatest(
       this.getLibId(),
-      this.exportConfigurationService.getAllExportConfigurations(Type.DATATYPELIBRARY)).pipe(
+      this.exportConfigurationService.getAllExportConfigurations(ExportTypes.DATATYPELIBRARY)).pipe(
         take(1),
         map(([igId, configurations]) => {
           console.log(igId);
@@ -78,7 +79,7 @@ export class LibraryEditToolbarComponent implements OnInit, OnDestroy {
   exportHTML() {
     combineLatest(
       this.getLibId(),
-      this.exportConfigurationService.getAllExportConfigurations(Type.DATATYPELIBRARY)).pipe(
+      this.exportConfigurationService.getAllExportConfigurations(ExportTypes.DATATYPELIBRARY)).pipe(
         take(1),
         map(([igId, configurations]) => {
           const dialogRef = this.dialog.open(ExportDialogComponent, {
