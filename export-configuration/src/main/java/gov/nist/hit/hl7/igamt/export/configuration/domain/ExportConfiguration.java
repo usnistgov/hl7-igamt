@@ -36,6 +36,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.ValueSetExportConfig
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.IgGeneralConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.PositionAndPresence;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ProfileComponentExportConfiguration;
 
 
 /**
@@ -61,6 +62,7 @@ public class ExportConfiguration {
   private DocumentMetadataConfiguration DocumentMetadataConfiguration;
   private ExportFontConfiguration exportFontConfiguration;
   private IgGeneralConfiguration igGeneralConfiguration;
+  private ProfileComponentExportConfiguration profileComponentExportConfiguration;
 
 
 
@@ -130,7 +132,9 @@ public class ExportConfiguration {
 
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue, Type type) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();
-    
+    //Setting ProfileComponent Export Configuration
+    ProfileComponentExportConfiguration profileComponentExportConfiguration = new ProfileComponentExportConfiguration();
+    defaultConfiguration.setProfileComponentExportConfiguration(profileComponentExportConfiguration);
     // Setting IgGeneralConfiguration
     IgGeneralConfiguration igGeneralConfiguration = new IgGeneralConfiguration();
     igGeneralConfiguration.setNotMessageInfrastructure(false);
@@ -1019,6 +1023,14 @@ public IgGeneralConfiguration getIgGeneralConfiguration() {
 
 public void setIgGeneralConfiguration(IgGeneralConfiguration igGeneralConfiguration) {
 	this.igGeneralConfiguration = igGeneralConfiguration;
+}
+
+public ProfileComponentExportConfiguration getProfileComponentExportConfiguration() {
+	return profileComponentExportConfiguration;
+}
+
+public void setProfileComponentExportConfiguration(ProfileComponentExportConfiguration profileComponentExportConfiguration) {
+	this.profileComponentExportConfiguration = profileComponentExportConfiguration;
 }
   
 
