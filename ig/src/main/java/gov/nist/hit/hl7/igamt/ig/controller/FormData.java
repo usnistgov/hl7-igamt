@@ -4,6 +4,8 @@ public class FormData {
 
 	private String clazz;
 	private String json;
+	private String config;
+	private String documentType;
 	
 	public String getClazz() {
 		return clazz;
@@ -17,4 +19,16 @@ public class FormData {
 	public void setJson(String json) {
 		this.json = json;
 	}
+  public String getConfig() {
+    return config;
+  }
+  public void setConfig(String config) {
+    this.config = config;
+  }
+  public String getDocumentType() {
+    return documentType;
+  }
+  public void setDocumentType(String documentType) {
+    this.documentType = documentType;
+  }
 }

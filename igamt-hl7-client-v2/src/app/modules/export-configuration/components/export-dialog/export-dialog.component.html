@@ -12,7 +12,7 @@
       optionLabel="configName"></p-dropdown>
   </div>
 
-  <div style="margin-top: 10px;" *ngIf="selectedConfig" >
+  <div style="margin-top: 10px;" *ngIf="selectedConfig && !delta"  >
     <label style="font-weight: bold;" >Would you like to override the configuration ?</label><br>
     <div style="display: flex; justify-content: center;">
       <button (click)="customize()" class="btn btn-sn btn-primary" style="margin-right:5px;">

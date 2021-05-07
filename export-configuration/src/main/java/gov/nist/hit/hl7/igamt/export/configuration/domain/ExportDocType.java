@@ -1,5 +1,4 @@
 /**
- * 
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -9,38 +8,40 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
- * 
  */
-package gov.nist.hit.hl7.igamt.export.exception;
+package gov.nist.hit.hl7.igamt.export.configuration.domain;
 
 /**
+ * @author Abdelghani El Ouakili
  *
- * @author Maxence Lefort on May 8, 2018.
  */
-public class ExportException extends Exception {
+public enum ExportDocType {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 2531849434075776303L;
+  HTML("HTML"),
+  WORD("WORD"),
+  XML("XML");
   
-  public ExportException(Throwable cause) {
-    super(cause.getMessage(), cause);
+  ExportDocType(String value) {
+    this.value = value;
   }
-  
-  public ExportException(Throwable cause, String message) {
-    super(message + "\n" + cause.getMessage(), cause);
-  }
-  
-  /**
-   * @param string
-   */
-  public ExportException(String string) {
-    super(string);
+  private final String value;
+
+  public String getValue() {
+    return value;
   }
 
-  public String printError() {
-    return this.getMessage() + "/n" + super.getCause().getMessage();
+  @Override
+  public String toString() {
+    return this.value;
+  }
+
+  public static ExportDocType fromString(String text) {
+    for (ExportDocType t : ExportDocType.values()) {
+      if (t.value.equalsIgnoreCase(text)) {
+        return t;
+      }
+    }
+    return null;
   }
 
 }

@@ -1,14 +1,14 @@
 <div class="card card-configuration" style="flex-grow: 1; margin-top: 10px;">
   <div class="custom-card-title" style="display: flex; justify-content: space-between; align-items: center;">
     <h5 class="card-title title-text" style="font-weight: bold;">Delta</h5>
-    <div class="custom-control custom-switch">
-      <div class="off-label">
-        Off
-      </div>
-      <input type="checkbox" class="custom-control-input" [id]="instanceId" [(ngModel)]="active" [disabled]="viewOnly"
-        (ngModelChange)="triggerChange()">
-      <label class="custom-control-label" [for]="instanceId">On</label>
-    </div>
+<!--    <div class="custom-control custom-switch">-->
+<!--      <div class="off-label">-->
+<!--        Off-->
+<!--      </div>-->
+<!--      <input type="checkbox" class="custom-control-input" [id]="instanceId" [(ngModel)]="active" [disabled]="viewOnly"-->
+<!--        (ngModelChange)="triggerChange()">-->
+<!--      <label class="custom-control-label" [for]="instanceId">On</label>-->
+<!--    </div>-->
   </div>
 
   <div style="padding: 1.25rem;" *ngIf="active" >
@@ -52,5 +52,5 @@
       </div>
     </div>
   </div>
-  
+
 </div>

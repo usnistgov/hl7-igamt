@@ -64,13 +64,9 @@
             <p-tabPanel header="ValueSet">
               <app-value-set-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.valueSetExportConfiguration" [displayColumns]="true" (detectChange)="change($event)" ></app-value-set-export-configuration>
             </p-tabPanel>
-            <p-tabPanel header="Delta">
-                <app-delta-export-configuration [active]="currentConfiguration.deltaMode" [config]="currentConfiguration.deltaConfig" (updateDelta)="updateDelta($event)" [viewOnly]="currentConfiguration.original"></app-delta-export-configuration>
-              </p-tabPanel>
               <p-tabPanel header="Font">
                 <app-font-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.exportFontConfiguration" (detectChange)="change($event)"></app-font-export-configuration>
               </p-tabPanel>
-
           </p-tabView>
           <p-tabView *ngIf="type === 'DATATYPELIBRARY'" [styleClass]="'configuration-tab-view'" >
               <p-tabPanel header="Datatype Library Datatypes" [selected]="true">
@@ -79,7 +75,28 @@
               <p-tabPanel header="Font">
                   <app-font-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.exportFontConfiguration" (detectChange)="change($event)"></app-font-export-configuration>
                 </p-tabPanel>
-            </p-tabView>
+          </p-tabView>
+
+          <p-tabView *ngIf="type === 'DIFFERENTIAL'" [styleClass]="'configuration-tab-view'" >
+            <p-tabPanel header="Delta">
+              <app-delta-export-configuration [active]="true" [config]="currentConfiguration.deltaConfig" (updateDelta)="updateDelta($event)" [viewOnly]="currentConfiguration.original"></app-delta-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="Conformance Profile">
+              <app-conformance-profile-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.conformamceProfileExportConfiguration" [displayColumns]="false" (detectChange)="change($event)" [delta]="true" ></app-conformance-profile-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="Segment" >
+              <app-segment-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.segmentExportConfiguration" [displayColumns]="false" (detectChange)="change($event)" [delta]="true" ></app-segment-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="Datatype">
+              <app-datatype-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.datatypeExportConfiguration" [displayColumns]="false" (detectChange)="change($event)" [delta]="true" ></app-datatype-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="ValueSet">
+              <app-value-set-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.valueSetExportConfiguration" [displayColumns]="false" (detectChange)="change($event)" [delta]="true"  ></app-value-set-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="Font">
+              <app-font-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.exportFontConfiguration" (detectChange)="change($event)"></app-font-export-configuration>
+            </p-tabPanel>
+          </p-tabView>
         </div>
       </div>
     </div>

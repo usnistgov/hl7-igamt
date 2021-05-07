@@ -1,13 +1,13 @@
 <div style="width: 100%; display: flex; align-items: flex-start;">
   <div style="width: 100%;">
 
-    <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+    <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;" *ngIf="!delta">
       <h5 class="card-title title-text custom-card-title">Usages (Fields to Export)</h5>
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.fieldsExport.r"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.fieldsExport.re"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="C(a/b)" binary="true" [(ngModel)]="config.fieldsExport.cab"> </p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.fieldsExport.c" (onChange)="triggerChange()"> </p-checkbox></li>    
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.fieldsExport.c" (onChange)="triggerChange()"> </p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="true" [(ngModel)]="config.fieldsExport.o" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="X" binary="true" [(ngModel)]="config.fieldsExport.x" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="B" binary="false" [(ngModel)]="config.fieldsExport.b" (onChange)="triggerChange()"></p-checkbox></li>
@@ -16,7 +16,7 @@
     </div>
     <div style="display: flex;">
 
-      <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;" *ngIf="displayColumns" >
+      <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;" *ngIf="displayColumns && !delta" >
         <h5 class="card-title title-text custom-card-title">Columns to export</h5>
         <ul class="list-group list-group-flush">
           <li class="list-group-item" *ngFor="let c of config.columns">
@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <div style="display: flex; flex-grow: 1; flex-direction: column;">
+      <div style="display: flex; flex-grow: 1; flex-direction: column;" *ngIf="!delta">
         <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
           <h5 class="card-title title-text custom-card-title">Constraints</h5>
           <ul class="list-group list-group-flush">
@@ -56,8 +56,6 @@
         </div>
       </div>
     </div>
-
+    </div>
     <app-delta-export-configuration *ngIf="derived && origin && delta" [id]="'SG'" [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
-
-  </div>
 </div>

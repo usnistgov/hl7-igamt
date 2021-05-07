@@ -1,3 +1,5 @@
+import {ExportTypes} from './export-types';
+
 export interface IExportConfiguration {
   configName: string;
   coConstraintExportMode: any;
@@ -53,6 +55,7 @@ export interface IExportConfiguration {
   documentMetadataConfiguration?: any;
   deltaMode?: boolean;
   deltaConfig?: any;
+  type: ExportTypes;
 }
 
 export interface IMessageColumn {

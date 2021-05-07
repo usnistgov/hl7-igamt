@@ -2,7 +2,7 @@
 <div style="width: 100%; display: flex; align-items: flex-start;">
   <div style="width: 100%;" >
 
-    <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+    <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;" *ngIf="!delta">
       <h5 class="card-title title-text custom-card-title">Usages (Segments/Groups to Export)</h5>
       <ul class="list-group list-group-flush">
         <li class="list-group-item"><p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.r"></p-checkbox></li>
@@ -54,13 +54,13 @@
         </ul>
       </div>
 
-     
-      
+
+
 
       <div style="display: flex; flex-grow: 1; flex-direction: column;">
-       
 
-        <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+
+        <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;" *ngIf="!delta">
           <h5 class="card-title title-text custom-card-title">Constraints</h5>
           <ul class="list-group list-group-flush">
             <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Conditional Predicates" binary="true" [(ngModel)]="config.constraintExportConfiguration.predicate" (onChange)="triggerChange()"></p-checkbox></li>
@@ -69,8 +69,8 @@
         </div>
 
 
-      <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
-        <h5 class="card-title title-text custom-card-title">CoConstraints</h5>
+      <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;" *ngIf="!delta">
+        <h5 class="card-title title-text custom-card-title" *ngIf="!delta">CoConstraints</h5>
         <ul class="list-group list-group-flush">
           <li class="list-group-item"><p-radioButton [disabled]="viewOnly" label="Compact Format" value="COMPACT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
           <li class="list-group-item"><p-radioButton [disabled]="viewOnly" label="Verbose Format" value="VERBOSE" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
@@ -78,9 +78,9 @@
         </ul>
       </div>
 
-      
 
-      
+
+
       </div>
     </div>
 

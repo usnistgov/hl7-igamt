@@ -15,6 +15,7 @@ import {
   ICreateCoConstraintGroupResponse, ICreateCompositeProfile, ICreateProfileComponent, ICreateProfileComponentResponse,
 } from '../../document/models/toc/toc-operation.class';
 import { IgTOCNodeHelper } from '../../document/services/ig-toc-node-helper.service';
+import {ExportTypes} from '../../export-configuration/models/export-types';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Scope } from '../../shared/constants/scope.enum';
@@ -306,38 +307,50 @@ export class IgService {
     form.submit();
   }
 
-  exportAsWord(igId: string, decision: any, configurationId: string) {
-    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/word');
-  }
 
-  export(igId, decision: any, format: string) {
+  export(igId, decision: any, format: string, configId: string , exportType: ExportTypes ) {
     const form = document.createElement('form');
-    form.action = this.EXPORT_URL + igId + '/' + format;
+    form.action = this.EXPORT_URL + igId + '/' + format + '?deltamode=TEST';
     form.method = 'POST';
+
     const json = document.createElement('input');
     json.type = 'hidden';
     json.name = 'json';
     json.value = JSON.stringify(decision);
     form.appendChild(json);
+
+    const config = document.createElement('input');
+    config.type = 'hidden';
+    config.name = 'configId';
+    config.value = configId;
+    form.appendChild(config);
+
+    const documentType = document.createElement('input');
+    documentType.type = 'hidden';
+    documentType.name = 'exportType';
+    documentType.value = exportType;
+    form.appendChild(documentType);
+
     form.style.display = 'none';
     document.body.appendChild(form);
     form.submit();
   }
 
-  exportAsHtml(igId: string, decision: any, configurationId: string) {
-    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/html');
+  exportAsHtml(igId: string, decision: any, configurationId: string, exportType: ExportTypes) {
+    this.submitForm(decision, this.EXPORT_URL + igId + '/html', configurationId, exportType );
   }
 
-  exportAsHtmlQuick(igId: string) {
-    this.submitForm(null, this.EXPORT_URL + igId + '/quickHtml');
+  exportDocument(igId: string, decision: any,  configId: string , exportType: ExportTypes, format: string) {
+    this.submitForm(decision, this.EXPORT_URL + igId + '/' + format, configId, exportType);
   }
 
-  exportAsWordQuick(igId: string) {
-    this.submitForm(null, this.EXPORT_URL + igId + '/quickWord');
-  }
-
-  submitForm(decision: any, end_point: string) {
+  submitForm(decision: any, end_point: string, configId: string , exportType: ExportTypes) {
     const form = document.createElement('form');
+    const documentType = document.createElement('input');
+    documentType.type = 'hidden';
+    documentType.name = 'documentType';
+    documentType.value = exportType;
+    form.appendChild(documentType);
     form.action = end_point;
     form.method = 'POST';
     if (decision) {
@@ -347,6 +360,11 @@ export class IgService {
       json.value = JSON.stringify(decision);
       form.appendChild(json);
     }
+    const config = document.createElement('input');
+    config.type = 'hidden';
+    config.name = 'config';
+    config.value = configId;
+    form.appendChild(config);
     form.style.display = 'none';
     document.body.appendChild(form);
     form.submit();

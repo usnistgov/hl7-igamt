@@ -341,7 +341,7 @@ public class BootstrapApplication implements CommandLineRunner {
     tableFixes.removeSegmentsDuplicatedBinding();
   }
   
-  @PostConstruct
+  //@PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
@@ -353,6 +353,17 @@ public class BootstrapApplication implements CommandLineRunner {
       basicExportConfiguration.setDefaultType(false);
       basicExportConfiguration.setDefaultConfig(false);
       exportConfigurationRepository.save(basicExportConfiguration);
+      
+      
+      ExportConfiguration differential = ExportConfiguration.getBasicExportConfiguration(false, ExportType.DIFFERENTIAL);
+      differential.setConfigName("Differential Export Configuration");
+      differential.setOriginal(true);
+      differential.setId("DIFF-DEFAULT-CONFIG-ID");
+      differential.setDefaultType(false);
+      differential.setDefaultConfig(false);
+      exportConfigurationRepository.save(differential);
+      
+      
       basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, ExportType.DATATYPELIBRARY);
       basicExportConfiguration.setConfigName("DTL Document Default Export Configuration");
       basicExportConfiguration.setOriginal(true);
