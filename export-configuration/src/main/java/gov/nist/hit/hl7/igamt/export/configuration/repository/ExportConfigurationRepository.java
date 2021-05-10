@@ -18,8 +18,8 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 
 /**
  *
@@ -30,16 +30,16 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 public interface ExportConfigurationRepository extends MongoRepository<ExportConfiguration, String> {
   public ExportConfiguration findOneByUsername(String username);
   public ExportConfiguration findOneByOriginal(String username);
-  public ExportConfiguration findOneByOriginalAndType(boolean original, Type type);
-  public List<ExportConfiguration> findByOriginalAndType(boolean original, Type type);
+  public ExportConfiguration findOneByOriginalAndType(boolean original, ExportType type);
+  public List<ExportConfiguration> findByOriginalAndType(boolean original, ExportType type);
   public List<ExportConfiguration> findByUsername(String username);
-  public List<ExportConfiguration> findByUsernameAndType(String username, Type type);
+  public List<ExportConfiguration> findByUsernameAndType(String username, ExportType type);
   public List<ExportConfiguration> findByOriginal(boolean original);
   public ExportConfiguration findOneById(String id);
   public ExportConfiguration findLatestById(String id);
   public ExportConfiguration findOneByOriginal(boolean isOriginal);
   public ExportConfiguration findOneByDefaultConfigAndUsername(boolean defaultConfig, String username);
-public ExportConfiguration findOneByIdAndType(String id, Type type);
+  public ExportConfiguration findOneByIdAndType(String id, ExportType type);
 
   
 }

@@ -143,11 +143,11 @@ export class IgTOCNodeHelper {
     return ret;
   }
 
-  static buildProfileTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[]) {
+  static buildProfileTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], coConstraintGroupNodes: IDisplayElement[], profileComponentsNodes: IDisplayElement[], compositeProfilesNodes: IDisplayElement[]) {
     const ret: IDisplayElement[] = [];
     for (const section of structure) {
       if (section.type === Type.PROFILE) {
-        ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, [], [], section.position + ''));
+        ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, profileComponentsNodes, compositeProfilesNodes, section.position + ''));
       }
     }
     return this.sort(ret);

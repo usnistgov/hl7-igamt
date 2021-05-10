@@ -185,6 +185,12 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		for (Link l : ig.getConformanceProfileRegistry().getChildren()) {
 			decision.getConformanceProfileFilterMap().put(l.getId(), true);
 		}
+	    for (Link l : ig.getCompositeProfileRegistry().getChildren()) {
+            decision.getCompositeProfileFilterMap().put(l.getId(), true);
+        }
+	    for (Link l : ig.getProfileComponentRegistry().getChildren()) {
+            decision.getProfileComponentFilterMap().put(l.getId(), true);
+        }
 		for (Link l : ig.getSegmentRegistry().getChildren()) {
 			decision.getSegmentFilterMap().put(l.getId(), false);
 		}
@@ -201,6 +207,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		  calculateDeltaAndDecide(ig, decision);
 		} else {
 		  processConformanceProfiles(ig, decision, config); 
+		  
+		  // TODO: Process Profile Components and composite
 		}
 		return decision;
 		} else if(documentStructure instanceof DatatypeLibrary) {
