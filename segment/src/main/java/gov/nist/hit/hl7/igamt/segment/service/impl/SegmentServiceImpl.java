@@ -633,6 +633,7 @@ public class SegmentServiceImpl implements SegmentService {
       }	
     }
 
+    bindingDisplay.setChangeLog(seb.getChangeLog());
     return bindingDisplay;
   }
 

@@ -1,15 +1,36 @@
-<div *ngIf="action !== 'UNCHANGED'" style="width: 100%;">
-  <div
-      pTooltip="Updated Value" tooltipPosition="top"
-      *ngIf="action !== 'REMOVED' && currentValue !== 'NA' && currentValue" [class]="'delta-current ' + (styleClassCurrent ? styleClassCurrent : '')" [ngClass]="{'delta-updated': action === 'UPDATED', 'delta-updated': action === 'ADDED' }">
-    <ng-container *ngTemplateOutlet="current ? current : default; context: { $implicit: currentValue }"></ng-container>
+<div *ngIf="action !== 'UNCHANGED'" style="width: 100%; display: flex; align-items: center; justify-content: center;" [ngStyle]="{ direction : rtl ? 'rtl' : 'ltr', 'background-color': action === 'UPDATED' ? 'bisque' : 'inherit'}">
+  <div [ngbPopover]="popContent" placement="bottom" *ngIf="reason" style="display: flex; justify-content: center; align-items: center; margin: 5px;" class="btn btn-sm btn-i">
+    <i class="fa fa-info"></i>
   </div>
-  <div
-    pTooltip="Original Value" tooltipPosition="top"
-    *ngIf="action !== 'ADDED' && previousValue !== 'NA' && previousValue" [class]="'delta-previous ' + (styleClassPrevious ? styleClassPrevious : '')" [ngClass]="{'delta-updated': action === 'UPDATED', 'delta-updated': action === 'ADDED' }">
-    <ng-container *ngTemplateOutlet="previous ? previous : default; context: { $implicit: previousValue }"></ng-container>
+  <div style="flex-grow: 1; direction: ltr;">
+    <div
+        pTooltip="Updated Value" tooltipPosition="top"
+        *ngIf="action !== 'REMOVED' && currentValue !== 'NA' && currentValue" [class]="'delta-current ' + (styleClassCurrent ? styleClassCurrent : '')" [ngClass]="{'delta-updated': action === 'UPDATED', 'delta-updated': action === 'ADDED' }">
+      <ng-container *ngTemplateOutlet="current ? current : default; context: { $implicit: currentValue }"></ng-container>
+    </div>
+    <div
+      pTooltip="Original Value" tooltipPosition="top"
+      *ngIf="action !== 'ADDED' && previousValue !== 'NA' && previousValue" [class]="'delta-previous ' + (styleClassPrevious ? styleClassPrevious : '')" [ngClass]="{'delta-updated': action === 'UPDATED', 'delta-updated': action === 'ADDED' }">
+      <ng-container *ngTemplateOutlet="previous ? previous : default; context: { $implicit: previousValue }"></ng-container>
+    </div>
   </div>
 </div>
 <div *ngIf="action === 'UNCHANGED' && currentValue !== 'NA' && currentValue " [class]="styleClassUnchanged ? styleClassUnchanged : ''">
   <ng-container *ngTemplateOutlet="default; context: { $implicit: currentValue }"></ng-container>
 </div>
+
+
+<ng-template #popContent>
+  <table style="table-layout: auto; direction: ltr;" class="table table-sm table-striped table-bordered">
+    <tbody>
+      <tr>
+        <th>
+          Change Reason ( {{ reason.date | date }})
+        </th>
+      </tr>
+      <tr>
+        <td colspan="3" style="vertical-align: center;">{{ reason.reason }}</td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>

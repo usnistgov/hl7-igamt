@@ -900,6 +900,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       }
     }
 
+    bindingDisplay.setChangeLog(seb.getChangeLog());
     return bindingDisplay;
   }
 

@@ -4,6 +4,7 @@ package gov.nist.hit.hl7.igamt.delta.domain;
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 
 import java.util.List;
 import java.util.Set;
@@ -14,6 +15,7 @@ public class DeltaValuesetBinding {
     private DeltaNode<List<DisplayElement>> valueSets;
     private DeltaNode<Set<Integer>> valuesetLocations;
     private DeltaNode<ValuesetStrength> strength;
+    private ChangeReason changeReason;
 
     public DeltaNode<List<DisplayElement>> getValueSets() {
         return valueSets;
@@ -54,5 +56,13 @@ public class DeltaValuesetBinding {
         if(a != DeltaAction.UNCHANGED) {
             this.setAction(DeltaAction.UPDATED);
         }
+    }
+
+    public ChangeReason getChangeReason() {
+        return changeReason;
+    }
+
+    public void setChangeReason(ChangeReason changeReason) {
+        this.changeReason = changeReason;
     }
 }

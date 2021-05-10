@@ -1,5 +1,6 @@
 import { Component, ContentChild, Input, OnInit, TemplateRef } from '@angular/core';
-import { DeltaAction, IDelta } from '../../models/delta';
+import { DeltaAction } from '../../models/delta';
+import { IChangeReason } from '../../models/save-change';
 
 @Component({
   selector: 'app-delta-column',
@@ -20,6 +21,10 @@ export class DeltaColumnComponent implements OnInit {
   styleClassPrevious: string;
   @Input()
   styleClassUnchanged: string;
+  @Input()
+  reason: IChangeReason;
+  @Input()
+  rtl: boolean;
 
   @ContentChild('current')
   current: TemplateRef<any>;
