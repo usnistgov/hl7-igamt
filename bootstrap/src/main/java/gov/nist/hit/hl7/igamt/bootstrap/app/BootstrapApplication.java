@@ -344,7 +344,7 @@ public class BootstrapApplication implements CommandLineRunner {
   //@PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
-    List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
+    List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true, ExportType.IGDOCUMENT);
     if( originals == null || originals.isEmpty()) {
       ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, ExportType.IGDOCUMENT);
       basicExportConfiguration.setConfigName("IG Document Default Export Configuration");

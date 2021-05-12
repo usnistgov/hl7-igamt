@@ -14,6 +14,8 @@
 	<xsl:import href="/templates/profile/constantValue.xsl" />
 	<xsl:import href="/templates/profile/dynamicMapping.xsl" />
 	<xsl:import href="/templates/profile/metadata.xsl" />
+	<xsl:import href="/templates/profile/reasonForChange.xsl" />
+	
 	
 	<xsl:template match="Segment" mode="toc">
 		<xsl:element name="a">
@@ -253,17 +255,8 @@
 				
 		<xsl:call-template name="ValueSetBindingList"/>	
 		<xsl:call-template name="InternalSingleCode"/>	
-		<xsl:apply-templates select="./DynamicMapping"/>				
-					
-						
-<!-- 		<xsl:apply-templates select="./Comments" />
- --><!-- 		<xsl:if test="$columnDisplay.segment.comment = 'true'">
- -->		
-<!--  	<xsl:apply-templates select="./Binding/CommentList" />
- -->
- 			
-<!-- 		</xsl:if>
- -->
+		<xsl:apply-templates select="./DynamicMapping"/>
+		<xsl:call-template name="Reasons"/>
 		<xsl:for-each select="Field">
 			<xsl:sort select="@Position" data-type="number"></xsl:sort>
 			<xsl:if test="count(./Text[@Type='Text']) &gt; 0">
