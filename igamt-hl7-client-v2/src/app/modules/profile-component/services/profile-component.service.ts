@@ -3,10 +3,10 @@ import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
 import { combineLatest, EMPTY, Observable, of } from 'rxjs';
 import { flatMap, map, take } from 'rxjs/operators';
-import {Message} from '../../dam-framework/models/messages/message.class';
+import { Message } from '../../dam-framework/models/messages/message.class';
 import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../shared/constants/type.enum';
-import {IDocumentRef} from '../../shared/models/abstract-domain.interface';
+import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IPath } from '../../shared/models/cs.interface';
 import {
   IItemProperty,
@@ -19,12 +19,12 @@ import {
   IPropertyRef,
 } from '../../shared/models/profile.component';
 import { IResource } from '../../shared/models/resource.interface';
-import {IChange, PropertyType} from '../../shared/models/save-change';
+import { IChange, PropertyType } from '../../shared/models/save-change';
 import { ElementNamingService, IPathInfo } from '../../shared/services/element-naming.service';
 import { Hl7V2TreeService } from '../../shared/services/hl7-v2-tree.service';
 import { PathService } from '../../shared/services/path.service';
 import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
-import {IProfileComponentMetadata} from '../components/profile-component-metadata/profile-component-metadata.component';
+import { IProfileComponentMetadata } from '../components/profile-component-metadata/profile-component-metadata.component';
 import { IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
 import { ITreeStructureProfileComponentPermutation } from './profile-component-ref-change.object';
 
@@ -111,7 +111,7 @@ export class ProfileComponentService {
   }
 
   applyBindingChangeAt(change: IProfileComponentChange, list: IPropertyBinding[]) {
-    const propId = list.findIndex((elm) => elm.target === change.target);
+    const propId = list.findIndex((elm) => elm.target === change.target && elm.propertyKey === change.type);
     // Remove
     if (propId !== -1) {
       list.splice(propId, 1);
@@ -286,7 +286,7 @@ export class ProfileComponentService {
     return {
       name: conformanceProfile.name,
       description: conformanceProfile.description,
-      profileIdentifier:  conformanceProfile.preCoordinatedMessageIdentifier ? conformanceProfile.preCoordinatedMessageIdentifier : {},
+      profileIdentifier: conformanceProfile.preCoordinatedMessageIdentifier ? conformanceProfile.preCoordinatedMessageIdentifier : {},
     };
   }
 }

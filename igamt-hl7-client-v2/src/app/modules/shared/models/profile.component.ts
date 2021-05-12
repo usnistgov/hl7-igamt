@@ -1,9 +1,9 @@
 import { LengthType } from '../constants/length-type.enum';
 import { Type } from '../constants/type.enum';
 import { Usage } from '../constants/usage.enum';
-import { IExternalSingleCode, InternalSingleCode, IValuesetBinding } from './binding.interface';
+import { InternalSingleCode, IValuesetBinding } from './binding.interface';
 import { IComment } from './comment.interface';
-import {IMessageProfileIdentifier} from './conformance-profile.interface';
+import { IMessageProfileIdentifier } from './conformance-profile.interface';
 import { IPredicate } from './predicate.interface';
 import { IResource } from './resource.interface';
 import { PropertyType } from './save-change';
