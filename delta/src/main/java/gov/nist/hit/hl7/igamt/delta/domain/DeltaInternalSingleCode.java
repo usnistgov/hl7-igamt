@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.delta.domain;
 
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 
 import java.util.List;
 
@@ -11,6 +12,7 @@ public class DeltaInternalSingleCode {
     private DeltaNode<DisplayElement> valueSetDisplay;
     private DeltaNode<String> code;
     private DeltaNode<String> codeSystem;
+    private ChangeReason changeReason;
 
     public DeltaAction getAction() {
         return action;
@@ -51,5 +53,13 @@ public class DeltaInternalSingleCode {
         if(a != DeltaAction.UNCHANGED) {
             this.setAction(DeltaAction.UPDATED);
         }
+    }
+
+    public ChangeReason getChangeReason() {
+        return changeReason;
+    }
+
+    public void setChangeReason(ChangeReason changeReason) {
+        this.changeReason = changeReason;
     }
 }

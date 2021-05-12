@@ -1,33 +1,29 @@
 package gov.nist.hit.hl7.igamt.export.controller;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Types;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -38,19 +34,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
-import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.DocumentStructureService;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
-import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.delta.exception.IGDeltaException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfigurationGlobal;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
@@ -58,11 +49,8 @@ import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.export.service.DlNewExportService;
 import gov.nist.hit.hl7.igamt.export.service.IgNewExportService;
-import gov.nist.hit.hl7.igamt.export.util.WordUtil;
 import gov.nist.hit.hl7.igamt.ig.controller.FormData;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.ExcelImportService;
@@ -251,7 +239,7 @@ public class ExportController {
 						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, decision, exportConfiguration.getId());
 					} 
 					else {
-						ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT);
+						ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,ExportType.IGDOCUMENT);
 						ExportFilterDecision decision = igExportService.getExportFilterDecision(ds, exportConfiguration);
 						exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, decision, exportConfiguration.getId());
 
@@ -273,7 +261,7 @@ public class ExportController {
 						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, exportFilterDecision, exportConfiguration.getId());
 					} 
 					else {
-						ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,Type.DATATYPELIBRARY);
+						ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,ExportType.DATATYPELIBRARY);
 						ExportFilterDecision exportFilterDecision = igExportService.getExportFilterDecision(ds, exportConfiguration);
 						exportedFile = dlNewExportService.exportDlDocumentToHtml(username, documentId, exportFilterDecision, exportConfiguration.getId());
 					}
@@ -410,7 +398,7 @@ public class ExportController {
 				} 
 				else {
 //					ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false,Type.IGDOCUMENT);
-					ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,Type.IGDOCUMENT);
+					ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,ExportType.IGDOCUMENT);
 					System.out.println("ADFDSFDSF");
 					exportedFile = igExportService.exportIgDocumentToWord(username, igId, null, exportConfiguration.getId());
 
@@ -446,7 +434,7 @@ public class ExportController {
 					exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, exportFilterDecision, exportConfiguration.getId());
 				} 
 				else {
-					ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,Type.DATATYPELIBRARY);
+					ExportConfiguration exportConfiguration = exportConfigurationService.getOriginalConfigWithType(true,ExportType.DATATYPELIBRARY);
 					ExportFilterDecision exportFilterDecision = igExportService.getExportFilterDecision(dl, exportConfiguration);
 					exportedFile = dlNewExportService.exportDlDocumentToWord(username, dlId, exportFilterDecision, exportConfiguration.getId());
 				}
@@ -476,10 +464,10 @@ public class ExportController {
 			DocumentStructure ds = new DocumentStructure();			
 			if(document.toLowerCase().equals("ig")) {
 				ds = igService.findById(id);
-				config = exportConfigurationService.getExportConfigurationWithType(configId, Type.IGDOCUMENT);
+				config = exportConfigurationService.getExportConfigurationWithType(configId, ExportType.IGDOCUMENT);
 			} else if(document.toLowerCase().equals("library")) {
 				ds = datatypeLibraryService.findById(id);
-				config = exportConfigurationService.getExportConfigurationWithType(configId, Type.DATATYPELIBRARY);
+				config = exportConfigurationService.getExportConfigurationWithType(configId, ExportType.DATATYPELIBRARY);
 			}
 			if (ds == null) {
 				throw  new IGNotFoundException(id);

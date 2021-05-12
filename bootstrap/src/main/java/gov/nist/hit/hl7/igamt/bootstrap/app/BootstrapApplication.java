@@ -73,6 +73,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
@@ -345,14 +346,14 @@ public class BootstrapApplication implements CommandLineRunner {
     exportConfigurationRepository.deleteAll();
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
     if( originals == null || originals.isEmpty()) {
-      ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, Type.IGDOCUMENT);
+      ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, ExportType.IGDOCUMENT);
       basicExportConfiguration.setConfigName("IG Document Default Export Configuration");
       basicExportConfiguration.setOriginal(true);
       basicExportConfiguration.setId("IG-DEFAULT-CONFIG-ID");
       basicExportConfiguration.setDefaultType(false);
       basicExportConfiguration.setDefaultConfig(false);
       exportConfigurationRepository.save(basicExportConfiguration);
-      basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, Type.DATATYPELIBRARY);
+      basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, ExportType.DATATYPELIBRARY);
       basicExportConfiguration.setConfigName("DTL Document Default Export Configuration");
       basicExportConfiguration.setOriginal(true);
       basicExportConfiguration.setId("DTL-DEFAULT-CONFIG-ID");

@@ -629,6 +629,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 			}
 		}
 
+		bindingDisplay.setChangeLog(seb.getChangeLog());
 		return bindingDisplay;
 	}
 

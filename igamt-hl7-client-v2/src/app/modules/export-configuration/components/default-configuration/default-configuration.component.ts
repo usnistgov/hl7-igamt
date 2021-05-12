@@ -12,6 +12,7 @@ import { MessageType } from '../../../dam-framework/models/messages/message.clas
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IExportConfiguration } from '../../models/default-export-configuration.interface';
+import {ExportTypes} from '../../models/export-types';
 import { IExportConfigurationItemList } from '../../models/exportConfigurationForFrontEnd.interface';
 import { ExportConfigurationService } from '../../services/export-configuration.service';
 
@@ -30,7 +31,7 @@ export class DefaultConfigurationComponent implements OnInit {
   configName: string;
   hasChanges: boolean;
   filter: string;
-  type: Type;
+  type: ExportTypes;
 
   constructor(
     private exportConfigurationService: ExportConfigurationService,
@@ -40,7 +41,7 @@ export class DefaultConfigurationComponent implements OnInit {
     private dialog: MatDialog,
   ) { }
 
-  loadExportConfigurationList(type: Type) {
+  loadExportConfigurationList(type: ExportTypes) {
     this.exportConfigurationService.getAllExportConfigurations(type).subscribe(
       (x) => this.configList = x,
     );
@@ -179,7 +180,7 @@ export class DefaultConfigurationComponent implements OnInit {
     }
   }
 
-  create(type: Type) {
+  create(type: ExportTypes) {
     this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: true }));
     this.exportConfigurationService.createExportConfiguration(type).subscribe(
       (x) => {

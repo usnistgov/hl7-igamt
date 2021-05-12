@@ -38,6 +38,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -123,6 +124,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   @Autowired
   ConformanceProfileService conformanceProfileService;
 
+  @Autowired
+  InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
   /*
    * (non-Javadoc)
    * 
@@ -2295,18 +2298,28 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     List<String> result = new ArrayList<String>();
     if (level.equals(Level.DATATYPE)) {
       Datatype target = this.datatypeService.findById(targetId);
+      if(target == null) {
+    	  target = this.inMemoryDomainExtensionService.findById(targetId, ComplexDatatype.class);
+      }
+      
       if (target != null) {
         if (path != null)
           this.visitComponent(target, path, result);
       }
     } else if (level.equals(Level.SEGMENT)) {
       Segment target = this.segmentService.findById(targetId);
+      if(target == null) {
+    	  target = this.inMemoryDomainExtensionService.findById(targetId, Segment.class);
+      }
       if (target != null) {
         if (path != null)
           this.visitField(target, path, result);
       }
     } else if (level.equals(Level.GROUP)) {
       ConformanceProfile cp = this.conformanceProfileService.findById(targetId);
+      if(cp == null) {
+    	  cp = this.inMemoryDomainExtensionService.findById(targetId, ConformanceProfile.class);
+      }
       Group target = this.findGroupByContext(context, cp.getChildren());
       if (target != null) {
         if (path != null)
@@ -2314,6 +2327,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       }
     } else if (level.equals(Level.CONFORMANCEPROFILE)) {
       ConformanceProfile target = this.conformanceProfileService.findById(targetId);
+      if(target == null) {
+    	  target = this.inMemoryDomainExtensionService.findById(targetId, ConformanceProfile.class);
+      }
       if (target != null) {
         if (path != null)
           this.visitSegOrGroup(target.getChildren(), path, result);

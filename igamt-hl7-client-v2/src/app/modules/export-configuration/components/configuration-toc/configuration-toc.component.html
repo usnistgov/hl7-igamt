@@ -87,6 +87,29 @@
         </div>
       </ng-container>
 
+      <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
+        <div style="display: flex; flex-direction: row; align-items: center;" *ngIf="filter.profileComponentFilterMap">
+          <input type="checkbox" [(ngModel)]="filter.profileComponentFilterMap[node.id]" style="margin-right: 5px;" [disabled]="node.data.delta && node.data.delta === 'DELETED'">
+          <span  [ngClass]="{
+            'delta-changed':filter.changed[node.id],
+             'delta-added':  filter.added[node.id]}">
+            <app-entity-bagde [type]="'PROFILECOMPONENT'" ></app-entity-bagde> {{node.data.variableName}}
+          </span>
+        </div>
+      </ng-container>
+
+
+      <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
+        <div style="display: flex; flex-direction: row; align-items: center;" *ngIf="filter.compositeProfileFilterMap">
+          <input type="checkbox" [(ngModel)]="filter.compositeProfileFilterMap[node.id]" style="margin-right: 5px;" [disabled]="node.data.delta && node.data.delta === 'DELETED'">
+          <span  [ngClass]="{
+    'delta-changed':filter.changed[node.id],
+    'delta-added':  filter.added[node.id]}">
+            <app-entity-bagde [type]="'PROFILECOMPONENT'" ></app-entity-bagde> {{node.data.variableName}}
+          </span>
+        </div>
+      </ng-container>
+
     </ng-container>
   </ng-template>
 

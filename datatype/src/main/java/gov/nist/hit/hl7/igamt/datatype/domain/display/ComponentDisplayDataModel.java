@@ -34,6 +34,7 @@ public class ComponentDisplayDataModel extends Component {
   public ComponentDisplayDataModel(Component component) {
     super();
     this.setType(Type.COMPONENT);
+    this.setChangeLog(component.getChangeLog());
     this.setConfLength(component.getConfLength());
     this.setCustom(component.isCustom());
     this.setId(component.getId());

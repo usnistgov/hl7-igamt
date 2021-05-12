@@ -19,9 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
@@ -79,7 +78,7 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   }
 
   @Override
-  public List<ExportConfiguration> getAllExportConfigurationWithType(String username,Type type) {
+  public List<ExportConfiguration> getAllExportConfigurationWithType(String username,ExportType type) {
     return exportConfigurationRepository.findByUsernameAndType(username, type);
   }
   
@@ -101,22 +100,13 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   @Override
   public ExportConfiguration create(String username, String type) {
     //	ExportConfiguration exportConfiguration = exportConfigurationRepository.findOneById("BasicExportConfiguration");
-	  Type docType = Type.IGDOCUMENT;
-	    if(type.equals("IGDOCUMENT")) {
-	     docType = Type.IGDOCUMENT;
-	    } else if(type.equals("DATATYPELIBRARY")) {
-	         docType = Type.DATATYPELIBRARY;
-	    }
-    ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false,docType);
+    ExportType docType = ExportType.fromString(type);
+    ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, docType);
     exportConfiguration.setId(null);
     exportConfiguration.setConfigName("New Configuration");
     exportConfiguration.setUsername(username);
-    if(type.equals("IGDOCUMENT")){
-    exportConfiguration.setType(Type.IGDOCUMENT);
-    System.out.println("inside IF IGDOCUMENT ");
-  }	else if(type.equals("DATATYPELIBRARY")){
-	    exportConfiguration.setType(Type.DATATYPELIBRARY);
-  }
+	exportConfiguration.setType(docType);
+  
     exportConfigurationRepository.save(exportConfiguration);
     return exportConfiguration;
   }
@@ -135,13 +125,13 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
 	    return exportConfigurationRepository.findOneByOriginal(isOriginal);
 	  }
   
-  public ExportConfiguration getOriginalConfigWithType(boolean isOriginal, Type type) {
+  public ExportConfiguration getOriginalConfigWithType(boolean isOriginal, ExportType type) {
 	    return exportConfigurationRepository.findOneByOriginalAndType(isOriginal, type);
 	  }
 
 
 @Override
-public ExportConfiguration getExportConfigurationWithType(String id, Type type) {
+public ExportConfiguration getExportConfigurationWithType(String id, ExportType type) {
     return exportConfigurationRepository.findOneByIdAndType(id,type);
 
 }

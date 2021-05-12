@@ -11,11 +11,14 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
+import java.util.Map;
 import java.util.Set;
 
 import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;
 
@@ -53,6 +56,8 @@ public class BindingDisplay {
 	
 	@DeltaField
 	private BindingType bindingType;
+
+	private Map<PropertyType, ChangeReason> changeLog;
 
 	public Set<DisplayValuesetBinding> getValuesetBindings() {
 		return valuesetBindings;
@@ -134,4 +139,11 @@ public class BindingDisplay {
 		this.bindingType = bindingType;
 	}
 
+	public Map<PropertyType, ChangeReason> getChangeLog() {
+		return changeLog;
+	}
+
+	public void setChangeLog(Map<PropertyType, ChangeReason> changeLog) {
+		this.changeLog = changeLog;
+	}
 }
