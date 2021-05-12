@@ -19,6 +19,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.delta.domain.ConformanceStatementDelta;
 import gov.nist.hit.hl7.igamt.delta.domain.ResourceDelta;
 import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
@@ -45,6 +47,8 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyName;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyRef;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyUsage;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyValueSet;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import nu.xom.Attribute;
 import nu.xom.Element;
@@ -54,6 +58,12 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
 	
 	@Autowired
     private IgDataModelSerializationService igDataModelSerializationService;
+	
+	@Autowired
+    private SegmentService segmentService;
+	
+	@Autowired
+    private DatatypeService datatypeService;
 
 	@Override
 	public Element serializeProfileComponent(ProfileComponentDataModel profileComponentDataModel,
@@ -78,6 +88,10 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                 			profileComponentContext.getSourceId() != null ? profileComponentContext.getSourceId() : ""));
                 	profileComponentContextElement.addAttribute(new Attribute("position",
                 			profileComponentContext != null ? String.valueOf(profileComponentContext.getPosition()) : ""));
+                	Segment segment = segmentService.findById(profileComponentContext.getSourceId());
+                	
+                	profileComponentContextElement.addAttribute(new Attribute("segmentName",
+                			segment != null ? String.valueOf(segment.getName()) : ""));
                 	
                 	for(ProfileComponentItem profileComponentItem : profileComponentContext.getProfileComponentItems()) {
                 		if(profileComponentItem != null) {
@@ -123,8 +137,9 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                                     break;
                                     
                                     case DATATYPE:
+                                    	Datatype datatype = datatypeService.findById(((PropertyDatatype) itemProperty).getDatatypeId());
                                     	profileComponentItemElement.addAttribute(new Attribute("datatype",
-                                    			((PropertyDatatype) itemProperty) != null ? ((PropertyDatatype) itemProperty).getDatatypeId() : ""));
+                                    			datatype != null ? datatype.getLabel() : ""));
                                     break;
                                     
 //                                    case DYNAMICMAPPINGITEM:
@@ -182,6 +197,8 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                                     	profileComponentItemElement.addAttribute(new Attribute("lengthType",
                                     			((PropertyLengthType) itemProperty) != null ? ((PropertyLengthType) itemProperty).getType().name() : ""));
                                     break;
+								default:
+									break;
                                     
                                     
                                 }

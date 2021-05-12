@@ -8,14 +8,14 @@
                 <xsl:value-of select="concat('#{',@id,'}')"/>
             </xsl:attribute>
             <xsl:element name="br"/>
-            <xsl:value-of select="@Name"/>
+            <xsl:value-of select="../@name"/>
         </xsl:element>
     </xsl:template>
 
-    <xsl:template match="ProfileComponent">
-        <xsl:if test="@Description!=''">
+     <xsl:template match="profileComponentContextElement">
+    <!--    <xsl:if test="../@description!=''">
             <xsl:element name="span">
-                <xsl:value-of select="@Description"/>
+                <xsl:value-of select=",,/@description"/>
             </xsl:element>
             <xsl:element name="br"/>
         </xsl:if>
@@ -26,7 +26,7 @@
                 </xsl:with-param>
             </xsl:call-template>
             <xsl:element name="br"/>
-        </xsl:if>
+        </xsl:if> -->
         <xsl:element name="span">
             <xsl:element name="b">
                 <xsl:text>Profile Component Definition</xsl:text>
@@ -97,11 +97,16 @@
                 </xsl:attribute>
                 <xsl:element name="tr">
                     <xsl:element name="th">
-                        <xsl:text>Location</xsl:text>
+                        <xsl:text>PATH</xsl:text>
                     </xsl:element>
                     <xsl:if test="$columnDisplay.profileComponent.name = 'true'">
                         <xsl:element name="th">
-                            <xsl:text>Name</xsl:text>
+                            <xsl:text>Element Name</xsl:text>
+                        </xsl:element>
+                    </xsl:if>
+                    <xsl:if test="$columnDisplay.profileComponent.dataType = 'true'">
+                        <xsl:element name="th">
+                            <xsl:text>DataType</xsl:text>
                         </xsl:element>
                     </xsl:if>
                     <xsl:if test="$columnDisplay.profileComponent.usage = 'true'">
@@ -114,19 +119,14 @@
                             <xsl:text>Cardinality</xsl:text>
                         </xsl:element>
                     </xsl:if>
-                    <xsl:if test="$columnDisplay.profileComponent.length = 'true'">
-                        <xsl:element name="th">
+<!--                     <xsl:if test="$columnDisplay.profileComponent.length = 'true'">
+ -->                        <xsl:element name="th">
                             <xsl:text>Length</xsl:text>
                         </xsl:element>
-                    </xsl:if>
-                    <xsl:if test="$columnDisplay.profileComponent.conformanceLength = 'true'">
+<!--                     </xsl:if>
+ -->                    <xsl:if test="$columnDisplay.profileComponent.conformanceLength = 'true'">
                         <xsl:element name="th">
                             <xsl:text>ConfLength</xsl:text>
-                        </xsl:element>
-                    </xsl:if>
-                    <xsl:if test="$columnDisplay.profileComponent.dataType = 'true'">
-                        <xsl:element name="th">
-                            <xsl:text>Data Type</xsl:text>
                         </xsl:element>
                     </xsl:if>
                     <xsl:if test="$columnDisplay.profileComponent.valueSet = 'true'">
@@ -149,80 +149,20 @@
                     </xsl:if>
                 </xsl:element>
                 <xsl:element name="tbody">
-                    <xsl:for-each select="./SubProfileComponent">
+                    <xsl:for-each select="./profileComponentItemElement">
                         <xsl:element name="tr">
                             <xsl:element name="td">
-                                <xsl:value-of select="@Path"/>
+                                <xsl:value-of select="@path"/>
                             </xsl:element>
                             <xsl:if test="$columnDisplay.profileComponent.name = 'true'">
                                 <xsl:element name="td">
-                                    <xsl:value-of select="@Name"/>
-                                </xsl:element>
-                            </xsl:if>
-                            <xsl:if test="$columnDisplay.profileComponent.usage = 'true'">
-                                <xsl:element name="td">
-                                    <xsl:choose>
-                                        <xsl:when test="@Usage!=''">
-                                            <xsl:value-of select="@Usage"/>
-                                        </xsl:when>
-                                        <xsl:otherwise>
-                                            <xsl:attribute name="class">
-                                                <xsl:text>greyCell</xsl:text>
-                                            </xsl:attribute>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                </xsl:element>
-                            </xsl:if>
-                            <xsl:if test="$columnDisplay.profileComponent.cardinality = 'true'">
-                                <xsl:element name="td">
-                                    <xsl:choose>
-                                        <xsl:when test="((normalize-space(@Min) = '') and (normalize-space(@Max) = '')) or @Usage = 'X'">
-                                            <xsl:attribute name="class">
-                                                <xsl:text>greyCell</xsl:text>
-                                            </xsl:attribute>
-                                        </xsl:when>
-                                        <xsl:otherwise>
-                                        	<xsl:value-of select="concat('[',@Min,'..',@Max,']')"/>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                </xsl:element>
-                            </xsl:if>
-                            <xsl:if test="$columnDisplay.profileComponent.length = 'true'">
-                                <xsl:element name="td">
-                                    <xsl:choose>
-                                        <xsl:when test="((normalize-space(@MinLength)='') and (normalize-space(@MaxLength)='')) or @Usage = 'X' or (normalize-space(@MinLength)='NA') or (normalize-space(@MaxLength)='NA')">
-                                            <xsl:attribute name="class">
-                                                <xsl:text>greyCell</xsl:text>
-                                            </xsl:attribute>
-                                        </xsl:when>
-                                        <xsl:otherwise>
-                                            <xsl:attribute name="class">
-                                            	<xsl:value-of select="concat('[',@MinLength,'..',@MaxLength,']')"/>
-                                            </xsl:attribute>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
-                                </xsl:element>
-                            </xsl:if>
-                            <xsl:if test="$columnDisplay.profileComponent.conformanceLength = 'true'">
-                                <xsl:element name="td">
-                                    <xsl:choose>
-                                        <xsl:when test="(normalize-space(@ConfLength)='') or (normalize-space(@ConfLength)='0') or @Usage = 'X' or (normalize-space(@ConfLength)='NA')">
-                                            <xsl:attribute name="class">
-                                                <xsl:text>greyCell</xsl:text>
-                                            </xsl:attribute>
-                                        </xsl:when>
-                                        <xsl:otherwise>
-                                            <xsl:attribute name="class">
-                                            	<xsl:value-of select="@ConfLength"/>
-                                            </xsl:attribute>
-                                        </xsl:otherwise>
-                                    </xsl:choose>
+                                    <xsl:value-of select="../@segmentName"/>
                                 </xsl:element>
                             </xsl:if>
                             <xsl:if test="$columnDisplay.profileComponent.dataType = 'true'">
                                 <xsl:element name="td">
                                     <xsl:choose>
-                                        <xsl:when test="@Datatype!=''">
+                                        <xsl:when test="@datatype!=''">
                                             <xsl:choose>
 						                    	<xsl:when test="@InnerLink!=''">
 						                    		<xsl:element name="a">
@@ -232,11 +172,11 @@
 						                    			<xsl:attribute name="target">
 						                    				<xsl:text>_blank</xsl:text>
 						                    			</xsl:attribute>
-						                    			<xsl:value-of select="@Datatype" />
+						                    			<xsl:value-of select="@datatype" />
 						                    		</xsl:element>
 						                    	</xsl:when>
 						                    	<xsl:otherwise>
-						                    		<xsl:value-of select="@Datatype" />
+						                    		<xsl:value-of select="@datatype" />
 						                    	</xsl:otherwise>
 						                    </xsl:choose>
                                         </xsl:when>
@@ -248,6 +188,69 @@
                                     </xsl:choose>
                                 </xsl:element>
                             </xsl:if>
+                            <xsl:if test="$columnDisplay.profileComponent.usage = 'true'">
+                                <xsl:element name="td">
+                                    <xsl:choose>
+                                        <xsl:when test="@usage!=''">
+                                            <xsl:value-of select="@usage"/>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:attribute name="class">
+                                                <xsl:text>greyCell</xsl:text>
+                                            </xsl:attribute>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:element>
+                            </xsl:if>
+<!--                             <xsl:if test="$columnDisplay.profileComponent.cardinality = 'true'">
+ -->                                <xsl:element name="td">
+                                    <xsl:choose>
+                                        <xsl:when test="(((normalize-space(@cardinalityMin) = '') and (normalize-space(@cardinalityMax) = ''))) or @usage = 'X'">
+                                            <xsl:attribute name="class">
+                                                 <xsl:text>greyCell</xsl:text>
+                                               
+<!--    <xsl:value-of select="concat(normalize-space(@cardinalityMin), ' + ', normalize-space(@cardinalityMax))"/>      
+ -->                                            </xsl:attribute>
+                                        </xsl:when>
+                                         <xsl:otherwise>
+                                        	<xsl:value-of select="concat('[', @cardinalityMin ,'..', @cardinalityMax,']')"/>
+                                        </xsl:otherwise> 
+                                    </xsl:choose>
+                                </xsl:element>
+                            <!-- </xsl:if> -->
+<!--                             <xsl:if test="$columnDisplay.profileComponent.length = 'true'">
+ -->                                <xsl:element name="td">
+                                    <xsl:choose>
+                                        <xsl:when test="(((normalize-space(@lengthMin)='') and (normalize-space(@lengthMax)=''))) or @usage = 'X' or (normalize-space(@MinLength)='NA') or (normalize-space(@MaxLength)='NA')">
+                                            <xsl:attribute name="class">
+                                                <xsl:text>greyCell</xsl:text>
+                                            </xsl:attribute>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                          <!--   <xsl:attribute name="class"> -->
+                                            	<xsl:value-of select="concat('[',@lengthMin,'..',@lengthMax,']')"/>
+<!--                                             </xsl:attribute>
+ -->                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:element>
+<!--                             </xsl:if>
+ -->                            <xsl:if test="$columnDisplay.profileComponent.conformanceLength = 'true'">
+                                <xsl:element name="td">
+                                    <xsl:choose>
+                                        <xsl:when test="(normalize-space(@confLength)='') or (normalize-space(@confLength)='0') or @usage = 'X' or (normalize-space(@confLength)='NA')">
+                                            <xsl:attribute name="class">
+                                                <xsl:text>greyCell</xsl:text>
+                                            </xsl:attribute>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:attribute name="class">
+                                            	<xsl:value-of select="@confLength"/>
+                                            </xsl:attribute>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:element>
+                            </xsl:if>
+                            
                             <xsl:if test="$columnDisplay.profileComponent.valueSet = 'true'">
                                 <xsl:element name="td">
                                     <xsl:choose>
@@ -264,8 +267,8 @@
                             </xsl:if>
                             <xsl:element name="td">
                                 <xsl:choose>
-                                    <xsl:when test="@SingleElement!=''">
-                                        <xsl:value-of select="@SingleElement"/>
+                                    <xsl:when test="@constantValue!=''">
+                                        <xsl:value-of select="@constantValue"/>
                                     </xsl:when>
                                     <xsl:otherwise>
                                         <xsl:attribute name="class">
