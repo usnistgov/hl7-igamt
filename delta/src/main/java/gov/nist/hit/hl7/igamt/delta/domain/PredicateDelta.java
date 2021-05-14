@@ -4,6 +4,7 @@ import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 public class PredicateDelta {
@@ -11,6 +12,7 @@ public class PredicateDelta {
     private DeltaNode<Usage> trueUsage;
     private DeltaNode<Usage> falseUsage;
     private DeltaNode<String> description;
+    private ChangeReason changeReason;
 
     public DeltaAction getAction() {
         return action;
@@ -51,5 +53,13 @@ public class PredicateDelta {
         if(a != DeltaAction.UNCHANGED) {
             this.setAction(DeltaAction.UPDATED);
         }
+    }
+
+    public ChangeReason getChangeReason() {
+        return changeReason;
+    }
+
+    public void setChangeReason(ChangeReason changeReason) {
+        this.changeReason = changeReason;
     }
 }

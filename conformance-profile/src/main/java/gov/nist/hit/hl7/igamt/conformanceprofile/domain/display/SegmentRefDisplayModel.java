@@ -35,6 +35,7 @@ public class SegmentRefDisplayModel extends SegmentRefOrGroupDisplayModel {
   public SegmentRefDisplayModel(SegmentRef segmentRef) {
     super();
     this.setType(Type.SEGMENTREF);
+    this.setChangeLog(segmentRef.getChangeLog());
     this.setCustom(segmentRef.isCustom());
     this.setId(segmentRef.getId());
     this.setMax(segmentRef.getMax());

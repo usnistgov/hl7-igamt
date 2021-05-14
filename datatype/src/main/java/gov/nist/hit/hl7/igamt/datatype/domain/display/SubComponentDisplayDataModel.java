@@ -34,6 +34,7 @@ public class SubComponentDisplayDataModel extends Component {
   public SubComponentDisplayDataModel(Component component) {
     super();
     this.setType(Type.SUBCOMPONENT);
+    this.setChangeLog(component.getChangeLog());
     this.setConfLength(component.getConfLength());
     this.setCustom(component.isCustom());
     this.setId(component.getId());

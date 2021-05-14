@@ -36,6 +36,7 @@ public class FieldDisplayDataModel extends Field {
   public FieldDisplayDataModel(Field field) {
     super();
     this.setType(Type.FIELD);
+    this.setChangeLog(field.getChangeLog());
     this.setConfLength(field.getConfLength());
     this.setCustom(field.isCustom());
     this.setId(field.getId());
