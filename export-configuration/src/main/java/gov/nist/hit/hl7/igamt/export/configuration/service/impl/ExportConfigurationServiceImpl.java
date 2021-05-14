@@ -99,7 +99,12 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   public ExportConfiguration create(String username, String type) {
     //	ExportConfiguration exportConfiguration = exportConfigurationRepository.findOneById("BasicExportConfiguration");
     ExportType docType = ExportType.fromString(type);
-    ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, docType);
+    ExportConfiguration exportConfiguration;
+    if(docType.equals(docType.DIFFERENTIAL)) {
+       exportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, docType);
+    }else {
+       exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, docType);
+    }
     exportConfiguration.setId(null);
     exportConfiguration.setConfigName("New Configuration");
     exportConfiguration.setUsername(username);

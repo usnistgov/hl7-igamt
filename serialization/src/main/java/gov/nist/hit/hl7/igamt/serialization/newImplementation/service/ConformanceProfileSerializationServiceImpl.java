@@ -89,13 +89,12 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
         List<CoConstraintBinding> coConstraintDelta = null;
         // Calculate conformanceProfile delta if the conformanceProfile has an origin
 
-        if (deltaMode) {
+        if (deltaMode && conformanceProfileExportConfiguration.isReasonForChange()) {
           conformanceProfileElement.appendChild(reasonForChangeSerializationService.serializeReasonForChange(conformanceProfile.getLabel(), conformanceProfile.getBinding(), conformanceProfile.getChildren()));
         if (conformanceProfile.isDerived()) {
           ResourceDelta resourceDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
           if (resourceDelta != null) {
             List<StructureDelta> structureDelta = resourceDelta.getStructureDelta();
-
             List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
             List<ConformanceStatementDelta> confStDeltaChanged = resourceDelta.getConformanceStatementDelta().stream().filter(d -> !d.getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
             List<CoConstraintBinding> coConstraintDeltaChanged = null;

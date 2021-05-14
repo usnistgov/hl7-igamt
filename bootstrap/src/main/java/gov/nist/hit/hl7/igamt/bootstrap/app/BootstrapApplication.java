@@ -343,9 +343,7 @@ public class BootstrapApplication implements CommandLineRunner {
   
   //@PostConstruct
   void generateDefaultExportConfig() {
-    exportConfigurationRepository.deleteAll();
-    List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true, ExportType.IGDOCUMENT);
-    if( originals == null || originals.isEmpty()) {
+      exportConfigurationRepository.deleteByType(ExportType.IGDOCUMENT);
       ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, ExportType.IGDOCUMENT);
       basicExportConfiguration.setConfigName("IG Document Default Export Configuration");
       basicExportConfiguration.setOriginal(true);
@@ -353,27 +351,37 @@ public class BootstrapApplication implements CommandLineRunner {
       basicExportConfiguration.setDefaultType(false);
       basicExportConfiguration.setDefaultConfig(false);
       exportConfigurationRepository.save(basicExportConfiguration);
-      
-      
-      ExportConfiguration differential = ExportConfiguration.getBasicExportConfiguration(false, ExportType.DIFFERENTIAL);
-      differential.setConfigName("Differential Export Configuration");
-      differential.setOriginal(true);
-      differential.setId("DIFF-DEFAULT-CONFIG-ID");
-      differential.setDefaultType(false);
-      differential.setDefaultConfig(false);
-      exportConfigurationRepository.save(differential);
-      
-      
-      basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, ExportType.DATATYPELIBRARY);
-      basicExportConfiguration.setConfigName("DTL Document Default Export Configuration");
-      basicExportConfiguration.setOriginal(true);
-      basicExportConfiguration.setId("DTL-DEFAULT-CONFIG-ID");
-      basicExportConfiguration.setDefaultType(false);
-      basicExportConfiguration.setDefaultConfig(false);
-      exportConfigurationRepository.save(basicExportConfiguration);
-
-    }
+       
   }
+
+  
+  @PostConstruct
+  void generateDiffrentialExportConfig() {
+    exportConfigurationRepository.deleteByType(ExportType.DIFFERENTIAL);
+    ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, ExportType.DIFFERENTIAL);
+    basicExportConfiguration.setConfigName("Differential Export Configuration");
+    basicExportConfiguration.setOriginal(true);
+    basicExportConfiguration.setId("DIFF-DEFAULT-CONFIG-ID");
+    basicExportConfiguration.setDefaultType(false);
+    basicExportConfiguration.setDefaultConfig(false);
+    exportConfigurationRepository.save(basicExportConfiguration);
+    
+  }
+  
+  //@PostConstruct
+  void generateDTLConfig() {
+    exportConfigurationRepository.deleteByType(ExportType.DATATYPELIBRARY);
+    ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, ExportType.DATATYPELIBRARY);
+    basicExportConfiguration.setConfigName("Datatype Library Default Export Configuration");
+    basicExportConfiguration.setOriginal(true);
+    basicExportConfiguration.setId("DTL-DEFAULT-CONFIG-ID");
+    basicExportConfiguration.setDefaultType(false);
+    basicExportConfiguration.setDefaultConfig(false);
+    exportConfigurationRepository.save(basicExportConfiguration);
+    
+  }
+  
+  
   //  
   //
   // @PostConstruct

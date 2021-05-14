@@ -70,7 +70,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
     Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
     Datatype datatype = datatypeDataModel.getModel();
 
-    if(deltaMode) {
+    if(deltaMode && datatypeExportConfiguration.isReasonForChange()) {
       if(datatype instanceof ComplexDatatype) {
         datatypeElement.appendChild(reasonForChangeSerializationService.serializeReasonForChange(datatype.getLabel(), datatype.getBinding(),  ((ComplexDatatype)datatype).getComponents()));
       }

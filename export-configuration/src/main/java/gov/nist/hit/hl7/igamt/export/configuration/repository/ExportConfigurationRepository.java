@@ -40,6 +40,7 @@ public interface ExportConfigurationRepository extends MongoRepository<ExportCon
   public ExportConfiguration findOneByOriginal(boolean isOriginal);
   public ExportConfiguration findOneByDefaultConfigAndUsernameAndType(boolean defaultConfig, String username, ExportType type);
   public ExportConfiguration findOneByIdAndType(String id, ExportType type);
-
+  public void deleteByType(ExportType type);
+  public void deleteByOriginalAndType(boolean original, ExportType type);
   
 }

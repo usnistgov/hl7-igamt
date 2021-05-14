@@ -64,7 +64,7 @@ public class ExportConfiguration {
   private IgGeneralConfiguration igGeneralConfiguration;
 
 
-
+  boolean reasonForChange = false;
   boolean defaultType = false;
   boolean defaultConfig = false;
   private String name;
@@ -169,41 +169,32 @@ public class ExportConfiguration {
     //    coConstraintExportMode.setNoExport(false);
     //    defaultConfiguration.setCoConstraintExportMode(coConstraintExportMode);
     // Default Usages
-    UsageConfiguration displayAll = new UsageConfiguration();
     UsageConfiguration displaySelectives = new UsageConfiguration();
-    displaySelectives.setC(false);
+    displaySelectives.setC(setAllTrue);
     displaySelectives.setX(setAllTrue);
     displaySelectives.setO(setAllTrue);
     displaySelectives.setR(true);
     displaySelectives.setRe(true);
     displaySelectives.setCab(true);
-    displaySelectives.setB(false);
-    displaySelectives.setW(false);
+    displaySelectives.setB(setAllTrue);
+    displaySelectives.setW(setAllTrue);
     CodeUsageConfiguration codeUsageExport = new CodeUsageConfiguration();
     codeUsageExport.setE(setAllTrue);
     codeUsageExport.setP(true);
     codeUsageExport.setR(true);
-    displayAll.setC(false);
-    displayAll.setCab(true);
-    displayAll.setRe(true);
-    displayAll.setX(false);
-    displayAll.setO(false);
-    displayAll.setR(true);
-    displayAll.setB(false);
-    displayAll.setW(false);
     DeltaExportConfigMode deltaMode = DeltaExportConfigMode.HIGHLIGHT;
     HashMap<DeltaAction,String> colors = new HashMap<>();
     colors.put(DeltaAction.ADDED, "#a7d6a9");
     colors.put(DeltaAction.DELETED, "#EC330C");
     colors.put(DeltaAction.UPDATED, "#ECAF0C");
     DeltaConfiguration deltaConfiguration = new DeltaConfiguration(deltaMode,colors);
-    defaultConfiguration.setSegmentORGroupsMessageExport(displayAll);
-    defaultConfiguration.setSegmentORGroupsCompositeProfileExport(displayAll);
+    defaultConfiguration.setSegmentORGroupsMessageExport(displaySelectives);
+    defaultConfiguration.setSegmentORGroupsCompositeProfileExport(displaySelectives);
 
-    defaultConfiguration.setComponentExport(displayAll);
+    defaultConfiguration.setComponentExport(displaySelectives);
 
-    defaultConfiguration.setFieldsExport(displayAll);
-    defaultConfiguration.setProfileComponentItemsExport(displayAll);
+    defaultConfiguration.setFieldsExport(displaySelectives);
+    defaultConfiguration.setProfileComponentItemsExport(displaySelectives);
 
     defaultConfiguration.setCodesExport(codeUsageExport);
     defaultConfiguration.setPhinvadsUpdateEmailNotification(false);
@@ -313,18 +304,24 @@ public class ExportConfiguration {
     datatypeExportConfiguration.setBinding(true);
     datatypeExportConfiguration.setPurposeAndUse(true);
     datatypeExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    datatypeExportConfiguration.setDeltaMode(true);
     datatypeExportConfiguration.setDeltaConfig(deltaConfiguration);
     datatypeExportConfiguration.setStructuredNarrative(structuredNarrative);
+    if(type.equals(ExportType.DIFFERENTIAL)) {
+      datatypeExportConfiguration.setReasonForChange(true);
+      datatypeExportConfiguration.setDeltaMode(true);
+    }
 
     // Setting SegmentExportConfiguration
     SegmentExportConfiguration segmentExportConfiguration = new SegmentExportConfiguration(defaultConfiguration);
     segmentExportConfiguration.setDynamicMappingInfo(true);
     segmentExportConfiguration.setBinding(true);
     segmentExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    segmentExportConfiguration.setDeltaMode(true);
     segmentExportConfiguration.setDeltaConfig(deltaConfiguration);
     segmentExportConfiguration.setStructuredNarrative(structuredNarrative);
+    if(type.equals(ExportType.DIFFERENTIAL)) {
+      segmentExportConfiguration.setReasonForChange(true);
+      segmentExportConfiguration.setDeltaMode(true);
+    }
 
 
     // Setting ConformanceProfileExportConfiguration
@@ -335,13 +332,15 @@ public class ExportConfiguration {
     conformanceProfileExportConfiguration.setStructID(true);
     conformanceProfileExportConfiguration.setBinding(true);
     conformanceProfileExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    conformanceProfileExportConfiguration.setDeltaMode(true);
     conformanceProfileExportConfiguration.setDeltaConfig(deltaConfiguration);
     conformanceProfileExportConfiguration.setListedColumns(listedColumns);
     //    conformanceProfileExportConfiguration.getMetadataConfig().setType(false);
     //    conformanceProfileExportConfiguration.getMetadataConfig().setRole(false);
     conformanceProfileExportConfiguration.setStructuredNarrative(structuredNarrative);
-
+    if(type.equals(ExportType.DIFFERENTIAL)) {
+      conformanceProfileExportConfiguration.setReasonForChange(true);
+      conformanceProfileExportConfiguration.setDeltaMode(true);
+    }
 
 
     // Setting ValueSetExportConfiguration
@@ -349,6 +348,10 @@ public class ExportConfiguration {
     valueSetExportConfiguration.setDeltaMode(true);
     valueSetExportConfiguration.setDeltaConfig(deltaConfiguration);
     valueSetExportConfiguration.setComments(false);
+    if(type.equals(ExportType.DIFFERENTIAL)) {
+      valueSetExportConfiguration.setReasonForChange(true);
+      valueSetExportConfiguration.setDeltaMode(true);
+    }
 
     //    defaultConfiguration.setDatatypeLibraryExportConfiguration(datatypeLibraryExportConfiguration);
     defaultConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
@@ -356,9 +359,11 @@ public class ExportConfiguration {
     defaultConfiguration.setValueSetExportConfiguration(valueSetExportConfiguration);
     defaultConfiguration.setSegmentExportConfiguration(segmentExportConfiguration);
     defaultConfiguration.setAbstractDomainExportConfiguration(abstractDomainExportConfiguration);
-    defaultConfiguration.setDeltaMode(true);
-    defaultConfiguration.setDeltaConfig(deltaConfiguration);
-
+    if(type.equals(ExportType.DIFFERENTIAL)) {
+      defaultConfiguration.setReasonForChange(true);
+      defaultConfiguration.setDeltaMode(true);
+      defaultConfiguration.setDeltaConfig(deltaConfiguration);
+    }    
 
 
     return defaultConfiguration;
@@ -1022,6 +1027,11 @@ public class ExportConfiguration {
     this.type = type;
   }
 
+  public boolean isReasonForChange() {
+    return reasonForChange;
+  }
 
-
+  public void setReasonForChange(boolean reasonForChange) {
+    this.reasonForChange = reasonForChange;
+  }
 }

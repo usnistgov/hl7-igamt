@@ -16,7 +16,7 @@
     <p-dropdown
       [options]="modeOptions"
       [styleClass]="'form-control form-control-dropdown'"
-      [(ngModel)]="config.mode" name="mode" placeholder="Mode" (ngModelChange)="triggerChange()"></p-dropdown>
+      [(ngModel)]="config.mode" name="mode" placeholder="Mode" (ngModelChange)="triggerChange()" [disabled]="viewOnly"></p-dropdown>
     <label style="font-weight: bold; margin-top: 10px;">Highlight Colors</label>
     <table class="table table-sm colors-table" style="margin-bottom: 0px !important;">
       <tr>

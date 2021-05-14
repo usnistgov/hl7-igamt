@@ -150,7 +150,6 @@ public class ExportController {
       e.printStackTrace();
       throw new ExportException(e, "Error while sending back exported IG Document with id " + igId);
     }
-
   }
 
   @RequestMapping(value = "/api/export/library/{igId}/configuration/{configId}/{format}", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")

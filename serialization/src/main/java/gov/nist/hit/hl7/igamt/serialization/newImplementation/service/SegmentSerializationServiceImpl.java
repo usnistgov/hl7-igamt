@@ -78,7 +78,7 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
   public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision, Boolean deltaMode) throws SerializationException {
     Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, position, segmentExportConfiguration);
     Segment segment = segmentDataModel.getModel();
-    if(deltaMode) {
+    if(deltaMode && segmentExportConfiguration.isReasonForChange()) {
       segmentElement.appendChild(reasonForChangeSerializationService.serializeReasonForChange(segment.getLabel(),segment.getBinding(), segment.getChildren()));
     if( segment.isDerived()) {
       ResourceDelta resourceDelta = deltaService.delta(Type.SEGMENT, segment);

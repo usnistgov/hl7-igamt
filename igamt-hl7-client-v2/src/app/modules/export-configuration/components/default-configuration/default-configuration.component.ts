@@ -67,6 +67,7 @@ export class DefaultConfigurationComponent implements OnInit {
   }
 
   updateDelta($event) {
+    console.log($event);
     this.hasChanges = true;
     this.currentConfiguration.deltaMode = $event.active;
     this.currentConfiguration.deltaConfig = $event.config;

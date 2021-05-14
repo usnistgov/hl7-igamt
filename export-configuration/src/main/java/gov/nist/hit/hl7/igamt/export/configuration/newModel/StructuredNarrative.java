@@ -6,8 +6,7 @@ public class StructuredNarrative {
 	private boolean comments = false ;
 	private boolean postDefinition = false ;
 	private boolean preDefinition = false ;
-	
-	
+		
 	
 	public boolean isDefinitionText() {
 		return definitionText;

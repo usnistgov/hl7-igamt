@@ -26,15 +26,10 @@
 						<xsl:element name="th">
 							<xsl:text>Reason</xsl:text>
 						</xsl:element>
-						<xsl:element name="th">
-							<xsl:text>Date</xsl:text>
-						</xsl:element>
 					</xsl:element>
 				</xsl:element>
 				<xsl:element name="tbody">
-					<xsl:value-of select="@Property" />
-					<xsl:element name="tr">
-						<xsl:for-each select=".//Reason">
+ 						<xsl:for-each select=".//Reason">
 							<xsl:element name="tr">
 								<xsl:element name="td">
 									<xsl:value-of select="@Location" />
@@ -45,15 +40,11 @@
 								<xsl:element name="td">
 									<xsl:value-of select="@Text" />
 								</xsl:element>
-								<xsl:element name="td">
-									<xsl:value-of select="@Date" />
-								</xsl:element>
 							</xsl:element>
 						</xsl:for-each>
-					</xsl:element>
+					
 				</xsl:element>
 			</xsl:element>
-
 		</xsl:if>
 	</xsl:template>
 
