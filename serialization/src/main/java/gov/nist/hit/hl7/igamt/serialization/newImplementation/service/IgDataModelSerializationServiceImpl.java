@@ -177,7 +177,9 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		if(resource instanceof Valueset) {
 		  title += '-'+ resource.getName();
 		}else {
+			if(resource.getDescription() != null && !resource.getDescription().isEmpty()) {
           title += '-'+ resource.getDescription();
+			} 
 		}
 		element.addAttribute(
 				new Attribute("title", title != null ? title: ""));

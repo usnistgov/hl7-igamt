@@ -30,6 +30,7 @@ public class IgDataModel extends DocumentStructureDataModel implements Serializa
 	private Set<SegmentDataModel> segments = new HashSet<SegmentDataModel>();
 	private Set<ConformanceProfileDataModel> conformanceProfiles = new HashSet<ConformanceProfileDataModel>();
     private Set<ProfileComponentDataModel> profileComponents = new HashSet<ProfileComponentDataModel>();
+    private Set<CompositeProfileDataModel> compositeProfile = new HashSet<CompositeProfileDataModel>();
 	private Set<ValuesetDataModel> valuesets = new HashSet<ValuesetDataModel>();
 	
 
@@ -132,6 +133,14 @@ public class IgDataModel extends DocumentStructureDataModel implements Serializa
 
 	public void setProfileComponents(Set<ProfileComponentDataModel> profileComponents) {
 		this.profileComponents = profileComponents;
+	}
+
+	public Set<CompositeProfileDataModel> getCompositeProfile() {
+		return compositeProfile;
+	}
+
+	public void setCompositeProfile(Set<CompositeProfileDataModel> compositeProfile) {
+		this.compositeProfile = compositeProfile;
 	}
 
 }

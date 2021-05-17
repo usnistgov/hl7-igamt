@@ -155,13 +155,7 @@ public class ExportFilterDecision {
     OveriddedValueSetMap = overiddedValueSetMap;
   }
   
-  public Map<String, Boolean> getProfileComponentFilterMap() {
-    return ProfileComponentFilterMap;
-  }
-
-  public void setProfileComponentFilterMap(Map<String, Boolean> profileComponentFilterMap) {
-    ProfileComponentFilterMap = profileComponentFilterMap;
-  }
+ 
 
   public Map<String, ProfileComponentExportConfiguration> getOveriddedProfileComponentSetMap() {
     return OveriddedProfileComponentSetMap;

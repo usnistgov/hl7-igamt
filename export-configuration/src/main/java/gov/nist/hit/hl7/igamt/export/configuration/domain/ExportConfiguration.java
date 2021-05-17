@@ -1014,10 +1014,6 @@ public class ExportConfiguration {
     return igGeneralConfiguration;
   }
 
-  public void setIgGeneralConfiguration(IgGeneralConfiguration igGeneralConfiguration) {
-    this.igGeneralConfiguration = igGeneralConfiguration;
-  }
-
   public ExportType getType() {
     return type;
   }
