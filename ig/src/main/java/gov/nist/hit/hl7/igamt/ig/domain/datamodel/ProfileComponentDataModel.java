@@ -16,7 +16,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -28,7 +30,9 @@ import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.service.impl.DataElementNamingService;
 
 /**
  * @author jungyubw
@@ -36,6 +40,7 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
  */
 public class ProfileComponentDataModel implements Serializable, Comparable{
 	private ProfileComponent model;
+	private Set<ProfileComponentContextDataModel> profileComponentContextDataModels;
 
 	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
 	private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
@@ -78,36 +83,22 @@ public class ProfileComponentDataModel implements Serializable, Comparable{
 		this.valuesetMap = valuesetMap;
 	}
 
-	/**
-	 * @param cp
-	 */
-	public void putModel(ProfileComponent cp, InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService, 
-			Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap,
-			ConformanceStatementRepository conformanceStatementRepository,
-			PredicateRepository predicateRepository, SegmentService segmentService) {
+	public Set<ProfileComponentContextDataModel> getProfileComponentContextDataModels() {
+		return profileComponentContextDataModels;
+	}
+
+	public void setProfileComponentContextDataModels(Set<ProfileComponentContextDataModel> profileComponentContextDataModels) {
+		this.profileComponentContextDataModels = profileComponentContextDataModels;
+	}
+
+	public void putModel(ProfileComponent cp, DataElementNamingService namingService) {
 		this.model = cp;
-
-//		if (cp.getBinding() != null) {
-//			if (cp.getBinding().getConformanceStatements() != null) {
-//				for (ConformanceStatement cs : cp.getBinding().getConformanceStatements()) {
-//					this.conformanceStatements.add(cs);
-//				}
-//			}
-//			if (cp.getBinding().getChildren() != null) {
-//				this.popPathBinding(cp.getName(), cp.getBinding().getChildren(), null, predicateRepository,
-//						valuesetBindingDataModelMap);
-//			}
-//		}
-
-
-
-//		if (cp.getChildren() != null) {
-//			cp.getChildren().forEach(child -> {
-//				this.segmentRefOrGroupDataModels.add(new SegmentRefOrGroupDataModel(child, inMemoryDomainExtensionService, null,
-//						this.predicateMap, segmentService));
-//			});
-//		}
-
+		this.setProfileComponentContextDataModels(
+				cp.getChildren()
+						.stream()
+						.map((context) -> new ProfileComponentContextDataModel(context, namingService))
+						.collect(Collectors.toSet())
+		);
 	}
 
 	private void popPathBinding(String readablePath, Set<StructureElementBinding> sebs, String path,

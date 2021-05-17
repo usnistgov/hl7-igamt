@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ProfileComponentExportConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -118,84 +119,65 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
         }
         return serializedSection;
     }
-    private Element SerializeProfileComponentRegistry(Section section, int level, IgDataModel igDataModel,
-			ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException {
-
+    private Element SerializeProfileComponentRegistry(
+    		Section section, int level, IgDataModel igDataModel,
+			ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision
+	) throws RegistrySerializationException {
         Registry profileComponentRegistry = igDataModel.getModel().getProfileComponentRegistry();
         try {
-            Element profileComponentRegistryElement = SerializeCommonSection(section, level, igDataModel,
-                    exportConfiguration);
-            if (profileComponentRegistry != null) {
-				if (!profileComponentRegistry.getChildren().isEmpty()) {					
-					ArrayList<ProfileComponentDataModel> profileComponentDataModelsList = new ArrayList<>();
+            Element profileComponentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+            if (profileComponentRegistry != null && !profileComponentRegistry.getChildren().isEmpty()) {
+            	ArrayList<ProfileComponentDataModel> profileComponentDataModelsList = new ArrayList<>();
+            	for (Link profileComponentLink : profileComponentRegistry.getChildren()) {
 
-					for (Link profileComponentLink : profileComponentRegistry.getChildren()) {
-//						if (exportFilterDecision != null && exportFilterDecision.getConformanceProfileFilterMap() != null
-//								&& exportFilterDecision.getConformanceProfileFilterMap().containsKey(conformanceProfileLink.getId())
-//								&& exportFilterDecision.getConformanceProfileFilterMap().get(conformanceProfileLink.getId())) {
-							ProfileComponentDataModel profileComponentModel = null;
+            		ProfileComponentDataModel profileComponentModel = igDataModel.getProfileComponents()
+							.stream()
+							.filter(dt -> profileComponentLink.getId().equals(dt.getModel().getId()))
+							.findAny()
+							.orElseThrow(() -> new ConformanceProfileNotFoundException(profileComponentLink.getId()));
+            		profileComponentDataModelsList.add(profileComponentModel);
+            	}
+            	Collections.sort(profileComponentDataModelsList);
 
-							profileComponentModel = igDataModel.getProfileComponents().stream()
-									.filter(dt -> profileComponentLink.getId().equals(dt.getModel().getId())).findAny()
-									.orElseThrow(() -> new ConformanceProfileNotFoundException(profileComponentLink.getId())); 
+            	for(ProfileComponentDataModel profileComponentDataModel : profileComponentDataModelsList) {
+					boolean exportFilterDecisionNotSet = exportFilterDecision == null;
+					boolean exportFilterDecisionIsTrue = exportFilterDecision != null
+							&& exportFilterDecision.getProfileComponentFilterMap() != null
+							&& exportFilterDecision.getProfileComponentFilterMap().containsKey(profileComponentDataModel.getModel().getId())
+							&& exportFilterDecision.getProfileComponentFilterMap().get(profileComponentDataModel.getModel().getId());
 
-							profileComponentDataModelsList.add(profileComponentModel);
-//						}
-					}
-					Collections.sort(profileComponentDataModelsList);
+					if (exportFilterDecisionNotSet || exportFilterDecisionIsTrue) {
 
-					for(ProfileComponentDataModel conformanceProfileDataModel : profileComponentDataModelsList) {
-							Element profileComponentElement;
-							if (exportFilterDecision != null && exportFilterDecision.getProfileComponentFilterMap() != null
-									&& exportFilterDecision.getProfileComponentFilterMap().containsKey(conformanceProfileDataModel.getModel().getId())
-									&& exportFilterDecision.getProfileComponentFilterMap().get(conformanceProfileDataModel.getModel().getId())) {
-							if (exportFilterDecision != null && exportFilterDecision.getOveriddedProfileComponentMap() != null
-									&& exportFilterDecision.getOveriddedProfileComponentMap()
-									.containsKey(conformanceProfileDataModel.getModel().getId())) {
-								profileComponentElement = profileComponentSerializationService.serializeProfileComponent(conformanceProfileDataModel, igDataModel,
-										level + 1, 0,
-										exportFilterDecision.getOveriddedProfileComponentMap().get(conformanceProfileDataModel.getModel().getId()), false);
-								System.out.println("We in the IF else 2");
+						boolean configurationIsOverridden = !exportFilterDecisionNotSet
+								&& exportFilterDecision.getOveriddedProfileComponentMap() != null
+								&& exportFilterDecision.getOveriddedProfileComponentMap().containsKey(profileComponentDataModel.getModel().getId());
 
-							} else {
-								System.out.println("We in the IF else 2");
-								profileComponentElement = profileComponentSerializationService.serializeProfileComponent(conformanceProfileDataModel, igDataModel, level+1, 0, exportConfiguration.getProfileComponentExportConfiguration(), false);
-							}
-							if (profileComponentElement != null) {
-								profileComponentRegistryElement.appendChild(profileComponentElement);
-							}
-							}
-						
-					if(exportFilterDecision == null) {
-//							DatatypeDataModel datatypeDataModel = null;
-//
-//							datatypeDataModel = ((DatatypeLibraryDataModel) documentStructureDataModel).getDatatypes().stream()
-//									.filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
-//									.orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId())); 
+						ProfileComponentExportConfiguration profileComponentExportConfiguration = configurationIsOverridden ?
+								exportFilterDecision.getOveriddedProfileComponentMap().get(profileComponentDataModel.getModel().getId()) :
+								exportConfiguration.getProfileComponentExportConfiguration();
 
+						Element profileComponentElement = profileComponentSerializationService.serializeProfileComponent(
+								profileComponentDataModel,
+								igDataModel,
+								level + 1,
+								0,
+								profileComponentExportConfiguration,
+								false
+						);
 
-//							Element datatypeElement;
-						profileComponentElement = profileComponentSerializationService.serializeProfileComponent(conformanceProfileDataModel,igDataModel,
-									level + 1, 0,
-									exportConfiguration.getProfileComponentExportConfiguration(), false);
-
-							if (profileComponentElement != null) {
-								profileComponentRegistryElement.appendChild(profileComponentElement);
-							}
-
-						}}
+						if (profileComponentElement != null) {
+							profileComponentRegistryElement.appendChild(profileComponentElement);
+						}
 					}
 				}
+            }
             return profileComponentRegistryElement;
         } catch (Exception exception) {
         	exception.printStackTrace();
             throw new RegistrySerializationException(exception, section, profileComponentRegistry);
         }
-
-    
 	}
-	//
-    // }
+
 
     public Element SerializeCommonSection(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
             ExportConfiguration exportConfiguration) {
