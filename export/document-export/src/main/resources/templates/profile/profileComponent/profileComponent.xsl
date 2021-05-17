@@ -27,16 +27,17 @@
             </xsl:call-template>
             <xsl:element name="br"/>
         </xsl:if> -->
-        <xsl:element name="span">
-            <xsl:element name="b">
-                <xsl:text>Profile Component Definition</xsl:text>
-            </xsl:element>
-        </xsl:element>
-        <xsl:element name="span">
+                <xsl:element name="span">
             <xsl:element name="h4">
                     <xsl:value-of select="@sourceName"/>
             </xsl:element>
         </xsl:element>
+        <xsl:element name="span">
+            <xsl:element name="b">
+                <xsl:text>Structure Definition</xsl:text>
+            </xsl:element>
+        </xsl:element>
+
         <xsl:element name="table">
             <xsl:attribute name="class">
                 <xsl:text>contentTable</xsl:text>
@@ -350,6 +351,9 @@
                 </xsl:element>
             </xsl:element>
         </xsl:element>
+                <xsl:element name="br"/>
+                <xsl:element name="br"/>
+        
     	<xsl:if test="count(Constraints/Constraint[@Type='pre']) &gt; 0">
             <xsl:element name="br"/>
             <xsl:element name="span">
