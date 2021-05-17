@@ -1108,8 +1108,8 @@ public class IgServiceImpl implements IgService {
         if(pc == null) pc = inMemoryDomainExtensionService.findById(link.getId(), ProfileComponent.class);
         if (pc != null) {
         	ProfileComponentDataModel profileComponentDataModel = new ProfileComponentDataModel();
-        	profileComponentDataModel.putModel(pc, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
-              this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
+        	DataElementNamingService dataElementNamingService = new DataElementNamingService(datatypeService, segmentService, conformanceProfileService);
+        	profileComponentDataModel.putModel(pc, dataElementNamingService);
           profileComponents.add(profileComponentDataModel);
         } else
           throw new Exception("ProfileComponent is missing::::" + link.getId());
