@@ -1,0 +1,92 @@
+<ng-template #headerControls>
+  <button class="btn btn-success btn-sm" (click)="createCs()" *ngIf="!(viewOnly$ | async)">
+    <i class="fa fa-plus"></i> New
+  </button>
+</ng-template>
+
+
+<!-- RESOURCE CS -->
+<ng-container *ngIf="conformanceStatementItem$ | async as csItems">
+  <div *ngIf="csItems.nonexistent && csItems.nonexistent.length > 0" class="alert alert-warning" style="display: flex; align-items: center; justify-content: center;">
+    <span>{{csItems.nonexistent.length}} items from deleted conformance statements found</span>
+    <button class="btn btn-sm btn-outline-primary" style="margin-left: 10px;" (click)="clean()">
+      <i class="fa fa-trash"></i> Clean
+    </button>
+  </div>
+  <div class="header-title">
+    <h5>List of profile components</h5>
+    <div></div>
+  </div>
+  <div class="panel-body">
+    <ng-container *ngTemplateOutlet="itemList; context: { $implicit: csItems.items }"></ng-container>
+  </div>
+  <div class="header-title">
+    <h5>List of resource conformance statements</h5>
+    <div></div>
+  </div>
+  <div class="panel-body">
+    <ng-container *ngTemplateOutlet="csList; context: { $implicit: csItems.available }"></ng-container>
+  </div>
+</ng-container>
+
+<ng-template #csList let-csList>
+  <div *ngIf="!csList || csList.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+    <span> No Conformance Statement </span>
+  </div>
+  <table class="table table-striped table-bordered table-sm" *ngIf="csList && csList.length > 0">
+    <tr>
+      <th style="width: 100px;">ID</th>
+      <th>Description</th>
+      <th *ngIf="!(viewOnly$ | async)" style="width: 190px;"></th>
+    </tr>
+    <tr *ngFor="let cs of csList; let i = index;">
+      <td>
+        {{ cs.identifier }}
+        <span class="badge badge-secondary" *ngIf="cs?.type === 'FREE'">free-text</span>
+        <span class="badge badge-success" *ngIf="cs?.type === 'FREE' && cs?.assertionScript">script</span>
+        <span class="badge badge-warning" *ngIf="cs?.locked">derived</span>
+      </td>
+      <td>{{ getDescription(cs) }}</td>
+      <td style="width: 190px;">
+        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="excludeCs(cs)">
+          Exclude
+        </button>
+      </td>
+    </tr>
+  </table>
+</ng-template>
+
+<ng-template #itemList let-itemList>
+  <div *ngIf="!itemList || itemList.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+    <span> No Conformance Statement Profile Components </span>
+  </div>
+  <table class="table table-striped table-bordered table-sm" *ngIf="itemList && itemList.length > 0">
+    <tr>
+      <th style="width: 100px;"> Action </th>
+      <th style="width: 100px;">ID</th>
+      <th>Description</th>
+      <th *ngIf="!(viewOnly$ | async)" style="width: 190px;"></th>
+    </tr>
+    <tr *ngFor="let cs of itemList; let i = index;" [ngClass]="{
+      'table-success': cs.item.change === 'ADD',
+      'table-danger': cs.item.change === 'DELETE'
+    }">
+      <td>
+        <span class="badge badge-success" *ngIf="cs.item.change === 'ADD'">{{ cs.item.change }}</span>
+        <span class="badge badge-danger" *ngIf="cs.item.change === 'DELETE'">{{ cs.item.change }}</span>
+      </td>
+      <td>
+        {{ cs.conformanceStatement?.identifier }}
+        <span class="badge badge-secondary" *ngIf="cs?.conformanceStatement?.type === 'FREE'">free-text</span>
+        <span class="badge badge-success" *ngIf="cs?.conformanceStatement?.type === 'FREE' && cs?.conformanceStatement?.assertionScript">script</span>
+        <span class="badge badge-warning" *ngIf="cs?.conformanceStatement?.locked">derived</span>
+      </td>
+      <td>{{ getDescription(cs?.conformanceStatement) }}</td>
+      <td style="width: 190px;">
+        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteItem(cs.item)">
+          <i class="fa fa-trash"></i> Delete
+        </button>
+      </td>
+    </tr>
+  </table>
+</ng-template>

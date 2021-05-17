@@ -6,8 +6,9 @@ import { IComment } from './comment.interface';
 import { IMessageProfileIdentifier } from './conformance-profile.interface';
 import { IPredicate } from './predicate.interface';
 import { IResource } from './resource.interface';
-import { PropertyType } from './save-change';
+import { PropertyType, ChangeType } from './save-change';
 import { IDynamicMappingInfo } from './segment.interface';
+import { IConformanceStatement } from './cs.interface';
 
 export interface IProfileComponent extends IResource {
   children?: IProfileComponentContext;
@@ -63,13 +64,6 @@ export interface IPropertyConfLength extends IItemProperty {
   propertyKey: PropertyType.CONFLENGTH;
 }
 
-export interface IPropertyConformanceStatement extends IItemProperty {
-  constraintId: string;
-  description: string;
-  assertionScript: string;
-  propertyKey: PropertyType.STATEMENT;
-}
-
 export interface IPropertyConstantValue extends IItemProperty {
   constantValue: string;
   propertyKey: PropertyType.CONSTANTVALUE;
@@ -116,6 +110,7 @@ export interface IPropertySingleCode extends IPropertyBinding {
   internalSingleCode: InternalSingleCode;
   propertyKey: PropertyType.SINGLECODE;
 }
+
 export interface IPropertyUsage extends IItemProperty {
   usage: Usage;
   propertyKey: PropertyType.USAGE;
@@ -127,6 +122,13 @@ export interface IPropertyLengthType extends IItemProperty {
 export interface IPropertyValueSet extends IPropertyBinding {
   valuesetBindings: IValuesetBinding[];
   propertyKey: PropertyType.VALUESET;
+}
+
+export interface IPropertyConformanceStatement extends IPropertyBinding {
+  change: ChangeType;
+  targetId: string;
+  payload: IConformanceStatement;
+  propertyKey: PropertyType.STATEMENT;
 }
 
 export interface IValuedPath {

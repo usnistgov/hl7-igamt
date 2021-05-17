@@ -27,6 +27,7 @@ import { AResourceRepositoryService } from '../../shared/services/resource-repos
 import { IProfileComponentMetadata } from '../components/profile-component-metadata/profile-component-metadata.component';
 import { IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
 import { ITreeStructureProfileComponentPermutation } from './profile-component-ref-change.object';
+import { IPropertyConformanceStatement } from '../../shared/models/profile.component';
 
 export interface IHL7v2TreeProfileComponentNode extends IHL7v2TreeNode {
   data: IHL7v2TreeProfileComponentNodeData;
@@ -66,6 +67,10 @@ export class ProfileComponentService {
 
   saveContext(pcId: string, context: IProfileComponentContext): Observable<IProfileComponentContext> {
     return this.http.post<IProfileComponentContext>(this.URL + pcId + '/context/' + context.id + '/update', context);
+  }
+
+  saveRootConformanceStatements(pcId: string, id: string, csList: IPropertyConformanceStatement[]): Observable<IPropertyConformanceStatement[]> {
+    return this.http.post<IPropertyConformanceStatement[]>(this.URL + pcId + '/context/' + id + '/conformance-statements', csList);
   }
 
   applyChange(change: IProfileComponentChange, context: IProfileComponentContext) {
