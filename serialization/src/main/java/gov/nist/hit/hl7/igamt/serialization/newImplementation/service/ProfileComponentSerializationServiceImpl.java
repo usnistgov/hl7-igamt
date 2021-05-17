@@ -4,7 +4,10 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentItemDataModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ProfileComponentExportConfiguration;
@@ -40,6 +43,9 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
     private SegmentService segmentService;
 	
 	@Autowired
+    private ConformanceProfileService conformanceProfileService;
+	
+	@Autowired
     private DatatypeService datatypeService;
 
 	@Override
@@ -68,12 +74,18 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                 		profileComponentContextElement.addAttribute(
                 				new Attribute("position", String.valueOf(profileComponentContext.getPosition()))
 						);
-                		///TODO Possible ConformanceProfile here
-                		Segment segment = segmentService.findById(profileComponentContext.getSourceId());
-                	
-                		profileComponentContextElement.addAttribute(
-                				new Attribute("segmentName", segment != null ? String.valueOf(segment.getName()) : "")
-						);
+
+						if(profileComponentContext.getLevel().equals(Type.SEGMENT)) {
+							Segment segment = segmentService.findById(profileComponentContext.getSourceId());
+							profileComponentContextElement.addAttribute(
+									new Attribute("sourceName", segment != null ? String.valueOf(segment.getLabel()) : "")
+							);
+						} else if(profileComponentContext.getLevel().equals(Type.CONFORMANCEPROFILE) ) {
+							ConformanceProfile conformanceProfile = conformanceProfileService.findById(profileComponentContext.getSourceId());
+							profileComponentContextElement.addAttribute(
+									new Attribute("sourceName", conformanceProfile != null ? String.valueOf(conformanceProfile.getLabel()) : "")
+							);
+						}
                 	
                 		for(ProfileComponentItemDataModel profileComponentItem : profileComponentContext.getProfileComponentItemMap().values()) {
                 			if(profileComponentItem != null) {

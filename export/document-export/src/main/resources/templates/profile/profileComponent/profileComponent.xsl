@@ -32,10 +32,20 @@
                 <xsl:text>Profile Component Definition</xsl:text>
             </xsl:element>
         </xsl:element>
+        <xsl:element name="span">
+            <xsl:element name="h4">
+                    <xsl:value-of select="@sourceName"/>
+            </xsl:element>
+        </xsl:element>
         <xsl:element name="table">
             <xsl:attribute name="class">
                 <xsl:text>contentTable</xsl:text>
             </xsl:attribute>
+ <!--            <xsl:element name="col">
+                <xsl:attribute name="width">
+                    <xsl:text>10%</xsl:text>
+                </xsl:attribute>
+            </xsl:element> -->
             <xsl:element name="col">
                 <xsl:attribute name="width">
                     <xsl:text>10%</xsl:text>
@@ -76,7 +86,7 @@
                     <xsl:text>10%</xsl:text>
                 </xsl:attribute>
             </xsl:element>
-            <xsl:element name="col">
+           <!--  <xsl:element name="col">
                 <xsl:attribute name="width">
                     <xsl:text>10%</xsl:text>
                 </xsl:attribute>
@@ -85,20 +95,15 @@
                 <xsl:attribute name="width">
                     <xsl:text>10%</xsl:text>
                 </xsl:attribute>
-            </xsl:element>
-            <xsl:element name="col">
-                <xsl:attribute name="width">
-                    <xsl:text>10%</xsl:text>
-                </xsl:attribute>
-            </xsl:element>
+            </xsl:element> -->
             <xsl:element name="thead">
                 <xsl:attribute name="class">
                     <xsl:text>contentThead</xsl:text>
                 </xsl:attribute>
                 <xsl:element name="tr">
-                    <xsl:element name="th">
+<!--                     <xsl:element name="th">
                         <xsl:text>PATH</xsl:text>
-                    </xsl:element>
+                    </xsl:element> -->
                     <xsl:if test="$columnDisplay.profileComponent.name = 'true'">
                         <xsl:element name="th">
                             <xsl:text>Element Name</xsl:text>
@@ -106,7 +111,12 @@
                     </xsl:if>
                     <xsl:if test="$columnDisplay.profileComponent.dataType = 'true'">
                         <xsl:element name="th">
-                            <xsl:text>DataType</xsl:text>
+                            <xsl:text>Data Type</xsl:text>
+                        </xsl:element>
+                    </xsl:if>
+                    <xsl:if test="@level='CONFORMANCEPROFILE'">
+                        <xsl:element name="th">
+                            <xsl:text>Segment</xsl:text>
                         </xsl:element>
                     </xsl:if>
                     <xsl:if test="$columnDisplay.profileComponent.usage = 'true'">
@@ -137,7 +147,7 @@
                     <xsl:element name="th">
                         <xsl:text>Constant Value</xsl:text>
                     </xsl:element>
-                    <xsl:if test="$columnDisplay.profileComponent.definitionText = 'true'">
+                    <!-- <xsl:if test="$columnDisplay.profileComponent.definitionText = 'true'">
                         <xsl:element name="th">
                             <xsl:text>Definition Text</xsl:text>
                         </xsl:element>
@@ -146,14 +156,14 @@
                         <xsl:element name="th">
                             <xsl:text>Comment</xsl:text>
                         </xsl:element>
-                    </xsl:if>
+                    </xsl:if> -->
                 </xsl:element>
                 <xsl:element name="tbody">
                     <xsl:for-each select="./profileComponentItemElement">
                         <xsl:element name="tr">
-                            <xsl:element name="td">
+     <!--                        <xsl:element name="td">
                                 <xsl:value-of select="@path"/>
-                            </xsl:element>
+                            </xsl:element> -->
                             <xsl:if test="$columnDisplay.profileComponent.name = 'true'">
                                 <xsl:element name="td">
                                     <xsl:value-of select="../@segmentName"/>
@@ -188,6 +198,36 @@
                                     </xsl:choose>
                                 </xsl:element>
                             </xsl:if>
+                            <xsl:if test="../@level='CONFORMANCEPROFILE'">
+                                <xsl:element name="td">
+                                    <xsl:choose>
+                                        <xsl:when test="@segmentRef!=''">
+                                            <xsl:choose>
+						                    	<xsl:when test="@InnerLink!=''">
+						                    		<xsl:element name="a">
+						                    			<xsl:attribute name="href">
+						                    				<xsl:value-of select="@InnerLink"/>
+						                    			</xsl:attribute>
+						                    			<xsl:attribute name="target">
+						                    				<xsl:text>_blank</xsl:text>
+						                    			</xsl:attribute>
+						                    			<xsl:value-of select="@segmentRef" />
+						                    		</xsl:element>
+						                    	</xsl:when>
+						                    	<xsl:otherwise>
+						                    		<xsl:value-of select="@segmentRef" />
+						                    	</xsl:otherwise>
+						                    </xsl:choose>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:attribute name="class">
+                                                <xsl:text>greyCell</xsl:text>
+                                            </xsl:attribute>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                </xsl:element>
+                            </xsl:if>
+                            
                             <xsl:if test="$columnDisplay.profileComponent.usage = 'true'">
                                 <xsl:element name="td">
                                     <xsl:choose>
@@ -277,7 +317,7 @@
                                     </xsl:otherwise>
                                 </xsl:choose>
                             </xsl:element>
-                            <xsl:if test="$columnDisplay.profileComponent.definitionText = 'true'">
+                            <!-- <xsl:if test="$columnDisplay.profileComponent.definitionText = 'true'">
                                 <xsl:element name="td">
                                     <xsl:choose>
                                         <xsl:when test="@DefinitionText!=''">
@@ -304,7 +344,7 @@
                                         </xsl:otherwise>
                                     </xsl:choose>
                                 </xsl:element>
-                            </xsl:if>
+                            </xsl:if> -->
                         </xsl:element>
                     </xsl:for-each>
                 </xsl:element>
