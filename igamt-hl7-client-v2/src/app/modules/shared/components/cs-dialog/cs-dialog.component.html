@@ -81,7 +81,7 @@
         </div>
       </div>
     </div>
-    <div>
+    <div *ngIf="cs.type === csType.ASSERTION">
       <div class="form-group">
         <label for="free" class="form-label-lg"> Assertion Pattern </label>
         <span *ngIf="pattern" style="margin-left: 5px;">

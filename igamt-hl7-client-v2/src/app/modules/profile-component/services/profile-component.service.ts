@@ -8,6 +8,7 @@ import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../../shared/c
 import { Type } from '../../shared/constants/type.enum';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IPath } from '../../shared/models/cs.interface';
+import { IPropertyConformanceStatement } from '../../shared/models/profile.component';
 import {
   IItemProperty,
   IProfileComponent,
@@ -27,7 +28,6 @@ import { AResourceRepositoryService } from '../../shared/services/resource-repos
 import { IProfileComponentMetadata } from '../components/profile-component-metadata/profile-component-metadata.component';
 import { IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
 import { ITreeStructureProfileComponentPermutation } from './profile-component-ref-change.object';
-import { IPropertyConformanceStatement } from '../../shared/models/profile.component';
 
 export interface IHL7v2TreeProfileComponentNode extends IHL7v2TreeNode {
   data: IHL7v2TreeProfileComponentNodeData;

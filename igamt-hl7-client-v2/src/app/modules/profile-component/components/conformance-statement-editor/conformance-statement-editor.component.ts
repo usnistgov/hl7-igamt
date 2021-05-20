@@ -3,9 +3,10 @@ import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, EMPTY, Observable, Subscription, throwError } from 'rxjs';
-import { concatMap, flatMap, map, take, tap, pluck, catchError } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, map, pluck, take, tap, withLatestFrom } from 'rxjs/operators';
 import { AbstractEditorComponent } from 'src/app/modules/core/components/abstract-editor-component/abstract-editor-component.component';
+import { Message } from 'src/app/modules/dam-framework/models/messages/message.class';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { CsDialogComponent } from 'src/app/modules/shared/components/cs-dialog/cs-dialog.component';
@@ -14,14 +15,17 @@ import { IDisplayElement } from 'src/app/modules/shared/models/display-element.i
 import { IHL7EditorMetadata } from 'src/app/modules/shared/models/editor.enum';
 import { IPropertyConformanceStatement } from 'src/app/modules/shared/models/profile.component';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
-import { ChangeType, IChange, PropertyType } from 'src/app/modules/shared/models/save-change';
+import { ChangeType, PropertyType } from 'src/app/modules/shared/models/save-change';
 import { ConformanceStatementService } from 'src/app/modules/shared/services/conformance-statement.service';
-import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
+import { AResourceRepositoryService, StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
+import { selectViewOnly } from 'src/app/root-store/dam-igamt/igamt.selectors';
+import { selectDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { selectContextById } from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
-import { ProfileComponentService } from '../../services/profile-component.service';
-import { Message } from 'src/app/modules/dam-framework/models/messages/message.class';
-import { MessageType } from '../../../dam-framework/models/messages/message.class';
 import { selectSelectedProfileComponent } from '../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
+import { MessageType } from '../../../dam-framework/models/messages/message.class';
+import { IPath } from '../../../shared/models/cs.interface';
+import { PathService } from '../../../shared/services/path.service';
+import { ProfileComponentService } from '../../services/profile-component.service';
 
 export interface IPcConformanceStatementEditorData {
   conformanceStatements: IConformanceStatement[];
@@ -33,30 +37,44 @@ export interface IConformanceStatementItem {
   conformanceStatement: IConformanceStatement;
 }
 
-export interface IConformanceStatementItem {
-  item: IPropertyConformanceStatement;
-  conformanceStatement: IConformanceStatement;
+export interface IConformanceStatementDisplay {
+  groups: IConformanceStatementItemDisplayGroup[];
+  nonexistent: IPropertyConformanceStatement[];
 }
 
-export interface IConformanceStatementItemDisplay {
+export interface IConformanceStatementItemDisplayGroup {
+  context: IPath;
+  name: string;
   available: IConformanceStatement[];
   items: IConformanceStatementItem[];
-  nonexistent: IPropertyConformanceStatement[];
+}
+
+export interface IConformanceStatementItemGroup {
+  context: IPath;
+  name: string;
+  list: IConformanceStatementItem[];
+}
+
+export interface IConformanceStatementList {
+  available: IConformanceStatement[];
+  items: IConformanceStatementItem[];
 }
 
 export abstract class ConformanceStatementEditorComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
   selectedResource$: Observable<IResource>;
   resourceConformanceStatements$: Observable<IConformanceStatement[]>;
   items$: BehaviorSubject<IPropertyConformanceStatement[]>;
-  conformanceStatementItem$: Observable<IConformanceStatementItemDisplay>;
+  conformanceStatementItem$: Observable<IConformanceStatementDisplay>;
   profileComponentId$: Observable<string>;
   s_workspace: Subscription;
+  hide: Record<string, boolean> = {};
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
     private messageService: MessageService,
     protected conformanceStatementService: ConformanceStatementService,
     protected pcService: ProfileComponentService,
+    protected pathService: PathService,
     private dialog: MatDialog,
     actions$: Actions,
     store: Store<any>,
@@ -69,6 +87,15 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
         return this.store.select(resource$, { id });
       }),
     );
+
+    this._viewOnly$ = combineLatest(
+      this.store.select(selectViewOnly),
+      this.store.select(selectDelta)).pipe(
+        map(([vOnly, delta]) => {
+          return vOnly || delta;
+        }),
+      );
+
     this.items$ = new BehaviorSubject([]);
     this.resourceConformanceStatements$ = this.current$.pipe(
       map((current) => {
@@ -84,19 +111,17 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       this.resourceConformanceStatements$,
       this.items$,
     ).pipe(
-      map(([csList, itemList]) => {
-        const available = csList.filter((cs) => !itemList.find((elm) => elm.targetId === cs.id));
-
-        const mapped = itemList.map((item) => ({
-          item,
-          conformanceStatement: item.change === ChangeType.ADD ? item.payload : csList.find((elm) => elm.id === item.targetId),
-        }));
-
-        return {
-          items: mapped.filter((elm) => !!elm.conformanceStatement),
-          nonexistent: mapped.filter((elm) => !elm.conformanceStatement).map((e) => e.item),
-          available,
-        };
+      withLatestFrom(this.selectedResource$),
+      flatMap(([[list, itemList], resource]) => {
+        const merged = this.merge(list, itemList);
+        return this.createConformanceStatementGroupsFromList(merged.items, resource, repository).pipe(
+          map((groups) => {
+            return {
+              groups: groups.map((g) => this.groupSplit(g)),
+              nonexistent: merged.unmapped,
+            };
+          }),
+        );
       }),
     );
 
@@ -106,6 +131,106 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       }),
     ).subscribe();
 
+  }
+
+  toggle(id: string) {
+    this.hide[id] = !this.hide[id];
+  }
+
+  merge(csList: IConformanceStatement[], itemList: IPropertyConformanceStatement[]): { items: IConformanceStatementItem[], unmapped: IPropertyConformanceStatement[] } {
+    const process = itemList.reduce(({ leftOverCsList, unmapped, items }, item) => {
+      if (item.change === ChangeType.ADD) {
+        return {
+          items: [
+            ...items,
+            { item, conformanceStatement: item.payload },
+          ],
+          unmapped,
+          leftOverCsList,
+        };
+      } else if (item.change === ChangeType.DELETE) {
+        const idx = leftOverCsList.findIndex((elm) => elm.id === item.targetId);
+        if (idx !== -1) {
+          const left = [...leftOverCsList];
+          left.splice(idx, 1);
+          return {
+            items: [
+              ...items,
+              { item, conformanceStatement: leftOverCsList[idx] },
+            ],
+            unmapped,
+            leftOverCsList: left,
+          };
+        } else {
+          return {
+            items: [
+              ...items,
+            ],
+            unmapped: [
+              ...unmapped,
+              item,
+            ],
+            leftOverCsList,
+          };
+        }
+      }
+    }, { leftOverCsList: csList, unmapped: [], items: [] });
+
+    return {
+      items: [
+        ...process.items,
+        ...process.leftOverCsList.map((cs) => ({
+          conformanceStatement: cs,
+        })),
+      ],
+      unmapped: process.unmapped,
+    };
+  }
+
+  groupSplit(group: IConformanceStatementItemGroup): IConformanceStatementItemDisplayGroup {
+    return {
+      ...group,
+      available: group.list.filter((elm) => !elm.item).map((elm) => elm.conformanceStatement),
+      items: group.list.filter((elm) => !!elm.item),
+    };
+  }
+
+  createConformanceStatementGroupsFromList(list: IConformanceStatementItem[], resource: IResource, repository: AResourceRepositoryService): Observable<IConformanceStatementItemGroup[]> {
+    if (list.length > 0) {
+
+      const grouped = list.reduce((acc, elm) => {
+        const path = this.pathService.pathToString(elm.conformanceStatement.context);
+        if (acc[path]) {
+          acc[path].list.push(elm);
+        } else {
+          acc[path] = {
+            context: elm.conformanceStatement.context,
+            list: [elm],
+            name: '',
+          };
+        }
+        return acc;
+      }, {} as Map<string, IConformanceStatementItemGroup>);
+
+      return combineLatest(
+        Object
+          .values(grouped)
+          .sort((a) => {
+            return !a.context ? -1 : 1;
+          })
+          .map((group) => {
+            return this.conformanceStatementService.getGroupName<IConformanceStatementItem>(group, resource, repository);
+          }),
+      );
+    } else {
+      return of([
+        {
+          context: undefined,
+          name: '',
+          list: [],
+        },
+      ]);
+    }
   }
 
   removeItemFromList(list: IPropertyConformanceStatement[], item: IPropertyConformanceStatement) {

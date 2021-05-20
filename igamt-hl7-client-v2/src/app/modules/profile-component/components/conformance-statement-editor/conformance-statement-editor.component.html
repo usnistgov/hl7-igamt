@@ -13,21 +13,42 @@
       <i class="fa fa-trash"></i> Clean
     </button>
   </div>
-  <div class="header-title">
-    <h5>List of profile components</h5>
-    <div></div>
-  </div>
-  <div class="panel-body">
-    <ng-container *ngTemplateOutlet="itemList; context: { $implicit: csItems.items }"></ng-container>
-  </div>
-  <div class="header-title">
-    <h5>List of resource conformance statements</h5>
-    <div></div>
-  </div>
-  <div class="panel-body">
-    <ng-container *ngTemplateOutlet="csList; context: { $implicit: csItems.available }"></ng-container>
-  </div>
+  <ng-container *ngTemplateOutlet="group; context: { $implicit: csItems.groups }"></ng-container>
 </ng-container>
+
+<ng-template #group let-csGroup>
+  <div *ngIf="!csGroup || csGroup.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+    <span> No Conformance Statement or Profile Components </span>
+  </div>
+  <ng-container *ngFor="let item of csGroup" >
+    <div *ngIf="item.context" style="display: flex; align-items: center; margin-bottom: 10px;">
+      <app-entity-bagde style="display: flex;" [type]="'GROUP'"></app-entity-bagde>
+      <span style="margin-left: 5px;"> {{ item.name }} </span>
+    </div>
+    <div *ngIf="!item.context" style="display: flex; align-items: center; margin-bottom: 10px;">
+      <ng-container *ngIf="editorDisplayNode() | async as current">
+        <app-display-section [element]="current" [hideDescription]="true"></app-display-section>
+      </ng-container>
+    </div>
+    <div class="header-title">
+      <strong>List of profile components</strong>
+    </div>
+    <div class="panel-body">
+      <ng-container *ngTemplateOutlet="itemList; context: { $implicit: item.items }"></ng-container>
+    </div>
+    <div class="header-title" (click)="toggle(item.context ? item.context.name : '_def')">
+      <button class="btn btn-sm btn-primary">
+        <i *ngIf="!hide[item.context ? item.context.name : '_def']"  class="fa fa-eye-slash"></i>
+        <i *ngIf="hide[item.context ? item.context.name : '_def']"  class="fa fa-eye"></i>
+      </button>
+      <strong style="margin-left: 5px;">List of resource conformance statements</strong>
+    </div>
+    <div *ngIf="!hide[item.context ? item.context.name : '_def']" class="panel-body">
+      <ng-container *ngTemplateOutlet="csList; context: { $implicit: item.available }"></ng-container>
+    </div>
+    <hr>
+  </ng-container>
+</ng-template>
 
 <ng-template #csList let-csList>
   <div *ngIf="!csList || csList.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">

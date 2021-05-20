@@ -1,3 +1,4 @@
+import { IConformanceStatement } from './cs.interface';
 import { IPredicate } from './predicate.interface';
 import { IChangeLog } from './save-change';
 
@@ -50,7 +51,7 @@ export interface IStructureElementBinding extends IBinding, IStructureElementBin
 }
 
 export interface IResourceBinding extends IBinding {
-  conformanceStatementIds: string[];
+  conformanceStatements: IConformanceStatement[];
 }
 
 export enum IBindingType {

@@ -6,6 +6,7 @@ import { ConformanceProfileModule } from '../conformance-profile/conformance-pro
 import { SegmentModule } from '../segment/segment.module';
 import { SharedModule } from '../shared/shared.module';
 import { AddProfileComponentItemComponent } from './components/add-profile-component-item/add-profile-component-item.component';
+import { MessageConformanceStatementEditorComponent } from './components/message-conformance-statement-editor/message-conformance-statement-editor.component';
 import { MessageContextStructureEditorComponent } from './components/message-context-structure-editor/message-context-structure-editor.component';
 import { ProfileComponentMetadataComponent } from './components/profile-component-metadata/profile-component-metadata.component';
 import { PpCardinalityComponent } from './components/profile-component-structure-tree/columns/pp-cardinality/pp-cardinality.component';
@@ -23,7 +24,24 @@ import { SegmentContextStructureEditorComponent } from './components/segment-con
 import { ProfileComponentRoutingModule } from './profile-component-routing.module';
 
 @NgModule({
-  declarations: [ProfileComponentMetadataComponent, SegmentContextStructureEditorComponent, MessageContextStructureEditorComponent, AddProfileComponentItemComponent, ProfileComponentStructureTreeComponent, PpNameComponent, PpUsageComponent, PpConstantValueComponent, PpCardinalityComponent, PpLengthComponent, PpConfLengthComponent, PpDatatypeComponent, PpValuesetComponent, PpSegmentComponent, SegmentConformanceStatementEditorComponent],
+  declarations: [
+    ProfileComponentMetadataComponent,
+    SegmentContextStructureEditorComponent,
+    MessageContextStructureEditorComponent,
+    AddProfileComponentItemComponent,
+    ProfileComponentStructureTreeComponent,
+    PpNameComponent,
+    PpUsageComponent,
+    PpConstantValueComponent,
+    PpCardinalityComponent,
+    PpLengthComponent,
+    PpConfLengthComponent,
+    PpDatatypeComponent,
+    PpValuesetComponent,
+    PpSegmentComponent,
+    SegmentConformanceStatementEditorComponent,
+    MessageConformanceStatementEditorComponent,
+  ],
   imports: [
     CommonModule,
     ProfileComponentRoutingModule,

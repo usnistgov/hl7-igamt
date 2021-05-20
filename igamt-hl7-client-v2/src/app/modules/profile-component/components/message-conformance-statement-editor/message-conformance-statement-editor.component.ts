@@ -5,7 +5,7 @@ import { Store } from '@ngrx/store';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { ConformanceStatementService } from 'src/app/modules/shared/services/conformance-statement.service';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
-import { selectLoadedSegmentById } from '../../../../root-store/dam-igamt/igamt.loaded-resources.selectors';
+import { selectLoadedMessageById } from '../../../../root-store/dam-igamt/igamt.loaded-resources.selectors';
 import { Type } from '../../../shared/constants/type.enum';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { PathService } from '../../../shared/services/path.service';
@@ -17,7 +17,7 @@ import { ConformanceStatementEditorComponent } from '../conformance-statement-ed
   templateUrl: '../conformance-statement-editor/conformance-statement-editor.component.html',
   styleUrls: ['../conformance-statement-editor/conformance-statement-editor.component.scss'],
 })
-export class SegmentConformanceStatementEditorComponent extends ConformanceStatementEditorComponent implements OnInit {
+export class MessageConformanceStatementEditorComponent extends ConformanceStatementEditorComponent implements OnInit {
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -39,11 +39,11 @@ export class SegmentConformanceStatementEditorComponent extends ConformanceState
       actions$,
       store,
       {
-        id: EditorID.PC_SEGMENT_CTX_CS,
+        id: EditorID.PC_CONFP_CTX_CS,
         title: 'Conformance Statements',
-        resourceType: Type.SEGMENTCONTEXT,
+        resourceType: Type.MESSAGECONTEXT,
       },
-      selectLoadedSegmentById,
+      selectLoadedMessageById,
     );
   }
 

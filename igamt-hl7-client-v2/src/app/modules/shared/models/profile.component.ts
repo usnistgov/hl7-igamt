@@ -4,11 +4,11 @@ import { Usage } from '../constants/usage.enum';
 import { InternalSingleCode, IValuesetBinding } from './binding.interface';
 import { IComment } from './comment.interface';
 import { IMessageProfileIdentifier } from './conformance-profile.interface';
+import { IConformanceStatement } from './cs.interface';
 import { IPredicate } from './predicate.interface';
 import { IResource } from './resource.interface';
-import { PropertyType, ChangeType } from './save-change';
+import { ChangeType, PropertyType } from './save-change';
 import { IDynamicMappingInfo } from './segment.interface';
-import { IConformanceStatement } from './cs.interface';
 
 export interface IProfileComponent extends IResource {
   children?: IProfileComponentContext;

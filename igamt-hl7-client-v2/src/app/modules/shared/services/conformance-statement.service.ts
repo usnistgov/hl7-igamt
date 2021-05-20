@@ -24,6 +24,12 @@ export interface IAssertionBag<T> {
   leafs: ISimpleAssertion[];
 }
 
+export interface ICsGroup<T> {
+  context: IPath;
+  list: T[];
+  name: string;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -61,15 +67,7 @@ export class ConformanceStatementService {
             return !a.context ? -1 : 1;
           })
           .map((group) => {
-            return this.elementNamingService.getStringNameFromPath(group.context, resource, repository).pipe(
-              take(1),
-              map((name) => {
-                return {
-                  ...group,
-                  name,
-                };
-              }),
-            );
+            return this.getGroupName<IEditableListNode<IConformanceStatement>>(group, resource, repository);
           }),
       );
     } else {
@@ -81,6 +79,18 @@ export class ConformanceStatementService {
         },
       ]);
     }
+  }
+
+  getGroupName<T>(group: ICsGroup<T>, resource: IResource, repository: AResourceRepositoryService): Observable<ICsGroup<T>> {
+    return this.elementNamingService.getStringNameFromPath(group.context, resource, repository).pipe(
+      take(1),
+      map((name) => {
+        return {
+          ...group,
+          name,
+        };
+      }),
+    );
   }
 
   createEditableNode(list: IConformanceStatement[]): Array<IEditableListNode<IConformanceStatement>> {
