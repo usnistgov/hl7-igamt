@@ -39,7 +39,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
   current: any = {};
   derived: boolean;
   delta: any;
-  selectedDeltaValues = [];
+  selectedDeltaValues = ['ADDED', 'UPDATED'];
   configurationName: string;
   documentId: string;
 
@@ -47,7 +47,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<ExportConfigurationDialogComponent>,
     private libraryService: LibraryService,
     private igService: IgService,
-
     @Inject(MAT_DIALOG_DATA) public data: any, private store: Store<any>) {
     this.initialConfig = data.decision;
     this.nodes = data.toc;
@@ -61,6 +60,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.delta = data.delta;
     this.documentId = data.documentId;
   }
+
   select(node) {
     this.loading = true;
     this.selected = node;
@@ -143,12 +143,9 @@ export class ExportConfigurationDialogComponent implements OnInit {
       console.log(this.documentId);
       this.igService.getLastUserConfiguration(this.documentId).subscribe(
         (lastConfig) => {
-          this.filter = {... lastConfig.exportFilterDecision, changed: this.initialConfig.exportFilterDecision.changed};
+          this.filter = {...lastConfig.exportFilterDecision, changed: this.initialConfig.exportFilterDecision.changed};
           this.initialConfig = lastConfig;
-
         },
-        // lastConfig =>     console.log(" lastConfig is : ",lastConfig),
-
       );
     } else {
       if (this.docType === Type.DATATYPELIBRARY) {
@@ -156,19 +153,21 @@ export class ExportConfigurationDialogComponent implements OnInit {
           (lastConfig) => {
             this.initialConfig = lastConfig;
             this.filter = this.initialConfig.exportFilterDecision;
-
           },
-              );
+        );
+      }
     }
   }
-  }
+
   submit() {
     console.log('new initalConfig is : ', this.initialConfig);
     this.dialogRef.close(this.filter);
   }
+
   cancel() {
     this.dialogRef.close();
   }
+
   filterFn(value: any) {
     this.toc.filter(value);
   }
@@ -176,6 +175,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
   scrollTo(messages: string) {
     this.toc.scrollTo(messages);
   }
+
   toggleDelta() {
     this.toc.filter('');
     this.store.select(selectIgId).pipe(
@@ -186,36 +186,34 @@ export class ExportConfigurationDialogComponent implements OnInit {
       }),
     ).subscribe();
   }
+
+  mergeDeltaFilter($event: string[], key: string) {
+    console.log($event);
+    let ret = false;
+    if ($event.indexOf('ADDED') > -1) {
+      console.log('ADDED');
+
+      ret = this.filter.added[key] || ret;
+    }
+    if ($event.indexOf('UPDATED') > -1) {
+      console.log('UPDATED');
+
+      ret = this.filter.changed[key] || ret;
+    }
+    return ret;
+  }
+
+  applyFilter($event: string[], obj: any) {
+    Object.keys(obj).forEach((key) => {
+        obj[key] = this.mergeDeltaFilter($event, key);
+      },
+    );
+  }
+
   filterByDelta($event: string[]) {
-    let subscription = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes).pipe(
-      map((value: IDisplayElement[], number: any) => {
-        for (const display of value) {
-          this.filter.datatypesFilterMap[display.id] = $event.indexOf(display.delta) > -1;
-        }
-      })).subscribe();
-
-    subscription.unsubscribe();
-    subscription = this.store.select(fromIgamtDisplaySelectors.selectAllSegments).pipe(
-      map((value: IDisplayElement[], number: any) => {
-        for (const display of value) {
-          this.filter.segmentFilterMap[display.id] = $event.indexOf(display.delta) > -1;
-        }
-      })).subscribe();
-    subscription.unsubscribe();
-    subscription = this.store.select(fromIgamtDisplaySelectors.selectAllValueSets).pipe(
-      map((value: IDisplayElement[], number: any) => {
-        for (const display of value) {
-          this.filter.valueSetFilterMap[display.id] = $event.indexOf(display.delta) > -1;
-        }
-      })).subscribe();
-    subscription.unsubscribe();
-
-    subscription = this.store.select(fromIgamtDisplaySelectors.selectAllMessages).pipe(
-      map((value: IDisplayElement[], number: any) => {
-        for (const display of value) {
-          this.filter.conformanceProfileFilterMap[display.id] = $event.indexOf(display.delta) > -1;
-        }
-      })).subscribe();
-    subscription.unsubscribe();
+    this.applyFilter($event, this.filter.datatypesFilterMap);
+    this.applyFilter($event, this.filter.segmentFilterMap);
+    this.applyFilter($event, this.filter.valueSetFilterMap);
+    this.applyFilter($event, this.filter.conformanceProfileFilterMap);
   }
 }

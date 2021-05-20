@@ -307,16 +307,12 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                           } else {
                             color = conformanceProfileExportConfiguration.getDeltaConfig().getColors().get(coConstraintTableConditionalBinding.getConditionDelta().getDelta());
                           }
-
                           if(coConstraintTableConditionalBinding.getConditionDelta().getCurrent() != null){
                             span.addAttribute(new Attribute("style", "background-color: " + color));
                             span.appendChild(coConstraintTableConditionalBinding.getConditionDelta().getCurrent());
                             coConstraintCondition.appendChild(span);
                             coConstraintTableConditionalBindingElement.appendChild(coConstraintCondition);
                           }
-
-
-
                         }
                       } else {
                         if (coConstraintTableConditionalBinding.getCondition() != null && !conformanceProfileExportConfiguration.getDeltaConfig().getMode().equals(DeltaExportConfigMode.HIDE_WITH_CHANGED_ONLY)) {

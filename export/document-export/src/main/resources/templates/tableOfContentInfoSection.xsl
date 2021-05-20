@@ -13,8 +13,6 @@
                     <xsl:value-of select="concat('divh', @h)"/>
                 </xsl:attribute>  
                 <xsl:value-of select="@title"/>
-
-        
           </xsl:element>
             
             <xsl:choose>

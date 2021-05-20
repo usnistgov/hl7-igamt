@@ -7,11 +7,11 @@
         <li class="list-group-item"><p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.fieldsExport.r"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.fieldsExport.re"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="C(a/b)" binary="true" [(ngModel)]="config.fieldsExport.cab"> </p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta" label="C" binary="false" [(ngModel)]="config.fieldsExport.c" (onChange)="triggerChange()"> </p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta" label="O" binary="true" [(ngModel)]="config.fieldsExport.o" (onChange)="triggerChange()"></p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta" label="X" binary="true" [(ngModel)]="config.fieldsExport.x" (onChange)="triggerChange()"></p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta" label="B" binary="false" [(ngModel)]="config.fieldsExport.b" (onChange)="triggerChange()"></p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta"  label="W" binary="false" [(ngModel)]="config.fieldsExport.w" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.fieldsExport.c" (onChange)="triggerChange()"> </p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="true" [(ngModel)]="config.fieldsExport.o" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="X" binary="true" [(ngModel)]="config.fieldsExport.x" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="B" binary="false" [(ngModel)]="config.fieldsExport.b" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="W" binary="false" [(ngModel)]="config.fieldsExport.w" (onChange)="triggerChange()"></p-checkbox></li>
       </ul>
     </div>
     <div style="display: flex;">
@@ -52,8 +52,8 @@
         <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
           <h5 class="card-title title-text custom-card-title">Constraints</h5>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta" label="Conditional Predicates" binary="true" [(ngModel)]="config.constraintExportConfiguration.predicate" (onChange)="triggerChange()"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta" label="Conformance Statments" binary="true" [(ngModel)]="config.constraintExportConfiguration.conformanceStatement" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Conditional Predicates" binary="true" [(ngModel)]="config.constraintExportConfiguration.predicate" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Conformance Statments" binary="true" [(ngModel)]="config.constraintExportConfiguration.conformanceStatement" (onChange)="triggerChange()"></p-checkbox></li>
           </ul>
         </div>
       </div>

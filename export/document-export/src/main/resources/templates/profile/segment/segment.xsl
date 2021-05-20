@@ -209,7 +209,7 @@
 						<xsl:call-template name="ConstantValue" />
     </xsl:if>
 		 					<xsl:call-template name="CommentList" />
-		 							<xsl:call-template name="DefinitionText2" />
+		 					<xsl:call-template name="DefinitionText2" />
 		 					
 		
 		

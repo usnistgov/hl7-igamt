@@ -8,11 +8,11 @@
         <li class="list-group-item"><p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.r"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.re"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="C(a/b)" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.cab"> </p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta" label="C" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.c" (onChange)="triggerChange()"> </p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta" label="O" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.o" (onChange)="triggerChange()"></p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta"  label="X" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.x" (onChange)="triggerChange()"></p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta" label="B" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.b" (onChange)="triggerChange()"></p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta"  label="W" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.w" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.c" (onChange)="triggerChange()"> </p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.o" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="X" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.x" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="B" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.b" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="W" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.w" (onChange)="triggerChange()"></p-checkbox></li>
       </ul>
     </div>
 
@@ -74,9 +74,9 @@
       <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
         <h5 class="card-title title-text custom-card-title">CoConstraints</h5>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item"><p-radioButton [disabled]="viewOnly || delta" label="Compact Format" value="COMPACT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
-          <li class="list-group-item"><p-radioButton [disabled]="viewOnly || delta" label="Verbose Format" value="VERBOSE" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
-          <li class="list-group-item"><p-radioButton [disabled]="viewOnly || delta" label="Don't Export" value="NOEXPORT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
+          <li class="list-group-item"><p-radioButton [disabled]="viewOnly" label="Compact Format" value="COMPACT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
+          <li class="list-group-item"><p-radioButton [disabled]="viewOnly" label="Verbose Format" value="VERBOSE" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
+          <li class="list-group-item"><p-radioButton [disabled]="viewOnly" label="Don't Export" value="NOEXPORT" [(ngModel)]="config.coConstraintExportMode" (ngModelChange)="triggerChange()"></p-radioButton></li>
         </ul>
       </div>
 

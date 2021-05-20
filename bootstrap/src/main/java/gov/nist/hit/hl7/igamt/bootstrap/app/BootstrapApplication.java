@@ -355,7 +355,7 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
   
-  @PostConstruct
+  //@PostConstruct
   void generateDiffrentialExportConfig() {
     exportConfigurationRepository.deleteByType(ExportType.DIFFERENTIAL);
     ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, ExportType.DIFFERENTIAL);
