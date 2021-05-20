@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyConformanceStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +101,14 @@ public class ProfileComponentController extends BaseController {
           Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
       return profileComponentService.updateContext(pcId, contextId, ctx);
   }
+
+    @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/conformance-statements", method = RequestMethod.POST, produces = {"application/json"})
+    @ResponseBody
+    public List<PropertyConformanceStatement> updateContextConformanceStatements(
+            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody List<PropertyConformanceStatement> conformanceStatements,
+            Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
+        return profileComponentService.updateContextConformanceStatements(pcId, contextId, conformanceStatements);
+    }
   
 
   @RequestMapping(value = "/api/profile-component/{id}", method = RequestMethod.POST, produces = {

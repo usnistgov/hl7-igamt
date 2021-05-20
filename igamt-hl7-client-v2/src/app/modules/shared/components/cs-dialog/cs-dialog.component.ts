@@ -2,7 +2,7 @@ import { Component, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import * as _ from 'lodash';
-import { BehaviorSubject, EMPTY, from, Observable, of, Subject, Subscription } from 'rxjs';
+import { BehaviorSubject, from, Observable, of, Subject, Subscription } from 'rxjs';
 import { concatMap, finalize, flatMap, map, skip, take, takeWhile, tap } from 'rxjs/operators';
 import * as vk from 'vkbeautify';
 import { Type } from '../../constants/type.enum';
@@ -47,7 +47,6 @@ export class CsDialogComponent implements OnDestroy {
     // Set the payload of each token upon initialization
     this.setPatternTokenPayload(p).pipe(
       finalize(() => {
-        console.log(p.statements);
         this._pattern = p;
       }),
     ).subscribe();
@@ -117,7 +116,6 @@ export class CsDialogComponent implements OnDestroy {
           this.context = this.structure;
           this.contextName = resource.name;
           this.contextType = resource.type;
-
           if (!this.assertionMode) {
             this.conformanceStatement = data.payload;
           } else {
@@ -429,7 +427,7 @@ export class CsDialogComponent implements OnDestroy {
     switch (item) {
       case CsTab.FREE:
         const payload = this.predicateMode ? this.csService.getFreePredicate() : this.csService.getFreeConformanceStatement();
-        this.mergeAssertionIntoCs(this.cs, payload, this.predicateMode, this.resourceType);
+        this.cs = this.mergeAssertionIntoCs(this.cs, payload, this.predicateMode, this.resourceType);
         (this.cs as any).assertion = undefined;
         break;
       case CsTab.SIMPLE:
