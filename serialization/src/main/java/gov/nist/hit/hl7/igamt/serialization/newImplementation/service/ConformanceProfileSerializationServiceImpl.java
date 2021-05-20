@@ -138,6 +138,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
 
 
                 }
+//                conformanceProfileElement = serializeConformanceProfileAttributes(conformanceProfileElement, conformanceProfile, conformanceProfileExportConfiguration);
                 if (conformanceProfileExportConfiguration.getIdentifier()) {
                     conformanceProfileElement.addAttribute(new Attribute("identifier",
                             conformanceProfile.getIdentifier() != null ? conformanceProfile.getIdentifier() : ""));
@@ -435,7 +436,45 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
         return null;
     }
 
-    /**
+    private Element serializeConformanceProfileAttributes(Element conformanceProfileElement,
+			ConformanceProfile conformanceProfile, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) {
+    	if (conformanceProfileExportConfiguration.getIdentifier()) {
+            conformanceProfileElement.addAttribute(new Attribute("identifier",
+                    conformanceProfile.getIdentifier() != null ? conformanceProfile.getIdentifier() : ""));
+        }
+        if (conformanceProfileExportConfiguration.getMessageType()) {
+            conformanceProfileElement.addAttribute(new Attribute("messageType",
+                    conformanceProfile.getMessageType() != null ? conformanceProfile.getMessageType()
+                            : ""));
+        }
+        if (conformanceProfileExportConfiguration.getEvent()) {
+            conformanceProfileElement.addAttribute(new Attribute("event",
+                    conformanceProfile.getEvent() != null ? conformanceProfile.getEvent() : ""));
+        }
+        if (conformanceProfileExportConfiguration.getStructID()) {
+            conformanceProfileElement.addAttribute(new Attribute("structID",
+                    conformanceProfile.getStructID() != null ? conformanceProfile.getStructID() : ""));
+        }
+        if (conformanceProfileExportConfiguration.getMetadataConfig().isAuthor()) {
+            conformanceProfileElement.addAttribute(new Attribute("author",
+                    conformanceProfile.getAuthors() != null ? convertListToString(conformanceProfile.getAuthors()) : ""));
+        }
+        if (conformanceProfileExportConfiguration.getMetadataConfig().isOrganization()) {
+            conformanceProfileElement.addAttribute(new Attribute("organization",
+                    conformanceProfile.getOrganization() != null ? conformanceProfile.getOrganization() : ""));
+        }
+        if (conformanceProfileExportConfiguration.getMetadataConfig().isType()) {
+            conformanceProfileElement.addAttribute(new Attribute("type",
+                    conformanceProfile.getProfileType() != null ? conformanceProfile.getProfileType().name() : ""));
+        }
+        if (conformanceProfileExportConfiguration.getMetadataConfig().isRole()) {
+            conformanceProfileElement.addAttribute(new Attribute("role",
+                    conformanceProfile.getRole() != null ? conformanceProfile.getRole().name() : ""));
+        }
+       		return conformanceProfileElement;
+	}
+
+	/**
      * @param msgStructElm
      * @return
      * @throws SerializationException

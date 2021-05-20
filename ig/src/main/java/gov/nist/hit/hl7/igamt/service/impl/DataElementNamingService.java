@@ -68,9 +68,6 @@ public class DataElementNamingService {
     private LocationInfo processSegRef(SegmentRef segmentRef, Stack<String> route, LocationInfo info) {
         info.setPositionalPath(this.append(info.getPositionalPath(), ".", segmentRef.getPosition() + ""));
         info.setType(Type.SEGMENTREF);
-        if(route.empty()) {
-            return info;
-        }
         Segment segment = this.getSegmentById(segmentRef.getRef().getId());
         if(segment != null) {
             return this.processSegment(segment, route, info);

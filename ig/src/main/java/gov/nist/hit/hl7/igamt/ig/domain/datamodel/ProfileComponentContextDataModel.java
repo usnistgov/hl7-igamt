@@ -10,7 +10,7 @@ import gov.nist.hit.hl7.igamt.service.impl.DataElementNamingService;
 
 import java.util.*;
 
-public class ProfileComponentContextDataModel {
+public class ProfileComponentContextDataModel implements Comparable< ProfileComponentContextDataModel > {
     private String id;
     private Type level;
     private String sourceId;
@@ -136,4 +136,9 @@ public class ProfileComponentContextDataModel {
     public void setProfileComponentItemMap(Map<String, ProfileComponentItemDataModel> profileComponentItemMap) {
         this.profileComponentItemMap = profileComponentItemMap;
     }
+
+	@Override
+	public int compareTo(ProfileComponentContextDataModel o) {
+        return Integer.valueOf(this.getPosition()).compareTo(o.getPosition());
+	}
 }

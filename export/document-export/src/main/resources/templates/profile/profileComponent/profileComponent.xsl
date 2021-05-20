@@ -1,6 +1,11 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:import href="/templates/profile/constraint.xsl"/>
+        	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
+        		<xsl:import href="/templates/profile/singleCode/internalSingleCode.xsl" />
+        			<xsl:import href="/templates/profile/constraint.xsl" />
+        		
     <xsl:include href="/templates/profile/definitionText.xsl"/>
+    
 
     <xsl:template match="ProfileComponent" mode="toc">
         <xsl:element name="a">
@@ -42,14 +47,14 @@
             <xsl:attribute name="class">
                 <xsl:text>contentTable</xsl:text>
             </xsl:attribute>
- <!--            <xsl:element name="col">
+             <xsl:element name="col">
                 <xsl:attribute name="width">
                     <xsl:text>10%</xsl:text>
                 </xsl:attribute>
-            </xsl:element> -->
+            </xsl:element> 
             <xsl:element name="col">
                 <xsl:attribute name="width">
-                    <xsl:text>10%</xsl:text>
+                    <xsl:text>22%</xsl:text>
                 </xsl:attribute>
             </xsl:element>
             <xsl:element name="col">
@@ -102,9 +107,9 @@
                     <xsl:text>contentThead</xsl:text>
                 </xsl:attribute>
                 <xsl:element name="tr">
-<!--                     <xsl:element name="th">
+                     <xsl:element name="th">
                         <xsl:text>PATH</xsl:text>
-                    </xsl:element> -->
+                    </xsl:element> 
                     <xsl:if test="$columnDisplay.profileComponent.name = 'true'">
                         <xsl:element name="th">
                             <xsl:text>Element Name</xsl:text>
@@ -162,12 +167,12 @@
                 <xsl:element name="tbody">
                     <xsl:for-each select="./profileComponentItemElement">
                         <xsl:element name="tr">
-     <!--                        <xsl:element name="td">
+                            <xsl:element name="td">
                                 <xsl:value-of select="@path"/>
-                            </xsl:element> -->
+                            </xsl:element> 
                             <xsl:if test="$columnDisplay.profileComponent.name = 'true'">
                                 <xsl:element name="td">
-                                    <xsl:value-of select="../@segmentName"/>
+                                    <xsl:value-of select="@name"/>
                                 </xsl:element>
                             </xsl:if>
                             <xsl:if test="$columnDisplay.profileComponent.dataType = 'true'">
@@ -295,8 +300,8 @@
                             <xsl:if test="$columnDisplay.profileComponent.valueSet = 'true'">
                                 <xsl:element name="td">
                                     <xsl:choose>
-                                        <xsl:when test="@ValueSet!=''">
-                                            <xsl:value-of disable-output-escaping="yes" select="@ValueSet"/>
+                                        <xsl:when test="@valueSet!=''">
+                                            <xsl:value-of disable-output-escaping="yes" select="@valueSet"/>
                                         </xsl:when>
                                         <xsl:otherwise>
                                             <xsl:attribute name="class">
@@ -352,7 +357,31 @@
             </xsl:element>
         </xsl:element>
                 <xsl:element name="br"/>
-                <xsl:element name="br"/>
+                
+                		<xsl:call-template name="ValueSetBindingList"/>	
+					<xsl:call-template name="InternalSingleCode"/>	
+					<xsl:call-template name="Constraint"/>
+					
+					<xsl:if test="count(Constraints/Predicate)  &gt; 0">
+			<xsl:element name="br" />
+			<xsl:call-template name="Constraint">
+				<xsl:with-param name="title">
+					<xsl:text>Conditional Predicates</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="constraintMode">
+					<xsl:text>standalone</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="type">
+					<xsl:text>pre</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="headerLevel">
+					<xsl:text>h4</xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+		</xsl:if>
+					
+                		
+                
         
     	<xsl:if test="count(Constraints/Constraint[@Type='pre']) &gt; 0">
             <xsl:element name="br"/>
