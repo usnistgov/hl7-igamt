@@ -99,7 +99,6 @@ export const selectMessagesEntites = createSelector(
 export const selectMessagesById = createSelector(
   selectMessagesEntites,
   (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
-    console.log(props);
     return dictionary[props.id];
   },
 );

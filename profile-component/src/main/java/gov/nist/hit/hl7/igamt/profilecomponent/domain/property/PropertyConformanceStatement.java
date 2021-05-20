@@ -13,59 +13,63 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import org.bson.types.ObjectId;
+
+import java.util.HashSet;
 
 /**
  *
  * @author Maxence Lefort on Feb 22, 2018.
  */
-public class PropertyConformanceStatement extends ItemProperty {
+public class PropertyConformanceStatement extends PropertyBinding implements ApplyResourceBinding {
 
-  private String constraintId;
-  private String description;
-  private String assertionScript;
-
+  private ChangeType change;
+  private String targetId;
+  private ConformanceStatement payload;
 
 
   public PropertyConformanceStatement() {
     super(PropertyType.STATEMENT);
   }
 
-
-
-  public String getConstraintId() {
-    return constraintId;
+  public ChangeType getChange() {
+    return change;
   }
 
-
-
-  public void setConstraintId(String constraintId) {
-    this.constraintId = constraintId;
+  public void setChange(ChangeType change) {
+    this.change = change;
   }
 
-
-
-  public String getDescription() {
-    return description;
+  public String getTargetId() {
+    return targetId;
   }
 
-
-
-  public void setDescription(String description) {
-    this.description = description;
+  public void setTargetId(String targetId) {
+    this.targetId = targetId;
   }
 
-
-
-  public String getAssertionScript() {
-    return assertionScript;
+  public ConformanceStatement getPayload() {
+    return payload;
   }
 
-
-
-  public void setAssertionScript(String assertionScript) {
-    this.assertionScript = assertionScript;
+  public void setPayload(ConformanceStatement payload) {
+    this.payload = payload;
   }
 
+  @Override
+  public void onResourceBinding(ResourceBinding resourceBinding, BindingService bindingService) {
+    if(change.equals(ChangeType.ADD) && this.payload != null) {
+      this.payload.setId(new ObjectId().toString());
+      resourceBinding.addConformanceStatement(this.payload);
+    }
 
+    if(change.equals(ChangeType.DELETE) && resourceBinding != null && resourceBinding.getConformanceStatements() != null) {
+      resourceBinding.getConformanceStatements().removeIf((elm) -> elm.getId().equals(targetId));
+    }
+  }
 }

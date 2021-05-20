@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentBinding;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.*;
@@ -236,7 +237,6 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
    */
   @Override
   public ProfileComponentContext updateContext(String pcId, String contextId, ProfileComponentContext updated) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
-    // TODO Auto-generated method stub
     boolean found = false;
     ProfileComponent pc = this.findById(pcId);
     for(ProfileComponentContext ctx:  pc.getChildren()) {
@@ -250,6 +250,35 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
     return findContextById(pcId, contextId);
 
+  }
+
+  @Override
+  public List<PropertyConformanceStatement> updateContextConformanceStatements(String pcId, String contextId, List<PropertyConformanceStatement> conformanceStatements) throws ProfileComponentContextNotFoundException {
+    boolean found = false;
+    ProfileComponent pc = this.findById(pcId);
+    for(ProfileComponentContext ctx:  pc.getChildren()) {
+      if(ctx.getId().equals(contextId)) {
+        ProfileComponentBinding ctxBinding = ctx.getProfileComponentBindings();
+        if(ctxBinding == null) {
+          ctxBinding = new ProfileComponentBinding();
+        }
+        Set<PropertyBinding> rootBinding = ctxBinding.getContextBindings();
+        if(rootBinding == null) {
+          rootBinding = new HashSet<>();
+        }
+
+        rootBinding = rootBinding
+                .stream()
+                .filter((elm) -> !elm.getPropertyKey().equals(PropertyType.STATEMENT))
+                .collect(Collectors.toSet());
+        rootBinding.addAll(conformanceStatements);
+        ctxBinding.setContextBindings(rootBinding);
+        ctx.setProfileComponentBindings(ctxBinding);
+        this.save(pc);
+        return conformanceStatements;
+      }
+    }
+    throw new ProfileComponentContextNotFoundException(contextId);
   }
 
   /* (non-Javadoc)
