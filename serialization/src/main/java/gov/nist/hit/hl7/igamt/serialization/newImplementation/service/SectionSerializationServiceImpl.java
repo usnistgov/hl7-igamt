@@ -563,67 +563,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
         }
     }
     
-//    @Override
-//    public Element SerializeConformanceProfileRegistry(Section section, int level, IgDataModel igDataModel,
-//            ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision)
-//            throws RegistrySerializationException {
-//        Registry conformanceProfileRegistry = igDataModel.getModel().getConformanceProfileRegistry();
-//        try {
-//            Element conformanceProfileRegistryElement = SerializeCommonSection(section, level, igDataModel,
-//                    exportConfiguration);
-//            if (conformanceProfileRegistry != null) {
-//                if (!conformanceProfileRegistry.getChildren().isEmpty()) {
-//                	ArrayList<Link> sorted = new ArrayList<>(conformanceProfileRegistry.getChildren());
-//                	Collections.sort(sorted);
-//                    for (Link conformanceProfileLink : sorted) {
-//                        ConformanceProfileDataModel conformanceProfileDataModel = igDataModel
-//                                .getConformanceProfiles().stream()
-//                                .filter(cp -> conformanceProfileLink.getId().equals(cp.getModel().getId()))
-//                                .findAny().orElseThrow(() -> new ConformanceProfileNotFoundException(
-//                                        conformanceProfileLink.getId()));
-//                        Element conformanceProfileElement;
-//                        if (exportFilterDecision != null
-//                                && exportFilterDecision.getConformanceProfileFilterMap() != null
-//                                && exportFilterDecision.getConformanceProfileFilterMap()
-//                                        .containsKey(conformanceProfileLink.getId())
-//                                && exportFilterDecision.getConformanceProfileFilterMap()
-//                                        .get(conformanceProfileLink.getId())) {
-//                    
-//                            if (exportFilterDecision != null && exportFilterDecision.getOveriddedConformanceProfileMap()
-//                                    .keySet().contains(conformanceProfileLink.getId())) {
-//                                conformanceProfileElement = conformanceProfileSerializationService
-//                                        .serializeConformanceProfile(conformanceProfileDataModel, igDataModel,
-//                                                level + 1, conformanceProfileLink.getPosition(),
-//                                                exportFilterDecision.getOveriddedConformanceProfileMap()
-//                                                        .get(conformanceProfileLink.getId()), exportConfiguration.isDeltaMode());
-//                            } else {
-//                                conformanceProfileElement = conformanceProfileSerializationService
-//                                        .serializeConformanceProfile(conformanceProfileDataModel, igDataModel,
-//                                                level + 1, conformanceProfileLink.getPosition(),
-//                                                exportConfiguration.getConformamceProfileExportConfiguration(), exportConfiguration.isDeltaMode());
-//                            }
-//                            if (conformanceProfileElement != null) {
-//                                conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
-//                            }
-//                        } else if(exportFilterDecision == null) {
-//                             conformanceProfileElement = conformanceProfileSerializationService
-//                                    .serializeConformanceProfile(conformanceProfileDataModel, igDataModel,
-//                                            level + 1, conformanceProfileLink.getPosition(),
-//                                            exportConfiguration.getConformamceProfileExportConfiguration(), exportConfiguration.isDeltaMode());
-//                             if (conformanceProfileElement != null) {
-//                                    conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
-//                                }
-//                        }
-//                    }
-//                }
-//            }
-//            return conformanceProfileRegistryElement;
-//        } catch (Exception exception) {
-//        	exception.printStackTrace();
-//            throw new RegistrySerializationException(exception, section, conformanceProfileRegistry);
-//        }
-//
-//    }
+
 
     @Override
     public Element SerializeConformanceProfileRegistry(Section section, int level, IgDataModel igDataModel,
@@ -638,9 +578,6 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 					ArrayList<ConformanceProfileDataModel> conformanceProfileDataModelsList = new ArrayList<>();
 
 					for (Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
-//						if (exportFilterDecision != null && exportFilterDecision.getConformanceProfileFilterMap() != null
-//								&& exportFilterDecision.getConformanceProfileFilterMap().containsKey(conformanceProfileLink.getId())
-//								&& exportFilterDecision.getConformanceProfileFilterMap().get(conformanceProfileLink.getId())) {
 							ConformanceProfileDataModel conformanceProfileModel = null;
 
 							conformanceProfileModel = igDataModel.getConformanceProfiles().stream()
@@ -663,10 +600,8 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 								conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel, igDataModel,
 										level + 1, 0,
 										exportFilterDecision.getOveriddedConformanceProfileMap().get(conformanceProfileDataModel.getModel().getId()), exportConfiguration.isDeltaMode());
-								System.out.println("We in the IF else 2");
 
 							} else {
-								System.out.println("We in the IF else 2");
 								conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel,igDataModel,
 										level + 1, 0,
 										exportConfiguration.getConformamceProfileExportConfiguration(), exportConfiguration.isDeltaMode());
@@ -677,14 +612,6 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							}
 						
 					if(exportFilterDecision == null) {
-//							DatatypeDataModel datatypeDataModel = null;
-//
-//							datatypeDataModel = ((DatatypeLibraryDataModel) documentStructureDataModel).getDatatypes().stream()
-//									.filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
-//									.orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId())); 
-
-
-//							Element datatypeElement;
 						conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel,igDataModel,
 									level + 1, 0,
 									exportConfiguration.getConformamceProfileExportConfiguration(), exportConfiguration.isDeltaMode());
@@ -747,14 +674,6 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							}
 							}
 					if(exportFilterDecision == null) {
-//							DatatypeDataModel datatypeDataModel = null;
-//
-//							datatypeDataModel = ((DatatypeLibraryDataModel) documentStructureDataModel).getDatatypes().stream()
-//									.filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny()
-//									.orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId())); 
-
-
-//							Element datatypeElement;
 						segmentElement = segmentSerializationService.serializeSegment(igDataModel,segmentDataModel,
 									level + 1, 0,
 									exportConfiguration.getSegmentExportConfiguration(),exportFilterDecision , exportConfiguration.isDeltaMode());

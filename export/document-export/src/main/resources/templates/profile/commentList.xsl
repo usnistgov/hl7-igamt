@@ -11,8 +11,8 @@
         </xsl:element>
         <xsl:element name="br"/>
         <xsl:for-each select="Comments/Comment">
-<!--         	<xsl:sort select="@location" data-type="number" order="ascending" />
- -->        
+         	<xsl:sort select="@position" data-type="number" order="ascending" />
+         
  	<xsl:element name="span">
                 <xsl:element name="br"/>
                 <xsl:element name="b">

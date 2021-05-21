@@ -188,11 +188,14 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                     Element commentsElement = new Element("Comments");
                     Element definitionTextsElement = new Element("DefinitionTexts");
                     for (SegmentRefOrGroup segmentRefOrGroup : conformanceProfile.getChildren()) {
+                    	if(bindedPaths.containsKey(segmentRefOrGroup.getId())) {
                         if (segmentRefOrGroup.getComments() != null) {
                             for (Comment comment : segmentRefOrGroup.getComments()) {
                                 Element commentElement = new Element("Comment");
                                 commentElement.addAttribute(new Attribute("name", segmentRefOrGroup.getName()));
                                 commentElement.addAttribute(new Attribute("description", comment.getDescription()));
+                                commentElement.addAttribute(new Attribute("position", String.valueOf(segmentRefOrGroup.getPosition())));
+
                                 commentsElement.appendChild(commentElement);
                             }
 
@@ -202,9 +205,12 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                             definitionText
                                     .addAttribute(new Attribute("text", segmentRefOrGroup.getText()));
                             definitionText.addAttribute(new Attribute("name", segmentRefOrGroup.getName()));
+      	    			  definitionText.addAttribute(new Attribute("position", String.valueOf(segmentRefOrGroup.getPosition())));
+
                             definitionTextsElement.appendChild(definitionText);
                         }
                     }
+                }
 
                     if(conformanceProfileExportConfiguration.getStructuredNarrative().isComments()) {
                         conformanceProfileElement.appendChild(commentsElement);

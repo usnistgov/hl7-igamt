@@ -198,6 +198,8 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
               } 
               commentElement
               .addAttribute(new Attribute("description", comment.getDescription()));
+              commentElement.addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
+
               comments.appendChild(commentElement);
             }
 
@@ -205,6 +207,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
               Element definitionText = new Element("DefinitionText");
               definitionText
               .addAttribute(new Attribute("text", component.getText()));
+  			  definitionText.addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
               if(complexDatatype.getExt() != null) {
                 definitionText
                 .addAttribute(new Attribute("name", complexDatatype.getName()+"_"+complexDatatype.getExt() + "." + component.getPosition()));
