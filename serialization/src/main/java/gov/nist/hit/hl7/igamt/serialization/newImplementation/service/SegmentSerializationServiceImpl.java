@@ -136,29 +136,31 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
       }
       for(Field field : segment.getChildren()) {
         if(bindedPaths.containsKey(field.getId())) {
-          if(field.getComments() != null) {
-            for(Comment comment : field.getComments()) {
-              Element commentElement = new Element("Comment");
-              if(segment.getExt() != null) {
-                commentElement
-                .addAttribute(new Attribute("name", segment.getName()+"_"+segment.getExt() + "." + field.getPosition()));
-              } else {
-                commentElement
-                .addAttribute(new Attribute("name", segment.getName()+ "." + field.getPosition()));
-              } 
-              commentElement.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
-              commentElement.addAttribute(new Attribute("description",comment.getDescription()));
-              commentsElement.appendChild(commentElement);
-            }  
-          }
-          if(field.getText() != null) {
-            Element definitionText = new Element("DefinitionText");
-            definitionText
-            .addAttribute(new Attribute("text", field.getText()));
-            definitionText.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
-            definitionTextsElement.appendChild(definitionText);
-          }
-        }
+  		  if(field.getComments() != null) {
+			  for(Comment comment : field.getComments()) {
+    			  Element commentElement = new Element("Comment");
+    			  if(segment.getExt() != null) {
+    		          commentElement
+    	              .addAttribute(new Attribute("name", segment.getName()+"_"+segment.getExt() + "." + field.getPosition()));
+    		          } else {
+    		        	  commentElement
+	    	              .addAttribute(new Attribute("name", segment.getName()+ "." + field.getPosition()));
+    			          } 
+    			  commentElement.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
+				  commentElement.addAttribute(new Attribute("description",comment.getDescription()));
+				  commentElement.addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
+    			  commentsElement.appendChild(commentElement);
+			  }  
+		  }
+		  if(field.getText() != null) {
+			  Element definitionText = new Element("DefinitionText");
+			  definitionText
+              .addAttribute(new Attribute("text", field.getText()));
+			  definitionText.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
+			  definitionText.addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
+			  definitionTextsElement.appendChild(definitionText);
+		  }
+	  }
       }
       //			segmentElement.appendChild(commentsElement);
       //			segmentElement.appendChild(definitionTextsElement);
