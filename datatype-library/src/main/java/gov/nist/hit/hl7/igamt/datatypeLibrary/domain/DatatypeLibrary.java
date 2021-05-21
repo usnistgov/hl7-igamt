@@ -43,7 +43,7 @@ public class DatatypeLibrary extends DocumentStructure {
 
   private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
   private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
-  private DocumentExportConfiguration lastUserConfiguration;
+//  private DocumentExportConfiguration lastUserConfiguration;
 
 
   /**
@@ -56,16 +56,16 @@ public class DatatypeLibrary extends DocumentStructure {
   }
 
 
+//
+//  public DocumentExportConfiguration getLastUserConfiguration() {
+//    return lastUserConfiguration;
+//  }
 
-  public DocumentExportConfiguration getLastUserConfiguration() {
-    return lastUserConfiguration;
-  }
 
 
-
-  public void setLastUserConfiguration(DocumentExportConfiguration lastUserConfiguration) {
-    this.lastUserConfiguration = lastUserConfiguration;
-  }
+//  public void setLastUserConfiguration(DocumentExportConfiguration lastUserConfiguration) {
+//    this.lastUserConfiguration = lastUserConfiguration;
+//  }
 
 
 

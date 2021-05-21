@@ -307,7 +307,6 @@ export class IgService {
     form.submit();
   }
 
-
   export(igId, decision: any, format: string, configId: string , exportType: ExportTypes ) {
     const form = document.createElement('form');
     form.action = this.EXPORT_URL + igId + '/' + format + '?deltamode=TEST';

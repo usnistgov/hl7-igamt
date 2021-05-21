@@ -45,6 +45,8 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportDocType;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
+import gov.nist.hit.hl7.igamt.export.configuration.previous.ExportDecisionRepository;
+import gov.nist.hit.hl7.igamt.export.configuration.previous.ExportDecision;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
@@ -84,6 +86,9 @@ public class ExportController {
 
   @Autowired
   DatatypeLibraryService datatypeLibraryService;
+  
+  @Autowired
+  ExportDecisionRepository exportDecisionRepository;
 
   List<String> files = new ArrayList<String>();
   Path source = Paths.get(this.getClass().getResource("/").getPath());
@@ -100,21 +105,27 @@ public class ExportController {
       ExportFilterDecision decision = null;
       ExportConfiguration config = null;
       Ig ig = igService.findById(igId);		
-      
+      ExportType type = ExportType.fromString(formData.getDocumentType());
+      if(type == null) {
+        throw new ExportException("Unspecified Export Type");
+      }
       if(formData.getConfig() != null && !formData.getConfig().isEmpty()) {
         config = exportConfigurationService.getExportConfiguration(formData.getConfig());
       } else {
-        ExportType type = ExportType.fromString(formData.getDocumentType());
-        if(type != null) {
-          config = exportConfigurationService.getConfigurationToApply(type, username);
-        }else {
-          throw new ExportException("Unspecified Export Type");
-        }
+        config = exportConfigurationService.getConfigurationToApply(type, username);
       } 
       if(formData.getJson() != null) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        decision = mapper.readValue(formData.getJson(), ExportFilterDecision.class);      
+        decision = mapper.readValue(formData.getJson(), ExportFilterDecision.class);
+        ExportDecision oldDecsision = exportDecisionRepository.findByUsernameAndTypeAndDocumentAndConfig(username, type, ig.getId(), config.getId());
+        if(oldDecsision != null) {
+          oldDecsision.setDecision(decision);
+          exportDecisionRepository.save(oldDecsision);
+        }else {
+          ExportDecision newDecsion = new ExportDecision(type, ig.getId(), config.getId(), username, decision);
+          exportDecisionRepository.insert(newDecsion);
+        }
       } else {
         if(config != null) {
         decision = igExportService.getExportFilterDecision(ig, config);
@@ -122,14 +133,6 @@ public class ExportController {
           throw new ExportException("Missing Configuration");
         }
       }
-
-      //Save lastUserConfiguration For quickHtmlExport
-      DocumentExportConfiguration lastUserConfiguration = new DocumentExportConfiguration();
-      lastUserConfiguration.setConfigId(config.getId());
-      lastUserConfiguration.setDecision(decision);
-      igService.save(ig);					
-
-      //   
       if(format.equalsIgnoreCase(ExportDocType.HTML.toString())) {
         exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, config.getId());
 
@@ -173,14 +176,6 @@ public class ExportController {
         ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
         decision = igExportService.getExportFilterDecision(lib, exportConfiguration); // Move to different service since it applies to DTLIB and IG
       }
-      //----------------  STORE THE LATEST CONFIG
-      DocumentExportConfiguration lastUserConfiguration = new DocumentExportConfiguration();
-      lastUserConfiguration.setConfigId(configId);
-      lastUserConfiguration.setDecision(decision); 
-      lib.setLastUserConfiguration(lastUserConfiguration);
-      datatypeLibraryService.save(lib);
-      // ----------------
-
       if(format.equalsIgnoreCase(ExportDocType.HTML.toString())) {
         exportedFile = dlNewExportService.exportDlDocumentToHtml(username, igId, decision, configId);
         response.setContentType("text/html");
@@ -200,41 +195,6 @@ public class ExportController {
     }
 
   }
-  
-  @RequestMapping(value = "/api/export/{document}/{documentId}/getLastUserConfiguration", method = RequestMethod.GET, produces = { "application/json" })
-  public @ResponseBody ExportConfigurationGlobal getLastUserConfiguration(@PathVariable("documentId") String documentId,
-      @PathVariable("document") String document,
-      HttpServletResponse response,
-      FormData formData) throws ExportException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null) {
-      try {
-        String username = authentication.getPrincipal().toString();
-        DocumentStructure ds = new DocumentStructure();
-        ExportConfigurationGlobal exportConfigurationGlobal = new ExportConfigurationGlobal();
-        if(document.toLowerCase().equals("ig")) {
-          System.out.println("We here in IG");
-          ds = igService.findById(documentId);
-          ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((Ig) ds).getLastUserConfiguration().getConfigId());
-          ExportFilterDecision efc = ((Ig) ds).getLastUserConfiguration().getDecision();
-          exportConfigurationGlobal.setExportConfiguration(ec);
-          exportConfigurationGlobal.setExportFilterDecision(efc);
-        } else if(document.toLowerCase().equals("library")) {
-          ds = datatypeLibraryService.findById(documentId);
-          ExportConfiguration ec = exportConfigurationService.getExportConfiguration(((DatatypeLibrary) ds).getLastUserConfiguration().getConfigId());
-          ExportFilterDecision efc = ((DatatypeLibrary) ds).getLastUserConfiguration().getDecision();
-          exportConfigurationGlobal.setExportConfiguration(ec);
-          exportConfigurationGlobal.setExportFilterDecision(efc);
-        }
-        return exportConfigurationGlobal;
-      }catch (Exception e) {
-        throw new ExportException(e, "Error while sending back last user configuration for Document with id " + documentId);
-      }
-    } else {
-      throw new AuthenticationCredentialsNotFoundException("No Authentication");
-    }
-  }
-
 
   @RequestMapping(value = "/api/export/ig/{documentId}/quickHtml", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
   public @ResponseBody void exportIgDocumentHtml(@PathVariable("documentId") String documentId,
@@ -356,6 +316,7 @@ public class ExportController {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       ExportConfiguration config =  exportConfigurationService.getExportConfiguration(configId);
+      
       DocumentStructure ds = new DocumentStructure();	
       if(document.toLowerCase().equals("ig")) {
         ds = igService.findById(id);
@@ -367,6 +328,11 @@ public class ExportController {
       } else {	
         ExportConfigurationGlobal exportConfigurationGlobal = new ExportConfigurationGlobal();
         ExportFilterDecision exportFilterDecision = igExportService.getExportFilterDecision(ds, config);
+        ExportDecision oldDecsision = this.exportDecisionRepository.findByUsernameAndTypeAndDocumentAndConfig(authentication.getPrincipal().toString(), config.getType(), id, config.getId());
+        if(oldDecsision != null) {
+          exportConfigurationGlobal.setPrevious(oldDecsision.getDecision());
+        }
+        
         exportConfigurationGlobal.setExportConfiguration(config);
         exportConfigurationGlobal.setExportFilterDecision(exportFilterDecision);
         return exportConfigurationGlobal;

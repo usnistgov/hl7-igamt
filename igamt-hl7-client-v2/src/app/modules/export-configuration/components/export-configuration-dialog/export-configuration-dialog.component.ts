@@ -67,7 +67,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.type = node.type;
     switch (this.type) {
       case Type.SEGMENT: {
-        console.log('Type in TOC is S bbbbbb:' + this.type);
         if (this.filter.overiddedSegmentMap[node.id]) {
           this.current = this.filter.overiddedSegmentMap[node.id];
         } else {
@@ -78,7 +77,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
         break;
       }
       case Type.DATATYPE: {
-        console.log('Type in TOC is D:' + this.type);
         if (this.filter.overiddedDatatypesMap[node.id]) {
           this.current = this.filter.overiddedDatatypesMap[node.id];
 
@@ -89,7 +87,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
         break;
       }
       case Type.CONFORMANCEPROFILE: {
-        console.log('toc', node, this.filter);
         if (this.filter.overiddedConformanceProfileMap[node.id]) {
           this.current = this.filter.overiddedConformanceProfileMap[node.id];
         } else {
@@ -139,23 +136,8 @@ export class ExportConfigurationDialogComponent implements OnInit {
   }
 
   applyLastUserConfiguration() {
-    if (this.docType === Type.IGDOCUMENT) {
-      console.log(this.documentId);
-      this.igService.getLastUserConfiguration(this.documentId).subscribe(
-        (lastConfig) => {
-          this.filter = {...lastConfig.exportFilterDecision, changed: this.initialConfig.exportFilterDecision.changed};
-          this.initialConfig = lastConfig;
-        },
-      );
-    } else {
-      if (this.docType === Type.DATATYPELIBRARY) {
-        this.libraryService.getLastUserConfiguration(this.documentId).subscribe(
-          (lastConfig) => {
-            this.initialConfig = lastConfig;
-            this.filter = this.initialConfig.exportFilterDecision;
-          },
-        );
-      }
+    if (this.initialConfig.previous) {
+      this.filter = this.initialConfig.previous;
     }
   }
 
@@ -191,13 +173,9 @@ export class ExportConfigurationDialogComponent implements OnInit {
     console.log($event);
     let ret = false;
     if ($event.indexOf('ADDED') > -1) {
-      console.log('ADDED');
-
       ret = this.filter.added[key] || ret;
     }
     if ($event.indexOf('UPDATED') > -1) {
-      console.log('UPDATED');
-
       ret = this.filter.changed[key] || ret;
     }
     return ret;
