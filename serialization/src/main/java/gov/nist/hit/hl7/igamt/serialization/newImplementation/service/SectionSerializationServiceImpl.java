@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ProfileComponentExportConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +22,14 @@ import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibraryDataModel;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.CompositeProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.CompositeProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -52,6 +56,9 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 
     @Autowired
     private ConformanceProfileSerializationService conformanceProfileSerializationService;
+    
+    @Autowired
+    private ProfileComponentSerializationService profileComponentSerializationService;
 
     @Autowired
     private ValuesetSerializationService valuesetSerializationService;
@@ -72,7 +79,17 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
         	if (Type.PROFILE.equals(section.getType())) {
             serializedSection = SerializeProfile((TextSection) section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
                     exportFilterDecision);
-        } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
+        } 
+        	else if (Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
+            serializedSection = SerializeProfileComponentRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
+                    exportFilterDecision);
+        } 
+//         	else if (Type.COMPOSITEPROFILEREGISTRY.equals(section.getType())) {
+//                serializedSection = SerializeCompositeProfileRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
+//                        exportFilterDecision);
+//            } 
+        else 
+        	if (Type.DATATYPEREGISTRY.equals(section.getType())) {
             serializedSection = SerializeDatatypeRegistry(section, level, (IgDataModel) documentStructureDataModel, exportConfiguration,
                     exportFilterDecision);
         } else if (Type.SEGMENTREGISTRY.equals(section.getType())) {
@@ -104,8 +121,127 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
         }
         return serializedSection;
     }
-    //
-    // }
+    private Element SerializeCompositeProfileRegistry(Section section, int level,
+			IgDataModel igDataModel, ExportConfiguration exportConfiguration,
+			ExportFilterDecision exportFilterDecision) 
+    {
+		return null;
+//    		Registry compositeProfileRegistry = igDataModel.getModel().getCompositeProfileRegistry();
+//            try {
+//                Element compositeProfileRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+//                if (compositeProfileRegistry != null && !compositeProfileRegistry.getChildren().isEmpty()) {
+//                	ArrayList<CompositeProfileDataModel> compositeProfileDataModelsList = new ArrayList<>();
+//                	for (Link compositeProfileLink : compositeProfileRegistry.getChildren()) {
+//
+//                		CompositeProfileDataModel compositeProfileModel = igDataModel.getCompositeProfile()
+//    							.stream()
+//    							.filter(dt -> compositeProfileLink.getId().equals(dt.getModel().getId()))
+//    							.findAny()
+//    							.orElseThrow(() -> new ConformanceProfileNotFoundException(compositeProfileLink.getId()));
+//                		compositeProfileDataModelsList.add(compositeProfileModel);
+//                	}
+//                	Collections.sort(compositeProfileDataModelsList);
+//
+//                	for(CompositeProfileDataModel compositeProfileDataModel : compositeProfileDataModelsList) {
+//    					boolean exportFilterDecisionNotSet = exportFilterDecision == null;
+//    					boolean exportFilterDecisionIsTrue = exportFilterDecision != null
+//    							&& exportFilterDecision.getCompositeProfileFilterMap() != null
+//    							&& exportFilterDecision.getCompositeProfileFilterMap().containsKey(compositeProfileDataModel.getModel().getId())
+//    							&& exportFilterDecision.getCompositeProfileFilterMap().get(compositeProfileDataModel.getModel().getId());
+//
+//    					if (exportFilterDecisionNotSet || exportFilterDecisionIsTrue) {
+//
+//    						boolean configurationIsOverridden = !exportFilterDecisionNotSet
+//    								&& exportFilterDecision.getOveriddedCompositeProfileMap() != null
+//    								&& exportFilterDecision.getOveriddedCompositeProfileMap().containsKey(compositeProfileDataModel.getModel().getId());
+//
+//    						CompositeProfileExportConfiguration compositeProfileExportConfiguration = configurationIsOverridden ?
+//    								exportFilterDecision.getOveriddedCompositeProfileMap().get(compositeProfileDataModel.getModel().getId()) :
+//    								exportConfiguration.getCompositeProfileExportConfiguration();
+//
+//    						Element conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel,igDataModel,
+//
+//    						Element compositeProfileElement = profileComponentSerializationService.serializeProfileComponent(
+//    								profileComponentDataModel,
+//    								igDataModel,
+//    								level + 1,
+//    								0,
+//    								profileComponentExportConfiguration,
+//    								false
+//    						);
+//
+//    						if (profileComponentElement != null) {
+//    							profileComponentRegistryElement.appendChild(profileComponentElement);
+//    						}
+//    					}
+//    				}
+//                }
+//                return profileComponentRegistryElement;
+//            } catch (Exception exception) {
+//            	exception.printStackTrace();
+//                throw new RegistrySerializationException(exception, section, profileComponentRegistry);
+//            }
+//    	
+	}
+	private Element SerializeProfileComponentRegistry(
+    		Section section, int level, IgDataModel igDataModel,
+			ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision
+	) throws RegistrySerializationException {
+        Registry profileComponentRegistry = igDataModel.getModel().getProfileComponentRegistry();
+        try {
+            Element profileComponentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
+            if (profileComponentRegistry != null && !profileComponentRegistry.getChildren().isEmpty()) {
+            	ArrayList<ProfileComponentDataModel> profileComponentDataModelsList = new ArrayList<>();
+            	for (Link profileComponentLink : profileComponentRegistry.getChildren()) {
+
+            		ProfileComponentDataModel profileComponentModel = igDataModel.getProfileComponents()
+							.stream()
+							.filter(dt -> profileComponentLink.getId().equals(dt.getModel().getId()))
+							.findAny()
+							.orElseThrow(() -> new ConformanceProfileNotFoundException(profileComponentLink.getId()));
+            		profileComponentDataModelsList.add(profileComponentModel);
+            	}
+            	Collections.sort(profileComponentDataModelsList);
+
+            	for(ProfileComponentDataModel profileComponentDataModel : profileComponentDataModelsList) {
+					boolean exportFilterDecisionNotSet = exportFilterDecision == null;
+					boolean exportFilterDecisionIsTrue = exportFilterDecision != null
+							&& exportFilterDecision.getProfileComponentFilterMap() != null
+							&& exportFilterDecision.getProfileComponentFilterMap().containsKey(profileComponentDataModel.getModel().getId())
+							&& exportFilterDecision.getProfileComponentFilterMap().get(profileComponentDataModel.getModel().getId());
+
+					if (exportFilterDecisionNotSet || exportFilterDecisionIsTrue) {
+
+						boolean configurationIsOverridden = !exportFilterDecisionNotSet
+								&& exportFilterDecision.getOveriddedProfileComponentMap() != null
+								&& exportFilterDecision.getOveriddedProfileComponentMap().containsKey(profileComponentDataModel.getModel().getId());
+
+						ProfileComponentExportConfiguration profileComponentExportConfiguration = configurationIsOverridden ?
+								exportFilterDecision.getOveriddedProfileComponentMap().get(profileComponentDataModel.getModel().getId()) :
+								exportConfiguration.getProfileComponentExportConfiguration();
+
+						Element profileComponentElement = profileComponentSerializationService.serializeProfileComponent(
+								profileComponentDataModel,
+								igDataModel,
+								level + 1,
+								0,
+								profileComponentExportConfiguration,
+								false
+						);
+
+						if (profileComponentElement != null) {
+							profileComponentRegistryElement.appendChild(profileComponentElement);
+						}
+					}
+				}
+            }
+            return profileComponentRegistryElement;
+        } catch (Exception exception) {
+        	exception.printStackTrace();
+            throw new RegistrySerializationException(exception, section, profileComponentRegistry);
+        }
+	}
+
 
     public Element SerializeCommonSection(Section section, int level, DocumentStructureDataModel documentStructureDataModel,
             ExportConfiguration exportConfiguration) {
@@ -626,7 +762,8 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							if (segmentElement != null) {
 								segmentRegistryElement.appendChild(segmentElement);
 							}
-						}}
+						}
+						}
 					}
 				}
             return segmentRegistryElement;

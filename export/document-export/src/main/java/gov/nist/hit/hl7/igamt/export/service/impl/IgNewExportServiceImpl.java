@@ -169,6 +169,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		ExportFilterDecision decision = new ExportFilterDecision();
 		if(documentStructure instanceof Ig) {
 			Ig ig = (Ig) documentStructure;
+			for (Link l : ig.getProfileComponentRegistry().getChildren()) {
+				decision.getProfileComponentFilterMap().put(l.getId(), true);
+			}
 		for (Link l : ig.getConformanceProfileRegistry().getChildren()) {
 			decision.getConformanceProfileFilterMap().put(l.getId(), true);
 		}

@@ -76,7 +76,7 @@ public class ConstraintSerializationServiceImpl implements ConstraintSerializati
 		predicateElement.addAttribute(new Attribute("falseUsage",
 				predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : ""));
 		predicateElement.addAttribute(new Attribute("location",
-				predicate.getLocation() != null ? predicate.getLocation() : ""));
+				predicate.getLocation() != null ? predicate.getLocation() : location));
 		predicateElement.addAttribute(new Attribute("position",location));
 		System.out.println("New field path is : " + predicate.getContext());
 		if (predicate instanceof AssertionPredicate) {

@@ -6,7 +6,7 @@
 
     <xsl:template name="InternalSingleCode">
 
-        <xsl:if test="count(Binding/StructureElementBindings/StructureElementBinding/InternalSingleCode) &gt; 0">
+        <xsl:if test="count(Binding//InternalSingleCode) &gt; 0">
             <xsl:element name="br"/>
             <xsl:element name="span">
                 <xsl:element name="b">

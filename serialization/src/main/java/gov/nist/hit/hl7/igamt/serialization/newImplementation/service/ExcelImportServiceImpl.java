@@ -122,7 +122,7 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 		
 //		//Iterate through each rows one by one
 		CoConstraintSpreadSheetParser parser = new CoConstraintSpreadSheetParser(sheet);
-		ParserResults parserResults = processCoConstraintTable(parser.parseTable(sheet), segmentID, conformanceProfileID, igID, pathID, sheet, parser.wrongHeaderStructure);
+		ParserResults parserResults = processCoConstraintTable(parser.parseTable(sheet), segmentID, conformanceProfileID, igID, pathID, sheet, parser.wrongHeaderStructure, parser.emptyCellInRow);
 		CoConstraintTableConditionalBinding coConstraintTableConditionalBinding = new CoConstraintTableConditionalBinding();
 		coConstraintTableConditionalBinding.setValue(parserResults.getCoConstraintTable());
 		ConformanceProfile cs = conformanceProfileService.findById(conformanceProfileID);
@@ -166,10 +166,30 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 			coConstraintHeaders.setSelectors(selectors);
 			coConstraintHeaders.setConstraints(constraints);
 			coConstraintHeaders.setNarratives(narratives);
+			if(checkCardinalityColumns(constraints)) {
+				IgamtObjectError igamtObjectError = new IgamtObjectError("Wrong Table Structure", "Use a template as a starting point", Type.COCONSTRAINTBINDINGS, null, "Varies cells should be followed by a cardinality Column",
+					      "first row", "ERROR", "handleBy");
+				errors.add(igamtObjectError);
+			}
+			
 			System.out.println("Proccessed all headers");
 			return coConstraintHeaders;  
 	    }
 	 
+private boolean checkCardinalityColumns(List<CoConstraintHeader> constraints) {
+		for(int i = 0; i < constraints.size(); i++ ) {
+			if(((DataElementHeader) constraints.get(i)).getColumnType().equals("VARIES")) {
+				
+			}
+		}
+		return false;
+	}
+
+
+
+
+
+
 //	 //NEW
 //	 void checkAndAddGroup(int i) {
 //	        if(i > 1) {
@@ -177,7 +197,7 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 //	        }
 //	    }
 
-	public ParserResults processCoConstraintTable(ParsedTable parsedTable, String segmentID, String conformanceProfileID, String igID, String pathID, XSSFSheet sheet, boolean wrongHeaderStructure) throws Exception{
+	public ParserResults processCoConstraintTable(ParsedTable parsedTable, String segmentID, String conformanceProfileID, String igID, String pathID, XSSFSheet sheet, boolean wrongHeaderStructure, boolean emptyCellInRow) throws Exception{
 		ParserResults parserResults = new ParserResults();
 		CoConstraintTable coConstraintTable = new CoConstraintTable();
 		VerificationResult verificationResult = new VerificationResult();
@@ -191,7 +211,7 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 //		Row row2 = rowIterator.next();
 		
 	     if(wrongHeaderStructure == true) {
-	    	 IgamtObjectError igamtObjectError = new IgamtObjectError("Wrong Table Structure Or Empty File", "Use a template as a starting point", Type.COCONSTRAINTBINDINGS, null, "Wrong Table Structure Or Empty Spread Sheet, the first row of the spread sheet should only contains cells with following values : Usage, Cardinality, IF, THEN, NARRATIVES, - Case Sensitive-",
+	    	 IgamtObjectError igamtObjectError = new IgamtObjectError("Wrong Table Structure", "Use a template as a starting point", Type.COCONSTRAINTBINDINGS, null, "Wrong Table Structure Or Empty Spread Sheet, the first row of the spread sheet should only contains cells with following values : Usage, Cardinality, IF, THEN, NARRATIVES, - Case Sensitive-",
 				      "first row", "ERROR", "handleBy");
 			errors.add(igamtObjectError);
 	     }else {
@@ -199,6 +219,11 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 	     
 	    CoConstraintHeaders coConstraintHeaders =  this.processHeaders(parsedTable,headerMap,segmentID,errors);
 //		CoConstraintHeaders coConstraintHeaders = processHeaders(row1,row2,headerMap,segmentID);
+	    if(emptyCellInRow == true) {
+//	    	 IgamtObjectError igamtObjectError = new IgamtObjectError("Wrong Table Structure", "Use a template as a starting point", Type.COCONSTRAINTBINDINGS, null, "Empty cell in a Row causing erroneous Table strucutre. Please verify that headers do not have empty columns",
+//				      "first row", "ERROR", "handleBy");
+//			errors.add(igamtObjectError);
+	     }else {
 		List<CoConstraint> coConstraintsFree = new ArrayList<CoConstraint>();
 		List<CoConstraintGroupBinding> groups = new ArrayList<CoConstraintGroupBinding>();
 		
@@ -217,6 +242,7 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 		System.out.println("Groups result : " + groups.size());
 		parserResults.setCoConstraintTable(coConstraintTable);
 		return parserResults;		
+	}
 	}
 		return parserResults;
 	}
@@ -251,18 +277,27 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 
 			cardinality.setMax(parsedCoConstraint.getMaxCardinality());
 			System.out.println(newLine +" MAX : " + cardinality.getMax());
-	     
+	     int i = 0;
 	     for(Map.Entry<Integer, String> entry: entries) {
 //	    	 	// column index
 //	    	 	entry.getKey();
 //	    	 	// column value
 //	    	 	entry.getValue(); 	
 	    	 	CoConstraintHeader coConstraintHeader = headerMap.get(entry.getKey());
-				CoConstraintCell coConstraintCell = processConstraintCell(entry.getKey(), entry.getValue(),headerMap,igID,errors);
-				System.out.println("IT3");
+	    	 	int j = entries.size();
+	    	 	if(i < entries.size()-1) {
+				CoConstraintCell coConstraintCell = processConstraintCell(entry.getKey(), entry.getValue(), entries.get(i+1).getValue(),headerMap,igID,errors);
 				if(coConstraintHeader != null) {
-				cells.put(coConstraintHeader.getKey(), coConstraintCell);
-				}
+					cells.put(coConstraintHeader.getKey(), coConstraintCell);
+					}
+	    	 	} else {
+					CoConstraintCell coConstraintCell = processConstraintCell(entry.getKey(), entry.getValue(), null,headerMap,igID,errors);
+					if(coConstraintHeader != null) {
+						cells.put(coConstraintHeader.getKey(), coConstraintCell);
+						}
+	    	 	}
+				
+				i++;
 	     }
 	     
 		return coConstraint;
@@ -345,7 +380,9 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 		for(Integer location : values.keySet()) {
 			if(!narrative) {
 			CoConstraintHeader coConstraintHeader = processIfHeaderCell(values.get(location), segmentID,errors);
+			if(coConstraintHeader != null) {
 			headers.add(coConstraintHeader);
+			}
 			headerMap.put(location , coConstraintHeader);
 		}
 			else {
@@ -374,7 +411,7 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 		return result;
 	}
 	
-	public CoConstraintCell processConstraintCell(Integer columnIndex, String cellValue, Map<Integer, CoConstraintHeader> headerMap, String igID, List<IgamtObjectError> errors) throws Exception {
+	public CoConstraintCell processConstraintCell(Integer columnIndex, String cellValue, String cardValue, Map<Integer, CoConstraintHeader> headerMap, String igID, List<IgamtObjectError> errors) throws Exception {
 		CoConstraintHeader coConstraintHeader = headerMap.get(columnIndex);
 		if (coConstraintHeader != null && coConstraintHeader.getType().equals(HeaderType.DATAELEMENT)) {
 			switch (((DataElementHeader) coConstraintHeader).getColumnType()) 
@@ -448,6 +485,7 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 	            	
 	            case VARIES:
 	            	VariesCell variesCell = new VariesCell();
+	            	variesCell.setCardinalityMax(cardValue);
 //	            	CoConstraintCell coConstraintCell = new CoConstraintCell();
 //	            	String x = "a : 1";
 //	            	x.matches("Code\\w*:\\\\w*[a-zA-Z] : [0-9]");
@@ -504,11 +542,12 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 			String[] splitCellValue = cellValue.split("\\s+");;
 
 			String columnType = splitCellValue[0];
-			if(!(columnType.equals("VALUE") || columnType.equals("VARIES") || columnType.equals("DATATYPE") || columnType.equals("VALUESET") || columnType.equals("CODE"))) {
+			if(!(columnType.equals("VALUE") || columnType.equals("VARIES") || columnType.equals("DATATYPE") || columnType.equals("VALUESET") || columnType.equals("CODE") || columnType.equals("Cardinality") )) {
 				IgamtObjectError igamtObjectError = new IgamtObjectError("Invalid header type value", "CODE OBX-3", Type.COCONSTRAINTBINDINGS, null, "Invalid header value, encountred " +columnType + " expected values : " + " CODE, VALUE, VALUESET, DATATYPE, VARIES.",
 					      "table_headers", "ERROR", "handleBy");
 				errors.add(igamtObjectError);
 			} else {
+				if(!columnType.equals("Cardinality")) {
 			String name = splitCellValue[1];
 			String stringKey = name.split("-")[1].replace(".", "-");
 //			int key = Integer.parseInt(name.split("-")[1]);
@@ -530,6 +569,7 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 			System.out.println(" type : " + dataElementHeader.getColumnType().name() + " and name : "+ name + " and key : " + stringKey);
 		return dataElementHeader;
 		}
+			}
 			}
 			return null;
 		

@@ -214,7 +214,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 					elementIdParent != null ? name+"."+elementIdParent : ""));		
 			valuesetBindingElement.addAttribute(new Attribute("locations",
 					valuesetBinding.getValuesetLocations() != null
-							? convertValuesetLocationsToString(location, valuesetBinding.getValuesetLocations())
+							? convertValuesetLocationsToString(name+"."+elementIdParent, valuesetBinding.getValuesetLocations())
 							: ""));
 			return valuesetBindingElement;
 		}

@@ -90,9 +90,11 @@ import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileLabel;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileSelectItem;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.CompositeProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
@@ -1044,6 +1046,9 @@ public class IgServiceImpl implements IgService {
     Set<DatatypeDataModel> datatypes = new HashSet<DatatypeDataModel>();
     Set<SegmentDataModel> segments = new HashSet<SegmentDataModel>();
     Set<ConformanceProfileDataModel> conformanceProfiles = new HashSet<ConformanceProfileDataModel>();
+    Set<ProfileComponentDataModel> profileComponents = new HashSet<ProfileComponentDataModel>();
+    Set<CompositeProfileDataModel> compositeProfiles = new HashSet<CompositeProfileDataModel>();
+
     Set<ValuesetDataModel> valuesets = new HashSet<ValuesetDataModel>();
     Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap = new HashMap<String, ValuesetBindingDataModel>();
 
@@ -1098,11 +1103,37 @@ public class IgServiceImpl implements IgService {
         throw new Exception("ConformanceProfile is missing::::" + link.getId());
     }
     
+    for (Link link : ig.getProfileComponentRegistry().getChildren()) {
+        ProfileComponent pc = this.profileComponentService.findById(link.getId());
+        if(pc == null) pc = inMemoryDomainExtensionService.findById(link.getId(), ProfileComponent.class);
+        if (pc != null) {
+        	ProfileComponentDataModel profileComponentDataModel = new ProfileComponentDataModel();
+        	DataElementNamingService dataElementNamingService = new DataElementNamingService(datatypeService, segmentService, conformanceProfileService);
+        	profileComponentDataModel.putModel(pc, dataElementNamingService);
+          profileComponents.add(profileComponentDataModel);
+        } else
+          throw new Exception("ProfileComponent is missing::::" + link.getId());
+      }
+    
+    for (Link link : ig.getCompositeProfileRegistry().getChildren()) {
+        CompositeProfileStructure cps = this.compositeProfileService.findById(link.getId());
+        if (cps != null) {
+        	CompositeProfileDataModel compositeProfileDataModel = new CompositeProfileDataModel();
+        	compositeProfileDataModel.putModel(cps, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
+              this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
+          compositeProfiles.add(compositeProfileDataModel);
+//          generateFlavoredElements(String cpId);
+        } else
+          throw new Exception("Composite Profile is missing::::" + link.getId());
+      }
+    
 
     igDataModel.setDatatypes(datatypes);
     igDataModel.setSegments(segments);
     igDataModel.setConformanceProfiles(conformanceProfiles);
     igDataModel.setValuesets(valuesets);
+    igDataModel.setProfileComponents(profileComponents);
+    igDataModel.setCompositeProfile(compositeProfiles);
 
     return igDataModel;
   }

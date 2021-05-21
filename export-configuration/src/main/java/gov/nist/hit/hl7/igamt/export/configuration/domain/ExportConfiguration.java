@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.Columns;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.CompositeProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConstraintExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
@@ -36,6 +37,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.ValueSetExportConfig
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.IgGeneralConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.PositionAndPresence;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ProfileComponentExportConfiguration;
 
 
 /**
@@ -62,6 +64,9 @@ public class ExportConfiguration {
   private DocumentMetadataConfiguration DocumentMetadataConfiguration;
   private ExportFontConfiguration exportFontConfiguration;
   private IgGeneralConfiguration igGeneralConfiguration;
+  private ProfileComponentExportConfiguration profileComponentExportConfiguration;
+  private CompositeProfileExportConfiguration compositeProfileExportConfiguration;
+
 
 
   boolean reasonForChange = false;
@@ -131,7 +136,12 @@ public class ExportConfiguration {
 
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue, ExportType type) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();
-
+    //Setting ProfileComponent Export Configuration
+    ProfileComponentExportConfiguration profileComponentExportConfiguration = new ProfileComponentExportConfiguration();
+    defaultConfiguration.setProfileComponentExportConfiguration(profileComponentExportConfiguration);
+    //Setting CompositeProfile Export Configuration
+    CompositeProfileExportConfiguration compositeProfileExportConfiguration = new CompositeProfileExportConfiguration();
+    defaultConfiguration.setCompositeProfileExportConfiguration(compositeProfileExportConfiguration);
     // Setting IgGeneralConfiguration
     IgGeneralConfiguration igGeneralConfiguration = new IgGeneralConfiguration();
     igGeneralConfiguration.setNotMessageInfrastructure(false);
@@ -1015,10 +1025,6 @@ public class ExportConfiguration {
     return igGeneralConfiguration;
   }
 
-  public void setIgGeneralConfiguration(IgGeneralConfiguration igGeneralConfiguration) {
-    this.igGeneralConfiguration = igGeneralConfiguration;
-  }
-
   public ExportType getType() {
     return type;
   }
@@ -1029,6 +1035,25 @@ public class ExportConfiguration {
 
   public boolean isReasonForChange() {
     return reasonForChange;
+  }
+  public void setIgGeneralConfiguration(IgGeneralConfiguration igGeneralConfiguration) {
+    this.igGeneralConfiguration = igGeneralConfiguration;
+  }
+
+  public ProfileComponentExportConfiguration getProfileComponentExportConfiguration() {
+    return profileComponentExportConfiguration;
+  }
+
+  public void setProfileComponentExportConfiguration(ProfileComponentExportConfiguration profileComponentExportConfiguration) {
+    this.profileComponentExportConfiguration = profileComponentExportConfiguration;
+  }
+
+  public CompositeProfileExportConfiguration getCompositeProfileExportConfiguration() {
+    return compositeProfileExportConfiguration;
+  }
+
+  public void setCompositeProfileExportConfiguration(CompositeProfileExportConfiguration compositeProfileExportConfiguration) {
+    this.compositeProfileExportConfiguration = compositeProfileExportConfiguration;
   }
 
   public void setReasonForChange(boolean reasonForChange) {
