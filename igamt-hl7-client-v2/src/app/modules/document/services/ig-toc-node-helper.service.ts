@@ -130,10 +130,10 @@ export class IgTOCNodeHelper {
         const retChild = this.initializeIDisplayElement(child, ret.path + '.' + child.position);
         switch (child.type) {
           case Type.DATATYPEREGISTRY:
-            retChild.children = datatypesNodes.filter((dt: IDisplayElement) => this.isPartOfLib(dt, documentRef.documentId));
+            retChild.children = datatypesNodes.filter((dt: IDisplayElement) =>  dt && this.isPartOfLib(dt, documentRef.documentId));
             break;
           case Type.DERIVEDDATATYPEREGISTRY:
-            retChild.children = datatypesNodes.filter((dt: IDisplayElement) => !this.isPartOfLib(dt, documentRef.documentId));
+            retChild.children = datatypesNodes.filter((dt: IDisplayElement) => dt && !this.isPartOfLib(dt, documentRef.documentId));
             break;
         }
         ret.children.push(retChild);

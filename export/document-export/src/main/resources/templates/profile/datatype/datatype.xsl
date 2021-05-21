@@ -10,8 +10,8 @@
 	<xsl:import href="/templates/profile/resource/datatypeName.xsl" />
 	<xsl:import href="/templates/profile/resource/hl7versions.xsl" />
 	<xsl:import href="/templates/profile/resource/publicationDate.xsl" />
-<!-- 	<xsl:import href="/templates/profile/resource/purpose&Use.xsl" />
- -->	<xsl:import href="/templates/profile/resource/status.xsl" />
+	<!-- <xsl:import href="/templates/profile/resource/purpose&Use.xsl" /> -->
+	<xsl:import href="/templates/profile/resource/status.xsl" />
 	<xsl:import href="/templates/profile/resource/shortDescription.xsl" />
 
 	<xsl:import href="/templates/profile/datatype/component.xsl" />
@@ -19,24 +19,24 @@
 	<xsl:import href="/templates/profile/datatype/DateTimeDatatype.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl" />
 	<xsl:import href="/templates/profile/commentList.xsl" />
-		<xsl:import href="/templates/profile/constantValue.xsl" />
-	
-	 	<xsl:import href="/templates/profile/definitionText2.xsl" />
-
+	<xsl:import href="/templates/profile/constantValue.xsl" />
+	<xsl:import href="/templates/profile/definitionText2.xsl" />
 	<xsl:import href="/templates/profile/metadata.xsl" />
+	<xsl:import href="/templates/profile/reasonForChange.xsl" />
+	
 	<xsl:template match="Datatype">
 		<xsl:call-template name="VersionDisplay" />
 		<xsl:call-template name="UsageNotes" />
-			<xsl:call-template name="DatatypeFlavor" />
+		<xsl:call-template name="DatatypeFlavor" />
 		<xsl:call-template name="DatatypeName" />
 		<xsl:call-template name="ShortDescription" />
 		<xsl:call-template name="AuthorNotes" />
-	
- 		<xsl:call-template name="Hl7versions" />
- 	<xsl:call-template name="Status" />
+
+		<xsl:call-template name="Hl7versions" />
+		<xsl:call-template name="Status" />
 		<xsl:call-template name="PublicationDate" />
-				<xsl:call-template name="PreDef" />
-		
+		<xsl:call-template name="PreDef" />
+
 
 		<xsl:if test="$datatypeMetadata.display = 'true'">
 			<xsl:apply-templates select="Metadata">
@@ -278,7 +278,8 @@
 											<xsl:with-param name="updatedColor"
 												select="../Changes/@updatedColor" />
 											<xsl:with-param name="addedColor" select="../Changes/@addedColor" />
-											<xsl:with-param name="deletedColor" select="../Changes/@deletedColor" />
+											<xsl:with-param name="deletedColor"
+												select="../Changes/@deletedColor" />
 											<xsl:with-param name="mode" select="../Changes/@mode" />
 
 										</xsl:call-template>
@@ -290,38 +291,39 @@
 				</xsl:element>
 			</xsl:element>
 			<xsl:if test=".//@constantValue != ''">
-						<xsl:call-template name="ConstantValue" />
-    </xsl:if>
+				<xsl:call-template name="ConstantValue" />
+			</xsl:if>
 
 			<xsl:call-template name="CommentList" />
- 		<xsl:call-template name="DefinitionText2" />
+			<xsl:call-template name="DefinitionText2" />
 
 			<xsl:call-template name="ValueSetBindingList" />
 			<xsl:call-template name="InternalSingleCode" />
+			<xsl:call-template name="Reasons"/>
 
 
-			<!-- <xsl:if test="count(./Constraint) &gt; 0"> -->
-			<xsl:if test="count(Constraints/ConformanceStatement)  &gt; 0">
+				<!-- <xsl:if test="count(./Constraint) &gt; 0"> -->
+				<xsl:if test="count(Constraints/ConformanceStatement)  &gt; 0">
 
-				<!-- <xsl:if test="count(./Constraint[@Type='cs']) &gt; 0"> -->
+					<!-- <xsl:if test="count(./Constraint[@Type='cs']) &gt; 0"> -->
+					<xsl:element name="br" />
+					<xsl:call-template name="Constraint">
+						<xsl:with-param name="title">
+							<xsl:text>Conformance Statements</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="constraintMode">
+							<xsl:text>standalone</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="type">
+							<xsl:text>cs</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="headerLevel">
+							<xsl:text>h4</xsl:text>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:if>
+				<!-- <xsl:if test="count(./Constraint[@Type='pre']) &gt; 0"> -->
 				<xsl:element name="br" />
-				<xsl:call-template name="Constraint">
-					<xsl:with-param name="title">
-						<xsl:text>Conformance Statements</xsl:text>
-					</xsl:with-param>
-					<xsl:with-param name="constraintMode">
-						<xsl:text>standalone</xsl:text>
-					</xsl:with-param>
-					<xsl:with-param name="type">
-						<xsl:text>cs</xsl:text>
-					</xsl:with-param>
-					<xsl:with-param name="headerLevel">
-						<xsl:text>h4</xsl:text>
-					</xsl:with-param>
-				</xsl:call-template>
-			</xsl:if>
-<!-- 			<xsl:if test="count(./Constraint[@Type='pre'])  &gt; 0">
- -->				<xsl:element name="br" />
 				<xsl:call-template name="Constraint">
 					<xsl:with-param name="title">
 						<xsl:text>Conditional Predicates</xsl:text>
@@ -336,37 +338,36 @@
 						<xsl:text>h4</xsl:text>
 					</xsl:with-param>
 				</xsl:call-template>
-<!-- 			</xsl:if>
- -->			<!-- </xsl:if> -->
-			<xsl:call-template name="PostDef" />
-			<xsl:if test="$columnDisplay.dataType.comment = 'true'">
-				<xsl:apply-templates select="./Binding/CommentList" />
-			</xsl:if>
-			<xsl:if test="count(./Component/Text[@Type='Text']) &gt; 0">
-				<xsl:element name="br" />
-				<xsl:element name="span">
-					<xsl:element name="b">
-						<xsl:text>Component Definitions</xsl:text>
+				<!-- </xsl:if> -->			<!-- </xsl:if> -->
+				<xsl:call-template name="PostDef" />
+				<xsl:if test="$columnDisplay.dataType.comment = 'true'">
+					<xsl:apply-templates select="./Binding/CommentList" />
+				</xsl:if>
+				<xsl:if test="count(./Component/Text[@Type='Text']) &gt; 0">
+					<xsl:element name="br" />
+					<xsl:element name="span">
+						<xsl:element name="b">
+							<xsl:text>Component Definitions</xsl:text>
+						</xsl:element>
 					</xsl:element>
-				</xsl:element>
-				<xsl:element name="br" />
-				<xsl:for-each select="Component">
-					<xsl:sort select="@Position" data-type="number"></xsl:sort>
-					<xsl:if test="count(./Text[@Type='Text']) &gt; 0">
-						<xsl:element name="span">
-							<xsl:element name="br" />
-							<xsl:element name="b">
-								<xsl:value-of select="concat(../@Name, '.', @Position, ' : ', @Name)" />
+					<xsl:element name="br" />
+					<xsl:for-each select="Component">
+						<xsl:sort select="@Position" data-type="number"></xsl:sort>
+						<xsl:if test="count(./Text[@Type='Text']) &gt; 0">
+							<xsl:element name="span">
+								<xsl:element name="br" />
+								<xsl:element name="b">
+									<xsl:value-of select="concat(../@Name, '.', @Position, ' : ', @Name)" />
+								</xsl:element>
 							</xsl:element>
-						</xsl:element>
-						<xsl:element name="br" />
-						<xsl:element name="span">
-							<xsl:value-of disable-output-escaping="yes"
-								select="./Text[@Type='Text']" />
-						</xsl:element>
-					</xsl:if>
-				</xsl:for-each>
-			</xsl:if>
+							<xsl:element name="br" />
+							<xsl:element name="span">
+								<xsl:value-of disable-output-escaping="yes"
+									select="./Text[@Type='Text']" />
+							</xsl:element>
+						</xsl:if>
+					</xsl:for-each>
+				</xsl:if>
 		</xsl:if>
 		<xsl:if test="count(Text[@Type='UsageNote']) &gt; 0">
 			<xsl:element name="br" />
@@ -382,7 +383,7 @@
 
 	<xsl:template match="Datatype" mode="toc">
 		<xsl:element name="a">
-		
+
 			<xsl:attribute name="href">
 	        	<xsl:value-of select="concat('#', @id)"></xsl:value-of>
         	</xsl:attribute>

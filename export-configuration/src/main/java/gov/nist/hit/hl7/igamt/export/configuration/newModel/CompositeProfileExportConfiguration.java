@@ -15,6 +15,10 @@ package gov.nist.hit.hl7.igamt.export.configuration.newModel;
  * @author Abdelghani El Ouakili
  *
  */
-public class CompositeProfileExportConfiguration {
+public class CompositeProfileExportConfiguration extends ResourceExportConfiguration {
+
+  public CompositeProfileExportConfiguration() {
+    super();
+  }
 
 }

@@ -29,17 +29,18 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 @Repository
 public interface ExportConfigurationRepository extends MongoRepository<ExportConfiguration, String> {
   public ExportConfiguration findOneByUsername(String username);
-  public ExportConfiguration findOneByOriginal(String username);
+  public ExportConfiguration findOneByOriginalAndType(String username, ExportType type);
   public ExportConfiguration findOneByOriginalAndType(boolean original, ExportType type);
   public List<ExportConfiguration> findByOriginalAndType(boolean original, ExportType type);
   public List<ExportConfiguration> findByUsername(String username);
   public List<ExportConfiguration> findByUsernameAndType(String username, ExportType type);
-  public List<ExportConfiguration> findByOriginal(boolean original);
+  public List<ExportConfiguration> findByOriginal(boolean original, ExportType type);
   public ExportConfiguration findOneById(String id);
   public ExportConfiguration findLatestById(String id);
   public ExportConfiguration findOneByOriginal(boolean isOriginal);
-  public ExportConfiguration findOneByDefaultConfigAndUsername(boolean defaultConfig, String username);
+  public ExportConfiguration findOneByDefaultConfigAndUsernameAndType(boolean defaultConfig, String username, ExportType type);
   public ExportConfiguration findOneByIdAndType(String id, ExportType type);
-
+  public void deleteByType(ExportType type);
+  public void deleteByOriginalAndType(boolean original, ExportType type);
   
 }

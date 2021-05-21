@@ -1,23 +1,15 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
-import gov.nist.diff.domain.DeltaAction;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.delta.domain.ConformanceStatementDelta;
-import gov.nist.hit.hl7.igamt.delta.domain.Delta;
-import gov.nist.hit.hl7.igamt.delta.domain.ResourceDelta;
-import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
-import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
-import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaExportConfigMode;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
@@ -26,18 +18,22 @@ import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
-import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.delta.domain.ConformanceStatementDelta;
+import gov.nist.hit.hl7.igamt.delta.domain.ResourceDelta;
+import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
+import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaExportConfigMode;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
-import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializationException;
@@ -46,11 +42,6 @@ import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ConformanceProfileSerializationServiceImpl implements ConformanceProfileSerializationService {
@@ -76,6 +67,9 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
     @Autowired
     BindingSerializationService bindingSerializationService;
 
+    @Autowired
+    private ReasonForChangeSerializationService reasonForChangeSerializationService;
+    
     @Override
     public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level, int position,
                                                ConformanceProfileExportConfiguration conformanceProfileExportConfiguration, Boolean deltaMode) throws ResourceSerializationException {
@@ -87,7 +81,9 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                 List<CoConstraintBinding> coConstraintDelta = null;
                 // Calculate conformanceProfile delta if the conformanceProfile has an origin
 
-                if (deltaMode && conformanceProfile.isDerived() && conformanceProfileExportConfiguration.isDeltaMode()) {
+                if (deltaMode && conformanceProfileExportConfiguration.isReasonForChange()) {
+                  conformanceProfileElement.appendChild(reasonForChangeSerializationService.serializeReasonForChange(conformanceProfile.getLabel(), conformanceProfile.getBinding(), conformanceProfile.getChildren()));
+                if (conformanceProfile.isDerived()) {
                     ResourceDelta resourceDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
                     if (resourceDelta != null) {
                         List<StructureDelta> structureDelta = resourceDelta.getStructureDelta();
@@ -111,8 +107,6 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                                     for (Element el : deltaElements) {
                                         changesElement.appendChild(el);
                                     }
-
-
                                 }
                             }
 
@@ -122,7 +116,6 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                                     for (Element el : deltaConfStatements) {
                                         changesElement.appendChild(el);
                                     }
-
                                 }
                             }
                             conformanceProfileElement.appendChild(changesElement);
@@ -135,9 +128,8 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                     } else {
                         return null;
                     }
-
-
                 }
+            }
 //                conformanceProfileElement = serializeConformanceProfileAttributes(conformanceProfileElement, conformanceProfile, conformanceProfileExportConfiguration);
                 if (conformanceProfileExportConfiguration.getIdentifier()) {
                     conformanceProfileElement.addAttribute(new Attribute("identifier",

@@ -73,5 +73,4 @@ export class ConfigurationTocComponent implements OnInit {
         .startsWith(value.toLowerCase());
     });
   }
-
 }

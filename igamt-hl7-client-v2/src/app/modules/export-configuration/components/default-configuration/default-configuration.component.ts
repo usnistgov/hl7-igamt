@@ -43,9 +43,12 @@ export class DefaultConfigurationComponent implements OnInit {
 
   loadExportConfigurationList(type: ExportTypes) {
     this.exportConfigurationService.getAllExportConfigurations(type).subscribe(
-      (x) => this.configList = x,
-    );
-    console.log('config list : ', this.configList);
+      (x) => {
+        this.configList = x;
+        if (this.currentConfiguration.type !== type ) {
+          this.currentConfiguration = null;
+        }
+         });
   }
 
   filteredList(): IExportConfigurationItemList[] {

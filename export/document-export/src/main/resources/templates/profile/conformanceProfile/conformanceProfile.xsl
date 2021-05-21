@@ -13,6 +13,7 @@
     <xsl:import href="/templates/profile/resource/role.xsl"/>
     <xsl:import href="/templates/profile/resource/type.xsl"/>
     <xsl:import href="/templates/profile/definitionText2.xsl"/>
+    <xsl:import href="/templates/profile/reasonForChange.xsl"/>
     <xsl:include href="/templates/profile/conformanceProfile/messageSegment.xsl"/>
     <xsl:include href="/templates/profile/messageConstraint.xsl"/>
     <xsl:include
@@ -148,6 +149,7 @@
         <!-- <xsl:apply-templates select="./Binding/ValueSetBindingList" /> -->
         <xsl:call-template name="ValueSetBindingList"/>
         <xsl:call-template name="InternalSingleCode"/>
+		<xsl:call-template name="Reasons"/>
 
 
         <xsl:if test="$columnDisplay.message.comment = 'true'">

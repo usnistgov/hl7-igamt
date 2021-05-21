@@ -4,6 +4,7 @@ import {Store} from '@ngrx/store';
 import {combineLatest, Observable, of, Subscription} from 'rxjs';
 import {filter, map, take, withLatestFrom} from 'rxjs/operators';
 import {selectDelta, selectViewOnly} from 'src/app/root-store/dam-igamt/igamt.selectors';
+import {selectDerived} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {selectExternalTools} from '../../../../root-store/config/config.reducer';
 import {ExportDialogComponent} from '../../../export-configuration/components/export-dialog/export-dialog.component';
@@ -31,6 +32,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   type: Type.IGDOCUMENT;
   delta: any;
   deltaMode$: Observable<boolean> = of(false);
+  derived$: Observable<boolean>;
 
   constructor(
     private store: Store<IDocumentDisplayInfo<IgDocument>>,
@@ -43,13 +45,14 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     this.toolConfig = this.store.select(selectExternalTools);
     this.deltaMode$ = this.store.select(selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
+    this.derived$ = this.store.select(selectDerived);
 
   }
 
-  exportWord() {
+  export(type: ExportTypes, format: string) {
     combineLatest(
       this.getIgId(),
-      this.exportConfigurationService.getAllExportConfigurations(ExportTypes.IGDOCUMENT)).pipe(
+      this.exportConfigurationService.getAllExportConfigurations(type)).pipe(
         take(1),
         map(([igId, configurations]) => {
           const dialogRef = this.dialog.open(ExportDialogComponent, {
@@ -57,14 +60,15 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
               toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
               igId,
               configurations,
-              type: Type.IGDOCUMENT,
+              type,
               getExportFirstDecision: this.igService.getExportFirstDecision,
+              delta: type === ExportTypes.DIFFERENTIAL,
             },
           });
           dialogRef.afterClosed().pipe(
             filter((y) => y !== undefined),
             map((result) => {
-              this.igService.exportAsWord(igId, result.decision, result.configurationId);
+              this.igService.exportDocument(igId, result.decision, result.configurationId, type , format);
             }),
           ).subscribe();
         }),
@@ -74,46 +78,10 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   getDecision() {
     return of();
   }
-  exportHTML() {
-    combineLatest(
-      this.getIgId(),
-      this.exportConfigurationService.getAllExportConfigurations(ExportTypes.IGDOCUMENT)).pipe(
-        take(1),
-      map(([igId, configurations]) => {
-        console.log(igId);
-        const dialogRef = this.dialog.open(ExportDialogComponent, {
-          data: {
-            toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
-            igId,
-            configurations,
-            type: Type.IGDOCUMENT,
-            delta: this.delta,
-
-          },
-        });
-        dialogRef.afterClosed().pipe(
-          filter((y) => y !== undefined),
-          map((result) => {
-            this.igService.exportAsHtml(igId, result.decision, result.configurationId);
-
-          }),
-        ).subscribe();
-      }),
-    ).subscribe();
-  }
-
-  exportQuickHTML() {
+  quickExport(type: ExportTypes, format: string) {
     this.getIgId().pipe(
       take(1),
-      map((id) => this.igService.exportAsHtmlQuick(id)),
-    ).subscribe();
-
-  }
-
-  exportQuickWORD() {
-    this.getIgId().pipe(
-      take(1),
-      map((id) => this.igService.exportAsWordQuick(id)),
+      map((id) => this.igService.exportDocument(id, null, null, type, format)),
     ).subscribe();
   }
 
