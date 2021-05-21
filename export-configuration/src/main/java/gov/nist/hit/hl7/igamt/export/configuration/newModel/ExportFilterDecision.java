@@ -22,6 +22,9 @@ public class ExportFilterDecision {
   private Map<String, Boolean> conformanceProfileFilterMap = new HashMap<String, Boolean>();
   private Map<String, ConformanceProfileExportConfiguration> OveriddedConformanceProfileMap = new HashMap<String, ConformanceProfileExportConfiguration>();
 
+  private Map<String, Boolean> profileComponentFilterMap = new HashMap<String, Boolean>();
+  private Map<String, ProfileComponentExportConfiguration> OveriddedProfileComponentMap = new HashMap<String, ProfileComponentExportConfiguration>();
+  
   private Map<String, Boolean> valueSetFilterMap = new HashMap<String, Boolean>();
   private Map<String, ValueSetExportConfiguration> OveriddedValueSetMap = new HashMap<String, ValueSetExportConfiguration>();
   
@@ -152,13 +155,7 @@ public class ExportFilterDecision {
     OveriddedValueSetMap = overiddedValueSetMap;
   }
   
-  public Map<String, Boolean> getProfileComponentFilterMap() {
-    return ProfileComponentFilterMap;
-  }
-
-  public void setProfileComponentFilterMap(Map<String, Boolean> profileComponentFilterMap) {
-    ProfileComponentFilterMap = profileComponentFilterMap;
-  }
+ 
 
   public Map<String, ProfileComponentExportConfiguration> getOveriddedProfileComponentSetMap() {
     return OveriddedProfileComponentSetMap;
@@ -202,6 +199,22 @@ public class ExportFilterDecision {
   public void setDelta(boolean delta) {
     this.delta = delta;
   }
+
+public Map<String, Boolean> getProfileComponentFilterMap() {
+	return profileComponentFilterMap;
+}
+
+public void setProfileComponentFilterMap(Map<String, Boolean> profileComponentFilterMap) {
+	this.profileComponentFilterMap = profileComponentFilterMap;
+}
+
+public Map<String, ProfileComponentExportConfiguration> getOveriddedProfileComponentMap() {
+	return OveriddedProfileComponentMap;
+}
+
+public void setOveriddedProfileComponentMap(Map<String, ProfileComponentExportConfiguration> overiddedProfileComponentMap) {
+	OveriddedProfileComponentMap = overiddedProfileComponentMap;
+}
 
 
 }

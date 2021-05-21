@@ -341,7 +341,7 @@ public class BootstrapApplication implements CommandLineRunner {
     tableFixes.removeSegmentsDuplicatedBinding();
   }
   
-  @PostConstruct
+//  @PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteAll();
     List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);

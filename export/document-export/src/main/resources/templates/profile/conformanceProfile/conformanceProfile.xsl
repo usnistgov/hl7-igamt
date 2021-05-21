@@ -58,6 +58,11 @@
             </xsl:attribute>
             <xsl:element name="col">
                 <xsl:attribute name="width">
+                    <xsl:text>3%</xsl:text>
+                </xsl:attribute>
+            </xsl:element>
+            <xsl:element name="col">
+                <xsl:attribute name="width">
                     <xsl:text>10%</xsl:text>
                 </xsl:attribute>
             </xsl:element>
@@ -91,6 +96,9 @@
                     <xsl:text>contentThead</xsl:text>
                 </xsl:attribute>
                 <xsl:element name="tr">
+                 <xsl:element name="th">
+                            <xsl:text>Path</xsl:text>
+                        </xsl:element>
                     <xsl:if test="$columnDisplay.message.segment = 'true'">
                         <xsl:element name="th">
                             <xsl:text>Segment</xsl:text>
