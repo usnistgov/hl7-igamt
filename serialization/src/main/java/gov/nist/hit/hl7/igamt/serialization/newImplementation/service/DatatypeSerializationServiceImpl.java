@@ -61,34 +61,41 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
   @Autowired
   private SerializationTools serializationTools;
 
+  @Autowired
+  private ReasonForChangeSerializationService reasonForChangeSerializationService;
+
   @Override
   public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type, Boolean deltaMode) throws SerializationException {
     //	    try {
     Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
     Datatype datatype = datatypeDataModel.getModel();
 
-    // Calculate datatype delta if the datatype has an origin
-    if(deltaMode && datatype.isDerived() && datatypeExportConfiguration.isDeltaMode()) {
-      ResourceDelta resourceDelta = deltaService.delta(Type.DATATYPE, datatype);
-      if(resourceDelta != null) {
-        List<StructureDelta> structureDelta = resourceDelta.getStructureDelta();
-        List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
-        List<ConformanceStatementDelta> confStDeltaChanged = resourceDelta.getConformanceStatementDelta().stream().filter(d -> !d.getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+    if(deltaMode && datatypeExportConfiguration.isReasonForChange()) {
+      if(datatype instanceof ComplexDatatype) {
+        datatypeElement.appendChild(reasonForChangeSerializationService.serializeReasonForChange(datatype.getLabel(), datatype.getBinding(),  ((ComplexDatatype)datatype).getComponents()));
+      }
+      if(datatype.isDerived()) {
 
-        if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
-          Element deltaElement = this.serializeDelta(datatype.getName(), structureDeltaChanged, confStDeltaChanged, datatypeExportConfiguration.getDeltaConfig());
-          if (deltaElement != null) {
-            datatypeElement.appendChild(deltaElement);
+        ResourceDelta resourceDelta = deltaService.delta(Type.DATATYPE, datatype);
+        if(resourceDelta != null) {
+          List<StructureDelta> structureDelta = resourceDelta.getStructureDelta();
+          List<StructureDelta> structureDeltaChanged = structureDelta.stream().filter(d -> !d.getData().getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+          List<ConformanceStatementDelta> confStDeltaChanged = resourceDelta.getConformanceStatementDelta().stream().filter(d -> !d.getAction().equals(DeltaAction.UNCHANGED)).collect(Collectors.toList());
+
+          if(structureDeltaChanged != null && structureDeltaChanged.size()>0) {
+            Element deltaElement = this.serializeDelta(datatype.getName(), structureDeltaChanged, confStDeltaChanged, datatypeExportConfiguration.getDeltaConfig());
+            if (deltaElement != null) {
+              datatypeElement.appendChild(deltaElement);
+            }
+          } else {
+            return  null;
           }
         } else {
           return  null;
         }
-      } else {
-        return  null;
+
       }
-
     }
-
     datatypeElement
     .addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
     datatypeElement

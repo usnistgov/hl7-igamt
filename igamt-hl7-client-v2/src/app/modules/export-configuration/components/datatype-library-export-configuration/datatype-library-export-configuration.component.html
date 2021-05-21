@@ -9,7 +9,7 @@
         <li class="list-group-item"><p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.datatypesExport.r"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.datatypesExport.re"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="C(a/b)" binary="true" [(ngModel)]="config.datatypesExport.cab"> </p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.datatypesExport.c"> </p-checkbox></li>   
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.datatypesExport.c"> </p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="false" [(ngModel)]="config.datatypesExport.o" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="X" binary="false" [(ngModel)]="config.datatypesExport.x" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="B" binary="false" [(ngModel)]="config.datatypesExport.b" (onChange)="triggerChange()"></p-checkbox></li>
@@ -25,7 +25,7 @@
         <li class="list-group-item"><p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.componentExport.r"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.componentExport.re"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="C(a/b)" binary="true" [(ngModel)]="config.componentExport.cab"> </p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.componentExport.c"> </p-checkbox></li>   
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.componentExport.c"> </p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="false" [(ngModel)]="config.componentExport.o" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="X" binary="false" [(ngModel)]="config.componentExport.x" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="B" binary="false" [(ngModel)]="config.componentExport.b" (onChange)="triggerChange()"></p-checkbox></li>
@@ -78,6 +78,6 @@
     <app-delta-export-configuration *ngIf="derived && origin && delta" [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
 
   </div>
-  
+
 </div>
 

@@ -8,7 +8,7 @@
         <li class="list-group-item"><p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.r"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.re"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox disabled="true" label="C(a/b)" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.cab"> </p-checkbox></li>
-        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.c" (onChange)="triggerChange()"> </p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="C" binary="true" [(ngModel)]="config.segmentORGroupsMessageExport.c" (onChange)="triggerChange()"> </p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="O" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.o" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="X" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.x" (onChange)="triggerChange()"></p-checkbox></li>
         <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="B" binary="false" [(ngModel)]="config.segmentORGroupsMessageExport.b" (onChange)="triggerChange()"></p-checkbox></li>
@@ -34,6 +34,8 @@
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Comments" binary="true" [(ngModel)]="config.structuredNarrative.comments" (onChange)="triggerChange()"></p-checkbox></li>
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox></li>
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item" *ngIf="delta"><p-checkbox [disabled]="viewOnly" label="Reason For Change" binary="true" [(ngModel)]="config.reasonForChange" (onChange)="triggerChange()"></p-checkbox></li>
+
         </ul>
       </div>
 
@@ -54,17 +56,17 @@
         </ul>
       </div>
 
-     
-      
+
+
 
       <div style="display: flex; flex-grow: 1; flex-direction: column;">
-       
+
 
         <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
           <h5 class="card-title title-text custom-card-title">Constraints</h5>
           <ul class="list-group list-group-flush">
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Conditional Predicates" binary="true" [(ngModel)]="config.constraintExportConfiguration.predicate" (onChange)="triggerChange()"></p-checkbox></li>
-            <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Conformance Statments" binary="true" [(ngModel)]="config.constraintExportConfiguration.conformanceStatement" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta" label="Conditional Predicates" binary="true" [(ngModel)]="config.constraintExportConfiguration.predicate" (onChange)="triggerChange()"></p-checkbox></li>
+            <li class="list-group-item"><p-checkbox [disabled]="viewOnly || delta" label="Conformance Statments" binary="true" [(ngModel)]="config.constraintExportConfiguration.conformanceStatement" (onChange)="triggerChange()"></p-checkbox></li>
           </ul>
         </div>
 
@@ -78,13 +80,10 @@
         </ul>
       </div>
 
-      
 
-      
+
+
       </div>
     </div>
-
-    <app-delta-export-configuration *ngIf="derived && origin && delta" [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
-
   </div>
 </div>

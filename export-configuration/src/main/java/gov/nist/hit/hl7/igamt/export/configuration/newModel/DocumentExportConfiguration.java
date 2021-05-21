@@ -18,7 +18,4 @@ public class DocumentExportConfiguration {
 	public void setDecision(ExportFilterDecision decision) {
 		this.decision = decision;
 	}
-	
-	
-	
 }

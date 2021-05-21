@@ -47,6 +47,7 @@ import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationFilterService;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
@@ -116,20 +117,6 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		Ig igDocument = igService.findById(igDocumentId);
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-//			if(deltaMode != null){
-//				exportConfiguration.setDeltaMode(true);
-//				exportConfiguration.getSegmentExportConfiguration().setDeltaMode(true);
-//				exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(true);
-//				exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(true);
-//				exportConfiguration.getValueSetExportConfiguration().setDeltaMode(true);
-//
-//			} else {
-//				exportConfiguration.setDeltaMode(false);
-//				exportConfiguration.getSegmentExportConfiguration().setDeltaMode(false);
-//				exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(false);
-//				exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(false);
-//				exportConfiguration.getValueSetExportConfiguration().setDeltaMode(false);
-//			}
 			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration);
 			return htmlFile;
 		}
@@ -206,7 +193,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		for (Link l : ig.getValueSetRegistry().getChildren()) {
 			decision.getValueSetFilterMap().put(l.getId(), false);
 		}
-		if(documentStructure.getOrigin() !=null && config.isDeltaMode()) {
+		if(documentStructure.getOrigin() !=null && config.getType().equals(ExportType.DIFFERENTIAL)) {
 		  calculateDeltaAndDecide(ig, decision);
 		} else {
 		  processConformanceProfiles(ig, decision, config); 

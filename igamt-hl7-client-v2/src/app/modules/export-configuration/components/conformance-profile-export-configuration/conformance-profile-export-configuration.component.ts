@@ -29,6 +29,9 @@ export class ConformanceProfileExportConfigurationComponent implements OnInit {
   @Input()
   delta: boolean;
 
+  @Input()
+  differential: boolean;
+
   @Output()
   detectChange: EventEmitter<any> = new EventEmitter<any>();
 
