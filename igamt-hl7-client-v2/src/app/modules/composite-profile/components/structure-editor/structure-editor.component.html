@@ -32,31 +32,70 @@
       </p-dropdown>
     </div><br>
 
-    <ng-container *ngIf="selected">
-      <strong>Binding Context Legend : </strong>
-      <div style="display: flex; flex-direction: row; align-items: center;">
-        <div *ngFor="let item of legend" style="display: flex; flex-direction: row; align-items: center; margin-right: 5px;">
-          <app-binding-badge [context]="item.context"></app-binding-badge>
-          <span style="margin-left: 5px;">{{ item.label }}</span>
-        </div>
-      </div>
+    <ng-container *ngIf="selected" >
+      <ul class="nav nav-pills" style="margin-top: 10px;">
+        <li style="cursor: pointer;" class="nav-item" *ngFor="let item of tabs">
+          <span  class="nav-link active" [ngClass]="{ 'active': item === activeTab }" (click)="activeTab = item">{{ item }}</span>
+        </li>
+      </ul>
 
-      <app-hl7-v2-tree
-        [columns]="columns"
-        [documentRef]="documentRef$ | async"
-        [derived]="false"
-        [datatypes]="datatypes | async"
-        [segments]="segments | async"
-        [valueSets]="valueSets | async"
-        [repository]="repository"
-        [viewOnly]="true"
-        (changes)="change($event)"
-        [resource]="selected.resource"
-        [config]="config | async"
-        [bindingConfig]= "bindingConfig | async"
-        [username]="username | async">
-      </app-hl7-v2-tree>
+
+
+      <ng-container [ngSwitch]="activeTab" style="margin-top: 10px;">
+
+        <div *ngSwitchCase="TABS.STRUCTURE" style="margin-top: 10px;">
+          <strong>Binding Context Legend : </strong>
+          <div style="display: flex; flex-direction: row; align-items: center;">
+            <div *ngFor="let item of legend" style="display: flex; flex-direction: row; align-items: center; margin-right: 5px;">
+              <app-binding-badge [context]="item.context"></app-binding-badge>
+              <span style="margin-left: 5px;">{{ item.label }}</span>
+            </div>
+          </div>
+
+          <app-hl7-v2-tree
+            [columns]="columns"
+            [documentRef]="documentRef$ | async"
+            [derived]="false"
+            [datatypes]="datatypes | async"
+            [segments]="segments | async"
+            [valueSets]="valueSets | async"
+            [repository]="repository"
+            [viewOnly]="true"
+            (changes)="change($event)"
+            [resource]="selected.resource"
+            [config]="config | async"
+            [bindingConfig]= "bindingConfig | async"
+            [username]="username | async">
+          </app-hl7-v2-tree>
+        </div>
+
+        <div *ngSwitchCase="TABS.CONFORMANCE_STATEMENTS" style="margin-top: 10px;">
+
+          <table class="table table-sm table-striped" *ngIf="selected.resource?.binding?.conformanceStatements && selected.resource?.binding?.conformanceStatements.length > 0">
+            <thead>
+              <tr>
+                <th>Identifier</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of selected.resource.binding.conformanceStatements">
+                <td>
+                  {{item.identifier}} <br>
+                  <span class="badge badge-secondary" *ngIf="item.type === 'FREE'">free-text</span>
+                  <span class="badge badge-success" *ngIf="item.type === 'FREE' && item.assertionScript">script</span>
+                </td>
+                <td>{{getDescription(item)}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </ng-container>
     </ng-container>
+
+
+
 
 
   </ng-container>

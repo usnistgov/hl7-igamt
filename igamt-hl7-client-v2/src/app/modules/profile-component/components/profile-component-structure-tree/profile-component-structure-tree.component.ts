@@ -213,6 +213,7 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   }
 
   changeItem(change: IProfileComponentChange) {
+    console.log(this.itemsList);
     this.itemsList.update(change);
     this.changes.emit(change);
   }
@@ -222,7 +223,6 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   }
 
   onNodeExpand({ node }: { node: IHL7v2TreeNode }) {
-    console.log(this.refChangeMap.value$, node.data.pathId);
     const ref = this.refChangeMap ? this.refChangeMap.getPath(node.data.pathId) : node.data.ref.getValue();
     this.treeService.loadNodeChildren(node, this.repository, ref).pipe(
       take(1),

@@ -1,22 +1,27 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {of} from 'rxjs';
-import {catchError, concatMap, flatMap, map, pluck, switchMap, take} from 'rxjs/operators';
-import {OpenEditorService} from '../../modules/core/services/open-editor.service';
-import {MessageService} from '../../modules/dam-framework/services/message.service';
-import {SetValue} from '../../modules/dam-framework/store';
+import { Store } from '@ngrx/store';
+import { Observable, of } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, pluck, switchMap, take } from 'rxjs/operators';
+import { Type } from 'src/app/modules/shared/constants/type.enum';
+import { IConformanceStatementList } from 'src/app/modules/shared/models/cs-list.interface';
+import { PropertyType } from 'src/app/modules/shared/models/save-change';
+import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
+import { ConformanceProfileService } from '../../modules/conformance-profile/services/conformance-profile.service';
+import { OpenEditorService } from '../../modules/core/services/open-editor.service';
+import { MessageService } from '../../modules/dam-framework/services/message.service';
+import { SetValue } from '../../modules/dam-framework/store';
 import * as fromDAM from '../../modules/dam-framework/store';
 import * as fromDamActions from '../../modules/dam-framework/store/data/dam.actions';
 import * as fromRouterSelector from '../../modules/dam-framework/store/router/router.selectors';
-import {ProfileComponentService} from '../../modules/profile-component/services/profile-component.service';
-import {IProfileComponent, IProfileComponentContext} from '../../modules/shared/models/profile.component';
-import {ConformanceStatementService} from '../../modules/shared/services/conformance-statement.service';
-import {CrossReferencesService} from '../../modules/shared/services/cross-references.service';
-import {DeltaService} from '../../modules/shared/services/delta.service';
+import { IPcConformanceStatementEditorData } from '../../modules/profile-component/components/conformance-statement-editor/conformance-statement-editor.component';
+import { ProfileComponentService } from '../../modules/profile-component/services/profile-component.service';
+import { SegmentService } from '../../modules/segment/services/segment.service';
+import { IProfileComponent, IProfileComponentContext, IPropertyConformanceStatement } from '../../modules/shared/models/profile.component';
 import * as fromIgamtDisplaySelectors from '../dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from '../dam-igamt/igamt.selected-resource.selectors';
+import { OpenProfileComponentMessageConformanceStatementEditor, OpenProfileComponentSegmentConformanceStatementEditor } from './profile-component.actions';
 import {
   LoadContext,
   LoadContextFailure,
@@ -27,6 +32,8 @@ import {
   ProfileComponentActions,
   ProfileComponentActionTypes,
 } from './profile-component.actions';
+
+const CONTEXT_NOT_FOUND = 'Profile Component Context not found';
 
 @Injectable()
 export class ProfileComponentEffects {
@@ -153,17 +160,70 @@ export class ProfileComponentEffects {
     ProfileComponentActionTypes.OpenContextStructureEditor,
     fromIgamtDisplaySelectors.selectContextById,
     this.store.select(fromIgamtSelectedSelectors.selectProfileComponentContext),
-    'Profile Component Context not found',
+    CONTEXT_NOT_FOUND,
   );
 
-  constructor(private actions$: Actions<ProfileComponentActions>,   private store: Store<any>,
-              private message: MessageService,
-              private deltaService: DeltaService,
-              private profileComponentService: ProfileComponentService,
-              private editorHelper: OpenEditorService,
-              private conformanceStatementService: ConformanceStatementService,
-              private crossReferenceService: CrossReferencesService) {
+  @Effect()
+  openSegmentConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IPcConformanceStatementEditorData, OpenProfileComponentSegmentConformanceStatementEditor>(
+    ProfileComponentActionTypes.OpenProfileComponentSegmentConformanceStatementEditor,
+    Type.SEGMENT,
+    fromIgamtDisplaySelectors.selectContextById,
+    this.conformanceStatementEditor((id, doc) => {
+      return this.segmentService.getConformanceStatements(id, doc);
+    }),
+    CONTEXT_NOT_FOUND,
+  );
 
+  @Effect()
+  openMessageConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IPcConformanceStatementEditorData, OpenProfileComponentMessageConformanceStatementEditor>(
+    ProfileComponentActionTypes.OpenProfileComponentMessageConformanceStatementEditor,
+    Type.CONFORMANCEPROFILE,
+    fromIgamtDisplaySelectors.selectContextById,
+    this.conformanceStatementEditor((id, doc) => {
+      return this.cpService.getConformanceStatements(id, doc);
+    }),
+    CONTEXT_NOT_FOUND,
+  );
+
+  constructor(
+    private actions$: Actions<ProfileComponentActions>,
+    private store: Store<any>,
+    private message: MessageService,
+    private profileComponentService: ProfileComponentService,
+    private editorHelper: OpenEditorService,
+    private segmentService: SegmentService,
+    private cpService: ConformanceProfileService) {
+  }
+
+  conformanceStatementEditor(getter: (string, IDocumentRef) => Observable<IConformanceStatementList>) {
+    return (action: fromDamActions.OpenEditorBase) => {
+      return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
+        take(1),
+        mergeMap((documentInfo) => {
+          return getter(action.payload.id, documentInfo);
+        }),
+        flatMap((data) => {
+          return this.store.select(fromRouterSelector.selectRouteParams).pipe(
+            take(1),
+            pluck('pcId'),
+            flatMap((pcId) => {
+              return this.profileComponentService.getChildById(pcId as string, action.payload.id).pipe(
+                map((ctx) => {
+                  return {
+                    conformanceStatements: data.conformanceStatements || [],
+                    items: ctx.profileComponentBindings ?
+                      (ctx.profileComponentBindings.contextBindings || [])
+                        .filter((elm) => elm.propertyKey === PropertyType.STATEMENT)
+                        .map((elm) => elm as IPropertyConformanceStatement) :
+                      [],
+                  };
+                }),
+              );
+            }),
+          );
+        }),
+      );
+    };
   }
 
 }

@@ -28,6 +28,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyConformanceStatement;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContextNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
@@ -61,6 +62,8 @@ public interface ProfileComponentService {
   Set<Resource> getDependencies(String pcId, String contextId) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
 
   ProfileComponentContext updateContext(String pcId, String contextId, ProfileComponentContext context) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
+
+  List<PropertyConformanceStatement> updateContextConformanceStatements(String pcId, String contextId, List<PropertyConformanceStatement> conformanceStatements) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
 
   Link cloneProfileComponent(String string, HashMap<RealKey, String> newKeys, Link l,
       String username, Scope user, CloneMode cloneMode);

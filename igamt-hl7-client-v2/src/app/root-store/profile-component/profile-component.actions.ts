@@ -1,17 +1,19 @@
-import {HttpErrorResponse} from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
-import {IHL7EditorMetadata} from '../../modules/shared/models/editor.enum';
-import {IProfileComponent, IProfileComponentContext} from '../../modules/shared/models/profile.component';
+import { IHL7EditorMetadata } from '../../modules/shared/models/editor.enum';
+import { IProfileComponent, IProfileComponentContext } from '../../modules/shared/models/profile.component';
 
 export enum ProfileComponentActionTypes {
   LoadProfileComponent = '[ProfileComponent] Load Profile Component',
   LoadProfileComponentSuccess = '[ProfileComponent] Load Profile Component Success',
   LoadProfileComponentFailure = '[ProfileComponent] Load Profile Component Failure',
-  LoadContext =  '[ProfileComponent] Load  Context',
+  LoadContext = '[ProfileComponent] Load  Context',
   LoadContextSuccess = '[ProfileComponent] Load  Context Success',
   LoadContextFailure = '[ProfileComponent] Load  Context Failure',
   OpenContextStructureEditor = '[ProfileComponent] Open  Context Structure Editor',
   OpenProfileComponentMetadataEditor = '[ProfileComponent] Open Profile Component Metadata Editor',
+  OpenProfileComponentSegmentConformanceStatementEditor = '[ProfileComponent] Open Profile Component Segment Conformance Statement Editor',
+  OpenProfileComponentMessageConformanceStatementEditor = '[ProfileComponent] Open Profile Component Message Conformance Statement Editor',
 }
 
 export class LoadProfileComponent implements Action {
@@ -59,4 +61,30 @@ export class OpenProfileComponentMetadataEditor implements Action {
   }) { }
 }
 
-export type ProfileComponentActions = LoadProfileComponent | LoadContext| LoadContextSuccess | LoadContextFailure | OpenContextStructureEditor | LoadProfileComponentFailure | LoadProfileComponentSuccess | OpenProfileComponentMetadataEditor;
+export class OpenProfileComponentMessageConformanceStatementEditor implements Action {
+  readonly type = ProfileComponentActionTypes.OpenProfileComponentMessageConformanceStatementEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) { }
+}
+
+export class OpenProfileComponentSegmentConformanceStatementEditor implements Action {
+  readonly type = ProfileComponentActionTypes.OpenProfileComponentSegmentConformanceStatementEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) { }
+}
+
+export type ProfileComponentActions =
+  LoadProfileComponent |
+  LoadContext |
+  LoadContextSuccess |
+  LoadContextFailure |
+  OpenContextStructureEditor |
+  LoadProfileComponentFailure |
+  LoadProfileComponentSuccess |
+  OpenProfileComponentMetadataEditor |
+  OpenProfileComponentMessageConformanceStatementEditor |
+  OpenProfileComponentSegmentConformanceStatementEditor;

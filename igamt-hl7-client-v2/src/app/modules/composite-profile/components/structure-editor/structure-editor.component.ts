@@ -14,6 +14,7 @@ import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
 import { ICompositeProfileState, IResourceAndDisplay } from 'src/app/modules/shared/models/composite-profile';
 import { Hl7Config, IValueSetBindingConfigMap } from 'src/app/modules/shared/models/config.class';
+import { ConstraintType } from 'src/app/modules/shared/models/cs.interface';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import { IChange } from 'src/app/modules/shared/models/save-change';
@@ -30,6 +31,11 @@ export type GroupOptions = Array<{
   }>,
 }>;
 
+export enum GeneratedFlavorTabs {
+  STRUCTURE = 'Structure',
+  CONFORMANCE_STATEMENTS = 'Conformance Statements',
+}
+
 @Component({
   selector: 'app-structure-editor',
   templateUrl: './structure-editor.component.html',
@@ -37,6 +43,7 @@ export type GroupOptions = Array<{
 })
 export class StructureEditorComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
   type = Type;
+  TABS = GeneratedFlavorTabs;
   resourceSubject: ReplaySubject<GroupOptions>;
   public datatypes: Observable<IDisplayElement[]>;
   public segments: Observable<IDisplayElement[]>;
@@ -50,6 +57,8 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   legend: BindingLegend;
   columns: HL7v2TreeColumnType[];
   selected: IResourceAndDisplay<any>;
+  activeTab: GeneratedFlavorTabs;
+  tabs: GeneratedFlavorTabs[] = [];
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -138,6 +147,7 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
           })),
         } : undefined;
         this.selected = confP.items[0].value;
+        this.selectItem(confP.items[0].value);
         this.resourceSubject.next([
           ...(confP ? [confP] : []),
           ...(segments ? [segments] : []),
@@ -153,10 +163,29 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
     return of();
   }
 
+  getDescription(cs) {
+    if (cs.type === ConstraintType.ASSERTION) {
+      return cs.assertion.description;
+    } else {
+      return cs.freeText;
+    }
+  }
+
   ngOnInit(): void {
   }
 
-  selectItem(elm) {
+  selectItem(elm: IResourceAndDisplay<any>) {
+    console.log(elm);
+    switch (elm.display.type) {
+      case Type.DATATYPE:
+      case Type.SEGMENT:
+      case Type.CONFORMANCEPROFILE:
+        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS];
+        break;
+    }
+    if (!this.tabs.includes(this.activeTab)) {
+      this.activeTab = GeneratedFlavorTabs.STRUCTURE;
+    }
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {
