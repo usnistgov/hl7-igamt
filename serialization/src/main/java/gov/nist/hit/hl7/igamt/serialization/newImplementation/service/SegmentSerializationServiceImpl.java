@@ -93,7 +93,6 @@ private SerializationTools serializationTools;
 			} else {
 				return  null;
 			}
-
 		}
 		if(segment.getExt() != null) {
 	    segmentElement
@@ -144,6 +143,7 @@ private SerializationTools serializationTools;
 		    			          } 
 		    			  commentElement.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
 	    				  commentElement.addAttribute(new Attribute("description",comment.getDescription()));
+	    				  commentElement.addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
 		    			  commentsElement.appendChild(commentElement);
 	    			  }  
 	    		  }
@@ -152,6 +152,7 @@ private SerializationTools serializationTools;
 	    			  definitionText
     	              .addAttribute(new Attribute("text", field.getText()));
 	    			  definitionText.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
+	    			  definitionText.addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
 	    			  definitionTextsElement.appendChild(definitionText);
 	    		  }
 	    	  }
