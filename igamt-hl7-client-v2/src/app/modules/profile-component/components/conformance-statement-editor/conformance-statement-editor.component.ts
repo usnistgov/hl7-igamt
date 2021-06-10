@@ -113,7 +113,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     ).pipe(
       withLatestFrom(this.selectedResource$),
       flatMap(([[list, itemList], resource]) => {
-        const merged = this.merge(list, itemList);
+        const merged = this.merge(list || [], itemList || []);
         return this.createConformanceStatementGroupsFromList(merged.items, resource, repository).pipe(
           map((groups) => {
             return {
@@ -341,7 +341,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
                 return [
                   this.messageService.messageToAction(new Message<any>(MessageType.SUCCESS, 'Conformance Statements saved successfully!', null)),
                   new fromDam.EditorUpdate({ value: current.data, updateDate: false }),
-                  new fromDam.SetValue({ selected: context }),
+                  new fromDam.SetValue({ context }),
                 ];
               }),
             );

@@ -1,13 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output, QueryList, ViewChildren } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { FormGroup } from '@angular/forms';
-import { FormControl } from '@angular/forms';
-import { Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
-import { flatMap } from 'lodash';
 import { Observable } from 'rxjs';
 import { map, mergeMap, take, tap } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
@@ -78,31 +75,29 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
 
   excelImport = false;
 
-  // Variable to store shortLink from api response
-  shortLink = '';
   loading = false; // Flag variable
   file: File = null; // Variable to store file
 
   // On file Select
   onChange(event) {
-      this.file = event.target.files[0];
+    this.file = event.target.files[0];
   }
 
   // OnClick of button Upload
   onUpload() {
-          console.log(this.file);
-          this.conformanceProfile.pipe(
-        take(1),
-        mergeMap((cp) => {
-          return this.fileUploadService.upload(this.file, this.binding.flavorId, cp.id, this.documentRef.documentId, this.context.pathId).pipe(
-            map((v) => {
-              console.log(v.data );
-              this.store.dispatch(this.messageService.messageToAction(v));
-              this.binding.tables.push({ delta: undefined, value: v.data, condition: undefined });
-              console.log(this.binding.tables);
-            }),
-          );
-        }),
+    console.log(this.file);
+    this.conformanceProfile.pipe(
+      take(1),
+      mergeMap((cp) => {
+        return this.fileUploadService.upload(this.file, this.binding.flavorId, cp.id, this.documentRef.documentId, this.context.pathId).pipe(
+          map((v) => {
+            console.log(v.data);
+            this.store.dispatch(this.messageService.messageToAction(v));
+            this.binding.tables.push({ id: '', delta: undefined, value: v.data, condition: undefined });
+            console.log(this.binding.tables);
+          }),
+        );
+      }),
     ).subscribe();
 
   }
@@ -115,7 +110,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
         fileUploadService: this.fileUploadService,
         flavorId: this.binding.flavorId,
         conformanceProfile: this.conformanceProfile,
-        documentId : this.documentRef.documentId,
+        documentId: this.documentRef.documentId,
         pathId: this.context.pathId,
 
       },
@@ -127,9 +122,10 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
 
           this.store.dispatch(this.messageService.userMessageToAction(new UserMessage<never>(MessageType.SUCCESS, 'TABLE SAVED SUCCESSFULLY')),
 
-        );
-          this.binding.tables.push({ delta: undefined, value: coConstraintTable, condition: undefined });
-          console.log(this.binding.tables);          }
+          );
+          this.binding.tables.push({ id: '', delta: undefined, value: coConstraintTable, condition: undefined });
+          console.log(this.binding.tables);
+        }
       },
     );
   }
@@ -160,7 +156,6 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     this.ccService.exportAsExcel(table);
   }
   importAsExcel() {
-    console.log('Button import excel working');
     this.excelImport = true;
   }
   triggerRemove() {
@@ -178,6 +173,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
         binding.tables.push({
           condition: undefined,
           value: table,
+          id: Guid.create().toString(),
         });
         this.triggerChange();
       }),
@@ -242,12 +238,10 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   }
 
   addCoConstraintGroup(id: number) {
-    const group = this.ccService.createEmptyContainedGroupBinding();
     const component = this.tableComponents.find((table) => table.id === id);
     if (component) {
       component.dispatch({
         type: CoConstraintAction.ADD_GROUP,
-        payload: group,
       });
     }
   }
