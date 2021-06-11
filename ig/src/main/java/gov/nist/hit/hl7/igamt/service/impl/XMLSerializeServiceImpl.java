@@ -125,6 +125,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   ConformanceProfileService conformanceProfileService;
 
   @Autowired
+  CoConstraintXMLSerialization coConstraintXMLSerialization;
+
+  @Autowired
   InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
   /*
    * (non-Javadoc)
@@ -171,6 +174,19 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       e.printStackTrace();
       throw new ProfileSerializationException(e, igModel != null ? igModel.getModel().getId() : "");
     }
+  }
+
+  @Override
+  public Element serializeCoConstraintXML(IgDataModel igModel) {
+
+      Element ccc = new Element("CoConstraintContext");
+      for(ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
+        Element message = this.coConstraintXMLSerialization.serialize(cpModel.getModel());
+        if(message != null) {
+          ccc.appendChild(message);
+        }
+      }
+      return ccc;
   }
 
   private String findDefaultHL7Version(IgDataModel igModel) {
@@ -988,10 +1004,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 	      return countContextChild(path.getChild(), result + 1);
 	  }
 
-  /**
-   * @param key
-   * @return
-   */
+
   private String bindingInstanceNum(String keyStr) {
     String[] keys = keyStr.split("\\.");
     for (int i = 0; i < keys.length; i++) {
@@ -2044,15 +2057,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       return text.replaceFirst("(?s)"+regex+"(?!.*?"+regex+")", replacement);
   }
   
-  
-  /**
-   * @param assertion
-   * @param level
-   * @param targetId
-   * @param context
-   * @param igModel
-   * @return
-   */
+
   private String generateSingleAssertionScript(SingleAssertion assertion, Level level,
       String targetId, InstancePath context, boolean presenceCheckOn) {
     Complement complement = assertion.getComplement();
@@ -2338,11 +2343,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     return String.join(".", result);
   }
 
-  /**
-   * @param target
-   * @param child
-   * @param result
-   */
   private void visitSegOrGroup(Set<SegmentRefOrGroup> segOrGroups, InstancePath child,
       List<String> result) {
     for (SegmentRefOrGroup segOrGroup : segOrGroups) {
@@ -2365,11 +2365,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
   }
 
-  /**
-   * @param target
-   * @param child
-   * @param result
-   */
   private void visitField(Segment seg, InstancePath child, List<String> result) {
     for (Field f : seg.getChildren()) {
       if (child.getElementId().equals(f.getId())) {
@@ -2384,11 +2379,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     }
   }
 
-  /**
-   * @param target
-   * @param child
-   * @param result
-   */
+
   private void visitComponent(Datatype dt, InstancePath child, List<String> result) {
     if (dt instanceof ComplexDatatype) {
       ComplexDatatype complexDatatype = (ComplexDatatype) dt;
