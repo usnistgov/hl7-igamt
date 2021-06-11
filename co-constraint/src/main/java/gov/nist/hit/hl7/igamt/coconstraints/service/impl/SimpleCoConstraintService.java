@@ -14,7 +14,9 @@ import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.PrimitiveDatatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -100,7 +102,9 @@ public class SimpleCoConstraintService implements CoConstraintService {
     this.mergeHeader(origin.getSelectors(), target.getSelectors());
     this.mergeHeader(origin.getConstraints(), target.getConstraints());
     this.mergeHeader(origin.getNarratives(), target.getNarratives());
-
+    if(origin.getGrouper() == null) {
+      origin.setGrouper(target.getGrouper());
+    }
   }
 
   public void mergeHeader(List<CoConstraintHeader> origin, List<CoConstraintHeader>  target) {
@@ -187,11 +191,13 @@ public class SimpleCoConstraintService implements CoConstraintService {
     Field obx_2 = obx.getChildren().stream().filter(field -> field.getPosition() == 2).findFirst().get();
     Field obx_3 = obx.getChildren().stream().filter(field -> field.getPosition() == 3).findFirst().get();
     Field obx_5 = obx.getChildren().stream().filter(field -> field.getPosition() == 5).findFirst().get();
+    Field obx_4 = obx.getChildren().stream().filter(field -> field.getPosition() == 4).findFirst().get();
 
     if(obx_2 != null && obx_3 != null && obx_5 != null) {
       group.getHeaders().getSelectors().add(this.OBXHeader(obx_3, ColumnType.CODE, false));
       group.getHeaders().getConstraints().add(this.OBXHeader(obx_2, ColumnType.DATATYPE, false));
       group.getHeaders().getConstraints().add(this.OBXHeader(obx_5, ColumnType.VARIES, true));
+      group.getHeaders().setGrouper(this.OBXGrouper(obx_4));
     }
   }
 
@@ -218,6 +224,25 @@ public class SimpleCoConstraintService implements CoConstraintService {
     obx_header.setElementInfo(obx_info);
 
     return obx_header;
+  }
+
+  public CoConstraintGrouper OBXGrouper(Field field) {
+    CoConstraintGrouper obx_grouper = new CoConstraintGrouper();
+    Datatype obx_dt = this.datatypeService.findById(field.getRef().getId());
+
+    if(!(obx_dt instanceof ComplexDatatype) || obx_dt.getFixedName().equals("OG")) {
+      return null;
+    }
+
+    obx_grouper.setName("OBX-"+field.getPosition());
+    obx_grouper.setPathId(field.getId());
+    obx_grouper.setName(obx_dt.getName());
+    obx_grouper.setVersion(obx_dt.getDomainInfo().getVersion());
+    obx_grouper.setDescription(field.getName());
+    obx_grouper.setType(Type.FIELD);
+
+
+    return obx_grouper;
   }
 
   /* (non-Javadoc)

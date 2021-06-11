@@ -27,11 +27,38 @@
         <th rowspan="2" class="requirement-cell column-border stick-header stick-top-none">Cardinality</th>
         <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'If', list: value.headers.selectors, isDataHeader: true, selector: true }"></ng-container>
         <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'Then', list: value.headers.constraints, isDataHeader: true  }"></ng-container>
+        <th class="column-border stick-header stick-top-none" style="vertical-align: middle; text-align: center;">Group By</th>
         <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'Narratives', list: value.headers.narratives, isDataHeader: false  }"></ng-container>
       </tr>
       <tr>
         <ng-container *ngTemplateOutlet="value.headers.selectors.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.selectors, template: dataHeader }"></ng-container>
         <ng-container *ngTemplateOutlet="value.headers.constraints.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.constraints, template: dataHeader }"></ng-container>
+        <th class="column column-border stick-header stick-top-none">
+          <div *ngIf="!delta" style="width: 100%; display: flex; justify-content: space-between;">
+            <div>
+              <button *ngIf="!vOnly && mode !== 'GROUP' && value.headers.grouper && (!value.groups || value.groups.length === 0)" (click)="clearGrouper()" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
+              <button *ngIf="!vOnly && (mode === 'GROUP' || (value.groups && value.groups.length > 0))" class="btn btn-sm btn-primary" (click)="setTableGrouper(false)"><i class="fa fa-pencil"></i></button>
+            </div>
+            <div style="width: 100%; text-align: center;" *ngIf="value.headers.grouper" >
+              <span class="badge badge-secondary"> Group Id </span>
+              <app-entity-bagde [type]="value.headers.grouper.type"></app-entity-bagde>
+              <span style="margin-left: 3px;">{{value.headers.grouper.name}}</span>
+            </div>
+          </div>
+          <app-delta-column
+              *ngIf="delta && value.headers.grouper"
+              [currentValue]="{ name : value.headers.grouper.nameDelta.current, type : value.headers.grouper.typeDelta.current }"
+              [previousValue]="{ name : value.headers.grouper.nameDelta.previous, type : value.headers.grouper.typeDelta.previous }"
+              [action]="value.headers.grouper.delta">
+            <ng-template #default let-value>
+              <div style="width: 100%; text-align: center;">
+                <span class="badge badge-secondary"> Group Id </span>
+                <app-entity-bagde [type]="value.type"></app-entity-bagde>
+                <span style="margin-left: 3px;">{{value.name}}</span>
+              </div>
+            </ng-template>
+          </app-delta-column>
+        </th>
         <ng-container *ngTemplateOutlet="value.headers.narratives.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.narratives, template: narrativeHeader }"></ng-container>
       </tr>
     </thead>
@@ -213,6 +240,9 @@
         <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: cc.requirement, cardinalityDelta: cc.requirement.cardinalityDelta, fieldId : fieldId + '-req-' + i, viewOnly : viewOnly || vOnly }"></ng-container></td>
         <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.selectors, fieldId : fieldId + '-if-' + i, viewOnly : viewOnly || vOnly || (cc.cloned && derived), excludeBindingStrength: true, column:'selectors'}"></ng-container>
         <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.constraints, fieldId : fieldId + '-then-' + i, viewOnly : viewOnly || vOnly || (cc.cloned && derived), column:'constraints' }"></ng-container>
+        <td class="column-border" style="vertical-align: middle; text-align: center; font-weight: bold;">
+          <span *ngIf="value.headers.grouper"> {{ group ? 'Same Within Group' : 'Distinct'}}</span>
+        </td>
         <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.narratives, fieldId : fieldId + '-nar-' + i, viewOnly : viewOnly || vOnly || (cc.cloned && derived), column:'narratives'}"></ng-container>
       </tr>
     </tbody>
@@ -246,9 +276,9 @@
           </table>
         </td>
         <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: group.requirement, usageDelta: group.requirement.usageDelta, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
-        <td class="requirement-cell"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, cardinalityDelta: group.requirement.cardinalityDelta, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
+        <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, cardinalityDelta: group.requirement.cardinalityDelta, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
         <td [attr.colspan]="numberOfColumns()" style="vertical-align: middle;">
-          <input *ngIf="!delta || !group.nameDelta"  [disabled]="viewOnly" class="form-control" type="text" [name]="'g-' + index + '-name'" [(ngModel)]="group.name" (ngModelChange)="emitChange()" placeholder="Group Name">
+          <input style="background-color: #f4f4f4;" *ngIf="!delta || !group.nameDelta"  [disabled]="viewOnly" class="form-control" type="text" [name]="'g-' + index + '-name'" [(ngModel)]="group.name" (ngModelChange)="emitChange()" placeholder="Group Name">
           <app-delta-column
             *ngIf="delta && !!group.nameDelta"
             [currentValue]="group.nameDelta.current"
@@ -273,7 +303,7 @@
           </td>
           <td *ngIf="vOnly || delta" ></td>
           <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: group.requirement, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
-          <td class="requirement-cell"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
+          <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
           <td [attr.colspan]="numberOfColumns()" style="vertical-align: middle;">
             <app-entity-bagde [type]="'COCONSTRAINTGROUP'"></app-entity-bagde>
             <strong style="color: white; margin-left: 5px;">{{ content.name }}</strong>
@@ -288,13 +318,27 @@
   <ng-template #cellList let-excludeBindingStrength="excludeBindingStrength" let-headers="headers" let-cc let-fieldId="fieldId" let-viewOnly="viewOnly" let-column="column">
     <ng-container *ngIf="headers.length > 0; else emptyColumn">
       <ng-container *ngFor="let header of headers; let i = index">
-        <td #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !header.cardinality, 'inside-border' : i !== (headers.length - 1) && !header.cardinality }" *ngIf="cc.cells[header.key]; else emptyColumn" >
-          <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor, excludeBindingStrength: excludeBindingStrength, column: column }"></ng-container>
-        </td>
-        <td *ngIf="header.cardinality" [ngClass]="{'column-border': i === (headers.length - 1), 'inside-border' :  i !== (headers.length - 1) }" style="vertical-align: middle; text-align: center;">
-          <input *ngIf="!viewOnly" type="text" style="width: 100px;" [placeholder]="header.elementInfo.cardinality.max" [name]="fieldId + '-cardinality'" [(ngModel)]="cc.cells[header.key].cardinalityMax" (ngModelChange)="emitChange()" >
-          <strong *ngIf="viewOnly"> {{ cc.cells[header.key].cardinalityMax || header.elementInfo.cardinality.max }}</strong>
-        </td>
+
+        <ng-container [ngSwitch]="!cc.cells[header.key] || (cc.cells[header.key] && (header.columnType === cc.cells[header.key].type || (!header.columnType && cc.cells[header.key].type === 'VALUE')))">
+
+          <ng-container *ngSwitchCase="true">
+            <td style="position: relative;" #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !header.cardinality, 'inside-border' : i !== (headers.length - 1) && !header.cardinality }" *ngIf="cc.cells[header.key]; else emptyColumn" >
+                <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor, excludeBindingStrength: excludeBindingStrength, column: column }"></ng-container>
+            </td>
+            <td *ngIf="header.cardinality" [ngClass]="{'column-border': i === (headers.length - 1), 'inside-border' :  i !== (headers.length - 1) }" style="vertical-align: middle; text-align: center;">
+              <input *ngIf="!viewOnly" type="text" style="width: 100px;" [placeholder]="header.elementInfo.cardinality.max" [name]="fieldId + '-cardinality'" [(ngModel)]="cc.cells[header.key].cardinalityMax" (ngModelChange)="emitChange()" >
+              <strong *ngIf="viewOnly"> {{ cc.cells[header.key].cardinalityMax || header.elementInfo.cardinality.max }}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="false">
+            <td #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !header.cardinality, 'inside-border' : i !== (headers.length - 1) && !header.cardinality }">
+              <span style="color: red">
+                Cell type conflicts with header (Header type is {{header.columnType ? header.columnType : 'VALUE'}}, Cell type is {{ cc.cells[header.key].type }})
+              </span>
+            </td>
+          </ng-container>
+        </ng-container>
       </ng-container>
     </ng-container>
   </ng-template>

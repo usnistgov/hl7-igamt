@@ -33,33 +33,10 @@
        <button *ngIf="!viewOnly" class="btn btn-sm btn-success" style="margin-left: 10px;" (click)="openImportDialog()" >
         <i class="fa fa-download"></i>
         Import As Table Excel
-      </button> 
-
-      <!-- <div class="form-group" *ngIf="excelImport && !viewOnly">
-        <label for="file" class="btn btn-sm btn-success" style="margin-left: 10px;"></label>
-        <input type="file"
-               id="file"
-               (change)="handleFileInput($event.target.files)">
-    </div> -->
-<!-- <div *ngIf="excelImport && !viewOnly">
-    <div class="text-center"> 
-      <input class="form-control" type="file" 
-              (change)="onChange($event)"> 
-    
-      <button (click)="onUpload()"  
-          class="btn btn-success"> 
-          Upload 
-      </button> 
-  </div>  
-    
-  <div class="container" *ngIf="loading"> 
-      <h3>Loading ...</h3> 
-  </div> 
-</div> -->
+      </button>
     </div>
-
-
   </div>
+
   <label style="font-weight: bold;">Name</label>
   <input *ngIf="!delta || !binding.nameDelta" [disabled]="viewOnly" type="text" class="form-control" [(ngModel)]="binding.name" (ngModelChange)="triggerChange()" placeholder="Name">
   <app-delta-column

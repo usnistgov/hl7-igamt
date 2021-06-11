@@ -1,23 +1,23 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material';
-import {Store} from '@ngrx/store';
-import {combineLatest, Observable, of, Subscription} from 'rxjs';
-import {filter, map, take, withLatestFrom} from 'rxjs/operators';
-import {selectDelta, selectViewOnly} from 'src/app/root-store/dam-igamt/igamt.selectors';
-import {selectDerived} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { Store } from '@ngrx/store';
+import { combineLatest, Observable, of, Subscription } from 'rxjs';
+import { filter, map, take, withLatestFrom } from 'rxjs/operators';
+import { selectDelta, selectViewOnly } from 'src/app/root-store/dam-igamt/igamt.selectors';
+import { selectDerived } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {selectExternalTools} from '../../../../root-store/config/config.reducer';
-import {ExportDialogComponent} from '../../../export-configuration/components/export-dialog/export-dialog.component';
-import {ExportTypes} from '../../../export-configuration/models/export-types';
-import {ExportConfigurationService} from '../../../export-configuration/services/export-configuration.service';
-import {ExportToolComponent} from '../../../shared/components/export-tool/export-tool.component';
-import {ExportXmlDialogComponent} from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
-import {VerifyIgDialogComponent} from '../../../shared/components/verify-ig-dialog/verify-ig-dialog.component';
-import {Type} from '../../../shared/constants/type.enum';
-import {IConnectingInfo} from '../../../shared/models/config.class';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {IDocumentDisplayInfo, IgDocument} from '../../models/ig/ig-document.class';
-import {IgService} from '../../services/ig.service';
+import { selectExternalTools } from '../../../../root-store/config/config.reducer';
+import { ExportDialogComponent } from '../../../export-configuration/components/export-dialog/export-dialog.component';
+import { ExportTypes } from '../../../export-configuration/models/export-types';
+import { ExportConfigurationService } from '../../../export-configuration/services/export-configuration.service';
+import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
+import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
+import { VerifyIgDialogComponent } from '../../../shared/components/verify-ig-dialog/verify-ig-dialog.component';
+import { Type } from '../../../shared/constants/type.enum';
+import { IConnectingInfo } from '../../../shared/models/config.class';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
+import { IgService } from '../../services/ig.service';
 
 @Component({
   selector: 'app-ig-edit-toolbar',
@@ -25,7 +25,7 @@ import {IgService} from '../../services/ig.service';
   styleUrls: ['./ig-edit-toolbar.component.scss'],
 })
 export class IgEditToolbarComponent implements OnInit, OnDestroy {
-
+  exportTypes = ExportTypes;
   viewOnly: boolean;
   subscription: Subscription;
   toolConfig: Observable<IConnectingInfo[]>;
@@ -68,7 +68,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
           dialogRef.afterClosed().pipe(
             filter((y) => y !== undefined),
             map((result) => {
-              this.igService.exportDocument(igId, result.decision, result.configurationId, type , format);
+              this.igService.exportDocument(igId, result.decision, result.configurationId, type, format);
             }),
           ).subscribe();
         }),
