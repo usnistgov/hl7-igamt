@@ -22,6 +22,11 @@ import { IBindingContext } from '../../../shared/services/structure-element-bind
 import { ProfileComponentRefChange } from '../../services/profile-component-ref-change.object';
 import { ProfileComponentStructureTreeItemMap } from '../../services/profile-component-structure-tree-item-map.object';
 
+export interface IItemLocation {
+  path: string,
+  parent: string;
+  target: string;
+}
 export interface IHL7V2ProfileComponentItemNode {
   location: {
     pathId: string;
@@ -142,7 +147,7 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
   @Output()
   changes: EventEmitter<IProfileComponentChange>;
   @Output()
-  removeItem: EventEmitter<string>;
+  removeItem: EventEmitter<IItemLocation>;
 
   changes$: Observable<IChange>;
   cols: ColumnOptions;
@@ -167,7 +172,7 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
     this.treeSubscriptions = [];
     this.treeExpandedNodes = [];
     this.changes = new EventEmitter<IProfileComponentChange>();
-    this.removeItem = new EventEmitter<string>();
+    this.removeItem = new EventEmitter<IItemLocation>();
     this.activeNodes$ = new BehaviorSubject([]);
     this.nodes$ = new BehaviorSubject([]);
     this.tree$ = new BehaviorSubject([]);
@@ -218,8 +223,16 @@ export class ProfileComponentStructureTreeComponent implements OnInit, OnDestroy
     this.changes.emit(change);
   }
 
-  clear(pathId: string) {
-    this.removeItem.next(pathId);
+  clear(path: string, elementId: string) {
+    this.removeItem.next({
+      path,
+      parent: this.getParentLocation(path),
+      target: elementId,
+    });
+  }
+
+  getParentLocation(path: string) {
+    return path.includes('-') ? path.substring(0, path.lastIndexOf('-')) : '';
   }
 
   onNodeExpand({ node }: { node: IHL7v2TreeNode }) {

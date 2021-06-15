@@ -26,7 +26,7 @@ import { Hl7V2TreeService } from '../../shared/services/hl7-v2-tree.service';
 import { PathService } from '../../shared/services/path.service';
 import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
 import { IProfileComponentMetadata } from '../components/profile-component-metadata/profile-component-metadata.component';
-import { IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
+import { IProfileComponentChange, IItemLocation } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
 import { ITreeStructureProfileComponentPermutation } from './profile-component-ref-change.object';
 
 export interface IHL7v2TreeProfileComponentNode extends IHL7v2TreeNode {
@@ -71,6 +71,25 @@ export class ProfileComponentService {
 
   saveRootConformanceStatements(pcId: string, id: string, csList: IPropertyConformanceStatement[]): Observable<IPropertyConformanceStatement[]> {
     return this.http.post<IPropertyConformanceStatement[]>(this.URL + pcId + '/context/' + id + '/conformance-statements', csList);
+  }
+
+  removeBindings(location: IItemLocation, context: IProfileComponentContext) {
+    if (context.profileComponentBindings) {
+      if (context.profileComponentBindings.contextBindings) {
+        context.profileComponentBindings.contextBindings = [
+          ...context.profileComponentBindings.contextBindings.filter((elm) => elm.target !== location.path),
+        ];
+      }
+
+      if (context.profileComponentBindings.itemBindings && location.parent) {
+        context.profileComponentBindings.itemBindings = [
+          ...context.profileComponentBindings.itemBindings.map((elm) => ({
+            path: elm.path,
+            bindings: elm.path === location.parent ? elm.bindings.filter((binding) => binding.target !== location.target) : elm.bindings,
+          })),
+        ];
+      }
+    }
   }
 
   applyChange(change: IProfileComponentChange, context: IProfileComponentContext) {

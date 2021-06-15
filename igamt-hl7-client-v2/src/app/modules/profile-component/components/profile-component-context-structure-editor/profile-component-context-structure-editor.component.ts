@@ -29,7 +29,7 @@ import { IBindingContext } from '../../../shared/services/structure-element-bind
 import { ProfileComponentItemList } from '../../services/profile-component-item.object';
 import { ProfileComponentService } from '../../services/profile-component.service';
 import { AddProfileComponentItemComponent } from '../add-profile-component-item/add-profile-component-item.component';
-import { IProfileComponentChange } from '../profile-component-structure-tree/profile-component-structure-tree.component';
+import { IProfileComponentChange, IItemLocation } from '../profile-component-structure-tree/profile-component-structure-tree.component';
 
 export type BindingLegend = Array<{
   label: string,
@@ -172,8 +172,8 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
     ).subscribe();
   }
 
-  removeItem(pathId: string) {
-    this.profileComponentItemList.removeItem(pathId);
+  removeItem(location: IItemLocation) {
+    this.profileComponentItemList.removeItem(location);
   }
 
   addItems() {
