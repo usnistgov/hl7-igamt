@@ -13,8 +13,9 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 
 /**
  *
@@ -22,23 +23,31 @@ import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
  */
 public class PropertyDynamicMapping extends ItemProperty {
 
-  private DynamicMappingInfo dynamicMappingInfo;
+  private ChangeType change;
+  private DynamicMappingItem payload;
 
-  public PropertyDynamicMapping(DynamicMappingInfo dynamicMappingInfo) {
-    super(PropertyType.DYNAMICMAPPINGITEM); //TODO verify wether we need DYNAMIC MAPPING or DYNAMICMAPPINGITEM
-    this.dynamicMappingInfo = dynamicMappingInfo;
+  public PropertyDynamicMapping(PropertyType propertyKey) {
+    super(propertyKey);
   }
-
   public PropertyDynamicMapping() {
     super(PropertyType.DYNAMICMAPPINGITEM);
   }
-
-  public DynamicMappingInfo getDynamicMappingInfo() {
-    return dynamicMappingInfo;
+  
+  public ChangeType getChange() {
+    return change;
   }
 
-  public void setDynamicMappingInfo(DynamicMappingInfo dynamicMappingInfo) {
-    this.dynamicMappingInfo = dynamicMappingInfo;
+  public void setChange(ChangeType change) {
+    this.change = change;
   }
+
+  public DynamicMappingItem getPayload() {
+    return payload;
+  }
+
+  public void setPayload(DynamicMappingItem payload) {
+    this.payload = payload;
+  }
+
 
 }

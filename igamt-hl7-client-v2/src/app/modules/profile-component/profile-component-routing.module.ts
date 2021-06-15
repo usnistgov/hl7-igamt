@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import {
   LoadContext,
   LoadProfileComponent,
-  OpenContextStructureEditor, OpenProfileComponentMetadataEditor,
+  OpenContextStructureEditor, OpenProfileComponentMetadataEditor, OpenSegmentContextDynamicMappingEditor,
   ProfileComponentActionTypes,
 } from '../../root-store/profile-component/profile-component.actions';
 import { OpenProfileComponentMessageConformanceStatementEditor, OpenProfileComponentSegmentConformanceStatementEditor } from '../../root-store/profile-component/profile-component.actions';
@@ -15,6 +15,7 @@ import { MessageConformanceStatementEditorComponent } from './components/message
 import { MessageContextStructureEditorComponent } from './components/message-context-structure-editor/message-context-structure-editor.component';
 import { ProfileComponentMetadataComponent } from './components/profile-component-metadata/profile-component-metadata.component';
 import { SegmentConformanceStatementEditorComponent } from './components/segment-conformance-statement-editor/segment-conformance-statement-editor.component';
+import {SegmentContextDynamicMappingComponent} from './components/segment-context-dynamic-mapping/segment-context-dynamic-mapping.component';
 import { SegmentContextStructureEditorComponent } from './components/segment-context-structure-editor/segment-context-structure-editor.component';
 
 const routes: Routes = [
@@ -110,6 +111,25 @@ const routes: Routes = [
                         saveTableOfContent: true,
                       },
                       action: OpenContextStructureEditor,
+                      idKey: 'contextId',
+                    },
+                  },
+                  {
+                    path: 'dynamic-mapping',
+                    component: SegmentContextDynamicMappingComponent,
+                    canActivate: [EditorActivateGuard],
+                    canDeactivate: [EditorDeactivateGuard],
+                    data: {
+                      editorMetadata: {
+                        id: EditorID.PC_SEGMENT_CTX_DYNAMIC_MAPPING,
+                        title: 'Dynamic Mapping',
+                        resourceType: Type.SEGMENTCONTEXT,
+                      },
+                      onLeave: {
+                        saveEditor: true,
+                        saveTableOfContent: true,
+                      },
+                      action: OpenSegmentContextDynamicMappingEditor,
                       idKey: 'contextId',
                     },
                   },

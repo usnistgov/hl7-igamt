@@ -50,7 +50,7 @@ export class TocSubMenuComponent implements OnInit {
       if (type !== Type.VALUESET.toLowerCase() && type !== Type.COMPOSITEPROFILE.toLowerCase()) {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'conformance-statement', 'Conformance statements', Icons.TABLE));
       }
-      if (type === Type.SEGMENT.toLocaleLowerCase() && this.element.fixedName === 'OBX') {
+      if ((type === Type.SEGMENT.toLocaleLowerCase() || type === Type.SEGMENTCONTEXT.toLocaleLowerCase()) && this.element.fixedName === 'OBX') {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'dynamic-mapping', 'Dynamic Mapping', Icons.LIST));
       }
       if (type === Type.CONFORMANCEPROFILE.toLowerCase()) {
@@ -89,7 +89,7 @@ export class TocSubMenuComponent implements OnInit {
 
     ret.push(new SubMenu(url + '/structure', 'Structure', Icons.TABLE));
     ret.push(new SubMenu(url + '/conformance-statement', 'Conformance statements', Icons.TABLE));
-    if (this.element.type === Type.SEGMENTCONTEXT.toLocaleLowerCase() && this.element.fixedName === 'OBX') {
+    if (this.element.type === Type.SEGMENTCONTEXT) {
       ret.push(new SubMenu(url + '/dynamic-mapping', 'Dynamic Mapping', Icons.LIST));
     }
     if (this.element.type === Type.MESSAGECONTEXT) {

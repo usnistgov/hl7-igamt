@@ -20,8 +20,10 @@ import { PpUsageComponent } from './components/profile-component-structure-tree/
 import { PpValuesetComponent } from './components/profile-component-structure-tree/columns/pp-valueset/pp-valueset.component';
 import { ProfileComponentStructureTreeComponent } from './components/profile-component-structure-tree/profile-component-structure-tree.component';
 import { SegmentConformanceStatementEditorComponent } from './components/segment-conformance-statement-editor/segment-conformance-statement-editor.component';
+import { SegmentContextDynamicMappingComponent } from './components/segment-context-dynamic-mapping/segment-context-dynamic-mapping.component';
 import { SegmentContextStructureEditorComponent } from './components/segment-context-structure-editor/segment-context-structure-editor.component';
 import { ProfileComponentRoutingModule } from './profile-component-routing.module';
+import { PcDynamicMappingSelectorComponent } from './components/pc-dynamic-mapping-selector/pc-dynamic-mapping-selector.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +43,8 @@ import { ProfileComponentRoutingModule } from './profile-component-routing.modul
     PpSegmentComponent,
     SegmentConformanceStatementEditorComponent,
     MessageConformanceStatementEditorComponent,
+    SegmentContextDynamicMappingComponent,
+    PcDynamicMappingSelectorComponent,
   ],
   imports: [
     CommonModule,

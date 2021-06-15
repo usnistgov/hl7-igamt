@@ -57,11 +57,6 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDatatype;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyRef;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertySingleCode;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyValueSet;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContextNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
@@ -268,9 +263,9 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
         }
 
         rootBinding = rootBinding
-                .stream()
-                .filter((elm) -> !elm.getPropertyKey().equals(PropertyType.STATEMENT))
-                .collect(Collectors.toSet());
+            .stream()
+            .filter((elm) -> !elm.getPropertyKey().equals(PropertyType.STATEMENT))
+            .collect(Collectors.toSet());
         rootBinding.addAll(conformanceStatements);
         ctxBinding.setContextBindings(rootBinding);
         ctx.setProfileComponentBindings(ctxBinding);
@@ -487,6 +482,38 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
         throw new ApplyChangeException(singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER));
       }
     } 
+
+  }
+
+  @Override
+  public List<PropertyDynamicMapping> updateContextDynamicMapping(String pcId, String contextId,
+      List<PropertyDynamicMapping> dynamicMappingItems) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
+    Set<ItemProperty> toAdd =  new HashSet<ItemProperty>();
+    toAdd.addAll(dynamicMappingItems);
+    ProfileComponentContext pcContext = this.findContextById(pcId, contextId);
+    if(pcContext.getProfileComponentItems() != null && !pcContext.getProfileComponentItems().isEmpty() ) {
+      for(ProfileComponentItem item: pcContext.getProfileComponentItems()) {
+        if(item.getPath() == null || item.getPath().isEmpty() || item.getPath().equals("0") || item.getPath().equals("-1") ){
+          if(item.getItemProperties() != null) {
+            item.getItemProperties().removeIf((x) -> x.getPropertyKey().equals(PropertyType.DYNAMICMAPPINGITEM));
+            item.getItemProperties().addAll(dynamicMappingItems);
+          }else {
+            item.setItemProperties(new HashSet<ItemProperty>());
+            item.getItemProperties().addAll(toAdd);
+          }
+        }
+      }
+    }else {
+      pcContext.setProfileComponentItems(new HashSet<ProfileComponentItem>());
+      ProfileComponentItem item = new ProfileComponentItem();
+      item.setItemProperties(toAdd);
+      pcContext.getProfileComponentItems().add(item);
+     
+    }
+    
+    
+    this.updateContext(pcId, contextId, pcContext);
+    return dynamicMappingItems;
 
   }
 

@@ -8,7 +8,7 @@ import { IConformanceStatement } from './cs.interface';
 import { IPredicate } from './predicate.interface';
 import { IResource } from './resource.interface';
 import { ChangeType, PropertyType } from './save-change';
-import { IDynamicMappingInfo } from './segment.interface';
+import {IDynamicMappingInfo, IDynamicMappingItem} from './segment.interface';
 
 export interface IProfileComponent extends IResource {
   children?: IProfileComponentContext;
@@ -129,6 +129,10 @@ export interface IPropertyConformanceStatement extends IPropertyBinding {
   targetId: string;
   payload: IConformanceStatement;
   propertyKey: PropertyType.STATEMENT;
+}
+export interface IPropertyDynamicMappingItem extends IItemProperty {
+  change: ChangeType;
+  payload: IDynamicMappingItem;
 }
 
 export interface IValuedPath {

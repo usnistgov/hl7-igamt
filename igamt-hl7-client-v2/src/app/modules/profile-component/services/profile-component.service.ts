@@ -4,11 +4,16 @@ import * as _ from 'lodash';
 import { combineLatest, EMPTY, Observable, of } from 'rxjs';
 import { flatMap, map, take } from 'rxjs/operators';
 import { Message } from '../../dam-framework/models/messages/message.class';
+import {SegmentService} from '../../segment/services/segment.service';
 import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../shared/constants/type.enum';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IPath } from '../../shared/models/cs.interface';
-import { IPropertyConformanceStatement } from '../../shared/models/profile.component';
+import {
+  IPropertyConformanceStatement,
+  IPropertyDynamicMappingItem,
+  IPropertyValueSet,
+} from '../../shared/models/profile.component';
 import {
   IItemProperty,
   IProfileComponent,
@@ -21,12 +26,17 @@ import {
 } from '../../shared/models/profile.component';
 import { IResource } from '../../shared/models/resource.interface';
 import { IChange, PropertyType } from '../../shared/models/save-change';
+import {IDynamicMappingInfo, ISegment} from '../../shared/models/segment.interface';
 import { ElementNamingService, IPathInfo } from '../../shared/services/element-naming.service';
 import { Hl7V2TreeService } from '../../shared/services/hl7-v2-tree.service';
 import { PathService } from '../../shared/services/path.service';
 import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
+import {ValueSetService} from '../../value-set/service/value-set.service';
 import { IProfileComponentMetadata } from '../components/profile-component-metadata/profile-component-metadata.component';
 import { IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
+import {
+  IDynamicMappingEditorInfo,
+} from '../components/segment-context-dynamic-mapping/segment-context-dynamic-mapping.component';
 import { ITreeStructureProfileComponentPermutation } from './profile-component-ref-change.object';
 
 export interface IHL7v2TreeProfileComponentNode extends IHL7v2TreeNode {
@@ -55,6 +65,8 @@ export class ProfileComponentService {
     private treeService: Hl7V2TreeService,
     private pathService: PathService,
     private elementNamingService: ElementNamingService,
+    private segmentService: SegmentService,
+    private valueSetService: ValueSetService,
   ) { }
 
   getById(id: string): Observable<IProfileComponent> {
@@ -65,12 +77,19 @@ export class ProfileComponentService {
     return this.http.get<IProfileComponentContext>(this.URL + pcId + '/context/' + id);
   }
 
+  getDynamicMappingInfo(pcId: string, id: string): Observable<IProfileComponentContext> {
+    return this.http.get<IProfileComponentContext>(this.URL + pcId + '/context/' + id + '/dynamicMappingInfo');
+  }
+
   saveContext(pcId: string, context: IProfileComponentContext): Observable<IProfileComponentContext> {
     return this.http.post<IProfileComponentContext>(this.URL + pcId + '/context/' + context.id + '/update', context);
   }
 
   saveRootConformanceStatements(pcId: string, id: string, csList: IPropertyConformanceStatement[]): Observable<IPropertyConformanceStatement[]> {
     return this.http.post<IPropertyConformanceStatement[]>(this.URL + pcId + '/context/' + id + '/conformance-statements', csList);
+  }
+  saveDynamicMapping(pcId: string, id: string, csList: IPropertyDynamicMappingItem[]): Observable<IPropertyDynamicMappingItem[]> {
+    return this.http.post<IPropertyDynamicMappingItem[]>(this.URL + pcId + '/context/' + id + '/dynamic-mapping', csList);
   }
 
   applyChange(change: IProfileComponentChange, context: IProfileComponentContext) {
@@ -293,5 +312,63 @@ export class ProfileComponentService {
       description: conformanceProfile.description,
       profileIdentifier: conformanceProfile.preCoordinatedMessageIdentifier ? conformanceProfile.preCoordinatedMessageIdentifier : {},
     };
+  }
+  getDynamicMappingEditorInfo(ctx: IProfileComponentContext, seg: ISegment): IDynamicMappingEditorInfo {
+        return {
+          segmentVs: this.segmentService.getValueSetBindingByLocation(seg, 2)[0],
+          pcVs: this.findValueSetIdByLocation(ctx, '2'),
+          segmentDynamicMapping: seg.dynamicMappingInfo,
+          profileComponentDynamicMapping: ctx.profileComponentItems ? this.instanceOfIPropertyDynamicMappingItem(ctx.profileComponentItems) : [],
+        };
+  }
+
+  instanceOfIPropertyDynamicMappingItem(items: any[]):  IPropertyDynamicMappingItem[] {
+    console.log(items);
+    const mappingItems: IPropertyDynamicMappingItem[] = [];
+    items.forEach(
+      (x) => {
+        if (x.itemProperties && x.itemProperties.length > 0) {
+          x.itemProperties.forEach((y) => {
+            if (y.propertyKey && y.propertyKey === PropertyType.DYNAMICMAPPINGITEM) {
+              mappingItems.push(y as IPropertyDynamicMappingItem);
+            }
+          });
+        }
+      },
+    );
+    return mappingItems;
+  }
+
+  private findPropertyBinding(ctx: IProfileComponentContext, location: string): IPropertyBinding[] {
+    if (ctx.profileComponentBindings && ctx.profileComponentBindings.contextBindings) {
+      return ctx.profileComponentBindings.contextBindings.filter((x) => (x.propertyKey === PropertyType.VALUESET) && x.target === location);
+    } else { return null; }
+  }
+
+  private findOnePropertyBinding(ctx: IProfileComponentContext, location: string): IPropertyValueSet {
+    const multiple: IPropertyBinding[] = this.findPropertyBinding(ctx, location);
+    if (multiple != null && multiple.length > 0 ) {
+      return multiple[0] as IPropertyValueSet;
+    } else {
+      return null;
+    }
+  }
+
+  private findValueSetIdByLocation(ctx: IProfileComponentContext, location: string): string {
+    const multiple: IPropertyValueSet = this.findOnePropertyBinding(ctx, location);
+    if (multiple && multiple.valuesetBindings != null && multiple.valuesetBindings.length > 0) {
+      // tslint:disable-next-line:no-collapsible-if
+      if (multiple.valuesetBindings[0].valueSets && multiple.valuesetBindings[0].valueSets.length > 0) {
+        return multiple.valuesetBindings[0].valueSets[0];
+      }
+    }
+    return null;
+  }
+  getAvailableCodes(vsId: string, segVs: string, documentRef: IDocumentRef): Observable<string[]> {
+    const final = vsId !== null ? vsId : segVs;
+    if ( final == null) { return of([]); }
+    return this.valueSetService.getById(documentRef, final).pipe(map((vs) => {
+      return [].concat(vs.codes.filter((code) => code.usage !== 'E').map((code) => code.value));
+    }));
   }
 }
