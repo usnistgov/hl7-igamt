@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PcDynamicMappingItem;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyConformanceStatement;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDynamicMapping;
 
@@ -114,10 +115,10 @@ public class ProfileComponentController extends BaseController {
   
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/dynamic-mapping", method = RequestMethod.POST, produces = {"application/json"})
     @ResponseBody
-    public List<PropertyDynamicMapping> updateDynamicMapping(
-            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody List<PropertyDynamicMapping> conformanceStatements,
+    public PropertyDynamicMapping updateDynamicMapping(
+            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody PropertyDynamicMapping dynamicMapping,
             Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
-        return profileComponentService.updateContextDynamicMapping(pcId, contextId, conformanceStatements);
+        return profileComponentService.updateContextDynamicMapping(pcId, contextId, dynamicMapping);
     }
 
   @RequestMapping(value = "/api/profile-component/{id}", method = RequestMethod.POST, produces = {

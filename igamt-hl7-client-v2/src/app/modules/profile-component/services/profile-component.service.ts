@@ -10,8 +10,7 @@ import { Type } from '../../shared/constants/type.enum';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IPath } from '../../shared/models/cs.interface';
 import {
-  IPropertyConformanceStatement,
-  IPropertyDynamicMappingItem,
+  IPropertyConformanceStatement, IPropertyDynamicMapping,
   IPropertyValueSet,
 } from '../../shared/models/profile.component';
 import {
@@ -88,8 +87,8 @@ export class ProfileComponentService {
   saveRootConformanceStatements(pcId: string, id: string, csList: IPropertyConformanceStatement[]): Observable<IPropertyConformanceStatement[]> {
     return this.http.post<IPropertyConformanceStatement[]>(this.URL + pcId + '/context/' + id + '/conformance-statements', csList);
   }
-  saveDynamicMapping(pcId: string, id: string, csList: IPropertyDynamicMappingItem[]): Observable<IPropertyDynamicMappingItem[]> {
-    return this.http.post<IPropertyDynamicMappingItem[]>(this.URL + pcId + '/context/' + id + '/dynamic-mapping', csList);
+  saveDynamicMapping(pcId: string, id: string, csList: IPropertyDynamicMapping): Observable<IPropertyDynamicMapping> {
+    return this.http.post<IPropertyDynamicMapping>(this.URL + pcId + '/context/' + id + '/dynamic-mapping', csList);
   }
 
   applyChange(change: IProfileComponentChange, context: IProfileComponentContext) {
@@ -318,27 +317,9 @@ export class ProfileComponentService {
           segmentVs: this.segmentService.getValueSetBindingByLocation(seg, 2)[0],
           pcVs: this.findValueSetIdByLocation(ctx, '2'),
           segmentDynamicMapping: seg.dynamicMappingInfo,
-          profileComponentDynamicMapping: ctx.profileComponentItems ? this.instanceOfIPropertyDynamicMappingItem(ctx.profileComponentItems) : [],
+          profileComponentDynamicMapping: ctx.profileComponentDynamicMapping ? ctx.profileComponentDynamicMapping : {items: [], override: false, propertyKey: PropertyType.DYNAMICMAPPING},
         };
   }
-
-  instanceOfIPropertyDynamicMappingItem(items: any[]):  IPropertyDynamicMappingItem[] {
-    console.log(items);
-    const mappingItems: IPropertyDynamicMappingItem[] = [];
-    items.forEach(
-      (x) => {
-        if (x.itemProperties && x.itemProperties.length > 0) {
-          x.itemProperties.forEach((y) => {
-            if (y.propertyKey && y.propertyKey === PropertyType.DYNAMICMAPPINGITEM) {
-              mappingItems.push(y as IPropertyDynamicMappingItem);
-            }
-          });
-        }
-      },
-    );
-    return mappingItems;
-  }
-
   private findPropertyBinding(ctx: IProfileComponentContext, location: string): IPropertyBinding[] {
     if (ctx.profileComponentBindings && ctx.profileComponentBindings.contextBindings) {
       return ctx.profileComponentBindings.contextBindings.filter((x) => (x.propertyKey === PropertyType.VALUESET) && x.target === location);

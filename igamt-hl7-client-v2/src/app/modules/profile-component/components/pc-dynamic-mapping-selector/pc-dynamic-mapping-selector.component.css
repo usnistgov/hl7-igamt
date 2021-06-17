@@ -14,3 +14,15 @@
   margin-top: 10px;
   margin-bottom: 10px;
 }
+.deleted {
+  color: red;
+  cursor: pointer;
+}
+
+.old-active {
+  background-color: grey;
+}
+
+.new-active {
+  background-color: #e4e4e4 !important;
+}

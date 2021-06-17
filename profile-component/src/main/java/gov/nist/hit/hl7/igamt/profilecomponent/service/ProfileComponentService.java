@@ -75,7 +75,8 @@ public interface ProfileComponentService {
 
   void applyChanges(ProfileComponent pc, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException;
 
-  List<PropertyDynamicMapping> updateContextDynamicMapping(String pcId, String contextId,
-      List<PropertyDynamicMapping> dynamicMappingItems) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
+  PropertyDynamicMapping updateContextDynamicMapping(String pcId, String contextId,
+      PropertyDynamicMapping pcDynamicMapping)
+      throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
 
 }

@@ -1,13 +1,13 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {forEach} from '@angular/router/src/utils/collection';
 import {Actions} from '@ngrx/effects';
 import {Action, Store} from '@ngrx/store';
 import * as _ from 'lodash';
 import {BehaviorSubject, combineLatest, Observable, Subscription, throwError} from 'rxjs';
-import {catchError, concatMap, flatMap, map, mergeMap, pluck, take, withLatestFrom} from 'rxjs/operators';
+import {catchError, concatMap, flatMap, map, mergeMap, pluck, take} from 'rxjs/operators';
 import {
-  selectAllDatatypes, selectContextById,
+  selectAllDatatypes,
+  selectContextById,
   selectValueSetById,
 } from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import {selectSelectedProfileComponent} from '../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
@@ -19,9 +19,13 @@ import {EditorSave} from '../../../dam-framework/store/data';
 import {Type} from '../../../shared/constants/type.enum';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {EditorID} from '../../../shared/models/editor.enum';
-import { IPropertyDynamicMappingItem } from '../../../shared/models/profile.component';
-import {ChangeType} from '../../../shared/models/save-change';
-import {IDynamicMappingInfo, IDynamicMappingNaming} from '../../../shared/models/segment.interface';
+import {IPcDynamicMappingItem, IPropertyDynamicMapping} from '../../../shared/models/profile.component';
+import {ChangeType, PropertyType} from '../../../shared/models/save-change';
+import {
+  IDynamicMappingInfo,
+  IDynamicMappingItem,
+  IDynamicMappingNaming
+} from '../../../shared/models/segment.interface';
 import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
 import {ProfileComponentService} from '../../services/profile-component.service';
 
@@ -36,12 +40,13 @@ export class SegmentContextDynamicMappingComponent extends AbstractEditorCompone
   profileComponentId$: Observable<string>;
   pcVsDisplay$: Observable<IDisplayElement>;
   segmentDynamicMapping$: Observable<IDynamicMappingInfo>;
-  profileComponentDynamicMapping$: BehaviorSubject<IPropertyDynamicMappingItem[]>;
+  profileComponentDynamicMapping$: BehaviorSubject<IPropertyDynamicMapping>;
   segmentDynamicMappingDisplay$: Observable<IDynamicMappingItemDisplay[]>;
   profileComponentDynamicMappingDisplay$: Observable<IDynamicMappingItemDisplay[]>;
-  dynamicMappinInfo$: Observable<IDynamicMappingEditorInfo>;
+  dynamicMappingInfo$: Observable<IDynamicMappingEditorInfo>;
   datatypeMap$: Observable<{ [k: string]: IDisplayElement}>;
   availableMapping$: Observable<IDynamicMappingNaming>;
+  override$: Observable<boolean>;
   s_workspace: Subscription;
 
   constructor(
@@ -73,20 +78,28 @@ export class SegmentContextDynamicMappingComponent extends AbstractEditorCompone
         return this.store.select(selectValueSetById, {id: current.data.pcVs != null ? current.data.pcVs : current.data.segmentVs });
       }),
     );
-
     this.segmentDynamicMapping$ = this.current$.pipe(
       map((current) => {
         return current.data.segmentDynamicMapping;
       }),
     );
 
+    this.override$ = this.current$.pipe(
+      map((current) => {
+        if  ( current.data.profileComponentDynamicMapping ) {
+          return current.data.profileComponentDynamicMapping.override;
+        }
+        return false;
+      }),
+    );
     this.profileComponentId$ = this.store.select(selectSelectedProfileComponent).pipe(
       pluck('id'),
     );
 
-    this.profileComponentDynamicMapping$ = new BehaviorSubject([]);
+    const init: IPropertyDynamicMapping = {items: [], override: false, propertyKey: PropertyType.DYNAMICMAPPINGITEM};
+    this.profileComponentDynamicMapping$ = new BehaviorSubject(init);
 
-    this.dynamicMappinInfo$ =  this.current$.pipe(
+    this.dynamicMappingInfo$ =  this.current$.pipe(
        map((current) => {
          return current.data;
        }),
@@ -94,7 +107,7 @@ export class SegmentContextDynamicMappingComponent extends AbstractEditorCompone
 
     this.s_workspace = this.currentSynchronized$.pipe(
       map((data: IDynamicMappingEditorInfo) => {
-        this.profileComponentDynamicMapping$.next([...data.profileComponentDynamicMapping]);
+        this.profileComponentDynamicMapping$.next(data.profileComponentDynamicMapping);
       }),
     ).subscribe();
 
@@ -105,14 +118,9 @@ export class SegmentContextDynamicMappingComponent extends AbstractEditorCompone
         } ));
       }),
     );
-    this.segmentDynamicMappingDisplay$ = combineLatest(this.availableMapping$, this.profileComponentDynamicMapping$, this.segmentDynamicMapping$, this.datatypeMap$).pipe(
-      map(([ available, pcMapping , segmentMappingItems, datatypesMap]  ) => {
-        return this.processSegmentMapping(available, pcMapping, segmentMappingItems, datatypesMap);
-      }));
-
-    this.profileComponentDynamicMappingDisplay$ = combineLatest(this.availableMapping$, this.profileComponentDynamicMapping$, this.datatypeMap$).pipe(
-      map(([ available, pcMapping, datatypesMap]  ) => {
-        return this.processPcMapping(available, pcMapping, datatypesMap);
+    this.profileComponentDynamicMappingDisplay$ = combineLatest(this.availableMapping$, this.profileComponentDynamicMapping$, this.segmentDynamicMapping$, this.datatypeMap$ , this.override$).pipe(
+      map(([ available, pcMapping, segmentMappingItems, datatypesMap, override]  ) => {
+        return this.processPcMapping(available, pcMapping && pcMapping.items ? pcMapping.items : [] , segmentMappingItems.items ? segmentMappingItems.items : [] , datatypesMap, override);
       }));
 
   }
@@ -150,41 +158,53 @@ export class SegmentContextDynamicMappingComponent extends AbstractEditorCompone
     );
   }
 
-  processSegmentMapping(available: IDynamicMappingInfo, pcMapping: IPropertyDynamicMappingItem[], segmentMappingItems: IDynamicMappingInfo, datatypesMap: {[p: string]: IDisplayElement}): IDynamicMappingItemDisplay[] {
-    const ret: IDynamicMappingItemDisplay[] = [];
-    if (segmentMappingItems && segmentMappingItems.items) {
-      segmentMappingItems.items.forEach((x) => {
-        if (pcMapping.filter((p) => p.payload.value === x.value).length > 0) {
-          ret.push({status: DynamicMappingStatus.INACTIVE, display: datatypesMap[x.datatypeId], value: x.value});
-        } else if (!available[x.value]) {
-          ret.push({status: DynamicMappingStatus.INVALID, display: datatypesMap[x.datatypeId], value: x.value});
-        } else {
-          ret.push({status: DynamicMappingStatus.ACTIVE, display: datatypesMap[x.datatypeId], value: x.value});
-        }
-      });
-    }
-    return ret;
-  }
   private group(values: string[], datatypes: IDisplayElement[]): IDynamicMappingNaming {
    return _.groupBy(datatypes.filter((x) => values.indexOf(x.fixedName) > -1), 'fixedName');
   }
 
-  private processPcMapping(available: IDynamicMappingNaming, pcMapping: IPropertyDynamicMappingItem[], datatypesMap: { [p: string]: IDisplayElement }): IDynamicMappingItemDisplay[] {
+  private processPcMapping(available: IDynamicMappingNaming, pcItems: IPcDynamicMappingItem[], segmentMappingItems: IDynamicMappingItem[], datatypesMap: { [p: string]: IDisplayElement }, override: boolean ): IDynamicMappingItemDisplay[] {
+    let ret: IDynamicMappingItemDisplay[] = [];
 
-    return pcMapping.map((x) => ({ status: DynamicMappingStatus.ACTIVE, display: datatypesMap[x.payload.datatypeId] , value: x.payload.value , changeType : x.change }));
+    if (override) {
+        ret = pcItems.map((x) => ({
+          status: DynamicMappingStatus.ACTIVE,
+          display: datatypesMap[x.flavorId],
+          value: x.datatypeName,
+          changeType: x.change,
+        }));
+    } else {
+        segmentMappingItems.forEach((x) => {
+          const pcItem: IPcDynamicMappingItem =  pcItems.find((p) => p.datatypeName === x.value );
+          if (pcItem != null ) {
+          ret.push({
+            status: DynamicMappingStatus.ACTIVE,
+            display: datatypesMap[pcItem.flavorId],
+            value: pcItem.datatypeName,
+            changeType: pcItem.change,
+          });
+          } else {
+            ret.push({
+              status: DynamicMappingStatus.ACTIVE,
+              display: datatypesMap[x.datatypeId],
+              value: x.value,
+              changeType: null,
+            });
+          }
+        });
+    }
+    return ret;
   }
 
-  update($event: IPropertyDynamicMappingItem[]) {
+  update($event: IPcDynamicMappingItem[]) {
     this.registerChange($event);
   }
-
-  registerChange(list: IPropertyDynamicMappingItem[]) {
-    this.dynamicMappinInfo$.pipe(
+  registerChange(list: IPcDynamicMappingItem[]) {
+    this.dynamicMappingInfo$.pipe(
       take(1),
       map(( data: IDynamicMappingEditorInfo) => {
-        this.profileComponentDynamicMapping$.next(list);
+        this.profileComponentDynamicMapping$.next({...data.profileComponentDynamicMapping , items: list});
         this.editorChange({
-        ...data, profileComponentDynamicMapping: [...list],
+        ...data, profileComponentDynamicMapping: {...data.profileComponentDynamicMapping , items: list},
         }, true);
       }),
     ).subscribe();
@@ -205,7 +225,7 @@ export interface IDynamicMappingEditorInfo {
   segmentVs: string;
   pcVs: string;
   segmentDynamicMapping: IDynamicMappingInfo;
-  profileComponentDynamicMapping?: IPropertyDynamicMappingItem[];
+  profileComponentDynamicMapping?: IPropertyDynamicMapping;
 }
 
 export enum DynamicMappingStatus {

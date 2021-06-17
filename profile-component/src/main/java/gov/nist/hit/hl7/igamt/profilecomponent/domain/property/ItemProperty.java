@@ -34,7 +34,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
         @JsonSubTypes.Type(value = PropertyConformanceStatement.class, name = "STATEMENT"),
         @JsonSubTypes.Type(value = PropertyConstantValue.class, name = "CONSTANTVALUE"),
         @JsonSubTypes.Type(value = PropertyDatatype.class, name = "DATATYPE"),
-        @JsonSubTypes.Type(value = PropertyDynamicMapping.class, name = "DYNAMICMAPPINGITEM"),
+        @JsonSubTypes.Type(value = PropertyDynamicMapping.class, name = "DYNAMICMAPPING"),
         @JsonSubTypes.Type(value = PropertyDefinitionText.class, name = "DEFINITIONTEXT"),
         @JsonSubTypes.Type(value = PropertyLengthMax.class, name = "LENGTHMAX"),
         @JsonSubTypes.Type(value = PropertyLengthMin.class, name = "LENGTHMIN"),

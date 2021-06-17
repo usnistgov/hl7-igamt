@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyBinding;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDynamicMapping;
 
 /**
  * A profile component is an objects that contains all the changes between the source (a message or
@@ -32,6 +33,7 @@ public class ProfileComponentContext {
   private int position;
   private Set<ProfileComponentItem> profileComponentItems;
   private ProfileComponentBinding profileComponentBindings;
+  private PropertyDynamicMapping profileComponentDynamicMapping;
 
   public ProfileComponentContext(String id, Type level, String sourceId, String structure,
       int position, Set<ProfileComponentItem> profileComponentItems, ProfileComponentBinding profileComponentBindings) {
@@ -47,7 +49,6 @@ public class ProfileComponentContext {
 
   public ProfileComponentContext() {
     super();
-    // TODO Auto-generated constructor stub
   }
 
   public enum Level {
@@ -141,6 +142,14 @@ public class ProfileComponentContext {
     } else if (!sourceId.equals(other.sourceId))
       return false;
     return true;
+  }
+
+  public PropertyDynamicMapping getProfileComponentDynamicMapping() {
+    return profileComponentDynamicMapping;
+  }
+
+  public void setProfileComponentDynamicMapping(PropertyDynamicMapping profileComponentDynamicMapping) {
+    this.profileComponentDynamicMapping = profileComponentDynamicMapping;
   }
 
 }

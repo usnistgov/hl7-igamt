@@ -1303,8 +1303,8 @@ public class SegmentServiceImpl implements SegmentService {
     return ret;
   }
 
-
-  private String findObx2VsId(Segment s) {
+  @Override
+  public String findObx2VsId(Segment s) {
     // TODO Auto-generated method stub
     if(s.getBinding() != null && s.getBinding().getChildren() != null) {
       for(StructureElementBinding child : s.getBinding().getChildren()) {
@@ -1314,7 +1314,6 @@ public class SegmentServiceImpl implements SegmentService {
             if(vs.isPresent() && vs.get().getValueSets() !=null && !vs.get().getValueSets().isEmpty()) {
               return vs.get().getValueSets().get(0);
             }
-
           }
         }
       }

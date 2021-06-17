@@ -7,16 +7,14 @@
 <div class="header-title">
   <strong>Profile Component Dynamic mapping</strong>
 </div>
-
 <table class="table table-bordered">
   <tr>
     <td>
-      <strong>Value Set</strong>
+      <strong>OBX-2 Value Set</strong>
     </td>
     <td>
       <app-display-section *ngIf="pcVs" [element]="pcVs" [hideDescription]="true"></app-display-section>
     </td>
-
   </tr>
 </table>
 
@@ -24,7 +22,7 @@
   <span> No Dynamic Mapping defined </span>
 </div>
 
- <table class="table table-striped table-bordered table-sm" *ngIf="profileComponentDynamicMapping && profileComponentDynamicMapping.length > 0">
+ <table class="table table-bordered table-sm" *ngIf="profileComponentDynamicMapping && profileComponentDynamicMapping.length > 0">
     <tr>
       <th style="width: 100px;"> Action </th>
       <th style="width: 100px;">Reference Value</th>
@@ -32,18 +30,21 @@
       <th *ngIf="!viewOnly" style="width: 190px;"></th>
     </tr>
     <tr *ngFor="let dyn of profileComponentDynamicMapping; let i = index;" [ngClass]="{
-      'table-success': dyn.changeType === 'ADD',
-      'table-danger': dyn.changeType === 'DELETE'}">
+      'old-active' : !dyn.changeType
+      }">
       <td>
         <span class="badge badge-success" *ngIf="dyn.changeType === 'ADD'">{{ dyn.changeType }}</span>
         <span class="badge badge-danger" *ngIf="dyn.changeType === 'DELETE'">{{ dyn.changeType }}</span>
+        <span class="badge badge-warning" *ngIf="dyn.changeType === 'UPDATE'">{{ dyn.changeType }}</span>
       </td>
       <td>
         {{dyn?.value}}
       </td>
-
       <td #anchor>
-        <p-dropdown [(ngModel)]="dyn.display"  [appendTo]="anchor" [optionLabel]="'fixedName'" *ngIf="!viewOnly && dyn.changeType !=='DELETE' && dyn.status !=='INVALID'"
+
+        <div style="display: flex; flex-direction: row; justify-content: flex-start">
+        <div style="min-width: 200px;">
+        <p-dropdown [(ngModel)]="dyn.display"  [appendTo]="anchor" [optionLabel]="'fixedName'" *ngIf="!viewOnly && dyn.changeType !=='DELETE' && dyn.status !=='INVALID' && edit[dyn.value]"
                     [options]="available[dyn.value]" [style]="{'minWidth':'100%'}"
                     [placeholder]="'Default HL7 '" (onChange)="modelChange($event)">
           <ng-template let-item pTemplate="selectedItem">
@@ -53,73 +54,33 @@
             <app-display-section [element]="item.value" [hideDescription]="true"></app-display-section>
           </ng-template>
         </p-dropdown>
-        <app-display-section  *ngIf="viewOnly || dyn.changeType ==='DELETE' || dyn.status ==='INVALID'" [element]="dyn.display" [hideDescription]="true"></app-display-section>
+          <app-display-section  *ngIf="viewOnly || dyn.changeType ==='DELETE' || dyn.status ==='INVALID' || !edit[dyn.value]" [element]="dyn.display" [hideDescription]="true"></app-display-section>
+        </div>
+          <div>
+          <button class="btn btn-sm btn-primary" style="margin-left: 5px;" (click)="editRow(dyn)" *ngIf="(!dyn.changeType || dyn.changeType === 'UPDATE' || dyn.changeType === 'ADD' )&& !edit[dyn.value]">
+            <i class="fa fa-pencil"></i>
+          </button>
+            <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="hideDropDown(dyn)" *ngIf="edit[dyn.value]">
+              <i class="fa fa-remove"></i>
+            </button>
+        </div>
+        </div>
+
       </td>
       <td style="width: 190px;">
-        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteItem(dyn)">
-          <i class="fa fa-trash"></i> Delete
+        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteItem(dyn)" *ngIf="!dyn.changeType">
+          <i class="fa fa-minus"></i> Exclude
+        </button>
+        <button class="btn btn-sm btn-success" style="margin-left: 5px;" (click)="restoreItem(dyn)" *ngIf="dyn.changeType === 'DELETE'">
+          <i class="fa fa-refresh"></i> Restore
+        </button>
+        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="restoreItem(dyn)" *ngIf="dyn.changeType === 'ADD'">
+          <i class="fa fa-remove"></i> Delete
+        </button>
+        <button class="btn btn-sm btn-info" style="margin-left: 5px;" (click)="restoreItem(dyn)" *ngIf="dyn.changeType === 'UPDATE'">
+          <i class="fa fa-remove"></i> Reset
         </button>
       </td>
     </tr>
   </table>
 
-<div class="header-title" (click)="toggle()">
-  <button class="btn btn-sm btn-primary">
-    <i *ngIf="!showOrigin"  class="fa fa-eye-slash"></i>
-    <i *ngIf="showOrigin"  class="fa fa-eye"></i>
-  </button>
-  <strong style="margin-left: 5px;">Resource Dynamic Mapping</strong>
-</div>
-
-<!--<div *ngIf="!segmentDynamicMapping || !segmentDynamicMapping.length || !available" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">-->
-<!--  <span> No Dynamic Mapping defined In the segment </span>-->
-<!--</div>-->
-
-<!--<div *ngIf="segmentDynamicMapping&&segmentDynamicMapping.length && available && showOrigin">-->
-
-<!--  <table class="table table-bordered">-->
-<!--    <tr>-->
-<!--      <td>-->
-<!--        <strong>Value Set</strong>-->
-<!--      </td>-->
-<!--      <td>-->
-<!--        <app-display-section *ngIf="segVs" [element]="segVs" [hideDescription]="true"></app-display-section>-->
-<!--      </td>-->
-<!--    </tr>-->
-<!--  </table>-->
-
-<!--  <table class="table table-striped table-bordered table-sm" *ngIf="segmentDynamicMapping && segmentDynamicMapping?.length > 0">-->
-<!--    <tr>-->
-<!--      <th style="width: 100px;">Reference Value</th>-->
-<!--      <th>User Mapping</th>-->
-<!--      <th style="width: 100px;"> STATUS </th>-->
-<!--      <th *ngIf="!viewOnly" style="width: 190px;">Actions</th>-->
-<!--    </tr>-->
-<!--    <tr *ngFor="let dyn of segmentDynamicMapping; let i = index;">-->
-<!--      <td>-->
-<!--        {{dyn?.value}}-->
-<!--      </td>-->
-<!--      <td>-->
-<!--        <div *ngIf="dyn.display">-->
-<!--          <app-display-section [element]="dyn.display"></app-display-section>-->
-<!--        </div>-->
-<!--      </td>-->
-<!--      <td [ngClass]="{'table-success': dyn.status === 'ADD',-->
-<!--      'table-danger': dyn.status === 'INACTIVE',-->
-<!--      'table-warning': dyn.status === 'INVALID'-->
-<!--      }">-->
-<!--        <span class="badge" ></span>-->
-<!--        {{dyn.status}}-->
-<!--      </td>-->
-<!--      <td style="width: 190px;">-->
-<!--        <button class="btn btn-sm btn-danger" *ngIf="dyn.status ==='ACTIVE'" style="margin-left: 5px;" (click)="deleteFromResource(dyn)">-->
-<!--          <i class="fa fa-trash"></i> Exclude-->
-<!--        </button>-->
-
-<!--        <button class="btn btn-sm btn-danger" *ngIf="dyn.status ==='INVALID'" style="margin-left: 5px;" (click)="deleteFromResource(dyn)">-->
-<!--          <i class="fa fa-trash"></i> Remove-->
-<!--        </button>-->
-<!--      </td>-->
-<!--    </tr>-->
-<!--  </table>-->
-<!--</div>-->
