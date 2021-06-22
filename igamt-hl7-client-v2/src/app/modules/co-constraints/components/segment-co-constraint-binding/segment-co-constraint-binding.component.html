@@ -6,33 +6,33 @@
   }"
 >
 
-  <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
-    <div>
+  <div style="display: flex; flex-direction: row; align-items: flex-start; justify-content: space-between; margin-bottom: 10px;">
+    <div style="display: flex; align-items: flex-start; justify-content: flex-end;">
       <div style="display: flex; align-items: center; justify-content: flex-start;">
-        <strong style="margin-right: 10px !important;"> Co-Constraint Tables for Segment </strong>
         <app-entity-bagde [type]="'SEGMENT'" ></app-entity-bagde>
         <h6 class="title-text" style="margin-left: 10px !important;" > {{ binding.segment.name }} </h6>
         <span *ngIf="delta && binding.delta" style="margin-left: 20px;"> ( {{ binding.delta }} )</span>
       </div>
       <div style="display: flex; align-items: center; justify-content: flex-start;">
-        <strong style="margin-right: 10px !important;"> Flavor </strong>
-        <ng-container *ngIf="display$ | async as display">
-          <app-display-section [element]="display" [hideDescription]="true" ></app-display-section>
-        </ng-container>
+        (
+          <ng-container *ngIf="display$ | async as display">
+            <app-display-section [element]="display" [hideDescription]="true" ></app-display-section>
+          </ng-container>
+        )
       </div>
     </div>
-    <div>
-      <button *ngIf="!viewOnly" class="btn btn-sm btn-primary" style="margin-right: 10px;" (click)="createTable(binding, segment)" >
+    <div style="display: flex; align-items: flex-start; justify-content: flex-end;">
+      <button *ngIf="!viewOnly" class="btn btn-sm btn-primary" style="margin-right: 5px;" (click)="createTable(binding, segment)" >
         <i class="fa fa-plus"></i>
-        Co-Constraint Table
+        Add Table
       </button>
       <button *ngIf="!viewOnly" class="btn btn-sm btn-danger" (click)="triggerRemove()" >
         <i class="fa fa-trash"></i>
         Delete Segment
       </button>
-       <button *ngIf="!viewOnly" class="btn btn-sm btn-success" style="margin-left: 10px;" (click)="openImportDialog()" >
+       <button *ngIf="!viewOnly" class="btn btn-sm btn-success" style="margin-left: 5px;" (click)="openImportDialog()" >
         <i class="fa fa-download"></i>
-        Import As Table Excel
+        Import Table As Excel
       </button>
     </div>
   </div>
@@ -62,11 +62,11 @@
       <div>
         <button *ngIf="!viewOnly" class="btn btn-sm entity-badge-co-constraint-group margin-right" style="color: white;" (click)="importCoConstraintGroup(binding, i)" >
           <i class="fa fa-arrow-down"></i>
-          Import Co-Constraint Group
+          Import Group
         </button>
         <button *ngIf="!viewOnly" class="btn btn-sm btn-primary margin-right" (click)="addCoConstraintGroup(i)">
           <i class="fa fa-plus"></i>
-          Co-Constraint Group
+          Add Group
         </button>
         <button *ngIf="!viewOnly" class="btn btn-sm btn-danger margin-right" (click)="deleteTable(binding, i)" >
           <i class="fa fa-trash"></i>
@@ -74,7 +74,7 @@
         </button>
         <button class="btn btn-sm btn-success margin-right" (click)="exportAsExcel(table.value)" *ngIf="!delta" >
           <i class="fa fa-download"></i>
-          Export As Excel
+          Export From Excel
         </button>
       </div>
     </div>

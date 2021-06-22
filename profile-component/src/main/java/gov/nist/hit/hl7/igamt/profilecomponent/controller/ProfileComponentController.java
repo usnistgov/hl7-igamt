@@ -15,6 +15,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCoConstraintBindings;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyConformanceStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +110,22 @@ public class ProfileComponentController extends BaseController {
             @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody List<PropertyConformanceStatement> conformanceStatements,
             Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
         return profileComponentService.updateContextConformanceStatements(pcId, contextId, conformanceStatements);
+    }
+
+    @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/co-constraints", method = RequestMethod.POST, produces = {"application/json"})
+    @ResponseBody
+    public ProfileComponentContext updateContextCoConstraints(
+            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody PropertyCoConstraintBindings coConstraintBindings,
+            Authentication authentication) throws Exception  {
+        return profileComponentService.updateContextCoConstraintBindings(pcId, contextId, coConstraintBindings);
+    }
+
+    @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/co-constraints", method = RequestMethod.DELETE, produces = {"application/json"})
+    @ResponseBody
+    public ProfileComponentContext removeContextCoConstraints(
+            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId,
+            Authentication authentication) throws Exception  {
+        return profileComponentService.updateContextCoConstraintBindings(pcId, contextId, null);
     }
   
 

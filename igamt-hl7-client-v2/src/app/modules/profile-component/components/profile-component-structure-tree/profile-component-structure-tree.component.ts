@@ -15,7 +15,7 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IItemProperty, IProfileComponentBinding, IProfileComponentItem, IPropertyBinding } from '../../../shared/models/profile.component';
+import { IItemProperty, IProfileComponentBinding, IProfileComponentItem } from '../../../shared/models/profile.component';
 import { IChange, PropertyType } from '../../../shared/models/save-change';
 import { AResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
@@ -23,7 +23,7 @@ import { ProfileComponentRefChange } from '../../services/profile-component-ref-
 import { ProfileComponentStructureTreeItemMap } from '../../services/profile-component-structure-tree-item-map.object';
 
 export interface IItemLocation {
-  path: string,
+  path: string;
   parent: string;
   target: string;
 }

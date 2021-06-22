@@ -6,7 +6,7 @@ import { IProfileComponentContext, IProfileComponentItem } from '../../shared/mo
 import { IResource } from '../../shared/models/resource.interface';
 import { PropertyType } from '../../shared/models/save-change';
 import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
-import { IProfileComponentChange, IItemLocation } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
+import { IItemLocation, IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
 import { ProfileComponentRefChange } from './profile-component-ref-change.object';
 import { IHL7v2TreeProfileComponentNode, ProfileComponentService } from './profile-component.service';
 

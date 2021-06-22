@@ -15,12 +15,12 @@
     </ng-template>
     <ng-template pTemplate="header" let-columns>
       <tr>
-        <th *ngIf="!treeView" style="width: 80px;" ttReorderableColumn ttResizableColumn>
+        <th *ngIf="!treeView" style="width: 120px;" ttReorderableColumn ttResizableColumn>
           Path
         </th>
         <ng-container *ngFor="let col of columns" [ngSwitch]="col.field">
 
-          <th *ngSwitchCase="columnTypes.NAME" style="width: 380px;" ttReorderableColumn ttResizableColumn>
+          <th *ngSwitchCase="columnTypes.NAME" style="width: 400px;" ttReorderableColumn ttResizableColumn>
             {{col.header}}
           </th>
           <th *ngSwitchCase="columnTypes.USAGE" style="width: 330px;" ttReorderableColumn ttResizableColumn>
