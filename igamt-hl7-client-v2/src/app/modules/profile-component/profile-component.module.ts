@@ -8,6 +8,7 @@ import { SharedModule } from '../shared/shared.module';
 import { AddProfileComponentItemComponent } from './components/add-profile-component-item/add-profile-component-item.component';
 import { MessageConformanceStatementEditorComponent } from './components/message-conformance-statement-editor/message-conformance-statement-editor.component';
 import { MessageContextStructureEditorComponent } from './components/message-context-structure-editor/message-context-structure-editor.component';
+import { PcDynamicMappingSelectorComponent } from './components/pc-dynamic-mapping-selector/pc-dynamic-mapping-selector.component';
 import { ProfileComponentMetadataComponent } from './components/profile-component-metadata/profile-component-metadata.component';
 import { PpCardinalityComponent } from './components/profile-component-structure-tree/columns/pp-cardinality/pp-cardinality.component';
 import { PpConfLengthComponent } from './components/profile-component-structure-tree/columns/pp-conf-length/pp-conf-length.component';
@@ -23,7 +24,6 @@ import { SegmentConformanceStatementEditorComponent } from './components/segment
 import { SegmentContextDynamicMappingComponent } from './components/segment-context-dynamic-mapping/segment-context-dynamic-mapping.component';
 import { SegmentContextStructureEditorComponent } from './components/segment-context-structure-editor/segment-context-structure-editor.component';
 import { ProfileComponentRoutingModule } from './profile-component-routing.module';
-import { PcDynamicMappingSelectorComponent } from './components/pc-dynamic-mapping-selector/pc-dynamic-mapping-selector.component';
 
 @NgModule({
   declarations: [

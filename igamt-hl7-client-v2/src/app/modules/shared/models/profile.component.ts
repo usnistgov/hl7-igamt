@@ -140,3 +140,7 @@ export interface IValuedPath {
   child?: IValuedPath;
   values?: IItemProperty[];
 }
+export enum DynamicMappingStatus {
+  ACTIVE = 'ACTIVE',
+  INVALID = 'INVALID',
+}

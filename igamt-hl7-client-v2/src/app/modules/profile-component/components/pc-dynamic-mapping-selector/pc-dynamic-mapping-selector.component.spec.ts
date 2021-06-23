@@ -8,7 +8,7 @@ describe('PcDynamicMappingSelectorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PcDynamicMappingSelectorComponent ]
+      declarations: [ PcDynamicMappingSelectorComponent ],
     })
     .compileComponents();
   }));

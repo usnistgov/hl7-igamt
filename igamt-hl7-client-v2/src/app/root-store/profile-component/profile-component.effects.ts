@@ -28,7 +28,7 @@ import * as fromIgamtSelectedSelectors from '../dam-igamt/igamt.selected-resourc
 import {
   OpenProfileComponentMessageConformanceStatementEditor,
   OpenProfileComponentSegmentConformanceStatementEditor,
-  OpenSegmentContextDynamicMappingEditor
+  OpenSegmentContextDynamicMappingEditor,
 } from './profile-component.actions';
 import {
   LoadContext,

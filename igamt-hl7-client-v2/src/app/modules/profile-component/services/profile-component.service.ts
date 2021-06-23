@@ -26,6 +26,7 @@ import {
 import { IResource } from '../../shared/models/resource.interface';
 import { IChange, PropertyType } from '../../shared/models/save-change';
 import {IDynamicMappingInfo, ISegment} from '../../shared/models/segment.interface';
+import {DisplayService} from '../../shared/services/display.service';
 import { ElementNamingService, IPathInfo } from '../../shared/services/element-naming.service';
 import { Hl7V2TreeService } from '../../shared/services/hl7-v2-tree.service';
 import { PathService } from '../../shared/services/path.service';
@@ -66,6 +67,7 @@ export class ProfileComponentService {
     private elementNamingService: ElementNamingService,
     private segmentService: SegmentService,
     private valueSetService: ValueSetService,
+    private display: DisplayService,
   ) { }
 
   getById(id: string): Observable<IProfileComponent> {
@@ -317,6 +319,7 @@ export class ProfileComponentService {
           segmentVs: this.segmentService.getValueSetBindingByLocation(seg, 2)[0],
           pcVs: this.findValueSetIdByLocation(ctx, '2'),
           segmentDynamicMapping: seg.dynamicMappingInfo,
+          segmentId: seg.id,
           profileComponentDynamicMapping: ctx.profileComponentDynamicMapping ? ctx.profileComponentDynamicMapping : {items: [], override: false, propertyKey: PropertyType.DYNAMICMAPPING},
         };
   }

@@ -21,6 +21,12 @@
 <div *ngIf="!profileComponentDynamicMapping || !profileComponentDynamicMapping.length || !available" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
   <span> No Dynamic Mapping defined </span>
 </div>
+<div  class="alert alert-warning" style="display: flex; align-items: center; justify-content: center;" *ngIf="containsInvalid">
+  <span> Some values are Invalid </span>
+  <button class="btn btn-sm btn-outline-primary" style="margin-left: 10px;" (click)="clean()">
+    <i class="fa fa-trash"></i> Clean
+  </button>
+</div>
 
  <table class="table table-bordered table-sm" *ngIf="profileComponentDynamicMapping && profileComponentDynamicMapping.length > 0">
     <tr>
@@ -30,7 +36,8 @@
       <th *ngIf="!viewOnly" style="width: 190px;"></th>
     </tr>
     <tr *ngFor="let dyn of profileComponentDynamicMapping; let i = index;" [ngClass]="{
-      'old-active' : !dyn.changeType
+      'old-active' : !dyn.changeType,
+      'value-deprecated' : dyn.status === 'INVALID'
       }">
       <td>
         <span class="badge badge-success" *ngIf="dyn.changeType === 'ADD'">{{ dyn.changeType }}</span>
@@ -57,29 +64,34 @@
           <app-display-section  *ngIf="viewOnly || dyn.changeType ==='DELETE' || dyn.status ==='INVALID' || !edit[dyn.value]" [element]="dyn.display" [hideDescription]="true"></app-display-section>
         </div>
           <div>
-          <button class="btn btn-sm btn-primary" style="margin-left: 5px;" (click)="editRow(dyn)" *ngIf="(!dyn.changeType || dyn.changeType === 'UPDATE' || dyn.changeType === 'ADD' )&& !edit[dyn.value]">
+          <button class="btn btn-sm btn-primary" style="margin-left: 5px;" (click)="editRow(dyn)" *ngIf="(!dyn.changeType || dyn.changeType === 'UPDATE' || dyn.changeType === 'ADD' )&& !edit[dyn.value] && available[dyn.value] &&  dyn.status !=='INVALID'">
             <i class="fa fa-pencil"></i>
           </button>
             <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="hideDropDown(dyn)" *ngIf="edit[dyn.value]">
               <i class="fa fa-remove"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="restoreItem(dyn)" *ngIf="!edit[dyn.value] && dyn.changeType === 'UPDATE' && dyn.status !=='INVALID'">
+              <i class="fa fa-trash"></i>
             </button>
         </div>
         </div>
 
       </td>
       <td style="width: 190px;">
-        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteItem(dyn)" *ngIf="!dyn.changeType">
+        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteItem(dyn)" *ngIf="!dyn.changeType && dyn.status !=='INVALID'">
           <i class="fa fa-minus"></i> Exclude
         </button>
-        <button class="btn btn-sm btn-success" style="margin-left: 5px;" (click)="restoreItem(dyn)" *ngIf="dyn.changeType === 'DELETE'">
+        <button class="btn btn-sm btn-success" style="margin-left: 5px;" (click)="restoreItem(dyn)" *ngIf="dyn.changeType === 'DELETE' && dyn.status !=='INVALID'">
           <i class="fa fa-refresh"></i> Restore
         </button>
-        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="restoreItem(dyn)" *ngIf="dyn.changeType === 'ADD'">
+        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="remove(dyn)" *ngIf="dyn.changeType === 'ADD' && dyn.status !=='INVALID'">
           <i class="fa fa-remove"></i> Delete
         </button>
-        <button class="btn btn-sm btn-info" style="margin-left: 5px;" (click)="restoreItem(dyn)" *ngIf="dyn.changeType === 'UPDATE'">
-          <i class="fa fa-remove"></i> Reset
+        <button class="btn btn-sm btn-outline-primary" style="margin-left: 5px;" (click)="cleanOne(dyn)" *ngIf="dyn.status ==='INVALID' && !segmentMustDelete(dyn)" >
+          <i class="fa fa-remove"></i> Clean
         </button>
+        <span style="color: red" *ngIf="segmentMustDelete(dyn)"> <i class="fa fa-warning"> Must remove from segment <span *ngIf="segmentDisplay"> {{segmentDisplay.fixedName + '_' +segmentDisplay.variableName| json}} </span>
+        </i></span>
       </td>
     </tr>
   </table>

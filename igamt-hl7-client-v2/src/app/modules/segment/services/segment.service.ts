@@ -14,7 +14,7 @@ import { ValueSetService } from '../../value-set/service/value-set.service';
 
 @Injectable(
   {  providedIn: 'root',
-  }
+  },
 )
 export class SegmentService {
 

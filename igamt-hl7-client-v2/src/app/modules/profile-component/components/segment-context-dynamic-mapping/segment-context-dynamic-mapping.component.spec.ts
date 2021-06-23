@@ -8,7 +8,7 @@ describe('SegmentContextDynamicMappingComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SegmentContextDynamicMappingComponent ]
+      declarations: [ SegmentContextDynamicMappingComponent ],
     })
     .compileComponents();
   }));

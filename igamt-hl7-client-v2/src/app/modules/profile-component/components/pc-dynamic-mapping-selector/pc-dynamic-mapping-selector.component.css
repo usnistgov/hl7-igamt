@@ -20,9 +20,10 @@
 }
 
 .old-active {
-  background-color: grey;
+  background-color: #e4e4e4;
 }
-
-.new-active {
-  background-color: #e4e4e4 !important;
+.value-deprecated{
+  background-color: #fff3cd;
+  text-decoration: line-through !important;
+  font-style: italic !important;
 }

@@ -11,11 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.service.impl;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.io.IOException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -31,7 +27,6 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -244,29 +239,34 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
   public ProfileComponentContext updateContext(String pcId, String contextId, ProfileComponentContext updated) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
     ProfileComponent pc = this.findById(pcId);
     for(ProfileComponentContext ctx:  pc.getChildren()) {
-      ctx.setProfileComponentItems(updated.getProfileComponentItems());
       if(ctx.getId().equals(contextId)) {
-        if(ctx.getLevel().equals(Type.SEGMENT)) {
-          Segment s = this.segmentService.findById(ctx.getSourceId());
-          if(s != null && s.getName().equals("OBX")) {
-            if (this.hasObx2Change(updated.getProfileComponentBindings())) {
-              checkAndUpdateDynamicMapping(ctx, updated, s);
-            } else {
-              ctx.setProfileComponentDynamicMapping(updated.getProfileComponentDynamicMapping()); 
-            }
-          }
-        }
+        updateDynamicMapping(ctx, updated);  
+        ctx.setProfileComponentItems(updated.getProfileComponentItems());
         ctx.setProfileComponentBindings(updated.getProfileComponentBindings());
         break;
       }
     }
     this.save(pc);
-
     return findContextById(pcId, contextId);
 
   }
 
-
+  void updateDynamicMapping(ProfileComponentContext oldContext, ProfileComponentContext newContext){
+    if(oldContext.getLevel().equals(Type.SEGMENT)) {
+      Segment s = this.segmentService.findById(oldContext.getSourceId());
+      if(s != null && s.getName().equals("OBX")) {
+        if (this.hasObx2Change(newContext.getProfileComponentBindings())) {
+          checkAndUpdateDynamicMapping(oldContext, newContext, s);
+        } else if(oldContext.getProfileComponentDynamicMapping() != null && oldContext.getProfileComponentDynamicMapping().isOverride()){
+            oldContext.setProfileComponentDynamicMapping(null);
+        } else {
+          oldContext.setProfileComponentDynamicMapping(newContext.getProfileComponentDynamicMapping());
+        }
+      }
+    }  
+  }
+  
+  
   /**
    * @param profileComponentBindings
    * @return
@@ -286,6 +286,8 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     String newVs = this.getObx2ValueSet(updated, s);
     if(newVs != oldVs) {
       ctx.setProfileComponentDynamicMapping(this.restoreDyanamicMapping(newVs));
+    }else {
+      ctx.setProfileComponentDynamicMapping(updated.getProfileComponentDynamicMapping());
     }
   }
 
@@ -587,11 +589,15 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
   @Override
   public PropertyDynamicMapping updateContextDynamicMapping(String pcId, String contextId,
       PropertyDynamicMapping pcDynamicMapping) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
-    ProfileComponentContext pcContext = this.findContextById(pcId, contextId);
-    pcContext.setProfileComponentDynamicMapping(pcDynamicMapping);
-
-    this.updateContext(pcId, contextId, pcContext);
-    return pcContext.getProfileComponentDynamicMapping();
+    ProfileComponent pc = this.findById(pcId);
+    for(ProfileComponentContext ctx:  pc.getChildren()) {
+      if(ctx.getId().equals(contextId)) {
+        ctx.setProfileComponentDynamicMapping(pcDynamicMapping);
+        break;
+      }
+    }
+    this.save(pc);
+    return findContextById(pcId, contextId).getProfileComponentDynamicMapping();
 
   }
 

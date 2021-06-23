@@ -22,10 +22,14 @@ public class FlavorCreationDirective extends ElementChangeDirective {
 		for(ProfileComponentItem item : ctx.getProfileComponentItems()) {
 			this.compute(this.pathToStack(item.getPath()), pc.getId(), children, item);
 		}
-
+		
+	    // Flavor Dynamic Mapping
+        if(ctx.getProfileComponentDynamicMapping() != null) {
+            this.getItems().add(ctx.getProfileComponentDynamicMapping());
+        }
+        
 		// Spread Bindings
 		if(ctx.getProfileComponentBindings() != null) {
-
 			// Flavor level bindings
 			if(ctx.getProfileComponentBindings().getContextBindings() != null) {
 				this.getItems().addAll(ctx.getProfileComponentBindings().getContextBindings());
