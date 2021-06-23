@@ -2,6 +2,7 @@ import { LengthType } from '../constants/length-type.enum';
 import { Type } from '../constants/type.enum';
 import { Usage } from '../constants/usage.enum';
 import { InternalSingleCode, IValuesetBinding } from './binding.interface';
+import { ICoConstraintBindingContext } from './co-constraint.interface';
 import { IComment } from './comment.interface';
 import { IMessageProfileIdentifier } from './conformance-profile.interface';
 import { IConformanceStatement } from './cs.interface';
@@ -20,6 +21,7 @@ export interface IProfileComponentContext {
   sourceId: string;
   structure: string;
   position: number;
+  profileComponentCoConstraints?: IPropertyCoConstraintBindings;
   profileComponentBindings: IProfileComponentBinding;
   profileComponentItems: IProfileComponentItem[];
   profileComponentDynamicMapping?: IPropertyDynamicMapping;
@@ -134,6 +136,11 @@ export interface  IPcDynamicMappingItem {
   change: ChangeType;
   datatypeName: string;
   flavorId: string;
+}
+
+export interface IPropertyCoConstraintBindings extends IItemProperty {
+  bindings: ICoConstraintBindingContext[];
+  propertyKey: PropertyType.COCONSTRAINTBINDINGS;
 }
 export interface IValuedPath {
   elementId: string;

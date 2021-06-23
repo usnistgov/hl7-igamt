@@ -106,7 +106,7 @@ public class InMemoryDomainExtensionServiceImpl implements InMemoryDomainExtensi
 	
 	@Override
 	public void clear(String token) {
-		if(this.tokenRegistry.containsKey(token)) {
+		if(!Strings.isNullOrEmpty(token) && this.tokenRegistry.containsKey(token)) {
 			for(String id : this.tokenRegistry.get(token)) {
 				this.resources.remove(id);
 			}

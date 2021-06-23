@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import {CardModule} from 'primeng/card';
 import {TabViewModule} from 'primeng/tabview';
 import { SharedModule } from '../shared/shared.module';
+import { CompositeProfileExportConfigurationComponent } from './components/composite-profile-export-configuration/composite-profile-export-configuration.component';
 import { ConfigurationTocComponent } from './components/configuration-toc/configuration-toc.component';
 import { ConformanceProfileExportConfigurationComponent } from './components/conformance-profile-export-configuration/conformance-profile-export-configuration.component';
 import { DatatypeExportConfigurationComponent } from './components/datatype-export-configuration/datatype-export-configuration.component';
@@ -32,6 +33,7 @@ import { ExportConfigurationService } from './services/export-configuration.serv
     DatatypeLibraryExportConfigurationComponent,
     FontExportConfigurationComponent,
     IgGeneralDisplayConfigurationComponent,
+    CompositeProfileExportConfigurationComponent,
   ],
   imports: [
     CommonModule,
@@ -45,6 +47,7 @@ import { ExportConfigurationService } from './services/export-configuration.serv
     DatatypeExportConfigurationComponent,
     ValueSetExportConfigurationComponent,
     ConformanceProfileExportConfigurationComponent,
+    CompositeProfileExportConfigurationComponent,
     ExportConfigurationDialogComponent,
     DefaultConfigurationComponent,
     ExportDialogComponent,

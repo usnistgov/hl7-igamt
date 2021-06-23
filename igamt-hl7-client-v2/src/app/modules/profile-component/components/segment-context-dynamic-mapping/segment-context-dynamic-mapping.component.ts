@@ -25,7 +25,7 @@ import {
   DynamicMappingStatus,
   IPcDynamicMappingItem,
   IProfileComponent,
-  IPropertyDynamicMapping
+  IPropertyDynamicMapping,
 } from '../../../shared/models/profile.component';
 import {ChangeType, PropertyType} from '../../../shared/models/save-change';
 import {

@@ -360,8 +360,8 @@
                 
                 		<xsl:call-template name="ValueSetBindingList"/>	
 					<xsl:call-template name="InternalSingleCode"/>	
-					<xsl:call-template name="Constraint"/>
-					
+<!-- 					<xsl:call-template name="Constraint"/>
+ -->					
 					<xsl:if test="count(Constraints/Predicate)  &gt; 0">
 			<xsl:element name="br" />
 			<xsl:call-template name="Constraint">
@@ -376,6 +376,27 @@
 				</xsl:with-param>
 				<xsl:with-param name="headerLevel">
 					<xsl:text>h4</xsl:text>
+				</xsl:with-param>
+			</xsl:call-template>
+		</xsl:if>
+		
+		<xsl:if test="count(Constraints/ConformanceStatement)  &gt; 0">
+			<xsl:element name="br" />
+			<xsl:call-template name="Constraint">
+				<xsl:with-param name="title">
+					<xsl:text>Conformance Statements</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="constraintMode">
+					<xsl:text>standalone</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="type">
+					<xsl:text>cs</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="headerLevel">
+					<xsl:text>h4</xsl:text>
+				</xsl:with-param>
+				<xsl:with-param name="profileComponent">
+					<xsl:text>profileComponent</xsl:text>
 				</xsl:with-param>
 			</xsl:call-template>
 		</xsl:if>

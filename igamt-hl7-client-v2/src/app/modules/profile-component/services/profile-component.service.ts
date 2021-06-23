@@ -10,9 +10,10 @@ import { Type } from '../../shared/constants/type.enum';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IPath } from '../../shared/models/cs.interface';
 import {
-  IPropertyConformanceStatement, IPropertyDynamicMapping,
-  IPropertyValueSet,
+  IPropertyCoConstraintBindings, IPropertyConformanceStatement,
+  IPropertyDynamicMapping, IPropertyValueSet,
 } from '../../shared/models/profile.component';
+
 import {
   IItemProperty,
   IProfileComponent,
@@ -33,7 +34,7 @@ import { PathService } from '../../shared/services/path.service';
 import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
 import {ValueSetService} from '../../value-set/service/value-set.service';
 import { IProfileComponentMetadata } from '../components/profile-component-metadata/profile-component-metadata.component';
-import { IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
+import { IItemLocation, IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
 import {
   IDynamicMappingEditorInfo,
 } from '../components/segment-context-dynamic-mapping/segment-context-dynamic-mapping.component';
@@ -91,6 +92,33 @@ export class ProfileComponentService {
   }
   saveDynamicMapping(pcId: string, id: string, csList: IPropertyDynamicMapping): Observable<IPropertyDynamicMapping> {
     return this.http.post<IPropertyDynamicMapping>(this.URL + pcId + '/context/' + id + '/dynamic-mapping', csList);
+  }
+
+  saveCoConstraintBindings(pcId: string, id: string, coConstraintsBindings: IPropertyCoConstraintBindings): Observable<IProfileComponentContext> {
+    return this.http.post<IProfileComponentContext>(this.URL + pcId + '/context/' + id + '/co-constraints', coConstraintsBindings);
+  }
+
+  removeCoConstraintBindings(pcId: string, id: string): Observable<IProfileComponentContext> {
+    return this.http.delete<IProfileComponentContext>(this.URL + pcId + '/context/' + id + '/co-constraints');
+  }
+
+  removeBindings(location: IItemLocation, context: IProfileComponentContext) {
+    if (context.profileComponentBindings) {
+      if (context.profileComponentBindings.contextBindings) {
+        context.profileComponentBindings.contextBindings = [
+          ...context.profileComponentBindings.contextBindings.filter((elm) => elm.target !== location.path),
+        ];
+      }
+
+      if (context.profileComponentBindings.itemBindings && location.parent) {
+        context.profileComponentBindings.itemBindings = [
+          ...context.profileComponentBindings.itemBindings.map((elm) => ({
+            path: elm.path,
+            bindings: elm.path === location.parent ? elm.bindings.filter((binding) => binding.target !== location.target) : elm.bindings,
+          })),
+        ];
+      }
+    }
   }
 
   applyChange(change: IProfileComponentChange, context: IProfileComponentContext) {

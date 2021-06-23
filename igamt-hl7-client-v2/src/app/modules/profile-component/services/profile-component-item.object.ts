@@ -6,7 +6,7 @@ import { IProfileComponentContext, IProfileComponentItem } from '../../shared/mo
 import { IResource } from '../../shared/models/resource.interface';
 import { PropertyType } from '../../shared/models/save-change';
 import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
-import { IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
+import { IItemLocation, IProfileComponentChange } from '../components/profile-component-structure-tree/profile-component-structure-tree.component';
 import { ProfileComponentRefChange } from './profile-component-ref-change.object';
 import { IHL7v2TreeProfileComponentNode, ProfileComponentService } from './profile-component.service';
 
@@ -88,10 +88,11 @@ export class ProfileComponentItemList {
     this.changeItemList(itemsList);
   }
 
-  removeItem(path: string) {
-    this.refChangeMap.clear(path);
+  removeItem(location: IItemLocation) {
+    this.ppService.removeBindings(location, this.context$.getValue());
+    this.refChangeMap.clear(location.path);
     const itemsList = this.getItemsValue();
-    const index = itemsList.findIndex((elm) => elm.path === path);
+    const index = itemsList.findIndex((elm) => elm.path === location.path);
     if (index !== -1) {
       itemsList.splice(index, 1);
       this.changeItemList(itemsList);

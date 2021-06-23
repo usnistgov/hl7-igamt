@@ -14,7 +14,7 @@
     </ng-container>
   </div>
 </ng-template>
-<div>
+<div style="overflow-x: hidden;">
   <ng-container *ngIf="resource$ | async as resources">
     <strong style="margin-right: 10px;"> Select Generated Structure </strong>
     <div style="display: inline;">
@@ -93,8 +93,22 @@
 
         <div *ngSwitchCase="TABS.DYNAMIC_MAPPING" style="margin-top: 10px;">
           <app-dynamic-mapping [datatypes] ="datatypes |async" [dynamicMapping]="selected.resource.dynamicMappingInfo" [hl7Version]="selected.resource.domainInfo?.version"  [viewOnly]="true"  [documentId]="documentId$ |async" [documentType]="(documentRef$ |async).type"> </app-dynamic-mapping>
-        </div>
 
+        </div>
+        <div *ngSwitchCase="TABS.COCONSTRAINTS" style="margin-top: 10px; overflow: hidden;">
+          <div style="overflow: scroll; height: 100%;" *ngIf="selected.resource.coConstraintsBindings">
+            <app-context-co-constraint-binding
+              [viewOnly]="true"
+              [bindings]="selected.resource.coConstraintsBindings"
+              [derived]="derived$ | async"
+              [segments]="segments | async"
+              [datatypes]="datatypes | async"
+              [valueSets]="valueSets | async"
+              [documentRef]="documentRef$ | async"
+              [conformanceProfile]="selected.resource">
+            </app-context-co-constraint-binding>
+          </div>
+        </div>
       </ng-container>
     </ng-container>
   </ng-container>

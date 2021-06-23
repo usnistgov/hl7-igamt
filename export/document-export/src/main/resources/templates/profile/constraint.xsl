@@ -5,6 +5,7 @@
         <xsl:param name="type" />
         <xsl:param name="constraintMode" />
         <xsl:param name="headerLevel"/>
+            <xsl:param name="profileComponent" />
         <xsl:choose>
             <xsl:when test="$type='pre'">
  		<xsl:if test="count(Constraints/Predicate)  &gt; 0">
@@ -13,6 +14,7 @@
                         <xsl:with-param name="title" select="$title"/>
                         <xsl:with-param name="type" select="$type"/>
                         <xsl:with-param name="headerLevel" select="$headerLevel"/>
+                        
                     </xsl:call-template>
                 </xsl:if>
             </xsl:when>
@@ -23,6 +25,7 @@
                         <xsl:with-param name="title" select="$title"/>
                         <xsl:with-param name="type" select="$type"/>
                         <xsl:with-param name="headerLevel" select="$headerLevel"/>
+       					 <xsl:with-param name="profileComponent" select="$profileComponent"/>                 
                     </xsl:call-template>
                 </xsl:if>
             </xsl:when>

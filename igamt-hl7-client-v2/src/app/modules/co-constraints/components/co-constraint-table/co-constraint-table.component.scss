@@ -24,6 +24,24 @@
   vertical-align: middle;
 }
 
+textarea {
+  width: 100%;
+  top: 0; left: 0; right: 0; bottom: 0;
+  position: absolute;
+	resize: none;
+	-webkit-box-sizing: border-box; /* <=iOS4, <= Android  2.3 */
+      -moz-box-sizing: border-box; /* FF1+ */
+           box-sizing: border-box; /* Chrome, IE8, Opera, Safari 5.1*/
+
+    -webkit-box-shadow: 2px 2px 2px 1px #dddddd;
+    -moz-box-shadow: 2px 2px 2px 1px #dddddd;
+    box-shadow: inset 2px 2px 2px 1px #dddddd;
+    overflow: auto;
+    font-family: tahoma;
+    font-size: 13px;
+    border: 1px solid #aaa;
+}
+
 .column-border {
   border-right: 3px solid;
 }

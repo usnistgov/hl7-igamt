@@ -13,10 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ProfileComponentExportConfiguration;
@@ -24,9 +28,11 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentDataModel;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyBinding;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCardinalityMax;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCardinalityMin;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyConfLength;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyConformanceStatement;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyConstantValue;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDatatype;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyLengthMax;
@@ -107,14 +113,15 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                 		profileComponentContextElement.addAttribute(
                 				new Attribute("position", String.valueOf(profileComponentContext.getPosition()))
 						);
-
+                			Segment segment = new Segment();
+                			ConformanceProfile conformanceProfile = new ConformanceProfile();
 						if(profileComponentContext.getLevel().equals(Type.SEGMENT)) {
-							Segment segment = segmentService.findById(profileComponentContext.getSourceId());
+							 segment = segmentService.findById(profileComponentContext.getSourceId());
 							profileComponentContextElement.addAttribute(
 									new Attribute("sourceName", segment != null ? String.valueOf(segment.getLabel()) : "")
 							);
 						} else if(profileComponentContext.getLevel().equals(Type.CONFORMANCEPROFILE) ) {
-							ConformanceProfile conformanceProfile = conformanceProfileService.findById(profileComponentContext.getSourceId());
+							 conformanceProfile = conformanceProfileService.findById(profileComponentContext.getSourceId());
 							profileComponentContextElement.addAttribute(
 									new Attribute("sourceName", conformanceProfile != null ? String.valueOf(conformanceProfile.getLabel()) : "")
 							);
@@ -182,7 +189,7 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
 		//                                    break;
 
 											case SEGMENTREF:
-												Segment segment = segmentService.findById(((PropertyRef) itemProperty).getRef());
+												 segment = segmentService.findById(((PropertyRef) itemProperty).getRef());
 												profileComponentItemElement.addAttribute(new Attribute("segmentRef",
 														segment != null ? segment.getLabel(): ""));
 											break;
@@ -194,7 +201,7 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
 
 											case USAGE:
 												profileComponentItemElement.addAttribute(new Attribute("usage",
-														((PropertyUsage) itemProperty) != null ? ((PropertyUsage) itemProperty).getUsage().name() : ""));
+														((PropertyUsage) itemProperty) != null ? ((PropertyUsage) itemProperty).getUsage().toString() : ""));
 											break;
 
 											case VALUESET:
@@ -216,10 +223,9 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                 		}
             		
                 	
-                	//Serialize valuesetbindings
                 	List<ProfileComponentItemDataModel> filtredValueSetProfileComponentItemDataModelList = profileComponentContext.getProfileComponentItemMap().values().stream().filter((item) -> {
             			return item.getItemProperties().stream().anyMatch((itemProperty) -> {
-            				return itemProperty instanceof PropertyValueSet;
+            				return (itemProperty instanceof PropertyValueSet && !((PropertyValueSet) itemProperty).getValuesetBindings().isEmpty());
             			});		
             		}).collect(Collectors.toList());
                 	
@@ -233,6 +239,10 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
             			return item.getItemProperties().stream().anyMatch((itemProperty) -> {
             				return itemProperty instanceof PropertyPredicate;
             			});		
+            		}).collect(Collectors.toList());
+                	
+                	List<PropertyBinding> filtredConformanceStatementProfileComponentItemDataModelList = profileComponentContext.getRootContextBindings().stream().filter((item) -> {
+            				return item instanceof PropertyConformanceStatement;
             		}).collect(Collectors.toList());
                 	
                 	Element bindings = new Element("Binding");
@@ -267,7 +277,44 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                         }
                     	}
             	}
+                }
+                if(!filtredConformanceStatementProfileComponentItemDataModelList.isEmpty()) {
+        			ResourceBinding resourceBinding = new ResourceBinding();
+    				ConformanceStatement conformanceStatement = new ConformanceStatement();
+        			if(profileComponentContext.getLevel().equals(Type.SEGMENT)) {
+        				resourceBinding = segment.getBinding();
+        			} else if(profileComponentContext.getLevel().equals(Type.CONFORMANCEPROFILE)){
+        				resourceBinding = conformanceProfile.getBinding()	;
+        			}
+            		for(PropertyBinding propertyBinding :filtredConformanceStatementProfileComponentItemDataModelList) {
+            			if(propertyBinding != null) {
+            				ConformanceStatement cs = getConformanceStatement(propertyBinding, resourceBinding);
+            				if(cs != null) {
+                            	Element conformanceStatementElement = constraintSerializationService.serializeConformanceStatement(cs);
+                    			conformanceStatementElement.addAttribute(new Attribute("changeType",propertyBinding != null ? ((PropertyConformanceStatement) propertyBinding).getChange().name(): ""));
+                    			conformanceStatementElement.addAttribute(new Attribute("changeType",propertyBinding != null ? ((PropertyConformanceStatement) propertyBinding).getChange().name(): ""));
+
+//            					String description = "";
+//                    			if(conformanceStatement != null) {
+//                                 			conformanceStatementElement.addAttribute(new Attribute("description",((AssertionConformanceStatement) conformanceStatement).getAssertion() != null ? ((AssertionConformanceStatement) conformanceStatement).getAssertion().getDescription(): ""));
+//                    			}
+//                    			conformanceStatementElement.addAttribute(new Attribute("changeType",propertyBinding != null ? ((PropertyConformanceStatement) propertyBinding).getChange().name(): ""));
+//                    			conformanceStatementElement.addAttribute(new Attribute("identifier",conformanceStatement != null ? conformanceStatement.getIdentifier(): ""));
+
+                    					if(conformanceStatementElement != null) {
+                            	constraints.appendChild(conformanceStatementElement);
+                                }            				}
+//            				ItemProperty itemProperty = profileComponentItemDataModel.getItemProperties().stream().filter((item) -> {
+//            					return item instanceof PropertyConformanceStatement;
+//            				}).findAny().get();
+            			
+
+            			
+            			
+                    	}
             	}
+            	}
+                
                 if(constraints != null) {
                 	profileComponentContextElement.appendChild(constraints);
                 }
@@ -281,6 +328,18 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
         }
         return null;
     
+	}
+	
+	private ConformanceStatement getConformanceStatement(PropertyBinding propertyBinding, ResourceBinding resourceBinding) {
+		if(((PropertyConformanceStatement) propertyBinding).getChange().equals(ChangeType.DELETE)) {
+			
+			 return resourceBinding.getConformanceStatements().stream().filter((cs) -> {
+				return cs.getId().equals(((PropertyConformanceStatement) propertyBinding).getTargetId());
+			}).findAny().orElse(null);
+			 
+		} else {
+			return ((PropertyConformanceStatement) propertyBinding).getPayload();
+		}
 	}
 
 	private List<String> createValueSetList(Set<ValuesetBinding> valuesetBindings) {

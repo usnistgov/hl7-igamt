@@ -35,7 +35,7 @@ export enum GeneratedFlavorTabs {
   STRUCTURE = 'Structure',
   CONFORMANCE_STATEMENTS = 'Conformance Statements',
   DYNAMIC_MAPPING = 'Dynamic Mapping',
-
+  COCONSTRAINTS = 'Co-Constraints',
 }
 
 @Component({
@@ -177,7 +177,6 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   }
 
   selectItem(elm: IResourceAndDisplay<any>) {
-    console.log(elm);
     switch (elm.display.type) {
       case Type.DATATYPE:
       case Type.SEGMENT:
@@ -187,7 +186,7 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
         }
         break;
       case Type.CONFORMANCEPROFILE:
-        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS];
+        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS, GeneratedFlavorTabs.COCONSTRAINTS];
         break;
     }
     if (!this.tabs.includes(this.activeTab)) {

@@ -113,18 +113,20 @@ public class ConformanceProfileDataModel implements Serializable, Comparable{
 			PredicateRepository predicateRepository,
 			Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
 		for (StructureElementBinding seb : sebs) {
-			String key;
-			String localPath;
+			String key = path;
+			String localPath=readablePath;
+			if(seb.getLocationInfo() != null) {
 			localPath = readablePath + "." + seb.getLocationInfo().getPosition() + "";
+			
 			if (path == null) {
 				key = seb.getLocationInfo().getPosition() + "";
 			} else {
 				key = path + "." + seb.getLocationInfo().getPosition();
 			}
-
+			}
 			if (seb.getPredicate() != null) {
 				Predicate p = seb.getPredicate();
-				p.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
+//				p.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
 				this.predicateMap.put(key, p); 
 			}
 

@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentBinding;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -372,6 +373,23 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
         ctx.setProfileComponentBindings(ctxBinding);
         this.save(pc);
         return conformanceStatements;
+      }
+    }
+    throw new ProfileComponentContextNotFoundException(contextId);
+  }
+
+  @Override
+  public ProfileComponentContext updateContextCoConstraintBindings(String pcId, String contextId, PropertyCoConstraintBindings coConstraintBindings) throws Exception {
+    ProfileComponent pc = this.findById(pcId);
+    for(ProfileComponentContext ctx:  pc.getChildren()) {
+      if(ctx.getId().equals(contextId)) {
+        if(ctx.getLevel().equals(Type.CONFORMANCEPROFILE)) {
+          ctx.setProfileComponentCoConstraints(coConstraintBindings);
+          this.save(pc);
+          return ctx;
+        } else {
+          throw new Exception("Profile component context is not on a Conformance Profile");
+        }
       }
     }
     throw new ProfileComponentContextNotFoundException(contextId);

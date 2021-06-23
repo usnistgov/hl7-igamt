@@ -230,6 +230,15 @@ export class ProfileComponentEffects {
       );
     }),
   );
+  @Effect()
+  openMessageCoConstraintsEditor$ = this.editorHelper.openCoConstraintsBindingProfileComponentEditor(
+    ProfileComponentActionTypes.OpenProfileComponentMessageCoConstraintsEditor,
+    Type.CONFORMANCEPROFILE,
+    fromIgamtDisplaySelectors.selectContextById,
+    this.store.select(fromIgamtSelectedSelectors.selectProfileComponentContext),
+    (id: string) => this.cpService.getById(id),
+    CONTEXT_NOT_FOUND,
+  );
 
   conformanceStatementEditor(getter: (string, IDocumentRef) => Observable<IConformanceStatementList>) {
     return (action: fromDamActions.OpenEditorBase) => {
@@ -261,5 +270,4 @@ export class ProfileComponentEffects {
       );
     };
   }
-
 }
