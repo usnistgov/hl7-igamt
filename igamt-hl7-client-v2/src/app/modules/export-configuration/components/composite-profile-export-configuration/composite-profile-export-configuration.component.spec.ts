@@ -8,7 +8,7 @@ describe('CompositeProfileExportConfigurationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CompositeProfileExportConfigurationComponent ]
+      declarations: [ CompositeProfileExportConfigurationComponent ],
     })
     .compileComponents();
   }));

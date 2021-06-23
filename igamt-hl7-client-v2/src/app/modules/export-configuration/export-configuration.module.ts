@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import {CardModule} from 'primeng/card';
 import {TabViewModule} from 'primeng/tabview';
 import { SharedModule } from '../shared/shared.module';
+import { CompositeProfileExportConfigurationComponent } from './components/composite-profile-export-configuration/composite-profile-export-configuration.component';
 import { ConfigurationTocComponent } from './components/configuration-toc/configuration-toc.component';
 import { ConformanceProfileExportConfigurationComponent } from './components/conformance-profile-export-configuration/conformance-profile-export-configuration.component';
 import { DatatypeExportConfigurationComponent } from './components/datatype-export-configuration/datatype-export-configuration.component';
@@ -17,7 +18,6 @@ import { SegmentExportConfigurationComponent } from './components/segment-export
 import { ValueSetExportConfigurationComponent } from './components/value-set-export-configuration/value-set-export-configuration.component';
 import { ExportConfigurationRoutingModule } from './export-configuration-routing.module';
 import { ExportConfigurationService } from './services/export-configuration.service';
-import { CompositeProfileExportConfigurationComponent } from './components/composite-profile-export-configuration/composite-profile-export-configuration.component';
 
 @NgModule({
   declarations: [

@@ -62,56 +62,38 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.documentId = data.documentId;
   }
 
+  selectOverrideOrDefault(node, overiddedMap, defaultConfig) {
+    if (overiddedMap[node.id]) {
+      this.current = overiddedMap[node.id];
+    } else {
+      this.current = _.cloneDeep(defaultConfig);
+    }
+    this.loading = false;
+  }
+
   select(node) {
     this.loading = true;
     this.selected = node;
     this.type = node.type;
     switch (this.type) {
       case Type.SEGMENT: {
-        if (this.filter.overiddedSegmentMap[node.id]) {
-          this.current = this.filter.overiddedSegmentMap[node.id];
-        } else {
-          this.current = _.cloneDeep(this.defaultConfig.segmentExportConfiguration);
-        }
-
-        this.loading = false;
+        this.selectOverrideOrDefault(node, this.filter.overiddedSegmentMap, this.defaultConfig.segmentExportConfiguration);
         break;
       }
       case Type.DATATYPE: {
-        if (this.filter.overiddedDatatypesMap[node.id]) {
-          this.current = this.filter.overiddedDatatypesMap[node.id];
-
-        } else {
-          this.current = _.cloneDeep(this.defaultConfig.datatypeExportConfiguration);
-        }
-        this.loading = false;
+        this.selectOverrideOrDefault(node, this.filter.overiddedDatatypesMap, this.defaultConfig.datatypeExportConfiguration);
         break;
       }
       case Type.CONFORMANCEPROFILE: {
-        if (this.filter.overiddedConformanceProfileMap[node.id]) {
-          this.current = this.filter.overiddedConformanceProfileMap[node.id];
-        } else {
-          this.current = _.cloneDeep(this.defaultConfig.conformamceProfileExportConfiguration);
-        }
-        this.loading = false;
+        this.selectOverrideOrDefault(node, this.filter.overiddedConformanceProfileMap, this.defaultConfig.conformamceProfileExportConfiguration);
         break;
       }
       case Type.COMPOSITEPROFILE: {
-        if (this.filter.overiddedCompositeProfileMap[node.id]) {
-          this.current = this.filter.overiddedCompositeProfileMap[node.id];
-        } else {
-          this.current = _.cloneDeep(this.defaultConfig.compositeProfileExportConfiguration);
-        }
-        this.loading = false;
+        this.selectOverrideOrDefault(node, this.filter.overiddedCompositeProfileMap, this.defaultConfig.compositeProfileExportConfiguration);
         break;
       }
       case Type.VALUESET: {
-        if (this.filter.overiddedValueSetMap[node.id]) {
-          this.current = this.filter.overiddedValueSetMap[node.id];
-        } else {
-          this.current = _.cloneDeep(this.defaultConfig.valueSetExportConfiguration);
-        }
-        this.loading = false;
+        this.selectOverrideOrDefault(node, this.filter.overiddedValueSetMap, this.defaultConfig.valueSetExportConfiguration);
         break;
       }
       default: {
