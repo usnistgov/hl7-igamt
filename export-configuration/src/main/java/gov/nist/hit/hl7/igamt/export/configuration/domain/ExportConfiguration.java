@@ -91,6 +91,7 @@ public class ExportConfiguration {
   private boolean greyOutOBX2FlavorColumn = false;
 
   private CoConstraintExportMode coConstraintExportMode;
+  private GeneratedFlavorsConfiguration generatedFlavorsConfiguration;
 
   private boolean includeDerived = false;
 
@@ -139,10 +140,7 @@ public class ExportConfiguration {
     //Setting ProfileComponent Export Configuration
     ProfileComponentExportConfiguration profileComponentExportConfiguration = new ProfileComponentExportConfiguration();
     defaultConfiguration.setProfileComponentExportConfiguration(profileComponentExportConfiguration);
-    //Setting CompositeProfile Export Configuration
-    CompositeProfileExportConfiguration compositeProfileExportConfiguration = new CompositeProfileExportConfiguration();
-    defaultConfiguration.setCompositeProfileExportConfiguration(compositeProfileExportConfiguration);
-    // Setting IgGeneralConfiguration
+  // Setting IgGeneralConfiguration
     IgGeneralConfiguration igGeneralConfiguration = new IgGeneralConfiguration();
     igGeneralConfiguration.setNotMessageInfrastructure(false);
     defaultConfiguration.setIgGeneralConfiguration(igGeneralConfiguration);
@@ -373,7 +371,24 @@ public class ExportConfiguration {
       defaultConfiguration.setReasonForChange(true);
       defaultConfiguration.setDeltaMode(true);
       defaultConfiguration.setDeltaConfig(deltaConfiguration);
-    }    
+    }   
+    
+    //Setting CompositeProfile Export Configuration
+    CompositeProfileExportConfiguration compositeProfileExportConfiguration = new CompositeProfileExportConfiguration();  
+    compositeProfileExportConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
+    compositeProfileExportConfiguration.setSegmentExportConfiguration(segmentExportConfiguration);
+    compositeProfileExportConfiguration.setConformamceProfileExportConfiguration(conformanceProfileExportConfiguration);
+    compositeProfileExportConfiguration.setIncludeComposition(true);
+    compositeProfileExportConfiguration.setGeneratedDatatypesFlavorsConfiguration(GeneratedFlavorsConfiguration.DEFAULT);
+    compositeProfileExportConfiguration.setGeneratedSegmentsFlavorsConfiguration(GeneratedFlavorsConfiguration.DEFAULT);
+    compositeProfileExportConfiguration.setIncludeComposition(true);
+    compositeProfileExportConfiguration.setDescription(true);
+    compositeProfileExportConfiguration.setEntityIdentifier(true);
+    compositeProfileExportConfiguration.setNamespaceId(true);
+    compositeProfileExportConfiguration.setUniversalId(true);
+    compositeProfileExportConfiguration.setUniversalIdType(true);
+    defaultConfiguration.setCompositeProfileExportConfiguration(compositeProfileExportConfiguration);
+    
 
 
     return defaultConfiguration;
@@ -1059,4 +1074,12 @@ public class ExportConfiguration {
   public void setReasonForChange(boolean reasonForChange) {
     this.reasonForChange = reasonForChange;
   }
+
+public GeneratedFlavorsConfiguration getGeneratedFlavorsConfiguration() {
+	return generatedFlavorsConfiguration;
+}
+
+public void setGeneratedFlavorsConfiguration(GeneratedFlavorsConfiguration generatedFlavorsConfiguration) {
+	this.generatedFlavorsConfiguration = generatedFlavorsConfiguration;
+}
 }

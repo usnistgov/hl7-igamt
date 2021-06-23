@@ -39,6 +39,8 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 public class CompositeProfileDataModel implements Serializable, Comparable{
 	private CompositeProfileStructure model;
 	
+	private ConformanceProfileDataModel conformanceProfileDataModel;
+	
 	private ArrayList<SegmentDataModel> flavoredSegmentDataModelsList = new ArrayList<>();
 	private ArrayList<DatatypeDataModel> flavoredDatatypeDataModelsList = new ArrayList<>();
 
@@ -222,4 +224,13 @@ public class CompositeProfileDataModel implements Serializable, Comparable{
 		    }
 		    return getModel().getLabel().compareTo(((CompositeProfileDataModel) u).getModel().getLabel());
 	}
+
+	public ConformanceProfileDataModel getConformanceProfileDataModel() {
+		return conformanceProfileDataModel;
+	}
+
+	public void setConformanceProfileDataModel(ConformanceProfileDataModel conformanceProfileDataModel) {
+		this.conformanceProfileDataModel = conformanceProfileDataModel;
+	}
+
 }

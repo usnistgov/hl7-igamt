@@ -97,6 +97,9 @@
           <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
             <app-conformance-profile-export-configuration [config]="current" [derived]="derived" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading" [delta]="delta"></app-conformance-profile-export-configuration>
           </ng-container>
+          <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
+            <app-composite-profile-export-configuration [config]="current" [derived]="derived" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading" [delta]="delta"></app-composite-profile-export-configuration>
+          </ng-container>
         </ng-container>
       </div>
       <div *ngIf="docType === 'DATATYPELIBRARY'" class="content">

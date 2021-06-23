@@ -19,11 +19,14 @@ import nu.xom.Element;
 @Service
 public class ConstraintSerializationServiceImpl implements ConstraintSerializationService{
 
-	public Element serializeConstraints(Set<ConformanceStatement> conformanceStatements, Map<String,Predicate> predicates, ConstraintExportConfiguration constraintExportConfiguration) {
+	public Element serializeConstraints(Set<ConformanceStatement> conformanceStatements, Map<String,Predicate> predicates, ConstraintExportConfiguration constraintExportConfiguration) 
+	{
 		if(!constraintExportConfiguration.getConformanceStatement() && !constraintExportConfiguration.getPredicate()){
 			return null;
 		}
 		Element constraintsElement = new Element("Constraints");
+
+		if(constraintExportConfiguration.getConformanceStatement()) {
 		if(constraintExportConfiguration.getConformanceStatement()) {
 			if(conformanceStatements !=null) {
 				for(ConformanceStatement conformanceStatement : conformanceStatements){
@@ -31,6 +34,7 @@ public class ConstraintSerializationServiceImpl implements ConstraintSerializati
 					constraintsElement.appendChild(conformanceStatementElement);
 				}
 			}
+		}
 		}
 		if(constraintExportConfiguration.getPredicate()) {
 			if(predicates != null) {
@@ -43,7 +47,8 @@ public class ConstraintSerializationServiceImpl implements ConstraintSerializati
 			}
 		}
 		return constraintsElement;
-	};
+	}
+	
 
 
 	@Override
@@ -76,9 +81,9 @@ public class ConstraintSerializationServiceImpl implements ConstraintSerializati
 		predicateElement.addAttribute(new Attribute("falseUsage",
 				predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : ""));
 		predicateElement.addAttribute(new Attribute("location",
-				predicate.getLocation() != null ? predicate.getLocation() : location));
-		predicateElement.addAttribute(new Attribute("position",location));
-		System.out.println("New field path is : " + predicate.getContext());
+				predicate.getLocation() != null ? predicate.getLocation() : location != null ? location : ""));
+		predicateElement.addAttribute(new Attribute("position",
+				location != null ? location : ""));	
 		if (predicate instanceof AssertionPredicate) {
 			if (((AssertionPredicate) predicate).getAssertion() != null) {
 				String description = ((AssertionPredicate) predicate).getAssertion().getDescription();

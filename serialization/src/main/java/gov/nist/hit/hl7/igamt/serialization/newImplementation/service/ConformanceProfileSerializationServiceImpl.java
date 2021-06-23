@@ -27,6 +27,7 @@ import gov.nist.hit.hl7.igamt.delta.domain.ConformanceStatementDelta;
 import gov.nist.hit.hl7.igamt.delta.domain.ResourceDelta;
 import gov.nist.hit.hl7.igamt.delta.domain.StructureDelta;
 import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.CoConstraintExportMode;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaExportConfigMode;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
@@ -353,6 +354,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
 
                 }
                 else {
+                	if(!conformanceProfileExportConfiguration.getCoConstraintExportMode().equals(CoConstraintExportMode.NOEXPORT))
                     if (conformanceProfile.getCoConstraintsBindings() != null) {
                         Element coConstraintsBindingsElement = new Element("coConstraintsBindingsElement");
                         conformanceProfileElement.appendChild(coConstraintsBindingsElement);
@@ -417,8 +419,9 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                         }
 
                     }
-
                 }
+
+                
 
 
 

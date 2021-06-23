@@ -1,24 +1,46 @@
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <xsl:include href="/templates/profile/conformanceProfile/messageSegment.xsl"/>
-    <xsl:include href="/templates/profile/messageConstraint.xsl"/>
-    <xsl:include href="/templates/profile/compositeProfile/compositeProfileSegmentsOrGroups.xsl"/>
-    <xsl:include href="/templates/profile/valueset/valueSetBindingList.xsl"/>
-    <xsl:include href="/templates/profile/commentList.xsl"/>
-    <xsl:include href="/templates/profile/definitionText.xsl"/>
-    <xsl:include href="/templates/profile/metadata.xsl"/>
+	<xsl:include href="/templates/profile/conformanceProfile/messageSegment.xsl" />
+	<xsl:include href="/templates/profile/messageConstraint.xsl" />
+	<xsl:include
+		href="/templates/profile/compositeProfile/compositeProfileSegmentsOrGroups.xsl" />
+	<xsl:include href="/templates/profile/valueset/valueSetBindingList.xsl" />
+	<xsl:include href="/templates/profile/commentList.xsl" />
+	<xsl:include href="/templates/profile/definitionText.xsl" />
+	<xsl:include href="/templates/profile/metadata.xsl" />
+	<xsl:include href="/templates/profile/resource/shortDescription.xsl" />
+	<xsl:include href="/templates/profile/resource/flavorExtension.xsl" />
+	<xsl:include href="/templates/profile/resource/nameSpaceID.xsl" />
+	<xsl:include href="/templates/profile/resource/entityIdentifier.xsl" />
+	<xsl:include href="/templates/profile/resource/universalID.xsl" />
+	<xsl:include href="/templates/profile/resource/universalIDType.xsl" />
+	<xsl:include href="/templates/profile/resource/preDef.xsl" />
+	<xsl:include href="/templates/profile/resource/postDef.xsl" />
+        
+    
     <xsl:template match="CompositeProfile">
+    
+            <xsl:call-template name="ShortDescription"/>
+            <xsl:call-template name="FlavorExtension"/>
+            <xsl:call-template name="EntityIdentifier"/>
+            <xsl:call-template name="NameSpaceID"/>
+            <xsl:call-template name="UniversalID"/>
+            <xsl:call-template name="UniversalIDType"/>
+                    <xsl:call-template name="PreDef"/>
+            
+    
             <xsl:if test="count(./@Composition) &gt; 0">
    
         <xsl:element name="span">
             <xsl:element name="b">
                 <xsl:text>Composition</xsl:text>
             </xsl:element>
-        </xsl:element>     
-        </xsl:if>
-  				<br/>
+        </xsl:element>  
+        <br/>
                 <xsl:value-of select="./@Composition"></xsl:value-of>
-                <br/>
+                <br/>   
+        </xsl:if>
+  				
         <xsl:if test="count(./Text[@Type='DefPreText']) &gt; 0">
         
             <xsl:call-template name="definitionText">
@@ -50,7 +72,7 @@
                 <xsl:text>Composite Profile Definition</xsl:text>
             </xsl:element>
         </xsl:element>       
-         <xsl:element name="table">
+         <!-- <xsl:element name="table">
             <xsl:attribute name="class">
                 <xsl:text>contentTable</xsl:text>
             </xsl:attribute>
@@ -122,7 +144,7 @@
             <xsl:element name="tbody">
                 <xsl:call-template name="displayCompositeProfileSegmentsOrGroups"/>
             </xsl:element>
-        </xsl:element>
+        </xsl:element> -->
         <xsl:call-template name="MessageConstraint">
             <xsl:with-param name="constraintType">
                 <xsl:text>cs</xsl:text>

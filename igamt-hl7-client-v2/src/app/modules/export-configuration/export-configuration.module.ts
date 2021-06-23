@@ -17,6 +17,7 @@ import { SegmentExportConfigurationComponent } from './components/segment-export
 import { ValueSetExportConfigurationComponent } from './components/value-set-export-configuration/value-set-export-configuration.component';
 import { ExportConfigurationRoutingModule } from './export-configuration-routing.module';
 import { ExportConfigurationService } from './services/export-configuration.service';
+import { CompositeProfileExportConfigurationComponent } from './components/composite-profile-export-configuration/composite-profile-export-configuration.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { ExportConfigurationService } from './services/export-configuration.serv
     DatatypeLibraryExportConfigurationComponent,
     FontExportConfigurationComponent,
     IgGeneralDisplayConfigurationComponent,
+    CompositeProfileExportConfigurationComponent,
   ],
   imports: [
     CommonModule,
@@ -45,6 +47,7 @@ import { ExportConfigurationService } from './services/export-configuration.serv
     DatatypeExportConfigurationComponent,
     ValueSetExportConfigurationComponent,
     ConformanceProfileExportConfigurationComponent,
+    CompositeProfileExportConfigurationComponent,
     ExportConfigurationDialogComponent,
     DefaultConfigurationComponent,
     ExportDialogComponent,

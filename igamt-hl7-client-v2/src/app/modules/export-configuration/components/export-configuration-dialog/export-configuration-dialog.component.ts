@@ -95,6 +95,15 @@ export class ExportConfigurationDialogComponent implements OnInit {
         this.loading = false;
         break;
       }
+      case Type.COMPOSITEPROFILE: {
+        if (this.filter.overiddedCompositeProfileMap[node.id]) {
+          this.current = this.filter.overiddedCompositeProfileMap[node.id];
+        } else {
+          this.current = _.cloneDeep(this.defaultConfig.compositeProfileExportConfiguration);
+        }
+        this.loading = false;
+        break;
+      }
       case Type.VALUESET: {
         if (this.filter.overiddedValueSetMap[node.id]) {
           this.current = this.filter.overiddedValueSetMap[node.id];
