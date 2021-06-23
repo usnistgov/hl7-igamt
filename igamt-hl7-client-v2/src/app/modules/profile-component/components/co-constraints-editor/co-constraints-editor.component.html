@@ -1,0 +1,31 @@
+<ng-container *ngIf="bindingsSync$ | async as bindings">
+  <ng-template #headerControls>
+    <button class="btn btn-primary btn-sm" (click)="setProfileComponent(true)" *ngIf="!(viewOnly$ | async) && !(profileComponentActive$ | async)">
+      <i class="fa fa-pencil"></i> Create Profile Component
+    </button>
+    <button class="btn btn-danger btn-sm" style="margin-right: 5px;" (click)="setProfileComponent(false)" *ngIf="!(viewOnly$ | async) && (profileComponentActive$ | async)">
+      <i class="fa fa-trash"></i> Delete Profile Component
+    </button>
+    <button class="btn btn-success btn-sm" (click)="openBindingCreateDialog(bindings)" *ngIf="!(viewOnly$ | async) && (profileComponentActive$ | async)">
+      <i class="fa fa-plus"></i> Add Co-Constraint Binding
+    </button>
+  </ng-template>
+
+  <div style="overflow: scroll; height: 100%;">
+    <app-context-co-constraint-binding
+      [viewOnly]="!(editable$ | async)"
+      [bindings]="bindings"
+      [derived]="derived$ | async"
+      [segments]="segments | async"
+      [datatypes]="datatypes | async"
+      [valueSets]="valueSets | async"
+      [documentRef]="documentRef$ | async"
+      [conformanceProfile]="conformanceProfile"
+      [open]="openPanelId"
+      (segmentBindingChangeEvent)="segmentBindingChange($event)"
+      (formValidEvent)="formValid($event)"
+      (deleteSegmentBindingEvent)="deleteSegmentBinding($event)"
+      (deleteContextBindingEvent)="deleteContextBinding($event)">
+    </app-context-co-constraint-binding>
+  </div>
+</ng-container>

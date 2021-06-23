@@ -12,9 +12,13 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyBinding;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCoConstraintBindings;
 
 /**
  * A profile component is an objects that contains all the changes between the source (a message or
@@ -32,6 +36,7 @@ public class ProfileComponentContext {
   private int position;
   private Set<ProfileComponentItem> profileComponentItems;
   private ProfileComponentBinding profileComponentBindings;
+  private PropertyCoConstraintBindings profileComponentCoConstraints;
 
   public ProfileComponentContext(String id, Type level, String sourceId, String structure,
       int position, Set<ProfileComponentItem> profileComponentItems, ProfileComponentBinding profileComponentBindings) {
@@ -45,13 +50,17 @@ public class ProfileComponentContext {
     this.profileComponentBindings = profileComponentBindings;
   }
 
+  public PropertyCoConstraintBindings getProfileComponentCoConstraints() {
+    return profileComponentCoConstraints;
+  }
+
+  public void setProfileComponentCoConstraints(PropertyCoConstraintBindings profileComponentCoConstraints) {
+    this.profileComponentCoConstraints = profileComponentCoConstraints;
+  }
+
   public ProfileComponentContext() {
     super();
     // TODO Auto-generated constructor stub
-  }
-
-  public enum Level {
-    MESSAGE, SEGMENT
   }
 
   public ProfileComponentBinding getProfileComponentBindings() {

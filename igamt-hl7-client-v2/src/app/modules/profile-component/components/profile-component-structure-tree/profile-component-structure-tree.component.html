@@ -15,12 +15,12 @@
     </ng-template>
     <ng-template pTemplate="header" let-columns>
       <tr>
-        <th *ngIf="!treeView" style="width: 80px;" ttReorderableColumn ttResizableColumn>
+        <th *ngIf="!treeView" style="width: 120px;" ttReorderableColumn ttResizableColumn>
           Path
         </th>
         <ng-container *ngFor="let col of columns" [ngSwitch]="col.field">
 
-          <th *ngSwitchCase="columnTypes.NAME" style="width: 380px;" ttReorderableColumn ttResizableColumn>
+          <th *ngSwitchCase="columnTypes.NAME" style="width: 400px;" ttReorderableColumn ttResizableColumn>
             {{col.header}}
           </th>
           <th *ngSwitchCase="columnTypes.USAGE" style="width: 330px;" ttReorderableColumn ttResizableColumn>
@@ -66,7 +66,7 @@
       <tr>
         <td *ngIf="!treeView">
           <div  style="display: flex; justify-content: flex-start; align-items: center;">
-            <button *ngIf="!viewOnly" class="btn btn-sm btn-danger profile-component-cell-btn" style="background-color: red !important; margin-right: 5px;" (click)="clear(rowData.pathId)">
+            <button *ngIf="!viewOnly" class="btn btn-sm btn-danger profile-component-cell-btn" style="background-color: red !important; margin-right: 5px;" (click)="clear(rowData.pathId, rowData.id)">
               <i class="fa fa-trash"></i>
             </button>
             {{rowData.location.positionalPath}}

@@ -3,7 +3,7 @@ import { ICardinalityRange } from '../components/hl7-v2-tree/hl7-v2-tree.compone
 import { Type } from '../constants/type.enum';
 import { IValuesetBinding } from './binding.interface';
 import { IAssertion, IPath } from './cs.interface';
-import { DeltaAction } from './delta';
+import { DeltaAction, IDeltaInfo, IDeltaNode } from './delta';
 import { IResource } from './resource.interface';
 
 export interface IStructureElementRef {
@@ -28,6 +28,7 @@ export interface ICoConstraintBindingSegment {
 }
 
 export interface ICoConstraintTableConditionalBinding {
+  id: string;
   condition: IAssertion;
   value: ICoConstraintTable;
   delta?: DeltaAction;
@@ -71,6 +72,19 @@ export interface ICoConstraintHeaders {
   selectors: ICoConstraintHeader[];
   constraints: ICoConstraintHeader[];
   narratives: ICoConstraintHeader[];
+  grouper?: ICoConstraintGrouper;
+}
+
+export interface ICoConstraintGrouper {
+  name: string;
+  pathId: string;
+  description: string;
+  version: string;
+  datatype: string;
+  type: Type;
+  delta?: DeltaAction;
+  nameDelta?: IDeltaNode<string>;
+  typeDelta?: IDeltaNode<string>;
 }
 
 export interface ICoConstraintHeader {

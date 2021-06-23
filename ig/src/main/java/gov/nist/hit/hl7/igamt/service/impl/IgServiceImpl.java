@@ -1212,9 +1212,13 @@ public class IgServiceImpl implements IgService {
 
     String valueSetXMLStr = this.xmlSerializeService.serializeValueSetXML(igModel).toXML();
 
+//    String coConstraintsXMLStr = this.xmlSerializeService.serializeCoConstraintXML(igModel).toXML();
+
+
     this.xmlSerializeService.generateIS(out, profileXMLStr, "Profile.xml");
     this.xmlSerializeService.generateIS(out, valueSetXMLStr, "ValueSets.xml");
     this.xmlSerializeService.generateIS(out, constraintXMLStr, "Constraints.xml");
+//    this.xmlSerializeService.generateIS(out, coConstraintsXMLStr, "CoConstraints.xml");
 
     out.close();
     bytes = outputStream.toByteArray();

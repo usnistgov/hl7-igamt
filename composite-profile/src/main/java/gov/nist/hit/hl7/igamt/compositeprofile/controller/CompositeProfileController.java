@@ -11,9 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.compositeprofile.controller;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
@@ -31,13 +28,10 @@ import gov.nist.hit.hl7.igamt.compositeprofile.domain.ResourceAndDisplay;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;

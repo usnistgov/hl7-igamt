@@ -34,6 +34,7 @@ export type GroupOptions = Array<{
 export enum GeneratedFlavorTabs {
   STRUCTURE = 'Structure',
   CONFORMANCE_STATEMENTS = 'Conformance Statements',
+  COCONSTRAINTS = 'Co-Constraints',
 }
 
 @Component({
@@ -175,12 +176,11 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   }
 
   selectItem(elm: IResourceAndDisplay<any>) {
-    console.log(elm);
     switch (elm.display.type) {
       case Type.DATATYPE:
       case Type.SEGMENT:
       case Type.CONFORMANCEPROFILE:
-        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS];
+        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS, GeneratedFlavorTabs.COCONSTRAINTS];
         break;
     }
     if (!this.tabs.includes(this.activeTab)) {

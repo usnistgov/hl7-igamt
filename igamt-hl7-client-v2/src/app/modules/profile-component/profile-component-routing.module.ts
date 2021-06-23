@@ -6,11 +6,11 @@ import {
   OpenContextStructureEditor, OpenProfileComponentMetadataEditor,
   ProfileComponentActionTypes,
 } from '../../root-store/profile-component/profile-component.actions';
-import { OpenProfileComponentMessageConformanceStatementEditor, OpenProfileComponentSegmentConformanceStatementEditor } from '../../root-store/profile-component/profile-component.actions';
-import { OpenSegmentConformanceStatementEditor } from '../../root-store/segment-edit/segment-edit.actions';
+import { OpenProfileComponentMessageCoConstraintsEditor, OpenProfileComponentMessageConformanceStatementEditor, OpenProfileComponentSegmentConformanceStatementEditor } from '../../root-store/profile-component/profile-component.actions';
 import { DataLoaderGuard, EditorActivateGuard, EditorDeactivateGuard } from '../dam-framework';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
+import { CoConstraintsEditorComponent, PC_CC_EDITOR_METADATA } from './components/co-constraints-editor/co-constraints-editor.component';
 import { MessageConformanceStatementEditorComponent } from './components/message-conformance-statement-editor/message-conformance-statement-editor.component';
 import { MessageContextStructureEditorComponent } from './components/message-context-structure-editor/message-context-structure-editor.component';
 import { ProfileComponentMetadataComponent } from './components/profile-component-metadata/profile-component-metadata.component';
@@ -171,6 +171,21 @@ const routes: Routes = [
                         saveTableOfContent: true,
                       },
                       action: OpenProfileComponentMessageConformanceStatementEditor,
+                      idKey: 'contextId',
+                    },
+                  },
+                  {
+                    path: 'co-constraint',
+                    component: CoConstraintsEditorComponent,
+                    canActivate: [EditorActivateGuard],
+                    canDeactivate: [EditorDeactivateGuard],
+                    data: {
+                      editorMetadata: PC_CC_EDITOR_METADATA,
+                      onLeave: {
+                        saveEditor: true,
+                        saveTableOfContent: true,
+                      },
+                      action: OpenProfileComponentMessageCoConstraintsEditor,
                       idKey: 'contextId',
                     },
                   },
