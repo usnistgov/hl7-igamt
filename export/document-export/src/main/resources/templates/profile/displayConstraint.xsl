@@ -7,6 +7,7 @@
         <xsl:param name="type"/>
         <xsl:param name="constraintMode"/>
         <xsl:param name="headerLevel"/>
+            <xsl:param name="profileComponent" />
         <xsl:element name="span">
             <xsl:element name="span">
                 <xsl:element name="b">
@@ -22,7 +23,9 @@
                 </xsl:attribute>
                 <xsl:choose>
                     <xsl:when test="$type='cs'">
-                        <xsl:call-template name="conformanceStatementHeader"/>
+                        <xsl:call-template name="conformanceStatementHeader">
+                         <xsl:with-param name="profileComponent" select="$profileComponent"/>
+                        </xsl:call-template>
                         <xsl:element name="tbody">
                             <xsl:for-each select="Constraints/ConformanceStatement">
                                 <xsl:sort select="@identifier" data-type="text" order="ascending"/>

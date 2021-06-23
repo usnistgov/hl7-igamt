@@ -26,6 +26,7 @@ public class ProfileComponentContextDataModel implements Comparable< ProfileComp
         this.structure = profileComponentContext.getStructure();
         this.position = profileComponentContext.getPosition();
         profileComponentItemMap = new HashMap<>();
+        this.rootContextBindings = new HashSet<PropertyBinding>();
         for(ProfileComponentItem item: profileComponentContext.getProfileComponentItems()) {
             this.addToItemMap(item.getPath(), item.getItemProperties(), namingService);
         }

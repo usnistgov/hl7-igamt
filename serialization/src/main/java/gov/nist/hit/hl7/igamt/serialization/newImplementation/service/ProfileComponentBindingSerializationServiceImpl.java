@@ -33,8 +33,9 @@ public class ProfileComponentBindingSerializationServiceImpl implements ProfileC
 		for(ProfileComponentItemDataModel profileComponentItemDataModel : profileComponentItemDataModelList) {
 			if(profileComponentItemDataModel != null) {
 				ItemProperty itemProperty = profileComponentItemDataModel.getItemProperties().stream().filter((item) -> {
-					return item instanceof PropertyValueSet;
-				}).findAny().get();
+					return (item instanceof PropertyValueSet);
+				}).findAny().orElse(null);
+				if(itemProperty !=null) {
 			Element valuesetbindingElement = new Element("ValuesetBinding");
 			valuesetbindingElement.addAttribute(
     				new Attribute("name", profileComponentItemDataModel.getLocationInfo() != null ? profileComponentItemDataModel.getLocationInfo().getName() : "")
@@ -49,7 +50,7 @@ public class ProfileComponentBindingSerializationServiceImpl implements ProfileC
     				new Attribute("name", ((PropertyValueSet) itemProperty).getValuesetBindings()!= null  && !createValueSetList(((PropertyValueSet) itemProperty).getValuesetBindings()).isEmpty() ? createValueSetList(((PropertyValueSet) itemProperty).getValuesetBindings()).toString() : "")
 			);
 			valuesetbindingElement.addAttribute(
-    				new Attribute("strength", (((PropertyValueSet) itemProperty).getValuesetBindings() != null && !((PropertyValueSet) itemProperty).getValuesetBindings().isEmpty())  ? ((PropertyValueSet) itemProperty).getValuesetBindings().iterator().next().getStrength().name() : "")
+    				new Attribute("strength", (((PropertyValueSet) itemProperty).getValuesetBindings() != null && !((PropertyValueSet) itemProperty).getValuesetBindings().isEmpty())  ? ((PropertyValueSet) itemProperty).getValuesetBindings().iterator().next().getStrength().toString() : "")
 			);
 			valuesetbindingElement.addAttribute(
     				new Attribute("locations", (((PropertyValueSet) itemProperty).getValuesetBindings() != null && !((PropertyValueSet) itemProperty).getValuesetBindings().isEmpty() && !createBindingLocation(((PropertyValueSet) itemProperty).getValuesetBindings().iterator().next().getValuesetLocations(),profileComponentItemDataModel.getLocationInfo().getHl7Path()).isEmpty()) ? createBindingLocation(((PropertyValueSet) itemProperty).getValuesetBindings().iterator().next().getValuesetLocations(), profileComponentItemDataModel.getLocationInfo().getHl7Path()).toString() : "")
@@ -57,6 +58,7 @@ public class ProfileComponentBindingSerializationServiceImpl implements ProfileC
 			if(valuesetbindingElement != null && ((PropertyValueSet) itemProperty).getValuesetBindings() != null) {
 				valuesetbindingsElement.appendChild(valuesetbindingElement);
 			}
+		}
 		}
 	}
 		return valuesetbindingsElement;

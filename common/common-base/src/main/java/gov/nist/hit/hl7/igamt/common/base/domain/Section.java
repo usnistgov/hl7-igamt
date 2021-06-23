@@ -2,7 +2,7 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
 
-public class Section implements Serializable{
+public class Section implements Serializable, Comparable<Section>{
   
   private String id; 
   private String description;
@@ -52,6 +52,14 @@ public class Section implements Serializable{
 	super();
 	// TODO Auto-generated constructor stub
  }
+@Override
+public int compareTo(Section o) {
+    return Integer.valueOf(this.getPosition()).compareTo(o.getPosition());
+	
+}
+//public int compare(Section u1, Section u2) {
+//    return Integer.valueOf(u1.getPosition()).compareTo(u2.getPosition());
+//  }
 
 
 }

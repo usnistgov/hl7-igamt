@@ -54,6 +54,7 @@ import gov.nist.hit.hl7.igamt.export.service.DlNewExportService;
 import gov.nist.hit.hl7.igamt.export.service.IgNewExportService;
 import gov.nist.hit.hl7.igamt.ig.controller.FormData;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.serialization.newImplementation.service.ExcelImportService;
@@ -105,6 +106,8 @@ public class ExportController {
       ExportFilterDecision decision = null;
       ExportConfiguration config = null;
       Ig ig = igService.findById(igId);		
+      IgDataModel igDataModel = igService.generateDataModel(ig);
+      ig = igDataModel.getModel();
       ExportType type = ExportType.fromString(formData.getDocumentType());
       if(type == null) {
         throw new ExportException("Unspecified Export Type");
@@ -134,14 +137,14 @@ public class ExportController {
         }
       }
       if(format.equalsIgnoreCase(ExportDocType.HTML.toString())) {
-        exportedFile = igExportService.exportIgDocumentToHtml(username, igId, decision, config.getId());
+        exportedFile = igExportService.exportIgDocumentToHtml(username, igDataModel, decision, config.getId());
 
         response.setContentType("text/html");
         response.setHeader("Content-disposition",
             "attachment;filename=" + exportedFile.getFileName());
       }			
       if(format.equalsIgnoreCase(ExportDocType.WORD.toString())) {
-        exportedFile = igExportService.exportIgDocumentToWord(username, igId, decision, config.getId());
+        exportedFile = igExportService.exportIgDocumentToWord(username, igDataModel, decision, config.getId());
 
         response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
         response.setHeader("Content-disposition",
@@ -204,13 +207,15 @@ public class ExportController {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       try {
+    	  Ig ig = igService.findById(documentId);		
+          IgDataModel igDataModel = igService.generateDataModel(ig);
+          ig = igDataModel.getModel();
         String username = authentication.getPrincipal().toString();
         ExportedFile exportedFile= null;     
         ExportConfiguration exportConfiguration = exportConfigurationService.getConfigurationToApply(type, username);
         if(type.equals(ExportType.IGDOCUMENT ) || type.equals(ExportType.DIFFERENTIAL)) {
-          Ig ig = igService.findById(documentId);
           ExportFilterDecision decision = igExportService.getExportFilterDecision(ig, exportConfiguration);
-          exportedFile = igExportService.exportIgDocumentToHtml(username, documentId, decision, exportConfiguration.getId());
+          exportedFile = igExportService.exportIgDocumentToHtml(username, igDataModel, decision, exportConfiguration.getId());
         }
         response.setContentType("text/html");
         response.setHeader("Content-disposition",

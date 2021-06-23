@@ -112,20 +112,21 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	
 
 	@Override
-	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId)
+	public ExportedFile exportIgDocumentToHtml(String username,IgDataModel igDataModel, ExportFilterDecision decision, String configId)
 			throws Exception {
-		Ig igDocument = igService.findById(igDocumentId);
+		Ig igDocument = igDataModel.getModel();
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration);
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDataModel, ExportFormat.HTML, decision, exportConfiguration);
 			return htmlFile;
 		}
 		return null;
 	}
 
 	@Override
-	public ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument, ExportFormat exportFormat,
+	public ExportedFile serializeIgDocumentToHtml(String username,IgDataModel igDataModel, ExportFormat exportFormat,
 			ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception {
+		Ig igDocument = igDataModel.getModel();
 		try {
 //			ExportConfiguration exportConfiguration =
 //					exportConfigurationService.getExportConfiguration(username);
@@ -136,10 +137,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 //			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
 //			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
 //			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
-
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
-			IgDataModel igDataModel = igService.generateDataModel(igDocument);
 			DocumentStructureDataModel documentStructureDataModel = new DocumentStructureDataModel();
 			String xmlContent =
 					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,decision).toXML();
@@ -450,12 +449,12 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	@Override
-	public ExportedFile exportIgDocumentToWord(String username, String id, ExportFilterDecision decision, String configId )
+	public ExportedFile exportIgDocumentToWord(String username, IgDataModel igDatamodel, ExportFilterDecision decision, String configId )
 			throws Exception {
-		Ig igDocument = igService.findById(id);
+		Ig igDocument = igDatamodel.getModel();
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD, decision, exportConfiguration);
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDatamodel, ExportFormat.WORD, decision, exportConfiguration);
 			ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(),
 					igDocument.getUpdateDate(),
 					igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
@@ -561,5 +560,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	      }
 	    }
 	  }
+
+	
+
 
 }
