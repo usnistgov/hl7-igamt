@@ -185,6 +185,16 @@ export class ProfileComponentEffects {
     CONTEXT_NOT_FOUND,
   );
 
+  @Effect()
+  openMessageCoConstraintsEditor$ = this.editorHelper.openCoConstraintsBindingProfileComponentEditor(
+    ProfileComponentActionTypes.OpenProfileComponentMessageCoConstraintsEditor,
+    Type.CONFORMANCEPROFILE,
+    fromIgamtDisplaySelectors.selectContextById,
+    this.store.select(fromIgamtSelectedSelectors.selectProfileComponentContext),
+    (id: string) => this.cpService.getById(id),
+    CONTEXT_NOT_FOUND,
+  );
+
   constructor(
     private actions$: Actions<ProfileComponentActions>,
     private store: Store<any>,

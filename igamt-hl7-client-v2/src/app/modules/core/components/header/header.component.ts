@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import * as fromAuth from '../../../dam-framework/store/authentication/index';
+import { LogoutRequest } from '../../../dam-framework/store/authentication/index';
 import * as fromRoot from './../../../../root-store/index';
 
 @Component({
@@ -18,6 +19,8 @@ export class HeaderComponent implements OnInit {
   isIG: Observable<boolean>;
   isDtLib: Observable<boolean>;
   isConfig: Observable<boolean>;
+  isLoggedIn: Observable<boolean>;
+  username: Observable<string>;
 
   constructor(private store: Store<fromRoot.IRouteState>) {
     this.isLoading = store.select(fromDAM.selectLoaderIsLoading);
@@ -43,6 +46,13 @@ export class HeaderComponent implements OnInit {
         },
       ),
     );
+    this.isAdmin = store.select(fromAuth.selectIsAdmin);
+    this.isLoggedIn = store.select(fromAuth.selectIsLoggedIn);
+    this.username = store.select(fromAuth.selectUsername);
+  }
+
+  logout() {
+    this.store.dispatch(new LogoutRequest());
   }
 
   ngOnInit() {

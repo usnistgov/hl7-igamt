@@ -3,8 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, filter, flatMap, map, pluck, switchMap, take, tap } from 'rxjs/operators';
+import { combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, filter, flatMap, map, pluck, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { Hl7V2TreeService } from 'src/app/modules/shared/services/hl7-v2-tree.service';
@@ -22,14 +22,14 @@ import { Type } from '../../../shared/constants/type.enum';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
-import { IProfileComponentBinding, IProfileComponentContext, IProfileComponentItem, IPropertyBinding } from '../../../shared/models/profile.component';
+import { IProfileComponentBinding, IProfileComponentContext, IProfileComponentItem } from '../../../shared/models/profile.component';
 import { IResource } from '../../../shared/models/resource.interface';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { IBindingContext } from '../../../shared/services/structure-element-binding.service';
 import { ProfileComponentItemList } from '../../services/profile-component-item.object';
 import { ProfileComponentService } from '../../services/profile-component.service';
 import { AddProfileComponentItemComponent } from '../add-profile-component-item/add-profile-component-item.component';
-import { IProfileComponentChange } from '../profile-component-structure-tree/profile-component-structure-tree.component';
+import { IItemLocation, IProfileComponentChange } from '../profile-component-structure-tree/profile-component-structure-tree.component';
 
 export type BindingLegend = Array<{
   label: string,
@@ -152,6 +152,7 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
             // Initialize profile component context payload
             this.payload$ = this.profileComponentItemList.context$.pipe(
               map((context) => {
+
                 return {
                   items: context.profileComponentItems,
                   bindings: context.profileComponentBindings,
@@ -171,8 +172,8 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
     ).subscribe();
   }
 
-  removeItem(pathId: string) {
-    this.profileComponentItemList.removeItem(pathId);
+  removeItem(location: IItemLocation) {
+    this.profileComponentItemList.removeItem(location);
   }
 
   addItems() {
@@ -216,7 +217,7 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
             return [
               this.messageService.messageToAction(new Message<any>(MessageType.SUCCESS, 'Context saved successfully!', null)),
               new fromDam.EditorUpdate({ value: { changes: {}, resource: value }, updateDate: false }),
-              new fromDam.SetValue({ selected: value }),
+              new fromDam.SetValue({ context: value }),
             ];
           }),
           catchError((error) => throwError(this.messageService.actionFromError(error))),

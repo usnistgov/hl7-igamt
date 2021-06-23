@@ -10,6 +10,7 @@ public class CoConstraintHeaders {
     private List<CoConstraintHeader> selectors;
     private List<CoConstraintHeader> constraints;
     private List<CoConstraintHeader> narratives;
+    private CoConstraintGrouper grouper;
 
     public CoConstraintHeaders() {
         this.selectors = new ArrayList<>();
@@ -72,5 +73,13 @@ public class CoConstraintHeaders {
         }).filter(Objects::nonNull).collect(Collectors.toList());
 
         return clone;
+    }
+
+    public CoConstraintGrouper getGrouper() {
+        return grouper;
+    }
+
+    public void setGrouper(CoConstraintGrouper grouper) {
+        this.grouper = grouper;
     }
 }

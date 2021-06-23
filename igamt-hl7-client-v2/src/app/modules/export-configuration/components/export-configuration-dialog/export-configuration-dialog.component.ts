@@ -18,6 +18,7 @@ import { LibraryService } from '../../../library/services/library.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IExportConfigurationGlobal } from '../../models/config.interface';
+import { ExportTypes } from '../../models/export-types';
 import { ConfigurationTocComponent } from '../configuration-toc/configuration-toc.component';
 
 @Component({
@@ -28,7 +29,7 @@ import { ConfigurationTocComponent } from '../configuration-toc/configuration-to
 export class ExportConfigurationDialogComponent implements OnInit {
   selected: IDisplayElement;
   type: Type;
-  docType: Type;
+  docType: ExportTypes;
   @ViewChild(ConfigurationTocComponent) toc;
   initialConfig: IExportConfigurationGlobal;
   filter: any;
@@ -183,8 +184,8 @@ export class ExportConfigurationDialogComponent implements OnInit {
 
   applyFilter($event: string[], obj: any) {
     Object.keys(obj).forEach((key) => {
-        obj[key] = this.mergeDeltaFilter($event, key);
-      },
+      obj[key] = this.mergeDeltaFilter($event, key);
+    },
     );
   }
 

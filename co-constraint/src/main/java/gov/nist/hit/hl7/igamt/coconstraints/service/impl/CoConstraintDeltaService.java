@@ -8,6 +8,8 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -99,9 +101,11 @@ public class CoConstraintDeltaService {
     public CoConstraintGroup deltaGroup(CoConstraintGroup source, CoConstraintGroup target) {
         List<CoConstraint> coConstraints = this.matchAndTransform(source.getCoConstraints(), target.getCoConstraints(), this.getMatchFactory(this::match), this::deltaCoConstraint);
         DeltaField<String> deltaName = this.deltaName(source.getName(), target.getName());
+        CoConstraintGrouper grouper = this.deltaCoConstraintGrouper(source.getHeaders().getGrouper(), target.getHeaders().getGrouper());
         target.setCoConstraints(coConstraints);
+        target.getHeaders().setGrouper(grouper);
         target.setNameDelta(deltaName);
-        target.setDelta(this.hasChange(coConstraints) || !target.getNameDelta().getDelta().equals(DeltaAction.UNCHANGED) ? DeltaAction.CHANGED : DeltaAction.UNCHANGED);
+        target.setDelta(this.hasChange(coConstraints) || this.hasChange(Collections.singletonList(grouper)) || !target.getNameDelta().getDelta().equals(DeltaAction.UNCHANGED) ? DeltaAction.CHANGED : DeltaAction.UNCHANGED);
         return target;
     }
 
@@ -137,11 +141,43 @@ public class CoConstraintDeltaService {
     public CoConstraintTable deltaCoConstraintTable(CoConstraintTable source, CoConstraintTable target) {
         List<CoConstraint> coConstraints = this.matchAndTransform(source.getCoConstraints(), target.getCoConstraints(), this.getMatchFactory(this::match), this::deltaCoConstraint);
         List<CoConstraintGroupBinding> groups = this.matchAndTransform(source.getGroups(), target.getGroups(), this.getMatchFactory(this::match), this::deltaCoConstraintGroupBinding);
-        boolean hasChanges = this.hasChange(coConstraints) || this.hasChange(groups);
+        CoConstraintGrouper grouper = this.deltaCoConstraintGrouper(source.getHeaders().getGrouper(), target.getHeaders().getGrouper());
+        boolean hasChanges = this.hasChange(coConstraints) || this.hasChange(groups) || this.hasChange(Collections.singletonList(grouper));
         target.setDelta(hasChanges ? DeltaAction.CHANGED : DeltaAction.UNCHANGED);
         target.setCoConstraints(coConstraints);
         target.setGroups(groups);
+        target.getHeaders().setGrouper(grouper);
         return target;
+    }
+
+    public CoConstraintGrouper deltaCoConstraintGrouper(CoConstraintGrouper source, CoConstraintGrouper target) {
+        if(source != null && target == null) {
+            source.setDelta(DeltaAction.DELETED);
+            source.setNameDelta(new DeltaField<>(source.getName(), null));
+            source.setTypeDelta(new DeltaField<>(source.getType(), null));
+            return source;
+        }
+
+        if(source == null && target != null) {
+            target.setDelta(DeltaAction.ADDED);
+            target.setNameDelta(new DeltaField<>(null, target.getName()));
+            target.setTypeDelta(new DeltaField<>(null, target.getType()));
+            return target;
+        }
+
+        if(source != null && target != null) {
+            target.setDelta(DeltaAction.ADDED);
+            target.setNameDelta(new DeltaField<>(source.getName(), target.getName()));
+            target.setTypeDelta(new DeltaField<>(source.getType(), target.getType()));
+            boolean hasChanges = this.hasChange(Arrays.asList(
+                    target.getNameDelta(),
+                    target.getTypeDelta()
+            ));
+            target.setDelta(hasChanges ? DeltaAction.CHANGED : DeltaAction.UNCHANGED);
+            return target;
+        }
+
+        return null;
     }
 
     public CoConstraint deltaCoConstraint(CoConstraint source, CoConstraint target) {
