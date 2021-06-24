@@ -136,7 +136,6 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
 
   editBinding() {
     const dialogRef = this.dialog.open(BindingSelectorComponent, {
-
       data: {
         resources: this.valueSets,
         locationInfo: this.bindingInfo,

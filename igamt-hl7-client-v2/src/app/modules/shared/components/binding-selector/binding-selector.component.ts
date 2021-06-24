@@ -62,7 +62,7 @@ export class BindingSelectorComponent<T> implements OnInit {
     if (!this.selectedValueSets) {
       this.selectedValueSets = [];
     }
-    this.editableBinding = { valueSets: [], bindingStrength: undefined, bindingLocation: this.getDefaultBindinglcation() };
+    this.editableBinding = { valueSets: [], bindingStrength: IValuesetStrength.R, bindingLocation: this.getDefaultBindinglcation() };
     this.selectedValueSets.push(this.editableBinding);
   }
   submitValueSet(binding: IValueSetBindingDisplay, vs: IDisplayElement) {

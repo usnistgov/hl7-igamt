@@ -9,7 +9,6 @@ import { IConformanceStatement } from './cs.interface';
 import { IPredicate } from './predicate.interface';
 import { IResource } from './resource.interface';
 import { ChangeType, PropertyType } from './save-change';
-import { IDynamicMappingInfo } from './segment.interface';
 
 export interface IProfileComponent extends IResource {
   children?: IProfileComponentContext;
@@ -25,6 +24,7 @@ export interface IProfileComponentContext {
   profileComponentCoConstraints?: IPropertyCoConstraintBindings;
   profileComponentBindings: IProfileComponentBinding;
   profileComponentItems: IProfileComponentItem[];
+  profileComponentDynamicMapping?: IPropertyDynamicMapping;
 }
 
 export interface IProfileComponentBinding {
@@ -79,10 +79,6 @@ export interface IPropertyDefinitionText extends IItemProperty {
   definitionText: string;
   propertyKey: PropertyType.DEFINITIONTEXT;
 }
-export interface IPropertyDynamicMapping extends IItemProperty {
-  dynamicMappingInfo: IDynamicMappingInfo;
-  propertyKey: PropertyType.DYNAMICMAPPINGITEM;
-}
 export interface IPropertyLengthMax extends IItemProperty {
   max: string;
   propertyKey: PropertyType.LENGTHMAX;
@@ -132,14 +128,26 @@ export interface IPropertyConformanceStatement extends IPropertyBinding {
   payload: IConformanceStatement;
   propertyKey: PropertyType.STATEMENT;
 }
+export interface IPropertyDynamicMapping extends IItemProperty {
+  override: boolean;
+  items: IPcDynamicMappingItem[];
+}
+export interface  IPcDynamicMappingItem {
+  change: ChangeType;
+  datatypeName: string;
+  flavorId: string;
+}
 
 export interface IPropertyCoConstraintBindings extends IItemProperty {
   bindings: ICoConstraintBindingContext[];
   propertyKey: PropertyType.COCONSTRAINTBINDINGS;
 }
-
 export interface IValuedPath {
   elementId: string;
   child?: IValuedPath;
   values?: IItemProperty[];
+}
+export enum DynamicMappingStatus {
+  ACTIVE = 'ACTIVE',
+  INVALID = 'INVALID',
 }

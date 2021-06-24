@@ -2,11 +2,12 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, pluck, switchMap, take } from 'rxjs/operators';
+import {combineLatest, Observable, of} from 'rxjs';
+import {catchError, concatMap, flatMap, map, mergeMap, pluck, switchMap, take, withLatestFrom} from 'rxjs/operators';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { IConformanceStatementList } from 'src/app/modules/shared/models/cs-list.interface';
 import { PropertyType } from 'src/app/modules/shared/models/save-change';
+import {selectDocument, selectLoadedDocumentInfo} from 'src/app/root-store/dam-igamt/igamt.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { ConformanceProfileService } from '../../modules/conformance-profile/services/conformance-profile.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
@@ -18,10 +19,17 @@ import * as fromRouterSelector from '../../modules/dam-framework/store/router/ro
 import { IPcConformanceStatementEditorData } from '../../modules/profile-component/components/conformance-statement-editor/conformance-statement-editor.component';
 import { ProfileComponentService } from '../../modules/profile-component/services/profile-component.service';
 import { SegmentService } from '../../modules/segment/services/segment.service';
+import {IDocumentRef} from '../../modules/shared/models/abstract-domain.interface';
+import {IDisplayElement} from '../../modules/shared/models/display-element.interface';
 import { IProfileComponent, IProfileComponentContext, IPropertyConformanceStatement } from '../../modules/shared/models/profile.component';
+import {ISegment} from '../../modules/shared/models/segment.interface';
 import * as fromIgamtDisplaySelectors from '../dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from '../dam-igamt/igamt.selected-resource.selectors';
-import { OpenProfileComponentMessageConformanceStatementEditor, OpenProfileComponentSegmentConformanceStatementEditor } from './profile-component.actions';
+import {
+  OpenProfileComponentMessageConformanceStatementEditor,
+  OpenProfileComponentSegmentConformanceStatementEditor,
+  OpenSegmentContextDynamicMappingEditor,
+} from './profile-component.actions';
 import {
   LoadContext,
   LoadContextFailure,
@@ -37,6 +45,16 @@ const CONTEXT_NOT_FOUND = 'Profile Component Context not found';
 
 @Injectable()
 export class ProfileComponentEffects {
+
+  constructor(
+    private actions$: Actions<ProfileComponentActions>,
+    private store: Store<any>,
+    private message: MessageService,
+    private profileComponentService: ProfileComponentService,
+    private editorHelper: OpenEditorService,
+    private segmentService: SegmentService,
+    private cpService: ConformanceProfileService) {
+  }
 
   @Effect()
   loadProfileComponent$ = this.actions$.pipe(
@@ -184,7 +202,34 @@ export class ProfileComponentEffects {
     }),
     CONTEXT_NOT_FOUND,
   );
-
+  @Effect()
+  openDynamicMappingEditor = this.actions$.pipe(
+    ofType(ProfileComponentActionTypes.OpenSegmentContextDynamicMappingEditor),
+    switchMap((action: OpenSegmentContextDynamicMappingEditor) => {
+      return this.store.select(fromRouterSelector.selectRouteParams).pipe(
+        take(1),
+        pluck('pcId'),
+        withLatestFrom(this.store.select(selectLoadedDocumentInfo)),
+        flatMap(([pcId, documentRef]) => {
+          return this.profileComponentService.getChildById(pcId as string, action.payload.id).pipe(
+            concatMap((ctx) => {
+              return this.segmentService.getById(ctx.sourceId).pipe(
+                withLatestFrom(this.store.select(fromIgamtDisplaySelectors.selectContextById, { id: ctx.id })),
+                map(([seg, display]) => {
+                  return new fromDamActions.OpenEditor({
+                    id: action.payload.id,
+                    display,
+                    editor: action.payload.editor,
+                    initial: this.profileComponentService.getDynamicMappingEditorInfo(ctx, seg),
+                  });
+                }),
+              );
+            }),
+          );
+        }),
+      );
+    }),
+  );
   @Effect()
   openMessageCoConstraintsEditor$ = this.editorHelper.openCoConstraintsBindingProfileComponentEditor(
     ProfileComponentActionTypes.OpenProfileComponentMessageCoConstraintsEditor,
@@ -194,16 +239,6 @@ export class ProfileComponentEffects {
     (id: string) => this.cpService.getById(id),
     CONTEXT_NOT_FOUND,
   );
-
-  constructor(
-    private actions$: Actions<ProfileComponentActions>,
-    private store: Store<any>,
-    private message: MessageService,
-    private profileComponentService: ProfileComponentService,
-    private editorHelper: OpenEditorService,
-    private segmentService: SegmentService,
-    private cpService: ConformanceProfileService) {
-  }
 
   conformanceStatementEditor(getter: (string, IDocumentRef) => Observable<IConformanceStatementList>) {
     return (action: fromDamActions.OpenEditorBase) => {
@@ -235,5 +270,4 @@ export class ProfileComponentEffects {
       );
     };
   }
-
 }

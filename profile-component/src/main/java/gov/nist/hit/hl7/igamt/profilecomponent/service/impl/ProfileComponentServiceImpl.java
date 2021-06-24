@@ -12,13 +12,13 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.service.impl;
 
 import java.io.IOException;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -28,7 +28,6 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -38,6 +37,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
@@ -46,6 +46,7 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -58,17 +59,16 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDatatype;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyRef;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertySingleCode;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyValueSet;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContextNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 import gov.nist.hit.hl7.resource.change.service.ApplyChange;
@@ -238,19 +238,115 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
    */
   @Override
   public ProfileComponentContext updateContext(String pcId, String contextId, ProfileComponentContext updated) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
-    boolean found = false;
     ProfileComponent pc = this.findById(pcId);
     for(ProfileComponentContext ctx:  pc.getChildren()) {
       if(ctx.getId().equals(contextId)) {
+        updateDynamicMapping(ctx, updated);  
         ctx.setProfileComponentItems(updated.getProfileComponentItems());
         ctx.setProfileComponentBindings(updated.getProfileComponentBindings());
         break;
       }
     }
     this.save(pc);
-
     return findContextById(pcId, contextId);
 
+  }
+
+  void updateDynamicMapping(ProfileComponentContext oldContext, ProfileComponentContext newContext){
+    if(oldContext.getLevel().equals(Type.SEGMENT)) {
+      Segment s = this.segmentService.findById(oldContext.getSourceId());
+      if(s != null && s.getName().equals("OBX")) {
+        if (this.hasObx2Change(newContext.getProfileComponentBindings())) {
+          checkAndUpdateDynamicMapping(oldContext, newContext, s);
+        } else if(oldContext.getProfileComponentDynamicMapping() != null && oldContext.getProfileComponentDynamicMapping().isOverride()){
+            oldContext.setProfileComponentDynamicMapping(null);
+        } else {
+          oldContext.setProfileComponentDynamicMapping(newContext.getProfileComponentDynamicMapping());
+        }
+      }
+    }  
+  }
+  
+  
+  /**
+   * @param profileComponentBindings
+   * @return
+   */
+  private boolean hasObx2Change(ProfileComponentBinding profileComponentBindings) {
+    if(profileComponentBindings == null || profileComponentBindings.getContextBindings() == null) {
+      return false;
+    }else {
+      Set<PropertyBinding> obx2Bindings = profileComponentBindings.getContextBindings().stream().filter((x) -> x.getTarget().equals("2")).collect(Collectors.toSet());
+      return obx2Bindings != null && !obx2Bindings.isEmpty();
+    }
+  }
+
+  private void checkAndUpdateDynamicMapping(ProfileComponentContext ctx,
+      ProfileComponentContext updated, Segment s) {
+    String oldVs = this.getObx2ValueSet(ctx, s);
+    String newVs = this.getObx2ValueSet(updated, s);
+    if(newVs != oldVs) {
+      ctx.setProfileComponentDynamicMapping(this.restoreDyanamicMapping(newVs));
+    }else {
+      ctx.setProfileComponentDynamicMapping(updated.getProfileComponentDynamicMapping());
+    }
+  }
+
+
+  /**
+   * @param newVs
+   * @return
+   */
+  private PropertyDynamicMapping restoreDyanamicMapping(String newVs) {
+    PropertyDynamicMapping mapping = new PropertyDynamicMapping();
+    mapping.setOverride(true);
+    mapping.setItems(new HashSet<PcDynamicMappingItem>());
+    if (newVs !=null) {
+      Valueset source = valuesetService.findById(newVs);
+      if(source !=null) {
+        for(Code c : source.getCodes()) {
+          if(c.getValue() !=null && c.getUsage() != CodeUsage.E) {
+            Datatype d = datatypeService.findOneByNameAndVersionAndScope(c.getValue(), source.getDomainInfo().getVersion(), Scope.HL7STANDARD.toString());
+            if(d != null) {
+              mapping.getItems().add((new PcDynamicMappingItem(ChangeType.ADD, d.getName(), d.getId())));
+            }
+          }
+        }
+      }
+    }
+    return mapping;
+  }
+
+  private String getObx2ValueSet(ProfileComponentContext ctx, Segment s) {
+    Set<PropertyBinding> obx2Bindings = new HashSet<PropertyBinding>();
+    if(ctx.getProfileComponentBindings() != null && ctx.getProfileComponentBindings().getContextBindings() !=null) {
+      obx2Bindings = ctx.getProfileComponentBindings().getContextBindings().stream().filter((x) -> x.getTarget() != null && x.getTarget().equals("2")).collect(Collectors.toSet());
+    if(obx2Bindings == null || obx2Bindings.isEmpty()) {
+      return this.segmentService.findObx2VsId(s);
+    }else { 
+      return findObx2ValueSet(obx2Bindings);
+    }
+    }else return null;
+  }
+
+  /**
+   * @param obx2Bindings
+   * @return 
+   */
+  private String findObx2ValueSet(Set<PropertyBinding> obx2Bindings) {
+
+    for(PropertyBinding prop: obx2Bindings) {
+      if(prop instanceof PropertyValueSet ) {
+        PropertyValueSet propvs = (PropertyValueSet)prop;
+        if(propvs.getValuesetBindings() != null) {
+          Optional<ValuesetBinding> vs = propvs.getValuesetBindings().stream().findAny();
+          if(vs.isPresent() && vs.get().getValueSets() !=null && !vs.get().getValueSets().isEmpty()) {
+            return vs.get().getValueSets().get(0);
+          }
+        }
+      }
+    }
+    return null;
   }
 
   @Override
@@ -269,9 +365,9 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
         }
 
         rootBinding = rootBinding
-                .stream()
-                .filter((elm) -> !elm.getPropertyKey().equals(PropertyType.STATEMENT))
-                .collect(Collectors.toSet());
+            .stream()
+            .filter((elm) -> !elm.getPropertyKey().equals(PropertyType.STATEMENT))
+            .collect(Collectors.toSet());
         rootBinding.addAll(conformanceStatements);
         ctxBinding.setContextBindings(rootBinding);
         ctx.setProfileComponentBindings(ctxBinding);
@@ -505,6 +601,21 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
         throw new ApplyChangeException(singlePropertyMap.get(PropertyType.PROFILEIDENTIFIER));
       }
     } 
+
+  }
+
+  @Override
+  public PropertyDynamicMapping updateContextDynamicMapping(String pcId, String contextId,
+      PropertyDynamicMapping pcDynamicMapping) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException {
+    ProfileComponent pc = this.findById(pcId);
+    for(ProfileComponentContext ctx:  pc.getChildren()) {
+      if(ctx.getId().equals(contextId)) {
+        ctx.setProfileComponentDynamicMapping(pcDynamicMapping);
+        break;
+      }
+    }
+    this.save(pc);
+    return findContextById(pcId, contextId).getProfileComponentDynamicMapping();
 
   }
 

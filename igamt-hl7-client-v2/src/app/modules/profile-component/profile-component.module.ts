@@ -10,6 +10,7 @@ import { AddProfileComponentItemComponent } from './components/add-profile-compo
 import { CoConstraintsEditorComponent } from './components/co-constraints-editor/co-constraints-editor.component';
 import { MessageConformanceStatementEditorComponent } from './components/message-conformance-statement-editor/message-conformance-statement-editor.component';
 import { MessageContextStructureEditorComponent } from './components/message-context-structure-editor/message-context-structure-editor.component';
+import { PcDynamicMappingSelectorComponent } from './components/pc-dynamic-mapping-selector/pc-dynamic-mapping-selector.component';
 import { ProfileComponentMetadataComponent } from './components/profile-component-metadata/profile-component-metadata.component';
 import { PpCardinalityComponent } from './components/profile-component-structure-tree/columns/pp-cardinality/pp-cardinality.component';
 import { PpConfLengthComponent } from './components/profile-component-structure-tree/columns/pp-conf-length/pp-conf-length.component';
@@ -22,6 +23,7 @@ import { PpUsageComponent } from './components/profile-component-structure-tree/
 import { PpValuesetComponent } from './components/profile-component-structure-tree/columns/pp-valueset/pp-valueset.component';
 import { ProfileComponentStructureTreeComponent } from './components/profile-component-structure-tree/profile-component-structure-tree.component';
 import { SegmentConformanceStatementEditorComponent } from './components/segment-conformance-statement-editor/segment-conformance-statement-editor.component';
+import { SegmentContextDynamicMappingComponent } from './components/segment-context-dynamic-mapping/segment-context-dynamic-mapping.component';
 import { SegmentContextStructureEditorComponent } from './components/segment-context-structure-editor/segment-context-structure-editor.component';
 import { ProfileComponentRoutingModule } from './profile-component-routing.module';
 
@@ -43,6 +45,8 @@ import { ProfileComponentRoutingModule } from './profile-component-routing.modul
     PpSegmentComponent,
     SegmentConformanceStatementEditorComponent,
     MessageConformanceStatementEditorComponent,
+    SegmentContextDynamicMappingComponent,
+    PcDynamicMappingSelectorComponent,
     CoConstraintsEditorComponent,
   ],
   imports: [

@@ -126,5 +126,11 @@ public interface SegmentService extends ResourceService {
 	DisplayElement convertSegment(Segment segment);
 	Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
 
+  /**
+   * @param s
+   * @return
+   */
+  String findObx2VsId(Segment s);
+
 
 }

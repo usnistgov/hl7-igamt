@@ -14,6 +14,7 @@ export enum ProfileComponentActionTypes {
   OpenProfileComponentMetadataEditor = '[ProfileComponent] Open Profile Component Metadata Editor',
   OpenProfileComponentSegmentConformanceStatementEditor = '[ProfileComponent] Open Profile Component Segment Conformance Statement Editor',
   OpenProfileComponentMessageConformanceStatementEditor = '[ProfileComponent] Open Profile Component Message Conformance Statement Editor',
+  OpenSegmentContextDynamicMappingEditor = '[ProfileComponent] Open Profile Component Segment Dynamic Mapping Editor',
   OpenProfileComponentMessageCoConstraintsEditor = '[ProfileComponent] Open Profile Component Message Co-Constraints Editor',
 }
 
@@ -78,6 +79,15 @@ export class OpenProfileComponentSegmentConformanceStatementEditor implements Ac
   }) { }
 }
 
+export class OpenSegmentContextDynamicMappingEditor implements Action {
+  readonly type = ProfileComponentActionTypes.OpenSegmentContextDynamicMappingEditor;
+
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) {
+  }
+}
 export class OpenProfileComponentMessageCoConstraintsEditor implements Action {
   readonly type = ProfileComponentActionTypes.OpenProfileComponentMessageCoConstraintsEditor;
   constructor(readonly payload: {
@@ -97,4 +107,5 @@ export type ProfileComponentActions =
   OpenProfileComponentMetadataEditor |
   OpenProfileComponentMessageConformanceStatementEditor |
   OpenProfileComponentSegmentConformanceStatementEditor |
+  OpenSegmentContextDynamicMappingEditor |
   OpenProfileComponentMessageCoConstraintsEditor;
