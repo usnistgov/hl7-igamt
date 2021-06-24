@@ -33,7 +33,7 @@ export class CompositeProfilePostDefComponent extends DefinitionEditorComponent 
     messageService: MessageService,
     private compositeProfileService: CompositeProfileService, froalaService: FroalaService) {
     super({
-        id: EditorID.PREDEF,
+        id: EditorID.POSTDEF,
         resourceType: Type.COMPOSITEPROFILE,
         title: 'Pre-definition',
       },
