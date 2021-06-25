@@ -1,20 +1,20 @@
-import { Component, Input, OnInit, TemplateRef } from "@angular/core";
-import { Router } from "@angular/router";
-import { IWorkspaceActive } from "../../../dam-framework/models/data/workspace";
-import { Store } from "@ngrx/store";
+import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { IWorkspaceActive } from '../../../dam-framework/models/data/workspace';
 import {
   IDocumentDisplayInfo,
-  IgDocument
-} from "../../models/ig/ig-document.class";
-import { Observable } from "rxjs";
-import { IgService } from "../../services/ig.service";
-import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { map, take } from 'rxjs/operators';
+  IgDocument,
+} from '../../models/ig/ig-document.class';
+import { IgService } from '../../services/ig.service';
 
 @Component({
-  selector: "app-ig-edit-active-titlebar",
-  templateUrl: "./ig-edit-active-titlebar.component.html",
-  styleUrls: ["./ig-edit-active-titlebar.component.scss"]
+  selector: 'app-ig-edit-active-titlebar',
+  templateUrl: './ig-edit-active-titlebar.component.html',
+  styleUrls: ['./ig-edit-active-titlebar.component.scss'],
 })
 export class IgEditActiveTitlebarComponent implements OnInit {
   @Input() active: IWorkspaceActive;
@@ -23,7 +23,7 @@ export class IgEditActiveTitlebarComponent implements OnInit {
 
   constructor(
     private store: Store<IDocumentDisplayInfo<IgDocument>>,
-    private igService: IgService
+    private igService: IgService,
   ) {}
 
   ngOnInit() {}
@@ -31,11 +31,10 @@ export class IgEditActiveTitlebarComponent implements OnInit {
     return this.store.select(fromIgDocumentEdit.selectIgId);
   }
   exportDiffXML() {
-    console.log(this.active.display.id)
     this.getIgId()
       .pipe(
         take(1),
-        map(id => this.igService.exportProfileDiffXML(id, this.active.display.id))
+        map((id) => this.igService.exportProfileDiffXML(id, this.active.display.id)),
       )
       .subscribe();
   }
