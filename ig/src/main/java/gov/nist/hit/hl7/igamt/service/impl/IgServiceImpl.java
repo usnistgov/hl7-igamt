@@ -1181,6 +1181,8 @@ public class IgServiceImpl implements IgService {
       }
   
 
+
+  }
     igDataModel.setDatatypes(datatypes);
     igDataModel.setSegments(segments);
     igDataModel.setConformanceProfiles(conformanceProfiles);
@@ -1188,7 +1190,6 @@ public class IgServiceImpl implements IgService {
     igDataModel.setProfileComponents(profileComponents);
     igDataModel.setCompositeProfile(compositeProfiles);
 
-  }
     return igDataModel;
 
   }
