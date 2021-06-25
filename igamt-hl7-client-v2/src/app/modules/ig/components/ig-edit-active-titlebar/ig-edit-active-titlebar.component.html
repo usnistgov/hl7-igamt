@@ -11,6 +11,11 @@
     <div *ngIf="controls" style="flex: none;">
       <ng-container *ngTemplateOutlet="controls; context : { $implicit: active }"></ng-container>
     </div>
+    <div *ngIf="active.display.type === 'CONFORMANCEPROFILE'">
+      <button class="btn btn-secondary btn-sm toolbar-button" type="button" (click)="exportDiffXML()">
+        Diff. tool export 
+      </button>
+    </div>
   </div>
 </ng-container>
 

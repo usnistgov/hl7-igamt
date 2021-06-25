@@ -15,6 +15,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -1414,5 +1422,133 @@ public class IgServiceImpl implements IgService {
       this.save(ig);
     }
   }
+
+  @Override
+  public Ig makeSelectedIg(Ig ig, ReqId reqIds) {
+    Ig selectedIg = new Ig();
+    selectedIg.setId(ig.getId());
+    selectedIg.setDomainInfo(ig.getDomainInfo());
+    selectedIg.setMetadata(ig.getMetadata());
+    selectedIg.setConformanceProfileRegistry(new ConformanceProfileRegistry());
+    selectedIg.setSegmentRegistry(new SegmentRegistry());
+    selectedIg.setDatatypeRegistry(new DatatypeRegistry());
+    selectedIg.setValueSetRegistry(new ValueSetRegistry());
+
+    for(String id : reqIds.getConformanceProfilesId()) {
+      Link l = ig.getConformanceProfileRegistry().getLinkById(id);
+
+      if(l != null) {
+        selectedIg.getConformanceProfileRegistry().getChildren().add(l);
+
+        this.visitSegmentRefOrGroup(this.conformanceProfileService.findById(l.getId()).getChildren(), selectedIg, ig);
+      }
+    }
+
+    return selectedIg;
+  }
+
+  @Override
+  public void visitSegmentRefOrGroup(Set<SegmentRefOrGroup> srgs, Ig selectedIg, Ig all) {
+    srgs.forEach(srg -> {
+      if(srg instanceof Group) {
+        Group g = (Group)srg;
+        if(g.getChildren() != null) this.visitSegmentRefOrGroup(g.getChildren(), selectedIg, all);
+      } else if (srg instanceof SegmentRef) {
+        SegmentRef sr = (SegmentRef)srg;
+
+        if(sr != null && sr.getId() != null && sr.getRef() != null) {
+          Link l = all.getSegmentRegistry().getLinkById(sr.getRef().getId());
+          if(l != null) {
+            selectedIg.getSegmentRegistry().getChildren().add(l);
+            Segment s = this.segmentService.findById(l.getId());
+            if (s != null && s.getChildren() != null) {
+              this.visitSegment(s.getChildren(), selectedIg, all);
+              if(s.getBinding() != null && s.getBinding().getChildren() != null) this.collectVS(s.getBinding().getChildren(), selectedIg, all);
+            }
+            //For Dynamic Mapping
+            if (s != null && s.getDynamicMappingInfo() != null && s.getDynamicMappingInfo().getItems() != null) {
+              s.getDynamicMappingInfo().getItems().forEach(item -> {
+                Link link = all.getDatatypeRegistry().getLinkById(item.getDatatypeId());
+                if(link != null) {
+                  selectedIg.getDatatypeRegistry().getChildren().add(link);
+                  Datatype dt = this.datatypeService.findById(link.getId());
+                  if (dt != null && dt instanceof ComplexDatatype) {
+                    ComplexDatatype cdt = (ComplexDatatype)dt;
+                    if(cdt.getComponents() != null) {
+                      this.visitDatatype(cdt.getComponents(), selectedIg, all);
+                      if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+                    }
+                  }
+
+                }
+              });
+            }
+          }
+        }
+      }
+    });
+
+  }
+
+  @Override
+  public void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all) {
+    sebs.forEach(seb -> {
+      if(seb.getValuesetBindings() != null) {
+        seb.getValuesetBindings().forEach(b -> {
+          if(b.getValueSets() != null) {
+            b.getValueSets().forEach(id -> {
+              Link l = all.getValueSetRegistry().getLinkById(id);
+              if(l != null) {
+                selectedIg.getValueSetRegistry().getChildren().add(l);
+              }
+            });
+          }
+        });
+      }
+    });
+
+  }
+
+  @Override
+  public void visitSegment(Set<Field> fields, Ig selectedIg, Ig all) {
+    fields.forEach(f -> {
+      if(f.getRef() != null && f.getRef().getId() != null) {
+        Link l = all.getDatatypeRegistry().getLinkById(f.getRef().getId());
+        if(l != null) {
+          selectedIg.getDatatypeRegistry().getChildren().add(l);
+          Datatype dt = this.datatypeService.findById(l.getId());
+          if (dt != null && dt instanceof ComplexDatatype) {
+            ComplexDatatype cdt = (ComplexDatatype)dt;
+            if(cdt.getComponents() != null) {
+              this.visitDatatype(cdt.getComponents(), selectedIg, all);
+              if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+            }
+          }
+        }
+      }
+    });
+
+  }
+
+  @Override
+  public void visitDatatype(Set<Component> components, Ig selectedIg, Ig all) {
+    components.forEach(c -> {
+      if(c.getRef() != null && c.getRef().getId() != null) {
+        Link l = all.getDatatypeRegistry().getLinkById(c.getRef().getId());
+        if(l != null) {
+          selectedIg.getDatatypeRegistry().getChildren().add(l);
+          Datatype dt = this.datatypeService.findById(l.getId());
+          if (dt != null && dt instanceof ComplexDatatype) {
+            ComplexDatatype cdt = (ComplexDatatype)dt;
+            if(cdt.getComponents() != null) {
+              this.visitDatatype(cdt.getComponents(), selectedIg, all);
+              if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+            }
+          }
+        }
+      }
+    });
+  }
+
 
 }

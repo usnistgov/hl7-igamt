@@ -1,21 +1,42 @@
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
-import { Router } from '@angular/router';
-import { IWorkspaceActive } from '../../../dam-framework/models/data/workspace';
+import { Component, Input, OnInit, TemplateRef } from "@angular/core";
+import { Router } from "@angular/router";
+import { IWorkspaceActive } from "../../../dam-framework/models/data/workspace";
+import { Store } from "@ngrx/store";
+import {
+  IDocumentDisplayInfo,
+  IgDocument
+} from "../../models/ig/ig-document.class";
+import { Observable } from "rxjs";
+import { IgService } from "../../services/ig.service";
+import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { map, take } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-ig-edit-active-titlebar',
-  templateUrl: './ig-edit-active-titlebar.component.html',
-  styleUrls: ['./ig-edit-active-titlebar.component.scss'],
+  selector: "app-ig-edit-active-titlebar",
+  templateUrl: "./ig-edit-active-titlebar.component.html",
+  styleUrls: ["./ig-edit-active-titlebar.component.scss"]
 })
 export class IgEditActiveTitlebarComponent implements OnInit {
-
   @Input() active: IWorkspaceActive;
   @Input() controls: TemplateRef<any>;
   @Input() header: TemplateRef<any>;
 
-  constructor() { }
+  constructor(
+    private store: Store<IDocumentDisplayInfo<IgDocument>>,
+    private igService: IgService
+  ) {}
 
-  ngOnInit() {
+  ngOnInit() {}
+  getIgId(): Observable<string> {
+    return this.store.select(fromIgDocumentEdit.selectIgId);
   }
-
+  exportDiffXML() {
+    console.log(this.active.display.id)
+    this.getIgId()
+      .pipe(
+        take(1),
+        map(id => this.igService.exportProfileDiffXML(id, this.active.display.id))
+      )
+      .subscribe();
+  }
 }

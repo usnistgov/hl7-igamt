@@ -13,6 +13,7 @@ public interface IgNewExportService {
 
 	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId) throws Exception;
 	public String exportIgDocumentToDiffXml( String igDocumentId) throws Exception;
+	public String exportIgDocumentToDiffXml( Ig ig) throws Exception;
 	public String serializeIgDocumentToDiffXml( Ig igDocument) throws Exception;
 	public ExportFilterDecision getExportFilterDecision(DocumentStructure documentStructure, ExportConfiguration config) throws CoConstraintGroupNotFoundException, IGDeltaException;
 	public  ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument,

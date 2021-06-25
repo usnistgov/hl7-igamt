@@ -144,6 +144,16 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	@Override
+	public String exportIgDocumentToDiffXml(Ig ig)
+			throws Exception {
+		if (ig != null) {
+			String htmlFile = this.serializeIgDocumentToDiffXml(ig);
+			return htmlFile;
+		}
+		return null;
+	}
+
+	@Override
 	public String serializeIgDocumentToDiffXml( Ig igDocument) throws Exception {
 		try {
 

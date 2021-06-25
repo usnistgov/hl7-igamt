@@ -6,6 +6,11 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -92,6 +97,9 @@ public interface IgService {
   public void publishIG(Ig ig) throws IGNotFoundException, IGUpdateException;
   UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass);
   public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
-
-
+  public Ig makeSelectedIg(Ig ig, ReqId reqIds);
+  public void visitSegmentRefOrGroup(Set<SegmentRefOrGroup> srgs, Ig selectedIg, Ig all);
+  public void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all);
+  public void visitSegment(Set<Field> fields, Ig selectedIg, Ig all);
+  public void visitDatatype(Set<Component> components, Ig selectedIg, Ig all);
 }

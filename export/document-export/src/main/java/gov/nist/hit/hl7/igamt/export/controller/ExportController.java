@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.export.controller;
 import java.io.*;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -162,6 +163,29 @@ public class ExportController {
 		Ig ig = igService.findById(id);
 		if (ig != null)  {
 			String xmlContent = igExportService.exportIgDocumentToDiffXml(id);
+			InputStream xmlStream = new ByteArrayInputStream(xmlContent.getBytes());
+
+			ExportedFile exportedFile = new ExportedFile(xmlStream, ig.getMetadata().getTitle(), id,
+					ExportFormat.XML);
+
+			response.setContentType("text/xml");
+			response.setHeader("Content-disposition",
+					"attachment;filename=" + ig.getMetadata().getTitle()+ ".xml");
+			FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+		}
+	}
+	@RequestMapping(value = "/api/export/ig/{id}/{profileId}/xml/diff", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	public void exportXML(@PathVariable("id") String id, @PathVariable("profileId") String profileId,  HttpServletResponse response) throws Exception {
+		String[] profiles = {profileId};
+		ReqId reqIds = new ReqId();
+		reqIds.setConformanceProfilesId(profiles);
+
+		Ig ig = igService.findById(id);
+
+		if (ig != null)  {
+			Ig selectedIg = this.igService.makeSelectedIg(ig, reqIds);
+			selectedIg.setContent(ig.getContent());
+			String xmlContent = igExportService.exportIgDocumentToDiffXml(selectedIg);
 			InputStream xmlStream = new ByteArrayInputStream(xmlContent.getBytes());
 
 			ExportedFile exportedFile = new ExportedFile(xmlStream, ig.getMetadata().getTitle(), id,

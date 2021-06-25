@@ -312,6 +312,9 @@ export class IgService {
   exportDiffXML(igId: string) {
     this.submitForm(null, this.EXPORT_URL + igId + '/xml/diff');
   }
+  exportProfileDiffXML(igId: string, profileId) {
+    this.submitForm(null, this.EXPORT_URL + igId + '/' + profileId + '/xml/diff');
+  }
 
   exportAsWordQuick(igId: string) {
     this.submitForm(null, this.EXPORT_URL + igId + '/quickWord');
