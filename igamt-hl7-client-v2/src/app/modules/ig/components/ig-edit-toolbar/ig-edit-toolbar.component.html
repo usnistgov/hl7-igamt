@@ -8,15 +8,24 @@
     Connect
   </button>
   <div ngbDropdown class="d-inline-block">
-    <button class="btn btn-secondary btn-sm toolbar-button" id="exportDropDown" ngbDropdownToggle>Export</button>
+    <button class="btn btn-secondary btn-sm toolbar-button" id="differentialExport" ngbDropdownToggle>Export</button>
     <div ngbDropdownMenu aria-labelledby="exportDropDown">
-      <button ngbDropdownItem (click)="exportWord()">Word</button>
-      <button ngbDropdownItem (click)="exportQuickWORD()">WORD (Quick)</button>
-      <button ngbDropdownItem (click)="exportHTML()">HTML</button>
-      <button ngbDropdownItem (click)="exportQuickHTML()">HTML (Quick)</button>
+      <button ngbDropdownItem (click)="export(exportTypes.IGDOCUMENT, 'word')">Word</button>
+      <button ngbDropdownItem (click)="quickExport(exportTypes.IGDOCUMENT, 'word')">WORD (Quick)</button>
+      <button ngbDropdownItem (click)="export(exportTypes.IGDOCUMENT, 'html')">HTML</button>
+      <button ngbDropdownItem (click)="quickExport(exportTypes.IGDOCUMENT, 'html')">HTML (Quick)</button>
       <button ngbDropdownItem (click)="exportXML()">XML</button>
       <button ngbDropdownItem (click)="exportDiffXML()">Diff. tool XML</button>
 
+    </div>
+  </div>
+  <div ngbDropdown class="d-inline-block" *ngIf="derived$ | async">
+    <button class="btn btn-warning btn-sm toolbar-button" id="exportDropDown" ngbDropdownToggle> Differential Export</button>
+    <div ngbDropdownMenu aria-labelledby="exportDropDown">
+      <button ngbDropdownItem (click)="export(exportTypes.DIFFERENTIAL, 'word')">Word</button>
+      <button ngbDropdownItem (click)="quickExport(exportTypes.DIFFERENTIAL, 'word')">WORD (Quick)</button>
+      <button ngbDropdownItem (click)="export(exportTypes.DIFFERENTIAL, 'html')">HTML</button>
+      <button ngbDropdownItem (click)="quickExport(exportTypes.DIFFERENTIAL, 'html')">HTML (Quick)</button>
     </div>
   </div>
   <div ngbDropdown class="d-inline-block">

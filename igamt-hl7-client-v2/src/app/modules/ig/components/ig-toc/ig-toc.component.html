@@ -20,11 +20,18 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILE'">
-          <span (click)="print()"> {{node.data.path}} {{node.data.variableName}}</span>
+          <span> {{node.data.path}} {{node.data.variableName}}</span>
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
-          <span> {{node.data.path}} {{node.data.variableName}}</span>
+          <div #pcLib>
+            <span [contextMenu]="ProfileComponentContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+            <context-menu #ProfileComponentContextMenu [disabled]="viewOnly||delta">
+              <ng-template (execute)="createNew(node.data, 'PROFILECOMPONENT')" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-plus"></i> Create Profile Component
+              </ng-template>
+            </context-menu>
+          </div>
         </ng-container>
 
         <ng-container *ngSwitchCase="'CONFORMANCESTATEMENTSUMMARY'">
@@ -43,9 +50,12 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
-          <div #compositePLib>
-            <span> {{node.data.path}} {{node.data.variableName}}</span>
-          </div>
+          <span  #cmppLib [contextMenu]="CompositeProfileContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+          <context-menu #CompositeProfileContextMenu [disabled]="viewOnly||delta">
+            <ng-template (execute)="createNew(node.data, 'COMPOSITEPROFILE')" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-plus"></i> Create Composite Profile
+            </ng-template>
+          </context-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
@@ -101,7 +111,6 @@
                 <i class="fa fa-plus"></i> Add HL7 Segments
               </ng-template>
             </context-menu>
-
           </div>
         </ng-container>
 
@@ -134,12 +143,24 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-          <span>{{node.variableName}}</span>
+          <span [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive>
+            <app-entity-bagde [type]="'COMPOSITEPROFILE'" ></app-entity-bagde>
+            {{node.data.variableName}}
+          </span>
+          <context-menu #cp [disabled]="viewOnly||delta">
+            <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-copy"></i> Create Flavor
+            </ng-template>
+            <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
+          </context-menu>
+          <app-toc-sub-menu [element]="node.data"  *ngIf="rla.isActive" [delta]="delta"></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'SEGMENT'">
           <app-display-section  [contextMenu]='segmentContextMenu' [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" ></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true"></app-display-section>
           <context-menu #segmentContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-copy"></i> Create Flavor
@@ -179,6 +200,37 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
+          <span  [contextMenu]='pc' [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node">
+           <app-entity-bagde [type]="'PROFILECOMPONENT'" ></app-entity-bagde> {{node.data.variableName}}
+          </span>
+          <context-menu #pc [disabled]="viewOnly||delta">
+            <ng-template (execute)="addPcContexts(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-plus"></i> Add Contexts
+            </ng-template>
+            <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
+          </context-menu>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'MESSAGECONTEXT'">
+          <app-display-section [contextMenu]='msgContext'  #msg="routerLinkActive" [element]="node.data"  [routerLink]="getPcElementUrl(node)" routerLinkActive></app-display-section>
+          <app-toc-sub-menu [element]="node.data"  *ngIf="msg.isActive" [delta]="delta" [pcId]="node.parent.data.id" ></app-toc-sub-menu>
+          <context-menu #msgContext [disabled]="viewOnly||delta">
+            <ng-template (execute)="deleteOneChild(node.data, node.parent.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
+          </context-menu>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'SEGMENTCONTEXT'">
+          <app-display-section [contextMenu]='segContext' #rla="routerLinkActive"  [element]="node.data" [routerLink]="getPcElementUrl(node)" routerLinkActive></app-display-section>
+          <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive" [pcId]="node.parent.data.id" ></app-toc-sub-menu>
+          <context-menu #segContext [disabled]="viewOnly||delta">
+            <ng-template (execute)="deleteOneChild(node.data, node.parent.data)" contextMenuItem [enabled]="!viewOnly&&!delta">
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
+          </context-menu>
         </ng-container>
 
       </ng-container>

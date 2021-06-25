@@ -6,6 +6,7 @@ public class CoConstraintTableConditionalBinding extends WithDelta {
     private Assertion condition;
     private CoConstraintTable value;
     private DeltaField<String> conditionDelta;
+    private String id;
 
     public Assertion getCondition() {
         return condition;
@@ -29,6 +30,14 @@ public class CoConstraintTableConditionalBinding extends WithDelta {
 
     public void setConditionDelta(DeltaField<String> conditionDelta) {
         this.conditionDelta = conditionDelta;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public CoConstraintTableConditionalBinding clone() {

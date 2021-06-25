@@ -174,7 +174,9 @@ public class GVTServiceImpl implements GVTService {
       }
     } catch (HttpClientErrorException e) {
     	if(e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
-      throw new GVTLoginException("Invalid credentials");
+    	  throw new GVTLoginException("Invalid credentials");
+    	}else {
+          throw new GVTLoginException(e.getMessage());
     	}
     } catch (Exception e) {
       throw new GVTLoginException(e.getMessage());

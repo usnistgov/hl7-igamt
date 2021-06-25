@@ -34,6 +34,7 @@ export const selectSegmentsEntites = createSelector(
   selectSegments,
   selectEntities,
 );
+
 export const selectAllSegments = createSelector(
   selectSegments,
   selectAll,
@@ -78,10 +79,19 @@ export const selectValueSetById = createSelector(
 
 // MESSAGE DISPLAY GETTERS
 export const selectMessages = fromDAM.selectFromCollection<IDisplayElement>('messages');
+export const selectProfileComponents = fromDAM.selectFromCollection<IDisplayElement>('profileComponents');
+
+export const selectCompositeProfiles = fromDAM.selectFromCollection<IDisplayElement>('compositeProfiles');
+
 export const selectAllMessages = createSelector(
   selectMessages,
   selectAll,
 );
+export const selectAllProfileComponents = createSelector(
+  selectProfileComponents,
+  selectAll,
+);
+
 export const selectMessagesEntites = createSelector(
   selectMessages,
   selectEntities,
@@ -93,6 +103,44 @@ export const selectMessagesById = createSelector(
   },
 );
 
+export const selectProfileComponentsEntites = createSelector(
+  selectProfileComponents,
+  selectEntities,
+);
+
+export const selectProfileComponentById = createSelector(
+  selectProfileComponentsEntites,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
+);
+export const selectContexts = fromDAM.selectFromCollection<IDisplayElement>('contexts');
+export const selectContextEntites = createSelector(
+  selectContexts,
+  selectEntities,
+);
+export const selectAllContexts = createSelector(
+  selectContexts,
+  selectAll,
+);
+export const selectContextById = createSelector(
+  selectContextEntites,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
+);
+
+export const selectCompositeProfilesEntites = createSelector(
+  selectCompositeProfiles,
+  selectEntities,
+);
+
+export const selectCompositeProfileById = createSelector(
+  selectCompositeProfilesEntites,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
+);
 // COCONSTRAINT GROUP DISPLAY GETTERS
 export const selectCoConstraintGroups = fromDAM.selectFromCollection<IDisplayElement>('coConstraintGroups');
 export const selectCoConstraintGroupEntites = createSelector(

@@ -13,6 +13,7 @@
     <xsl:import href="/templates/profile/resource/role.xsl"/>
     <xsl:import href="/templates/profile/resource/type.xsl"/>
     <xsl:import href="/templates/profile/definitionText2.xsl"/>
+    <xsl:import href="/templates/profile/reasonForChange.xsl"/>
     <xsl:include href="/templates/profile/conformanceProfile/messageSegment.xsl"/>
     <xsl:include href="/templates/profile/messageConstraint.xsl"/>
     <xsl:include
@@ -58,6 +59,11 @@
             </xsl:attribute>
             <xsl:element name="col">
                 <xsl:attribute name="width">
+                    <xsl:text>3%</xsl:text>
+                </xsl:attribute>
+            </xsl:element>
+            <xsl:element name="col">
+                <xsl:attribute name="width">
                     <xsl:text>10%</xsl:text>
                 </xsl:attribute>
             </xsl:element>
@@ -91,6 +97,9 @@
                     <xsl:text>contentThead</xsl:text>
                 </xsl:attribute>
                 <xsl:element name="tr">
+                 <xsl:element name="th">
+                            <xsl:text>Path</xsl:text>
+                        </xsl:element>
                     <xsl:if test="$columnDisplay.message.segment = 'true'">
                         <xsl:element name="th">
                             <xsl:text>Segment</xsl:text>
@@ -140,6 +149,7 @@
         <!-- <xsl:apply-templates select="./Binding/ValueSetBindingList" /> -->
         <xsl:call-template name="ValueSetBindingList"/>
         <xsl:call-template name="InternalSingleCode"/>
+		<xsl:call-template name="Reasons"/>
 
 
         <xsl:if test="$columnDisplay.message.comment = 'true'">

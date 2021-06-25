@@ -50,6 +50,9 @@ export class SegmentEditEffects {
         flatMap((segment: ISegment) => {
           return [
             new fromDAM.TurnOffLoader(),
+            new SetValue({
+              selected: segment,
+            }),
             new LoadSegmentSuccess(segment),
           ];
         }),
@@ -60,18 +63,6 @@ export class SegmentEditEffects {
           );
         }),
       );
-    }),
-  );
-
-  @Effect()
-  LoadSegmentSuccess$ = this.actions$.pipe(
-    ofType(SegmentEditActionTypes.LoadSegmentSuccess),
-    flatMap((action: LoadSegmentSuccess) => {
-      return [
-        new SetValue({
-          selected: action.segment,
-        }),
-      ];
     }),
   );
 
@@ -94,17 +85,6 @@ export class SegmentEditEffects {
   );
 
   @Effect()
-  openSegmentCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenSegmentCrossRefEditor>(
-    SegmentEditActionTypes.OpenSegmentCrossRefEditor,
-    fromIgamtDisplaySelectors.selectSegmentsById,
-    Type.IGDOCUMENT,
-    Type.SEGMENT,
-    fromIgamtSelectors.selectLoadedDocumentInfo,
-    this.crossReferenceService.findUsagesDisplay,
-    this.SegmentNotFound,
-  );
-
-  @Effect()
   openSegmentMetadataEditor$ = this.editorHelper.openMetadataEditor<OpenSegmentMetadataEditor>(
     SegmentEditActionTypes.OpenSegmentMetadataEditor,
     fromIgamtDisplaySelectors.selectSegmentsById,
@@ -117,6 +97,17 @@ export class SegmentEditEffects {
     SegmentEditActionTypes.OpenSegmentPostDefEditor,
     fromIgamtDisplaySelectors.selectSegmentsById,
     this.store.select(fromIgamtSelectedSelectors.selectedResourcePostDef),
+    this.SegmentNotFound,
+  );
+
+  @Effect()
+  openSegmentCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenSegmentCrossRefEditor>(
+    SegmentEditActionTypes.OpenSegmentCrossRefEditor,
+    fromIgamtDisplaySelectors.selectSegmentsById,
+    Type.IGDOCUMENT,
+    Type.SEGMENT,
+    fromIgamtSelectors.selectLoadedDocumentInfo,
+    this.crossReferenceService.findUsagesDisplay,
     this.SegmentNotFound,
   );
 

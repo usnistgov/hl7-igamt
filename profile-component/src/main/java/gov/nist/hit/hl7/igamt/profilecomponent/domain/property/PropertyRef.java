@@ -11,16 +11,20 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+
 /**
  * 
  * Created by Jungyub Woo on Feb 20, 2018.
  */
-public class PropertyRef extends ItemProperty {
+public class PropertyRef extends ItemProperty implements ApplySegmentRef {
 
   private String ref;
   
   public PropertyRef() {
-    super(PropertyKey.REF);
+    super(PropertyType.SEGMENTREF); //
   }
 
   public String getRef() {
@@ -31,5 +35,10 @@ public class PropertyRef extends ItemProperty {
     this.ref = ref;
   }
 
-  
+
+  @Override
+  public void onSegmentRef(SegmentRef segmentRef) {
+    Ref ref = new Ref(this.ref);
+    segmentRef.setRef(ref);
+  }
 }

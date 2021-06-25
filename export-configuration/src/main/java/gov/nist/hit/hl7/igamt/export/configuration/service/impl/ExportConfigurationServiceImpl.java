@@ -19,9 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
@@ -62,10 +61,9 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
 
 
   @Override
-  public void selectDefault(String id, Authentication authentication) {
-    String username = authentication.getPrincipal().toString();
-    List<ExportConfiguration> usersConfig= exportConfigurationRepository.findByUsername(username);
+  public void selectDefault(String id,  ExportType type, String username) {
 
+    List<ExportConfiguration> usersConfig= exportConfigurationRepository.findByUsernameAndType(username, type);    
     for (ExportConfiguration exportconfiguration : usersConfig) {
       if(exportconfiguration.getId().equals(id)) {
         exportconfiguration.setDefaultConfig(true);
@@ -73,16 +71,15 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
         exportconfiguration.setDefaultConfig(false);
       }
       exportConfigurationRepository.save(exportconfiguration);
-
     }
 
   }
 
   @Override
-  public List<ExportConfiguration> getAllExportConfigurationWithType(String username,Type type) {
+  public List<ExportConfiguration> getAllExportConfigurationWithType(String username, ExportType type) {
     return exportConfigurationRepository.findByUsernameAndType(username, type);
   }
-  
+
   @Override
   public List<ExportConfiguration> getAllExportConfiguration(String username) {
     return exportConfigurationRepository.findByUsername(username);
@@ -101,22 +98,18 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   @Override
   public ExportConfiguration create(String username, String type) {
     //	ExportConfiguration exportConfiguration = exportConfigurationRepository.findOneById("BasicExportConfiguration");
-	  Type docType = Type.IGDOCUMENT;
-	    if(type.equals("IGDOCUMENT")) {
-	     docType = Type.IGDOCUMENT;
-	    } else if(type.equals("DATATYPELIBRARY")) {
-	         docType = Type.DATATYPELIBRARY;
-	    }
-    ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false,docType);
+    ExportType docType = ExportType.fromString(type);
+    ExportConfiguration exportConfiguration;
+    if(docType.equals(docType.DIFFERENTIAL)) {
+       exportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, docType);
+    }else {
+       exportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, docType);
+    }
     exportConfiguration.setId(null);
     exportConfiguration.setConfigName("New Configuration");
     exportConfiguration.setUsername(username);
-    if(type.equals("IGDOCUMENT")){
-    exportConfiguration.setType(Type.IGDOCUMENT);
-    System.out.println("inside IF IGDOCUMENT ");
-  }	else if(type.equals("DATATYPELIBRARY")){
-	    exportConfiguration.setType(Type.DATATYPELIBRARY);
-  }
+    exportConfiguration.setType(docType);
+
     exportConfigurationRepository.save(exportConfiguration);
     return exportConfiguration;
   }
@@ -127,24 +120,37 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
   }
 
   @Override
-  public ExportConfiguration getDefaultConfig(boolean defaultConfig, String username) {
-    return exportConfigurationRepository.findOneByDefaultConfigAndUsername(defaultConfig, username);
+  public ExportConfiguration getDefaultConfig(boolean defaultConfig, String username, ExportType type) {
+    return exportConfigurationRepository.findOneByDefaultConfigAndUsernameAndType(defaultConfig, username, type);
   }
-  
-  public ExportConfiguration getOriginalConfig(boolean isOriginal) {
-	    return exportConfigurationRepository.findOneByOriginal(isOriginal);
-	  }
-  
-  public ExportConfiguration getOriginalConfigWithType(boolean isOriginal, Type type) {
-	    return exportConfigurationRepository.findOneByOriginalAndType(isOriginal, type);
-	  }
 
 
-@Override
-public ExportConfiguration getExportConfigurationWithType(String id, Type type) {
+  public ExportConfiguration getOriginalConfigWithType(boolean isOriginal, ExportType type) {
+    return exportConfigurationRepository.findOneByOriginalAndType(isOriginal, type);
+  }
+
+
+  @Override
+  public ExportConfiguration getExportConfigurationWithType(String id, ExportType type) {
     return exportConfigurationRepository.findOneByIdAndType(id,type);
 
-}
+  }
+  @Override
+  public ExportConfiguration getOriginalConfig(boolean isOriginal, ExportType type) {
+    return exportConfigurationRepository.findOneByOriginalAndType(isOriginal, type);
+  }
+
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService#getConfigurationToApply(gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType, java.lang.String)
+   */
+  @Override
+  public ExportConfiguration getConfigurationToApply(ExportType type, String username) {
+    ExportConfiguration conf =  this.getDefaultConfig(true, username, type );
+    if(conf != null) {
+      return conf;
+    }else return getOriginalConfig(true, type);
+  }
 
 
 

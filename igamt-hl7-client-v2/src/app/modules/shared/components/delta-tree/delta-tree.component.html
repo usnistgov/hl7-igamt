@@ -1,8 +1,19 @@
-<p-treeTable [value]="compare.delta" [columns]="selectedColumns"  [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy" *ngIf="compare.delta.length>0">
+<p-treeTable [value]="nodes$ | async" [columns]="selectedColumns"  [reorderableColumns]="true" [resizableColumns]="true" [rowTrackBy]="trackBy">
   <ng-template pTemplate="caption">
-    <div style="text-align:left">
-      <p-multiSelect [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
-                  selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
+    <div style="text-align:left; display: flex;">
+      <p-multiSelect
+        [options]="cols"
+        [(ngModel)]="selectedColumns"
+        optionLabel="header"
+        selectedItemsLabel="{0} columns selected"
+        [style]="{minWidth: '200px'}"
+        defaultLabel="Choose Columns">
+      </p-multiSelect>
+
+      <div [ngClass]="{ 'active-tree-view' : treeView }" style="display: flex; align-items: center; justify-content: center; margin-left: 10px; padding: 3px 10px 3px 5px; border: 1px solid darkgray;">
+        <p-inputSwitch [ngStyle]=" { height: '25px' }" [(ngModel)]="treeView" (ngModelChange)="toggleTreeView($event)"></p-inputSwitch>
+        <span style="margin-left: 10px;">Full Structure</span>
+      </div>
     </div>
   </ng-template>
   <ng-template pTemplate="header" let-columns>
@@ -20,8 +31,11 @@
           <th *ngSwitchCase="columnTypes.SEGMENT" style="width: 250px;" ttReorderableColumn ttResizableColumn>
             {{col.header}}
           </th>
-          <th *ngSwitchCase="columnTypes.VALUESET" style="width: 180px;" ttReorderableColumn ttResizableColumn>
-            {{col.header}}
+          <th *ngSwitchCase="columnTypes.VALUESET" style="width: 250px;" ttReorderableColumn ttResizableColumn>
+            <div style="display: flex; align-items: center; width: 100%;">
+              <div class="binding-vs" style="margin-right: 5px; width: 10px; border: 1px solid darkgray; height: 21px;"></div> Value Set or
+              <div class="binding-sg" style="margin-right: 5px; margin-left: 5px; width: 10px; border: 1px solid darkgray; height: 21px;"></div> Single Code
+            </div>
           </th>
           <th *ngSwitchCase="columnTypes.CONSTANTVALUE" style="width: 180px;" ttReorderableColumn ttResizableColumn>
             {{col.header}}
@@ -77,15 +91,17 @@
                   <ng-container *ngTemplateOutlet="diff; context : { $implicit: {
                     action: rowData.minCardinality.action,
                     current: '['+rowData.minCardinality.current+'.',
-                    previous: '['+rowData.minCardinality.previous+'.'
+                    previous: '['+rowData.minCardinality.previous+'.',
+                    changeReason: rowData.minCardinality.changeReason
                   }, styleCurrent: 'toRight',  stylePrevious: 'toRight', styleUnchanged: 'toRight' }"></ng-container>
                 </div>
                 <div style="width: 50%;">
                   <ng-container *ngTemplateOutlet="diff; context : { $implicit: {
                     action: rowData.maxCardinality.action,
                     current: '.'+rowData.maxCardinality.current+']',
-                    previous: '.'+rowData.maxCardinality.previous+']'
-                  }, styleCurrent: 'toLeft',  stylePrevious: 'toLeft', styleUnchanged: 'toLeft' }"></ng-container>
+                    previous: '.'+rowData.maxCardinality.previous+']',
+                    changeReason: rowData.maxCardinality.changeReason
+                  }, rtl: true, styleCurrent: 'toLeft',  stylePrevious: 'toLeft', styleUnchanged: 'toLeft' }"></ng-container>
                 </div>
               </div>
             </td>
@@ -97,15 +113,17 @@
                   <ng-container *ngTemplateOutlet="diff; context : { $implicit: {
                     action: rowData.minLength.action,
                     current: '['+rowData.minLength.current+'.',
-                    previous: '['+rowData.minLength.previous+'.'
+                    previous: '['+rowData.minLength.previous+'.',
+                    changeReason: rowData.minLength.changeReason
                   }, styleCurrent: 'toRight',  stylePrevious: 'toRight', styleUnchanged: 'toRight' }"></ng-container>
                 </div>
                 <div style="width: 50%;">
                   <ng-container *ngTemplateOutlet="diff; context : { $implicit: {
                     action: rowData.maxLength.action,
                     current: '.'+rowData.maxLength.current+']',
-                    previous: '.'+rowData.maxLength.previous+']'
-                  }, styleCurrent: 'toLeft',  stylePrevious: 'toLeft', styleUnchanged: 'toLeft' }"></ng-container>
+                    previous: '.'+rowData.maxLength.previous+']',
+                    changeReason: rowData.maxLength.changeReason
+                  }, rtl: true, styleCurrent: 'toLeft',  stylePrevious: 'toLeft', styleUnchanged: 'toLeft' }"></ng-container>
                 </div>
               </div>
             </td>
@@ -145,20 +163,20 @@
           </ng-container>
           <ng-container *ngSwitchCase="columnTypes.VALUESET">
             <td>
-              <div *ngIf="rowData.internalSingleCode&&rowData.internalSingleCode.action=='ADDED' ">
-                <ng-container *ngTemplateOutlet="displaySingleCode; context : { $implicit: rowData.internalSingleCode, prop: 'current' }">
-                </ng-container>
-              </div>
+              <div style="width: 100%; display: flex; align-items: center; justify-content: center;" >
 
-              <ng-container *ngIf="rowData.valuesetBinding && rowData.valuesetBinding.action!=='UNCHANGED'">
-
-              <ng-container *ngTemplateOutlet="vsBindingDelta; context : { $implicit: rowData.valuesetBinding }"></ng-container>
-              </ng-container>
+                <ng-container *ngTemplateOutlet="bindingChangeReason; context : { $implicit: rowData.valuesetBinding, vs: rowData.valuesetBinding, sg: rowData.internalSingleCode }"></ng-container>
 
 
-              <div *ngIf="rowData.internalSingleCode&&rowData.internalSingleCode.action =='REMOVED'">
-                <ng-container *ngTemplateOutlet="displaySingleCode; context : { $implicit: rowData.internalSingleCode, prop: 'previous' }">
-                </ng-container>
+                <div>
+                  <ng-container *ngIf="rowData.valuesetBinding">
+                    <ng-container *ngTemplateOutlet="vsBindingDelta; context : { $implicit: rowData.valuesetBinding }"></ng-container>
+                  </ng-container>
+
+                  <ng-container *ngIf="rowData.internalSingleCode">
+                    <ng-container *ngTemplateOutlet="displaySingleCode; context : { $implicit: rowData.internalSingleCode }"></ng-container>
+                  </ng-container>
+                </div>
               </div>
             </td>
           </ng-container>
@@ -171,18 +189,23 @@
       </tr>
   </ng-template>
 </p-treeTable>
-<ng-template #diff let-delta let-styleCurrent="styleCurrent" let-stylePrevious="stylePrevious" let-styleUnchanged="styleUnchanged" >
+
+<!-- ALL STRING VALUES -->
+<ng-template #diff let-rtl="rtl" let-delta let-styleCurrent="styleCurrent" let-stylePrevious="stylePrevious" let-styleUnchanged="styleUnchanged" >
   <ng-container *ngIf="delta">
-    <app-delta-column [action]="delta.action" [currentValue]="delta.current" [previousValue]="delta.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
+    <app-delta-column [rtl]="rtl" [reason]="delta.changeReason" [action]="delta.action" [currentValue]="delta.current" [previousValue]="delta.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
       <ng-template #default let-value>
         {{value}}
       </ng-template>
     </app-delta-column>
   </ng-container>
 </ng-template>
+
+<!-- REFERENCE (Datatype / Segment) -->
 <ng-template #reference let-reference>
   <ng-container *ngIf="reference">
     <app-delta-column [action]="referenceAction(reference)"
+      [reason]="reference.changeReason"
       [currentValue]="{
         id: reference.id.current,
         domainInfo: reference.domainInfo.current,
@@ -201,87 +224,98 @@
     </app-delta-column>
   </ng-container>
 </ng-template>
+
+<!-- VALUESET -->
 <ng-template #vsBindingDelta let-vsDelta>
-
-  <table class="table table-striped table-sm table-bordered delta-current" style="text-align: center; margin-bottom: 5px;" *ngIf="vsDelta.valueSets?.current">
-    <tr>
-      <td style="vertical-align: middle; width: 25px;" pTooltip="Value Set binding" tooltipPosition="top">
-        <strong> VS </strong>
-      </td>
-      <td pTooltip="Binding Strength" tooltipPosition="top">
-        <strong>{{vsDelta.strength?.current}}</strong>
-      </td>
-      <td pTooltip="Binding Locations" tooltipPosition="top">
-        <strong>{{vsDelta.bindingLocation?.current.length > 0 ? (vsDelta?.bindingLocation?.current | json) : '.'}}</strong>
-      </td>
-    </tr>
-    <tr *ngFor="let item of vsDelta.valueSets?.current">
-      <td colspan="3">
-        <app-display-section [element]="item" [hideDescription]="true" ></app-display-section>
-      </td>
-    </tr>
-  </table>
-  <table class="table table-striped table-sm table-bordered delta-previous" style="text-align: center; margin-bottom: 0;" *ngIf="vsDelta.valueSets?.previous">
-    <tr>
-      <td style="vertical-align: middle; width: 25px;" pTooltip="Value Set binding" tooltipPosition="top">
-        <strong> VS </strong>
-      </td>
-      <td pTooltip="Binding Strength" tooltipPosition="top">
-        <strong>{{vsDelta.strength?.previous}}</strong>
-      </td>
-      <td pTooltip="Binding Locations" tooltipPosition="top">
-        <strong>{{vsDelta.bindingLocation?.previous.length > 0 ? (vsDelta?.bindingLocation?.previous | json) : '.'}}</strong>
-      </td>
-    </tr>
-    <tr *ngFor="let item of vsDelta.valueSets?.previous">
-      <td colspan="3">
-        <app-display-section  [element]="item" [hideDescription]="true" ></app-display-section>
-      </td>
-    </tr>
-  </table>
+  <app-delta-column [action]="vsDelta.action"
+    [currentValue]="{
+      valueSets: vsDelta.valueSets?.current,
+      bindingLocation: vsDelta.bindingLocation?.current,
+      strength: vsDelta.strength?.current
+    }"
+    [previousValue]="{
+      valueSets: vsDelta.valueSets?.previous,
+      bindingLocation: vsDelta.bindingLocation?.previous,
+      strength: vsDelta.strength?.previous
+    }">
+    <ng-template #default let-value>
+      <table *ngIf="value.strength || value.bindingLocation || value.valueSets" class="table table-sm table-bordered" style="text-align: center; margin-bottom: 5px;">
+        <tr>
+          <td [attr.rowspan]="value?.valueSets?.length + 1" style="width: 10px;" class="binding-vs" >
+          </td>
+          <td pTooltip="Binding Strength" tooltipPosition="top">
+            <strong>{{value?.strength}}</strong>
+          </td>
+          <td pTooltip="Binding Locations" tooltipPosition="top">
+            <strong>{{value?.bindingLocation?.length > 0 ? (value.bindingLocation | json) : '.'}}</strong>
+          </td>
+        </tr>
+        <tr *ngFor="let item of value?.valueSets">
+          <td colspan="2">
+            <app-display-section [element]="item" [hideDescription]="true" ></app-display-section>
+          </td>
+        </tr>
+      </table>
+    </ng-template>
+  </app-delta-column>
 </ng-template>
 
+<!-- SINGLE CODE -->
+<ng-template #displaySingleCode let-singleCode>
+  <app-delta-column [action]="singleCode.action"
+    [currentValue]="{
+      code: singleCode.code?.current,
+      codeSystem: singleCode.codeSystem?.current,
+      valueSetDisplay: singleCode.valueSetDisplay?.current
+    }"
+    [previousValue]="{
+      code: singleCode.code?.previous,
+      codeSystem: singleCode.codeSystem?.previous,
+      valueSetDisplay: singleCode.valueSetDisplay?.previous
+    }">
+    <ng-template #default let-value>
+      <table *ngIf="value.code || value.codeSystem || value.valueSetDisplay " class="table table-striped table-sm table-bordered" style="text-align: center;  margin-bottom: 0;">
+        <tr>
+          <td rowspan="2" style="width: 10px;" class="binding-sg" >
+          <td pTooltip="Code" tooltipPosition="top">
+            <strong>{{value.code}}</strong>
+          </td>
+          <td pTooltip="Code System" tooltipPosition="top">
+            <strong>{{value.codeSystem}}</strong>
+          </td>
+        </tr>
+        <tr *ngIf="value.valueSetDisplay">
+          <td colspan="2">
+            <app-display-section [element]="value.valueSetDisplay" [hideDescription]="true" ></app-display-section>
+          </td>
+        </tr>
+      </table>
+    </ng-template>
+  </app-delta-column>
 
-<ng-template #displaySingleCode let-singleCode let-prop="prop">
-  <table class="table table-striped table-sm table-bordered" [ngClass]="{'delta-previous': prop==='previous', 'delta-current': prop ==='current'}"  style="text-align: center;  margin-bottom: 0;">
-    <tr>
-      <td style="vertical-align: middle; width: 25px;" pTooltip="Single code binding" tooltipPosition="top">
-        <strong> SC </strong>
-      </td>
-      <td pTooltip="Code" tooltipPosition="top">
-        <strong>{{singleCode.code[prop]}}</strong>
-      </td>
-      <td pTooltip="Code System" tooltipPosition="top">
-        <strong>{{singleCode.codeSystem[prop]}}</strong>
-      </td>
-    </tr>
-    <tr *ngIf="singleCode.valueSetDisplay[prop]">
-      <td colspan="3">
-        <app-display-section [element]="singleCode.valueSetDisplay[prop]" [hideDescription]="true" ></app-display-section>
-      </td>
-    </tr>
-  </table>
+
 </ng-template>
 
-
+<!-- USAGE / PREDICATE -->
 <ng-template #usage let-usage let-styleCurrent="styleCurrent" let-stylePrevious="stylePrevious" let-styleUnchanged="styleUnchanged" let-predicate="predicate">
-  <div style="display: flex; flex-direction: row; justify-content: space-between;">
+  <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
     <div style="width: 100%">
       <ng-container *ngIf="usage">
-    <app-delta-column [action]="usage.action" [currentValue]="usage.current" [previousValue]="usage.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
-      <ng-template #default let-value>
-        {{value}}
-      </ng-template>
-    </app-delta-column>
+        <app-delta-column [reason]="usage.changeReason" [action]="usage.action" [currentValue]="usage.current" [previousValue]="usage.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
+          <ng-template #default let-value>
+            <div style="width: 100%; text-align: center;">
+              {{value}}
+            </div>
+          </ng-template>
+        </app-delta-column>
       </ng-container>
     </div>
-    <div *ngIf="predicate" style="display: flex; flex-direction: column; justify-content: center;   height: 100%; width: 100%;
-    padding: 2px;">
-      <div style="display: flex; flex-direction: row; justify-content: flex-end; width: 100%;">
-        <button class="btn btn-sm btn-secondary" [ngbPopover]="popContent" triggers="mouseenter:mouseleave" placement="bottom">
-          <i class="fa fa-eye"></i>
-        </button>
+    <div *ngIf="predicate" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; padding: 2px;">
+      <div style="display: flex; justify-content: center; align-items: center;" class="btn btn-sm" [ngClass]="{ 'delta-changed': predicate.action === 'UPDATED', 'delta-added': predicate.action === 'ADDED', 'delta-deleted': predicate.action === 'DELETED'}" >
+        <app-entity-bagde type="PREDICATE" [ngbPopover]="popContent" triggers="mouseenter:mouseleave" placement="bottom" ></app-entity-bagde>
+        <ng-container *ngTemplateOutlet="predicateChangeReason; context : { $implicit: predicate }"></ng-container>
       </div>
+
        <ng-template #popContent>
           <table class="table table-striped table-sm table-bordered"  style="text-align: center;  margin-bottom: 0;">
             <thead>
@@ -315,7 +349,6 @@
                 </app-delta-column>
               </td>
             </tr>
-
             </tbody>
           </table>
         </ng-template>
@@ -328,3 +361,53 @@
 
 
 
+<ng-template #bindingChangeReason let-change let-vs="vs" let-sg="sg">
+  <div *ngIf="(vs && vs.action !== 'UNCHANGED' && vs.changeReason )|| (sg && sg.action !== 'UNCHANGED' && sg.changeReason)" [ngbPopover]="popContent" placement="bottom" style="display: flex; justify-content: center; align-items: center; margin: 5px;" class="btn btn-sm btn-i">
+    <i class="fa fa-info"></i>
+  </div>
+  <ng-template #popContent>
+    <table style="table-layout: auto; direction: ltr;" class="table table-sm table-striped table-bordered">
+      <tbody *ngIf="vs && vs.action !== 'UNCHANGED' && vs.changeReason" >
+        <tr>
+          <th>
+            Change Reason ValueSet ( {{ vs.changeReason.date | date }})
+          </th>
+        </tr>
+        <tr>
+          <td colspan="3" style="vertical-align: center;">{{ vs.changeReason.reason }}</td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="sg && sg.action !== 'UNCHANGED' && sg.changeReason">
+        <tr>
+          <th>
+            Change Reason Single Code ( {{ sg.changeReason.date | date }})
+          </th>
+        </tr>
+        <tr>
+          <td colspan="3" style="vertical-align: center;">{{ sg.changeReason.reason }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
+
+</ng-template>
+
+<ng-template #predicateChangeReason let-predicate>
+  <div *ngIf="predicate && predicate.action !== 'UNCHANGED' && predicate.changeReason" [ngbPopover]="popContent" placement="bottom" style="display: flex; justify-content: center; align-items: center; margin: 5px;" class="btn btn-sm btn-i">
+    <i class="fa fa-info"></i>
+  </div>
+  <ng-template #popContent>
+    <table style="table-layout: auto; direction: ltr;" class="table table-sm table-striped table-bordered">
+      <tbody>
+        <tr>
+          <th>
+            Change Reason Predicate ( {{ predicate.changeReason.date | date }})
+          </th>
+        </tr>
+        <tr>
+          <td colspan="3" style="vertical-align: center;">{{ predicate.changeReason.reason }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
+</ng-template>

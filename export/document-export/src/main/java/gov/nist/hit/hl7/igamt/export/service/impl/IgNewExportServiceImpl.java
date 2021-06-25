@@ -44,6 +44,7 @@ import gov.nist.hit.hl7.igamt.delta.service.DeltaService;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationFilterService;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
@@ -108,26 +109,12 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	
 
 	@Override
-	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId, ExportFilterDecision decision, String configId)
+	public ExportedFile exportIgDocumentToHtml(String username,IgDataModel igDataModel, ExportFilterDecision decision, String configId)
 			throws Exception {
-		Ig igDocument = igService.findById(igDocumentId);
+		Ig igDocument = igDataModel.getModel();
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-//			if(deltaMode != null){
-//				exportConfiguration.setDeltaMode(true);
-//				exportConfiguration.getSegmentExportConfiguration().setDeltaMode(true);
-//				exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(true);
-//				exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(true);
-//				exportConfiguration.getValueSetExportConfiguration().setDeltaMode(true);
-//
-//			} else {
-//				exportConfiguration.setDeltaMode(false);
-//				exportConfiguration.getSegmentExportConfiguration().setDeltaMode(false);
-//				exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(false);
-//				exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(false);
-//				exportConfiguration.getValueSetExportConfiguration().setDeltaMode(false);
-//			}
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision, exportConfiguration);
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDataModel, ExportFormat.HTML, decision, exportConfiguration);
 			return htmlFile;
 		}
 		return null;
@@ -157,7 +144,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	public String serializeIgDocumentToDiffXml( Ig igDocument) throws Exception {
 		try {
 
-			ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, Type.IGDOCUMENT);
+			ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, ExportType.IGDOCUMENT);
 			exportConfiguration.setDeltaMode(false);
 			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(false);
 			exportConfiguration.getValueSetExportConfiguration().setDeltaMode(false);
@@ -177,8 +164,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	@Override
-	public ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument, ExportFormat exportFormat,
+	public ExportedFile serializeIgDocumentToHtml(String username,IgDataModel igDataModel, ExportFormat exportFormat,
 			ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception {
+		Ig igDocument = igDataModel.getModel();
 		try {
 //			ExportConfiguration exportConfiguration =
 //					exportConfigurationService.getExportConfiguration(username);
@@ -189,10 +177,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 //			Boolean deltaMode = exportConfiguration.getSegmentExportConfiguration().isDeltaMode();
 //			exportConfiguration.getSegmentExportConfiguration().setDeltaConfig(deltaConfig);
 //			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(deltaMode);
-
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
-			IgDataModel igDataModel = igService.generateDataModel(igDocument);
 			DocumentStructureDataModel documentStructureDataModel = new DocumentStructureDataModel();
 			String xmlContent =
 					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,decision).toXML();
@@ -222,22 +208,36 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		ExportFilterDecision decision = new ExportFilterDecision();
 		if(documentStructure instanceof Ig) {
 			Ig ig = (Ig) documentStructure;
+			for (Link l : ig.getProfileComponentRegistry().getChildren()) {
+				decision.getProfileComponentFilterMap().put(l.getId(), true);
+			}
 		for (Link l : ig.getConformanceProfileRegistry().getChildren()) {
 			decision.getConformanceProfileFilterMap().put(l.getId(), true);
 		}
+	    for (Link l : ig.getCompositeProfileRegistry().getChildren()) {
+            decision.getCompositeProfileFilterMap().put(l.getId(), true);
+        }
+	    for (Link l : ig.getProfileComponentRegistry().getChildren()) {
+            decision.getProfileComponentFilterMap().put(l.getId(), true);
+        }
 		for (Link l : ig.getSegmentRegistry().getChildren()) {
 			decision.getSegmentFilterMap().put(l.getId(), false);
 		}
 		for (Link l : ig.getDatatypeRegistry().getChildren()) {
+			if(l.getId()==null) {
+//				System.out.println("NULL HERE :" + l.get);
+			}
 			decision.getDatatypesFilterMap().put(l.getId(), false);
 		}
 		for (Link l : ig.getValueSetRegistry().getChildren()) {
 			decision.getValueSetFilterMap().put(l.getId(), false);
 		}
-		if(documentStructure.getOrigin() !=null && config.isDeltaMode()) {
+		if(documentStructure.getOrigin() !=null && config.getType().equals(ExportType.DIFFERENTIAL)) {
 		  calculateDeltaAndDecide(ig, decision);
 		} else {
 		  processConformanceProfiles(ig, decision, config); 
+		  
+		  // TODO: Process Profile Components and composite
 		}
 		return decision;
 		} else if(documentStructure instanceof DatatypeLibrary) {
@@ -293,6 +293,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
           }
           if(elm.getDelta().equals(DeltaAction.UPDATED)) {
             decision.getChanged().put(elm.getId(), true);
+          }
+          if(elm.getId()==null) {
+        	  System.out.println("Look here for null1 : " + elm.getFixedName());
           }
           decision.getDatatypesFilterMap().put(elm.getId(), true);
         }
@@ -355,6 +358,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			if (child.getRef() != null && child.getRef().getId() != null) {
 				if (child.getUsage() != null && config.getSegmentExportConfiguration().getFieldsExport().isBinded(child.getUsage())) {
 					datatypesIds.add(child.getRef().getId());
+					if(child.getRef().getId()==null) {
+			        	  System.out.println("Look here for null2 : " + child.getName());
+			          }
 					decision.getDatatypesFilterMap().put(child.getRef().getId(), true);
 					bindedPaths.put(child.getId(), true);
 				}
@@ -384,6 +390,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			if (child.getRef() != null && child.getRef().getId() != null) {
 				if (child.getUsage() != null && config.getDatatypeExportConfiguration().getComponentExport().isBinded(child.getUsage())) {
 					datatypesIds.add(child.getRef().getId());
+					if(child.getRef().getId()==null) {
+			        	  System.out.println("Look here for null3 : " + child.getName());
+			          }
 					decision.getDatatypesFilterMap().put(child.getRef().getId(), true);
 					bindedPaths.put(child.getId(), true);
 				}
@@ -480,12 +489,12 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	@Override
-	public ExportedFile exportIgDocumentToWord(String username, String id, ExportFilterDecision decision, String configId )
+	public ExportedFile exportIgDocumentToWord(String username, IgDataModel igDatamodel, ExportFilterDecision decision, String configId )
 			throws Exception {
-		Ig igDocument = igService.findById(id);
+		Ig igDocument = igDatamodel.getModel();
 		ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(configId);
 		if (igDocument != null) {
-			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD, decision, exportConfiguration);
+			ExportedFile htmlFile = this.serializeIgDocumentToHtml(username, igDatamodel, ExportFormat.WORD, decision, exportConfiguration);
 			ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(),
 					igDocument.getUpdateDate(),
 					igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
@@ -581,7 +590,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	      }
 	    }else if(cell instanceof DatatypeCell ) {
 	      DatatypeCell dtCell= (DatatypeCell)cell; 
-	      decision.getDatatypesFilterMap().put(dtCell.getDatatypeId(), true);
+	      if(dtCell.getDatatypeId()!=null) {
+		      decision.getDatatypesFilterMap().put(dtCell.getDatatypeId(), true);
+          }
 	    }else if(cell instanceof VariesCell) {
 	      VariesCell vrCell= (VariesCell)cell;
 	      if(vrCell.getCellValue() !=null) {
@@ -589,5 +600,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	      }
 	    }
 	  }
+
+	
+
 
 }

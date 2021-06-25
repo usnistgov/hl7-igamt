@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -79,7 +80,7 @@ public class ConformanceProfileDataModel implements Serializable, Comparable{
 	/**
 	 * @param cp
 	 */
-	public void putModel(ConformanceProfile cp,
+	public void putModel(ConformanceProfile cp, InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService, 
 			Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap,
 			ConformanceStatementRepository conformanceStatementRepository,
 			PredicateRepository predicateRepository, SegmentService segmentService) {
@@ -101,7 +102,7 @@ public class ConformanceProfileDataModel implements Serializable, Comparable{
 
 		if (cp.getChildren() != null) {
 			cp.getChildren().forEach(child -> {
-				this.segmentRefOrGroupDataModels.add(new SegmentRefOrGroupDataModel(child, null,
+				this.segmentRefOrGroupDataModels.add(new SegmentRefOrGroupDataModel(child, inMemoryDomainExtensionService, null,
 						this.predicateMap, segmentService));
 			});
 		}
@@ -112,18 +113,20 @@ public class ConformanceProfileDataModel implements Serializable, Comparable{
 			PredicateRepository predicateRepository,
 			Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
 		for (StructureElementBinding seb : sebs) {
-			String key;
-			String localPath;
+			String key = path;
+			String localPath=readablePath;
+			if(seb.getLocationInfo() != null) {
 			localPath = readablePath + "." + seb.getLocationInfo().getPosition() + "";
+			
 			if (path == null) {
 				key = seb.getLocationInfo().getPosition() + "";
 			} else {
 				key = path + "." + seb.getLocationInfo().getPosition();
 			}
-
+			}
 			if (seb.getPredicate() != null) {
 				Predicate p = seb.getPredicate();
-				p.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
+//				p.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
 				this.predicateMap.put(key, p); 
 			}
 

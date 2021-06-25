@@ -1,0 +1,8 @@
+<div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;">
+  <h5 class="card-title title-text custom-card-title">General Display</h5>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Export Only Message Infrastructure Mode" binary="true" [(ngModel)]="config.notMessageInfrastructure" (onChange)="triggerChange()"></p-checkbox></li>
+    <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Anything we can think of in the future" binary="true"></p-checkbox></li>
+ 
+  </ul>
+</div>

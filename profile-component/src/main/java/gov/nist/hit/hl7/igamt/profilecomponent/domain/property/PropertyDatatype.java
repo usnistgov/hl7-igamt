@@ -13,21 +13,25 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
+import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+
 /**
  *
  * @author Maxence Lefort on Feb 21, 2018.
  */
-public class PropertyDatatype extends ItemProperty {
+public class PropertyDatatype extends ItemProperty implements ApplySubStructElement {
 
   private String datatypeId;
 
   public PropertyDatatype(String datatypeId) {
-    super(PropertyKey.DATATYPE);
+    super(PropertyType.DATATYPE);
     this.setDatatypeId(datatypeId);
   }
 
   public PropertyDatatype() {
-    super(PropertyKey.DATATYPE);
+    super(PropertyType.DATATYPE);
   }
 
   public String getDatatypeId() {
@@ -39,5 +43,9 @@ public class PropertyDatatype extends ItemProperty {
   }
 
 
-
+  @Override
+  public void onSubStructElement(SubStructElement subStruct) {
+    Ref ref = new Ref(datatypeId);
+    subStruct.setRef(ref);
+  }
 }

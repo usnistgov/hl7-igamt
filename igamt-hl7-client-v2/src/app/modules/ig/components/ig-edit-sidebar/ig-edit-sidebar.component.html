@@ -20,13 +20,23 @@
       <span class="badge delta-badge-added delta-badge"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"></p-checkbox> added </span>
       <span class="badge delta-badge">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedValues"> </p-checkbox> unchanged</span>
   </div>
-  <div *ngIf="delta" class="alert-info" style="height: 25px; padding: 5px; display: flex; flex-direction: row; justify-content: center"> <i class="fa fa-eye">View Only</i></div>
+  <div *ngIf="delta" class="alert-info" style="height: 25px; padding: 5px; display: flex; flex-direction: row; justify-content: center; align-items: center;">
+    <i class="fa fa-eye"></i>
+    <span style="margin-left: 5px;">View Only</span>
+  </div>
 
 </div>
 <div class="sidebar-controls">
   <app-dam-side-bar-toggle></app-dam-side-bar-toggle>
-  <div class="btn-group mr-2" role="group">
+  <div class="btn-group mr-2" role="group" style="margin-left: 10px;">
 
+    <button (click)="scrollTo('profilecomponents')" class="btn btn-text btn-sm entity-badge-profile-component" type="button">
+      PC
+    </button>
+    <button (click)="scrollTo('composites')" class="btn btn-text btn-sm btn-w-icon entity-badge-composite-profile" type="button">
+      <i class="fa fa-sitemap entity-badge-composite-profile-icon" style="margin-right: 5px;"></i>
+      CP
+    </button>
     <button (click)="scrollTo('messages')" class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
       CP
     </button>
@@ -56,5 +66,5 @@
 
 </div>
 <div class="sidebar-content" id="sidebar-content">
-  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (addChild)="addChild($event)" (copy)="copy($event)" (delete)="delete($event)" (addVSFromCSV)="addVSFromCSV($event)"  [delta]="deltaMode$ | async" [viewOnly]="viewOnly$ | async" (deleteNarrative)="checkDeleteNarrative($event)"></app-ig-toc>
+  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (addChild)="addChild($event)" (copy)="copy($event)" (delete)="delete($event)" (addVSFromCSV)="addVSFromCSV($event)"  [delta]="deltaMode$ | async" [viewOnly]="viewOnly$ | async" (deleteNarrative)="checkDeleteNarrative($event)" (addPcChildren)="onAddPcChildren($event)" (deleteContext)="deleteOneChild($event)"></app-ig-toc>
 </div>

@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
@@ -47,7 +47,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
-import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
+import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
@@ -101,7 +101,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 	private DatatypeRepository datatypeRepository;
 
 	@Autowired
-	private InMemoryDomainExtentionService domainExtention;
+	private InMemoryDomainExtensionService domainExtention;
 
 	@Autowired
 	CommonService commonService;
@@ -629,6 +629,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 			}
 		}
 
+		bindingDisplay.setChangeLog(seb.getChangeLog());
 		return bindingDisplay;
 	}
 
@@ -1192,4 +1193,50 @@ public class DatatypeServiceImpl implements DatatypeService {
     return datatypeRepository.findByParentId(id);
     
   }
+
+	@Override
+	public Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes) {
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(Datatype dt : datatypes ) {
+			ret.add(this.convertDatatype(dt));
+		}
+		return ret;
+	}
+
+	@Override
+	public DisplayElement convertDatatype(Datatype datatype) {
+		DisplayElement displayElement= new DisplayElement();
+		displayElement.setId(datatype.getId());
+		displayElement.setDomainInfo(datatype.getDomainInfo());
+		displayElement.setFixedName(datatype.getName());
+		if(!datatype.getDomainInfo().getScope().equals(Scope.SDTF)) {
+			displayElement.setFixedName(datatype.getName());
+			if(datatype.getFixedExtension() !=null && !datatype.getFixedExtension().isEmpty()) {
+				displayElement.setFixedName(datatype.getName() + "_"+ datatype.getFixedExtension());
+			}
+			displayElement.setVariableName(datatype.getExt());
+		}else {
+			displayElement.setFixedName(datatype.getLabel());
+		}
+		displayElement.setDescription(datatype.getDescription());
+		displayElement.setDifferantial(datatype.getOrigin() !=null);
+		displayElement.setActiveInfo(datatype.getActiveInfo());
+		displayElement.setLeaf(!(datatype instanceof ComplexDatatype));
+		displayElement.setType(Type.DATATYPE);
+		displayElement.setOrigin(datatype.getOrigin());
+		displayElement.setParentId(datatype.getParentId());
+		displayElement.setParentType(datatype.getParentType());
+		return displayElement;
+	}
+
+	@Override
+	public Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry) {
+		Set<String> ids= registry.getChildren().stream().map(Link::getId).collect(Collectors.toSet());
+		List<Datatype> datatypes= this.findByIdIn(ids);
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(Datatype dt : datatypes) {
+			ret.add(convertDatatype(dt));
+		}
+		return ret;
+	}
 }

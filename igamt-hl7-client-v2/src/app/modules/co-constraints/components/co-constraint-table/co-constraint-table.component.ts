@@ -3,8 +3,8 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild 
 import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
-import { combineLatest, Observable, of, Subject } from 'rxjs';
-import { map, take, tap } from 'rxjs/operators';
+import { combineLatest, EMPTY, Observable, of, Subject } from 'rxjs';
+import { filter, map, take, tap } from 'rxjs/operators';
 import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
@@ -21,6 +21,7 @@ import {
   ICoConstraint,
   ICoConstraintGroup,
   ICoConstraintGroupBindingContained,
+  ICoConstraintGrouper,
   ICoConstraintHeader,
   ICoConstraintTable,
   ICoConstraintValueSetCell,
@@ -35,6 +36,7 @@ import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
+import { GrouperDialogComponent } from '../grouper-dialog/grouper-dialog.component';
 import { NarrativeHeaderDialogComponent } from '../narrative-header-dialog/narrative-header-dialog.component';
 
 export enum CoConstraintAction {
@@ -105,6 +107,7 @@ export class CoConstraintTableComponent implements OnInit {
     }
 
     if (this._value && datatype) {
+      console.log(this.coconstraintEntity.getCoConstraintRowList(this._value));
       this.initVariesOptionList(this.coconstraintEntity.getCoConstraintRowList(this._value), datatype);
     }
 
@@ -213,6 +216,7 @@ export class CoConstraintTableComponent implements OnInit {
     allowed?: any[];
     bindingInfo?: IBindingLocationInfo;
   } = {};
+  showGrouper = false;
 
   constructor(
     private dialog: MatDialog,
@@ -230,6 +234,11 @@ export class CoConstraintTableComponent implements OnInit {
       this.bindingsService.getBingdingInfo(header.elementInfo.version, header.elementInfo.parent, header.elementInfo.datatype, header.elementInfo.location, header.elementInfo.type).pipe(
         take(1),
         map((bindingsInfo) => {
+          if (header.key === '3') {
+            console.log('-------');
+            console.log(header.elementInfo.version, header.elementInfo.parent, header.elementInfo.datatype, header.elementInfo.location, header.elementInfo.type);
+            console.log(bindingsInfo.allowedBindingLocations);
+          }
           header.elementInfo.bindingInfo = bindingsInfo;
         }),
       ).subscribe();
@@ -261,6 +270,42 @@ export class CoConstraintTableComponent implements OnInit {
     RxjsStoreHelperService.forkJoin(obs).subscribe();
   }
 
+  promptSelectGrouper(deflt: boolean = false): Observable<ICoConstraintGrouper> {
+    if (deflt) {
+      const grouper = this.coconstraintEntity.getDefaultGrouper(this._segment, this.structure[0].children);
+      if (grouper) {
+        return of(grouper);
+      }
+    }
+
+    return this.dialog.open(GrouperDialogComponent, {
+      data: {
+        structure: this.structure,
+        repository: this.repository,
+        segment: this._segment,
+        excludePaths: this.getDataElementPaths(this._value.headers),
+      },
+    }).afterClosed();
+
+  }
+
+  setTableGrouper(_default: boolean = false, then?: (ICoConstraintGrouper) => void) {
+    this.promptSelectGrouper(_default).pipe(
+      filter((grouper) => !!grouper),
+      tap((grouper) => {
+        this.setGrouper(grouper);
+        if (then) {
+          then(grouper);
+        }
+      }),
+    ).subscribe();
+  }
+
+  clearGrouper() {
+    this.setGrouper(undefined);
+  }
+
+  // tslint:disable-next-line: cognitive-complexity
   dispatch(action: ICoConstraintAction) {
     switch (action.type) {
       case CoConstraintAction.ADD_COCONSTRAINT:
@@ -269,11 +314,17 @@ export class CoConstraintTableComponent implements OnInit {
             this.addCoConstraint((this.value.groups[action.targetGroup] as ICoConstraintGroupBindingContained).coConstraints);
           }
         } else {
-          this.addCoConstraint(this.value);
+          this.addCoConstraint(this.value.coConstraints);
         }
         break;
       case CoConstraintAction.ADD_GROUP:
-        this.addCoConstraintGroup();
+        if (this.value.headers.grouper) {
+          this.addCoConstraintGroup();
+        } else {
+          this.setTableGrouper(true, () => {
+            this.addCoConstraintGroup();
+          });
+        }
         break;
       case CoConstraintAction.DELETE_COCONSTRAINT:
         if (action.targetGroup) {
@@ -305,6 +356,11 @@ export class CoConstraintTableComponent implements OnInit {
         this.groupsMap[id] = value;
       }),
     ).subscribe();
+  }
+
+  setGrouper(grouper: ICoConstraintGrouper) {
+    this.value.headers.grouper = grouper;
+    this.emitChange();
   }
 
   addImportedGroup(group: ICoConstraintGroupBindingRef) {
@@ -559,7 +615,7 @@ export class CoConstraintTableComponent implements OnInit {
     const thenSize = this.listSize(this.value.headers.constraints);
     const userSize = this.listSize(this.value.headers.narratives);
 
-    return ifSize + thenSize + userSize;
+    return ifSize + thenSize + userSize + 1;
   }
 
   oneOrMore(n: number): number {
@@ -671,7 +727,7 @@ export class CoConstraintTableComponent implements OnInit {
       delete cc.cells[header.key];
     });
 
-    if (this.value.type === CoConstraintMode.TABLE) {
+    if (this.value.tableType === CoConstraintMode.TABLE) {
       const table = this.value as ICoConstraintTable;
       table.groups.forEach((group) => {
         if (group.type === CoConstraintGroupBindingType.CONTAINED) {

@@ -13,31 +13,68 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 
 /**
  *
  * @author Maxence Lefort on Feb 23, 2018.
  */
-public class PropertyDynamicMapping extends ItemProperty {
-
-  private DynamicMappingInfo dynamicMappingInfo;
-
-  public PropertyDynamicMapping(DynamicMappingInfo dynamicMappingInfo) {
-    super(PropertyKey.DYNAMIC_MAPPING);
-    this.dynamicMappingInfo = dynamicMappingInfo;
+public class PropertyDynamicMapping extends ItemProperty implements ApplySegment{
+  
+  private boolean override;
+  private Set<PcDynamicMappingItem> items; 
+  
+  public Set<PcDynamicMappingItem> getItems() {
+    return items;
   }
-
+  public void setItems(Set<PcDynamicMappingItem> items) {
+    this.items = items;
+  }
+  public PropertyDynamicMapping(PropertyType propertyKey) {
+    super(propertyKey);
+  }
   public PropertyDynamicMapping() {
-    super(PropertyKey.DYNAMIC_MAPPING);
+    super(PropertyType.DYNAMICMAPPING);
+  }
+  public boolean isOverride() {
+    return override;
+  }
+  public void setOverride(boolean override) {
+    this.override = override;
   }
 
-  public DynamicMappingInfo getDynamicMappingInfo() {
-    return dynamicMappingInfo;
+  @Override
+  public void onSegment(Segment segment) {
+    if(segment.getDynamicMappingInfo() == null) {
+      segment.setDynamicMappingInfo(new DynamicMappingInfo());
+      segment.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
+    }
+    
+    if(this.override) {
+      segment.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
+      for(PcDynamicMappingItem item: this.getItems()) {
+        segment.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(item.getFlavorId(), item.getDatatypeName()));
+      }
+    }else {      
+      for(PcDynamicMappingItem item: this.getItems()) {
+        if(item.getChange().equals(ChangeType.ADD)) {
+          segment.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(item.getFlavorId(), item.getDatatypeName()));
+        }else {
+          segment.getDynamicMappingInfo().getItems().removeIf((x) ->x.getValue().equals(item.getDatatypeName()));
+          if(item.getChange().equals(ChangeType.UPDATE)) {
+            segment.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(item.getFlavorId(), item.getDatatypeName()));
+          }
+        }
+      }
+    }
   }
 
-  public void setDynamicMappingInfo(DynamicMappingInfo dynamicMappingInfo) {
-    this.dynamicMappingInfo = dynamicMappingInfo;
-  }
 
 }

@@ -5,6 +5,7 @@ import { HomeComponent } from './modules/core/components/home/home.component';
 import { NewPasswordComponent } from './modules/core/components/new-password/new-password.component';
 import { RegisterComponent } from './modules/core/components/register/register.component';
 import { ResetPasswordRequestComponent } from './modules/core/components/reset-password-request/reset-password-request.component';
+import { UserManagementComponent } from './modules/core/components/user-management/user-management.component';
 import { UserProfileComponent } from './modules/core/components/user-profile/user-profile.component';
 import { LoginComponent } from './modules/dam-framework/components/authentication/login/login.component';
 import { NotAuthenticatedGuard } from './modules/dam-framework/guards/auth-guard.guard';
@@ -36,6 +37,10 @@ const routes: Routes = [
   {
     path: 'user-profile',
     component: UserProfileComponent,
+  },
+  {
+    path: 'user-management',
+    component: UserManagementComponent,
   },
   { path: 'reset-password-confirm/:token', component: NewPasswordComponent, resolve: { valid: NewPasswordResolver } },
 

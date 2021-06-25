@@ -15,7 +15,7 @@
       </div>
       <div class="sidebar-controls">
         <div>
-          <button  class="btn btn-sm btn-primary" (click)="applyLastUserConfiguration()" type="button">
+          <button  class="btn btn-sm btn-primary" (click)="applyLastUserConfiguration()" type="button" [disabled]="!this.initialConfig.previous">
             Apply Last User Configuration
           </button>
         </div>
@@ -62,7 +62,6 @@
           <div *ngIf="delta" style="display: flex; flex-direction: row">
             <span class="badge delta-badge delta-badge-changed"> <p-checkbox name="delta-display" value="UPDATED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> updated</span>
             <span class="badge delta-badge delta-badge-added"> <p-checkbox name="delta-display" value="ADDED"   (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"></p-checkbox> added </span>
-            <span class="badge delta-badge badge-default">  <p-checkbox name="delta-display" value="UNCHANGED" (ngModelChange)="filterByDelta($event)" [(ngModel)]="selectedDeltaValues"> </p-checkbox> unchanged</span>
           </div>
         </div>
       </div>
@@ -84,19 +83,22 @@
           <span *ngIf="selected?.type === 'IGDOCUMENT'"> Implementation Guide</span>
         </h5>
       </div>
-      <div *ngIf="docType === 'IGDOCUMENT'" class="content">
+      <div *ngIf="docType === 'IGDOCUMENT' || docType === 'DIFFERENTIAL'" class="content">
         <ng-container [ngSwitch]="type">
           <ng-container *ngSwitchCase="'SEGMENT'">
-            <app-segment-export-configuration [config]="current" [derived]="derived" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading"></app-segment-export-configuration>
+            <app-segment-export-configuration [config]="current" [derived]="derived" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading" [delta]="delta"></app-segment-export-configuration>
           </ng-container>
           <ng-container *ngSwitchCase="'VALUESET'">
-            <app-value-set-export-configuration [config]="current" [derived]="derived"  [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading" ></app-value-set-export-configuration>
+            <app-value-set-export-configuration [config]="current" [derived]="derived"  [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading" [delta]="delta"></app-value-set-export-configuration>
           </ng-container>
           <ng-container *ngSwitchCase="'DATATYPE'">
-            <app-datatype-export-configuration [leaf]="selected?.leaf" [config]="current" [derived]="derived" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading"></app-datatype-export-configuration>
+            <app-datatype-export-configuration [leaf]="selected?.leaf" [config]="current" [derived]="derived" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading" [delta]="delta"></app-datatype-export-configuration>
           </ng-container>
           <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-            <app-conformance-profile-export-configuration [config]="current" [derived]="derived" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading"></app-conformance-profile-export-configuration>
+            <app-conformance-profile-export-configuration [config]="current" [derived]="derived" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading" [delta]="delta"></app-conformance-profile-export-configuration>
+          </ng-container>
+          <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
+            <app-composite-profile-export-configuration [config]="current" [derived]="derived" [origin]="selected?.origin" (detectChange)="applyChange($event)" *ngIf="!loading" [delta]="delta"></app-composite-profile-export-configuration>
           </ng-container>
         </ng-container>
       </div>

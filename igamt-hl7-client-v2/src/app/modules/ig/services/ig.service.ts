@@ -1,19 +1,21 @@
 import { LocationStrategy } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 import { Action } from '@ngrx/store';
-import { Observable, throwError } from 'rxjs';
+import {Observable, of, throwError} from 'rxjs';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { TableOfContentSave } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentCreationWrapper } from '../../document/models/document/document-creation.interface';
 import { MessageEventTreeNode } from '../../document/models/message-event/message-event.class';
 import {
-  IAddNodes, IAddResourceFromFile, ICopyNode, ICopyResourceResponse,
+  IAddNodes, IAddProfileComponentContext, IAddResourceFromFile, ICopyNode, ICopyResourceResponse,
   ICreateCoConstraintGroup,
-  ICreateCoConstraintGroupResponse,
+  ICreateCoConstraintGroupResponse, ICreateCompositeProfile, ICreateProfileComponent, ICreateProfileComponentResponse,
 } from '../../document/models/toc/toc-operation.class';
 import { IgTOCNodeHelper } from '../../document/services/ig-toc-node-helper.service';
+import {ExportTypes} from '../../export-configuration/models/export-types';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { CloneModeEnum } from '../../shared/constants/clone-mode.enum';
 import { Scope } from '../../shared/constants/scope.enum';
@@ -45,7 +47,6 @@ export class IgService {
   getRegistryAndCollectionByType(type: Type): { registry: string, collection: string } {
     let registry: string;
     let collection: string;
-
     if (type === Type.VALUESET) {
       registry = 'valueSetRegistry';
       collection = 'valueSets';
@@ -61,20 +62,30 @@ export class IgService {
     } else if (type === Type.COCONSTRAINTGROUP) {
       registry = 'coConstraintGroupRegistry';
       collection = 'coConstraintGroups';
+    } else if (type === Type.PROFILECOMPONENT) {
+      registry = 'profileComponentRegistry';
+      collection = 'profileComponents';
+    } else if (type === Type.COMPOSITEPROFILE) {
+      registry = 'compositeProfileRegistry';
+      collection = 'compositeProfiles';
     }
-
     return { registry, collection };
   }
 
   loadOrInsertRepositoryFromIgDisplayInfo(igInfo: IDocumentDisplayInfo<IgDocument>, load: boolean, values?: string[]): fromDam.InsertResourcesInRepostory | fromDam.LoadResourcesInRepostory {
-    const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'sections'];
+    const _default = ['segments', 'datatypes', 'messages', 'valueSets', 'coConstraintGroups', 'profileComponents', 'compositeProfiles',  'sections'];
+    console.log('loading');
     const collections = (values ? values : _default).map((key) => {
       return {
         key,
         values: key === 'sections' ? IgTOCNodeHelper.getIDisplayFromSections(igInfo.ig.content, '') : igInfo[key],
       };
     });
-
+    if (igInfo.profileComponents !== null ) {
+      let childrenArray = [];
+      igInfo['profileComponents'].forEach((x) => childrenArray = childrenArray.concat(x.children));
+      collections.push({key: 'contexts', values: childrenArray});
+    }
     return !load ? new fromDam.InsertResourcesInRepostory({
       collections,
     }) : new fromDam.LoadResourcesInRepostory({
@@ -92,16 +103,20 @@ export class IgService {
 
   insertRepositoryCopyResource(registryList: IRegistry, display: IDisplayElement, ig: IgDocument): Action[] {
     const { registry, collection } = this.getRegistryAndCollectionByType(display.type);
+    const collections = [{
+      key: collection,
+      values: [display],
+    }];
+    if (display.type === Type.PROFILECOMPONENT && display.children ) {
+      collections.push({key: 'contexts' , values: display.children });
+    }
     return [
       ...(registry ? [new fromDam.LoadPayloadData({
         ...ig,
         [registry]: registryList,
       })] : []),
       ...(collection ? [new fromDam.InsertResourcesInRepostory({
-        collections: [{
-          key: collection,
-          values: [display],
-        }],
+         collections,
       })] : []),
     ];
   }
@@ -220,6 +235,10 @@ export class IgService {
         return this.IG_END_POINT + payload.documentId + '/segments/' + payload.selected.originalId + '/clone';
       case Type.VALUESET:
         return this.IG_END_POINT + payload.documentId + '/valuesets/' + payload.selected.originalId + '/clone';
+      case Type.PROFILECOMPONENT:
+        return this.IG_END_POINT + payload.documentId + '/' + 'profile-component/' + payload.selected.originalId + '/clone';
+      case Type.COMPOSITEPROFILE:
+        return this.IG_END_POINT + payload.documentId + '/composite-profile/' + payload.selected.originalId + '/clone';
       default: return null;
     }
   }
@@ -236,6 +255,11 @@ export class IgService {
         return this.IG_END_POINT + documentId + '/valuesets/' + element.id + '/delete';
       case Type.COCONSTRAINTGROUP:
         return this.IG_END_POINT + documentId + '/co-constraint-group/' + element.id + '/delete';
+      case Type.PROFILECOMPONENT:
+        // tslint:disable-next-line:no-duplicate-string
+        return this.IG_END_POINT + documentId + '/profile-component/' + element.id + '/delete';
+      case Type.COMPOSITEPROFILE:
+        return this.IG_END_POINT + documentId + '/composite-profile/' + element.id + '/delete';
       default: return null;
     }
   }
@@ -283,45 +307,56 @@ export class IgService {
     form.submit();
   }
 
-  exportAsWord(igId: string, decision: any, configurationId: string) {
-    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/word');
-  }
-
-  export(igId, decision: any, format: string) {
+  export(igId, decision: any, format: string, configId: string , exportType: ExportTypes ) {
     const form = document.createElement('form');
-    form.action = this.EXPORT_URL + igId + '/' + format;
+    form.action = this.EXPORT_URL + igId + '/' + format + '?deltamode=TEST';
     form.method = 'POST';
+
     const json = document.createElement('input');
     json.type = 'hidden';
     json.name = 'json';
     json.value = JSON.stringify(decision);
     form.appendChild(json);
+
+    const config = document.createElement('input');
+    config.type = 'hidden';
+    config.name = 'configId';
+    config.value = configId;
+    form.appendChild(config);
+
+    const documentType = document.createElement('input');
+    documentType.type = 'hidden';
+    documentType.name = 'exportType';
+    documentType.value = exportType;
+    form.appendChild(documentType);
+
     form.style.display = 'none';
     document.body.appendChild(form);
     form.submit();
   }
 
-  exportAsHtml(igId: string, decision: any, configurationId: string) {
-    this.submitForm(decision, this.EXPORT_URL + igId + this.CONFIGURATION + configurationId + '/html');
-  }
-
-  exportAsHtmlQuick(igId: string) {
-    this.submitForm(null, this.EXPORT_URL + igId + '/quickHtml');
+  exportAsHtml(igId: string, decision: any, configurationId: string, exportType: ExportTypes) {
+    this.submitForm(decision, this.EXPORT_URL + igId + '/html', configurationId, exportType );
   }
 
   exportDiffXML(igId: string) {
-    this.submitForm(null, this.EXPORT_URL + igId + '/xml/diff');
+    this.submitForm(null, this.EXPORT_URL + igId + '/xml/diff', null, null);
   }
   exportProfileDiffXML(igId: string, profileId) {
-    this.submitForm(null, this.EXPORT_URL + igId + '/' + profileId + '/xml/diff');
+    this.submitForm(null, this.EXPORT_URL + igId + '/' + profileId + '/xml/diff', null, null);
   }
 
-  exportAsWordQuick(igId: string) {
-    this.submitForm(null, this.EXPORT_URL + igId + '/quickWord');
+  exportDocument(igId: string, decision: any,  configId: string , exportType: ExportTypes, format: string) {
+    this.submitForm(decision, this.EXPORT_URL + igId + '/' + format, configId, exportType);
   }
 
-  submitForm(decision: any, end_point: string) {
+  submitForm(decision: any, end_point: string, configId: string , exportType: ExportTypes) {
     const form = document.createElement('form');
+    const documentType = document.createElement('input');
+    documentType.type = 'hidden';
+    documentType.name = 'documentType';
+    documentType.value = exportType;
+    form.appendChild(documentType);
     form.action = end_point;
     form.method = 'POST';
     if (decision) {
@@ -331,6 +366,11 @@ export class IgService {
       json.value = JSON.stringify(decision);
       form.appendChild(json);
     }
+    const config = document.createElement('input');
+    config.type = 'hidden';
+    config.name = 'config';
+    config.value = configId;
+    form.appendChild(config);
     form.style.display = 'none';
     document.body.appendChild(form);
     form.submit();
@@ -387,5 +427,21 @@ export class IgService {
 
   loadTemplate(): Observable<IgTemplate[]> {
     return this.http.get<IgTemplate[]>('api/igdocuments/igTemplates');
+  }
+
+  createProfileComponent(request: ICreateProfileComponent): Observable<Message<ICreateProfileComponentResponse>> {
+    return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/profile-component/create', request);
+  }
+
+  addProfileComponentContext(request: IAddProfileComponentContext): Observable<Message<ICreateProfileComponentResponse>> {
+    return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/profile-component/' + request.pcId + '/addChildren', request.added);
+  }
+
+  deleteContext(documentId: string, element: IDisplayElement, parent: IDisplayElement): Observable<IDisplayElement> {
+    return this.http.post<IDisplayElement>(this.IG_END_POINT + documentId + '/profile-component/' + parent.id + '/removeContext' , element.id);
+  }
+
+  createCompositeProfile(request: ICreateCompositeProfile): Observable<Message<ICreateProfileComponentResponse>> {
+    return this.http.post<Message<ICreateProfileComponentResponse>>(this.IG_END_POINT + request.documentId + '/composite-profile/create', request);
   }
 }

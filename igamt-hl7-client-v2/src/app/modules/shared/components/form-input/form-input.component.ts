@@ -79,14 +79,14 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
     const errors = [];
     for (const property in this.control.errors) {
       if (property === 'required') {
-        errors.push(this.name + ' is required');
+        errors.push(this.label + ' is required');
         break;
       } else if (property === 'minlength') {
-        errors.push(this.name + ' is too short');
+        errors.push(this.label + ' is too short');
         break;
 
       } else if (property === 'maxlength') {
-        errors.push(this.name + ' is too long');
+        errors.push(this.label + ' is too long');
         break;
 
       } else if (property === 'email') {

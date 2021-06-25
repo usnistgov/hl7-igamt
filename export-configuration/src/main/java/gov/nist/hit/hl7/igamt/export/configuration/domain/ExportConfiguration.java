@@ -25,15 +25,19 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.Columns;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.CompositeProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConstraintExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeLibraryExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ResourceExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.SegmentExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.StructuredNarrative;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ValueSetExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.IgGeneralConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.PositionAndPresence;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ProfileComponentExportConfiguration;
 
 
 /**
@@ -44,12 +48,13 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.PositionAndPresence;
 public class ExportConfiguration {
 
   private String configName;
-  private Type type;
+
+  private ExportType type;
   @Id
   private String id;
   private boolean original; // true if it is the first time config
-  
-//  private DatatypeLibraryExportConfiguration datatypeLibraryExportConfiguration;
+
+  //  private DatatypeLibraryExportConfiguration datatypeLibraryExportConfiguration;
   private DatatypeExportConfiguration datatypeExportConfiguration;
   private SegmentExportConfiguration segmentExportConfiguration;
   private ConformanceProfileExportConfiguration conformamceProfileExportConfiguration;
@@ -58,8 +63,13 @@ public class ExportConfiguration {
   private ResourceExportConfiguration resourceExportConfiguration;
   private DocumentMetadataConfiguration DocumentMetadataConfiguration;
   private ExportFontConfiguration exportFontConfiguration;
+  private IgGeneralConfiguration igGeneralConfiguration;
+  private ProfileComponentExportConfiguration profileComponentExportConfiguration;
+  private CompositeProfileExportConfiguration compositeProfileExportConfiguration;
 
 
+
+  boolean reasonForChange = false;
   boolean defaultType = false;
   boolean defaultConfig = false;
   private String name;
@@ -76,11 +86,12 @@ public class ExportConfiguration {
   private boolean includeValuesetsTable = true;
   private boolean includeCompositeProfileTable = true;
   private boolean includeProfileComponentTable = true;
-  private boolean deltaMode = true;
+  private boolean deltaMode = false;
 
   private boolean greyOutOBX2FlavorColumn = false;
 
   private CoConstraintExportMode coConstraintExportMode;
+  private GeneratedFlavorsConfiguration generatedFlavorsConfiguration;
 
   private boolean includeDerived = false;
 
@@ -124,11 +135,28 @@ public class ExportConfiguration {
     return exportConfiguration;
   }
 
-  public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue, Type type) {
+  public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue, ExportType type) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();
+    //Setting ProfileComponent Export Configuration
+    ProfileComponentExportConfiguration profileComponentExportConfiguration = new ProfileComponentExportConfiguration();
+    defaultConfiguration.setProfileComponentExportConfiguration(profileComponentExportConfiguration);
+  // Setting IgGeneralConfiguration
+    IgGeneralConfiguration igGeneralConfiguration = new IgGeneralConfiguration();
+    igGeneralConfiguration.setNotMessageInfrastructure(false);
+    defaultConfiguration.setIgGeneralConfiguration(igGeneralConfiguration);
+
+    // Setting structureNarrative
+    StructuredNarrative structuredNarrative = new StructuredNarrative();
+    structuredNarrative.setComments(true);
+    structuredNarrative.setDefinitionText(true);
+    structuredNarrative.setPostDefinition(true);
+    structuredNarrative.setPreDefinition(true);
+
     //setting font
     ExportFontConfiguration exportFontConfiguration = ExportFontConfiguration.getDefault();
     defaultConfiguration.setExportFontConfiguration(exportFontConfiguration);
+
+
     defaultConfiguration.setType(type);
     defaultConfiguration.setConfigName("");
     defaultConfiguration.setOriginal(false);
@@ -142,14 +170,13 @@ public class ExportConfiguration {
     defaultConfiguration.setIncludeValuesetsTable(true);
     defaultConfiguration.setIncludeCompositeProfileTable(true);
     defaultConfiguration.setIncludeProfileComponentTable(true);
-//    // CoConstraints config
-//    CoConstraintExportMode coConstraintExportMode;
-//    coConstraintExportMode.setCompact(true);
-//    coConstraintExportMode.setVerbose(false);
-//    coConstraintExportMode.setNoExport(false);
-//    defaultConfiguration.setCoConstraintExportMode(coConstraintExportMode);
+    //    // CoConstraints config
+    //    CoConstraintExportMode coConstraintExportMode;
+    //    coConstraintExportMode.setCompact(true);
+    //    coConstraintExportMode.setVerbose(false);
+    //    coConstraintExportMode.setNoExport(false);
+    //    defaultConfiguration.setCoConstraintExportMode(coConstraintExportMode);
     // Default Usages
-    UsageConfiguration displayAll = new UsageConfiguration();
     UsageConfiguration displaySelectives = new UsageConfiguration();
     displaySelectives.setC(setAllTrue);
     displaySelectives.setX(setAllTrue);
@@ -163,27 +190,19 @@ public class ExportConfiguration {
     codeUsageExport.setE(setAllTrue);
     codeUsageExport.setP(true);
     codeUsageExport.setR(true);
-    displayAll.setC(setAllTrue);
-    displayAll.setCab(true);
-    displayAll.setRe(true);
-    displayAll.setX(setAllTrue);
-    displayAll.setO(setAllTrue);
-    displayAll.setR(true);
-    displayAll.setB(setAllTrue);
-    displayAll.setW(setAllTrue);
     DeltaExportConfigMode deltaMode = DeltaExportConfigMode.HIGHLIGHT;
     HashMap<DeltaAction,String> colors = new HashMap<>();
     colors.put(DeltaAction.ADDED, "#a7d6a9");
     colors.put(DeltaAction.DELETED, "#EC330C");
     colors.put(DeltaAction.UPDATED, "#ECAF0C");
     DeltaConfiguration deltaConfiguration = new DeltaConfiguration(deltaMode,colors);
-    defaultConfiguration.setSegmentORGroupsMessageExport(displayAll);
-    defaultConfiguration.setSegmentORGroupsCompositeProfileExport(displayAll);
+    defaultConfiguration.setSegmentORGroupsMessageExport(displaySelectives);
+    defaultConfiguration.setSegmentORGroupsCompositeProfileExport(displaySelectives);
 
-    defaultConfiguration.setComponentExport(displayAll);
+    defaultConfiguration.setComponentExport(displaySelectives);
 
-    defaultConfiguration.setFieldsExport(displayAll);
-    defaultConfiguration.setProfileComponentItemsExport(displayAll);
+    defaultConfiguration.setFieldsExport(displaySelectives);
+    defaultConfiguration.setProfileComponentItemsExport(displaySelectives);
 
     defaultConfiguration.setCodesExport(codeUsageExport);
     defaultConfiguration.setPhinvadsUpdateEmailNotification(false);
@@ -293,16 +312,25 @@ public class ExportConfiguration {
     datatypeExportConfiguration.setBinding(true);
     datatypeExportConfiguration.setPurposeAndUse(true);
     datatypeExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    datatypeExportConfiguration.setDeltaMode(true);
     datatypeExportConfiguration.setDeltaConfig(deltaConfiguration);
+    datatypeExportConfiguration.setStructuredNarrative(structuredNarrative);
+    if(type.equals(ExportType.DIFFERENTIAL)) {
+      datatypeExportConfiguration.setReasonForChange(true);
+      datatypeExportConfiguration.setDeltaMode(true);
+    }
 
     // Setting SegmentExportConfiguration
     SegmentExportConfiguration segmentExportConfiguration = new SegmentExportConfiguration(defaultConfiguration);
     segmentExportConfiguration.setDynamicMappingInfo(true);
     segmentExportConfiguration.setBinding(true);
     segmentExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    segmentExportConfiguration.setDeltaMode(true);
     segmentExportConfiguration.setDeltaConfig(deltaConfiguration);
+    segmentExportConfiguration.setStructuredNarrative(structuredNarrative);
+    if(type.equals(ExportType.DIFFERENTIAL)) {
+      segmentExportConfiguration.setReasonForChange(true);
+      segmentExportConfiguration.setDeltaMode(true);
+    }
+
 
     // Setting ConformanceProfileExportConfiguration
     ConformanceProfileExportConfiguration conformanceProfileExportConfiguration = new ConformanceProfileExportConfiguration(defaultConfiguration);
@@ -312,25 +340,55 @@ public class ExportConfiguration {
     conformanceProfileExportConfiguration.setStructID(true);
     conformanceProfileExportConfiguration.setBinding(true);
     conformanceProfileExportConfiguration.setConstraintExportConfiguration(constraintExportConfiguration);
-    conformanceProfileExportConfiguration.setDeltaMode(true);
     conformanceProfileExportConfiguration.setDeltaConfig(deltaConfiguration);
     conformanceProfileExportConfiguration.setListedColumns(listedColumns);
     //    conformanceProfileExportConfiguration.getMetadataConfig().setType(false);
     //    conformanceProfileExportConfiguration.getMetadataConfig().setRole(false);
+    conformanceProfileExportConfiguration.setStructuredNarrative(structuredNarrative);
+    if(type.equals(ExportType.DIFFERENTIAL)) {
+      conformanceProfileExportConfiguration.setReasonForChange(true);
+      conformanceProfileExportConfiguration.setDeltaMode(true);
+    }
 
 
     // Setting ValueSetExportConfiguration
     ValueSetExportConfiguration valueSetExportConfiguration = new ValueSetExportConfiguration(defaultConfiguration);
     valueSetExportConfiguration.setDeltaMode(true);
     valueSetExportConfiguration.setDeltaConfig(deltaConfiguration);
-//    defaultConfiguration.setDatatypeLibraryExportConfiguration(datatypeLibraryExportConfiguration);
+    valueSetExportConfiguration.setComments(false);
+    if(type.equals(ExportType.DIFFERENTIAL)) {
+      valueSetExportConfiguration.setReasonForChange(true);
+      valueSetExportConfiguration.setDeltaMode(true);
+    }
+
+    //    defaultConfiguration.setDatatypeLibraryExportConfiguration(datatypeLibraryExportConfiguration);
     defaultConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
     defaultConfiguration.setConformamceProfileExportConfiguration(conformanceProfileExportConfiguration);
     defaultConfiguration.setValueSetExportConfiguration(valueSetExportConfiguration);
     defaultConfiguration.setSegmentExportConfiguration(segmentExportConfiguration);
     defaultConfiguration.setAbstractDomainExportConfiguration(abstractDomainExportConfiguration);
-    defaultConfiguration.setDeltaMode(true);
-    defaultConfiguration.setDeltaConfig(deltaConfiguration);
+    if(type.equals(ExportType.DIFFERENTIAL)) {
+      defaultConfiguration.setReasonForChange(true);
+      defaultConfiguration.setDeltaMode(true);
+      defaultConfiguration.setDeltaConfig(deltaConfiguration);
+    }   
+    
+    //Setting CompositeProfile Export Configuration
+    CompositeProfileExportConfiguration compositeProfileExportConfiguration = new CompositeProfileExportConfiguration();  
+    compositeProfileExportConfiguration.setDatatypeExportConfiguration(datatypeExportConfiguration);
+    compositeProfileExportConfiguration.setSegmentExportConfiguration(segmentExportConfiguration);
+    compositeProfileExportConfiguration.setConformamceProfileExportConfiguration(conformanceProfileExportConfiguration);
+    compositeProfileExportConfiguration.setIncludeComposition(true);
+    compositeProfileExportConfiguration.setGeneratedDatatypesFlavorsConfiguration(GeneratedFlavorsConfiguration.DEFAULT);
+    compositeProfileExportConfiguration.setGeneratedSegmentsFlavorsConfiguration(GeneratedFlavorsConfiguration.DEFAULT);
+    compositeProfileExportConfiguration.setIncludeComposition(true);
+    compositeProfileExportConfiguration.setDescription(true);
+    compositeProfileExportConfiguration.setEntityIdentifier(true);
+    compositeProfileExportConfiguration.setNamespaceId(true);
+    compositeProfileExportConfiguration.setUniversalId(true);
+    compositeProfileExportConfiguration.setUniversalIdType(true);
+    defaultConfiguration.setCompositeProfileExportConfiguration(compositeProfileExportConfiguration);
+    
 
 
     return defaultConfiguration;
@@ -496,16 +554,16 @@ public class ExportConfiguration {
 
 
 
-//  public DatatypeLibraryExportConfiguration getDatatypeLibraryExportConfiguration() {
-//	return datatypeLibraryExportConfiguration;
-//}
-//
-//public void setDatatypeLibraryExportConfiguration(
-//		DatatypeLibraryExportConfiguration datatypeLibraryExportConfiguration) {
-//	this.datatypeLibraryExportConfiguration = datatypeLibraryExportConfiguration;
-//}
+  //  public DatatypeLibraryExportConfiguration getDatatypeLibraryExportConfiguration() {
+  //	return datatypeLibraryExportConfiguration;
+  //}
+  //
+  //public void setDatatypeLibraryExportConfiguration(
+  //		DatatypeLibraryExportConfiguration datatypeLibraryExportConfiguration) {
+  //	this.datatypeLibraryExportConfiguration = datatypeLibraryExportConfiguration;
+  //}
 
-public void setUnboundCustom(boolean unboundCustom) {
+  public void setUnboundCustom(boolean unboundCustom) {
     this.unboundCustom = unboundCustom;
   }
 
@@ -970,23 +1028,58 @@ public void setUnboundCustom(boolean unboundCustom) {
     this.original = original;
   }
 
-public Type getType() {
-	return type;
+  public ExportFontConfiguration getExportFontConfiguration() {
+    return exportFontConfiguration;
+  }
+
+  public void setExportFontConfiguration(ExportFontConfiguration exportFontConfiguration) {
+    this.exportFontConfiguration = exportFontConfiguration;
+  }
+
+  public IgGeneralConfiguration getIgGeneralConfiguration() {
+    return igGeneralConfiguration;
+  }
+
+  public ExportType getType() {
+    return type;
+  }
+
+  public void setType(ExportType type) {
+    this.type = type;
+  }
+
+  public boolean isReasonForChange() {
+    return reasonForChange;
+  }
+  public void setIgGeneralConfiguration(IgGeneralConfiguration igGeneralConfiguration) {
+    this.igGeneralConfiguration = igGeneralConfiguration;
+  }
+
+  public ProfileComponentExportConfiguration getProfileComponentExportConfiguration() {
+    return profileComponentExportConfiguration;
+  }
+
+  public void setProfileComponentExportConfiguration(ProfileComponentExportConfiguration profileComponentExportConfiguration) {
+    this.profileComponentExportConfiguration = profileComponentExportConfiguration;
+  }
+
+  public CompositeProfileExportConfiguration getCompositeProfileExportConfiguration() {
+    return compositeProfileExportConfiguration;
+  }
+
+  public void setCompositeProfileExportConfiguration(CompositeProfileExportConfiguration compositeProfileExportConfiguration) {
+    this.compositeProfileExportConfiguration = compositeProfileExportConfiguration;
+  }
+
+  public void setReasonForChange(boolean reasonForChange) {
+    this.reasonForChange = reasonForChange;
+  }
+
+public GeneratedFlavorsConfiguration getGeneratedFlavorsConfiguration() {
+	return generatedFlavorsConfiguration;
 }
 
-public void setType(Type type) {
-	this.type = type;
+public void setGeneratedFlavorsConfiguration(GeneratedFlavorsConfiguration generatedFlavorsConfiguration) {
+	this.generatedFlavorsConfiguration = generatedFlavorsConfiguration;
 }
-
-public ExportFontConfiguration getExportFontConfiguration() {
-	return exportFontConfiguration;
-}
-
-public void setExportFontConfiguration(ExportFontConfiguration exportFontConfiguration) {
-	this.exportFontConfiguration = exportFontConfiguration;
-}
-  
-
-  
-
 }

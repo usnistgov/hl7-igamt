@@ -4,6 +4,7 @@ import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 
 public class ReferenceDelta {
 
@@ -12,6 +13,7 @@ public class ReferenceDelta {
     private DeltaNode<String> id;
     private DeltaNode<DomainInfo> domainInfo;
     private DeltaNode<String> label;
+    private ChangeReason changeReason;
 
     public ReferenceDelta() {
         this.action = DeltaAction.UNCHANGED;
@@ -59,6 +61,14 @@ public class ReferenceDelta {
         if(a != DeltaAction.UNCHANGED) {
             this.setAction(DeltaAction.UPDATED);
         }
+    }
+
+    public ChangeReason getChangeReason() {
+        return changeReason;
+    }
+
+    public void setChangeReason(ChangeReason changeReason) {
+        this.changeReason = changeReason;
     }
 
     public void setAction(DeltaAction action) {

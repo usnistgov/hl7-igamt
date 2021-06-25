@@ -32,6 +32,13 @@ public class ExportException extends Exception {
     super(message + "\n" + cause.getMessage(), cause);
   }
   
+  /**
+   * @param string
+   */
+  public ExportException(String string) {
+    super(string);
+  }
+
   public String printError() {
     return this.getMessage() + "/n" + super.getCause().getMessage();
   }

@@ -318,14 +318,14 @@ export class LibraryEditEffects extends DamWidgetEffect {
         combineLatest(
           this.libraryService.addResource(action.payload),
           this.store.select(selectLibrary).pipe(take(1))).pipe(
-          flatMap(([response, ig]) => {
+          flatMap(([response, lib]) => {
             return [
               new fromDAM.TurnOffLoader(),
               new LoadPayloadData({
-                ...ig,
+                ...lib,
                 datatypeRegistry: response.data.ig.datatypeRegistry,
                 valueSetRegistry: response.data.ig.valueSetRegistry,
-                content: ig.content,
+                content: lib.content,
               }),
               this.libraryService.insertRepositoryFromDisplayInfo(response.data, ['datatypes', 'valueSets']),
               new AddResourceSuccess(response.data),

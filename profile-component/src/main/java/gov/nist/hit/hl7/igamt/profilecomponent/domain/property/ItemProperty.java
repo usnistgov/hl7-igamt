@@ -1,3 +1,15 @@
+package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+import gov.nist.hit.hl7.igamt.coconstraints.model.CodeCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.DatatypeCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.ValueCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.ValueSetCell;
+import gov.nist.hit.hl7.igamt.coconstraints.model.VariesCell;
+
 /**
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
@@ -10,21 +22,44 @@
  * that they have been modified.
 */
 
-package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
-/**
- * This is an abstract class to define all property objects of a profile component item.
- * Each ItemProperty object is going to be used to define a specific delta between the 
- * source and the targeted composite profile.
- *
- * Created by Maxence Lefort on Feb 20, 2018.
- */
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "propertyKey", visible = true)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = PropertyCardinalityMax.class, name = "CARDINALITYMAX"),
+        @JsonSubTypes.Type(value = PropertyCardinalityMin.class, name = "CARDINALITYMIN"),
+        @JsonSubTypes.Type(value = PropertyComment.class, name = "COMMENT"),
+        @JsonSubTypes.Type(value = PropertyConfLength.class, name = "CONFLENGTH"),
+        @JsonSubTypes.Type(value = PropertyConformanceStatement.class, name = "STATEMENT"),
+        @JsonSubTypes.Type(value = PropertyConstantValue.class, name = "CONSTANTVALUE"),
+        @JsonSubTypes.Type(value = PropertyDatatype.class, name = "DATATYPE"),
+        @JsonSubTypes.Type(value = PropertyDynamicMapping.class, name = "DYNAMICMAPPING"),
+        @JsonSubTypes.Type(value = PropertyDefinitionText.class, name = "DEFINITIONTEXT"),
+        @JsonSubTypes.Type(value = PropertyLengthMax.class, name = "LENGTHMAX"),
+        @JsonSubTypes.Type(value = PropertyLengthMin.class, name = "LENGTHMIN"),
+        @JsonSubTypes.Type(value = PropertyName.class, name = "NAME"),
+        @JsonSubTypes.Type(value = PropertyPredicate.class, name = "PREDICATE"),
+        @JsonSubTypes.Type(value = PropertyRef.class, name = "SEGMENTREF"),
+        @JsonSubTypes.Type(value = PropertySingleCode.class, name = "SINGLECODE"),    
+        @JsonSubTypes.Type(value = PropertyUsage.class, name = "USAGE"),
+        @JsonSubTypes.Type(value = PropertyValueSet.class, name = "VALUESET"),
+        @JsonSubTypes.Type(value = PropertyLengthType.class, name = "LENGTHTYPE"),
+        @JsonSubTypes.Type(value = PropertyCoConstraintBindings.class, name = "COCONSTRAINTBINDINGS"),
+})
 public abstract class ItemProperty {
 
-  protected PropertyKey propertyKey;
+  protected PropertyType propertyKey;
 
-  public ItemProperty(PropertyKey propertyKey) {
+  public ItemProperty(PropertyType propertyKey) {
     this.propertyKey = propertyKey;
   }
 
+  public PropertyType getPropertyKey() {
+    return propertyKey;
+  }
+
+  public void setPropertyKey(PropertyType propertyKey) {
+    this.propertyKey = propertyKey;
+  }
 }

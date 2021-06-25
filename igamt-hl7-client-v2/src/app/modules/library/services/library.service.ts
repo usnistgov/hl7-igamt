@@ -271,7 +271,7 @@ export class LibraryService {
   }
 
   exportAsHtml(libId: string, decision: any, configurationId: string) {
-    this.submitForm(decision, this.EXPORT_URL + libId + this.CONFIGURATION + configurationId + '/html');
+    this.submitForm(decision, this.EXPORT_URL + libId + this.CONFIGURATION + configurationId + '/HTML');
   }
 
   exportAsHtmlQuick(libId: string) {

@@ -7,6 +7,11 @@ import java.util.stream.Collectors;
 
 public class ValueSetCell extends CoConstraintCell  {
     protected List<ValuesetBinding> bindings;
+    
+    public ValueSetCell() {
+		super();
+		this.setType(ColumnType.VALUESET);
+	}
 
     public List<ValuesetBinding> getBindings() {
         return bindings;

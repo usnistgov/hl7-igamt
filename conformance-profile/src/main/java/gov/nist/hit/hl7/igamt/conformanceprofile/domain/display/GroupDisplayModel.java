@@ -34,6 +34,7 @@ public class GroupDisplayModel extends SegmentRefOrGroupDisplayModel {
   public GroupDisplayModel(Group group) {
     super();
     this.setType(Type.GROUP);
+    this.setChangeLog(group.getChangeLog());
     this.setCustom(group.isCustom());
     this.setId(group.getId());
     this.setMax(group.getMax());

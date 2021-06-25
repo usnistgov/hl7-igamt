@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 
 /**
  *
@@ -24,12 +25,12 @@ public class PropertyComment extends ItemProperty {
   private Comment comment;
 
   public PropertyComment(Comment comment) {
-    super(PropertyKey.COMMENT);
+    super(PropertyType.COMMENT);
     this.comment = comment;
   }
 
   public PropertyComment() {
-    super(PropertyKey.COMMENT);
+    super(PropertyType.COMMENT);
   }
 
   public Comment getComment() {

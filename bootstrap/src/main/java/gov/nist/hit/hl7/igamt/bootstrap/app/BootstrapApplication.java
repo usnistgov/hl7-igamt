@@ -1,6 +1,5 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ca.uhn.fhir.context.FhirContext;
 import gov.nist.hit.hl7.igamt.bootstrap.data.CodeFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementFixer;
+import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DynamicMappingFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
@@ -73,6 +73,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
@@ -114,8 +115,8 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   IgTemplateRepository igTemplateRepository;
   //
-  //  @Autowired
-  //  DataFixer dataFixer;
+    @Autowired
+    DataFixer dataFixer;
 
   @Autowired
   private PathFixes pathFixes;
@@ -339,29 +340,48 @@ public class BootstrapApplication implements CommandLineRunner {
   void fixSegmentduplicatedBinding() throws ValidationException {
     tableFixes.removeSegmentsDuplicatedBinding();
   }
-
-  //   @PostConstruct
+  
+  //@PostConstruct
   void generateDefaultExportConfig() {
-    exportConfigurationRepository.deleteAll();
-    List<ExportConfiguration> originals=  exportConfigurationRepository.findByOriginal(true);
-    if( originals == null || originals.isEmpty()) {
-      ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, Type.IGDOCUMENT);
+      exportConfigurationRepository.deleteByType(ExportType.IGDOCUMENT);
+      ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, ExportType.IGDOCUMENT);
       basicExportConfiguration.setConfigName("IG Document Default Export Configuration");
       basicExportConfiguration.setOriginal(true);
       basicExportConfiguration.setId("IG-DEFAULT-CONFIG-ID");
       basicExportConfiguration.setDefaultType(false);
       basicExportConfiguration.setDefaultConfig(false);
       exportConfigurationRepository.save(basicExportConfiguration);
-      basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, Type.DATATYPELIBRARY);
-      basicExportConfiguration.setConfigName("DTL Document Default Export Configuration");
-      basicExportConfiguration.setOriginal(true);
-      basicExportConfiguration.setId("DTL-DEFAULT-CONFIG-ID");
-      basicExportConfiguration.setDefaultType(false);
-      basicExportConfiguration.setDefaultConfig(false);
-      exportConfigurationRepository.save(basicExportConfiguration);
-
-    }
+       
   }
+
+  
+  //@PostConstruct
+  void generateDiffrentialExportConfig() {
+    exportConfigurationRepository.deleteByType(ExportType.DIFFERENTIAL);
+    ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, ExportType.DIFFERENTIAL);
+    basicExportConfiguration.setConfigName("Differential Export Configuration");
+    basicExportConfiguration.setOriginal(true);
+    basicExportConfiguration.setId("DIFF-DEFAULT-CONFIG-ID");
+    basicExportConfiguration.setDefaultType(false);
+    basicExportConfiguration.setDefaultConfig(false);
+    exportConfigurationRepository.save(basicExportConfiguration);
+    
+  }
+  
+//    @PostConstruct
+  void generateDTLConfig() {
+    exportConfigurationRepository.deleteByType(ExportType.DATATYPELIBRARY);
+    ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, ExportType.DATATYPELIBRARY);
+    basicExportConfiguration.setConfigName("Datatype Library Default Export Configuration");
+    basicExportConfiguration.setOriginal(true);
+    basicExportConfiguration.setId("DTL-DEFAULT-CONFIG-ID");
+    basicExportConfiguration.setDefaultType(false);
+    basicExportConfiguration.setDefaultConfig(false);
+    exportConfigurationRepository.save(basicExportConfiguration);
+    
+  }
+  
+  
   //  
   //
   // @PostConstruct
@@ -1025,7 +1045,24 @@ public class BootstrapApplication implements CommandLineRunner {
   void fixIgWithDynamicMapping() throws AddingException {
     dynamicMappingFixer.addMissingDatatypesBasedOnDynamicMapping();
   }
-  
+  //@PostConstruct
+  void shiftBinding() {
+    
+    this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "ADJ", "6", "2", 1);
+    this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.8",  "2.8.1",  "2.8.2")), "CDO", "4", "2", 1);
+    this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "PSL", "12", "2", 1);
+    this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1", "2.4", "2.5", "2.5.1", "2.6")), "QRD", "7", "2", 1);
+    this.dataFixer.shiftBinding(new ArrayList<String>(Arrays.asList("2.4", "2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "RCP", "2", "2", 1);
+  }
+ // @PostConstruct
+  void updateSegmentDatatype() {
+   this.dataFixer.changeHL7SegmentDatatype("OMC", "9", "ID", "2.8.2");
+
+  }
+  //@PostConstruct
+  void publishStructures() {
+    this.dataFixer.publishStructure("607da0e88b87bc00073b4ba6");
+  }
   
   
 }

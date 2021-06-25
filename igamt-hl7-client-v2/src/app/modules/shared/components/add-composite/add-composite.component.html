@@ -1,0 +1,69 @@
+<h2 mat-dialog-title>Create Composite Profile </h2>
+<mat-dialog-content>
+  <form #form='ngForm'>
+    <div class="form-group">
+      <label for="groupName" style="font-weight: bold;"> Composite Profile Name </label>
+      <input [(ngModel)]="model.name" class="form-control" id="groupName" name="name" required style="width: 100%"
+             type="text" type="text"/>
+      <div *ngIf="form.controls['name'] && form.controls['name'].errors"
+           style="color:red; font-size: 11px">
+        <div *ngIf="form.controls['name'].errors.required">
+          <span>*Composite Profile Name name is required</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="groupName" style="font-weight: bold;"> Flavors Extension </label>
+      <span class="badge" style="background: black; color: white; margin-left: 5px;"><i #tooltip="matTooltip"
+                                                                                        matTooltip="Used to identify the auto-generated segments and data types belonging to this composite profile"
+                                                                                        matTooltipHideDelay="100000" class="fa fa-info"> </i></span>
+      <input [(ngModel)]="model.flavorsExtension" class="form-control" id="flavorsExtension" name="flavorsExtension" required style="width: 100%"
+             type="text" type="text"/>
+      <div *ngIf="form.controls['flavorsExtension'] && form.controls['flavorsExtension'].errors"
+           style="color:red; font-size: 11px">
+        <div *ngIf="form.controls['flavorsExtension'].errors.required">
+          <span>*Flavors Extension is required </span>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="form-group">
+      <label for="groupName" style="font-weight: bold;" #anchor> Core profile </label>
+      <p-dropdown
+        [options]="messages"
+        [appendTo]="anchor"
+        [autoDisplayFirst]="false"
+        [style]="{'width': '100%', 'min-width': 'inherit'}"
+        [dataKey]="'id'"
+        [optionLabel]="'id'"
+        [(ngModel)]="coreProfile"
+        (ngModelChange)="modelChange($event)"
+        name="CoreProfile"
+        [filter]="true"
+        required
+        filterBy="value.fixedName,value.variableName">
+        <ng-template let-item pTemplate="selectedItem">
+          <ng-container *ngIf="item.value">
+            <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
+            <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
+            <span *ngIf="item.value.variableName">{{ item.value.variableName}}</span>
+          </ng-container>
+        </ng-template>
+        <ng-template let-item pTemplate="item">
+          <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
+          <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
+          <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ item.value.variableName}}</span>
+        </ng-template>
+      </p-dropdown>
+    </div>
+
+      <div *ngIf="coreProfile">
+        <app-select-profile-components (selected)="onSelect($event)" [availablePcs]="profileComponents"></app-select-profile-components>
+      </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" [disabled]="form && form.invalid" class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

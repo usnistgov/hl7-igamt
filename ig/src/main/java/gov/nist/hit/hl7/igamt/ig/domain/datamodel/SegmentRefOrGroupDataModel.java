@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
@@ -41,7 +42,7 @@ public class SegmentRefOrGroupDataModel implements Serializable{
     super();
   }
 
-  public SegmentRefOrGroupDataModel(SegmentRefOrGroup sog, String parentKey, Map<String, Predicate> predicateMap, SegmentService segmentService) {
+  public SegmentRefOrGroupDataModel(SegmentRefOrGroup sog, InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService, String parentKey, Map<String, Predicate> predicateMap, SegmentService segmentService) {
     super();
     this.model = sog;
     String key = null;
@@ -57,12 +58,15 @@ public class SegmentRefOrGroupDataModel implements Serializable{
       this.type = Type.GROUP;
       Group g = (Group)sog;
       for (SegmentRefOrGroup child : g.getChildren()) {
-        this.addChild(new SegmentRefOrGroupDataModel(child, key, predicateMap, segmentService));        
+        this.addChild(new SegmentRefOrGroupDataModel(child, inMemoryDomainExtensionService, key, predicateMap, segmentService));        
       }
     }else {
       this.type = Type.SEGMENTREF;  
       SegmentRef sr = (SegmentRef)sog;
       Segment s = segmentService.findById(sr.getRef().getId());
+      if(s == null) {
+    	  s = inMemoryDomainExtensionService.findById(sr.getRef().getId(), Segment.class);
+      }
       if(s != null) {
         this.segment = new SegmentBindingDataModel(s);
       }

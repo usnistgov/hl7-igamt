@@ -1,5 +1,9 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.hl7.fhir.r4.model.ValueSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,12 +51,15 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		if (metadataElement != null) {
 			igDocumentElement.appendChild(metadataElement);
 		}
-
-		for (Section section : documentStructure.getContent()) {
+		List<Section> sectionList = documentStructure.getContent().stream().collect(Collectors.toList());
+		Collections.sort(sectionList);
+		for (Section section : sectionList) {
 			// startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
 			int startLevel = 1;
 			Element sectionElement = sectionSerializationService.SerializeSection(section, startLevel, documentStructureDataModel, exportConfiguration, exportFilterDecision);
-			igDocumentElement.appendChild(sectionElement);
+			if (sectionElement != null) {
+				igDocumentElement.appendChild(sectionElement);
+			}
 		}
 		return igDocumentElement;
 	}
@@ -175,7 +182,9 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		if(resource instanceof Valueset) {
 		  title += '-'+ resource.getName();
 		}else {
+			if(resource.getDescription() != null && !resource.getDescription().isEmpty()) {
           title += '-'+ resource.getDescription();
+			} 
 		}
 		element.addAttribute(
 				new Attribute("title", title != null ? title: ""));

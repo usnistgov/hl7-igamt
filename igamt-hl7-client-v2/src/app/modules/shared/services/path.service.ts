@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
+import { IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { IPath } from '../models/cs.interface';
 
 @Injectable({
@@ -85,5 +86,27 @@ export class PathService {
     } else {
       return path;
     }
+  }
+
+  getPathFromNode(node: IHL7v2TreeNode): IPath {
+    const nodeToPathInfo = (elm: IHL7v2TreeNode): IPath => {
+      return {
+        elementId: elm.data.id,
+        instanceParameter: '*',
+      };
+    };
+
+    const loop = (elm: IHL7v2TreeNode): IPath[] => {
+      return elm ? [
+        ...loop(elm.parent),
+        nodeToPathInfo(elm),
+      ] : [];
+    };
+
+    const chain: IPath[] = loop(node);
+    return chain.reverse().reduce((pV, cV) => {
+      cV.child = pV;
+      return cV;
+    });
   }
 }

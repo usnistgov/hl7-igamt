@@ -18,8 +18,6 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
-import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
-import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
@@ -35,7 +33,6 @@ import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetsResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
@@ -55,17 +52,7 @@ public interface DisplayConverterService {
   public List<TreeNode> getSegmentNodes(Set<Segment> segments);
 
   public List<TreeNode> getValueSetNodes(Set<Valueset> valuesets);
-
-  public List<TreeNode> getCompositeProfileNodes(Set<CompositeProfile> compositeProfiles);
-
-  public List<TreeNode> getProfileCompoenents(Set<ProfileComponent> profileComponents);
-
-  public TreeNode createCompositeProfileNode(CompositeProfileStructure compositeProfile,
-      int position);
-
   public TreeNode createConformanceProfileNode(ConformanceProfile elm, int position);
-
-  public TreeNode createPcNode(ProfileComponent profileComponent, int position);
 
   public TreeNode createSegmentNode(Segment elm, int position);
 

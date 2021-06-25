@@ -21,11 +21,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+
 /**
  *
  * @author Jungyub Woo on Mar 1, 2018.
@@ -65,26 +68,13 @@ public interface ValuesetService {
 
 	public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope, String bindingIdentifier);
 
-	/**
-	 * @param string
-	 * @param version
-	 * @return
-	 */
 	public List<Valueset> findDisplayFormatByScopeAndVersion(String string, String version);
 
-	/**
-	 * @param newkey
-	 * @param l
-	 * @param scope
-	 * @param cloneMode 
-	 * @return
-	 */
 	Link cloneValueSet(String newkey, Link l, String username, Scope scope, CloneMode cloneMode);
 
 	public List<Valueset> findByIdIn(Set<String> linksAsIds);
 
 	public List<Valueset> findDisplayFormatByScope(String scope);
-	
 
 	public void applyChanges(Valueset s, List<ChangeItemDomain> cItems, String documentId)
 			throws JsonProcessingException, IOException;
@@ -92,5 +82,10 @@ public interface ValuesetService {
 	public Set<String> extractCodeSystemsFromCodes(Set<Code> codes);
 
 	public Valueset findExternalPhinvadsByOid(String oid);
+
+	DisplayElement convertValueSet(Valueset valueset);
+	Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
+	Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
+
 
 }

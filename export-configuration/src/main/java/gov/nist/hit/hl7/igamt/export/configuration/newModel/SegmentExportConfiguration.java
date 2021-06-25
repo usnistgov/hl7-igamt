@@ -23,6 +23,8 @@ public class SegmentExportConfiguration extends ResourceExportConfiguration{
 	  private CoConstraintExportMode coConstraintExportMode;
 	  private List<NameAndPositionAndPresence> columns;
 	  private MetadataConfiguration metadataConfig;
+	  private StructuredNarrative structuredNarrative;
+
 	  
 	  public SegmentExportConfiguration(ExportConfiguration defaultConfiguration) {
 		  this.includeSegmentTable = defaultConfiguration.isIncludeSegmentTable();
@@ -167,5 +169,15 @@ public class SegmentExportConfiguration extends ResourceExportConfiguration{
 	  public void setMetadataConfig(MetadataConfiguration metadataConfig) {
 	    this.metadataConfig = metadataConfig;
 	  }
+
+
+	public StructuredNarrative getStructuredNarrative() {
+		return structuredNarrative;
+	}
+
+
+	public void setStructuredNarrative(StructuredNarrative structuredNarrative) {
+		this.structuredNarrative = structuredNarrative;
+	}
 	  
 }

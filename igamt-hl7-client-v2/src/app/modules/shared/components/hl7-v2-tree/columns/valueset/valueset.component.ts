@@ -136,7 +136,6 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
 
   editBinding() {
     const dialogRef = this.dialog.open(BindingSelectorComponent, {
-
       data: {
         resources: this.valueSets,
         locationInfo: this.bindingInfo,
@@ -249,7 +248,6 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
 
   getDisplayTemplateForProperty(change: IChange): Observable<IChangeReasonDialogDisplay> {
     const context = { resource: this.context };
-    console.log(change);
     switch (change.propertyType) {
       case PropertyType.SINGLECODE:
         return combineLatest(

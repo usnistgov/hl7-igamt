@@ -11,20 +11,23 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+
 /**
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class PropertyLengthMin extends ItemProperty {
+public class PropertyLengthMin extends ItemProperty implements ApplySubStructElement{
 
   private String min;
 
   public PropertyLengthMin(String min) {
-    super(PropertyKey.LENGTH_MIN);
+    super(PropertyType.LENGTHMIN);
     this.min = min;
   }
 
   public PropertyLengthMin() {
-    super(PropertyKey.LENGTH_MIN);
+    super(PropertyType.LENGTHMIN);
   }
 
   public String getMin() {
@@ -36,4 +39,8 @@ public class PropertyLengthMin extends ItemProperty {
   }
 
 
+  @Override
+  public void onSubStructElement(SubStructElement subStruct) {
+    subStruct.setMinLength(min);
+  }
 }

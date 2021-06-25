@@ -4,8 +4,6 @@ import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { IgTOCNodeHelper } from '../../../modules/document/services/ig-toc-node-helper.service';
 import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
-import { Scope } from '../../../modules/shared/constants/scope.enum';
-import { SharePermission, Status } from '../../../modules/shared/models/abstract-domain.interface';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { IRegistry } from '../../../modules/shared/models/registry.interface';
@@ -91,6 +89,18 @@ export const selectCoConstraintGroupRegistry = createSelector(
     return state.coConstraintGroupRegistry;
   },
 );
+export const selectProfileComponentsRegistry = createSelector(
+  selectIgDocument,
+  (state: IgDocument) => {
+    return state.profileComponentRegistry;
+  },
+);
+export const selectCompositeProfilesRegistry = createSelector(
+  selectIgDocument,
+  (state: IgDocument) => {
+    return state.compositeProfileRegistry;
+  },
+);
 
 export const selectSectionFromIgById = createSelector(
   selectIgDocument,
@@ -153,6 +163,20 @@ export const selectMessagesNodes = createSelector(
     return IgTOCNodeHelper.sortRegistryByPosition(messages, registry);
   },
 );
+export const selectProfileComponentsNodes = createSelector(
+  fromIgamtDisplaySelectors.selectProfileComponentsEntites,
+  selectProfileComponentsRegistry,
+  (pcs: Dictionary<IDisplayElement>, registry: IRegistry) => {
+    return IgTOCNodeHelper.sortRegistryByPosition(pcs, registry);
+  },
+);
+export const selectCompositeProfilesNodes = createSelector(
+  fromIgamtDisplaySelectors.selectCompositeProfilesEntites,
+  selectCompositeProfilesRegistry,
+  (compositeProfiles: Dictionary<IDisplayElement>, registry: IRegistry) => {
+    return IgTOCNodeHelper.sortRegistryByPosition(compositeProfiles, registry);
+  },
+);
 
 export const selectStructure = createSelector(
   selectIgDocument,
@@ -167,15 +191,20 @@ export const selectToc = createSelector(
   selectSegmentsNodes,
   selectDatatypesNodes,
   selectValueSetsNodes,
-  selectCoConstraintGroupNodes, (
+  selectCoConstraintGroupNodes,
+  selectProfileComponentsNodes,
+  selectCompositeProfilesNodes,
+  (
     structure: IContent[],
     messageNodes: IDisplayElement[],
     segmentsNodes: IDisplayElement[],
     datatypesNodes: IDisplayElement[],
     valueSetsNodes: IDisplayElement[],
     coConstraintGroupNodes: IDisplayElement[],
-) => {
-  return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes);
+    profileComponentsNodes: IDisplayElement[],
+    compositeProfilesNodes: IDisplayElement[],
+  ) => {
+    return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, profileComponentsNodes, compositeProfilesNodes);
 },
 );
 
@@ -185,15 +214,19 @@ export const selectProfileTree = createSelector(
   selectSegmentsNodes,
   selectDatatypesNodes,
   selectValueSetsNodes,
-  selectCoConstraintGroupNodes, (
+  selectCoConstraintGroupNodes,
+  selectProfileComponentsNodes,
+  selectCompositeProfilesNodes, (
     structure: IContent[],
     messageNodes: IDisplayElement[],
     segmentsNodes: IDisplayElement[],
     datatypesNodes: IDisplayElement[],
     valueSetsNodes: IDisplayElement[],
     coConstraintGroupNodes: IDisplayElement[],
+    profileComponentsNodes: IDisplayElement[],
+    compositeProfilesNodes: IDisplayElement[],
 ) => {
-  return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes);
+  return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, coConstraintGroupNodes, profileComponentsNodes, compositeProfilesNodes);
 },
 );
 

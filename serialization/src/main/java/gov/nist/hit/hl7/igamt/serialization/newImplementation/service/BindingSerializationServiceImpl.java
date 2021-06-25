@@ -120,10 +120,10 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 				structureElementBindingElement.addAttribute(new Attribute("LocationInfoType",
 						structureElementBinding != null ? structureElementBinding.getLocationInfo().getType().name()
 								: ""));
-				structureElementBindingElement.addAttribute(new Attribute("LocationInfoName",
-						structureElementBinding.getLocationInfo() != null
-								? structureElementBinding.getLocationInfo().getName()
-								: ""));
+//				structureElementBindingElement.addAttribute(new Attribute("LocationInfoName",
+//						structureElementBinding.getLocationInfo() != null
+//								? structureElementBinding.getLocationInfo().getName()
+//								: ""));
 				structureElementBindingElement.addAttribute(new Attribute("Position1",
 						structureElementBinding.getLocationInfo() != null
 								? String.valueOf(structureElementBinding.getLocationInfo().getPosition())
@@ -214,7 +214,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 					elementIdParent != null ? name+"."+elementIdParent : ""));		
 			valuesetBindingElement.addAttribute(new Attribute("locations",
 					valuesetBinding.getValuesetLocations() != null
-							? convertValuesetLocationsToString(location, valuesetBinding.getValuesetLocations())
+							? convertValuesetLocationsToString(name+"."+elementIdParent, valuesetBinding.getValuesetLocations())
 							: ""));
 			return valuesetBindingElement;
 		}

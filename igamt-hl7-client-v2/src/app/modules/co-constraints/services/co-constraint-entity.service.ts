@@ -6,7 +6,7 @@ import { combineLatest, Observable, of } from 'rxjs';
 import { flatMap, map, take } from 'rxjs/operators';
 import { ICardinalityRange, IHL7v2TreeNode, IResourceKey } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../shared/constants/type.enum';
-import { ICoConstraintGroupBindingRef, ICoConstraintVariesCell, INarrativeHeader } from '../../shared/models/co-constraint.interface';
+import { ICoConstraintGroupBindingRef, ICoConstraintGrouper, ICoConstraintVariesCell, INarrativeHeader } from '../../shared/models/co-constraint.interface';
 import {
   CoConstraintGroupBindingType,
   CoConstraintHeaderType,
@@ -32,6 +32,7 @@ import {
 import { IResource } from '../../shared/models/resource.interface';
 import { IField, ISegment } from '../../shared/models/segment.interface';
 import { BindingService } from '../../shared/services/binding.service';
+import { ElementNamingService } from '../../shared/services/element-naming.service';
 import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
 
 @Injectable({
@@ -39,7 +40,10 @@ import { AResourceRepositoryService } from '../../shared/services/resource-repos
 })
 export class CoConstraintEntityService {
 
-  constructor(private binding: BindingService) { }
+  constructor(
+    private binding: BindingService,
+    private elementNamingService: ElementNamingService,
+  ) { }
 
   exportAsExcel(table: ICoConstraintTable) {
     const form = document.createElement('form');
@@ -59,6 +63,9 @@ export class CoConstraintEntityService {
     this.mergeHeaders(ccTable, ccTable.headers.selectors, group.headers.selectors);
     this.mergeHeaders(ccTable, ccTable.headers.constraints, group.headers.constraints);
     this.mergeHeaders(ccTable, ccTable.headers.narratives, group.headers.narratives);
+    if (!ccTable.headers.grouper) {
+      ccTable.headers.grouper = group.headers.grouper;
+    }
   }
 
   mergeHeaders(collection: ICoConstraintTable & ICoConstraintGroup, table: ICoConstraintHeader[], group: ICoConstraintHeader[]) {
@@ -92,7 +99,7 @@ export class CoConstraintEntityService {
 
   createOBXCoConstraintTable(segment: ISegment, repository: AResourceRepositoryService): Observable<ICoConstraintTable> {
     const table: ICoConstraintTable = {
-      type: CoConstraintMode.TABLE,
+      tableType: CoConstraintMode.TABLE,
       baseSegment: segment.id,
       headers: {
         selectors: [],
@@ -153,7 +160,7 @@ export class CoConstraintEntityService {
 
   createEmptyCoConstraintTable(segment: ISegment): ICoConstraintTable {
     return {
-      type: CoConstraintMode.TABLE,
+      tableType: CoConstraintMode.TABLE,
       baseSegment: segment.id,
       headers: {
         selectors: [],
@@ -171,6 +178,24 @@ export class CoConstraintEntityService {
     } else {
       return of(this.createEmptyCoConstraintTable(segment));
     }
+  }
+
+  getDefaultGrouper(segment: ISegment, tree: IHL7v2TreeNode[]): ICoConstraintGrouper {
+    if (segment.name === 'OBX') {
+      const OBX_4 = tree.find((elm) => elm.data.position === 4);
+      if (OBX_4 && (OBX_4.leaf || OBX_4.data.ref.getValue().name === 'OG')) {
+        return {
+          name: 'OBX-4',
+          pathId: OBX_4.data.pathId,
+          description: OBX_4.data.name,
+          version: OBX_4.data.ref.getValue().version,
+          datatype: OBX_4.data.ref.getValue().name,
+          type: OBX_4.data.type,
+        };
+      }
+    }
+
+    return undefined;
   }
 
   createEmptyCoConstraint(headers: ICoConstraintHeaders): ICoConstraint {

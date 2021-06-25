@@ -87,8 +87,11 @@ export class ExportToolComponent implements OnInit {
         this.store.dispatch(new AddMessage(new UserMessage(MessageType.FAILED, response.error.text)));
       });
   }
-  matchId($event: ISelectedIds) {
-    this.ids = $event;
+  matchCompositeProfiles($event: string[]) {
+    this.ids = {... this.ids, compositeProfilesId: $event };
+  }
+  matchConformanceProfileIds($event: string[]) {
+    this.ids = {... this.ids, conformanceProfilesId: $event };
   }
   loadDomain() {
     this.hasDomains = false;
@@ -107,12 +110,12 @@ export class ExportToolComponent implements OnInit {
     });
   }
   isSelected(): boolean {
-    return (this.ids.conformanceProfilesId && this.ids.conformanceProfilesId.length > 0) || (this.ids.compositeProfilesId && this.ids.compositeProfilesId.length > 0);
+    if (this.selectedDomain) {
+      return ((this.ids.conformanceProfilesId && this.ids.conformanceProfilesId.length > 0) || (this.ids.compositeProfilesId && this.ids.compositeProfilesId.length > 0));
+    } else { return false; }
   }
   selectDomain($event) {
-    console.log($event);
     this.selectedDomain = $event.value.domain;
-    console.log(this.selectedDomain);
   }
 
   isProcessable(): boolean {

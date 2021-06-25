@@ -5,9 +5,9 @@ import { filter, map, mergeMap, take } from 'rxjs/operators';
 import * as fromIgamtResourcesSelectors from 'src/app/root-store/dam-igamt/igamt.loaded-resources.selectors';
 import { LoadResourceReferences } from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
 import {
-  selectCoConstraintGroupsById,
+  selectCoConstraintGroupsById, selectCompositeProfileById,
   selectDatatypesById,
-  selectMessagesById,
+  selectMessagesById, selectProfileComponentById,
   selectSegmentsById,
   selectValueSetById,
 } from '../../../root-store/dam-igamt/igamt.resource-display.selectors';
@@ -146,6 +146,10 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
         return this.store.select(selectMessagesById, { id });
       case Type.COCONSTRAINTGROUP:
         return this.store.select(selectCoConstraintGroupsById, { id });
+      case Type.PROFILECOMPONENT:
+        return this.store.select(selectProfileComponentById, { id });
+      case Type.COMPOSITEPROFILE:
+        return this.store.select(selectCompositeProfileById, { id });
       default:
         return of(undefined);
     }

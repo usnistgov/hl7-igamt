@@ -7,8 +7,15 @@ public class CodeCell extends CoConstraintCell {
     protected String code;
     protected String codeSystem;
     protected List<Integer> locations;
+    
+    
 
-    public String getCode() {
+    public CodeCell() {
+		super();
+		this.setType(ColumnType.CODE);
+	}
+
+	public String getCode() {
         return code;
     }
 

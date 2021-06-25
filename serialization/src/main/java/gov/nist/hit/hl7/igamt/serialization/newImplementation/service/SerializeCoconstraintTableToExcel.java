@@ -134,7 +134,8 @@ public class SerializeCoconstraintTableToExcel {
             usageAndCardinalityStyle.setBorderLeft((short) 0x2);
             
 			//Counting headers
-			int headerCount = headers.getSelectors().size() + headers.getConstraints().size() +headers.getNarratives().size();
+            
+			int headerCount = headers.getSelectors().size() + headers.getConstraints().size() +headers.getNarratives().size() + countVaries(headers);
 //			System.out.println("hERE " +headers..size());
 			// Builing headerRows
 			int rowNumber = 0;
@@ -151,8 +152,13 @@ public class SerializeCoconstraintTableToExcel {
 			
 			Cell cardinalityHeaderCell = headerRow.createCell(headerCellNumber++);
 			cardinalityHeaderCell.setCellStyle(usageAndCardinalityStyle);
-			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
+//			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
 			cardinalityHeaderCell.setCellValue("Cardinality");
+			Cell cardinalityHeaderCell2 = headerRow2.createCell(headerCellNumber);
+			cardinalityHeaderCell2.setCellStyle(usageAndCardinalityStyle);
+			cardinalityHeaderCell2.setCellValue("Cardinality");
+			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
+
 			headerCellNumber++;
 			
 			Cell ifCell = headerRow.createCell(headerCellNumber);
@@ -165,7 +171,7 @@ public class SerializeCoconstraintTableToExcel {
 			thenCell.setCellValue("THEN");
 			thenCell.setCellStyle(thenHeaderStyle);
 			
-			Cell userCell = headerRow.createCell(headers.getSelectors().size()+headers.getConstraints().size()+3);
+			Cell userCell = headerRow.createCell(headers.getSelectors().size()+headers.getConstraints().size()+3+countThenVaries(headers.getConstraints()));
 			headerCellNumber=headerCellNumber+headers.getSelectors().size();
 			userCell.setCellValue("NARRATIVES");
 			userCell.setCellStyle(userHeaderStyle);
@@ -208,6 +214,11 @@ public class SerializeCoconstraintTableToExcel {
 					Cell cell = headerRow2.createCell(headerCellNumber++);
 					cell.setCellValue(headerLabel);
 					cell.setCellStyle(thenHeaderStyle);
+					if(((DataElementHeader) coConstraintTableHeader).getColumnType().equals(ColumnType.VARIES)) {
+						Cell cellCard = headerRow2.createCell(headerCellNumber++);
+							cellCard.setCellValue("Cardinality");
+							cellCard.setCellStyle(thenHeaderStyle);
+					}
 
 				}
 			}
@@ -277,8 +288,9 @@ public class SerializeCoconstraintTableToExcel {
 				cardinalityCell2
 				.setCellValue("  "+coConstraintTableGroup.getRequirement().getCardinality().getMax()+"  ");
 				cardinalityCell2.setCellStyle(headerGroupStyle);
-				Cell groupNameCell = headerGroupRow.createCell(cellNumber++);
+				Cell groupNameCell = headerGroupRow.createCell(cellNumber++);			
 				groupNameCell.setCellValue("Group name : " + ((CoConstraintGroupBindingContained) coConstraintTableGroup).getName());
+				groupNameCell.setCellValue(((CoConstraintGroupBindingContained) coConstraintTableGroup).getName());
 				groupNameCell.setCellStyle(headerGroupStyle);
 				sheet.addMergedRegion(new CellRangeAddress(rowNumber-1,rowNumber-1,cellNumber-1,cellNumber+headerCount-2));
 				for (CoConstraint coConstraintTableRow : ((CoConstraintGroupBindingContained) coConstraintTableGroup).getCoConstraints()) {
@@ -310,6 +322,31 @@ public class SerializeCoconstraintTableToExcel {
 
 			System.out.println("Done");
 		return null;
+	}
+
+	private int countThenVaries(List<CoConstraintHeader> constraints) {
+		int variesCount = 0;
+		for(CoConstraintHeader coConstraintHeader : constraints) {
+			if(((DataElementHeader) coConstraintHeader).getColumnType().equals(ColumnType.VARIES)) {
+				variesCount++;
+			}
+		}
+		return variesCount;
+	}
+
+	private int countVaries(CoConstraintHeaders headers) {
+		int variesCount = 0;
+		for(CoConstraintHeader coConstraintHeader : headers.getSelectors()) {
+			if(((DataElementHeader) coConstraintHeader).getColumnType().equals(ColumnType.VARIES)) {
+				variesCount++;
+			}
+		}
+		for(CoConstraintHeader coConstraintHeader : headers.getConstraints()) {
+			if(((DataElementHeader) coConstraintHeader).getColumnType().equals(ColumnType.VARIES)) {
+				variesCount++;
+			}
+		}
+		return variesCount;
 	}
 
 	private void serializeRowToExcel(XSSFWorkbook workbook,CoConstraintTable coConstraintTable, CoConstraint coConstraintTableRow,
@@ -418,8 +455,22 @@ public class SerializeCoconstraintTableToExcel {
 //					else
 					{
 						Cell cell = row.createCell(cellNumber++);
-						cell.setCellValue(WriteValueToCellExcel(coConstraintTableRow.getCells().get(cellId),((DataElementHeader) coConstraintTableHeader).getColumnType()));
+						CoConstraintCell coConstraintCell = coConstraintTableRow.getCells().get(cellId);
+						ColumnType c = ((DataElementHeader) coConstraintTableHeader).getColumnType();
+						cell.setCellValue(WriteValueToCellExcel(coConstraintCell, c));
 						cell.setCellStyle(thenRowStyle);
+						if(c.equals(ColumnType.VARIES)) {
+							Cell cellCard = row.createCell(cellNumber++);
+							if(coConstraintCell.getCardinalityMax() != null) {
+								cellCard.setCellValue(coConstraintCell.getCardinalityMax());
+								cellCard.setCellStyle(thenRowStyle);
+							} else {
+								cellCard.setCellValue("1");
+								cellCard.setCellStyle(thenRowStyle);
+
+							}
+
+						}
 					}
 				}
 			}
@@ -524,7 +575,7 @@ public class SerializeCoconstraintTableToExcel {
 					location = location + "or" + i;
 				}
 			}
-			cellValue = "Code: " + codeCell.getCode() + ",  " + "Code System: " + codeCell.getCodeSystem() + ",  " + "location: " + location;
+			cellValue = "Code:" + codeCell.getCode() + ",  " + "Code System:" + codeCell.getCodeSystem() + ",  " + "Location:" + location;
 			break;
 
 		case VALUE:

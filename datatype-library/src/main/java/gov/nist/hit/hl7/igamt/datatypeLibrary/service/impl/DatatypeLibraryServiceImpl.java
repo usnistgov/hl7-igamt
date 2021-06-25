@@ -63,6 +63,7 @@ import gov.nist.hit.hl7.igamt.common.base.model.PublicationEntry;
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationResult;
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.PublishedEntry;
+import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 //import gov.nist.hit.hl7.igamt.common.base.model.PublicationEntry;
 //import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
@@ -136,7 +137,8 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   @Autowired
   ConfigService configService;
 
-
+  @Autowired
+  InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
 
 
   @Override
@@ -648,7 +650,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   	      Datatype d = this.datatypeService.findById(link.getId());
   	      if (d != null) {
   	        DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
-  	        datatypeDataModel.putModel(d, this.datatypeService, valuesetBindingDataModelMap,
+  	        datatypeDataModel.putModel(d, this.datatypeService, this.inMemoryDomainExtensionService, valuesetBindingDataModelMap,
   	            this.conformanceStatementRepository, this.predicateRepository);
   	        datatypes.add(datatypeDataModel);
   	      }

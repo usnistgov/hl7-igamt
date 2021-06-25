@@ -84,8 +84,3 @@ export enum StatementType {
   DECLARATIVE = 'DECLARATIVE',
   COMPARATIVE = 'COMPARATIVE',
 }
-
-export enum ConformanceStatementType {
-  STATEMENT = 'STATEMENT',
-  PROPOSITION = 'PROPOSITION',
-}

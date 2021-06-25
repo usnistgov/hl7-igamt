@@ -1,0 +1,148 @@
+<div style="margin: 0; padding: 50px">
+  <div style="text-align: center; color: wheat; height: 10%">
+    <h2>User Managment for Administrator</h2>
+  </div>
+
+  <div class="row" style="margin-top: 5px">
+    <div class="col-md-12">
+      <p-card [styleClass]="'fill_height'">
+        <div style="display: flex; flex-direction: row; width: 100%">
+          <p-table
+            #dt
+            [value]="users"
+            [rows]="10"
+            [showCurrentPageReport]="true"
+            [rowsPerPageOptions]="[10, 25, 50]"
+            styleClass="p-datatable-customers"
+            [paginator]="true"
+          >
+            <ng-template pTemplate="header">
+              <tr>
+                <th [pSortableColumn]="'username'">
+                  Username
+                  <p-sortIcon
+                    [field]="'username'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'email'">
+                  Email
+                  <p-sortIcon
+                    [field]="'email'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'fullName'">
+                  Full Name
+                  <p-sortIcon
+                    [field]="'fullName'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th [pSortableColumn]="'organization'">
+                  Organization
+                  <p-sortIcon
+                    [field]="'organization'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th style="width:110px" [pSortableColumn]="'pending'">
+                  Active
+                  <p-sortIcon
+                    [field]="'pending'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+                <th style="width:110px" [pSortableColumn]="'admin'">
+                  Admin
+                  <p-sortIcon
+                    [field]="'admin'"
+                    ariaLabel="Activate to sort"
+                    ariaLabelDesc="Activate to sort in descending order"
+                    ariaLabelAsc="Activate to sort in ascending order"
+                  ></p-sortIcon>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  <input
+                    pInputText
+                    type="text"
+                    style="width: 100%"
+                    (input)="
+                      dt.filter($event.target.value, 'username', 'contains')
+                    "
+                  />
+                </th>
+                <th>
+                  <input
+                    pInputText
+                    type="text"
+                    style="width: 100%"
+                    (input)="
+                      dt.filter($event.target.value, 'email', 'contains')
+                    "
+                  />
+                </th>
+                <th>
+                  <input
+                    pInputText
+                    type="text"
+                    style="width: 100%"
+                    (input)="
+                      dt.filter($event.target.value, 'fullName', 'contains')
+                    "
+                  />
+                </th>
+                <th>
+                  <input
+                    pInputText
+                    type="text"
+                    style="width: 100%"
+                    (input)="
+                      dt.filter($event.target.value, 'organization', 'contains')
+                    "
+                  />
+                </th>
+                <th></th>
+                <th></th>
+              </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-user>
+              <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.fullName }}</td>
+                <td>{{ user.organization }}</td>
+                <td>
+                  <p-checkbox
+                    [(ngModel)]="user.pending"
+                    [binary]="true"
+                    (onChange) = "rawChange(user)"
+                  ></p-checkbox>
+                </td>
+                <td>
+                  <p-checkbox
+                    [(ngModel)]="user.admin"
+                    [binary]="true"
+                    (onChange) = "rawChange(user)"
+                  ></p-checkbox>
+                </td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+      </p-card>
+    </div>
+  </div>
+</div>

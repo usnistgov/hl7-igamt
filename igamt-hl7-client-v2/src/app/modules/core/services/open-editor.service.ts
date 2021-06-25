@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import { concatMap, flatMap, switchMap, take } from 'rxjs/operators';
-import { OpenEditor, OpenEditorBase, OpenEditorFailure } from 'src/app/modules/dam-framework/store/index';
+import { catchError, concatMap, filter, flatMap, pluck, switchMap, take } from 'rxjs/operators';
+import { InsertResourcesInRepostory, OpenEditor, OpenEditorBase, OpenEditorFailure } from 'src/app/modules/dam-framework/store/index';
+import { CompositeProfileActionTypes, OpenCompositeProfileStructureEditor } from 'src/app/root-store/composite-profile/composite-profile.actions';
+import { selectCompositeProfileById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import {
   IgamtLoadedResourcesActionTypes,
   LoadResourceReferences,
@@ -11,16 +13,23 @@ import {
   LoadResourceReferencesSuccess,
 } from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
 import { selectLoadedDocumentInfo } from '../../../root-store/dam-igamt/igamt.selectors';
+import { OpenProfileComponentMessageCoConstraintsEditor } from '../../../root-store/profile-component/profile-component.actions';
+import { IDamResource } from '../../dam-framework';
 import { MessageType, UserMessage } from '../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../dam-framework/services/message.service';
 import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
+import * as fromDAM from '../../dam-framework/store';
+import * as fromRouterSelector from '../../dam-framework/store/router/router.selectors';
 import { Type } from '../../shared/constants/type.enum';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
+import { ICompositeProfile, ICompositeProfileState } from '../../shared/models/composite-profile';
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
 import { IUsages } from '../../shared/models/cross-reference';
 import { IDelta } from '../../shared/models/delta';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
+import { IProfileComponentContext } from '../../shared/models/profile.component';
 import { IResource } from '../../shared/models/resource.interface';
+import { ResourceService } from '../../shared/services/resource.service';
 import { IResourceMetadata } from '../components/resource-metadata-editor/resource-metadata-editor.component';
 
 @Injectable({
@@ -31,7 +40,7 @@ export class OpenEditorService {
   constructor(
     private actions$: Actions,
     private message: MessageService,
-    private store: Store<any>) { }
+    private store: Store<any>, private resourceService: ResourceService) { }
 
   openEditor<T extends any, A extends OpenEditorBase>(
     _action: string,
@@ -101,6 +110,101 @@ export class OpenEditorService {
     );
   }
 
+  openCompositeProfileStructureEditor(
+    resource$: Observable<ICompositeProfile>,
+    generate: (cp: ICompositeProfile) => Observable<ICompositeProfileState>,
+  ): Observable<Action> {
+    return this.openEditor<ICompositeProfile, OpenCompositeProfileStructureEditor>(
+      CompositeProfileActionTypes.OpenCompositeProfileStructureEditor,
+      selectCompositeProfileById,
+      () => resource$,
+      'Composite Profile not found',
+      (action: OpenCompositeProfileStructureEditor, cp: ICompositeProfile, display: IDisplayElement) => {
+        return generate(cp).pipe(
+          flatMap((cps) => {
+            const openEditor = new OpenEditor({
+              id: action.payload.id,
+              display,
+              editor: action.payload.editor,
+              initial: {
+                ...cps,
+              },
+            });
+
+            this.store.dispatch(new LoadResourceReferences({ resourceType: Type.CONFORMANCEPROFILE, id: cp.conformanceProfileId }));
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
+              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
+                do: (loadSuccess: LoadResourceReferencesSuccess) => {
+                  return of(new InsertResourcesInRepostory({
+                    collections: [{
+                      key: 'datatypes',
+                      values: [...cps.datatypes.map((dr) => dr.display)],
+                    }, {
+                      key: 'segments',
+                      values: [...cps.segments.map((dr) => dr.display)],
+                    }, {
+                      key: 'resources',
+                      values: [...[...cps.datatypes, ...cps.segments].map((dr) => dr.resource), ...cps.references],
+                    }],
+                  }), openEditor);
+                },
+              },
+              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesFailure]: {
+                do: (loadFailure: LoadResourceReferencesFailure) => {
+                  return of(new OpenEditorFailure({ id: action.payload.id }));
+                },
+              },
+            });
+          }),
+        );
+      },
+    );
+  }
+
+  openProfileComponentContextStructureEditor<T extends IProfileComponentContext, A extends OpenEditorBase>(
+    _action: string,
+    displayElement$: MemoizedSelectorWithProps<object, { id: string }, IDisplayElement>,
+    resource$: Observable<T>,
+    notFoundMessage: string,
+  ): Observable<Action> {
+    return this.openEditor<T, A>(
+      _action,
+      displayElement$,
+      () => resource$,
+      notFoundMessage,
+      (action: A, context: T, display: IDisplayElement) => {
+        const openEditor = new OpenEditor({
+          id: action.payload.id,
+          display,
+          editor: action.payload.editor,
+          initial: {
+            resource: context,
+            changes: {},
+          },
+        });
+        return this.store.select(fromRouterSelector.selectRouteParams).pipe(
+          take(1),
+          pluck('pcId'),
+          switchMap((pcId) => {
+            return this.resourceService.getProfileComponentContextResources((pcId as string), display.id).pipe(
+              switchMap((resources) => {
+                const collections: Array<{
+                  key: string;
+                  values: IDamResource[];
+                }> = [{
+                  key: 'resources',
+                  values: resources,
+                }];
+                this.store.dispatch(new fromDAM.LoadResourcesInRepostory({ collections }));
+                return of(openEditor);
+              }),
+              catchError((err) => of(new OpenEditorFailure({ id: action.payload.id }))),
+            );
+          }));
+      },
+    );
+  }
+
   openCoConstraintsBindingEditor<T extends IConformanceProfile, A extends OpenEditorBase>(
     _action: string,
     type: Type,
@@ -136,6 +240,54 @@ export class OpenEditorService {
             },
           },
         });
+      },
+    );
+  }
+
+  openCoConstraintsBindingProfileComponentEditor(
+    _action: string,
+    type: Type,
+    displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
+    messageContext$: Observable<IProfileComponentContext>,
+    fetchConformanceProfile: (id: string) => Observable<IConformanceProfile>,
+    notFoundMessage: string,
+  ): Observable<Action> {
+    return this.openEditor<IProfileComponentContext, OpenProfileComponentMessageCoConstraintsEditor>(
+      _action,
+      displayElement$,
+      () => messageContext$,
+      notFoundMessage,
+      (action: OpenProfileComponentMessageCoConstraintsEditor, context: IProfileComponentContext, display: IDisplayElement) => {
+        return fetchConformanceProfile(context.sourceId).pipe(
+          filter((v) => !!v),
+          take(1),
+          flatMap((resource) => {
+            const openEditor = new OpenEditor({
+              id: action.payload.id,
+              display,
+              editor: action.payload.editor,
+              initial: {
+                resource,
+                profileComponent: context.profileComponentCoConstraints ? context.profileComponentCoConstraints.bindings : undefined,
+              },
+            });
+            console.log({ resourceType: type, id: resource.id });
+            this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: resource.id }));
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
+              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
+                do: (loadSuccess: LoadResourceReferencesSuccess) => {
+                  return of(openEditor);
+                },
+              },
+              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesFailure]: {
+                do: (loadFailure: LoadResourceReferencesFailure) => {
+                  return of(new OpenEditorFailure({ id: action.payload.id }));
+                },
+              },
+            });
+          }),
+        );
+
       },
     );
   }
