@@ -232,7 +232,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
             //	                && datatypeNamesMap.containsKey(component.getRef().getId())) {
             ComponentDataModel componentDataModel = datatypeDataModel.getComponentDataModels().stream().filter(cp -> component.getRef().getId().equals(cp.getDatatype().getId())).findAny().orElseThrow(() -> new DatatypeNotFoundException(component.getRef().getId()));
             componentElement.addAttribute(
-                new Attribute("datatype", componentDataModel.getDatatype().getName()));
+                new Attribute("datatype", componentDataModel.getDatatype().getLabel()));
             //	            } else {
             //	              //throw new DatatypeNotFoundException(component.getRef().getId());
             //	            }

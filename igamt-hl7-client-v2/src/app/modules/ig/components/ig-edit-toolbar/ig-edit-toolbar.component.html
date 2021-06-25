@@ -15,6 +15,8 @@
       <button ngbDropdownItem (click)="export(exportTypes.IGDOCUMENT, 'html')">HTML</button>
       <button ngbDropdownItem (click)="quickExport(exportTypes.IGDOCUMENT, 'html')">HTML (Quick)</button>
       <button ngbDropdownItem (click)="exportXML()">XML</button>
+      <button ngbDropdownItem (click)="exportDiffXML()">Diff. tool XML</button>
+
     </div>
   </div>
   <div ngbDropdown class="d-inline-block" *ngIf="derived$ | async">

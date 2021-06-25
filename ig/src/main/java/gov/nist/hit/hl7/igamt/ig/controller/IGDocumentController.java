@@ -1590,7 +1590,7 @@ private String token;
     if (ig != null)  {
       CompositeProfileState cps = null;
       Ig selectedIg = this.makeSelectedIg(ig, reqIds, cps);
-      IgDataModel igModel = this.igService.generateDataModel(selectedIg);	
+      IgDataModel igModel = this.igService.generateDataModel(selectedIg);
       InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
       response.setContentType("application/zip");
       response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");

@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.export.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +12,8 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
+import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -347,6 +350,46 @@ public class ExportController {
     }
   }
 
+	@RequestMapping(value = "/api/export/ig/{id}/xml/diff", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	public void exportXML(@PathVariable("id") String id, HttpServletResponse response) throws Exception {
+
+		Ig ig = igService.findById(id);
+		if (ig != null)  {
+			String xmlContent = igExportService.exportIgDocumentToDiffXml(id);
+			InputStream xmlStream = new ByteArrayInputStream(xmlContent.getBytes());
+
+			ExportedFile exportedFile = new ExportedFile(xmlStream, ig.getMetadata().getTitle(), id,
+					ExportFormat.XML);
+
+			response.setContentType("text/xml");
+			response.setHeader("Content-disposition",
+					"attachment;filename=" + ig.getMetadata().getTitle()+ ".xml");
+			FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+		}
+	}
+	@RequestMapping(value = "/api/export/ig/{id}/{profileId}/xml/diff", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	public void exportXML(@PathVariable("id") String id, @PathVariable("profileId") String profileId,  HttpServletResponse response) throws Exception {
+		String[] profiles = {profileId};
+		ReqId reqIds = new ReqId();
+		reqIds.setConformanceProfilesId(profiles);
+
+		Ig ig = igService.findById(id);
+
+		if (ig != null)  {
+			Ig selectedIg = this.igService.makeSelectedIg(ig, reqIds);
+			selectedIg.setContent(ig.getContent());
+			String xmlContent = igExportService.exportIgDocumentToDiffXml(selectedIg);
+			InputStream xmlStream = new ByteArrayInputStream(xmlContent.getBytes());
+
+			ExportedFile exportedFile = new ExportedFile(xmlStream, ig.getMetadata().getTitle(), id,
+					ExportFormat.XML);
+
+			response.setContentType("text/xml");
+			response.setHeader("Content-disposition",
+					"attachment;filename=" + ig.getMetadata().getTitle()+ ".xml");
+			FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+		}
+	}
 
 
 }
