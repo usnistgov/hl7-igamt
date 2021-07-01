@@ -25,6 +25,20 @@
 	<xsl:import href="/templates/profile/reasonForChange.xsl" />
 	
 	<xsl:template match="Datatype">
+	
+	<xsl:if test="count(./@Composition) &gt; 0">
+   
+        <xsl:element name="span">
+            <xsl:element name="b">
+                <xsl:text>Composition</xsl:text>
+            </xsl:element>
+        </xsl:element>  
+        <br/>
+                <xsl:value-of select="./@Composition"></xsl:value-of>
+                <br/>   
+        </xsl:if>
+	
+	
 		<xsl:call-template name="VersionDisplay" />
 		<xsl:call-template name="UsageNotes" />
 		<xsl:call-template name="DatatypeFlavor" />

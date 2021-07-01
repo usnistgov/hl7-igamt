@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -65,6 +66,7 @@ import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileState;
 //import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 //import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.GeneratedResourceMetadata;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluationResult;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.ResourceAndDisplay;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
@@ -1062,8 +1064,10 @@ public class IgServiceImpl implements IgService {
         valuesetDataModel.setModel(vs);
         valuesetBindingDataModelMap.put(vs.getId(), new ValuesetBindingDataModel(vs));
         valuesets.add(valuesetDataModel);
-      } else
+      }
+      else {
         throw new Exception("Valueset is missing.");
+    }
     }
 
     for (Link link : ig.getDatatypeRegistry().getChildren()) {
@@ -1151,7 +1155,17 @@ public class IgServiceImpl implements IgService {
         	        // CoConstraintTable coConstraintTable =
         	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
         	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
-        	        compositeProfileDataModel.getFlavoredSegmentDataModelsList().add(segmentDataModel);
+        	       Optional<GeneratedResourceMetadata> generatedResourceMetadata = profileComponentsEvaluationResult.getGeneratedResourceMetadataList().stream().filter((g) ->  {
+        	        	return g.getGeneratedResourceId().equals(segmentDataModel.getModel().getId());
+        	        }).findAny();
+        	       
+        	       if(generatedResourceMetadata.isPresent()) {
+           	        compositeProfileDataModel.getFlavoredSegmentDataModelsMap().put(segmentDataModel, generatedResourceMetadata.get());
+        	       } else {
+              	        compositeProfileDataModel.getFlavoredSegmentDataModelsMap().put(segmentDataModel, null);
+        	       }
+        	       igDataModel.getAllFlavoredSegmentDataModelsMap().putAll(compositeProfileDataModel.getFlavoredSegmentDataModelsMap());
+        	 
 //        	        Link segLink = new Link();
 //        	        segLink.setId(s.getId());
 //        	        ig.getSegmentRegistry().getChildren().add(segLink);
@@ -1164,10 +1178,18 @@ public class IgServiceImpl implements IgService {
         	        DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
         	        datatypeDataModel.putModel(d, this.datatypeService, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
         	                this.conformanceStatementRepository, this.predicateRepository);
-        	            datatypes.add(datatypeDataModel);        	        // CoConstraintTable coConstraintTable =
-        	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
-        	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
-        	            compositeProfileDataModel.getFlavoredDatatypeDataModelsList().add(datatypeDataModel);
+        	            datatypes.add(datatypeDataModel);
+        	            
+        	            Optional<GeneratedResourceMetadata> generatedResourceMetadata = profileComponentsEvaluationResult.getGeneratedResourceMetadataList().stream().filter((g) ->  {
+            	        	return g.getGeneratedResourceId().equals(datatypeDataModel.getModel().getId());
+            	        }).findAny();
+            	       
+            	       if(generatedResourceMetadata.isPresent()) {
+               	        compositeProfileDataModel.getFlavoredDatatypeDataModelsMap().put(datatypeDataModel, generatedResourceMetadata.get());
+            	       } else {
+                  	        compositeProfileDataModel.getFlavoredDatatypeDataModelsMap().put(datatypeDataModel, null);
+            	       }
+            	       igDataModel.getAllFlavoredDatatypeDataModelsMap().putAll(compositeProfileDataModel.getFlavoredDatatypeDataModelsMap());
 //        	            Link datLink = new Link();
 //            	        datLink.setId(d.getId());
 //            	        ig.getDatatypeRegistry().getChildren().add(datLink);
@@ -1179,16 +1201,14 @@ public class IgServiceImpl implements IgService {
         } else {
           throw new Exception("Composite Profile is missing::::" + link.getId());
       }
-  
 
+  }
     igDataModel.setDatatypes(datatypes);
     igDataModel.setSegments(segments);
     igDataModel.setConformanceProfiles(conformanceProfiles);
     igDataModel.setValuesets(valuesets);
     igDataModel.setProfileComponents(profileComponents);
     igDataModel.setCompositeProfile(compositeProfiles);
-
-  }
     return igDataModel;
 
   }

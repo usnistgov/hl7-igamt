@@ -30,6 +30,18 @@
 	<xsl:template match="Segment">
 	
 		<xsl:param name="inlineConstraint" />
+		
+		<xsl:if test="count(./@Composition) &gt; 0">
+   
+        <xsl:element name="span">
+            <xsl:element name="b">
+                <xsl:text>Composition</xsl:text>
+            </xsl:element>
+        </xsl:element>  
+        <br/>
+                <xsl:value-of select="./@Composition"></xsl:value-of>
+                <br/>   
+        </xsl:if>
 
 		
 		<xsl:call-template name="VersionDisplay" />

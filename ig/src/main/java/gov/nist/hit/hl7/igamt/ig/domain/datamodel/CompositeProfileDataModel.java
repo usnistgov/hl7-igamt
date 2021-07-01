@@ -24,6 +24,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.GeneratedResourceMetadata;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
@@ -41,8 +42,8 @@ public class CompositeProfileDataModel implements Serializable, Comparable{
 	
 	private ConformanceProfileDataModel conformanceProfileDataModel;
 	
-	private ArrayList<SegmentDataModel> flavoredSegmentDataModelsList = new ArrayList<>();
-	private ArrayList<DatatypeDataModel> flavoredDatatypeDataModelsList = new ArrayList<>();
+	private Map<SegmentDataModel, GeneratedResourceMetadata> flavoredSegmentDataModelsMap = new HashMap<>();
+	private Map<DatatypeDataModel, GeneratedResourceMetadata> flavoredDatatypeDataModelsMap = new HashMap<>();
 
 
 	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
@@ -84,6 +85,28 @@ public class CompositeProfileDataModel implements Serializable, Comparable{
 
 	public void setValuesetMap(Map<String, Set<ValuesetBindingDataModel>> valuesetMap) {
 		this.valuesetMap = valuesetMap;
+	}
+	
+	
+
+
+
+	public Map<SegmentDataModel, GeneratedResourceMetadata> getFlavoredSegmentDataModelsMap() {
+		return flavoredSegmentDataModelsMap;
+	}
+
+	public void setFlavoredSegmentDataModelsMap(
+			Map<SegmentDataModel, GeneratedResourceMetadata> flavoredSegmentDataModelsMap) {
+		this.flavoredSegmentDataModelsMap = flavoredSegmentDataModelsMap;
+	}
+
+	public Map<DatatypeDataModel, GeneratedResourceMetadata> getFlavoredDatatypeDataModelsMap() {
+		return flavoredDatatypeDataModelsMap;
+	}
+
+	public void setFlavoredDatatypeDataModelsMap(
+			Map<DatatypeDataModel, GeneratedResourceMetadata> flavoredDatatypeDataModelsMap) {
+		this.flavoredDatatypeDataModelsMap = flavoredDatatypeDataModelsMap;
 	}
 
 	/**
@@ -200,21 +223,7 @@ public class CompositeProfileDataModel implements Serializable, Comparable{
 	
 	
 
-	public ArrayList<SegmentDataModel> getFlavoredSegmentDataModelsList() {
-		return flavoredSegmentDataModelsList;
-	}
 
-	public void setFlavoredSegmentDataModelsList(ArrayList<SegmentDataModel> flavoredSegmentDataModelsList) {
-		this.flavoredSegmentDataModelsList = flavoredSegmentDataModelsList;
-	}
-
-	public ArrayList<DatatypeDataModel> getFlavoredDatatypeDataModelsList() {
-		return flavoredDatatypeDataModelsList;
-	}
-
-	public void setFlavoredDatatypeDataModelsList(ArrayList<DatatypeDataModel> flavoredDatatypeDataModelsList) {
-		this.flavoredDatatypeDataModelsList = flavoredDatatypeDataModelsList;
-	}
 
 	@Override
 	public int compareTo(Object u) {
