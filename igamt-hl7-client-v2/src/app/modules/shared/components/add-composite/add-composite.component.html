@@ -17,12 +17,19 @@
       <span class="badge" style="background: black; color: white; margin-left: 5px;"><i #tooltip="matTooltip"
                                                                                         matTooltip="Used to identify the auto-generated segments and data types belonging to this composite profile"
                                                                                         matTooltipHideDelay="100000" class="fa fa-info"> </i></span>
-      <input [(ngModel)]="model.flavorsExtension" class="form-control" id="flavorsExtension" name="flavorsExtension" required style="width: 100%"
-             type="text" type="text"/>
+      <input [(ngModel)]="model.flavorsExtension" class="form-control" id="flavorsExtension" name="flavorsExtension" appGeneratedNamingDuplicationDirective [existing]="compositeProfiles" required style="width: 100%" type="text" type="text" appNamingConvention  [type]="'SEGMENT'" [scope]="'USER'" [documentType]="'IGDOCUMENT'"/>
       <div *ngIf="form.controls['flavorsExtension'] && form.controls['flavorsExtension'].errors"
            style="color:red; font-size: 11px">
-        <div *ngIf="form.controls['flavorsExtension'].errors.required">
-          <span>*Flavors Extension is required </span>
+        <div *ngIf="form.controls['flavorsExtension'] && form.controls['flavorsExtension'].errors" style="color:red; font-size: 11px">
+          <div *ngIf="form.controls['flavorsExtension'].errors.required">
+            <span>*Flavors Extension is required </span>
+          </div>
+          <div *ngIf="form.controls['flavorsExtension'].errors.duplicated">
+            <span> *extension is duplicated</span>
+          </div>
+          <div *ngIf="form.controls['flavorsExtension'].errors.invalidConvention">
+            <span> {{form.controls['flavorsExtension'].errors.invalidConvention}}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -53,7 +60,7 @@
         <ng-template let-item pTemplate="item">
           <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
           <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
-          <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ item.value.variableName}}</span>
+          <span *ngIf="item.value.variableName">{{ item.value.variableName}}</span>
         </ng-template>
       </p-dropdown>
     </div>

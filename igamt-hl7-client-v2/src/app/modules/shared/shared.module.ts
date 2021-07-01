@@ -117,6 +117,7 @@ import { UserProfileFormComponent } from './components/user-profile-form/user-pr
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
 import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
+import {GeneratedNamingDuplicationDirective} from './directives/generated-naming-duplication.directive';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
@@ -208,6 +209,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddPcToList,
     CsSubcontextComponent,
     FileExcelInputComponent,
+    GeneratedNamingDuplicationDirective,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -379,6 +381,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SelectProfileComponentsComponent,
     AddPcToList,
     CsSubcontextComponent,
+    GeneratedNamingDuplicationDirective,
   ],
   entryComponents: [
     ResourcePickerComponent,
