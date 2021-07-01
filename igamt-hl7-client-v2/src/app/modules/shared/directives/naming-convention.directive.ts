@@ -8,9 +8,6 @@ import {validateConvention} from '../functions/convention-factory';
   selector: '[appNamingConvention]',
   providers: [{provide: NG_VALIDATORS, useExisting: NamingConventionDirective, multi: true}],
 })
-
-
-
 export class NamingConventionDirective  implements Validator, OnInit {
   @Input()
   scope: Scope;

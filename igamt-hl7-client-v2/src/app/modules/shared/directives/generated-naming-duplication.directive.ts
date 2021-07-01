@@ -3,8 +3,6 @@ import {AbstractControl, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn
 import {validateGeneratedFlavorsUnicity} from '../functions/unicity-factory';
 import {IDisplayElement} from '../models/display-element.interface';
 import {IDomainInfo} from '../models/domain-info.interface';
-
-
 @Directive({
   selector: '[appGeneratedNamingDuplicationDirective]',
   providers: [{provide: NG_VALIDATORS, useExisting: GeneratedNamingDuplicationDirective, multi: true}],
