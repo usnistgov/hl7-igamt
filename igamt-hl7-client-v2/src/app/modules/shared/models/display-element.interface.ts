@@ -27,5 +27,6 @@ export interface IDisplayElement {
   origin?: string;
   publicationInfo?: IPublicationInfo;
   activeInfo?: IActiveInfo;
+  flavorExt?: string;
 
 }

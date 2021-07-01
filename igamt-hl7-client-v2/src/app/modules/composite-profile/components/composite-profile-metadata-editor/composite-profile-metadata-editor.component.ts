@@ -3,9 +3,10 @@ import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angul
 import {Actions} from '@ngrx/effects';
 import {Action, MemoizedSelectorWithProps, Store} from '@ngrx/store';
 import {combineLatest, Observable, of, Subscription} from 'rxjs';
-import {catchError, concatMap, flatMap, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, concatMap, flatMap, map, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {LoadCompositeProfile} from '../../../../root-store/composite-profile/composite-profile.actions';
 import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
+import {selectSelectedResource} from '../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import {IgEditResolverLoad} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {LoadProfileComponent} from '../../../../root-store/profile-component/profile-component.actions';
 import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
@@ -15,6 +16,7 @@ import * as fromDam from '../../../dam-framework/store';
 import {Scope} from '../../../shared/constants/scope.enum';
 import {Type} from '../../../shared/constants/type.enum';
 import {validateConvention} from '../../../shared/functions/convention-factory';
+import {validateGeneratedFlavorsUnicity} from '../../../shared/functions/unicity-factory';
 import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {EditorID} from '../../../shared/models/editor.enum';
@@ -55,24 +57,24 @@ export class CompositeProfileMetadataEditorComponent extends AbstractEditorCompo
     this.compositeProfileMetadata = this.currentSynchronized$;
     this.froalaConfig = this.froalaService.getConfig();
     this.s_workspace = this.currentSynchronized$.pipe(
-      tap((metadata: ICompositeProfileMetadata) => {
-        this.initFormGroup();
+      withLatestFrom(this.getOthers()),
+      tap(([metadata, others]) => {
+        this.initFormGroup(others);
         this.formGroup.patchValue(metadata);
         this.formGroup.valueChanges.subscribe((changed) => {
           this.editorChange(changed, this.formGroup.valid);
         });
-
       }),
     ).subscribe();
 
     this.s_children = this.editorDisplayNode().subscribe((x) => this.contexts = x.children);
   }
 
-  initFormGroup() {
+  initFormGroup(others: IDisplayElement[]) {
     this.formGroup = this.formBuilder.group({
       name: new FormControl('', [Validators.required, Validators.minLength(2)]),
       description: [''],
-      flavorsExtension: ['', [validateConvention(Scope.USER, Type.SEGMENT, Type.IGDOCUMENT, false), Validators.required]],
+      flavorsExtension: ['', [validateConvention(Scope.USER, Type.SEGMENT, Type.IGDOCUMENT, false), validateGeneratedFlavorsUnicity(others), Validators.required]],
       profileIdentifier: this.formBuilder.group({
         entityIdentifier: [''],
         namespaceId: [''],
@@ -170,6 +172,15 @@ export class CompositeProfileMetadataEditorComponent extends AbstractEditorCompo
     this.s_children.unsubscribe();
   }
 
+  getOthers(): Observable<IDisplayElement[]> {
+    return this.store.select(fromIgamtDisplaySelectors.selectAllCompositeProfiles).pipe(
+      take(1),
+      withLatestFrom(this.store.select(selectSelectedResource)),
+      map(([exiting, selected]) => {
+        return exiting.filter((x) => x.id !== selected.id);
+      }),
+    );
+  }
   ngOnInit() {
 
   }
