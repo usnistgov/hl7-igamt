@@ -579,7 +579,13 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
         elementGroupBegin.addAttribute(new Attribute("ref", StringUtils.repeat(".", 4 * depth) + "["));
         elementGroupBegin.addAttribute(new Attribute("position", String.valueOf(group.getPosition())));
         groupElement.appendChild(elementGroupBegin);
-        for (MsgStructElement msgStructElm : group.getChildren()) {
+        
+        List<MsgStructElement> msgStructElementList = group.getChildren().stream().sorted((e1, e2) ->
+        e1.getPosition() - e2.getPosition()).collect(Collectors.toList());
+        
+        for (MsgStructElement msgStructElm : msgStructElementList) {
+        if(msgStructElm != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), msgStructElm.getUsage()))
+        		{
             try {
                 Element child = this.serializeMsgStructElement(igDataModel, msgStructElm, depth + 1, conformanceProfileExportConfiguration);
                 if (child != null) {
@@ -589,6 +595,8 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                 throw new MsgStructElementSerializationException(exception, group);
             }
         }
+        }
+        
         Element elementGroupEnd = new Element("SegmentRef");
         elementGroupEnd.addAttribute(new Attribute("idGpe", group.getId()));
         elementGroupEnd.addAttribute(new Attribute("name", "END " + group.getName() + " GROUP"));

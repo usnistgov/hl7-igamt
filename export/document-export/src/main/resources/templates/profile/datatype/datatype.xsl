@@ -175,33 +175,33 @@
 					</xsl:element>
 					<xsl:element name="col">
 						<xsl:attribute name="width">
-                            <xsl:text>15%</xsl:text>
+                            <xsl:text>40%</xsl:text>
                         </xsl:attribute>
 					</xsl:element>
 					<xsl:element name="col">
 						<xsl:attribute name="width">
-                            <xsl:text>10%</xsl:text>
+                            <xsl:text>20%</xsl:text>
                         </xsl:attribute>
 					</xsl:element>
 					<xsl:element name="col">
 						<xsl:attribute name="width">
-                            <xsl:text>10%</xsl:text>
+                            <xsl:text>20%</xsl:text>
                         </xsl:attribute>
 					</xsl:element>
 					<xsl:element name="col">
 						<xsl:attribute name="width">
-                            <xsl:text>10%</xsl:text>
+                            <xsl:text>20%</xsl:text>
                         </xsl:attribute>
 					</xsl:element>
 					<xsl:element name="col">
 						<xsl:attribute name="width">
-                            <xsl:text>10%</xsl:text>
+                            <xsl:text>20%</xsl:text>
                         </xsl:attribute>
 					</xsl:element>
 					<xsl:if test="@ShowConfLength='true'">
 						<xsl:element name="col">
 							<xsl:attribute name="width">
-                                <xsl:text>10%</xsl:text>
+                                <xsl:text>15%</xsl:text>
                             </xsl:attribute>
 						</xsl:element>
 						<xsl:element name="col">
