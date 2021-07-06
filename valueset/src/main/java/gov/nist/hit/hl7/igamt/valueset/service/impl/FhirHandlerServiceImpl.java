@@ -144,6 +144,7 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		System.out.println(restTemplate);
+		try {
 		ResponseEntity<String> response = restTemplate.exchange(
 				"https://hit-dev.nist.gov:8095/vocabulary-service/hl7/ValueSet/HL70396/$expand", HttpMethod.GET, entity,
 				String.class);
@@ -164,6 +165,10 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 			if (vsHl7nnn != null) {
 				codes.addAll(convertExpansionToCodes(vsHl7nnn.getExpansion()));
 			}
+		}
+		} catch(Exception e) {
+			codes = new HashSet<Code>(); // Temporary fix 
+
 		}
 			
 		return codes;
