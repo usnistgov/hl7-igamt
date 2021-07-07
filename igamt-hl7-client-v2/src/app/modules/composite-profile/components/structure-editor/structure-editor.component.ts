@@ -34,6 +34,7 @@ export type GroupOptions = Array<{
 export enum GeneratedFlavorTabs {
   STRUCTURE = 'Structure',
   CONFORMANCE_STATEMENTS = 'Conformance Statements',
+  DYNAMIC_MAPPING = 'Dynamic Mapping',
   COCONSTRAINTS = 'Co-Constraints',
 }
 
@@ -179,6 +180,11 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
     switch (elm.display.type) {
       case Type.DATATYPE:
       case Type.SEGMENT:
+        this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS ];
+        if (elm.resource.name === 'OBX') {
+          this.tabs.push(GeneratedFlavorTabs.DYNAMIC_MAPPING);
+        }
+        break;
       case Type.CONFORMANCEPROFILE:
         this.tabs = [GeneratedFlavorTabs.STRUCTURE, GeneratedFlavorTabs.CONFORMANCE_STATEMENTS, GeneratedFlavorTabs.COCONSTRAINTS];
         break;
@@ -201,7 +207,6 @@ export class StructureEditorComponent extends AbstractEditorComponent implements
   onDeactivate(): void {
 
   }
-
   ngOnDestroy() {
     this.workspace_s.unsubscribe();
   }

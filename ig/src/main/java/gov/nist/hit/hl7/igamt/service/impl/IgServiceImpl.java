@@ -17,6 +17,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -1064,10 +1072,8 @@ public class IgServiceImpl implements IgService {
         valuesetDataModel.setModel(vs);
         valuesetBindingDataModelMap.put(vs.getId(), new ValuesetBindingDataModel(vs));
         valuesets.add(valuesetDataModel);
-      }
-      else {
+      } else
         throw new Exception("Valueset is missing.");
-    }
     }
 
     for (Link link : ig.getDatatypeRegistry().getChildren()) {
@@ -1155,17 +1161,17 @@ public class IgServiceImpl implements IgService {
         	        // CoConstraintTable coConstraintTable =
         	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
         	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
-        	       Optional<GeneratedResourceMetadata> generatedResourceMetadata = profileComponentsEvaluationResult.getGeneratedResourceMetadataList().stream().filter((g) ->  {
-        	        	return g.getGeneratedResourceId().equals(segmentDataModel.getModel().getId());
-        	        }).findAny();
-        	       
-        	       if(generatedResourceMetadata.isPresent()) {
-           	        compositeProfileDataModel.getFlavoredSegmentDataModelsMap().put(segmentDataModel, generatedResourceMetadata.get());
-        	       } else {
-              	        compositeProfileDataModel.getFlavoredSegmentDataModelsMap().put(segmentDataModel, null);
-        	       }
-        	       igDataModel.getAllFlavoredSegmentDataModelsMap().putAll(compositeProfileDataModel.getFlavoredSegmentDataModelsMap());
-        	 
+         	       Optional<GeneratedResourceMetadata> generatedResourceMetadata = profileComponentsEvaluationResult.getGeneratedResourceMetadataList().stream().filter((g) ->  {
+       	        	return g.getGeneratedResourceId().equals(segmentDataModel.getModel().getId());
+       	        }).findAny();
+       	       
+       	       if(generatedResourceMetadata.isPresent()) {
+          	        compositeProfileDataModel.getFlavoredSegmentDataModelsMap().put(segmentDataModel, generatedResourceMetadata.get());
+       	       } else {
+             	        compositeProfileDataModel.getFlavoredSegmentDataModelsMap().put(segmentDataModel, null);
+       	       }
+       	       igDataModel.getAllFlavoredSegmentDataModelsMap().putAll(compositeProfileDataModel.getFlavoredSegmentDataModelsMap());
+       	 
 //        	        Link segLink = new Link();
 //        	        segLink.setId(s.getId());
 //        	        ig.getSegmentRegistry().getChildren().add(segLink);
@@ -1178,6 +1184,9 @@ public class IgServiceImpl implements IgService {
         	        DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
         	        datatypeDataModel.putModel(d, this.datatypeService, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
         	                this.conformanceStatementRepository, this.predicateRepository);
+        	            datatypes.add(datatypeDataModel);        	        // CoConstraintTable coConstraintTable =
+        	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
+        	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
         	            datatypes.add(datatypeDataModel);
         	            
         	            Optional<GeneratedResourceMetadata> generatedResourceMetadata = profileComponentsEvaluationResult.getGeneratedResourceMetadataList().stream().filter((g) ->  {
@@ -1201,6 +1210,8 @@ public class IgServiceImpl implements IgService {
         } else {
           throw new Exception("Composite Profile is missing::::" + link.getId());
       }
+  
+
 
   }
     igDataModel.setDatatypes(datatypes);
@@ -1209,6 +1220,7 @@ public class IgServiceImpl implements IgService {
     igDataModel.setValuesets(valuesets);
     igDataModel.setProfileComponents(profileComponents);
     igDataModel.setCompositeProfile(compositeProfiles);
+
     return igDataModel;
 
   }
@@ -1530,6 +1542,133 @@ public class IgServiceImpl implements IgService {
     }
   }
 
+  @Override
+  public Ig makeSelectedIg(Ig ig, ReqId reqIds) {
+    Ig selectedIg = new Ig();
+    selectedIg.setId(ig.getId());
+    selectedIg.setDomainInfo(ig.getDomainInfo());
+    selectedIg.setMetadata(ig.getMetadata());
+    selectedIg.setConformanceProfileRegistry(new ConformanceProfileRegistry());
+    selectedIg.setSegmentRegistry(new SegmentRegistry());
+    selectedIg.setDatatypeRegistry(new DatatypeRegistry());
+    selectedIg.setValueSetRegistry(new ValueSetRegistry());
+
+    for(String id : reqIds.getConformanceProfilesId()) {
+      Link l = ig.getConformanceProfileRegistry().getLinkById(id);
+
+      if(l != null) {
+        selectedIg.getConformanceProfileRegistry().getChildren().add(l);
+
+        this.visitSegmentRefOrGroup(this.conformanceProfileService.findById(l.getId()).getChildren(), selectedIg, ig);
+      }
+    }
+
+    return selectedIg;
+  }
+
+  @Override
+  public void visitSegmentRefOrGroup(Set<SegmentRefOrGroup> srgs, Ig selectedIg, Ig all) {
+    srgs.forEach(srg -> {
+      if(srg instanceof Group) {
+        Group g = (Group)srg;
+        if(g.getChildren() != null) this.visitSegmentRefOrGroup(g.getChildren(), selectedIg, all);
+      } else if (srg instanceof SegmentRef) {
+        SegmentRef sr = (SegmentRef)srg;
+
+        if(sr != null && sr.getId() != null && sr.getRef() != null) {
+          Link l = all.getSegmentRegistry().getLinkById(sr.getRef().getId());
+          if(l != null) {
+            selectedIg.getSegmentRegistry().getChildren().add(l);
+            Segment s = this.segmentService.findById(l.getId());
+            if (s != null && s.getChildren() != null) {
+              this.visitSegment(s.getChildren(), selectedIg, all);
+              if(s.getBinding() != null && s.getBinding().getChildren() != null) this.collectVS(s.getBinding().getChildren(), selectedIg, all);
+            }
+            //For Dynamic Mapping
+            if (s != null && s.getDynamicMappingInfo() != null && s.getDynamicMappingInfo().getItems() != null) {
+              s.getDynamicMappingInfo().getItems().forEach(item -> {
+                Link link = all.getDatatypeRegistry().getLinkById(item.getDatatypeId());
+                if(link != null) {
+                  selectedIg.getDatatypeRegistry().getChildren().add(link);
+                  Datatype dt = this.datatypeService.findById(link.getId());
+                  if (dt != null && dt instanceof ComplexDatatype) {
+                    ComplexDatatype cdt = (ComplexDatatype)dt;
+                    if(cdt.getComponents() != null) {
+                      this.visitDatatype(cdt.getComponents(), selectedIg, all);
+                      if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+                    }
+                  }
+
+                }
+              });
+            }
+          }
+        }
+      }
+    });
+
+  }
+
+  @Override
+  public void collectVS(Set<StructureElementBinding> sebs, Ig selectedIg, Ig all) {
+    sebs.forEach(seb -> {
+      if(seb.getValuesetBindings() != null) {
+        seb.getValuesetBindings().forEach(b -> {
+          if(b.getValueSets() != null) {
+            b.getValueSets().forEach(id -> {
+              Link l = all.getValueSetRegistry().getLinkById(id);
+              if(l != null) {
+                selectedIg.getValueSetRegistry().getChildren().add(l);
+              }
+            });
+          }
+        });
+      }
+    });
+
+  }
+
+  @Override
+  public void visitSegment(Set<Field> fields, Ig selectedIg, Ig all) {
+    fields.forEach(f -> {
+      if(f.getRef() != null && f.getRef().getId() != null) {
+        Link l = all.getDatatypeRegistry().getLinkById(f.getRef().getId());
+        if(l != null) {
+          selectedIg.getDatatypeRegistry().getChildren().add(l);
+          Datatype dt = this.datatypeService.findById(l.getId());
+          if (dt != null && dt instanceof ComplexDatatype) {
+            ComplexDatatype cdt = (ComplexDatatype)dt;
+            if(cdt.getComponents() != null) {
+              this.visitDatatype(cdt.getComponents(), selectedIg, all);
+              if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+            }
+          }
+        }
+      }
+    });
+
+  }
+
+  @Override
+  public void visitDatatype(Set<Component> components, Ig selectedIg, Ig all) {
+    components.forEach(c -> {
+      if(c.getRef() != null && c.getRef().getId() != null) {
+        Link l = all.getDatatypeRegistry().getLinkById(c.getRef().getId());
+        if(l != null) {
+          selectedIg.getDatatypeRegistry().getChildren().add(l);
+          Datatype dt = this.datatypeService.findById(l.getId());
+          if (dt != null && dt instanceof ComplexDatatype) {
+            ComplexDatatype cdt = (ComplexDatatype)dt;
+            if(cdt.getComponents() != null) {
+              this.visitDatatype(cdt.getComponents(), selectedIg, all);
+              if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+            }
+          }
+        }
+      }
+    });
+  }
+
   /* (non-Javadoc)
    * @see gov.nist.hit.hl7.igamt.ig.service.IgService#createProfileComponent(gov.nist.hit.hl7.igamt.ig.domain.Ig, java.lang.String, java.util.List)
    */
@@ -1580,8 +1719,6 @@ public class IgServiceImpl implements IgService {
 
     return ret;
   }
-  
-  
   
   
 

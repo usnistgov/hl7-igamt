@@ -1,0 +1,98 @@
+<div style="display: flex; justify-content: flex-end">
+  <button class="btn btn-success btn-sm" (click)="addMapping()">
+    <i class="fa fa-plus"></i> Add Mapping
+  </button>
+</div>
+
+<div class="header-title">
+  <strong>Profile Component Dynamic mapping</strong>
+</div>
+<table class="table table-bordered">
+  <tr>
+    <td>
+      <strong>OBX-2 Value Set</strong>
+    </td>
+    <td>
+      <app-display-section *ngIf="pcVs" [element]="pcVs" [hideDescription]="true"></app-display-section>
+    </td>
+  </tr>
+</table>
+
+<div *ngIf="!profileComponentDynamicMapping || !profileComponentDynamicMapping.length || !available" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+  <span> No Dynamic Mapping defined </span>
+</div>
+<div  class="alert alert-warning" style="display: flex; align-items: center; justify-content: center;" *ngIf="containsInvalid">
+  <span> Some values are Invalid </span>
+  <button class="btn btn-sm btn-outline-primary" style="margin-left: 10px;" (click)="clean()">
+    <i class="fa fa-trash"></i> Clean
+  </button>
+</div>
+
+ <table class="table table-bordered table-sm" *ngIf="profileComponentDynamicMapping && profileComponentDynamicMapping.length > 0">
+    <tr>
+      <th style="width: 100px;"> Action </th>
+      <th style="width: 100px;">Reference Value</th>
+      <th>User Mapping</th>
+      <th *ngIf="!viewOnly" style="width: 190px;"></th>
+    </tr>
+    <tr *ngFor="let dyn of profileComponentDynamicMapping; let i = index;" [ngClass]="{
+      'old-active' : !dyn.changeType,
+      'value-deprecated' : dyn.status === 'INVALID'
+      }">
+      <td>
+        <span class="badge badge-success" *ngIf="dyn.changeType === 'ADD'">{{ dyn.changeType }}</span>
+        <span class="badge badge-danger" *ngIf="dyn.changeType === 'DELETE'">{{ dyn.changeType }}</span>
+        <span class="badge badge-warning" *ngIf="dyn.changeType === 'UPDATE'">{{ dyn.changeType }}</span>
+      </td>
+      <td>
+        {{dyn?.value}}
+      </td>
+      <td #anchor>
+
+        <div style="display: flex; flex-direction: row; justify-content: flex-start">
+        <div style="min-width: 200px;">
+        <p-dropdown [(ngModel)]="dyn.display"  [appendTo]="anchor" [optionLabel]="'fixedName'" *ngIf="!viewOnly && dyn.changeType !=='DELETE' && dyn.status !=='INVALID' && edit[dyn.value]"
+                    [options]="available[dyn.value]" [style]="{'minWidth':'100%'}"
+                    [placeholder]="'Default HL7 '" (onChange)="modelChange($event)">
+          <ng-template let-item pTemplate="selectedItem">
+              <app-display-section [element]="dyn.display" [hideDescription]="true"></app-display-section>
+          </ng-template>
+          <ng-template let-item pTemplate="item">
+            <app-display-section [element]="item.value" [hideDescription]="true"></app-display-section>
+          </ng-template>
+        </p-dropdown>
+          <app-display-section  *ngIf="viewOnly || dyn.changeType ==='DELETE' || dyn.status ==='INVALID' || !edit[dyn.value]" [element]="dyn.display" [hideDescription]="true"></app-display-section>
+        </div>
+          <div>
+          <button class="btn btn-sm btn-primary" style="margin-left: 5px;" (click)="editRow(dyn)" *ngIf="(!dyn.changeType || dyn.changeType === 'UPDATE' || dyn.changeType === 'ADD' )&& !edit[dyn.value] && available[dyn.value] &&  dyn.status !=='INVALID'">
+            <i class="fa fa-pencil"></i>
+          </button>
+            <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="hideDropDown(dyn)" *ngIf="edit[dyn.value]">
+              <i class="fa fa-remove"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="restoreItem(dyn)" *ngIf="!edit[dyn.value] && dyn.changeType === 'UPDATE' && dyn.status !=='INVALID'">
+              <i class="fa fa-trash"></i>
+            </button>
+        </div>
+        </div>
+
+      </td>
+      <td style="width: 190px;">
+        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteItem(dyn)" *ngIf="!dyn.changeType && dyn.status !=='INVALID'">
+          <i class="fa fa-minus"></i> Exclude
+        </button>
+        <button class="btn btn-sm btn-success" style="margin-left: 5px;" (click)="restoreItem(dyn)" *ngIf="dyn.changeType === 'DELETE' && dyn.status !=='INVALID'">
+          <i class="fa fa-refresh"></i> Restore
+        </button>
+        <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="remove(dyn)" *ngIf="dyn.changeType === 'ADD' && dyn.status !=='INVALID'">
+          <i class="fa fa-remove"></i> Delete
+        </button>
+        <button class="btn btn-sm btn-outline-primary" style="margin-left: 5px;" (click)="cleanOne(dyn)" *ngIf="dyn.status ==='INVALID' && !segmentMustDelete(dyn)" >
+          <i class="fa fa-remove"></i> Clean
+        </button>
+        <span style="color: red" *ngIf="segmentMustDelete(dyn)"> <i class="fa fa-warning"> Must remove from segment <span *ngIf="segmentDisplay"> {{segmentDisplay.fixedName + '_' +segmentDisplay.variableName| json}} </span>
+        </i></span>
+      </td>
+    </tr>
+  </table>
+

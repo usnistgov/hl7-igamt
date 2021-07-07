@@ -1104,17 +1104,17 @@ public class SegmentServiceImpl implements SegmentService {
     //Resource part
     Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
     applyChange.applyResourceChanges(s, singlePropertyMap , documentId);
-    
-   if (singlePropertyMap.containsKey(PropertyType.EXT)) {
+
+    if (singlePropertyMap.containsKey(PropertyType.EXT)) {
       s.setExt((String) singlePropertyMap.get(PropertyType.EXT).getPropertyValue());
-   }
-    
+    }
+
     Map<PropertyType, List<ChangeItemDomain>> map = applyChange.convertToMultiplePropertyChangeMap(cItems);
     this.applyChildrenChange(map, s.getChildren(), documentId);
 
     applyChange.applyBindingChanges(map, s.getBinding(), documentId, Level.SEGMENT);
 
-    if(map.containsKey(PropertyType.DYNAMICMAPPINGITEM)) {
+    if(s.getName().equals("OBX")) {
       this.applyDynamicMappingChanges(map, s, documentId);
     }
     s.setBinding(this.makeLocationInfo(s));
@@ -1166,33 +1166,32 @@ public class SegmentServiceImpl implements SegmentService {
    */
   private void applyDynamicMappingChanges(Map<PropertyType, List<ChangeItemDomain>> map, Segment s,
       String documentId) {
-    // TODO Auto-generated method stub
-    for(ChangeItemDomain item: map.get(PropertyType.DYNAMICMAPPINGITEM)) {
-      String value = (String)item.getPropertyValue();
-      String location = (String)item.getLocation();
-      if(s.getDynamicMappingInfo().getItems() ==null) {
-        s.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
-      }
-      if(item.getChangeType().equals(ChangeType.DELETE)) {
-        s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
-      }
-      else if(item.getChangeType().equals(ChangeType.ADD)) {
-
-        s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
-        s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
-      }else if(item.getChangeType().equals(ChangeType.UPDATE)) {
-        s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
-        s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
-      } 
-    }
-
-    if(s.getName().equals("OBX")){
-      if(map.containsKey(PropertyType.VALUESET)) {
-        if( map.get(PropertyType.VALUESET).stream().anyMatch(x -> "2".equals(x.getLocation()))){
-          this.restoreDefaultDynamicMapping(s);
+    if(map.containsKey(PropertyType.DYNAMICMAPPINGITEM)) {
+      for(ChangeItemDomain item: map.get(PropertyType.DYNAMICMAPPINGITEM)) {
+        String value = (String)item.getPropertyValue();
+        String location = (String)item.getLocation();
+        if(s.getDynamicMappingInfo().getItems() ==null) {
+          s.getDynamicMappingInfo().setItems(new HashSet<DynamicMappingItem>());
         }
+        if(item.getChangeType().equals(ChangeType.DELETE)) {
+          s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
+        }
+        else if(item.getChangeType().equals(ChangeType.ADD)) {
+
+          s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
+          s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
+        }else if(item.getChangeType().equals(ChangeType.UPDATE)) {
+          s.getDynamicMappingInfo().getItems().removeIf((x) ->  x.getValue().equals((location)));
+          s.getDynamicMappingInfo().getItems().add(new DynamicMappingItem(value,location ));
+        } 
       }
     }
+    if(map.containsKey(PropertyType.VALUESET)) {
+      if( map.get(PropertyType.VALUESET).stream().anyMatch(x -> "2".equals(x.getLocation()))){
+        this.restoreDefaultDynamicMapping(s);
+      }
+    }
+
   }
 
   public void applyStructure(Segment segment, List<ChangeItemDomain> cItems)
@@ -1304,8 +1303,8 @@ public class SegmentServiceImpl implements SegmentService {
     return ret;
   }
 
-
-  private String findObx2VsId(Segment s) {
+  @Override
+  public String findObx2VsId(Segment s) {
     // TODO Auto-generated method stub
     if(s.getBinding() != null && s.getBinding().getChildren() != null) {
       for(StructureElementBinding child : s.getBinding().getChildren()) {
@@ -1315,7 +1314,6 @@ public class SegmentServiceImpl implements SegmentService {
             if(vs.isPresent() && vs.get().getValueSets() !=null && !vs.get().getValueSets().isEmpty()) {
               return vs.get().getValueSets().get(0);
             }
-
           }
         }
       }

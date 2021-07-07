@@ -222,10 +222,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
               Element commentElement = new Element("Comment");
               if(complexDatatype.getExt() != null) {
                 commentElement
-                .addAttribute(new Attribute("name", complexDatatype.getName()+"_"+complexDatatype.getExt() + "." + component.getPosition()));
+                .addAttribute(new Attribute("name", complexDatatype.getName()+"_"+complexDatatype.getExt() + "-" + component.getPosition()));
               } else {
                 commentElement
-                .addAttribute(new Attribute("name", complexDatatype.getName() + "." + component.getPosition()));
+                .addAttribute(new Attribute("name", complexDatatype.getName() + "-" + component.getPosition()));
               } 
               commentElement
               .addAttribute(new Attribute("description", comment.getDescription()));
@@ -241,10 +241,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
   			  definitionText.addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
               if(complexDatatype.getExt() != null) {
                 definitionText
-                .addAttribute(new Attribute("name", complexDatatype.getName()+"_"+complexDatatype.getExt() + "." + component.getPosition()));
+                .addAttribute(new Attribute("name", complexDatatype.getName()+"_"+complexDatatype.getExt() + "-" + component.getPosition()));
               } else {
                 definitionText
-                .addAttribute(new Attribute("name", complexDatatype.getName() + "." + component.getPosition()));
+                .addAttribute(new Attribute("name", complexDatatype.getName() + "-" + component.getPosition()));
               } 			    			  definitionTextsElement.appendChild(definitionText);
             }
           }
@@ -263,7 +263,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
             //	                && datatypeNamesMap.containsKey(component.getRef().getId())) {
             ComponentDataModel componentDataModel = datatypeDataModel.getComponentDataModels().stream().filter(cp -> component.getRef().getId().equals(cp.getDatatype().getId())).findAny().orElseThrow(() -> new DatatypeNotFoundException(component.getRef().getId()));
             componentElement.addAttribute(
-                new Attribute("datatype", componentDataModel.getDatatype().getName()));
+                new Attribute("datatype", componentDataModel.getDatatype().getLabel()));
             //	            } else {
             //	              //throw new DatatypeNotFoundException(component.getRef().getId());
             //	            }

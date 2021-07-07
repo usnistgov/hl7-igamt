@@ -44,11 +44,10 @@
         </td>
         <td *ngIf="data.locationInfo.allowedBindingLocations && data.locationInfo.allowedBindingLocations.length>1">
           <span #anchor2></span>
-
-          <p-dropdown [(ngModel)]="rowData.bindingLocation" [appendTo]="anchor2" [autoDisplayFirst]="false"
+          <p-dropdown [(ngModel)]="rowData.bindingLocation" [autoDisplayFirst]="false"
                       [id]="'bindingLocation'+index"
                       [name]="'bindingLocation'+index" [options]="data.locationInfo.allowedBindingLocations"
-                      [style]="{'min-width': 'unset','width': '100%'}"></p-dropdown>
+                      [style]="{'min-width': 'unset','width': '100%'}" required></p-dropdown>
         </td>
         <td #anchor3 style="padding: 5px;">
           <div *ngFor="let vs of rowData.valueSets; index as i" style="display: flex; flex-direction: row; justify-content: space-between;">
@@ -80,7 +79,7 @@
               <div>
                 <button (click)="edit[index]=!edit[index]" *ngIf="edit[index]" style="margin-left: 5px;" class="btn btn-danger btn-sm"
                         style="height: 100%"><i class="fa fa-remove"></i></button>
-                <button (click)="addValueSet(rowData, index)" *ngIf="!edit[index]" style="margin-left: 5px;" class="btn btn-primary btn-sm"><i
+                <button (click)="addValueSet(rowData, index)" *ngIf="!edit[index]&& !(data.obx2 && rowData.valueSets.length>0)" style="margin-left: 5px;" class="btn btn-primary btn-sm"><i
                   class="fa fa-plus"></i></button>
               </div>
             </div>

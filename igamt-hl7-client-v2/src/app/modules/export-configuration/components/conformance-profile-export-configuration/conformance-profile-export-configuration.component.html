@@ -44,7 +44,7 @@
       <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;">
         <h5 class="card-title title-text custom-card-title">Metadata</h5>
         <ul class="list-group list-group-flush">
-          <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="HL7 Version" binary="true" [(ngModel)]="config.metadataConfig.hl7version" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly"  label="HL7 Version" binary="true" [(ngModel)]="config.version" (onChange)="triggerChange()"></p-checkbox></li>
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Organization" binary="true" [(ngModel)]="config.metadataConfig.organization" (onChange)="triggerChange()"></p-checkbox></li>
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Author" binary="true" [(ngModel)]="config.metadataConfig.author" (onChange)="triggerChange()"></p-checkbox></li>
           <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Type" binary="true" [(ngModel)]="config.metadataConfig.type" (onChange)="triggerChange()"></p-checkbox></li>

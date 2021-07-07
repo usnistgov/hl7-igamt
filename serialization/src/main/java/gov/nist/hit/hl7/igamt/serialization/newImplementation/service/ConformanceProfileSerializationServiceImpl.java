@@ -171,9 +171,11 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                         conformanceProfileElement.appendChild(constraints);
                     }
                 }
-                
-        	      Map<String, Boolean > bindedPaths = conformanceProfile.getChildren().stream().filter(  field  -> field != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), field.getUsage())).collect(Collectors.toMap( x -> x.getId(), x -> true ));
+                if (conformanceProfile.getOrigin() != null) {
+                    conformanceProfileElement.addAttribute(new Attribute("origin",conformanceProfile.getOrigin()));
+                }
 
+        	      Map<String, Boolean > bindedPaths = conformanceProfile.getChildren().stream().filter(  field  -> field != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), field.getUsage())).collect(Collectors.toMap( x -> x.getId(), x -> true ));
 
                 if (conformanceProfile.getBinding() != null) {
                     Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), bindedPaths);

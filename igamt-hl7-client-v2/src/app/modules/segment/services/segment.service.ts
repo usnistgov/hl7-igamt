@@ -12,7 +12,10 @@ import { ISegment } from '../../shared/models/segment.interface';
 import {DisplayService} from '../../shared/services/display.service';
 import { ValueSetService } from '../../value-set/service/value-set.service';
 
-@Injectable()
+@Injectable(
+  {  providedIn: 'root',
+  },
+)
 export class SegmentService {
 
   readonly URL = 'api/segments/';

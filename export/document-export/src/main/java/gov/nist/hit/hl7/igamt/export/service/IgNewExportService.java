@@ -12,7 +12,10 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 
 public interface IgNewExportService {
 
-	
+	public String exportIgDocumentToDiffXml( String igDocumentId) throws Exception;
+	public String exportIgDocumentToDiffXml( Ig ig) throws Exception;
+	public String serializeIgDocumentToDiffXml( Ig igDocument) throws Exception;
+
 	public ExportFilterDecision getExportFilterDecision(DocumentStructure documentStructure, ExportConfiguration config) throws CoConstraintGroupNotFoundException, IGDeltaException;
 //	public  ExportedFile serializeIgDocumentToHtml(String username,
 //			ExportFormat exportFormat, ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception;

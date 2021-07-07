@@ -21,11 +21,13 @@ export class AddCompositeComponent implements OnInit {
   messages: IDisplayElement[];
   profileComponents: IDisplayElement[];
   coreProfile: IDisplayElement;
+  compositeProfiles: IDisplayElement[];
 
   constructor(  public dialogRef: MatDialogRef<AddCompositeComponent>,
                 @Inject(MAT_DIALOG_DATA) public data: any) {
     this.messages = this.data.messages;
     this.profileComponents = this.data.profileComponents;
+    this.compositeProfiles =  this.data.compositeProfiles;
   }
 
   ngOnInit() {

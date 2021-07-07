@@ -1,14 +1,10 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +28,8 @@ import nu.xom.Element;
 
 @Service
 public class BindingSerializationServiceImpl implements BindingSerializationService {
-
+	@Autowired
+	ValuesetService valuesetService;
 	@Override
 	public Element serializeBinding(Binding binding, Map<String, Set<ValuesetBindingDataModel>> valuesetMap,
 			String name, Map<String, Boolean> bindedPaths) throws SerializationException {
@@ -157,8 +154,8 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 				for (ValuesetBinding valuesetBinding : structureElementBinding.getValuesetBindings()) {
 					Element valuesetBindingElement = this.serializeValuesetBinding(elementIdParent, valuesetBinding, valuesetMap, name);
 					if (valuesetBindingElement != null) {
-						structureElementBindingElement.appendChild(valuesetBindingElement);
-					}
+                        structureElementBindingElement.appendChild(valuesetBindingElement);
+                    }
 				}
 			}
 			if (structureElementBinding.getInternalSingleCode() != null) {
@@ -170,7 +167,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 					 internalSingleCode.addAttribute(
 								new Attribute("internalSingleCodeVsId", structureElementBinding.getInternalSingleCode().getValueSetId()));
 					 internalSingleCode.addAttribute(
-								new Attribute("internalSingleCodeLocation", name + "."+elementIdParent));
+								new Attribute("internalSingleCodeLocation", name + "-"+elementIdParent));
 						 structureElementBindingElement.appendChild(internalSingleCode);
 			}
 			 if (structureElementBinding.getExternalSingleCode() != null) {
@@ -200,6 +197,9 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 			// valuesetBindingElement.addAttribute(new Attribute("id", valuesetBinding.));
 			valuesetBindingElement.addAttribute(new Attribute("name",
 					convertValuesetIdsToBindingIdentifier(valuesetBinding.getValueSets(), vsDataModel)));
+			valuesetBindingElement.addAttribute(new Attribute("version",
+					convertValuesetIdsToVersions(valuesetBinding.getValueSets(), vsDataModel)));
+
 			// System.out.println("for " +
 			// convertValuesetNamesToString(valuesetBinding.getValueSets()) + " results is :
 			// " + convertValuesetIdsToBindingIdentifier(valuesetBinding.getValueSets(),
@@ -211,10 +211,10 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 					valuesetBinding.getValueSets() != null
 							? location : ""));
 			valuesetBindingElement.addAttribute(new Attribute("Position2",
-					elementIdParent != null ? name+"."+elementIdParent : ""));		
+					elementIdParent != null ? name+"-"+elementIdParent : ""));		
 			valuesetBindingElement.addAttribute(new Attribute("locations",
 					valuesetBinding.getValuesetLocations() != null
-							? convertValuesetLocationsToString(name+"."+elementIdParent, valuesetBinding.getValuesetLocations())
+							? convertValuesetLocationsToString(name+"-"+elementIdParent, valuesetBinding.getValuesetLocations())
 							: ""));
 			return valuesetBindingElement;
 		}
@@ -282,17 +282,44 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 	}
 
 
+//	private String convertValuesetIdsToBindingIdentifier(List<String> listIds,
+//			List<ValuesetBindingDataModel> listVsDataModels) {
+//		List<String> bindingIdentifiersList = new ArrayList<>();
+//		for (String id : listIds) {
+//			for (ValuesetBindingDataModel valuesetBindingDataModel : listVsDataModels) {
+//				if (valuesetBindingDataModel.getId().equals(id)) {
+//					bindingIdentifiersList.add(valuesetBindingDataModel.getBindingIdentifier());
+//				}
+//			}
+//		}
+//		return String.join(",", bindingIdentifiersList);
+//	}
 	private String convertValuesetIdsToBindingIdentifier(List<String> listIds,
-			List<ValuesetBindingDataModel> listVsDataModels) {
-		Set<String> bindingIdentifiersList = new HashSet<>();
+														 List<ValuesetBindingDataModel> listVsDataModels) {
+		List<String> bindingIdentifiersList = new ArrayList<>();
 		for (String id : listIds) {
-			for (ValuesetBindingDataModel valuesetBindingDataModel : listVsDataModels) {
-				if (valuesetBindingDataModel.getId().equals(id)) {
-					bindingIdentifiersList.add(valuesetBindingDataModel.getBindingIdentifier());
-				}
+			Valueset vs = valuesetService.findById(id);
+			if(vs != null) {
+				bindingIdentifiersList.add(vs.getBindingIdentifier());
 			}
 		}
 		return String.join(",", bindingIdentifiersList);
+	}
+	private String convertValuesetIdsToVersions(List<String> listIds,
+														 List<ValuesetBindingDataModel> listVsDataModels) {
+		List<String> versionsList = new ArrayList<>();
+		for (String id : listIds) {
+			Valueset vs = valuesetService.findById(id);
+			if(vs != null) {
+				versionsList.add(vs.getDomainInfo().getVersion());
+			}
+//			for (ValuesetBindingDataModel valuesetBindingDataModel : listVsDataModels) {
+//				if (valuesetBindingDataModel.getId().equals(id)) {
+//					versionsList.add(valuesetBindingDataModel.getDomainInfo().getVersion());
+//				}
+//			}
+		}
+		return String.join(",", versionsList);
 	}
 
 }

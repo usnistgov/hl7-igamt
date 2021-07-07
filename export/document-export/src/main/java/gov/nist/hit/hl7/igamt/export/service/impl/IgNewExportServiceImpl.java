@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import org.apache.commons.lang3.SerializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,11 +27,6 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.DatatypeCell;
 import gov.nist.hit.hl7.igamt.coconstraints.model.ValueSetCell;
 import gov.nist.hit.hl7.igamt.coconstraints.model.VariesCell;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -121,6 +118,49 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			return htmlFile;
 		}
 		return null;
+	}
+	@Override
+	public String exportIgDocumentToDiffXml( String igDocumentId)
+			throws Exception {
+		Ig igDocument = igService.findById(igDocumentId);
+		if (igDocument != null) {
+			String htmlFile = this.serializeIgDocumentToDiffXml(igDocument);
+			return htmlFile;
+		}
+		return null;
+	}
+
+	@Override
+	public String exportIgDocumentToDiffXml(Ig ig)
+			throws Exception {
+		if (ig != null) {
+			String htmlFile = this.serializeIgDocumentToDiffXml(ig);
+			return htmlFile;
+		}
+		return null;
+	}
+
+	@Override
+	public String serializeIgDocumentToDiffXml( Ig igDocument) throws Exception {
+		try {
+
+			ExportConfiguration exportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, ExportType.IGDOCUMENT);
+			exportConfiguration.setDeltaMode(false);
+			exportConfiguration.getSegmentExportConfiguration().setDeltaMode(false);
+			exportConfiguration.getValueSetExportConfiguration().setDeltaMode(false);
+			exportConfiguration.getDatatypeExportConfiguration().setDeltaMode(false);
+			exportConfiguration.getConformamceProfileExportConfiguration().setDeltaMode(false);
+			IgDataModel igDataModel = igService.generateDataModel(igDocument);
+			String xmlContent =
+					igDataModelSerializationService.serializeDocument(igDataModel, exportConfiguration,null).toXML();
+			System.out.println("XML_EXPORT : " + xmlContent);
+
+			return xmlContent;
+
+		} catch (SerializationException serializationException) {
+			throw new ExportException(serializationException,
+					"Unable to serialize IG Document with ID " + igDocument.getId());
+		}
 	}
 
 	@Override

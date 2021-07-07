@@ -339,6 +339,13 @@ export class IgService {
     this.submitForm(decision, this.EXPORT_URL + igId + '/html', configurationId, exportType );
   }
 
+  exportDiffXML(igId: string) {
+    this.submitForm(null, this.EXPORT_URL + igId + '/xml/diff', null, null);
+  }
+  exportProfileDiffXML(igId: string, profileId) {
+    this.submitForm(null, this.EXPORT_URL + igId + '/' + profileId + '/xml/diff', null, null);
+  }
+
   exportDocument(igId: string, decision: any,  configId: string , exportType: ExportTypes, format: string) {
     this.submitForm(decision, this.EXPORT_URL + igId + '/' + format, configId, exportType);
   }

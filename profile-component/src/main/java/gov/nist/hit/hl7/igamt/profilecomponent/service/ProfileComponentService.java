@@ -31,6 +31,7 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCoConstraintBindings;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyConformanceStatement;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDynamicMapping;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContextNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
@@ -77,5 +78,9 @@ public interface ProfileComponentService {
   ProfileComponent deleteContextById(String pcId, String contextId) throws ProfileComponentNotFoundException;
 
   void applyChanges(ProfileComponent pc, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException;
+
+  PropertyDynamicMapping updateContextDynamicMapping(String pcId, String contextId,
+      PropertyDynamicMapping pcDynamicMapping)
+      throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
 
 }

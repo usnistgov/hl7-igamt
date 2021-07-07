@@ -91,6 +91,10 @@
           </table>
         </div>
 
+        <div *ngSwitchCase="TABS.DYNAMIC_MAPPING" style="margin-top: 10px;">
+          <app-dynamic-mapping [datatypes] ="datatypes |async" [dynamicMapping]="selected.resource.dynamicMappingInfo" [hl7Version]="selected.resource.domainInfo?.version"  [viewOnly]="true"  [documentId]="documentId$ |async" [documentType]="(documentRef$ |async).type"> </app-dynamic-mapping>
+
+        </div>
         <div *ngSwitchCase="TABS.COCONSTRAINTS" style="margin-top: 10px; overflow: hidden;">
           <div style="overflow: scroll; height: 100%;" *ngIf="selected.resource.coConstraintsBindings">
             <app-context-co-constraint-binding
@@ -105,14 +109,8 @@
             </app-context-co-constraint-binding>
           </div>
         </div>
-
       </ng-container>
     </ng-container>
-
-
-
-
-
   </ng-container>
 
 </div>

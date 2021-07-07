@@ -98,6 +98,8 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 //	      if(valueSetExportConfiguration.isContentDefinition()) {
 			valueSetElement.addAttribute(new Attribute("contentDefinition",
 					valueSet.getContentDefinition() != null ? valueSet.getContentDefinition().value : ""));
+			valueSetElement.addAttribute(new Attribute("version",
+					valueSet.getDomainInfo().getVersion() != null ? valueSet.getDomainInfo().getVersion() : ""));
 			valueSetElement.addAttribute(new Attribute("numberOfCodes", String.valueOf(valueSet.getNumberOfCodes())));
 			valueSetElement
 					.addAttribute(new Attribute("codeSystemIds", getCodSystemDispaly(valueSet.getCodeSystems())));
@@ -123,6 +125,7 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 					}
 				}
 			}
+
 			valueSetElement.appendChild(codesElement);
 //	      Element codeSystemsElement = new Element("CodeSystems");
 //	      if (this.valuesetStructure.getDisplayCodes().size() > 0) {

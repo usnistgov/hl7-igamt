@@ -14,10 +14,9 @@ package gov.nist.hit.hl7.igamt.profilecomponent.controller;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCoConstraintBindings;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyConformanceStatement;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDynamicMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,11 +39,9 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContextNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
@@ -128,6 +125,13 @@ public class ProfileComponentController extends BaseController {
         return profileComponentService.updateContextCoConstraintBindings(pcId, contextId, null);
     }
   
+    @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/dynamic-mapping", method = RequestMethod.POST, produces = {"application/json"})
+    @ResponseBody
+    public PropertyDynamicMapping updateDynamicMapping(
+            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody PropertyDynamicMapping dynamicMapping,
+            Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
+        return profileComponentService.updateContextDynamicMapping(pcId, contextId, dynamicMapping);
+    }
 
   @RequestMapping(value = "/api/profile-component/{id}", method = RequestMethod.POST, produces = {
           "application/json" })

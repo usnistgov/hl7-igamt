@@ -137,7 +137,7 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
     }
     if(segment.getLabel() != null) {
       segmentElement
-      .addAttribute(new Attribute("label", segment.getLabel() != null ? segment.getLabel() : ""));
+      .addAttribute(new Attribute("label" , segment.getLabel() != null ? segment.getLabel() : ""));
     }
     if (segment.getDynamicMappingInfo() != null && segment.getDynamicMappingInfo().getItems() !=null && !segment.getDynamicMappingInfo().getItems().isEmpty() ) {
       try {
@@ -169,12 +169,12 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
     			  Element commentElement = new Element("Comment");
     			  if(segment.getExt() != null) {
     		          commentElement
-    	              .addAttribute(new Attribute("name", segment.getName()+"_"+segment.getExt() + "." + field.getPosition()));
+    	              .addAttribute(new Attribute("name", segment.getName()+"_"+segment.getExt() + "-" + field.getPosition()));
     		          } else {
     		        	  commentElement
-	    	              .addAttribute(new Attribute("name", segment.getName()+ "." + field.getPosition()));
+	    	              .addAttribute(new Attribute("name", segment.getName()+ "-" + field.getPosition()));
     			          } 
-    			  commentElement.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
+    			  commentElement.addAttribute(new Attribute("name",segment.getName() +"-"+ field.getPosition()));
 				  commentElement.addAttribute(new Attribute("description",comment.getDescription()));
 				  commentElement.addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
     			  commentsElement.appendChild(commentElement);
@@ -184,7 +184,7 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
 			  Element definitionText = new Element("DefinitionText");
 			  definitionText
               .addAttribute(new Attribute("text", field.getText()));
-			  definitionText.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
+			  definitionText.addAttribute(new Attribute("name",segment.getName() +"-"+ field.getPosition()));
 			  definitionText.addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
 			  definitionTextsElement.appendChild(definitionText);
 		  }
