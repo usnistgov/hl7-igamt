@@ -14,6 +14,8 @@ public class SegmentExportConfiguration extends ResourceExportConfiguration{
 	  private Boolean dynamicMappingInfo;
 	  private Boolean binding;
 	  private ConstraintExportConfiguration constraintExportConfiguration;
+	  private AbstractDomainExportConfiguration abstractDomainExportConfiguration;
+
 
 	  
 	  private boolean includeSegmentTable = true;
@@ -178,6 +180,16 @@ public class SegmentExportConfiguration extends ResourceExportConfiguration{
 
 	public void setStructuredNarrative(StructuredNarrative structuredNarrative) {
 		this.structuredNarrative = structuredNarrative;
+	}
+
+
+	public AbstractDomainExportConfiguration getAbstractDomainExportConfiguration() {
+		return abstractDomainExportConfiguration;
+	}
+
+
+	public void setAbstractDomainExportConfiguration(AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
+		this.abstractDomainExportConfiguration = abstractDomainExportConfiguration;
 	}
 	  
 }

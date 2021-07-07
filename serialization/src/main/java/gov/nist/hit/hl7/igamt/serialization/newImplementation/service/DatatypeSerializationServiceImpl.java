@@ -2,10 +2,12 @@ package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.GeneratedResourceMetadata;
 import gov.nist.hit.hl7.igamt.delta.domain.ConformanceStatementDelta;
 import gov.nist.hit.hl7.igamt.delta.domain.Delta;
 import gov.nist.hit.hl7.igamt.delta.domain.ResourceDelta;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
+import gov.nist.hit.hl7.igamt.common.base.domain.GenerationDirective;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
@@ -27,12 +31,16 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
@@ -54,6 +62,12 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
   @Autowired
   private DeltaService deltaService;
+  
+  @Autowired
+  private DatatypeService datatypeService;
+  
+  @Autowired
+  private ProfileComponentService profileComponentService;
 
   @Autowired
   private FroalaSerializationUtil frolaCleaning;
@@ -65,7 +79,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
   private ReasonForChangeSerializationService reasonForChangeSerializationService;
 
   @Override
-  public Element serializeDatatype(String igId, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type, Boolean deltaMode) throws SerializationException {
+  public Element serializeDatatype(DocumentStructureDataModel documentStructureDataModel, DatatypeDataModel datatypeDataModel, int level, int position, DatatypeExportConfiguration datatypeExportConfiguration, Type type, Boolean deltaMode) throws SerializationException {
     //	    try {
     Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, position, datatypeExportConfiguration);
     Datatype datatype = datatypeDataModel.getModel();
@@ -96,6 +110,23 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 
       }
     }
+    
+    if(datatype.isGenerated()) {
+    String compositionString= datatype.getLabel() +" Composition = ";
+    GeneratedResourceMetadata generatedResourceMetadata = ((IgDataModel) documentStructureDataModel).getAllFlavoredDatatypeDataModelsMap().get(datatypeDataModel);
+    Datatype sourceDatatype = datatypeService.findById(generatedResourceMetadata.getSourceId());
+    if(generatedResourceMetadata != null) compositionString += sourceDatatype.getLabel();
+    Set<GenerationDirective> generationDirectiveSet = generatedResourceMetadata.getGeneratedUsing();
+    for(GenerationDirective generationDirective : generationDirectiveSet) {
+    	if(generationDirective.getType().equals(Type.PROFILECOMPONENT)) {
+    		ProfileComponent pc = profileComponentService.findById(generationDirective.getId());
+    		if(pc !=null) compositionString+= " + " + pc.getLabel();
+    }
+    }
+    datatypeElement.addAttribute(
+			new Attribute("Composition", datatype != null ? compositionString : "")
+	);
+    }   
     datatypeElement
     .addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
     datatypeElement
@@ -191,10 +222,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
               Element commentElement = new Element("Comment");
               if(complexDatatype.getExt() != null) {
                 commentElement
-                .addAttribute(new Attribute("name", complexDatatype.getName()+"_"+complexDatatype.getExt() + "." + component.getPosition()));
+                .addAttribute(new Attribute("name", complexDatatype.getName()+"_"+complexDatatype.getExt() + "-" + component.getPosition()));
               } else {
                 commentElement
-                .addAttribute(new Attribute("name", complexDatatype.getName() + "." + component.getPosition()));
+                .addAttribute(new Attribute("name", complexDatatype.getName() + "-" + component.getPosition()));
               } 
               commentElement
               .addAttribute(new Attribute("description", comment.getDescription()));
@@ -210,10 +241,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
   			  definitionText.addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
               if(complexDatatype.getExt() != null) {
                 definitionText
-                .addAttribute(new Attribute("name", complexDatatype.getName()+"_"+complexDatatype.getExt() + "." + component.getPosition()));
+                .addAttribute(new Attribute("name", complexDatatype.getName()+"_"+complexDatatype.getExt() + "-" + component.getPosition()));
               } else {
                 definitionText
-                .addAttribute(new Attribute("name", complexDatatype.getName() + "." + component.getPosition()));
+                .addAttribute(new Attribute("name", complexDatatype.getName() + "-" + component.getPosition()));
               } 			    			  definitionTextsElement.appendChild(definitionText);
             }
           }

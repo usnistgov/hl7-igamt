@@ -30,6 +30,18 @@
 	<xsl:template match="Segment">
 	
 		<xsl:param name="inlineConstraint" />
+		
+		<xsl:if test="count(./@Composition) &gt; 0">
+   
+        <xsl:element name="span">
+            <xsl:element name="b">
+                <xsl:text>Composition</xsl:text>
+            </xsl:element>
+        </xsl:element>  
+        <br/>
+                <xsl:value-of select="./@Composition"></xsl:value-of>
+                <br/>   
+        </xsl:if>
 
 		
 		<xsl:call-template name="VersionDisplay" />
@@ -74,39 +86,39 @@
                     </xsl:attribute>
 				</xsl:element>
 				<xsl:element name="col">
+				 	<xsl:attribute name="width">
+                        <xsl:text>40%</xsl:text>
+                    </xsl:attribute> 
+				</xsl:element>
+				<xsl:element name="col">
 					<xsl:attribute name="width">
                         <xsl:text>15%</xsl:text>
                     </xsl:attribute>
 				</xsl:element>
 				<xsl:element name="col">
 					<xsl:attribute name="width">
-                        <xsl:text>10%</xsl:text>
+                        <xsl:text>15%</xsl:text>
                     </xsl:attribute>
 				</xsl:element>
 				<xsl:element name="col">
 					<xsl:attribute name="width">
-                        <xsl:text>10%</xsl:text>
+                        <xsl:text>15%</xsl:text>
                     </xsl:attribute>
 				</xsl:element>
 				<xsl:element name="col">
 					<xsl:attribute name="width">
-                        <xsl:text>10%</xsl:text>
+                        <xsl:text>15%</xsl:text>
                     </xsl:attribute>
 				</xsl:element>
 				<xsl:element name="col">
 					<xsl:attribute name="width">
-                        <xsl:text>10%</xsl:text>
-                    </xsl:attribute>
-				</xsl:element>
-				<xsl:element name="col">
-					<xsl:attribute name="width">
-                        <xsl:text>10%</xsl:text>
+                        <xsl:text>20%</xsl:text>
                     </xsl:attribute>
 				</xsl:element>
 				<xsl:if test="@ShowConfLength='true'">
 					<xsl:element name="col">
 						<xsl:attribute name="width">
-                            <xsl:text>10%</xsl:text>
+                            <xsl:text>20%</xsl:text>
                         </xsl:attribute>
 					</xsl:element>
 					<xsl:element name="col">

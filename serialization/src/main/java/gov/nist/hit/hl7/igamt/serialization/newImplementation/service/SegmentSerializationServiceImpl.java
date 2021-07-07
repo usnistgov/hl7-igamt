@@ -11,6 +11,9 @@ import java.util.stream.Stream;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.GeneratedResourceMetadata;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.delta.domain.ConformanceStatementDelta;
 import gov.nist.hit.hl7.igamt.delta.domain.ResourceDelta;
 import gov.nist.hit.hl7.igamt.serialization.util.SerializationTools;
@@ -19,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
+import gov.nist.hit.hl7.igamt.common.base.domain.GenerationDirective;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -36,11 +40,14 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.SegmentExportConfigu
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
@@ -67,7 +74,11 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
   private DeltaService deltaService;
   @Autowired
   private DatatypeService datatypeService;
-
+  @Autowired
+  private SegmentService segmentService;
+  @Autowired
+  private ProfileComponentService profileComponentService;
+  
   @Autowired
   private SerializationTools serializationTools;
   
@@ -99,6 +110,23 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
       }
     }
   }
+    if(segment.isGenerated()) {
+        String compositionString= segment.getLabel() +" Composition = ";
+        GeneratedResourceMetadata generatedResourceMetadata = igDataModel.getAllFlavoredSegmentDataModelsMap().get(segmentDataModel);
+        Segment sourceSegment = segmentService.findById(generatedResourceMetadata.getSourceId());
+        if(generatedResourceMetadata != null) compositionString += sourceSegment.getLabel();
+        Set<GenerationDirective> generationDirectiveSet = generatedResourceMetadata.getGeneratedUsing();
+        for(GenerationDirective generationDirective : generationDirectiveSet) {
+        	if(generationDirective.getType().equals(Type.PROFILECOMPONENT)) {
+        		ProfileComponent pc = profileComponentService.findById(generationDirective.getId());
+        		if(pc !=null) compositionString+= " + " + pc.getLabel();
+        }
+        }
+        segmentElement.addAttribute(
+				new Attribute("Composition", segment != null ? compositionString : "")
+		);
+    
+    }
     if(segment.getExt() != null) {
       segmentElement
       .addAttribute(new Attribute("ext", segment.getExt() != null ? segment.getExt() : ""));
@@ -109,7 +137,7 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
     }
     if(segment.getLabel() != null) {
       segmentElement
-      .addAttribute(new Attribute("label", segment.getLabel() != null ? segment.getLabel() : ""));
+      .addAttribute(new Attribute("label" , segment.getLabel() != null ? segment.getLabel() : ""));
     }
     if (segment.getDynamicMappingInfo() != null && segment.getDynamicMappingInfo().getItems() !=null && !segment.getDynamicMappingInfo().getItems().isEmpty() ) {
       try {
@@ -141,12 +169,12 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
     			  Element commentElement = new Element("Comment");
     			  if(segment.getExt() != null) {
     		          commentElement
-    	              .addAttribute(new Attribute("name", segment.getName()+"_"+segment.getExt() + "." + field.getPosition()));
+    	              .addAttribute(new Attribute("name", segment.getName()+"_"+segment.getExt() + "-" + field.getPosition()));
     		          } else {
     		        	  commentElement
-	    	              .addAttribute(new Attribute("name", segment.getName()+ "." + field.getPosition()));
+	    	              .addAttribute(new Attribute("name", segment.getName()+ "-" + field.getPosition()));
     			          } 
-    			  commentElement.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
+    			  commentElement.addAttribute(new Attribute("name",segment.getName() +"-"+ field.getPosition()));
 				  commentElement.addAttribute(new Attribute("description",comment.getDescription()));
 				  commentElement.addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
     			  commentsElement.appendChild(commentElement);
@@ -156,7 +184,7 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
 			  Element definitionText = new Element("DefinitionText");
 			  definitionText
               .addAttribute(new Attribute("text", field.getText()));
-			  definitionText.addAttribute(new Attribute("name",segment.getName() +"."+ field.getPosition()));
+			  definitionText.addAttribute(new Attribute("name",segment.getName() +"-"+ field.getPosition()));
 			  definitionText.addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
 			  definitionTextsElement.appendChild(definitionText);
 		  }
