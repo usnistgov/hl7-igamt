@@ -26,6 +26,7 @@ export class VerifyIgDialogComponent implements OnInit {
 
   constructor(private http: HttpClient, public dialogRef: MatDialogRef<VerifyIgDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: IVerifyIgDialogData) {
+    dialogRef.disableClose = true;
     this.reports = null;
   }
   ngOnInit() {
