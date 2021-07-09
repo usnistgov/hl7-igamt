@@ -31,17 +31,17 @@
 				</xsl:element>
 				<xsl:element name="col">
 					<xsl:attribute name="width">
-                       <xsl:text>10%</xsl:text>
+                       <xsl:text>70%</xsl:text>
                    </xsl:attribute>
 				</xsl:element>
 				<xsl:element name="col">
-					<xsl:attribute name="width">
-                       <xsl:text>40%</xsl:text>
-                   </xsl:attribute>
+					<!-- <xsl:attribute name="width">
+                       <xsl:text>60%</xsl:text>
+                   </xsl:attribute> -->
 				</xsl:element>
 				<xsl:element name="col">
 					<xsl:attribute name="width">
-                       <xsl:text>20%</xsl:text>
+                       <xsl:text>30%</xsl:text>
                    </xsl:attribute>
 				</xsl:element>
 				<xsl:element name="thead">

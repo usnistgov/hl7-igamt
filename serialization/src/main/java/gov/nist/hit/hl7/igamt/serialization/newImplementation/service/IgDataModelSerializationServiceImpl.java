@@ -133,11 +133,15 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 			element.addAttribute(
 					new Attribute("domainCompatibilityVersion",
 							abstractDomain.getDomainInfo() != null
-							? (abstractDomain.getDomainInfo().getCompatibilityVersion() != null
-							? this.formatStringData(
-									abstractDomain.getDomainInfo().getCompatibilityVersion().toString())
+							? (abstractDomain.getDomainInfo().getVersion() != null
+							? 
+									abstractDomain.getDomainInfo().getVersion()
 									: "")
-									: ""));}
+									: ""));
+//							element.addAttribute(
+//									new Attribute("domainCompatibilityVersion",
+//											abstractDomain.getDomainInfo() != null ? abstractDomain.getDomainInfo().getVersion() : ""));
+			}
 			element.addAttribute(
 					new Attribute("name", abstractDomain.getName() != null ? abstractDomain.getName(): ""));
 			element.addAttribute(new Attribute("id",

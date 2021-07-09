@@ -327,11 +327,11 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
     							if (exportFilterDecision != null && exportFilterDecision.getOveriddedDatatypesMap() != null
     									&& exportFilterDecision.getOveriddedDatatypesMap()
     									.containsKey(datatypeDataModel.getModel().getId())) {
-    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
+    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
     										level + 1, 0,
     										exportFilterDecision.getOveriddedDatatypesMap().get(datatypeDataModel.getModel().getId()),documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
     							} else {
-    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
+    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
     										level + 1, 0,
     										exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
     							}
@@ -349,7 +349,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 
 
 //    							Element datatypeElement;
-    							datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
+    							datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
     									level + 1, 0,
     									exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
 
@@ -359,7 +359,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 
     						}
     							} else {
-    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
+    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
         									level + 1, 0,
         									exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
 
@@ -398,11 +398,11 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
     							if (exportFilterDecision != null && exportFilterDecision.getOveriddedDatatypesMap() != null
     									&& exportFilterDecision.getOveriddedDatatypesMap()
     									.containsKey(datatypeDataModel.getModel().getId())) {
-    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
+    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
     										level + 1, 0,
     										exportFilterDecision.getOveriddedDatatypesMap().get(datatypeDataModel.getModel().getId()),documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
     							} else {
-    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
+    								datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
     										level + 1, 0,
     										exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
     							}
@@ -420,7 +420,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 
 
 //    							Element datatypeElement;
-    							datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel.getModel().getId(),datatypeDataModel,
+    							datatypeElement = datatypeSerializationService.serializeDatatype(documentStructureDataModel,datatypeDataModel,
     									level + 1, 0,
     									exportConfiguration.getDatatypeExportConfiguration(), documentStructureDataModel.getModel().getType(), exportConfiguration.isDeltaMode());
 
@@ -574,18 +574,6 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
             Element segmentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
             if (segmentRegistry != null) {
 				if (!segmentRegistry.getChildren().isEmpty()) {					
-//					ArrayList<SegmentDataModel> segmentDataModelsList = new ArrayList<>();
-//
-//					for (Link segmentLink : segmentRegistry.getChildren()) {
-//							SegmentDataModel segmentDataModel = null;
-//
-//							segmentDataModel = igDataModel.getSegments().stream()
-//									.filter(s -> segmentLink.getId().equals(s.getModel().getId())).findAny()
-//									.orElseThrow(() -> new SegmentNotFoundException(segmentLink.getId())); 
-//
-//							segmentDataModelsList.add(segmentDataModel);
-//						
-//					}
 					List<SegmentDataModel> segmentDataModelsList = igDataModel.getSegments().stream().collect(Collectors.toList());
 					Collections.sort(segmentDataModelsList);
 					System.out.println("s");

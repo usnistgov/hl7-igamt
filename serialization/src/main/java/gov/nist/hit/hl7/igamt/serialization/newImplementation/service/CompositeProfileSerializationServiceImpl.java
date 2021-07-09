@@ -46,8 +46,8 @@ public class CompositeProfileSerializationServiceImpl implements CompositeProfil
 		if (compositeProfileDataModel != null) {
             try {
             	// Add flavored Segments and Datatypes of composite profile to DatamodelList to be exported in Datatypes and Segments
-					igDataModel.getSegments().addAll(compositeProfileDataModel.getFlavoredSegmentDataModelsList());
-					igDataModel.getDatatypes().addAll(compositeProfileDataModel.getFlavoredDatatypeDataModelsList());
+					igDataModel.getSegments().addAll(compositeProfileDataModel.getFlavoredSegmentDataModelsMap().keySet());
+					igDataModel.getDatatypes().addAll(compositeProfileDataModel.getFlavoredDatatypeDataModelsMap().keySet());
 
                 Element compositeProfileElement = igDataModelSerializationService.serializeResource(compositeProfileDataModel.getModel(), Type.COMPOSITEPROFILE, position, compositeProfileExportConfiguration);
                 CompositeProfileStructure compositeProfile = compositeProfileDataModel.getModel();
