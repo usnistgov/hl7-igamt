@@ -341,7 +341,7 @@ public class BootstrapApplication implements CommandLineRunner {
     tableFixes.removeSegmentsDuplicatedBinding();
   }
   
- // @PostConstruct
+  //@PostConstruct
   void generateDefaultExportConfig() {
       exportConfigurationRepository.deleteByType(ExportType.IGDOCUMENT);
       ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, ExportType.IGDOCUMENT);
@@ -355,7 +355,7 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
   
- // @PostConstruct
+ //@PostConstruct
   void generateDiffrentialExportConfig() {
     exportConfigurationRepository.deleteByType(ExportType.DIFFERENTIAL);
     ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, ExportType.DIFFERENTIAL);
@@ -1031,7 +1031,7 @@ public class BootstrapApplication implements CommandLineRunner {
     codeFixer.fixFromCSV();
   }
   
-  @PostConstruct
+  //@PostConstruct
   void generateDefaultFontConfigForAll(){
     List<ExportConfiguration> allConfigs= exportConfigurationRepository.findAll();
     ExportFontConfiguration fontConfig = ExportFontConfiguration.getDefault();
