@@ -350,11 +350,13 @@ export class ProfileComponentService {
     });
   }
 
-  profileComponentToMetadata(conformanceProfile: IProfileComponent): IProfileComponentMetadata {
+  profileComponentToMetadata(pc: IProfileComponent): IProfileComponentMetadata {
     return {
-      name: conformanceProfile.name,
-      description: conformanceProfile.description,
-      profileIdentifier: conformanceProfile.preCoordinatedMessageIdentifier ? conformanceProfile.preCoordinatedMessageIdentifier : {},
+      name: pc.name,
+      description: pc.description,
+      profileIdentifier: pc.preCoordinatedMessageIdentifier ? pc.preCoordinatedMessageIdentifier : {},
+      preDef: pc.preDef,
+      postDef: pc.postDef,
     };
   }
   getDynamicMappingEditorInfo(ctx: IProfileComponentContext, seg: ISegment): IDynamicMappingEditorInfo {

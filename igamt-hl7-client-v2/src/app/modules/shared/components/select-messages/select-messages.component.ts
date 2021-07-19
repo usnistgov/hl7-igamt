@@ -12,8 +12,15 @@ import { IDisplayElement } from '../../models/display-element.interface';
   styleUrls: ['./select-messages.component.scss'],
 })
 export class SelectMessagesComponent implements OnInit {
+  table_: any[];
   @Input()
-  table: any;
+  set table($event) {
+    this.table_ = $event;
+    if ( this.filterValue ) {
+      this.filterTable('');
+
+    }
+  }
   @ViewChild(NgForm) form;
   @ViewChild('dt1')
   tableRef: Table;
@@ -30,12 +37,14 @@ export class SelectMessagesComponent implements OnInit {
   existing: IDisplayElement[] = [];
   @Input()
   hl7Versions: string[];
+  filterValue: string;
 
   constructor() {
   }
   ngOnInit() {
   }
-  filterTable(value) {
+  filterTable(value: string) {
+    this.filterValue = value;
     this.tableRef.filteredValue = [];
     for (const row of this.tableRef.value) {
       let nameFilter = false;
@@ -76,7 +85,6 @@ export class SelectMessagesComponent implements OnInit {
     });
   }
   selectMessageEvent(obj: any) {
-    console.log(obj);
     const element: IAddingInfo = {
       originalId: obj.id,
       id: Guid.create().toString(),

@@ -37,4 +37,19 @@
     </table>
   </div>
 
+  <div class="form-group">
+    <label class="form-label-lg">Pre Definition</label>
+  <div id="predef" *ngIf="!(viewOnly$ | async)" [froalaEditor]="froalaConfig$ | async"
+       formControlName="preDef"
+       style="flex-grow: 1; display: flex; flex-direction: column;"></div>
+  <div *ngIf="(viewOnly$ | async)" [froalaView]="getValue('preDef')"  [froalaEditor]="froalaConfig$ | async"></div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label-lg">Post Definition</label>
+    <div id="postdef" *ngIf="!(viewOnly$ | async)" [froalaEditor]="froalaConfig$ | async"
+         formControlName="postDef"
+         style="flex-grow: 1; display: flex; flex-direction: column;"></div>
+    <div *ngIf="(viewOnly$ | async)" [froalaView]="getValue('postDef')"  [froalaEditor]="froalaConfig$ | async"></div>
+  </div>
 </form>
