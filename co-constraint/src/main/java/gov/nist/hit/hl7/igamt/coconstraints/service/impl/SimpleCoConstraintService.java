@@ -231,18 +231,15 @@ public class SimpleCoConstraintService implements CoConstraintService {
     Datatype obx_dt = this.datatypeService.findById(field.getRef().getId());
 
     if(!(obx_dt instanceof ComplexDatatype) || obx_dt.getFixedName().equals("OG")) {
-      return null;
+      obx_grouper.setName("OBX-"+field.getPosition());
+      obx_grouper.setPathId(field.getId());
+      obx_grouper.setVersion(obx_dt.getDomainInfo().getVersion());
+      obx_grouper.setDescription(field.getName());
+      obx_grouper.setType(Type.FIELD);
+
+      return obx_grouper;
     }
-
-    obx_grouper.setName("OBX-"+field.getPosition());
-    obx_grouper.setPathId(field.getId());
-    obx_grouper.setName(obx_dt.getName());
-    obx_grouper.setVersion(obx_dt.getDomainInfo().getVersion());
-    obx_grouper.setDescription(field.getName());
-    obx_grouper.setType(Type.FIELD);
-
-
-    return obx_grouper;
+    return null;
   }
 
   /* (non-Javadoc)
