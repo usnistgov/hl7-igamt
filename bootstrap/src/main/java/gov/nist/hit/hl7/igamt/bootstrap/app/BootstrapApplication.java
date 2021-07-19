@@ -1063,7 +1063,7 @@ public class BootstrapApplication implements CommandLineRunner {
   void publishStructures() {
     this.dataFixer.publishStructure("607da0e88b87bc00073b4ba6");
   }
-  @PostConstruct
+  //@PostConstruct
   void fixData() {
     this.dataFixer.fixDatatypeConstraintsLevel();
     this.dataFixer.fixConformanceProfileConstaintsLevel();
