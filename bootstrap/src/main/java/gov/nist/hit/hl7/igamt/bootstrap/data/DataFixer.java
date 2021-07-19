@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import com.opencsv.CSVReader;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
@@ -34,8 +36,13 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
@@ -53,13 +60,16 @@ public class DataFixer {
 
   @Autowired
   SegmentService segmentsService;
-  
+
+  @Autowired
+  ConformanceProfileService conformanceProfileService;
+
   @Autowired
   DatatypeService datatypeService;
 
   @Autowired
   ValuesetService valueSetService;
-  
+
   @Autowired
   MessageStructureRepository  messageStructureRepository;
 
@@ -204,7 +214,7 @@ public class DataFixer {
   }
 
   public void changeHL7SegmentDatatype(String segmentName, String location, String newDatatype, String version) {
-    
+
     List<Segment> segments = this.segmentsService.findByDomainInfoScopeAndDomainInfoVersionAndName(Scope.HL7STANDARD.toString(), version, segmentName);
     if(segments != null) {
       for (Segment s: segments) {
@@ -221,7 +231,7 @@ public class DataFixer {
       }
     }
   }
-  
+
   public void publishStructure(String id) {
     MessageStructure msg = this.messageStructureRepository.findOneById(id);
     if(msg != null) {
@@ -231,7 +241,74 @@ public class DataFixer {
       msg.setId(new ObjectId().toString());
       messageStructureRepository.insert(msg);
     }
-    
+
   }
+
+
+  /**
+   * 
+   */
+  public void fixDatatypeConstraintsLevel() {
+    List<Datatype> dts = this.datatypeService.findByDomainInfoScope(Scope.USER.toString());
+    Map<String, Boolean> map = new HashMap<String, Boolean>();
+    for(Datatype dt: dts) {
+      if(dt.getBinding() !=null ) {
+        if(dt.getBinding().getConformanceStatements() != null) {
+          for(ConformanceStatement statement: dt.getBinding().getConformanceStatements()) {
+            if(statement.getLevel() == null || !statement.getLevel().equals(Level.DATATYPE)) {
+              statement.setLevel(Level.DATATYPE);
+              map.put(dt.getId(), true);
+            }
+          }
+        }
+      }
+      if(map.containsKey(dt.getId())) {
+        this.datatypeService.save(dt);
+      }
+    }
+  }
+
+  public void fixConformanceProfileConstaintsLevel() {
+    List<ConformanceProfile> cps = this.conformanceProfileService.findByDomainInfoScope(Scope.USER.toString());
+    Map<String, Boolean> map = new HashMap<String, Boolean>();
+    for(ConformanceProfile cp: cps) {
+      if(cp.getBinding() !=null ) {
+        if(cp.getBinding().getConformanceStatements() != null) {
+          for(ConformanceStatement statement: cp.getBinding().getConformanceStatements()) {
+            statement.setLevel(this.getAssertionLevel(Level.CONFORMANCEPROFILE, statement.getContext()));
+          }
+        }
+        if(cp.getBinding().getChildren() != null) {
+          processAndFixPredicateLevel(Level.CONFORMANCEPROFILE, cp.getBinding().getChildren());
+          this.conformanceProfileService.save(cp);
+        }
+      }
+    }
+  }
+
+  private Level getAssertionLevel(Level level, InstancePath context) {
+    if(level.equals(Level.CONFORMANCEPROFILE)) {
+      if(context!= null) {
+        return Level.GROUP;
+      }
+    }
+    return level;
+  }
+
+
+  private void processAndFixPredicateLevel(Level resourceLevel,
+      Set<StructureElementBinding> children) {
+    for(StructureElementBinding child: children ) {
+      if(child.getPredicate() != null ) {
+        child.getPredicate().setLevel(this.getAssertionLevel(Level.CONFORMANCEPROFILE, child.getPredicate().getContext()));
+      }
+      if(child.getChildren() != null) {
+        processAndFixPredicateLevel(Level.CONFORMANCEPROFILE, child.getChildren());
+      }
+    }
+
+  }
+
+
 
 }

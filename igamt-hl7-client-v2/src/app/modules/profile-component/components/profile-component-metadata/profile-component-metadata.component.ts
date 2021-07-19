@@ -29,7 +29,7 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
 
   profileComponentMetadata: Observable<IProfileComponentMetadata>;
   formGroup: FormGroup;
-  froalaConfig: Observable<any>;
+  froalaConfig$: Observable<any>;
   s_workspace: Subscription;
   s_children: Subscription;
   contexts: IDisplayElement[];
@@ -51,7 +51,7 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
       store,
     );
     this.profileComponentMetadata = this.currentSynchronized$;
-    this.froalaConfig = this.froalaService.getConfig();
+    this.froalaConfig$ = this.froalaService.getConfig();
     this.s_workspace = this.currentSynchronized$.pipe(
       tap((metadata: IProfileComponentMetadata) => {
         this.initFormGroup();
@@ -70,7 +70,9 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
   initFormGroup() {
     this.formGroup = this.formBuilder.group({
       name: new FormControl('', [Validators.required, Validators.minLength(2)]),
-      description: [''],
+      description: new FormControl('', []),
+      preDef: new FormControl('', []),
+      postDef: new FormControl('', []),
       profileIdentifier: this.formBuilder.group({
         entityIdentifier: [''],
         namespaceId: [''],
@@ -79,25 +81,10 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
       }),
     });
   }
-
-  getArray(): FormArray {
-    return this.formGroup.get('profileIdentifier') as FormArray;
+  getValue(value: string) {
+    return this.formGroup.getRawValue()[value];
   }
-
-  addIdentifier(profileIdentifier: FormArray) {
-    profileIdentifier.push(this.formBuilder.group({
-      entityIdentifier: [''],
-      namespaceId: [''],
-      universalId: [''],
-      universalIdType: [''],
-    }));
-  }
-
-  removeIdentifier(profileIdentifier: FormArray, i: number) {
-    profileIdentifier.removeAt(i);
-  }
-
-  getChanges(elementId: string, current: IConformanceProfileEditMetadata, old: IConformanceProfileEditMetadata): IChange[] {
+  getChanges(elementId: string, current: IProfileComponentMetadata, old: IProfileComponentMetadata): IChange[] {
     const changes: IChange[] = [];
 
     if (current.name !== old.name) {
@@ -116,6 +103,28 @@ export class ProfileComponentMetadataComponent extends AbstractEditorComponent i
         oldPropertyValue: old.description,
         propertyValue: current.description,
         propertyType: PropertyType.DESCRIPTION,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
+
+    if (current.preDef !== old.preDef) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.preDef,
+        propertyValue: current.preDef,
+        propertyType: PropertyType.PREDEF,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
+
+    if (current.postDef !== old.postDef) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.postDef,
+        propertyValue: current.postDef,
+        propertyType: PropertyType.POSTDEF,
         position: -1,
         changeType: ChangeType.UPDATE,
       });
@@ -183,6 +192,8 @@ export interface IProfileComponentMetadata {
   name: string;
   description: string;
   displayName?: string;
+  preDef?: string;
+  postDef?: string;
   profileIdentifier: {
     entityIdentifier?: string,
     namespaceId?: string,

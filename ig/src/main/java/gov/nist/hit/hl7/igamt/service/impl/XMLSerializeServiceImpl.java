@@ -1017,7 +1017,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
   private Node innerXMLHandler(String xml) {
     if (xml != null && !xml.equals("")) {
-    	xml = xml.replace("&", "&amp;");
       Builder builder = new Builder(new NodeFactory());
       try {
         Document doc = builder.build(xml, null);

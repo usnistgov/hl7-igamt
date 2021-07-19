@@ -138,7 +138,7 @@ public interface ApplyChange {
 	 * @param documentId
 	 * @throws ApplyChangeException 
 	 */
-	public void applyConformanceStatements(ChangeItemDomain change, ResourceBinding binding, String documentId) throws ApplyChangeException ;
+	public void applyConformanceStatements(ChangeItemDomain change, ResourceBinding binding, String documentId, Level level) throws ApplyChangeException ;
 
 
 	/**
