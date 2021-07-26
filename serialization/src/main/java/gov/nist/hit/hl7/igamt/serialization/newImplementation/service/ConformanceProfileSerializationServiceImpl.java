@@ -81,9 +81,10 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
 
                 List<CoConstraintBinding> coConstraintDelta = null;
                 // Calculate conformanceProfile delta if the conformanceProfile has an origin
-
-                if (deltaMode && conformanceProfileExportConfiguration.isReasonForChange()) {
-                  conformanceProfileElement.appendChild(reasonForChangeSerializationService.serializeReasonForChange(conformanceProfile.getLabel(), conformanceProfile.getBinding(), conformanceProfile.getChildren()));
+                if(conformanceProfileExportConfiguration.isReasonForChange()){
+                    conformanceProfileElement.appendChild(reasonForChangeSerializationService.serializeReasonForChange(conformanceProfile.getLabel(), conformanceProfile.getBinding(), conformanceProfile.getChildren()));
+                }
+                if (deltaMode) {
                 if (conformanceProfile.isDerived()) {
                     ResourceDelta resourceDelta = deltaService.delta(Type.CONFORMANCEPROFILE, conformanceProfile);
                     if (resourceDelta != null) {
@@ -173,6 +174,9 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                 }
                 if (conformanceProfile.getOrigin() != null) {
                     conformanceProfileElement.addAttribute(new Attribute("origin",conformanceProfile.getOrigin()));
+                }
+                if (conformanceProfile.isDerived()) {
+                    conformanceProfileElement.addAttribute(new Attribute("derived",String.valueOf(conformanceProfile.isDerived())));
                 }
 
         	      Map<String, Boolean > bindedPaths = conformanceProfile.getChildren().stream().filter(  field  -> field != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), field.getUsage())).collect(Collectors.toMap( x -> x.getId(), x -> true ));
