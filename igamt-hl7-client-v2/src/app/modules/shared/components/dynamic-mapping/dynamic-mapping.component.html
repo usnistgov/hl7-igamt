@@ -35,6 +35,8 @@
         <td>{{rowData.value}}
         </td>
         <td #anchor>
+          <ng-container *ngIf="this.namingMap[rowData.value]">
+
           <p-dropdown [(ngModel)]="map[rowData.value]" [appendTo]="anchor" [optionLabel]="'fixedName'" *ngIf="!viewOnly"
                       [options]="namingMap[rowData.value]" [style]="{'minWidth':'100%'}"
                       [placeholder]="'Default HL7 '+ rowData.value" (onChange)="modelChange($event)">
@@ -45,12 +47,13 @@
             </ng-template>
             <ng-template let-item pTemplate="item">
               <app-display-section [element]="item.value" [hideDescription]="true"></app-display-section>
-              <button *ngIf="rowData.missing" (click)="import(rowData.display)" class="btn btn-primary btn-sm" style="float: right">
-                <i class="fa fa-plus"></i>
-              </button>
             </ng-template>
           </p-dropdown>
           <app-display-section  *ngIf="viewOnly" [element]="map[rowData.value]" [hideDescription]="true"></app-display-section>
+          </ng-container>
+          <ng-container *ngIf="!this.namingMap[rowData.value]">
+            <span style="color: red"><i class="fa fa-warning"></i> No Data type found in the IG</span>
+          </ng-container>
         </td>
         <td style="width: 20%" *ngIf="!viewOnly">
           <button (click)="remove(rowData.value)" class="btn btn-danger btn-sm" style="float: right">

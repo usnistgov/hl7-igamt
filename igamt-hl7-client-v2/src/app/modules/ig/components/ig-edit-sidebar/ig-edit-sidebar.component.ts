@@ -364,13 +364,14 @@ export class IgEditSidebarComponent implements OnInit {
   }
 
   addCompositeProfile(event: IAddNewWrapper) {
-    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllProfileComponents), this.store.select(selectAllMessages)).pipe(
+    combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllProfileComponents), this.store.select(fromIgamtDisplaySelectors.selectAllCompositeProfiles), this.store.select(selectAllMessages)).pipe(
       take(1),
-      tap(([{ documentId, type }, profileComponents, messages]) => {
+      tap(([{ documentId, type }, profileComponents, compositeProfiles,  messages]) => {
         const dialogRef = this.dialog.open(AddCompositeComponent, {
           data: {
             messages,
             profileComponents,
+            compositeProfiles,
           },
         });
         dialogRef.afterClosed().pipe(

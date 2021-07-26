@@ -25,7 +25,7 @@
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
           <div #pcLib>
-            <span [contextMenu]="ProfileComponentContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+            <span [contextMenu]="ProfileComponentContextMenu"> {{node.data.path}} {{node.data.variableName}} <span style="color: red"> -Beta<strong></strong></span></span>
             <context-menu #ProfileComponentContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="createNew(node.data, 'PROFILECOMPONENT')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Create Profile Component
@@ -50,7 +50,7 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
-          <span  #cmppLib [contextMenu]="CompositeProfileContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+          <span  #cmppLib [contextMenu]="CompositeProfileContextMenu"> {{node.data.path}} {{node.data.variableName}} <span style="color: red"> -Beta<strong></strong></span></span>
           <context-menu #CompositeProfileContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="createNew(node.data, 'COMPOSITEPROFILE')" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-plus"></i> Create Composite Profile

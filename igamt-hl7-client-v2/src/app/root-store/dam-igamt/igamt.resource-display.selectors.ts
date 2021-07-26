@@ -91,7 +91,10 @@ export const selectAllProfileComponents = createSelector(
   selectProfileComponents,
   selectAll,
 );
-
+export const selectAllCompositeProfiles = createSelector(
+  selectCompositeProfiles,
+  selectAll,
+);
 export const selectMessagesEntites = createSelector(
   selectMessages,
   selectEntities,

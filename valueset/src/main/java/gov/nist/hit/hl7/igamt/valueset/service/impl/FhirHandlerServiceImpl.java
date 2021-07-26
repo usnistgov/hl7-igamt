@@ -78,22 +78,24 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		Bundle bundle = new Bundle();
 		System.out.println(restTemplate);
-		ResponseEntity<String> response = restTemplate.exchange(
-				"https://hit-dev.nist.gov:8095/vocabulary-service/phinvads/ValueSet", HttpMethod.GET, entity,
-				String.class);
+		try {
+			ResponseEntity<String> response = restTemplate.exchange(
+					"https://hit-dev.nist.gov:8095/vocabulary-service/phinvads/ValueSet", HttpMethod.GET, entity,
+					String.class);
 
-		if (response != null) {
-			IParser parser = fhirR4Context.newJsonParser();
-			bundle = (Bundle) parser.parseResource(response.getBody());
-			if (bundle != null) {
-				valuesets = convertBundleToValueset(bundle);
+			if (response != null) {
+				IParser parser = fhirR4Context.newJsonParser();
+				bundle = (Bundle) parser.parseResource(response.getBody());
+				if (bundle != null) {
+					valuesets = convertBundleToValueset(bundle);
+				}
 			}
-			System.out.println(bundle.getTotal());
-
+		} catch(Exception e) {
+			return valuesets;
 		}
 		return valuesets;
 	}
-	
+
 	@Override
 	public Set<Code> getValusetCodes(String oid) {
 		Set<Code> codes = new HashSet<Code>();
@@ -114,29 +116,29 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 		}
 		return codes;
 	}
-	
+
 	public Set<Code> convertExpansionToCodes(ValueSetExpansionComponent expansion) {
 		Set<Code> codes = new HashSet<Code>();
 		for (ValueSetExpansionContainsComponent contain : expansion.getContains()) {
 			String exclude= contain.getExtensionString("exclude");
 			if(exclude ==null || !exclude.equals("true")) {
-			Code code = new Code();
-			code.setValue(contain.getCode());
-			code.setCodeSystem(contain.getSystem());
-			code.setDescription(contain.getDisplay());
-			String regex= contain.getExtensionString("regexRule");
-			code.setPattern(regex);
-			if(regex !=null) {
-				code.setHasPattern(true);
-			}else {
-				code.setHasPattern(false);
-			}
+				Code code = new Code();
+				code.setValue(contain.getCode());
+				code.setCodeSystem(contain.getSystem());
+				code.setDescription(contain.getDisplay());
+				String regex= contain.getExtensionString("regexRule");
+				code.setPattern(regex);
+				if(regex !=null) {
+					code.setHasPattern(true);
+				}else {
+					code.setHasPattern(false);
+				}
 				codes.add(code);
 			}
 		}
 		return codes;
 	}
-	
+
 	@Override
 	public Set<Code> getValusetCodeForDynamicTable() {
 		Set<Code> codes = new HashSet<Code>();
@@ -144,28 +146,33 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		System.out.println(restTemplate);
-		ResponseEntity<String> response = restTemplate.exchange(
-				"https://hit-dev.nist.gov:8095/vocabulary-service/hl7/ValueSet/HL70396/$expand", HttpMethod.GET, entity,
-				String.class);
+		try {
+			ResponseEntity<String> response = restTemplate.exchange(
+					"https://hit-dev.nist.gov:8095/vocabulary-service/hl7/ValueSet/HL70396/$expand", HttpMethod.GET, entity,
+					String.class);
 
-		ResponseEntity<String> responseHL7nnn = restTemplate.exchange(
-				"https://hit-dev.nist.gov:8095/vocabulary-service/hl7/ValueSet/HL7nnnn/$expand", HttpMethod.GET, entity,
-				String.class);
-		if (response != null) {
-			IParser parser = fhirR4Context.newJsonParser();
-			org.hl7.fhir.r4.model.ValueSet vs = (org.hl7.fhir.r4.model.ValueSet) parser.parseResource(response.getBody());
-			if (vs != null) {
-				codes = convertExpansionToCodes(vs.getExpansion());
+			ResponseEntity<String> responseHL7nnn = restTemplate.exchange(
+					"https://hit-dev.nist.gov:8095/vocabulary-service/hl7/ValueSet/HL7nnnn/$expand", HttpMethod.GET, entity,
+					String.class);
+			if (response != null) {
+				IParser parser = fhirR4Context.newJsonParser();
+				org.hl7.fhir.r4.model.ValueSet vs = (org.hl7.fhir.r4.model.ValueSet) parser.parseResource(response.getBody());
+				if (vs != null) {
+					codes = convertExpansionToCodes(vs.getExpansion());
+				}
 			}
-		}
-		if (responseHL7nnn != null) {
-			IParser parser = fhirR4Context.newJsonParser();
-			org.hl7.fhir.r4.model.ValueSet vsHl7nnn = (org.hl7.fhir.r4.model.ValueSet) parser.parseResource(responseHL7nnn.getBody());
-			if (vsHl7nnn != null) {
-				codes.addAll(convertExpansionToCodes(vsHl7nnn.getExpansion()));
+			if (responseHL7nnn != null) {
+				IParser parser = fhirR4Context.newJsonParser();
+				org.hl7.fhir.r4.model.ValueSet vsHl7nnn = (org.hl7.fhir.r4.model.ValueSet) parser.parseResource(responseHL7nnn.getBody());
+				if (vsHl7nnn != null) {
+					codes.addAll(convertExpansionToCodes(vsHl7nnn.getExpansion()));
+				}
 			}
+		} catch(Exception e) {
+			codes = new HashSet<Code>(); // Temporary fix 
+
 		}
-			
+
 		return codes;
 	}
 

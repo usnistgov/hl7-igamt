@@ -274,6 +274,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     displayElement.setDescription(compositeProfile.getName());
     displayElement.setPosition(position);
     displayElement.setLeaf(false);
+    displayElement.setFlavorExt(compositeProfile.getFlavorsExtension());
     displayElement.setVariableName(compositeProfile.getName());
     displayElement.setType(Type.COMPOSITEPROFILE);
     displayElement.setOrigin(compositeProfile.getOrigin());

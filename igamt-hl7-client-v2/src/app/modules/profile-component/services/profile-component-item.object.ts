@@ -64,7 +64,6 @@ export class ProfileComponentItemList {
   applyPropertyChange(change: IProfileComponentChange) {
     this.ppService.applyChange(change, this.context$.getValue());
     const property = change.property;
-
     // If it changes structure
     if (change.type === PropertyType.DATATYPE || change.type === PropertyType.SEGMENTREF) {
       (change.unset ? of(undefined) : this.ppService.getResourceRef(property, this.repository)).pipe(

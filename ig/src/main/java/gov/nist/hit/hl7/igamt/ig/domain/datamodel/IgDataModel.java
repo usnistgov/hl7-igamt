@@ -12,10 +12,13 @@
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructureDataModel;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.GeneratedResourceMetadata;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
 /**
@@ -32,6 +35,10 @@ public class IgDataModel extends DocumentStructureDataModel implements Serializa
     private Set<ProfileComponentDataModel> profileComponents = new HashSet<ProfileComponentDataModel>();
     private Set<CompositeProfileDataModel> compositeProfile = new HashSet<CompositeProfileDataModel>();
 	private Set<ValuesetDataModel> valuesets = new HashSet<ValuesetDataModel>();
+	
+	private Map<SegmentDataModel, GeneratedResourceMetadata> allFlavoredSegmentDataModelsMap = new HashMap<>();
+	private Map<DatatypeDataModel, GeneratedResourceMetadata> allFlavoredDatatypeDataModelsMap = new HashMap<>();
+
 	
 
 	public Ig getModel() {
@@ -142,5 +149,25 @@ public class IgDataModel extends DocumentStructureDataModel implements Serializa
 	public void setCompositeProfile(Set<CompositeProfileDataModel> compositeProfile) {
 		this.compositeProfile = compositeProfile;
 	}
+
+	public Map<SegmentDataModel, GeneratedResourceMetadata> getAllFlavoredSegmentDataModelsMap() {
+		return allFlavoredSegmentDataModelsMap;
+	}
+
+	public void setAllFlavoredSegmentDataModelsMap(
+			Map<SegmentDataModel, GeneratedResourceMetadata> allFlavoredSegmentDataModelsMap) {
+		this.allFlavoredSegmentDataModelsMap = allFlavoredSegmentDataModelsMap;
+	}
+
+	public Map<DatatypeDataModel, GeneratedResourceMetadata> getAllFlavoredDatatypeDataModelsMap() {
+		return allFlavoredDatatypeDataModelsMap;
+	}
+
+	public void setAllFlavoredDatatypeDataModelsMap(
+			Map<DatatypeDataModel, GeneratedResourceMetadata> allFlavoredDatatypeDataModelsMap) {
+		this.allFlavoredDatatypeDataModelsMap = allFlavoredDatatypeDataModelsMap;
+	}
+	
+	
 
 }

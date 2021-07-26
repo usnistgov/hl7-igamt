@@ -131,15 +131,7 @@ export class DynamicMappingComponent implements OnInit, OnDestroy {
   }
 
   private generate(x: IDynamicMappingItem) {
-    const ret: any  = {value: x.value, display: this.datatypes.find((y) => y.id === x.datatypeId) } ;
-    if (!ret.display) {
-      ret.display = {
-        fixedName: x.value, domainInfo: {version: this.hl7Version, scope: Scope.HL7STANDARD}, type: Type.DATATYPE, id: x.datatypeId,
-      };
-      ret.missing = true;
-      this.namingMap[x.value] = [ret.display];
-    }
-    return ret;
+    return {value: x.value, display: this.datatypes.find((y) => y.id === x.datatypeId) } ;
   }
 
   import(display: IDisplayElement) {

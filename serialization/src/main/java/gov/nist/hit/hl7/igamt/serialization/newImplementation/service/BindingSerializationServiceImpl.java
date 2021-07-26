@@ -167,7 +167,7 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 					 internalSingleCode.addAttribute(
 								new Attribute("internalSingleCodeVsId", structureElementBinding.getInternalSingleCode().getValueSetId()));
 					 internalSingleCode.addAttribute(
-								new Attribute("internalSingleCodeLocation", name + "."+elementIdParent));
+								new Attribute("internalSingleCodeLocation", name + "-"+elementIdParent));
 						 structureElementBindingElement.appendChild(internalSingleCode);
 			}
 			 if (structureElementBinding.getExternalSingleCode() != null) {
@@ -211,10 +211,10 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 					valuesetBinding.getValueSets() != null
 							? location : ""));
 			valuesetBindingElement.addAttribute(new Attribute("Position2",
-					elementIdParent != null ? name+"."+elementIdParent : ""));		
+					elementIdParent != null ? name+"-"+elementIdParent : ""));		
 			valuesetBindingElement.addAttribute(new Attribute("locations",
 					valuesetBinding.getValuesetLocations() != null
-							? convertValuesetLocationsToString(name+"."+elementIdParent, valuesetBinding.getValuesetLocations())
+							? convertValuesetLocationsToString(name+"-"+elementIdParent, valuesetBinding.getValuesetLocations())
 							: ""));
 			return valuesetBindingElement;
 		}

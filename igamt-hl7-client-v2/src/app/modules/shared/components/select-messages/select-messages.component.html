@@ -1,5 +1,5 @@
 <form #addingEditForm="ngForm" class="select-message-container">
-  <p-table #dt1 [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="table" dataKey="data.name" scrollHeight="100%"
+  <p-table #dt1 [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="table_" dataKey="data.name" scrollHeight="100%"
            scrollable="true">
     <ng-template pTemplate="caption">
       <div style="display: flex; margin-bottom: 5px;">
@@ -19,7 +19,7 @@
           <div class="input-group-prepend" style="height: 35px;">
             <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
           </div>
-          <input (input)="filterTable($event.target.value)" class="form-control" placeholder="Filter"
+          <input (ngModelChange)="filterTable($event)" [(ngModel)]="filterValue"  name="filter" class="form-control" placeholder="Filter"
                  required
                  style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
         </div>
