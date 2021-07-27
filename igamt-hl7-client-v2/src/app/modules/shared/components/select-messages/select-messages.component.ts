@@ -18,7 +18,6 @@ export class SelectMessagesComponent implements OnInit {
     this.table_ = $event;
     if ( this.filterValue ) {
       this.filterTable('');
-
     }
   }
   @ViewChild(NgForm) form;
