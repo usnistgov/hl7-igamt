@@ -47,6 +47,7 @@ import { MessagesEffects } from './store/messages/message.effects';
 import * as fromMessagesReducer from './store/messages/messages.reducer';
 import * as fromMessagesSelector from './store/messages/messages.selectors';
 import * as fromRouterSelector from './store/router/router.selectors';
+import { DamBottomToggleComponent } from './components/data-widget/dam-bottom-toggle/dam-bottom-toggle.component';
 
 @NgModule({
   declarations: [
@@ -91,6 +92,7 @@ export class DamRoutingModule {
     DamFullscreenButtonComponent,
     DamSideBarToggleComponent,
     DamWidgetContainerComponent,
+    DamBottomToggleComponent,
   ],
   imports: [
     CommonModule,
@@ -106,6 +108,7 @@ export class DamRoutingModule {
     DamFullscreenButtonComponent,
     DamSideBarToggleComponent,
     DamWidgetContainerComponent,
+    DamBottomToggleComponent,
   ],
 })
 export class DamFrameworkModule {

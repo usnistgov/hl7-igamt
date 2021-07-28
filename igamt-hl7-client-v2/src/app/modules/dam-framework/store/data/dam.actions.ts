@@ -30,6 +30,8 @@ export enum DamActionTypes {
   ClearRepository = '[DAMF Repository] Clear Repository',
   CollapseSideBar = '[DAMF Layout] Collapse Side Bar',
   ExpandSideBar = '[DAMF Layout] Expand Side Bar',
+  CollapseBottomDrawer = '[DAMF Layout] Collapse Bottom Drawer',
+  ExpandBottomDrawer = '[DAMF Layout] Expand Bottom Drawer',
   ToggleFullScreen = '[DAMF Layout] Toggle Fullscreen',
 }
 
@@ -250,6 +252,20 @@ export class ExpandSideBar implements Action {
 
 }
 
+export class CollapseBottomDrawer implements Action {
+  readonly type = DamActionTypes.CollapseBottomDrawer;
+  constructor() {
+  }
+}
+
+export class ExpandBottomDrawer implements Action {
+  readonly type = DamActionTypes.ExpandBottomDrawer;
+
+  constructor() {
+  }
+
+}
+
 export class ToggleFullScreen implements Action {
   readonly type = DamActionTypes.ToggleFullScreen;
   constructor() {
@@ -283,5 +299,7 @@ export type DamActions =
   LoadForRouteFailure |
   CollapseSideBar |
   ExpandSideBar |
+  CollapseBottomDrawer |
+  ExpandBottomDrawer |
   DeleteResourcesFromRepostory |
   ToggleFullScreen;

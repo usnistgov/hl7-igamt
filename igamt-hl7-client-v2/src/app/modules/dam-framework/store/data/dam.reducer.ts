@@ -60,7 +60,6 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
       };
 
     case DamActionTypes.LoadPayloadData:
-      console.log('LOAD PAYLOAD DATA');
       return {
         ...state,
         payload: {
@@ -249,6 +248,15 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
         },
       };
 
+    case DamActionTypes.CollapseBottomDrawer:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          bottomDrawerCollapsed: true,
+        },
+      };
+
     case DamActionTypes.ToggleFullScreen:
       return {
         ...state,
@@ -265,6 +273,15 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
         ui: {
           ...state.ui,
           sideBarCollapsed: false,
+        },
+      };
+
+    case DamActionTypes.ExpandBottomDrawer:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          bottomDrawerCollapsed: false,
         },
       };
     default:

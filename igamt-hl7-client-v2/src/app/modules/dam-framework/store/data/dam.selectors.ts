@@ -49,6 +49,13 @@ export const selecIsSideBarCollaped = createSelector(
   },
 );
 
+export const selectIsBottomDrawerCollapsed = createSelector(
+  selectUI,
+  (ui: any) => {
+    return ui.bottomDrawerCollapsed;
+  },
+);
+
 export const selectPayload = createSelector(
   selectDamfFeature,
   (state: IDamDataModel) => {

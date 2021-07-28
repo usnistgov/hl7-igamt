@@ -4,10 +4,10 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IDamDataModel } from '../../../models/data/state';
 import { DamAbstractEditorComponent } from '../../../services/dam-editor.component';
-import { CollapseSideBar, ExpandSideBar, ToggleFullScreen } from '../../../store/data/dam.actions';
+import { CollapseBottomDrawer, CollapseSideBar, ExpandBottomDrawer, ExpandSideBar, ToggleFullScreen } from '../../../store/data/dam.actions';
 import * as fromDAMF from '../../../store/data/dam.actions';
 import * as fromDAMFSelector from '../../../store/data/dam.selectors';
-import { selecIsSideBarCollaped, selectIsFullScreen, selectWidgetId } from '../../../store/data/dam.selectors';
+import { selecIsSideBarCollaped, selectIsBottomDrawerCollapsed, selectIsFullScreen, selectWidgetId } from '../../../store/data/dam.selectors';
 import { ConfirmDialogComponent } from '../../fragments/confirm-dialog/confirm-dialog.component';
 
 export abstract class DamWidgetComponent {
@@ -46,12 +46,24 @@ export abstract class DamWidgetComponent {
     this.store.dispatch(new CollapseSideBar());
   }
 
+  showBottomDrawer() {
+    this.store.dispatch(new ExpandBottomDrawer());
+  }
+
+  hideBottomDrawer() {
+    this.store.dispatch(new CollapseBottomDrawer());
+  }
+
   toggleFullScreen() {
     this.store.dispatch(new ToggleFullScreen());
   }
 
   sideBarCollapseStatus$(): Observable<boolean> {
     return this.store.select(selecIsSideBarCollaped);
+  }
+
+  bottomDrawerCollapseStatus$(): Observable<boolean> {
+    return this.store.select(selectIsBottomDrawerCollapsed);
   }
 
   fullScreenStatus$(): Observable<boolean> {

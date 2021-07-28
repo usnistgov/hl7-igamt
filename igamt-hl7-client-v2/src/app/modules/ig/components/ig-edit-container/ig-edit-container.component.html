@@ -27,4 +27,38 @@
     <app-ig-edit-sidebar [deltaMode]="deltaMode$ |async"></app-ig-edit-sidebar>
   </ng-template>
 
+  <ng-template #statusBar>
+    <div style="padding: 10px;     display: flex;
+    align-items: center;
+    justify-content: space-between;">
+    <div>
+      <span style="color: red; margin-right: 5px;">
+        <i class="fa fa-exclamation-circle"></i>
+        2 errors
+      </span>
+      <span style="color: #bb990c; margin-right: 5px;">
+        <i class="fa fa-exclamation-triangle"></i>
+        5 warnings
+      </span>
+      <span style="color: blue;">
+        <i class="fa fa-info-circle"></i>
+        3 informational
+      </span>
+    </div>
+
+      <span style="color: gray;">
+        <i class="fa fa-clock-o"></i>
+        last verified 10 minutes ago
+      </span>
+      <button class="btn btn-sm btn-primary">
+        <i class="fa fa-refresh"></i>
+        verify
+      </button>
+    </div>
+
+  </ng-template>
+
+  <ng-template #bottomDrawer>
+  </ng-template>
+
 </app-dam-layout>
