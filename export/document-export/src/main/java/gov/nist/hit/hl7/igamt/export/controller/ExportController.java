@@ -338,7 +338,7 @@ public class ExportController {
         ExportFilterDecision exportFilterDecision = igExportService.getExportFilterDecision(ds, config);
         ExportDecision oldDecsision = this.exportDecisionRepository.findByUsernameAndTypeAndDocumentAndConfig(authentication.getPrincipal().toString(), config.getType(), id, config.getId());
         if(oldDecsision != null) {
-          exportConfigurationGlobal.setPrevious(oldDecsision.getDecision());
+          exportConfigurationGlobal.setPrevious(oldDecsision.getFilterdDecision());
         }
         
         exportConfigurationGlobal.setExportConfiguration(config);

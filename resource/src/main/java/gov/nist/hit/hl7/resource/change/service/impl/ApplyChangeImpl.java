@@ -42,6 +42,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 import gov.nist.hit.hl7.resource.change.service.ApplyBindingPropertyFunction;
 import gov.nist.hit.hl7.resource.change.service.ApplyChange;
@@ -224,17 +225,17 @@ public class ApplyChangeImpl implements ApplyChange {
 
 		if(map.containsKey(PropertyType.STATEMENT)) {
 			for(ChangeItemDomain change:map.get(PropertyType.STATEMENT) ) {
-				this.applyConformanceStatements(change, binding, documentId);
+				this.applyConformanceStatements(change, binding, documentId, level);
 			}
 		}
 		if(map.containsKey(PropertyType.VALUESET)) {
-			this.applyAllStructureBindingChanges(map.get(PropertyType.VALUESET), binding, documentId,level,  this::applyValueSet);
+			this.applyAllStructureBindingChanges(map.get(PropertyType.VALUESET), binding, documentId, level,  this::applyValueSet);
 		}
 		if(map.containsKey(PropertyType.SINGLECODE)) {
-			this.applyAllStructureBindingChanges(map.get(PropertyType.SINGLECODE), binding, documentId,level,  this::applySingleCode);
+			this.applyAllStructureBindingChanges(map.get(PropertyType.SINGLECODE), binding, documentId, level,  this::applySingleCode);
 		}
 		if(map.containsKey(PropertyType.PREDICATE)) {
-			this.applyAllStructureBindingChanges(map.get(PropertyType.PREDICATE), binding, documentId,level, this::applyPredicate);
+			this.applyAllStructureBindingChanges(map.get(PropertyType.PREDICATE), binding, documentId, level, this::applyPredicate);
 		}
 		if(map.containsKey(PropertyType.CHANGEREASON)) {
 			applyChangeReason(map.get(PropertyType.CHANGEREASON), binding);
@@ -398,13 +399,13 @@ public class ApplyChangeImpl implements ApplyChange {
 	}
 
 	@Override
-	public void applyConformanceStatements(ChangeItemDomain change, ResourceBinding binding, String documentId) throws ApplyChangeException {
+	public void applyConformanceStatements(ChangeItemDomain change, ResourceBinding binding, String documentId, Level level) throws ApplyChangeException {
 		try {
 			ObjectMapper mapper = new ObjectMapper();
 			String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
 			if (change.getChangeType().equals(ChangeType.ADD)) {
 				ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-				cs.setLevel(Level.SEGMENT);
+				cs.setLevel(this.getAssertionLevel(level, cs.getContext()));
 				cs.setId(new ObjectId().toString());
 				binding.addConformanceStatement(cs);
 			} else if (change.getChangeType().equals(ChangeType.DELETE)) {
@@ -416,13 +417,23 @@ public class ApplyChangeImpl implements ApplyChange {
 					if (cs.getIdentifier() != null) {
 						this.bindingService.deleteConformanceStatementById(binding, cs.getId());
 					}
-					cs.setLevel(Level.SEGMENT);
+					cs.setLevel(this.getAssertionLevel(level, cs.getContext()));
 					binding.addConformanceStatement(cs);
 				}
 			}
 		} catch (IOException e) {
 			throw new ApplyChangeException(change);
 		}
+	}
+
+
+	private Level getAssertionLevel(Level level, InstancePath context) {
+		if(level.equals(Level.CONFORMANCEPROFILE)) {
+			if(context!= null) {
+				return Level.GROUP;
+			}
+		}
+		return level;
 	}
 
 	@Override
@@ -458,7 +469,7 @@ public class ApplyChangeImpl implements ApplyChange {
 			String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
 			if (change.getChangeType().equals(ChangeType.ADD)) {
 				Predicate cp = mapper.readValue(jsonInString, Predicate.class);
-				cp.setLevel(level);
+				cp.setLevel(this.getAssertionLevel(level, cp.getContext()));
 				elm.setPredicate(cp);
 			} else if (change.getChangeType().equals(ChangeType.DELETE)) {
 				change.setOldPropertyValue(change.getLocation());
@@ -469,7 +480,7 @@ public class ApplyChangeImpl implements ApplyChange {
 			} else if (change.getChangeType().equals(ChangeType.UPDATE)) {
 				Predicate cp = mapper.readValue(jsonInString, Predicate.class);
 				change.setOldPropertyValue(elm.getPredicate());
-				cp.setLevel(level);
+				cp.setLevel(this.getAssertionLevel(level, cp.getContext()));
 				elm.setPredicate(cp);
 			}
 		} catch (IOException e) {

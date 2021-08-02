@@ -81,7 +81,7 @@ export class ProfileComponentRefChange {
         inner(parts, perms[location].children);
       }
     };
-    return inner(path.split('-'), target);
+    return inner(path.split('-').reverse(), target);
   }
 
   insert(path: string, ref: IResourceRef) {

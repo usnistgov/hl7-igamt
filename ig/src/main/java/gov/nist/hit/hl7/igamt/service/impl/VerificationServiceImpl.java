@@ -1149,7 +1149,7 @@ public class VerificationServiceImpl implements VerificationService {
 							new VSMetadata(valueset), "In code: " + value + ", the codesys is missing.", null, "ERROR",
 							"User"));
 		
-		if (this.containWhiteSpace(codeSystem))
+		if (codeSystem != null && this.containWhiteSpace(codeSystem))
 			result.getErrors()
 					.add(new IgamtObjectError("Code_Codesys_Whitespace", c.getId(), Type.VALUESET,
 							new VSMetadata(valueset), "In code: " + value + ", the codesys has whitespace.", null, "WARNING",
