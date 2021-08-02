@@ -28,6 +28,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentDataModel;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PcDynamicMappingItem;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyBinding;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCardinalityMax;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCardinalityMin;
@@ -318,7 +319,24 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                 if(constraints != null) {
                 	profileComponentContextElement.appendChild(constraints);
                 }
-                }
+                
+            	if(profileComponentContext.getProfileComponentDynamicMapping() != null) {
+                    Element dynamicMapping = new Element("DynamicMapping");
+                    for(PcDynamicMappingItem pcDynamicMappingItem : profileComponentContext.getProfileComponentDynamicMapping().getItems()){
+                    	if(pcDynamicMappingItem != null){
+                            Element dynamicMappingItem = this.serializeDynamicMapping(pcDynamicMappingItem);              
+                            if(dynamicMappingItem != null){
+                            	dynamicMapping.appendChild(dynamicMappingItem);
+                            }
+                    	}
+                    }
+                    if(dynamicMapping != null) {
+                    	profileComponentContextElement.appendChild(dynamicMapping);
+                    }
+            	}
+            	}
+                
+                
                 }
                 return igDataModelSerializationService.getSectionElement(profileComponentElement, profileComponentDataModel.getModel(), level, profileComponentExportConfiguration);
             } catch (Exception exception) {
@@ -330,6 +348,20 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
     
 	}
 	
+	private Element serializeDynamicMapping(PcDynamicMappingItem pcDynamicMappingItem) {
+		Element dynamicMappingItem	= new Element("DynamicMappingItem");
+		dynamicMappingItem.addAttribute(
+				new Attribute("change", pcDynamicMappingItem.getChange() != null ? pcDynamicMappingItem.getChange().name() : "")
+		);
+		dynamicMappingItem.addAttribute(
+				new Attribute("datatypeName", pcDynamicMappingItem.getDatatypeName() != null ? pcDynamicMappingItem.getDatatypeName() : "")
+		);
+		dynamicMappingItem.addAttribute(
+				new Attribute("flavorId", pcDynamicMappingItem.getFlavorId() != null ? pcDynamicMappingItem.getFlavorId() : "")
+		);
+		return dynamicMappingItem;
+	}
+
 	private ConformanceStatement getConformanceStatement(PropertyBinding propertyBinding, ResourceBinding resourceBinding) {
 		if(((PropertyConformanceStatement) propertyBinding).getChange().equals(ChangeType.DELETE)) {
 			

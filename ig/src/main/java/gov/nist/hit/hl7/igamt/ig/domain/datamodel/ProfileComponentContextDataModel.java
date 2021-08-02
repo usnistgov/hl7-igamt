@@ -6,6 +6,8 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyBinding;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyCoConstraintBindings;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyDynamicMapping;
 import gov.nist.hit.hl7.igamt.service.impl.DataElementNamingService;
 
 import java.util.*;
@@ -18,6 +20,9 @@ public class ProfileComponentContextDataModel implements Comparable< ProfileComp
     private int position;
     private Set<PropertyBinding> rootContextBindings;
     private Map<String, ProfileComponentItemDataModel> profileComponentItemMap;
+    private PropertyDynamicMapping profileComponentDynamicMapping;
+    private PropertyCoConstraintBindings profileComponentCoConstraints;
+    
 
     public ProfileComponentContextDataModel(ProfileComponentContext profileComponentContext, DataElementNamingService namingService) {
         this.id = profileComponentContext.getId();
@@ -25,6 +30,8 @@ public class ProfileComponentContextDataModel implements Comparable< ProfileComp
         this.sourceId = profileComponentContext.getSourceId();
         this.structure = profileComponentContext.getStructure();
         this.position = profileComponentContext.getPosition();
+        this.profileComponentDynamicMapping = profileComponentContext.getProfileComponentDynamicMapping();
+        this.profileComponentCoConstraints = profileComponentContext.getProfileComponentCoConstraints();
         profileComponentItemMap = new HashMap<>();
         this.rootContextBindings = new HashSet<PropertyBinding>();
         for(ProfileComponentItem item: profileComponentContext.getProfileComponentItems()) {
@@ -137,6 +144,23 @@ public class ProfileComponentContextDataModel implements Comparable< ProfileComp
     public void setProfileComponentItemMap(Map<String, ProfileComponentItemDataModel> profileComponentItemMap) {
         this.profileComponentItemMap = profileComponentItemMap;
     }
+    
+
+	public PropertyDynamicMapping getProfileComponentDynamicMapping() {
+		return profileComponentDynamicMapping;
+	}
+
+	public void setProfileComponentDynamicMapping(PropertyDynamicMapping profileComponentDynamicMapping) {
+		this.profileComponentDynamicMapping = profileComponentDynamicMapping;
+	}
+
+	public PropertyCoConstraintBindings getProfileComponentCoConstraints() {
+		return profileComponentCoConstraints;
+	}
+
+	public void setProfileComponentCoConstraints(PropertyCoConstraintBindings profileComponentCoConstraints) {
+		this.profileComponentCoConstraints = profileComponentCoConstraints;
+	}
 
 	@Override
 	public int compareTo(ProfileComponentContextDataModel o) {
