@@ -16,6 +16,8 @@ import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.*;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldStructureTreeModel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
@@ -31,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -685,6 +688,56 @@ public class EntityDeltaServiceImpl {
     data.setPosition(source.getPosition());
     result.setData(data);
     return result;
+  }
+
+  public List<DynamicMappingItemDelta> compareDynamicMapping(DynamicMappingInfo source,
+      DynamicMappingInfo target) {
+    List<DynamicMappingItemDelta> ret = new ArrayList<DynamicMappingItemDelta>();
+   Map<String, String> sourceMap = new HashMap<String, String>();
+   Map<String, String> targetMap = new HashMap<String, String>();
+  
+   if(source != null && source.getItems() !=null) {
+     sourceMap = source.getItems().stream().collect(Collectors.toMap(x->x.getValue(), x-> x.getDatatypeId()));
+   }
+   if(target != null && target.getItems() !=null) {
+     targetMap = target.getItems().stream().collect(Collectors.toMap(x->x.getValue(), x-> x.getDatatypeId()));
+   }
+   
+   for(String s: sourceMap.keySet() ) {
+     DynamicMappingItemDelta delta = new DynamicMappingItemDelta();
+     DeltaNode<String> node = new  DeltaNode<String>();
+     delta.setFlavorId(node);
+     delta.setDatatypeName(s);
+     node.setPrevious(sourceMap.get(s));
+
+     if(targetMap.containsKey(s)) {
+       node.setCurrent(targetMap.get(s));
+       if(sourceMap.get(s).equals(targetMap.get(s))) {
+         node.setAction(DeltaAction.UNCHANGED);
+       }else {
+         node.setAction(DeltaAction.CHANGED);
+       }
+     }else {
+       node.setCurrent(null);
+       node.setAction(DeltaAction.DELETED);
+     }
+     delta.setAction(node.getAction());
+     ret.add(delta);
+   }
+   
+   for(String t: targetMap.keySet() ) {
+     if(!sourceMap.containsKey(t)) {
+       DynamicMappingItemDelta delta = new DynamicMappingItemDelta();
+       DeltaNode<String> node = new  DeltaNode<String>();
+       node.setCurrent(targetMap.get(t));
+       delta.setFlavorId(node);
+       delta.setDatatypeName(t);
+       node.setAction(DeltaAction.ADDED);
+       delta.setAction(node.getAction());
+       ret.add(delta);
+     }
+   }
+   return ret;
   }
 
 }

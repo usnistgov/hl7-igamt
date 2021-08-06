@@ -10,6 +10,7 @@ export interface IDelta<T> {
   delta: T;
   conformanceStatements?: Array<IDeltaNode<any>>;
   coConstraintBindings?: ICoConstraintBindingContext[];
+  dynamicMapping?: IDynamicMappingItemDelta[];
 }
 
 export interface IDeltaTreeNode extends TreeNode {
@@ -57,6 +58,12 @@ export interface ISourceDocument {
   id: string;
   name?: any;
   scope: string;
+}
+
+export interface  IDynamicMappingItemDelta {
+  action: DeltaAction;
+  datatypeName: string;
+  flavorId: IDeltaNode<string>;
 }
 
 export enum DeltaAction {

@@ -1,0 +1,49 @@
+<p-table  #dt1 [value]="displayed" [sortField]="'datatypeName'" [globalFilterFields]="['datatypeName']">
+  <ng-template pTemplate="header">
+    <tr>
+      <th>datatype</th>
+      <th>flavors</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="caption">
+    <div style="display: flex; flex-direction: row; justify-content: flex-start;">
+
+      <div  style="margin-left: 10px; padding: 3px 10px 3px 5px; border: 1px solid darkgray; display: flex; flex-direction: row; text-align: left; with: 250px;">
+        <p-inputSwitch [ngStyle]=" { height: '25px' }" [(ngModel)]="treeView" (ngModelChange)="toggleTreeView($event)"></p-inputSwitch>
+        <div><span style="margin-left: 10px;"> Full Structure </span></div>
+      </div>
+        <div class="input-group" style="margin-left: 10px;">
+          <div class="input-group-prepend" style="height: 40px;">
+            <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+          </div>
+          <input (input)="dt1.filterGlobal($event.target.value, 'contains')" class="form-control" placeholder="Filter"
+                 style="background-color: #f0f0f0; text-align: left; height: 40px;" type="text">
+        </div>
+    </div>
+
+
+  </ng-template>
+  <ng-template pTemplate="body" let-dyn>
+    <tr [ngClass]="{'delta-added': dyn.action === 'ADDED', 'delta-deleted': dyn.action === 'DELETED'}">
+      <td>
+        {{dyn.datatypeName}}
+      </td>
+      <td>
+        <app-delta-column [action]="dyn.action" [currentValue]="dyn.flavorId.current" [previousValue]="dyn.flavorId.previous" styleClassCurrent="delta-current" styleClassPrevious="delta-previous">
+          <ng-template #default let-value>
+           <app-display-section [element]="datatypesMap[value]"></app-display-section>
+          </ng-template>
+
+          <ng-template #current let-current>
+              <app-display-section [element]="datatypesMap[current]"></app-display-section>
+          </ng-template>
+
+          <ng-template #previous let-previous>
+            <app-display-section [element]="datatypesMap[previous]"></app-display-section>
+          </ng-template>
+        </app-delta-column>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+

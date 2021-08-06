@@ -22,6 +22,7 @@ export enum EntityDeltaNavigationPills {
   STRUCTURE = 'Structure',
   CONFORMANCE_STATEMENTS = 'Conformance Statements',
   COCONSTRAINTS = 'Co-Constraints',
+  DYNAMICMAPPING = 'Dynamic-Mapping',
 }
 
 export abstract class EntityDeltaEditorComponent extends AbstractEditorComponent implements OnInit {

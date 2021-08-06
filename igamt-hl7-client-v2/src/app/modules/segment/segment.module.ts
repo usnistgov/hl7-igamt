@@ -15,6 +15,7 @@ import { PredefEditorComponent } from './components/predef-editor/predef-editor.
 import { SegmentStructureEditorComponent } from './components/segment-structure-editor/segment-structure-editor.component';
 import { SegmentRoutingModule } from './segment-routing.module';
 import { SegmentService } from './services/segment.service';
+import { DynamicMappingDeltaComponent } from './components/delta-editor/dynamic-mapping-delta/dynamic-mapping-delta.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { SegmentService } from './services/segment.service';
     SegmentConformanceStatementEditorComponent,
     DeltaEditorComponent,
     DynamicMappingEditorComponent,
+    DynamicMappingDeltaComponent,
   ],
   imports: [
     CommonModule,
