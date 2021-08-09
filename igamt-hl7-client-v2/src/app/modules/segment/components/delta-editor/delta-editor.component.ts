@@ -14,7 +14,7 @@ import { EditorID } from '../../../shared/models/editor.enum';
   styleUrls: ['../../../core/components/entity-delta-editor/entity-delta-editor.component.scss'],
 })
 export class DeltaEditorComponent extends EntityDeltaEditorComponent implements OnInit {
-xx
+xx;
   constructor(
     protected actions$: Actions,
     protected store: Store<any>) {
