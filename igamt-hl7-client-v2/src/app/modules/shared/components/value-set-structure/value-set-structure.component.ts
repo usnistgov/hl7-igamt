@@ -22,7 +22,8 @@ export class ValueSetStructureComponent implements OnInit {
   filteredCodeSystems: string[] = [];
   @Output()
   changes: EventEmitter<IChange> = new EventEmitter<IChange>();
-
+  @Input()
+  existingChangeReason: any[];
   @Input()
   viewOnly: boolean;
   @Input()
@@ -46,6 +47,7 @@ export class ValueSetStructureComponent implements OnInit {
     {label: 'R', value: 'R'}, {label: 'P', value: 'P'}, {label: 'E', value: 'E'},
   ];
   editMap = {};
+
 
   ngOnInit() {
     this.editMap[this.valueSet.id] = false;
@@ -182,4 +184,5 @@ export class ValueSetStructureComponent implements OnInit {
   updateContentDefinition($event) {
     this.updateAttribute(PropertyType.CONTENTDEFINITION, $event);
   }
+
 }
