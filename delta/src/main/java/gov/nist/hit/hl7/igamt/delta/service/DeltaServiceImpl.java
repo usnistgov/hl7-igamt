@@ -106,8 +106,15 @@ public class DeltaServiceImpl implements DeltaService {
 
       List<StructureDelta> structure = entityDeltaService.compareSegment(sourceDisplay, targetDisplay);
       List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
-
-      return new Delta(sourceInfo, targetInfo, structure, conformanceStatements);
+      
+      Delta ret = new  Delta(sourceInfo, targetInfo, structure, conformanceStatements);
+      if(source.getName().toLowerCase().equals("obx")) {
+        
+        List<DynamicMappingItemDelta> dynamicMapping = entityDeltaService.compareDynamicMapping(source.getDynamicMappingInfo(), target.getDynamicMappingInfo());
+        ret.setDynamicMapping(dynamicMapping);
+      }
+      
+      return ret;
 
     } else if(type.equals(Type.COCONSTRAINTGROUP)) {
 
@@ -439,6 +446,15 @@ public class DeltaServiceImpl implements DeltaService {
         DisplayElement elm= this.displayInfoService.convertSegment(target);
         List<ConformanceStatementDelta> cfs = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
         elm.setDelta(summarize(structure,cfs, null));
+        if(elm.getFixedName().equalsIgnoreCase("OBX") && !elm.getDelta().equals(DeltaAction.UNCHANGED)) {
+          List<DynamicMappingItemDelta> dynamicMappingDelta = entityDeltaService.compareDynamicMapping(source.getDynamicMappingInfo(), target.getDynamicMappingInfo());
+          for(DynamicMappingItemDelta dyn: dynamicMappingDelta) {
+            if(dyn.getAction() != null && !dyn.getAction().equals(DeltaAction.UNCHANGED)) {
+              elm.setDelta(DeltaAction.UPDATED);
+              break;
+            }
+          }
+        }
         return elm;
       }
       case VALUESETREGISTRY: {

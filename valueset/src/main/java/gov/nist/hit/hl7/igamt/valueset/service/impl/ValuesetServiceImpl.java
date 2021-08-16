@@ -38,6 +38,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -300,6 +301,13 @@ public class ValuesetServiceImpl implements ValuesetService {
             else if (item.getPropertyType().equals(PropertyType.NAME)) {
                 item.setOldPropertyValue(s.getName());
                 s.setName((String) item.getPropertyValue());
+            }else if (item.getPropertyType().equals(PropertyType.CHANGEREASON)) {
+
+                String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+                item.setOldPropertyValue(s.getChangeLogs());
+                List<ChangeReason> changeLogs = mapper.readValue(jsonInString, new TypeReference<List<ChangeReason>>() {
+                });
+                s.setChangeLogs(changeLogs);
             }
 
         }

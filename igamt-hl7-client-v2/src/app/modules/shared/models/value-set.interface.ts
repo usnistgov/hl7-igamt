@@ -4,6 +4,7 @@ import {Stability} from '../constants/stability.enum';
 import {CodeUsage} from '../constants/usage.enum';
 import {SourceType} from './adding-info';
 import {IResource} from './resource.interface';
+import {IChangeReason} from './save-change';
 
 export interface ICodes {
   value: string;
@@ -30,4 +31,6 @@ export interface IValueSet extends IResource {
   contentDefinition: ContentDefinition;
   intensionalComment?: string;
   oid?: string;
+  changeLogs?: any[];
+
 }

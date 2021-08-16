@@ -10,11 +10,11 @@ import { EditorID } from '../../../shared/models/editor.enum';
 
 @Component({
   selector: 'app-delta-editor',
-  templateUrl: '../../../core/components/entity-delta-editor/entity-delta-editor.component.html',
+  templateUrl: './segment-delta-editor.html',
   styleUrls: ['../../../core/components/entity-delta-editor/entity-delta-editor.component.scss'],
 })
 export class DeltaEditorComponent extends EntityDeltaEditorComponent implements OnInit {
-
+xx;
   constructor(
     protected actions$: Actions,
     protected store: Store<any>) {
@@ -29,6 +29,7 @@ export class DeltaEditorComponent extends EntityDeltaEditorComponent implements 
       [
         EntityDeltaNavigationPills.STRUCTURE,
         EntityDeltaNavigationPills.CONFORMANCE_STATEMENTS,
+        EntityDeltaNavigationPills.DYNAMICMAPPING,
       ],
       [
         HL7v2TreeColumnType.NAME,

@@ -22,7 +22,8 @@ export class ValueSetStructureComponent implements OnInit {
   filteredCodeSystems: string[] = [];
   @Output()
   changes: EventEmitter<IChange> = new EventEmitter<IChange>();
-
+  @Input()
+  existingChangeReason: any[];
   @Input()
   viewOnly: boolean;
   @Input()
@@ -182,4 +183,5 @@ export class ValueSetStructureComponent implements OnInit {
   updateContentDefinition($event) {
     this.updateAttribute(PropertyType.CONTENTDEFINITION, $event);
   }
+
 }
