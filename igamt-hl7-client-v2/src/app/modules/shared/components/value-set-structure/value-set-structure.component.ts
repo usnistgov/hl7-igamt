@@ -48,7 +48,6 @@ export class ValueSetStructureComponent implements OnInit {
   ];
   editMap = {};
 
-
   ngOnInit() {
     this.editMap[this.valueSet.id] = false;
   }

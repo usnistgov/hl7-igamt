@@ -8,7 +8,7 @@ describe('ReasonForChangeDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ReasonForChangeDialogComponent ]
+      declarations: [ ReasonForChangeDialogComponent ],
     })
     .compileComponents();
   }));

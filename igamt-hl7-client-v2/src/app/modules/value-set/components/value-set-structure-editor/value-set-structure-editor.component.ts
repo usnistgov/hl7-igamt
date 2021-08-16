@@ -193,7 +193,7 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
             return this.getById(id).pipe(
               flatMap((resource) => {
                 this.changes.next({});
-                this.resourceSubject.next(resource as IValueSet);
+                this.resourceSubject.next(resource);
                 return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {} , resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
               }),
             );
