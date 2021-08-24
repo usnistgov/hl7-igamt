@@ -1517,6 +1517,19 @@ public class IgServiceImpl implements IgService {
         }
       }
     }
+    
+    for ( Link l: ig.getProfileComponentRegistry().getChildren()) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, ProfileComponent.class);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not publish Profile Components:" +l.getId());
+        }
+    }
+    for ( Link l: ig.getCompositeProfileRegistry().getChildren()) {
+      UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, CompositeProfileStructure.class);
+      if(! updateResult.wasAcknowledged()) {
+        throw new IGUpdateException("Could not publish Composite Profile:" +l.getId());
+      }
+  }
 
     UpdateResult updateResult = this.updateAttribute(ig.getId(), "status", Status.PUBLISHED, Ig.class);
     if(! updateResult.wasAcknowledged()) {

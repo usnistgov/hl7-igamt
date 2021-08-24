@@ -868,6 +868,7 @@ private String token;
       throw new CloneException("Failed to build composite profile tree structure");
     }
     CompositeProfileStructure clone = cp.clone();
+    clone.setDerived(false);
     clone.setUsername(username);
     clone.setName(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
@@ -903,7 +904,7 @@ private String token;
     clone.setName(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
     clone = profileComponentService.save(clone);
-
+    clone.setDerived(false);
     ig.getProfileComponentRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(),
         ig.getProfileComponentRegistry().getChildren().size() + 1));
     ig = igService.save(ig);

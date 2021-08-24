@@ -83,7 +83,7 @@ export class CompositeProfileService {
 
   reorder(orderedProfileComponents: IOrderedProfileComponentLink[] | any, map: { [p: string]: number }): IOrderedProfileComponentLink[] {
     const ret: IOrderedProfileComponentLink[] = [...orderedProfileComponents];
-    return ret.map((x) => ({ ...x, position: map[x.profileComponentId] }));
+    return ret.map((x) => ({ ...x, position: map[x.profileComponentId] + 1 }));
   }
 
   getGeneratedCompositeProfile = (composite: ICompositeProfile): Observable<ICompositeProfileState> => {

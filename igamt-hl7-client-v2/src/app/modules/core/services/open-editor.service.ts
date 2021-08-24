@@ -310,7 +310,7 @@ export class OpenEditorService {
         );
       },
       notFoundMessage,
-      this.openEditorProvider<A, IDelta<any>>(type, true),
+      this.openEditorProvider<A, IDelta<any>>(type, type !== Type.COMPOSITEPROFILE),
     );
   }
 

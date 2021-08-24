@@ -9,6 +9,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
+import gov.nist.hit.hl7.igamt.delta.display.CompositeProfileDeltaDisplay;
+import gov.nist.hit.hl7.igamt.delta.display.ProfileComponentLinkDeltaDisplay;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
 import gov.nist.hit.hl7.igamt.delta.exception.IGDeltaException;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
@@ -23,6 +25,9 @@ import gov.nist.diff.domain.DeltaMode;
 import gov.nist.diff.domain.DeltaObject;
 import gov.nist.diff.service.DeltaProcessor;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -31,6 +36,8 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -66,6 +73,10 @@ public class DeltaServiceImpl implements DeltaService {
   ValuesetService valuesetService;
   @Autowired
   CoConstraintDeltaService coConstraintDeltaService;
+  @Autowired
+  ProfileComponentService profileComponentService;
+  @Autowired
+  CompositeProfileStructureService compositeProfileStructureService;
 
   public Delta delta(Type type, String documentId, String entityId) throws CoConstraintGroupNotFoundException {
     Ig targetIg = this.igService.findById(documentId);
@@ -73,18 +84,18 @@ public class DeltaServiceImpl implements DeltaService {
 
     if(type.equals(Type.DATATYPE)) {
 
-    
+
       Datatype target = this.datatypeService.findById(entityId);
       Datatype source = this.datatypeService.findById(target.getOrigin());
       DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), source.getExt(), source.getDescription(), source.getId());
       DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), target.getExt(), target.getDescription(), target.getId());
-      
+
       DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
       DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
       List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
 
       if (target instanceof DateTimeDatatype && source instanceof DateTimeDatatype) {
-        
+
         List<StructureDelta> structure = entityDeltaService.compareDateAndTimeDatatypes((DateTimeDatatype) source,(DateTimeDatatype) target);
         return new Delta(sourceInfo, targetInfo, structure,conformanceStatements);
       } else {
@@ -106,14 +117,14 @@ public class DeltaServiceImpl implements DeltaService {
 
       List<StructureDelta> structure = entityDeltaService.compareSegment(sourceDisplay, targetDisplay);
       List<ConformanceStatementDelta> conformanceStatements = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
-      
+
       Delta ret = new  Delta(sourceInfo, targetInfo, structure, conformanceStatements);
       if(source.getName().toLowerCase().equals("obx")) {
-        
+
         List<DynamicMappingItemDelta> dynamicMapping = entityDeltaService.compareDynamicMapping(source.getDynamicMappingInfo(), target.getDynamicMappingInfo());
         ret.setDynamicMapping(dynamicMapping);
       }
-      
+
       return ret;
 
     } else if(type.equals(Type.COCONSTRAINTGROUP)) {
@@ -174,10 +185,24 @@ public class DeltaServiceImpl implements DeltaService {
       ValuesetDelta valuesetDelta = entityDeltaService.compareValueSet(source, target);
 
       return new Delta(sourceInfo, targetInfo, valuesetDelta);
+
+    } else if(type.equals(Type.COMPOSITEPROFILE)) {
+
+      CompositeProfileStructure target = this.compositeProfileStructureService.findById(entityId);
+      CompositeProfileStructure source = this.compositeProfileStructureService.findById(target.getOrigin());
+
+      DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), null, source.getDescription(), source.getId());
+      DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), null, target.getDescription(), target.getId());
+      CompositeProfileDelta delta = this.calculateCompositeProfileDelta(target);
+      CompositeProfileDeltaDisplay display = convertToDisplay(delta, target);
+      return new Delta(sourceInfo, targetInfo, display);
+
     }
 
     return null;
   }
+
+
 
   public <T extends SectionInfo, E extends AbstractDomain> EntityDelta<T> compute(String id,
       AbstractDomain document, Function<E, Boolean, T> converter,
@@ -276,6 +301,12 @@ public class DeltaServiceImpl implements DeltaService {
     ret.setSegments(compareRegistries(ig.getSegmentRegistry(), origin.getSegmentRegistry(), Type.SEGMENTREGISTRY));
     ret.setDatatypes(compareRegistries(ig.getDatatypeRegistry(), origin.getDatatypeRegistry(), Type.DATATYPEREGISTRY));
     ret.setValueSets(compareRegistries(ig.getValueSetRegistry(), origin.getValueSetRegistry(), Type.VALUESETREGISTRY));
+    //ret.setCoConstraintGroups(compareRegistries(ig.getCoConstraintGroupRegistry(), origin.getCoConstraintGroupRegistry(), Type.COCONSTRAINTGROUP));
+
+    ret.setProfileComponents(compareRegistries(ig.getProfileComponentRegistry(), origin.getProfileComponentRegistry(), Type.PROFILECOMPONENTREGISTRY));
+    ret.setCompositeProfiles(compareRegistries(ig.getCompositeProfileRegistry(), origin.getCompositeProfileRegistry(), Type.COMPOSITEPROFILEREGISTRY));
+
+
     return ret;
 
   }
@@ -361,7 +392,7 @@ public class DeltaServiceImpl implements DeltaService {
         if(l.getOrigin() == null || !originMap.containsKey(l.getOrigin()) ) {
           result.add(createDeltaDisplay(registryType, l, DeltaAction.ADDED));
         }else if(l.getOrigin()!=null && originMap.containsKey(l.getOrigin())) {
-          
+
           result.add(compareToOrigin(l, registryType));
           hasChild.put(l.getOrigin(), l);
         }
@@ -396,26 +427,14 @@ public class DeltaServiceImpl implements DeltaService {
     // TODO Auto-generated method stub
     switch(registryType) {
       case CONFORMANCEPROFILEREGISTRY: {
-        
+
         ConformanceProfile target = this.conformanceProfileService.findById(l.getId());
         ConformanceProfile source = this.conformanceProfileService.findById(target.getOrigin());
-
-        ConformanceProfileStructureDisplay sourceDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(source, true);
-        ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
-        List<ConformanceStatementDelta> cfs = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
-        List<StructureDelta> structure = entityDeltaService.compareConformanceProfile(sourceDisplay, targetDisplay);
-
-        List<CoConstraintBinding> sourceBindings = source.getCoConstraintsBindings() != null ? source.getCoConstraintsBindings() : new ArrayList<>();
-        List<CoConstraintBinding> targetBindings = target.getCoConstraintsBindings() != null ? target.getCoConstraintsBindings() : new ArrayList<>();
-
-        this.coConstraintDeltaService.preProcess(sourceBindings);
-        this.coConstraintDeltaService.preProcess(targetBindings);
-        List<CoConstraintBinding> bindings = this.coConstraintDeltaService.delta(sourceBindings, targetBindings);
-
         DisplayElement elm= this.displayInfoService.convertConformanceProfile(target,l.getPosition());
-        elm.setDelta(summarize(structure,cfs,bindings));
+        DeltaAction action = this.getDeltaSymmaries(target, source);
+        elm.setDelta(action);
         return elm;
-        
+
       }
       case DATATYPEREGISTRY: {
         Datatype target = this.datatypeService.findById(l.getId());
@@ -425,9 +444,9 @@ public class DeltaServiceImpl implements DeltaService {
         DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
         List<StructureDelta> structure = new ArrayList<StructureDelta>();
         if (target instanceof DateTimeDatatype && source instanceof DateTimeDatatype) {
-           structure = entityDeltaService.compareDateAndTimeDatatypes((DateTimeDatatype) source,(DateTimeDatatype) target);
+          structure = entityDeltaService.compareDateAndTimeDatatypes((DateTimeDatatype) source,(DateTimeDatatype) target);
         }else {
-           structure = entityDeltaService.compareDatatype(sourceDisplay, targetDisplay);
+          structure = entityDeltaService.compareDatatype(sourceDisplay, targetDisplay);
         }
         List<ConformanceStatementDelta> cfs = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
         DisplayElement elm= this.displayInfoService.convertDatatype(target);
@@ -435,8 +454,8 @@ public class DeltaServiceImpl implements DeltaService {
         return elm;
       }
       case SEGMENTREGISTRY : {
-      
-        
+
+
         Segment target = this.segmentService.findById(l.getId());
         Segment source = this.segmentService.findById(target.getOrigin());
 
@@ -458,15 +477,14 @@ public class DeltaServiceImpl implements DeltaService {
         return elm;
       }
       case VALUESETREGISTRY: {
-        
+
         Valueset target = this.valuesetService.findById(l.getId());
         Valueset source = this.valuesetService.findById(target.getOrigin());
-        
+
         DisplayElement elm= this.displayInfoService.convertValueSet(target);
-        
-        
+
         ValuesetDelta valuesetDelta = entityDeltaService.compareValueSetMetadata(source, target);
-        
+
         if(valuesetDelta.getAction() !=null && !valuesetDelta.getAction().equals(DeltaAction.UPDATED)) {
           List<CodeDelta> codeDeltas = entityDeltaService.compareCodes(source.getCodes(), target.getCodes());
           valuesetDelta.setCodes(codeDeltas);
@@ -474,8 +492,66 @@ public class DeltaServiceImpl implements DeltaService {
         elm.setDelta(valuesetDelta.getAction());
         return elm;
       }
+      case PROFILECOMPONENTREGISTRY: {
+
+        ProfileComponent target = this.profileComponentService.findById(l.getId());
+
+        DisplayElement elm= this.displayInfoService.convertProfileComponent(target, l.getPosition());
+
+        if(target.isDerived()) {
+          elm.setDelta(DeltaAction.UNCHANGED);
+        }else {
+          elm.setDelta(DeltaAction.ADDED);
+        }
+        return elm;
+      } 
+      case COMPOSITEPROFILEREGISTRY: {
+
+
+        CompositeProfileStructure target = this.compositeProfileStructureService.findById(l.getId());
+        CompositeProfileStructure source = this.compositeProfileStructureService.findById(target.getOrigin());
+        ConformanceProfile cpTarget = this.conformanceProfileService.findById(target.getConformanceProfileId());
+        ConformanceProfile cpSource = this.conformanceProfileService.findById(source.getConformanceProfileId());
+        DeltaAction profileAction = this.getDeltaSymmaries(cpTarget, cpSource);
+
+        DisplayElement elm= this.displayInfoService.convertCompositeProfile(target, l.getPosition());
+        if(!profileAction.equals(DeltaAction.UNCHANGED)) {
+          elm.setDelta(profileAction);
+        }else {
+          List<ProfileComponentLinkDelta> children = entityDeltaService.compareProfileComponents(target.getOrderedProfileComponents(), source.getOrderedProfileComponents());
+          for(ProfileComponentLinkDelta delta: children) {
+            if(!delta.getDelta().equals(DeltaAction.UNCHANGED)) {
+              elm.setDelta(DeltaAction.UPDATED);
+              break;
+            }
+          }
+        }
+
+        return elm;
+      } 
       default:  return null;
     }
+  }
+
+  /**
+   * @param target
+   * @param source
+   * @return
+   */
+  private DeltaAction getDeltaSymmaries(ConformanceProfile target, ConformanceProfile source) {
+
+    ConformanceProfileStructureDisplay sourceDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(source, true);
+    ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
+    List<ConformanceStatementDelta> cfs = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
+    List<StructureDelta> structure = entityDeltaService.compareConformanceProfile(sourceDisplay, targetDisplay);
+
+    List<CoConstraintBinding> sourceBindings = source.getCoConstraintsBindings() != null ? source.getCoConstraintsBindings() : new ArrayList<>();
+    List<CoConstraintBinding> targetBindings = target.getCoConstraintsBindings() != null ? target.getCoConstraintsBindings() : new ArrayList<>();
+
+    this.coConstraintDeltaService.preProcess(sourceBindings);
+    this.coConstraintDeltaService.preProcess(targetBindings);
+    List<CoConstraintBinding> bindings = this.coConstraintDeltaService.delta(sourceBindings, targetBindings);
+    return summarize(structure,cfs,bindings);
   }
 
   /**
@@ -487,12 +563,12 @@ public class DeltaServiceImpl implements DeltaService {
     // TODO Auto-generated method stub
     switch(registryType) {
       case CONFORMANCEPROFILEREGISTRY: {
-        
+
         ConformanceProfile target = this.conformanceProfileService.findById(l.getId());
         DisplayElement elm= this.displayInfoService.convertConformanceProfile(target,l.getPosition());
         elm.setDelta(action);
         return elm;
-        
+
       }
       case DATATYPEREGISTRY: {
         Datatype target = this.datatypeService.findById(l.getId());
@@ -501,19 +577,33 @@ public class DeltaServiceImpl implements DeltaService {
         return elm;
       }
       case SEGMENTREGISTRY : {
-      
-        
+
         Segment target = this.segmentService.findById(l.getId());
         DisplayElement elm= this.displayInfoService.convertSegment(target);
         elm.setDelta(action);
         return elm;
       }
       case VALUESETREGISTRY: {
-        
+
         Valueset vs =  this.valuesetService.findById(l.getId()); 
         DisplayElement elm= displayInfoService.convertValueSet(vs);
         elm.setDelta(action);
 
+        return elm;
+      }
+      case PROFILECOMPONENTREGISTRY: {
+
+        ProfileComponent pc =  this.profileComponentService.findById(l.getId()); 
+        DisplayElement elm= displayInfoService.convertProfileComponent(pc, l.getPosition());
+        elm.setDelta(action);
+
+        return elm;
+      }
+      case COMPOSITEPROFILEREGISTRY: {
+
+        CompositeProfileStructure cp =  this.compositeProfileStructureService.findById(l.getId());
+        DisplayElement elm= displayInfoService.convertCompositeProfile(cp, l.getPosition());
+        elm.setDelta(action);
         return elm;
       }
       default:  return null;
@@ -579,21 +669,90 @@ public class DeltaServiceImpl implements DeltaService {
     return null;
   }
 
-@Override
-public ValuesetDelta valuesetDelta(Valueset valueset) {
-	Valueset source = this.valuesetService.findById(valueset.getOrigin());
-	ValuesetDelta vsDelta = entityDeltaService.compareValueSet(source, valueset);
-	return vsDelta;
-}
-  
-Map<RealKey, Boolean> getChangedElement(Ig ig){
-  Map<RealKey, Boolean> ret = new HashMap<RealKey, Boolean>();
-  
-  
-  return null;
-  
-}
+  @Override
+  public ValuesetDelta valuesetDelta(Valueset valueset) {
+    Valueset source = this.valuesetService.findById(valueset.getOrigin());
+    ValuesetDelta vsDelta = entityDeltaService.compareValueSet(source, valueset);
+    return vsDelta;
+  }
 
+
+  public CompositeProfileDelta calculateCompositeProfileDelta(CompositeProfileStructure target) {
+    CompositeProfileDelta delta = new CompositeProfileDelta();
+    CompositeProfileStructure source = this.compositeProfileStructureService.findById(target.getOrigin());
+    ConformanceProfile cpTarget = this.conformanceProfileService.findById(target.getConformanceProfileId());
+    ConformanceProfile cpSource = this.conformanceProfileService.findById(source.getConformanceProfileId());
+    DeltaAction profileAction = this.getDeltaSymmaries(cpTarget, cpSource);
+    List<ProfileComponentLinkDelta> children = entityDeltaService.compareProfileComponents(source.getOrderedProfileComponents(), target.getOrderedProfileComponents());
+    delta.setChildren(children);
+    if(!profileAction.equals(DeltaAction.UNCHANGED)) {
+      delta.setAction(profileAction);
+    } else {
+      for(ProfileComponentLinkDelta child: children) {
+        if(!child.getDelta().equals(DeltaAction.UNCHANGED)) {
+          delta.setAction(DeltaAction.UPDATED);
+          break;
+        }
+      }
+    }
+    return delta; 
+  }
+
+  /**
+   * @param delta
+   * @return
+   */
+  private CompositeProfileDeltaDisplay convertToDisplay(CompositeProfileDelta delta, CompositeProfileStructure composite) {
+    CompositeProfileDeltaDisplay ret = new CompositeProfileDeltaDisplay();
+    ret.setAction(delta.getAction());
+    DisplayElement elm= this.displayInfoService.convertCompositeProfile(composite, 0);
+    ret.setCompositeDisplay(elm);
+    List<ProfileComponentLinkDeltaDisplay> children = new ArrayList<ProfileComponentLinkDeltaDisplay>();
+    ConformanceProfile cpTarget = this.conformanceProfileService.findById(composite.getConformanceProfileId());
+    if(cpTarget != null) {
+      DisplayElement profileElement= this.displayInfoService.convertConformanceProfile(cpTarget, 0);
+      profileElement.setDelta(delta.getAction());
+      ret.setCoreProfileDisplay(profileElement);
+    }
+    
+    if(delta.getChildren() != null) {
+      for (ProfileComponentLinkDelta node : delta.getChildren() ) {
+        children.add(this.convertProfileComponentDeltaToDisplay(node));
+      }
+      ret.setChildren(children);
+    }
+    return ret;
+  }
+
+
+
+  /**
+   * @param node
+   * @return
+   */
+  private ProfileComponentLinkDeltaDisplay convertProfileComponentDeltaToDisplay(
+      ProfileComponentLinkDelta node) {
+    ProfileComponentLinkDeltaDisplay ret = new ProfileComponentLinkDeltaDisplay();
+    ret.setPosition(node.getPosition());
+    ret.setDelta(node.getDelta());
+    ret.setDisplay(new DeltaNode<DisplayElement>());
+    ret.getDisplay().setAction(node.getDelta());
+    if(node.getNode() != null) {
+      if(node.getNode().getCurrent() != null) {
+        ProfileComponent current =  this.profileComponentService.findById(node.getNode().getCurrent());
+        if(current != null) {
+          ret.getDisplay().setCurrent(displayInfoService.convertProfileComponent(current, 0));
+        }
+      }
+      if(node.getNode().getPrevious() != null) {
+        ProfileComponent previous =  this.profileComponentService.findById(node.getNode().getPrevious());
+        if(previous != null) {
+          ret.getDisplay().setPrevious(displayInfoService.convertProfileComponent(previous, 0));
+        }
+      }
+    }
+    return ret;
+  }
 
 
 }

@@ -217,7 +217,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
       ConformanceProfile cp= this.conformanceProfileService.findById(context.getSourceId());
       if(cp !=null) {
         ret = this.convertConformanceProfile(cp, context.getPosition()); // TODOO add resource not found exception
-        ret.setType(Type.MESSAGECONTEXT);    
+        ret.setType(Type.MESSAGECONTEXT);   
       }
     }else if (context.getLevel().equals(Type.SEGMENT)){
       Segment seg= this.segmentService.findById(context.getSourceId());
@@ -227,6 +227,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
         ret.setType(Type.SEGMENTCONTEXT);    
       }
     }
+    ret.setId(context.getId());
     return ret;
     
   }
