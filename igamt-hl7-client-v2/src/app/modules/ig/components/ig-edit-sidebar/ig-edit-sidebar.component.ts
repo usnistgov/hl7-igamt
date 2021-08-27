@@ -104,7 +104,7 @@ export class IgEditSidebarComponent implements OnInit {
   getNodes() {
     return this.deltaMode$.pipe(
       switchMap((x) => {
-        console.log("DELTA");
+        console.log('DELTA');
         console.log(x);
 
         if (!x) {
