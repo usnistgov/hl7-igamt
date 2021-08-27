@@ -34,7 +34,7 @@ export class CompositeDeltaEditorComponent  extends AbstractEditorComponent impl
       resourceType: Type.COMPOSITEPROFILE,
       title: 'Delta',
     }, actions$, store);
-    console.log("CALLED");
+    console.log('CALLED');
     this.delta$ = this.currentSynchronized$.pipe(
       pluck('value'),
       map((delta: IDelta<any>) => {

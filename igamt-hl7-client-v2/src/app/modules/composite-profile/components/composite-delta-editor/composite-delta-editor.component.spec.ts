@@ -8,7 +8,7 @@ describe('CompositeDeltaEditorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CompositeDeltaEditorComponent ]
+      declarations: [ CompositeDeltaEditorComponent ],
     })
     .compileComponents();
   }));
