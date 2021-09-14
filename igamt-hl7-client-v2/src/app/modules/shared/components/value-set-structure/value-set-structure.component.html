@@ -176,20 +176,20 @@
                   </div>
                 </div>
                 <div *ngSwitchCase="'description'">
-                  <input (ngModelChange)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.description"
+                  <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.description"
                          [id]="'description'+rowData.id"
                          [name]="'description'+rowData.id" class="form-control"
                          placeholder="set code description"
                          type="text">
                 </div>
                 <div *ngSwitchCase="'value'">
-                  <input (ngModelChange)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.value"
+                  <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.value"
                          [id]="'value'+rowData.id" [name]="'value'+rowData.id"
                          class="form-control" placeholder="set code value" required
                          type="text">
                 </div>
                 <div *ngSwitchCase="'comments'">
-                  <input (ngModelChange)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.comments"
+                  <input (change)="changeCodes()" *ngIf="!viewOnly" [(ngModel)]="rowData.comments"
                          [id]="'comments'+rowData.id"
                          [name]="'comments'+rowData.id" class="form-control" placeholder="add comments"
                          type="text">

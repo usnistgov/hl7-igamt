@@ -73,7 +73,6 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
     );
     this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
-        console.log(current);
         this.resourceSubject.next({ ...current.resource });
         this.changes.next({ ...current.changes });
       }),
@@ -93,6 +92,8 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
       this.selectedColumns = this.cols;
       this.codeSystemOptions = this.getCodeSystemOptions(resource);
     });
+
+    this.changes.asObservable().subscribe((x) => console.log(x));
   }
 
   getCodeSystemOptions(resource: IValueSet): SelectItem[] {
@@ -150,12 +151,14 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
   change(change: IChange) {
     this.getChange(change, false).pipe(
       mergeMap((ch) => {
-        return combineLatest(this.changes.asObservable(), this.resource$).pipe(
+        console.log(ch);
+        return combineLatest(this.changes, this.resource$).pipe(
           take(1),
             tap(([changes, resource]) => {
               const newchanges = {...changes};
-              newchanges[change.propertyType] = ch;
+              newchanges[ch.propertyType] = ch;
               this.resourceSubject.next(resource);
+              this.changes.next(newchanges);
               this.editorChange({changes: newchanges, resource}, true);
             }),
           );
@@ -163,8 +166,14 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
       )).subscribe();
   }
   getChange( change: IChange, skipReason: boolean = false): Observable<IChange> {
-    const reasonForChange = this.getChangeReasonForPropertyChange(change, skipReason);
-    return concat(of(change), reasonForChange);
+    return this.derived$.pipe(
+      take(1),
+      mergeMap((x) => {if (x) {
+      return concat(of(change), this.getChangeReasonForPropertyChange(change, false));
+    } else {
+        return of(change);
+    }}),
+    );
   }
 
   getChangeReasonForPropertyChange(change: IChange, skipReason: boolean = false): Observable<IChange> {
@@ -187,13 +196,15 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
   onEditorSave(action: fromDam.EditorSave): Observable<Action> {
     return combineLatest(this.elementId$, this.documentRef$, this.changes.asObservable()).pipe(
       take(1),
-      concatMap(([id, documentRef, changes]) => {
+      mergeMap(([id, documentRef, changes]) => {
+        console.log(changes);
         return this.saveChanges(id, documentRef, Object.values(changes)).pipe(
           mergeMap((message) => {
             return this.getById(id).pipe(
+              take(1),
               flatMap((resource) => {
                 this.changes.next({});
-                this.resourceSubject.next(resource);
+                this.resourceSubject.next(resource as IValueSet);
                 return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {} , resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
               }),
             );
