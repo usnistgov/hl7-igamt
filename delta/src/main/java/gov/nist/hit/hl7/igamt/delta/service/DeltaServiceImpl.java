@@ -122,6 +122,9 @@ public class DeltaServiceImpl implements DeltaService {
       if(source.getName().toLowerCase().equals("obx")) {
 
         List<DynamicMappingItemDelta> dynamicMapping = entityDeltaService.compareDynamicMapping(source.getDynamicMappingInfo(), target.getDynamicMappingInfo());
+        if(dynamicMapping != null) {
+          this.setDynamicMappingDisplay(dynamicMapping);
+        }
         ret.setDynamicMapping(dynamicMapping);
       }
 
@@ -200,6 +203,32 @@ public class DeltaServiceImpl implements DeltaService {
     }
 
     return null;
+  }
+
+
+
+  /**
+   * @param dynamicMapping
+   */
+  private void setDynamicMappingDisplay(List<DynamicMappingItemDelta> dynamicMappingList) {
+    for(DynamicMappingItemDelta elm : dynamicMappingList) {
+      if(elm.getFlavorId()!=null) {
+        elm.setDisplay(new DeltaNode<DisplayElement>());
+        if(elm.getFlavorId().getPrevious() != null) {
+          Datatype d = datatypeService.findById(elm.getFlavorId().getPrevious());
+          if(d != null) {
+             elm.getDisplay().setPrevious(displayInfoService.convertDatatype(d));
+          }
+        }
+        if(elm.getFlavorId().getCurrent() != null) {
+          Datatype d = datatypeService.findById(elm.getFlavorId().getCurrent());
+          if(d != null) {
+             elm.getDisplay().setCurrent(displayInfoService.convertDatatype(d));
+          }
+        }
+      }
+    }   
+    
   }
 
 
@@ -714,7 +743,7 @@ public class DeltaServiceImpl implements DeltaService {
       profileElement.setDelta(delta.getAction());
       ret.setCoreProfileDisplay(profileElement);
     }
-    
+
     if(delta.getChildren() != null) {
       for (ProfileComponentLinkDelta node : delta.getChildren() ) {
         children.add(this.convertProfileComponentDeltaToDisplay(node));

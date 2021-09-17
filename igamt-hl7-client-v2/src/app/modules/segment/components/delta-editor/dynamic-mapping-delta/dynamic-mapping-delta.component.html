@@ -29,17 +29,17 @@
         {{dyn.datatypeName}}
       </td>
       <td>
-        <app-delta-column [action]="dyn.action" [currentValue]="dyn.flavorId.current" [previousValue]="dyn.flavorId.previous" styleClassCurrent="delta-current" styleClassPrevious="delta-previous">
+        <app-delta-column [action]="dyn.action" [currentValue]="dyn.display.current" [previousValue]="dyn.display.previous" styleClassCurrent="delta-current" styleClassPrevious="delta-previous">
           <ng-template #default let-value>
-           <app-display-section [element]="datatypesMap[value]"></app-display-section>
+           <app-display-section [element]="value"></app-display-section>
           </ng-template>
 
           <ng-template #current let-current>
-              <app-display-section [element]="datatypesMap[current]"></app-display-section>
+              <app-display-section [element]="current"></app-display-section>
           </ng-template>
 
           <ng-template #previous let-previous>
-            <app-display-section [element]="datatypesMap[previous]"></app-display-section>
+            <app-display-section [element]="previous"></app-display-section>
           </ng-template>
         </app-delta-column>
       </td>

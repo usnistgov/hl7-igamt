@@ -16,6 +16,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Element;
 
 /**
@@ -26,5 +27,6 @@ public interface ReasonForChangeSerializationService {
   
   <T extends StructureElement> Element serializeReasonForChange(String label, Binding binding, Set<T> children)
       throws SerializationException;
- 
+  
+  Element serializeValueSetReasons(Valueset vs) throws SerializationException;
 }

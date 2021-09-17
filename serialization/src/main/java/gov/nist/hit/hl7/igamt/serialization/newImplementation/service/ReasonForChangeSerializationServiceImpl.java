@@ -27,6 +27,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -120,4 +121,31 @@ public class ReasonForChangeSerializationServiceImpl implements ReasonForChangeS
     }
   }
 
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.serialization.newImplementation.service.ReasonForChangeSerializationService#serializeValueSetReasons(java.lang.String, gov.nist.hit.hl7.igamt.valueset.domain.Valueset)
+   */
+  @Override
+  public Element serializeValueSetReasons(Valueset vs)
+      throws SerializationException {
+    
+    Element reasons =  new Element("Reasons");
+
+        if(vs.getChangeLogs() != null) {
+          for(ChangeReason reason : vs.getChangeLogs()) {
+            Element child =  new Element("Reason");
+
+
+
+            child.addAttribute(new Attribute("Text",
+                reason.getReason() != null ? reason.getReason() : ""));
+            child.addAttribute(new Attribute("Date",
+                reason.getDate().toString() != null ? reason.getDate().toString() : ""));
+            reasons.appendChild(child);
+          }
+        }
+        
+    return reasons;    
+  
+
+}
 }
