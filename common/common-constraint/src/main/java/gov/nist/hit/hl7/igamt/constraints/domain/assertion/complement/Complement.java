@@ -13,8 +13,9 @@ package gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement;
 
 import java.util.Arrays;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.text.StringEscapeUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 
@@ -110,7 +111,16 @@ public class Complement {
 	}
 
 	public String[] getValues() {
-		return values;
+		if(values != null) {
+			String[] modifiedValues = new String[values.length];
+			for( int i = 0; i < values.length; i++)
+			{
+				modifiedValues[i] = StringEscapeUtils.escapeXml11(values[i]);
+			}
+			return modifiedValues;
+		}
+		return null;
+
 	}
 
 	public void setValues(String[] values) {
