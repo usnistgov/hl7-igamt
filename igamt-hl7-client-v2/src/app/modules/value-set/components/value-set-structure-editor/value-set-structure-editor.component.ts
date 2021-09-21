@@ -197,7 +197,6 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
     return combineLatest(this.elementId$, this.documentRef$, this.changes.asObservable()).pipe(
       take(1),
       mergeMap(([id, documentRef, changes]) => {
-        console.log(changes);
         return this.saveChanges(id, documentRef, Object.values(changes)).pipe(
           mergeMap((message) => {
             return this.getById(id).pipe(
