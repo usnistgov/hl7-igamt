@@ -9,24 +9,36 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
+package gov.nist.hit.hl7.igamt.delta.domain;
 
-import java.util.Set;
-import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
-import gov.nist.hit.hl7.igamt.segment.domain.Field;
-import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import nu.xom.Element;
+import gov.nist.diff.domain.DeltaAction;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public interface ReasonForChangeSerializationService {
+public class ProfileComponentLinkDelta {
+  private int position;
+  private DeltaNode<String> node;
+  private DeltaAction delta;
   
-  <T extends StructureElement> Element serializeReasonForChange(String label, Binding binding, Set<T> children)
-      throws SerializationException;
-  
-  Element serializeValueSetReasons(Valueset vs) throws SerializationException;
+  public int getPosition() {
+    return position;
+  }
+  public void setPosition(int position) {
+    this.position = position;
+  }
+  public DeltaNode<String> getNode() {
+    return node;
+  }
+  public void setNode(DeltaNode<String> node) {
+    this.node = node;
+  }
+  public DeltaAction getDelta() {
+    return delta;
+  }
+  public void setDelta(DeltaAction delta) {
+    this.delta = delta;
+  }
+
 }

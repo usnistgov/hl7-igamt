@@ -11,11 +11,14 @@ import { MessageService } from '../../modules/dam-framework/services/message.ser
 import { SetValue } from '../../modules/dam-framework/store';
 import * as fromDAM from '../../modules/dam-framework/store';
 import * as fromDamActions from '../../modules/dam-framework/store/data/dam.actions';
+import {Type} from '../../modules/shared/constants/type.enum';
 import { ICompositeProfile } from '../../modules/shared/models/composite-profile';
 import { ConformanceStatementService } from '../../modules/shared/services/conformance-statement.service';
+import {DeltaService} from '../../modules/shared/services/delta.service';
 import { IState } from '../conformance-profile-edit/conformance-profile-edit.reducer';
 import * as fromIgamtDisplaySelectors from '../dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from '../dam-igamt/igamt.selected-resource.selectors';
+import {DatatypeEditActionTypes, OpenDatatypeDeltaEditor} from '../datatype-edit/datatype-edit.actions';
 import {
   OpenProfileComponentMetadataEditor,
   ProfileComponentActionTypes,
@@ -28,8 +31,12 @@ import {
 import {
   CompositeProfileActions,
   CompositeProfileActionTypes,
-  LoadCompositeProfile, LoadCompositeProfileFailure,
-  LoadCompositeProfileSuccess, OpenCompositeProfileMetadataEditor, OpenCompositionEditor,
+  LoadCompositeProfile,
+  LoadCompositeProfileFailure,
+  LoadCompositeProfileSuccess,
+  OpenCompositeProfileDeltaEditor,
+  OpenCompositeProfileMetadataEditor, OpenCompositeProfilePostDefEditor,
+  OpenCompositionEditor,
 } from './composite-profile.actions';
 
 @Injectable()
@@ -137,7 +144,15 @@ export class CompositeProfileEffects {
     }),
   );
   @Effect()
-  openSegmentPostDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenSegmentPostDefEditor>(
+  openDeltaEditor$ = this.editorHelper.openDeltaEditor<OpenCompositeProfileDeltaEditor>(
+    CompositeProfileActionTypes.OpenCompositeProfileDeltaEditor,
+    Type.COMPOSITEPROFILE,
+    fromIgamtDisplaySelectors.selectCompositeProfileById,
+    this.deltaService.getDeltaFromOrigin,
+    this.CompositeProfileNotFound,
+  );
+  @Effect()
+  openCompositeProfilePostDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenCompositeProfilePostDefEditor>(
     CompositeProfileActionTypes.OpenCompositeProfilePostDefEditor,
     fromIgamtDisplaySelectors.selectCompositeProfileById,
     this.store.select(fromIgamtSelectedSelectors.selectedResourcePostDef),
@@ -148,6 +163,7 @@ export class CompositeProfileEffects {
     private actions$: Actions<CompositeProfileActions>,
     private store: Store<IState>,
     private message: MessageService,
+    private deltaService: DeltaService,
     private conformanceStatementService: ConformanceStatementService,
     private compositeProfileService: CompositeProfileService,
     private editorHelper: OpenEditorService) { }

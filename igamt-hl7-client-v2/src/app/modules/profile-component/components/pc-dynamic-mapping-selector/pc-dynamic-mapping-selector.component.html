@@ -1,5 +1,5 @@
 <div style="display: flex; justify-content: flex-end">
-  <button class="btn btn-success btn-sm" (click)="addMapping()">
+  <button class="btn btn-success btn-sm" (click)="addMapping()" *ngIf="!viewOnly">
     <i class="fa fa-plus"></i> Add Mapping
   </button>
 </div>
@@ -63,7 +63,7 @@
         </p-dropdown>
           <app-display-section  *ngIf="viewOnly || dyn.changeType ==='DELETE' || dyn.status ==='INVALID' || !edit[dyn.value]" [element]="dyn.display" [hideDescription]="true"></app-display-section>
         </div>
-          <div>
+          <div *ngIf="!viewOnly">
           <button class="btn btn-sm btn-primary" style="margin-left: 5px;" (click)="editRow(dyn)" *ngIf="(!dyn.changeType || dyn.changeType === 'UPDATE' || dyn.changeType === 'ADD' )&& !edit[dyn.value] && available[dyn.value] &&  dyn.status !=='INVALID'">
             <i class="fa fa-pencil"></i>
           </button>
@@ -73,11 +73,11 @@
             <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="restoreItem(dyn)" *ngIf="!edit[dyn.value] && dyn.changeType === 'UPDATE' && dyn.status !=='INVALID'">
               <i class="fa fa-trash"></i>
             </button>
-        </div>
+          </div>
         </div>
 
       </td>
-      <td style="width: 190px;">
+      <td style="width: 190px;" *ngIf="!viewOnly">
         <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteItem(dyn)" *ngIf="!dyn.changeType && dyn.status !=='INVALID'">
           <i class="fa fa-minus"></i> Exclude
         </button>

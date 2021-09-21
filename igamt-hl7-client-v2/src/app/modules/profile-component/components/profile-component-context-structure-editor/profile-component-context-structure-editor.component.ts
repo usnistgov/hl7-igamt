@@ -87,9 +87,10 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
     this._viewOnly$ = combineLatest(
       this.store.select(fromIgamtSelectors.selectViewOnly),
       this.store.select(fromIgamtSelectors.selectDelta),
+      this.hasOrigin$,
     ).pipe(
-      map(([vOnly, delta]) => {
-        return vOnly || delta;
+      map(([vOnly, delta, derived]) => {
+        return vOnly || delta || derived;
       }),
     );
 

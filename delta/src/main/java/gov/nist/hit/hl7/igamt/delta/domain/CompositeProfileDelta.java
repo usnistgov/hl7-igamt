@@ -11,68 +11,50 @@
  */
 package gov.nist.hit.hl7.igamt.delta.domain;
 
+import java.util.List;
+
 import gov.nist.diff.domain.DeltaAction;
-import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public class DynamicMappingItemDelta {
-
+public class CompositeProfileDelta {
   private DeltaAction action;
-  private String datatypeName;
-  public DeltaNode<String> flavorId;
-  public DeltaNode<DisplayElement> display;
-
-  
-  public DeltaNode<DisplayElement> getDisplay() {
-    return display;
-  }
-
-  public void setDisplay(DeltaNode<DisplayElement> display) {
-    this.display = display;
-  }
-
-  public DynamicMappingItemDelta(DeltaAction action, String datatypeName,
-      DeltaNode<String> flavorId) {
-    super();
-    this.action = action;
-    this.datatypeName = datatypeName;
-    this.flavorId = flavorId;
-  }
-
-  public DynamicMappingItemDelta() {
-  }
-
+  private List<ProfileComponentLinkDelta> children; 
+  private String coreProfileId;
+  private String compositeProfileId;
+  private DeltaAction profileDeltaAction;
   public DeltaAction getAction() {
     return action;
   }
-
   public void setAction(DeltaAction action) {
     this.action = action;
   }
-
-  public String getDatatypeName() {
-    return datatypeName;
+  public List<ProfileComponentLinkDelta> getChildren() {
+    return children;
   }
-
-  public void setDatatypeName(String datatypeName) {
-    this.datatypeName = datatypeName;
+  public void setChildren(List<ProfileComponentLinkDelta> children) {
+    this.children = children;
   }
-
-  public DeltaNode<String> getFlavorId() {
-    return flavorId;
+  public String getCoreProfileId() {
+    return coreProfileId;
   }
-
-  public void setFlavorId(DeltaNode<String> flavorId) {
-    this.flavorId = flavorId;
+  public void setCoreProfileId(String coreProfileId) {
+    this.coreProfileId = coreProfileId;
   }
-
-  public void crunchAction(DeltaAction a) {
-    if(a != DeltaAction.UNCHANGED) {
-      this.setAction(DeltaAction.UPDATED);
-    }
+  public DeltaAction getProfileDeltaAction() {
+    return profileDeltaAction;
   }
-
+  public void setProfileDeltaAction(DeltaAction profileDeltaAction) {
+    this.profileDeltaAction = profileDeltaAction;
+  }
+  public String getCompositeProfileId() {
+    return compositeProfileId;
+  }
+  public void setCompositeProfileId(String compositeProfileId) {
+    this.compositeProfileId = compositeProfileId;
+  }
+ 
+  
 }

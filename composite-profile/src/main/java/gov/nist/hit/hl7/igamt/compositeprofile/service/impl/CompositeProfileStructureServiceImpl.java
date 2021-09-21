@@ -126,7 +126,7 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
     }
     if(elm.getOrderedProfileComponents() != null) {
       for(OrderedProfileComponentLink child: elm.getOrderedProfileComponents()) {
-        RealKey key = new RealKey(elm.getConformanceProfileId(), Type.PROFILECOMPONENT);
+        RealKey key = new RealKey(child.getProfileComponentId(), Type.PROFILECOMPONENT);
         if(newKeys.containsKey(key)) {
           child.setProfileComponentId(newKeys.get(key));
         }

@@ -652,6 +652,7 @@ export class IgEditEffects extends DamWidgetEffect {
           ];
         }),
         catchError((error: HttpErrorResponse) => {
+          console.log(error);
           return of(
             new fromDAM.TurnOffLoader(),
             new ToggleDeltaFailure(error),

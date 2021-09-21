@@ -143,9 +143,12 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-          <span [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive>
-            <app-entity-bagde [type]="'COMPOSITEPROFILE'" ></app-entity-bagde>
-            {{node.data.variableName}}
+            <span  [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive [ngClass]="{
+                      'delta-changed':node.data.delta === 'UPDATED',
+                       'delta-deleted':node.data.delta === 'DELETED',
+                        'delta-added':node.data.delta === 'ADDED'}" style="cursor: pointer;">
+                   <app-entity-bagde [type]="'COMPOSITEPROFILE'" ></app-entity-bagde>
+              {{node.data.variableName}}
           </span>
           <context-menu #cp [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
@@ -200,11 +203,15 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
-          <span  [contextMenu]='pc' [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node">
+          <span  [contextMenu]='pc' [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node" [ngClass]="{
+                      'delta-changed':node.data.delta === 'UPDATED',
+                       'delta-deleted':node.data.delta === 'DELETED',
+                        'delta-added':node.data.delta === 'ADDED'}" style="cursor: pointer;">
            <app-entity-bagde [type]="'PROFILECOMPONENT'" ></app-entity-bagde> {{node.data.variableName}}
           </span>
+
           <context-menu #pc [disabled]="viewOnly||delta">
-            <ng-template (execute)="addPcContexts(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+            <ng-template (execute)="addPcContexts(node)" contextMenuItem [enabled]="!viewOnly&&!delta && node.parent?.data?.derived">
               <i class="fa fa-plus"></i> Add Contexts
             </ng-template>
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">

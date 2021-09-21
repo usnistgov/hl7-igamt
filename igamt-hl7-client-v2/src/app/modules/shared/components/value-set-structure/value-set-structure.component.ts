@@ -167,7 +167,6 @@ export class ValueSetStructureComponent implements OnInit {
       position: 0,
       changeType: ChangeType.UPDATE,
     });
-    console.log(propertyType);
   }
   updateURl(value) {
     this.updateAttribute(PropertyType.URL, value);

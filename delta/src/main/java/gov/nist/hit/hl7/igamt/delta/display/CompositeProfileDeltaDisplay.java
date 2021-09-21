@@ -9,70 +9,50 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.delta.domain;
+package gov.nist.hit.hl7.igamt.delta.display;
+
+import java.util.List;
 
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public class DynamicMappingItemDelta {
+public class CompositeProfileDeltaDisplay {
 
   private DeltaAction action;
-  private String datatypeName;
-  public DeltaNode<String> flavorId;
-  public DeltaNode<DisplayElement> display;
+  private List<ProfileComponentLinkDeltaDisplay> children; 
+  private DisplayElement coreProfileDisplay;
+  private DisplayElement compositeDisplay;
 
   
-  public DeltaNode<DisplayElement> getDisplay() {
-    return display;
+  public DisplayElement getCoreProfileDisplay() {
+    return coreProfileDisplay;
   }
-
-  public void setDisplay(DeltaNode<DisplayElement> display) {
-    this.display = display;
+  public void setCoreProfileDisplay(DisplayElement coreProfileDisplay) {
+    this.coreProfileDisplay = coreProfileDisplay;
   }
-
-  public DynamicMappingItemDelta(DeltaAction action, String datatypeName,
-      DeltaNode<String> flavorId) {
-    super();
-    this.action = action;
-    this.datatypeName = datatypeName;
-    this.flavorId = flavorId;
+  public DisplayElement getCompositeDisplay() {
+    return compositeDisplay;
   }
-
-  public DynamicMappingItemDelta() {
+  public void setCompositeDisplay(DisplayElement compositeDisplay) {
+    this.compositeDisplay = compositeDisplay;
   }
 
   public DeltaAction getAction() {
     return action;
   }
-
   public void setAction(DeltaAction action) {
     this.action = action;
   }
-
-  public String getDatatypeName() {
-    return datatypeName;
+  public List<ProfileComponentLinkDeltaDisplay> getChildren() {
+    return children;
   }
-
-  public void setDatatypeName(String datatypeName) {
-    this.datatypeName = datatypeName;
-  }
-
-  public DeltaNode<String> getFlavorId() {
-    return flavorId;
-  }
-
-  public void setFlavorId(DeltaNode<String> flavorId) {
-    this.flavorId = flavorId;
-  }
-
-  public void crunchAction(DeltaAction a) {
-    if(a != DeltaAction.UNCHANGED) {
-      this.setAction(DeltaAction.UPDATED);
-    }
+  public void setChildren(List<ProfileComponentLinkDeltaDisplay> children) {
+    this.children = children;
   }
 
 }
