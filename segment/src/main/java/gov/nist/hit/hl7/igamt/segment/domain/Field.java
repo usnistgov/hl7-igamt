@@ -8,6 +8,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 
 public class Field extends SubStructElement {
 
@@ -15,6 +16,8 @@ public class Field extends SubStructElement {
   private int min;
   @DeltaField
   private String max;
+  
+  private Slicing slicing;
 
   public Field() {
     super();
@@ -44,6 +47,14 @@ public class Field extends SubStructElement {
 
   public void setMax(String max) {
     this.max = max;
+  }
+
+  public Slicing getSlicing() {
+    return slicing;
+  }
+
+  public void setSlicing(Slicing slicing) {
+    this.slicing = slicing;
   }
 
 
