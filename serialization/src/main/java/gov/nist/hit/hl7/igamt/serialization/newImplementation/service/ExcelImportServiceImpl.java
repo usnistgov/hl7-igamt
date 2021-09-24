@@ -127,6 +127,9 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 		coConstraintTableConditionalBinding.setValue(parserResults.getCoConstraintTable());
 		ConformanceProfile cs = conformanceProfileService.findById(conformanceProfileID);
 		List<CoConstraintBinding> coConstraintsBindings = cs.getCoConstraintsBindings();
+		if(coConstraintsBindings == null) {
+			coConstraintsBindings = new ArrayList<CoConstraintBinding>();
+		}
 		boolean foundOne=false;
 		for(CoConstraintBinding coConstraintBinding : coConstraintsBindings) {
 			if(coConstraintBinding.getContext().getPathId().equals(pathID)) {

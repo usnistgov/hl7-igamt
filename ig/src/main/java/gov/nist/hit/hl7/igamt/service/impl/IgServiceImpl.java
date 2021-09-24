@@ -1172,7 +1172,7 @@ public class IgServiceImpl implements IgService {
        	       }
        	       igDataModel.getAllFlavoredSegmentDataModelsMap().putAll(compositeProfileDataModel.getFlavoredSegmentDataModelsMap());
        	 
-//        	        Link segLink = new Link();
+System.out.println("sdsd");
 //        	        segLink.setId(s.getId());
 //        	        ig.getSegmentRegistry().getChildren().add(segLink);
         	      } else {
