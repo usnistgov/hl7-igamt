@@ -1538,8 +1538,41 @@ public class IgServiceImpl implements IgService {
   }
 
   @Override
-  public Set<ConformanceStatement> conformanceStatementsSummary(Ig igdoument) {
-    return this.conformanceStatementRepository.findByIgDocumentId(igdoument.getId());
+  public Set<ConformanceStatement> conformanceStatementsSummary(Ig ig) {
+    Set<ConformanceStatement> ret = new HashSet<ConformanceStatement>();
+    for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        ConformanceProfile cp = this.conformanceProfileService.findById(l.getId());
+        if(cp.getBinding() != null && cp.getBinding().getConformanceStatements() != null) {
+          for(ConformanceStatement cs : cp.getBinding().getConformanceStatements()) {
+            cs.setResourceId(l.getId());
+            ret.add(cs);
+          }
+        }
+      }
+    }
+    for ( Link l: ig.getSegmentRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        Segment s = this.segmentService.findById(l.getId());
+        if(s.getBinding() != null && s.getBinding().getConformanceStatements() != null) {
+          for(ConformanceStatement cs : s.getBinding().getConformanceStatements()) {
+            cs.setResourceId(l.getId());
+            ret.add(cs);
+          }        }   
+      }
+    }
+
+    for ( Link l: ig.getDatatypeRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        Datatype dt = this.datatypeService.findById(l.getId());
+        for(ConformanceStatement cs : dt.getBinding().getConformanceStatements()) {
+          cs.setResourceId(l.getId());
+          ret.add(cs);
+        }   
+      }
+    }
+    
+    return ret;
   }
 
 
