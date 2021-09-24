@@ -91,8 +91,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
         const dialogRef = this.dialog.open(VerifyIgDialogComponent, {
           data: { igId, type },
         });
-
-        dialogRef.afterClosed().pipe().subscribe();
+        dialogRef.afterClosed().pipe(take(1)).subscribe();
       });
     }
 
