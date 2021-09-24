@@ -11,6 +11,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
@@ -76,12 +82,16 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
 	@Autowired
 	private ConstraintSerializationService constraintSerializationService;
 	
+	@Autowired
+	CoConstraintService coConstraintService;
+	
 	
 	
 	@Autowired
 	private ProfileComponentBindingSerializationService profileComponentBindingSerializationService;
 	
-	
+    @Autowired
+    private CoConstraintSerializationService coConstraintSerializationService;
 	
 	@Autowired
     private DatatypeService datatypeService;
@@ -320,8 +330,9 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                 	profileComponentContextElement.appendChild(constraints);
                 }
                 
+            	//Dynamic mapping	
             	if(profileComponentContext.getProfileComponentDynamicMapping() != null) {
-                    Element dynamicMapping = new Element("DynamicMapping");
+                    Element dynamicMapping = new Element("DynamicMappingForProfileComponent");
                     for(PcDynamicMappingItem pcDynamicMappingItem : profileComponentContext.getProfileComponentDynamicMapping().getItems()){
                     	if(pcDynamicMappingItem != null){
                             Element dynamicMappingItem = this.serializeDynamicMapping(pcDynamicMappingItem);              
@@ -334,6 +345,61 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                     	profileComponentContextElement.appendChild(dynamicMapping);
                     }
             	}
+            	
+            	//Coconstraints	
+            	if (profileComponentContext.getProfileComponentCoConstraints() != null && profileComponentContext.getProfileComponentCoConstraints().getBindings()  != null) {
+                    Element coConstraintsBindingsElement = new Element("coConstraintsBindingsElement");
+                    profileComponentContextElement.appendChild(coConstraintsBindingsElement);
+                    for (CoConstraintBinding coConstraintBinding : profileComponentContext.getProfileComponentCoConstraints().getBindings() ) {
+                        Element coConstraintBindingElement = new Element("coConstraintBindingElement");
+                        coConstraintsBindingsElement.appendChild(coConstraintBindingElement);
+                        if (coConstraintBinding != null) {
+                            if (coConstraintBinding.getContext() != null) {
+                                Element coConstraintContext = new Element("coConstraintContext");
+                                coConstraintContext.appendChild(coConstraintBinding.getContext().getName());
+                                coConstraintBindingElement.appendChild(coConstraintContext);
+                            }
+                            if (coConstraintBinding.getBindings() != null) {
+                                for (CoConstraintBindingSegment coConstraintBindingSegment : coConstraintBinding.getBindings()) {
+                                    if (coConstraintBindingSegment != null) {
+                                        Element coConstraintBindingSegmentElement = new Element("coConstraintBindingSegmentElement");
+                                        coConstraintBindingElement.appendChild(coConstraintBindingSegmentElement);
+//            							coConstraintBindingSegmentElement.appendChild(coConstraintContext);
+                                        Element coConstraintSegmentName = new Element("coConstraintSegmentName");
+                                        coConstraintSegmentName.appendChild(coConstraintBindingSegment.getSegment().getName());
+                                        coConstraintBindingSegmentElement.appendChild(coConstraintSegmentName);
+                                        for (CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {
+                                            CoConstraintTable mergedCoConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableConditionalBinding.getValue());
+                                            Element coConstraintTableConditionalBindingElement = new Element("coConstraintTableConditionalBindingElement");
+                                            coConstraintBindingSegmentElement.appendChild(coConstraintTableConditionalBindingElement);
+                                            if (coConstraintTableConditionalBinding.getCondition() != null) {
+                                                Element coConstraintCondition = new Element("coConstraintCondition");
+                                                coConstraintCondition.appendChild(coConstraintTableConditionalBinding.getCondition().getDescription());
+                                                coConstraintTableConditionalBindingElement.appendChild(coConstraintCondition);
+                                            }
+    
+                                                Element coConstraintsTable = new Element("coConstraintsTable");
+                                                coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintCompact(mergedCoConstraintTable));
+                                                coConstraintTableConditionalBindingElement.appendChild(coConstraintsTable);
+                                            
+//            	    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("NOEXPORT")) {
+//            		    						 coConstraintsElement = new Element("");
+//            	    						}
+//            	    						System.out.println("Coconstraint XML :" + coConstraintsElement.toXML());
+//            	    		    	        if (coConstraintsElement != null) {
+//            	    		    	        	getCoConstraintsBindingsElement.appendChild(coConstraintsElement);
+//            	    		    	        }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+//            		conformanceProfileElement.appendChild(getCoConstraintsBindingsElement);
+
+                    }
+
+                }
             	}
                 
                 
@@ -356,11 +422,13 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
 		dynamicMappingItem.addAttribute(
 				new Attribute("datatypeName", pcDynamicMappingItem.getDatatypeName() != null ? pcDynamicMappingItem.getDatatypeName() : "")
 		);
+		Datatype datatype = datatypeService.findById(pcDynamicMappingItem.getFlavorId());
 		dynamicMappingItem.addAttribute(
-				new Attribute("flavorId", pcDynamicMappingItem.getFlavorId() != null ? pcDynamicMappingItem.getFlavorId() : "")
+				new Attribute("flavor", datatype != null ? datatype.getLabel() : "")
 		);
 		return dynamicMappingItem;
 	}
+	
 
 	private ConformanceStatement getConformanceStatement(PropertyBinding propertyBinding, ResourceBinding resourceBinding) {
 		if(((PropertyConformanceStatement) propertyBinding).getChange().equals(ChangeType.DELETE)) {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:template match="DynamicMapping">
+	<xsl:template match="DynamicMappingForProfileComponent">
 		<xsl:element name="br"/>
 		<xsl:element name="span">
    			<xsl:element name="b">
@@ -26,6 +26,9 @@
                 	<xsl:text>contentThead</xsl:text>
                 </xsl:attribute>
 				<xsl:element name="tr">
+				<xsl:element name="th">
+						<xsl:text>Change</xsl:text>
+					</xsl:element>
 					<xsl:element name="th">
 						<xsl:text>Reference Value</xsl:text>
 					</xsl:element>
@@ -37,11 +40,14 @@
 			<xsl:element name="tbody">
 				<xsl:for-each select="./DynamicMappingItem">
 					<xsl:element name="tr">
-						<xsl:element name="td">
-							<xsl:value-of select="@value" />
+					<xsl:element name="td">
+							<xsl:value-of select="@change" />
 						</xsl:element>
 						<xsl:element name="td">
-							<xsl:value-of select="@datatype" />
+							<xsl:value-of select="@datatypeName" />
+						</xsl:element>
+						<xsl:element name="td">
+							<xsl:value-of select="@flavor" />
 						</xsl:element>
 					</xsl:element>
 				</xsl:for-each>

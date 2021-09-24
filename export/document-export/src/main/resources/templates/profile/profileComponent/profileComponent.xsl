@@ -362,6 +362,8 @@
                 
                 		<xsl:call-template name="ValueSetBindingList"/>	
 					<xsl:call-template name="InternalSingleCode"/>	
+		<xsl:apply-templates select="./DynamicMappingForProfileComponent"/>
+					
 <!-- 					<xsl:call-template name="Constraint"/>
  -->					
 					<xsl:if test="count(Constraints/Predicate)  &gt; 0">
@@ -445,9 +447,82 @@
 			</xsl:call-template>
 		</xsl:if>
 		
-		                		<xsl:call-template name="DynamicMappingForProfileComponent"/>	
+		        <xsl:apply-templates select="coConstraintsBindingsElement"/>
 		
         
+    </xsl:template>
+    
+    <xsl:template match="coConstraintsBindingsElement">
+
+        <xsl:element name="br"/>
+        <xsl:element name="span">
+            <xsl:element name="b">
+                <xsl:text>Co-Constraints</xsl:text>
+            </xsl:element>
+        </xsl:element>
+
+        <xsl:for-each select="./coConstraintBindingElement">
+
+
+            <xsl:element name="br"/>
+            <xsl:element name="br"/>
+            <xsl:element name="span">
+
+                <xsl:element name="span">
+                    <xsl:text>CoConstraint Context : </xsl:text>
+                    <xsl:value-of select="./coConstraintContext"/>
+                    <xsl:element name="br"/>
+                </xsl:element>
+
+
+                <xsl:element name="span">
+                    <xsl:text>CoConstraint Segment Name : </xsl:text>
+                    <xsl:value-of
+                            select="./coConstraintBindingSegmentElement/coConstraintSegmentName"/>
+                    <xsl:element name="br"/>
+                    <xsl:element name="br"/>
+
+                </xsl:element>
+
+            </xsl:element>
+
+
+            <xsl:for-each select="./coConstraintBindingSegmentElement/coConstraintTableConditionalBindingElement">
+				<xsl:element name="div">
+
+					<xsl:if test="./@background">
+						<xsl:attribute name="style">
+							<xsl:value-of select="concat('margin: 10px 0px;background-color:' , ./@background) "/>
+						</xsl:attribute>
+					</xsl:if>
+                    <xsl:if test="not(./@background)">
+                        <xsl:attribute name="style">
+                            <xsl:value-of select="'margin: 10px 0px'"/>
+                        </xsl:attribute>
+                    </xsl:if>
+					<xsl:if test="normalize-space(./coConstraintCondition)!=''">
+
+						<xsl:element name="span">
+							<xsl:text>CoConstraint Condition : </xsl:text>
+							<xsl:if test="./coConstraintCondition/span">
+								<xsl:copy-of
+										select="./coConstraintCondition/span"/>
+							</xsl:if>
+							<xsl:if test="not(./coConstraintCondition/span)">
+								<xsl:value-of
+										select="./coConstraintCondition"/>
+							</xsl:if>
+
+						</xsl:element>
+					</xsl:if>
+
+
+					<xsl:copy-of
+							select="./coConstraintsTable/coconstraints/table"/>
+				</xsl:element>
+            </xsl:for-each>
+
+        </xsl:for-each>
     </xsl:template>
 
 </xsl:stylesheet>
