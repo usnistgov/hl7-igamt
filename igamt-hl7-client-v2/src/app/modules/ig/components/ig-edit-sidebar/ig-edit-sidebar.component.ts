@@ -149,7 +149,7 @@ export class IgEditSidebarComponent implements OnInit {
       withLatestFrom(this.version$),
       take(1),
       map(([versions, selectedVersion]) => {
-        this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version: selectedVersion }));
+        //this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version: selectedVersion }));
 
         const dialogData: IResourcePickerData = {
           hl7Versions: versions,

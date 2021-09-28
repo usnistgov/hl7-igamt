@@ -347,6 +347,8 @@ public class StructureServiceImpl implements StructureService {
         Segment segment = this.getSegmentForUser(id, user);
         if(segment!= null && !Status.PUBLISHED.equals(segment.getStatus())) {
             segment.setStatus(Status.PUBLISHED);
+            segment.setFixedExtension(segment.getExt());
+            segment.setExt(null);
             this.segmentRepository.save(segment);
             SegmentStructureAndDisplay response = new SegmentStructureAndDisplay();
             response.setDisplayElement(this.displayInfoService.convertSegment(segment));

@@ -1,5 +1,6 @@
 import {Scope} from '../constants/scope.enum';
 import {Type} from '../constants/type.enum';
+import {Status} from '../models/abstract-domain.interface';
 import {IConventionError} from '../models/convention-error';
 import {IDisplayElement} from '../models/display-element.interface';
 import {IDomainInfo} from '../models/domain-info.interface';
@@ -9,8 +10,23 @@ export function isDuplicated(fixedName: string, variableName: string, domainInfo
 
       return ( fixedName && x.fixedName ? x.fixedName  === fixedName : true) && x.variableName === variableName && x.domainInfo.version === domainInfo.version;
     });
-
     return filtered.length > 0;
+}
+
+export function isDuplicatedLabelStructure(name: string, inputValue: string, domainInfo: IDomainInfo, existing: IDisplayElement[]) {
+
+  const filtered = existing.filter( (x: IDisplayElement) => {
+   if ( x.domainInfo.version !== domainInfo.version) {
+     return false;
+   } else {
+     if ( x.status === Status.PUBLISHED ) {
+       return x.resourceName + x.flavorExt  === name + inputValue;
+     } else {
+       return x.resourceName + x.variableName  === name + inputValue;
+     }
+   }
+  });
+  return filtered.length > 0;
 }
 
 export function validConvention(scope: Scope, type: Type, ext: string, documentType: Type, admin: boolean): IConventionError {

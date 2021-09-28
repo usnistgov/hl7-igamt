@@ -1280,10 +1280,15 @@ public class SegmentServiceImpl implements SegmentService {
     displayElement.setId(segment.getId());
     displayElement.setDomainInfo(segment.getDomainInfo());
     displayElement.setDescription(segment.getDescription());
+    displayElement.setResourceName(segment.getName());
     displayElement.setFixedName(segment.getName());
+    displayElement.setVariableName(segment.getExt());
+    if(segment.getFixedExtension() !=null && !segment.getFixedExtension().isEmpty()) {
+        displayElement.setFixedName(segment.getName() + "#"+ segment.getFixedExtension());
+    }
+    displayElement.setFlavorExt(segment.getFixedExtension());
     displayElement.setDifferantial(segment.getOrigin() !=null);
     displayElement.setLeaf(false);
-    displayElement.setVariableName(segment.getExt());
     displayElement.setType(Type.SEGMENT);
     displayElement.setOrigin(segment.getOrigin());
     displayElement.setParentId(segment.getParentId());

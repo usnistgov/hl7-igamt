@@ -33,6 +33,7 @@ public class DisplayElement {
   private Set<String> libraryReferences;
   private List<DisplayElement> children;
   private String flavorExt;
+  private String resourceName;
 
   public DeltaAction getDelta() {
     return delta;
@@ -201,5 +202,12 @@ public class DisplayElement {
     this.flavorExt = flavorExt;
   }
 
+  public String getResourceName() {
+    return resourceName;
+  }
+
+  public void setResourceName(String resourceName) {
+    this.resourceName = resourceName;
+  }
 
 }
