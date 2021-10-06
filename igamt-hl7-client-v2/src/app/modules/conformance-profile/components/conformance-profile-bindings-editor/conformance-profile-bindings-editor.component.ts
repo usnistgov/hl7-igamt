@@ -14,8 +14,8 @@ import { IChange } from 'src/app/modules/shared/models/save-change';
 import { BindingService } from 'src/app/modules/shared/services/binding.service';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
-import { ConformanceProfileService } from '../../services/conformance-profile.service';
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';
+import { ConformanceProfileService } from '../../services/conformance-profile.service';
 
 @Component({
   selector: 'app-conformance-profile-bindings-editor',

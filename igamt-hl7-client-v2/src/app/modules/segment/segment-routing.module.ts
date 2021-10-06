@@ -2,14 +2,14 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {
   LoadSegment,
-  OpenSegmentConformanceStatementEditor,
-  OpenSegmentCrossRefEditor, OpenSegmentDynamicMappingEditor,
+  OpenSegmentBindingsEditor,
+  OpenSegmentConformanceStatementEditor, OpenSegmentCrossRefEditor,
+  OpenSegmentDynamicMappingEditor,
   OpenSegmentMetadataEditor,
   OpenSegmentPostDefEditor,
   OpenSegmentPreDefEditor,
   OpenSegmentStructureEditor,
   SegmentEditActionTypes,
-  OpenSegmentBindingsEditor,
 } from '../../root-store/segment-edit/segment-edit.actions';
 import { OpenSegmentDeltaEditor } from '../../root-store/segment-edit/segment-edit.actions';
 import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
@@ -24,8 +24,8 @@ import { DynamicMappingEditorComponent } from './components/dynamic-mapping-edit
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
-import { SegmentStructureEditorComponent } from './components/segment-structure-editor/segment-structure-editor.component';
 import { SegmentBindingsEditorComponent } from './components/segment-bindings-editor/segment-bindings-editor.component';
+import { SegmentStructureEditorComponent } from './components/segment-structure-editor/segment-structure-editor.component';
 
 const routes: Routes = [
   {

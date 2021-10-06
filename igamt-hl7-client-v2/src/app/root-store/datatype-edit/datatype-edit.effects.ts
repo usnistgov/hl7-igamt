@@ -19,7 +19,7 @@ import { IUsages } from '../../modules/shared/models/cross-reference';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
 import { BindingService } from '../../modules/shared/services/binding.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor, OpenDatatypeBindingsEditor } from './datatype-edit.actions';
+import { OpenDatatypeBindingsEditor, OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from './datatype-edit.actions';
 import {
   DatatypeEditActionTypes,
   LoadDatatype,

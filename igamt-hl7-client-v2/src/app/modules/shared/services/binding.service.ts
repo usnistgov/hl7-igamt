@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable, of, BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { selectBindingConfig } from '../../../root-store/config/config.reducer';
 import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';

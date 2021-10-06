@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { getValue } from '@angular/core/src/render3/styling/class_and_style_bindings';
 import { ICardinalityRange, IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { Usage } from '../constants/usage.enum';
-import { getValue } from '@angular/core/src/render3/styling/class_and_style_bindings';
 
 export enum RestrictionCombinator {
   ACCUMULATE = 'ACCUMULATE',

@@ -1,6 +1,6 @@
-import { Component, Input, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { ActivatedRoute, Router, ActivatedRouteSnapshot } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { SelectItem } from 'primeng/api';
@@ -40,6 +40,7 @@ import * as fromResource from '../../../../root-store/resource-loader/resource-l
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
 import { EditorReset, selectWorkspaceActive } from '../../../dam-framework/store/data';
+import { selectRouterURL } from '../../../dam-framework/store/router/router.selectors';
 import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
 import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
 import { AddCompositeComponent } from '../../../shared/components/add-composite/add-composite.component';
@@ -61,7 +62,6 @@ import { IResourcePickerData } from '../../../shared/models/resource-picker-data
 import { CrossReferencesService } from '../../../shared/services/cross-references.service';
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
-import { selectRouterURL } from '../../../dam-framework/store/router/router.selectors';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
