@@ -188,6 +188,13 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     }
   }
 
+  scrollById(id: string) {
+    const elm = document.getElementById(id);
+    if (elm) {
+      elm.scrollIntoView();
+    }
+  }
+
   filter(value: string) {
     this.tree.treeModel.filterNodes((node) => {
       return this.nodeHelperService

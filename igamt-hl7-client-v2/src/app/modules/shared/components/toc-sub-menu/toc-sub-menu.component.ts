@@ -45,6 +45,11 @@ export class TocSubMenuComponent implements OnInit {
       } else {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Value Set Definition', Icons.TABLE));
       }
+
+      if ([Type.DATATYPE.toLowerCase(), Type.SEGMENT.toLowerCase(), Type.CONFORMANCEPROFILE.toLowerCase()].includes(type)) {
+        ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'bindings', 'Bindings', Icons.BINDING));
+      }
+
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'post-def', 'Post-definition', Icons.POST));
 
       if (type !== Type.VALUESET.toLowerCase() && type !== Type.COMPOSITEPROFILE.toLowerCase()) {

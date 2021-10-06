@@ -1,6 +1,6 @@
 <ng-container [ngSwitch]="scope">
   <span *ngSwitchCase="'USER'" class="badge scope-badge-user">
-    USER <span style="color: white; font-size: 0.5em;">{{version}}</span>
+    USER <span style="color: white; font-size: 0.9em; font-weight: 300;">{{version}}</span>
   </span>
   <span *ngSwitchCase="'HL7STANDARD'" class="badge" [ngClass]="{'scope-badge-hl7': version !=='2.x',  'scope-badge-dynamic': version ==='2.x' }">
     HL7 <span style="font-size: 0.9em; font-weight: 300;">{{version}}</span>

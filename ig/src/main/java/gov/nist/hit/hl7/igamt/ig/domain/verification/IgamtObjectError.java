@@ -23,16 +23,17 @@ public class IgamtObjectError {
   private Type targetType;
   private Object targetMeta;
   private String description;
+  @Deprecated
   private String location;
-  
   private String handleBy;
-  
   private String severity;
+  private Location locationInfo;
   
   public IgamtObjectError(){
     super();
   }
-  
+
+  @Deprecated
   public IgamtObjectError(String code, String target, Type targetType, Object targetMeta, String description,
       String location, String severity, String handleBy) {
     super();
@@ -42,6 +43,18 @@ public class IgamtObjectError {
     this.targetMeta = targetMeta;
     this.description = description;
     this.location = location;
+    this.severity = severity;
+    this.handleBy = handleBy;
+  }
+
+  public IgamtObjectError(String code, String target, Type targetType, Object targetMeta, Location locationInfo, String description, String severity, String handleBy) {
+    super();
+    this.code = code;
+    this.target = target;
+    this.targetType = targetType;
+    this.targetMeta = targetMeta;
+    this.description = description;
+    this.locationInfo = locationInfo;
     this.severity = severity;
     this.handleBy = handleBy;
   }
@@ -70,10 +83,12 @@ public class IgamtObjectError {
     this.description = description;
   }
 
+  @Deprecated
   public String getLocation() {
     return location;
   }
 
+  @Deprecated
   public void setLocation(String location) {
     this.location = location;
   }
@@ -109,8 +124,12 @@ public class IgamtObjectError {
   public void setHandleBy(String handleBy) {
     this.handleBy = handleBy;
   }
-  
-  
-  
 
+  public Location getLocationInfo() {
+    return locationInfo;
+  }
+
+  public void setLocationInfo(Location locationInfo) {
+    this.locationInfo = locationInfo;
+  }
 }

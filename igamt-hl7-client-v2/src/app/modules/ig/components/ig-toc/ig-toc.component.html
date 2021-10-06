@@ -1,11 +1,11 @@
 <div id="toc-container" class="toc-container">
-  <span routerLink="metadata" routerLinkActive="active-node" style="cursor: pointer; width: fit-content;">&emsp; Implementation Guide Document Metadata</span>
+  <span id="TOC-IG" routerLink="metadata" routerLinkActive="active-node" style="cursor: pointer; width: fit-content;">&emsp; Implementation Guide Document Metadata</span>
   <tree-root #treeroot [nodes]="nodes" [options]="options">
     <ng-template #treeNodeTemplate let-index="index" let-node>
       <ng-container [ngSwitch]="node.data.type">
 
         <ng-container *ngSwitchCase="'TEXT'">
-          <span [contextMenu]="textContextMenu" [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"> {{node.data.path}} {{node.data.variableName}}</span>
+          <span [id]="'TOC-TEXT-'+ node.data.id" [contextMenu]="textContextMenu" [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"> {{node.data.path}} {{node.data.variableName}}</span>
           <context-menu #textContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="addSectionToNode(node)" contextMenuItem contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-plus"></i> Add Section
@@ -143,7 +143,7 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-            <span  [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive [ngClass]="{
+            <span [id]="'TOC-COMPOSITEPROFILE-'+ node.data.id"  [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive [ngClass]="{
                       'delta-changed':node.data.delta === 'UPDATED',
                        'delta-deleted':node.data.delta === 'DELETED',
                         'delta-added':node.data.delta === 'ADDED'}" style="cursor: pointer;">
@@ -203,7 +203,7 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
-          <span  [contextMenu]='pc' [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node" [ngClass]="{
+          <span  [id]="'TOC-PROFILECOMPONENT-'+ node.data.id"  [contextMenu]='pc' [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node" [ngClass]="{
                       'delta-changed':node.data.delta === 'UPDATED',
                        'delta-deleted':node.data.delta === 'DELETED',
                         'delta-added':node.data.delta === 'ADDED'}" style="cursor: pointer;">

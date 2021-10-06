@@ -1,12 +1,13 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable, of } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, of } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { selectBindingConfig } from '../../../root-store/config/config.reducer';
 import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
 import { IBindingLocationInfo, ISingleCodeDisplay, IValueSetBindingDisplay } from '../components/binding-selector/binding-selector.component';
 import { Type } from '../constants/type.enum';
-import { InternalSingleCode, IValuesetBinding } from '../models/binding.interface';
+import { IFlatResourceBindings, InternalSingleCode, IValuesetBinding } from '../models/binding.interface';
 import { IBindingLocationInfoConfig } from '../models/config.class';
 import { AResourceRepositoryService } from './resource-repository.service';
 
@@ -21,7 +22,11 @@ function contains(locationExceptions: IBindingLocationInfoConfig[], version: str
 })
 export class BindingService {
 
-  constructor(private store: Store<any>) { }
+  constructor(private http: HttpClient, private store: Store<any>) { }
+
+  getResourceBindings = (type: Type, id: string): Observable<IFlatResourceBindings> => {
+    return this.http.get<IFlatResourceBindings>('api/bindings/' + type + '/' + id);
+  }
 
   getValueSetBindingDisplay(bindings: IValuesetBinding[], repository: AResourceRepositoryService): Observable<IValueSetBindingDisplay[]> {
     return RxjsStoreHelperService.forkJoin(bindings.map((x) => {
@@ -60,8 +65,9 @@ export class BindingService {
     );
   }
 
-  getBingdingInfo(version: string, parent: string, elementName: string, location: number, type: Type): Observable<IBindingLocationInfo> {
-    return this.store.select(selectBindingConfig).pipe(
+  getBingdingInfo(version: string, parent: string, elementName: string, location: number, type: Type): BehaviorSubject<IBindingLocationInfo> {
+    const vsBindingInfo = new BehaviorSubject<IBindingLocationInfo>(null);
+    this.store.select(selectBindingConfig).pipe(
       map((valueSetBindingConfig) => {
         const ret: IBindingLocationInfo = {
           allowedBindingLocations: [],
@@ -88,7 +94,8 @@ export class BindingService {
         }
         return ret;
       }),
-    );
+    ).subscribe(vsBindingInfo);
+    return vsBindingInfo;
   }
 
 }

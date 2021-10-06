@@ -1,10 +1,10 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 public class LocationInfo {
-    private String name;
-    private String hl7Path;
-    private Type type;
-    private String positionalPath;
+    private String name; // Administered Vaccine
+    private String hl7Path; // RXA-5
+    private Type type; // Component
+    private String positionalPath; // 1.2.3
 
     public LocationInfo() {
     }

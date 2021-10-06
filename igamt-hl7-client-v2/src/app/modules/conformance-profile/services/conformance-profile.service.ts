@@ -1,11 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
+import { flatMap, map, take } from 'rxjs/operators';
+import { selectDatatypesById, selectSegmentsById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import { IConformanceStatementEditorData } from '../../core/components/conformance-statement-editor/conformance-statement-editor.component';
 import { Message } from '../../dam-framework/models/messages/message.class';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
 import { ICPConformanceStatementList } from '../../shared/models/cs-list.interface';
 import { IChange } from '../../shared/models/save-change';
+import { ConformanceStatementService } from '../../shared/services/conformance-statement.service';
 import { IConformanceProfileEditMetadata } from '../components/metadata-editor/metadata-editor.component';
 
 @Injectable()
@@ -13,7 +17,9 @@ export class ConformanceProfileService {
 
   readonly URL = 'api/conformanceprofiles/';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private conformanceStatementService: ConformanceStatementService) { }
 
   getById(id: string): Observable<IConformanceProfile> {
     return this.http.get<IConformanceProfile>(this.URL + id);
@@ -25,6 +31,30 @@ export class ConformanceProfileService {
         dId: documentRef.documentId,
       },
     });
+  }
+
+  getConformanceStatementEditorData(id: string, documentInfo: IDocumentRef): Observable<IConformanceStatementEditorData> {
+    return this.getConformanceStatements(id, documentInfo).pipe(
+      flatMap((data) => {
+        const segments = this.conformanceStatementService.resolveDependantConformanceStatement(data.associatedSEGConformanceStatementMap || {}, selectSegmentsById);
+        const datatypes = this.conformanceStatementService.resolveDependantConformanceStatement(data.associatedDTConformanceStatementMap || {}, selectDatatypesById);
+        return combineLatest(
+          (segments.length > 0 ? combineLatest(segments) : of([])),
+          (datatypes.length > 0 ? combineLatest(datatypes) : of([])),
+        ).pipe(
+          take(1),
+          map(([s, d]) => {
+            return {
+              active: this.conformanceStatementService.createEditableNode(data.conformanceStatements || []),
+              dependants: {
+                segments: s,
+                datatypes: d,
+              },
+            };
+          }),
+        );
+      }),
+    );
   }
 
   getConformanceStatements(id: string, documentRef: IDocumentRef): Observable<ICPConformanceStatementList> {
@@ -44,7 +74,7 @@ export class ConformanceProfileService {
       role: conformanceProfile.role,
       description: conformanceProfile.description,
       displayName: conformanceProfile.displayName,
-      profileIdentifier:  conformanceProfile.preCoordinatedMessageIdentifier ? conformanceProfile.preCoordinatedMessageIdentifier : {},
+      profileIdentifier: conformanceProfile.preCoordinatedMessageIdentifier ? conformanceProfile.preCoordinatedMessageIdentifier : {},
     };
   }
 }

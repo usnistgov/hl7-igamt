@@ -167,8 +167,10 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
         Object.assign(this.assertion.complement, {
           ...this.compare.value,
         });
-        this.updateTokenStatus();
-        this.valueChange.emit(this.assertion);
+        setTimeout(() => {
+          this.updateTokenStatus();
+          this.valueChange.emit(this.assertion);
+        });
       }),
     ).subscribe();
   }
