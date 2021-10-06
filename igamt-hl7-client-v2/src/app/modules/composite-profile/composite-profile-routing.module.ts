@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {
   CompositeProfileActionTypes,
-  LoadCompositeProfile,
+  LoadCompositeProfile, OpenCompositeProfileDeltaEditor,
   OpenCompositeProfileMetadataEditor, OpenCompositeProfilePostDefEditor,
   OpenCompositeProfilePreDefEditor,
   OpenCompositeProfileStructureEditor,
@@ -13,6 +13,7 @@ import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.gua
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
+import {CompositeDeltaEditorComponent} from './components/composite-delta-editor/composite-delta-editor.component';
 import {CompositeProfileMetadataEditorComponent} from './components/composite-profile-metadata-editor/composite-profile-metadata-editor.component';
 import {CompositeProfilePostDefComponent} from './components/composite-profile-post-def/composite-profile-post-def.component';
 import {CompositeProfilePreDefComponent} from './components/composite-profile-pre-def/composite-profile-pre-def.component';
@@ -128,6 +129,25 @@ const routes: Routes = [
             saveTableOfContent: true,
           },
           action: OpenCompositeProfilePostDefEditor,
+          idKey: 'compositeProfileId',
+        },
+      },
+      {
+        path: 'delta',
+        component: CompositeDeltaEditorComponent,
+        canActivate: [EditorActivateGuard],
+        canDeactivate: [EditorDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.COMPOSITE_PROFILE_DELTA,
+            title: 'Delta',
+            resourceType: Type.COMPOSITEPROFILE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenCompositeProfileDeltaEditor,
           idKey: 'compositeProfileId',
         },
       },

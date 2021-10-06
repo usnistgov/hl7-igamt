@@ -30,5 +30,6 @@
 		<module>common-change-entity</module>
 		<module>common-util</module>
 		<module>common-exception</module>
+		<module>common-slicing</module>
 	</modules>
 </project>

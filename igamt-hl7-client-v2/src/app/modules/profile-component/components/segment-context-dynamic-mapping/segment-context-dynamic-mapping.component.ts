@@ -105,9 +105,10 @@ export class SegmentContextDynamicMappingComponent extends AbstractEditorCompone
     );
     this._viewOnly$ = combineLatest(
       this.store.select(selectViewOnly),
-      this.store.select(selectDelta)).pipe(
-      map(([vOnly, delta]) => {
-        return vOnly || delta;
+      this.store.select(selectDelta),
+      this.store.select(selectSelectedProfileComponent)).pipe(
+      map(([vOnly, delta, pc]) => {
+        return vOnly || delta || pc.derived ;
       }),
     );
 

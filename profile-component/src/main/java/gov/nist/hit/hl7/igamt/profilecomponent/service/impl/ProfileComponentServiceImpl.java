@@ -185,6 +185,15 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     if(pc  == null ) {
       throw new ProfileComponentNotFoundException(pcId);
     }
+    
+    for(ProfileComponentContext ctx: pc.getChildren()) {
+      System.out.println(ctx.getId());
+      System.out.println(contextId);
+      if(ctx.getId().equals(contextId.toString())) {
+        System.out.println("FOUND");
+      }
+    }
+    
     return pc.getChildren().stream().filter(customer -> contextId.equals(customer.getId())).findAny().orElseThrow( () -> new ProfileComponentContextNotFoundException(contextId));
 
 

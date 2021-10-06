@@ -47,7 +47,6 @@ public class DeltaController {
 
    return this.deltaService.delta(ig, origin);
     
-  
   }
 
 

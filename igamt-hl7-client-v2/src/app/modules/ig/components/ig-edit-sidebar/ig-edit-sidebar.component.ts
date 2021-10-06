@@ -119,9 +119,13 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
   getNodes() {
     return this.deltaMode$.pipe(
       switchMap((x) => {
+        console.log('DELTA');
+        console.log(x);
+
         if (!x) {
           return this.store.select(fromIgDocumentEdit.selectToc);
         } else {
+          console.log(x);
           return this.store.select(fromIgDocumentEdit.selectProfileTree);
         }
       }),

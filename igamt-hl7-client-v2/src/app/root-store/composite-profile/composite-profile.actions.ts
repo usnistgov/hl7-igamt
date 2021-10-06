@@ -14,6 +14,7 @@ export enum CompositeProfileActionTypes {
   OpenCompositeProfileMetadataEditor = '[OpenCompositeProfileMetadataEditor] Open Composite Profile Metadata Editor',
   OpenCompositeProfilePreDefEditor = '[OpenCompositeProfilePreDefEditor] Open Composite Profile PreDef Editor',
   OpenCompositeProfilePostDefEditor = '[OpenCompositeProfilePostDefEditor] Open Composite Profile PostDef Editor',
+  OpenCompositeProfileDeltaEditor = '[OpenCompositeProfileDeltaEditor] Open Composite Profile Delta Editor',
 }
 
 export class LoadCompositeProfile implements Action {
@@ -74,5 +75,12 @@ export class OpenCompositeProfilePostDefEditor implements Action {
     editor: IHL7EditorMetadata,
   }) { }
 }
+export class OpenCompositeProfileDeltaEditor implements Action {
+  readonly type = CompositeProfileActionTypes.OpenCompositeProfileDeltaEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) { }
+}
 
-export type CompositeProfileActions = LoadCompositeProfile | LoadCompositeProfileSuccess | LoadCompositeProfileFailure | OpenCompositionEditor | OpenCompositeProfileStructureEditor  | OpenCompositeProfilePostDefEditor | OpenCompositeProfilePreDefEditor | OpenCompositeProfileMetadataEditor;
+export type CompositeProfileActions = LoadCompositeProfile | LoadCompositeProfileSuccess | LoadCompositeProfileFailure | OpenCompositionEditor | OpenCompositeProfileStructureEditor  | OpenCompositeProfilePostDefEditor | OpenCompositeProfilePreDefEditor | OpenCompositeProfileMetadataEditor | OpenCompositeProfileDeltaEditor;

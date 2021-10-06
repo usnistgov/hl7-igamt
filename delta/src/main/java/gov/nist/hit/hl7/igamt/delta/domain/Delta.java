@@ -6,71 +6,78 @@ import java.util.List;
 
 public class Delta<T> {
 
-    private DeltaInfo source;
-    private DeltaInfo target;
-    private T delta;
-    private List<ConformanceStatementDelta> conformanceStatements;
-    private List<CoConstraintBinding> coConstraintBindings;
+  private DeltaInfo source;
+  private DeltaInfo target;
+  private T delta;
+  private List<ConformanceStatementDelta> conformanceStatements;
+  private List<CoConstraintBinding> coConstraintBindings;
+  private List<DynamicMappingItemDelta> dynamicMapping;
 
+  public Delta(DeltaInfo source, DeltaInfo target, T delta) {
+    this.source = source;
+    this.target = target;
+    this.delta = delta;
+  }
 
-    public Delta(DeltaInfo source, DeltaInfo target, T delta) {
-        this.source = source;
-        this.target = target;
-        this.delta = delta;
-    }
+  public Delta(DeltaInfo source, DeltaInfo target, T delta, List<ConformanceStatementDelta> conformanceStatements) {
+    this.source = source;
+    this.target = target;
+    this.delta = delta;
+    this.conformanceStatements = conformanceStatements;
+  }
 
-    public Delta(DeltaInfo source, DeltaInfo target, T delta, List<ConformanceStatementDelta> conformanceStatements) {
-        this.source = source;
-        this.target = target;
-        this.delta = delta;
-        this.conformanceStatements = conformanceStatements;
-    }
+  public Delta(DeltaInfo source, DeltaInfo target, T delta, List<ConformanceStatementDelta> conformanceStatements, List<CoConstraintBinding> coConstraintBindings) {
+    this.source = source;
+    this.target = target;
+    this.delta = delta;
+    this.conformanceStatements = conformanceStatements;
+    this.coConstraintBindings = coConstraintBindings;
+  }
+  public DeltaInfo getSource() {
+    return source;
+  }
 
-    public Delta(DeltaInfo source, DeltaInfo target, T delta, List<ConformanceStatementDelta> conformanceStatements, List<CoConstraintBinding> coConstraintBindings) {
-        this.source = source;
-        this.target = target;
-        this.delta = delta;
-        this.conformanceStatements = conformanceStatements;
-        this.coConstraintBindings = coConstraintBindings;
-    }
+  public void setSource(DeltaInfo source) {
+    this.source = source;
+  }
 
-    public DeltaInfo getSource() {
-        return source;
-    }
+  public DeltaInfo getTarget() {
+    return target;
+  }
 
-    public void setSource(DeltaInfo source) {
-        this.source = source;
-    }
+  public void setTarget(DeltaInfo target) {
+    this.target = target;
+  }
 
-    public DeltaInfo getTarget() {
-        return target;
-    }
+  public T getDelta() {
+    return delta;
+  }
 
-    public void setTarget(DeltaInfo target) {
-        this.target = target;
-    }
+  public void setDelta(T delta) {
+    this.delta = delta;
+  }
 
-    public T getDelta() {
-        return delta;
-    }
+  public List<ConformanceStatementDelta> getConformanceStatements() {
+    return conformanceStatements;
+  }
 
-    public void setDelta(T delta) {
-        this.delta = delta;
-    }
+  public void setConformanceStatements(List<ConformanceStatementDelta> conformanceStatements) {
+    this.conformanceStatements = conformanceStatements;
+  }
 
-    public List<ConformanceStatementDelta> getConformanceStatements() {
-        return conformanceStatements;
-    }
+  public List<CoConstraintBinding> getCoConstraintBindings() {
+    return coConstraintBindings;
+  }
 
-    public void setConformanceStatements(List<ConformanceStatementDelta> conformanceStatements) {
-        this.conformanceStatements = conformanceStatements;
-    }
+  public void setCoConstraintBindings(List<CoConstraintBinding> coConstraintBindings) {
+    this.coConstraintBindings = coConstraintBindings;
+  }
 
-    public List<CoConstraintBinding> getCoConstraintBindings() {
-        return coConstraintBindings;
-    }
+  public List<DynamicMappingItemDelta> getDynamicMapping() {
+    return dynamicMapping;
+  }
 
-    public void setCoConstraintBindings(List<CoConstraintBinding> coConstraintBindings) {
-        this.coConstraintBindings = coConstraintBindings;
-    }
+  public void setDynamicMapping(List<DynamicMappingItemDelta> dynamicMapping) {
+    this.dynamicMapping = dynamicMapping;
+  }
 }

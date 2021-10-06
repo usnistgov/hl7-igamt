@@ -8,7 +8,8 @@ import { SharedModule } from '../shared/shared.module';
 import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';
 import { SegmentCrossRefsComponent } from './components/cross-refs/segment-cross-refs.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
-import {DynamicMappingEditorComponent} from './components/dynamic-mapping-editor/dynamic-mapping-editor.component';
+import { DynamicMappingDeltaComponent } from './components/delta-editor/dynamic-mapping-delta/dynamic-mapping-delta.component';
+import { DynamicMappingEditorComponent } from './components/dynamic-mapping-editor/dynamic-mapping-editor.component';
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -28,6 +29,7 @@ import { SegmentService } from './services/segment.service';
     DeltaEditorComponent,
     DynamicMappingEditorComponent,
     SegmentBindingsEditorComponent,
+    DynamicMappingDeltaComponent,
   ],
   imports: [
     CommonModule,

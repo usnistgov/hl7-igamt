@@ -1,6 +1,6 @@
-<!--<ng-template #headerControls let-router="router" *ngIf="hasOrigin$ | async">-->
-<!--    <button class="btn btn-sm btn-default toggle-btn" style="margin-left: 10px; border: 1px solid black;" [routerLink]="'../delta'">-->
-<!--      <span style="font-weight: bold;" ><span style="font-size: 1em;" >Δ</span> delta</span>-->
-<!--    </button>-->
-<!--  </ng-template>-->
+<div style="display: flex; flex-direction: row; justify-content: flex-end; width: 100%; margin-bottom: 5px;" *ngIf="derived$ | async">
+  <button class="btn btn-sm btn-i" (click)="viewReasons()">
+    <i class="fa fa-info"></i> Reason For changes
+  </button>
+</div>
 <app-value-set-structure [valueSet]="resource$ |async" [viewOnly]="viewOnly$ | async" (changes)="change($event)" [cols]="cols" [codeSystemOptions]="codeSystemOptions" [selectedColumns]="selectedColumns"></app-value-set-structure>

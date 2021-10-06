@@ -12,6 +12,8 @@
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,6 +21,8 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
@@ -42,6 +46,9 @@ public class Valueset extends Resource {
 	@org.springframework.data.annotation.Transient
 	private boolean includeCodes;
 	private boolean isFlavor;
+	private List<ChangeReason> changeLogs;
+	private Set<String> codeSystems = new HashSet<String>();
+	private Set<Code> codes = new HashSet<Code>();
 	
 	
 	public boolean isIncludeCodes() {
@@ -55,8 +62,7 @@ public class Valueset extends Resource {
 	public int getNumberOfCodes() {
 		return numberOfCodes;
 	}
-	private Set<String> codeSystems = new HashSet<String>();
-	private Set<Code> codes = new HashSet<Code>();
+	
 
 	public Valueset() {
 		super();
@@ -200,6 +206,14 @@ public class Valueset extends Resource {
 			if(code.getValue().equals(value)) return true;
 		}
 		return false;
+	}
+
+	public List<ChangeReason> getChangeLogs() {
+		return changeLogs;
+	}
+
+	public void setChangeLogs(List<ChangeReason> changeLogs) {
+		this.changeLogs = changeLogs;
 	};
 	
 	

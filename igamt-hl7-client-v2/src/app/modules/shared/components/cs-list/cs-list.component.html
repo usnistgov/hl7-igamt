@@ -17,9 +17,6 @@
   <ng-template let-columns pTemplate="header">
     <tr>
       <th style="width: 200px;">
-        Structure Id
-      </th>
-      <th style="width: 200px;">
         References
       </th>
       <th style="width: 100px;">
@@ -36,14 +33,9 @@
   <ng-template let-columns="columns" let-expanded="expanded" let-index="rowIndex" let-node="node" let-rowData let-rowNode pTemplate="body">
     <tr>
       <td>
-        <app-entity-bagde [type]="rowData.level"></app-entity-bagde>
-        {{rowData.structureId}}
-      </td>
-      <td>
         <app-display-ref
-          *ngFor="let source of rowData.sourceIds"
           [documentId]="documentId"
-          [element]="getDisplay(rowData.level, source) | async"
+          [element]="getDisplay(rowData.level, rowData.resourceId) | async"
           [hideDescription]="true">
         </app-display-ref>
       </td>
