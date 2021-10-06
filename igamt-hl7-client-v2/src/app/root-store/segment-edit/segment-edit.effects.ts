@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { combineLatest, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import { OpenEditorBase } from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
@@ -17,10 +17,10 @@ import { SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { SegmentService } from '../../modules/segment/services/segment.service';
 import { IUsages } from '../../modules/shared/models/cross-reference';
 import { ISegment } from '../../modules/shared/models/segment.interface';
-import { ConformanceStatementService } from '../../modules/shared/services/conformance-statement.service';
+import { BindingService } from '../../modules/shared/services/binding.service';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { selectDatatypesById } from '../dam-igamt/igamt.resource-display.selectors';
+import { OpenSegmentBindingsEditor } from './segment-edit.actions';
 import {
   LoadSegment,
   LoadSegmentFailure,
@@ -121,7 +121,19 @@ export class SegmentEditEffects {
   );
 
   @Effect()
-  openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IConformanceStatementEditorData, OpenSegmentConformanceStatementEditor>(
+  openSegmentBindingsEditor$ = this.editorHelper.openBindingsEditor<ISegment, OpenSegmentStructureEditor>(
+    SegmentEditActionTypes.OpenSegmentBindingsEditor,
+    Type.SEGMENT,
+    fromIgamtDisplaySelectors.selectSegmentsById,
+    this.store.select(fromIgamtSelectedSelectors.selectedSegment),
+    (id, type) => {
+      return this.bindingService.getResourceBindings(type, id);
+    },
+    this.SegmentNotFound,
+  );
+
+  @Effect()
+  openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IConformanceStatementEditorData, OpenSegmentBindingsEditor>(
     SegmentEditActionTypes.OpenSegmentConformanceStatementEditor,
     Type.SEGMENT,
     fromIgamtDisplaySelectors.selectSegmentsById,
@@ -129,22 +141,7 @@ export class SegmentEditEffects {
       return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
         take(1),
         mergeMap((documentInfo) => {
-          return this.segmentService.getConformanceStatements(action.payload.id, documentInfo);
-        }),
-        flatMap((data) => {
-          const datatypes = this.conformanceStatementService.resolveDependantConformanceStatement(data.associatedConformanceStatementMap || {}, selectDatatypesById);
-
-          return (datatypes.length > 0 ? combineLatest(datatypes) : of([])).pipe(
-            take(1),
-            map((d) => {
-              return {
-                active: this.conformanceStatementService.createEditableNode(data.conformanceStatements || []),
-                dependants: {
-                  datatypes: d,
-                },
-              };
-            }),
-          );
+          return this.segmentService.getConformanceStatementEditorData(action.payload.id, documentInfo);
         }),
       );
     },
@@ -179,8 +176,8 @@ export class SegmentEditEffects {
     private deltaService: DeltaService,
     private segmentService: SegmentService,
     private editorHelper: OpenEditorService,
-    private conformanceStatementService: ConformanceStatementService,
     private crossReferenceService: CrossReferencesService,
+    private bindingService: BindingService,
   ) { }
 
 }

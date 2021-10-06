@@ -9,6 +9,7 @@ import {
   OpenSegmentPreDefEditor,
   OpenSegmentStructureEditor,
   SegmentEditActionTypes,
+  OpenSegmentBindingsEditor,
 } from '../../root-store/segment-edit/segment-edit.actions';
 import { OpenSegmentDeltaEditor } from '../../root-store/segment-edit/segment-edit.actions';
 import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
@@ -19,11 +20,12 @@ import { EditorID } from '../shared/models/editor.enum';
 import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';
 import { SegmentCrossRefsComponent } from './components/cross-refs/segment-cross-refs.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
-import {DynamicMappingEditorComponent} from './components/dynamic-mapping-editor/dynamic-mapping-editor.component';
+import { DynamicMappingEditorComponent } from './components/dynamic-mapping-editor/dynamic-mapping-editor.component';
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
 import { SegmentStructureEditorComponent } from './components/segment-structure-editor/segment-structure-editor.component';
+import { SegmentBindingsEditorComponent } from './components/segment-bindings-editor/segment-bindings-editor.component';
 
 const routes: Routes = [
   {
@@ -99,6 +101,30 @@ const routes: Routes = [
                 saveTableOfContent: true,
               },
               action: OpenSegmentStructureEditor,
+              idKey: 'segmentId',
+            },
+          },
+        ],
+      },
+      {
+        path: 'bindings',
+        children: [
+          {
+            path: '',
+            component: SegmentBindingsEditorComponent,
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
+            data: {
+              editorMetadata: {
+                id: EditorID.SEGMENT_BINDINGS,
+                title: 'Bindings',
+                resourceType: Type.SEGMENT,
+              },
+              onLeave: {
+                saveEditor: true,
+                saveTableOfContent: true,
+              },
+              action: OpenSegmentBindingsEditor,
               idKey: 'segmentId',
             },
           },

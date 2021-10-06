@@ -443,8 +443,17 @@ public class ApplyChangeImpl implements ApplyChange {
 		try {
 			jsonInString = mapper.writeValueAsString(change.getPropertyValue());
 			change.setOldPropertyValue(elm.getValuesetBindings());
-			elm.setValuesetBindings(this.bindingService.convertDisplayValuesetBinding(new HashSet<>(
-					Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
+			if (change.getChangeType().equals(ChangeType.DELETE)) {
+				elm.setValuesetBindings(null);
+			} else {
+				elm.setValuesetBindings(
+						this.bindingService.convertDisplayValuesetBinding(
+								new HashSet<>(
+										Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class))
+								)
+						)
+				);
+			}
 		} catch (IOException e) {
 			throw new ApplyChangeException(change);
 		}
@@ -456,7 +465,11 @@ public class ApplyChangeImpl implements ApplyChange {
 		try {
 			String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
 			change.setOldPropertyValue(elm.getInternalSingleCode());
-			elm.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
+			if (change.getChangeType().equals(ChangeType.DELETE)) {
+				elm.setInternalSingleCode(null);
+			} else {
+				elm.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
+			}
 		} catch (IOException e) {
 			throw new ApplyChangeException(change);
 		}

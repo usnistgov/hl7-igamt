@@ -14,6 +14,7 @@ export enum DatatypeEditActionTypes {
   OpenDatatypeStructureEditor = '[Datatype Edit] Open Datatype Structure Editor',
   OpenDatatypeDeltaEditor = '[Datatype Edit] Open Datatype Delta Editor',
   OpenDatatypeConformanceStatementEditor = '[Datatype Edit] Open Datatype Conformance Statement Editor',
+  OpenDatatypeBindingsEditor = '[Datatype Edit] Open Datatype Bindings Editor',
 }
 
 export class LoadDatatype implements Action {
@@ -80,6 +81,14 @@ export class OpenDatatypeMetadataEditorNode implements Action {
   }) { }
 }
 
+export class OpenDatatypeBindingsEditor implements Action {
+  readonly type = DatatypeEditActionTypes.OpenDatatypeBindingsEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) { }
+}
+
 export class OpenDatatypeCrossRefEditor implements Action {
   readonly type = DatatypeEditActionTypes.OpenDatatypeCrossRefEditor;
   constructor(readonly payload: {
@@ -97,4 +106,5 @@ export type DatatypeEditActions =
   | OpenDatatypePostDefEditor
   | OpenDatatypeMetadataEditorNode
   | OpenDatatypeConformanceStatementEditor
-  | OpenDatatypeCrossRefEditor;
+  | OpenDatatypeCrossRefEditor
+  | OpenDatatypeBindingsEditor;

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoadConformanceProfile, OpenConformanceProfileDeltaEditor, OpenConformanceProfilePreDefEditor } from 'src/app/root-store/conformance-profile-edit/conformance-profile-edit.actions';
-import { ConformanceProfileEditActionTypes, OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfilePostDefEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from '../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
+import { ConformanceProfileEditActionTypes, OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfilePostDefEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor, OpenConformanceProfileBindingsEditor } from '../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
@@ -15,6 +15,7 @@ import { DeltaEditorComponent } from './components/delta-editor/delta-editor.com
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
+import { ConformanceProfileBindingsEditorComponent } from './components/conformance-profile-bindings-editor/conformance-profile-bindings-editor.component';
 
 const routes: Routes = [
   {
@@ -152,6 +153,30 @@ const routes: Routes = [
           action: OpenConformanceProfileMetadataEditor,
           idKey: 'conformanceProfileId',
         },
+      },
+      {
+        path: 'bindings',
+        children: [
+          {
+            path: '',
+            component: ConformanceProfileBindingsEditorComponent,
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
+            data: {
+              editorMetadata: {
+                id: EditorID.CP_BINDINGS,
+                title: 'Bindings',
+                resourceType: Type.CONFORMANCEPROFILE,
+              },
+              onLeave: {
+                saveEditor: true,
+                saveTableOfContent: true,
+              },
+              action: OpenConformanceProfileBindingsEditor,
+              idKey: 'conformanceProfileId',
+            },
+          },
+        ],
       },
       {
         path: 'delta',
