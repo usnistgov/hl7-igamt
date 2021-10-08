@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { ICoConstraintBindingContext, ICoConstraintBindingSegment } from '../../../shared/models/co-constraint.interface';
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';
@@ -23,6 +24,8 @@ export class ContextCoConstraintBindingComponent implements OnInit {
   derived: boolean;
   @Input()
   bindings: ICoConstraintBindingContext[];
+  @Input()
+  structure: IHL7v2TreeNode[];
   @Input()
   segments: IDisplayElement[];
   @Input()

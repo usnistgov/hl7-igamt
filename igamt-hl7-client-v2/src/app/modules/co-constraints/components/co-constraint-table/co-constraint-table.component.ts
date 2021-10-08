@@ -3,14 +3,12 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild 
 import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
-import { combineLatest, EMPTY, Observable, of, Subject } from 'rxjs';
+import { combineLatest, Observable, of, Subject } from 'rxjs';
 import { filter, map, take, tap } from 'rxjs/operators';
-import { Scope } from 'src/app/modules/shared/constants/scope.enum';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
-import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
 import { SegmentService } from '../../../segment/services/segment.service';
-import { BindingSelectorComponent, IBindingLocationInfo } from '../../../shared/components/binding-selector/binding-selector.component';
-import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { IBindingLocationInfo } from '../../../shared/components/binding-selector/binding-selector.component';
+import { ICardinalityRange, IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import {
@@ -24,15 +22,14 @@ import {
   ICoConstraintGrouper,
   ICoConstraintHeader,
   ICoConstraintTable,
-  ICoConstraintValueSetCell,
-  ICoConstraintVariesCell,
   IDataElementHeader,
   INarrativeHeader,
 } from '../../../shared/models/co-constraint.interface';
-import { ICoConstraintDatatypeCell, ICoConstraintGroupBinding, ICoConstraintGroupBindingRef, ICoConstraintHeaders, ICoConstraintRequirement } from '../../../shared/models/co-constraint.interface';
+import { ICoConstraintGroupBinding, ICoConstraintGroupBindingRef, ICoConstraintHeaders, ICoConstraintRequirement, IDataElementHeaderInfo } from '../../../shared/models/co-constraint.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { BindingService } from '../../../shared/services/binding.service';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
+import { PathService } from '../../../shared/services/path.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
@@ -52,6 +49,11 @@ export interface ICoConstraintAction {
   targetGroup?: number;
   targetCoConstraint?: number;
   payload?: any;
+}
+
+export interface IDynamicMappingHeaders {
+  datatype: IDataElementHeader;
+  varies: IDataElementHeader;
 }
 
 interface ICoConstraintGroupMap {
@@ -82,6 +84,10 @@ export class CoConstraintTableComponent implements OnInit {
     this.processTree(seg, this._documentRef);
   }
 
+  get segment() {
+    return this._segment;
+  }
+
   @Input()
   set documentRef(documentRef: IDocumentRef) {
     this.processTree(this._segment, documentRef);
@@ -105,15 +111,6 @@ export class CoConstraintTableComponent implements OnInit {
         this.loadGroupRef(group as ICoConstraintGroupBindingRef);
       });
     }
-
-    if (this._value && datatype) {
-      console.log(this.coconstraintEntity.getCoConstraintRowList(this._value));
-      this.initVariesOptionList(this.coconstraintEntity.getCoConstraintRowList(this._value), datatype);
-    }
-
-    if (this._value) {
-      this.initBindingsValue(this._value.headers);
-    }
   }
 
   get value() {
@@ -124,57 +121,6 @@ export class CoConstraintTableComponent implements OnInit {
   valueChange: EventEmitter<ICoConstraintTable & ICoConstraintGroup>;
   @Output()
   formValue: EventEmitter<NgForm>;
-
-  usages = [
-    {
-      label: 'R',
-      value: 'R',
-    },
-    {
-      label: 'S',
-      value: 'S',
-    },
-    {
-      label: 'O',
-      value: 'O',
-    },
-  ];
-
-  locations = [
-    {
-      label: '1',
-      value: [
-        1,
-      ],
-    },
-    {
-      label: '4',
-      value: [
-        4,
-      ],
-    },
-    {
-      label: '10',
-      value: [
-        10,
-      ],
-    },
-    {
-      label: '1 or 4',
-      value: [
-        1,
-        4,
-      ],
-    },
-    {
-      label: '1 or 4 or 10',
-      value: [
-        1,
-        4,
-        10,
-      ],
-    },
-  ];
 
   _documentRef: IDocumentRef;
   @Input()
@@ -199,7 +145,6 @@ export class CoConstraintTableComponent implements OnInit {
   narrativeTmplRef: TemplateRef<any>;
   @ViewChild('variesCell')
   variesTmplRef: TemplateRef<any>;
-
   @ViewChild('tableForm')
   form: NgForm;
 
@@ -210,64 +155,85 @@ export class CoConstraintTableComponent implements OnInit {
     varies: IDataElementHeader;
   };
   groupsMap: ICoConstraintGroupMap = {};
-
   datatypeOptionsMap = {};
-  variesOptionMap: {
-    allowed?: any[];
-    bindingInfo?: IBindingLocationInfo;
-  } = {};
   showGrouper = false;
+  usages = [
+    {
+      label: 'R',
+      value: 'R',
+    },
+    {
+      label: 'S',
+      value: 'S',
+    },
+    {
+      label: 'O',
+      value: 'O',
+    },
+  ];
+  headersElementInfo: Record<string, IDataElementHeaderInfo> = {};
 
   constructor(
     private dialog: MatDialog,
     private segmentService: SegmentService,
-    private bindingsService: BindingService,
     private coconstraintEntity: CoConstraintEntityService,
     private repository: StoreResourceRepositoryService,
+    private pathService: PathService,
     private treeService: Hl7V2TreeService) {
     this.valueChange = new EventEmitter();
     this.formValue = new EventEmitter();
   }
 
-  initBindingsValue(headers: ICoConstraintHeaders) {
-    const initHeaderInfo = (header: IDataElementHeader) => {
-      this.bindingsService.getBingdingInfo(header.elementInfo.version, header.elementInfo.parent, header.elementInfo.datatype, header.elementInfo.location, header.elementInfo.type).pipe(
+  getHeaderElementInfo(header: IDataElementHeader): Observable<IDataElementHeaderInfo> {
+    if (this.headersElementInfo[header.key]) {
+      return of(this.headersElementInfo[header.key]);
+    } else {
+      return this.getDataElementHeaderElementInfo(this.segment.name, this.structure[0].children, header).pipe(
         take(1),
-        map((bindingsInfo) => {
-          if (header.key === '3') {
-            console.log('-------');
-            console.log(header.elementInfo.version, header.elementInfo.parent, header.elementInfo.datatype, header.elementInfo.location, header.elementInfo.type);
-            console.log(bindingsInfo.allowedBindingLocations);
-          }
-          header.elementInfo.bindingInfo = bindingsInfo;
+        map((info) => {
+          this.headersElementInfo[header.key] = info;
+          return info;
         }),
-      ).subscribe();
-    };
-
-    headers.selectors.filter((elm) => elm.type === CoConstraintHeaderType.DATAELEMENT).forEach((elm) => {
-      initHeaderInfo(elm as IDataElementHeader);
-    });
-    headers.constraints.filter((elm) => elm.type === CoConstraintHeaderType.DATAELEMENT).forEach((elm) => {
-      initHeaderInfo(elm as IDataElementHeader);
-    });
+      );
+    }
   }
 
-  initVariesOptionList(rows: ICoConstraint[], header: IDataElementHeader) {
-    const obs = rows.map((row) => {
-      const dt = row.cells[header.key] as ICoConstraintDatatypeCell;
-      if (dt && dt.datatypeId) {
-        return this.repository.getResourceDisplay(Type.DATATYPE, dt.datatypeId).pipe(
-          tap((datatype) => {
-            this.setAllowedVariesConstraints(row.id, datatype).pipe(
-              take(1),
-            ).subscribe();
-          }),
-        );
-      } else {
-        return of();
-      }
-    });
-    RxjsStoreHelperService.forkJoin(obs).subscribe();
+  repeats(cardinality: ICardinalityRange): boolean {
+    return cardinality && cardinality.max && cardinality.max !== '*' && +cardinality.max > 1;
+  }
+
+  getDataElementHeaderElementInfo(segment: string, tree: IHL7v2TreeNode[], header: IDataElementHeader): Observable<IDataElementHeaderInfo> {
+    return this.treeService.getNodeByPath(tree, this.pathService.getPathFromPathId(header.key), this.repository).pipe(
+      map((node) => {
+        const resourceRef = node.data.ref.getValue();
+        const parent = node.parent ? node.parent.data.ref.getValue() : undefined;
+        return {
+          version: resourceRef.version,
+          parent: parent ? parent.name : segment,
+          datatype: resourceRef.name,
+          location: node.data.position,
+          cardinality: node.data.cardinality,
+          type: node.data.type,
+          bindingInfo: node.data.valueSetBindingsInfo ? node.data.valueSetBindingsInfo.getValue() : null,
+          displayCardinality: this.repeats(node.data.cardinality) && header.columnType === CoConstraintColumnType.VARIES,
+        };
+      }),
+    );
+  }
+
+  numberOfCardinalityColumns(headersObj: ICoConstraintHeaders): Observable<number> {
+    const headers = [
+      ...(headersObj.selectors ? headersObj.selectors : []),
+      ...(headersObj.constraints ? headersObj.constraints : []),
+    ];
+    return combineLatest(headers.map((header) => this.getHeaderElementInfo(header as IDataElementHeader))).pipe(
+      take(1),
+      map((headerInfos) => {
+        return headerInfos.map((hi) => hi.displayCardinality).reduce((acc, v) => {
+          return v ? acc + 1 : acc;
+        }, 0);
+      }),
+    );
   }
 
   promptSelectGrouper(deflt: boolean = false): Observable<ICoConstraintGrouper> {
@@ -344,10 +310,6 @@ export class CoConstraintTableComponent implements OnInit {
     }
   }
 
-  filterDatatypeValue = (str: string, values: any[]) => {
-    return values.filter((v) => str === '' || v.value.includes(str));
-  }
-
   loadGroupRef(group: ICoConstraintGroupBindingRef) {
     const id = group.refId;
     this.getGroup(id).pipe(
@@ -367,10 +329,6 @@ export class CoConstraintTableComponent implements OnInit {
     this.loadGroupRef(group);
     this.value.groups.push(group);
     this.emitChange();
-  }
-
-  filterDatatype(id: string, value: string) {
-    this.datatypeOptionsMap[id] = this.filter(this.datatypes, value);
   }
 
   getDatatype(id: string): IDisplayElement {
@@ -458,32 +416,6 @@ export class CoConstraintTableComponent implements OnInit {
     ).subscribe();
   }
 
-  datatypeValueChange(value, cell, row) {
-    const candidates = this.datatypes.filter((dt) => dt.fixedName === value);
-    if (candidates && candidates.length > 0) {
-      const found = candidates.find((dt) => dt.id === cell.datatypeId);
-      if (!found) {
-        if (candidates.length === 1) {
-          cell.datatypeId = candidates[0].id;
-          this.datatypeChange(candidates[0], row);
-        } else {
-          const standard = candidates.find((dt) => dt.domainInfo.scope === Scope.HL7STANDARD && dt.domainInfo.version === this._segment.domainInfo.version);
-          if (standard) {
-            cell.datatypeId = standard.id;
-            this.datatypeChange(standard, row);
-          } else {
-            cell.datatypeId = null;
-            this.datatypeChange(null, row);
-          }
-        }
-      }
-    } else {
-      cell.datatypeId = null;
-      this.datatypeChange(null, row);
-    }
-    this.emitChange();
-  }
-
   getCellTemplateForType(type: CoConstraintColumnType) {
     switch (type) {
       case CoConstraintColumnType.VALUE:
@@ -497,12 +429,6 @@ export class CoConstraintTableComponent implements OnInit {
       case CoConstraintColumnType.VARIES:
         return this.variesTmplRef;
     }
-  }
-
-  setTemplateType(varies: ICoConstraintVariesCell, type: CoConstraintColumnType) {
-    varies.cellType = type;
-    varies.cellValue = this.coconstraintEntity.createEmptyCell(type);
-    this.emitChange();
   }
 
   openDataColumnDialog(list: IDataElementHeader[], selector: boolean) {
@@ -529,7 +455,6 @@ export class CoConstraintTableComponent implements OnInit {
     } else if (usage === 'O') {
       req.cardinality.min = 0;
     }
-
     this.emitChange();
   }
 
@@ -555,12 +480,6 @@ export class CoConstraintTableComponent implements OnInit {
     }
   }
 
-  clearVariesCell(cell: ICoConstraintVariesCell) {
-    cell.cellType = undefined;
-    cell.cellValue = undefined;
-    this.emitChange();
-  }
-
   getCellTemplate(header: ICoConstraintHeader) {
     if (header.type === CoConstraintHeaderType.DATAELEMENT) {
       const dataHeader = header as IDataElementHeader;
@@ -568,46 +487,6 @@ export class CoConstraintTableComponent implements OnInit {
     } else {
       return this.narrativeTmplRef;
     }
-  }
-
-  openVsPicker(vsCell: ICoConstraintValueSetCell, dataHeader: IDataElementHeader, excludeBindingStrength: boolean, override: IBindingLocationInfo) {
-    const info = dataHeader.elementInfo;
-    combineLatest(
-      this.bindingsService.getValueSetBindingDisplay(vsCell.bindings, this.repository),
-    ).pipe(
-      take(1),
-      tap(([bindings]) => {
-        const dialogRef = this.dialog.open(BindingSelectorComponent, {
-          minWidth: '40%',
-          minHeight: '40%', data: {
-            excludeBindingStrength,
-            resources: this.valueSets,
-            locationInfo: {
-              ...(override ? override : info.bindingInfo),
-              singleCodeAllowed: false,
-              multiple: false,
-              allowSingleCode: false,
-            },
-            selectedValueSetBinding: bindings,
-          },
-        });
-
-        dialogRef.afterClosed().subscribe(
-          (result) => {
-            if (result) {
-              vsCell.bindings = result.selectedValueSets.map((element) => {
-                return {
-                  valueSets: element.valueSets.map((vs) => vs.id),
-                  strength: element.bindingStrength,
-                  valuesetLocations: element.bindingLocation,
-                };
-              });
-              this.emitChange();
-            }
-          },
-        );
-      }),
-    ).subscribe();
   }
 
   numberOfColumns() {
@@ -626,73 +505,11 @@ export class CoConstraintTableComponent implements OnInit {
     let size = 0;
     headers.forEach(
       (header) => {
-        if (header.type === CoConstraintHeaderType.DATAELEMENT && (header as IDataElementHeader).cardinality) {
-          size += 2;
-        } else {
-          size++;
-        }
+        size++;
       },
     );
 
     return this.oneOrMore(size);
-  }
-
-  datatypeChange(datatype: IDisplayElement, row: ICoConstraint) {
-    if (this.dynamicMappingHeaders && this.dynamicMappingHeaders.varies && this.dynamicMappingHeaders.datatype) {
-      this.setAllowedVariesConstraints(row.id, datatype).pipe(
-        tap((allowed) => {
-          if (row.cells[this.dynamicMappingHeaders.varies.key]) {
-            const varies = row.cells[this.dynamicMappingHeaders.varies.key] as ICoConstraintVariesCell;
-            if (!allowed.includes(varies.cellType)) {
-              this.clearVariesCell(varies);
-            }
-          }
-          this.emitChange();
-        }),
-      ).subscribe();
-    }
-  }
-
-  setAllowedVariesConstraints(rowId: string, datatype: IDisplayElement): Observable<CoConstraintColumnType[]> {
-    return datatype ? this.bindingsService.getBingdingInfo(datatype.domainInfo.version, 'OBX', datatype.fixedName, 5, Type.FIELD).pipe(
-      take(1),
-      map((bindingInfo) => {
-        const allowed = this.getDatatypeAllowedConstraints(datatype, bindingInfo);
-        this.variesOptionMap[rowId] = {
-          allowed,
-          bindingInfo,
-        };
-        return allowed;
-      }),
-    ) : of([]).pipe(
-      map((value) => {
-        this.variesOptionMap[rowId] = [];
-        return value;
-      }),
-    );
-  }
-
-  getDatatypeAllowedConstraints(elm: IDisplayElement, bindingInfo: IBindingLocationInfo): CoConstraintColumnType[] {
-    const allow = [];
-    if (elm.leaf) {
-      allow.push(CoConstraintColumnType.VALUE);
-    }
-
-    if (bindingInfo.allowValueSets) {
-      allow.push(CoConstraintColumnType.VALUESET);
-    }
-
-    if (bindingInfo.coded) {
-      allow.push(CoConstraintColumnType.CODE);
-    }
-
-    return allow;
-  }
-
-  getVsById(id: string): IDisplayElement {
-    return this.valueSets.find((vs) => {
-      return vs.id === id;
-    });
   }
 
   addCoConstraint(list) {
@@ -744,7 +561,12 @@ export class CoConstraintTableComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.value.headers.selectors.forEach((header) => {
+      this.getDataElementHeaderElementInfo(this.segment.name, this.structure[0].children, header as IDataElementHeader);
+    });
+    this.value.headers.constraints.forEach((header) => {
+      this.getDataElementHeaderElementInfo(this.segment.name, this.structure[0].children, header as IDataElementHeader);
+    });
   }
 
 }

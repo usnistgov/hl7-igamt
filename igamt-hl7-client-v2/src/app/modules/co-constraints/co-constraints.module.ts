@@ -13,6 +13,11 @@ import { CoConstraintGroupDeltaEditorComponent } from './components/co-constrain
 import { CoConstraintGroupEditorComponent } from './components/co-constraint-group-editor/co-constraint-group-editor.component';
 import { CoConstraintGroupSelectorComponent } from './components/co-constraint-group-selector/co-constraint-group-selector.component';
 import { CoConstraintTableComponent } from './components/co-constraint-table/co-constraint-table.component';
+import { CodeCellComponent } from './components/co-constraint-table/code-cell/code-cell.component';
+import { DatatypeCellComponent } from './components/co-constraint-table/datatype-cell/datatype-cell.component';
+import { ValueCellComponent } from './components/co-constraint-table/value-cell/value-cell.component';
+import { VariesCellComponent } from './components/co-constraint-table/varies-cell/varies-cell.component';
+import { VsCellComponent } from './components/co-constraint-table/vs-cell/vs-cell.component';
 import { ContextCoConstraintBindingComponent } from './components/context-co-constraint-binding/context-co-constraint-binding.component';
 import { DataHeaderDialogComponent } from './components/data-header-dialog/data-header-dialog.component';
 import { GrouperDialogComponent } from './components/grouper-dialog/grouper-dialog.component';
@@ -34,6 +39,11 @@ import { CoConstraintGroupService } from './services/co-constraint-group.service
     CoConstraintCrossRefComponent,
     CoConstraintGroupDeltaEditorComponent,
     GrouperDialogComponent,
+    CodeCellComponent,
+    VsCellComponent,
+    DatatypeCellComponent,
+    VariesCellComponent,
+    ValueCellComponent,
   ],
   imports: [
     CommonModule,
@@ -46,7 +56,7 @@ import { CoConstraintGroupService } from './services/co-constraint-group.service
     SegmentService,
     CoConstraintGroupService,
   ],
-  exports: [CoConstraintTableComponent, DataHeaderDialogComponent, NarrativeHeaderDialogComponent, CoConstraintBindingDialogComponent, CoConstraintGroupSelectorComponent, SegmentCoConstraintBindingComponent, ContextCoConstraintBindingComponent],
+  exports: [CoConstraintTableComponent, DataHeaderDialogComponent, NarrativeHeaderDialogComponent, CoConstraintBindingDialogComponent, CoConstraintGroupSelectorComponent, SegmentCoConstraintBindingComponent, ContextCoConstraintBindingComponent, CodeCellComponent, VsCellComponent, DatatypeCellComponent, VariesCellComponent, ValueCellComponent],
   entryComponents: [ImportDialogComponent, DataHeaderDialogComponent, NarrativeHeaderDialogComponent, CoConstraintBindingDialogComponent, CoConstraintGroupSelectorComponent, GrouperDialogComponent],
 })
 export class CoConstraintsModule { }

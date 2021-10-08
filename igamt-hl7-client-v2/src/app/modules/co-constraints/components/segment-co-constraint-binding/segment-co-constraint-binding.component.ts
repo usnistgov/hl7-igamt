@@ -10,6 +10,7 @@ import { map, mergeMap, take, tap } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { MessageType, UserMessage } from '../../../dam-framework/models/messages/message.class';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
+import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import {
@@ -23,6 +24,8 @@ import {
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { ISegment } from '../../../shared/models/segment.interface';
+import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
+import { PathService } from '../../../shared/services/path.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 import { FileUploadService } from '../../services/file-upload.service';
@@ -59,6 +62,8 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   segments: IDisplayElement[];
   @Input()
   conformanceProfile: Observable<IConformanceProfile>;
+  @Input()
+  structure: IHL7v2TreeNode[];
   @Input()
   context: IStructureElementRef;
   @Input()
@@ -135,8 +140,6 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     this.binding = {
       ...binding,
     };
-    this.display$ = this.repository.getResourceDisplay(Type.SEGMENT, binding.flavorId);
-    this.segment$ = this.getSegment(binding.flavorId);
   }
 
   constructor(
@@ -146,6 +149,8 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     public repository: StoreResourceRepositoryService,
     private fileUploadService: FileUploadService,
     private messageService: MessageService,
+    private treeService: Hl7V2TreeService,
+    private pathService: PathService,
     protected ccService: CoConstraintEntityService) {
     this.valueChange = new EventEmitter<ICoConstraintBindingSegment>();
     this.delete = new EventEmitter<boolean>();
@@ -295,7 +300,18 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.binding);
+    this.treeService.getNodeByPath(
+      this.structure[0].children,
+      this.pathService.straightConcatPath(this.context.path, this.binding.segment.path),
+      this.repository,
+    ).pipe(
+      take(1),
+      map((segmentRef) => {
+        const segmentId = segmentRef.data.ref.getValue().id;
+        this.segment$ = this.getSegment(segmentId);
+        this.display$ = this.repository.getResourceDisplay(Type.SEGMENT, segmentId);
+      }),
+    ).subscribe();
   }
 
 }

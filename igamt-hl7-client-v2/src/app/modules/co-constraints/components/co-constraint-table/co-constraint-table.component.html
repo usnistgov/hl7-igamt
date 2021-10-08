@@ -66,10 +66,10 @@
     <ng-container *ngFor="let group of value.groups; let i = index">
       <ng-container [ngSwitch]="group.type" >
         <ng-container *ngSwitchCase="'REF'">
-          <ng-container *ngTemplateOutlet="ccGroupRef; context: { $implicit: group, list : value.groups, index: i, viewOnly: vOnly }"></ng-container>
+          <ng-container *ngTemplateOutlet="ccGroupRef; context: { $implicit: group, list : value.groups, index: i, viewOnly: vOnly, cardCells: numberOfCardinalityColumns(value.headers) | async }"></ng-container>
         </ng-container>
         <ng-container *ngSwitchCase="'CONTAINED'">
-          <ng-container *ngTemplateOutlet="ccGroup; context: { $implicit: group, list : value.groups, index: i, viewOnly: vOnly }"></ng-container>
+          <ng-container *ngTemplateOutlet="ccGroup; context: { $implicit: group, list : value.groups, index: i, viewOnly: vOnly, cardCells: numberOfCardinalityColumns(value.headers) | async }"></ng-container>
         </ng-container>
       </ng-container>
     </ng-container>
@@ -101,21 +101,23 @@
 
   <!-- DATA HEADER -->
   <ng-template #dataHeader let-header let-list="list" let-index="index">
-    <th class="column stick-header stick-top-pad" [ngClass]="{'column-border': index === (list.length - 1) && !header.cardinality, 'inside-border' :  index !== (list.length - 1) && !header.cardinality }">
-      <div style="width: 100%; display: flex; justify-content: space-between;">
-        <div *ngIf="!header._keep">
-          <button *ngIf="!vOnly" class="btn btn-sm btn-danger" (click)="deleteColumn(list, header, index)"><i class="fa fa-times"></i></button>
+    <ng-container *ngIf="getHeaderElementInfo(header) | async as headerInfo" >
+      <th  class="column stick-header stick-top-pad" [ngClass]="{'column-border': index === (list.length - 1) && !headerInfo.displayCardinality, 'inside-border' :  index !== (list.length - 1) && !headerInfo.displayCardinality }">
+        <div style="width: 100%; display: flex; justify-content: space-between;">
+          <div *ngIf="!header._keep">
+            <button *ngIf="!vOnly" class="btn btn-sm btn-danger" (click)="deleteColumn(list, header, index)"><i class="fa fa-times"></i></button>
+          </div>
+          <div style="width: 100%; text-align: center;">
+            <span class="badge badge-secondary">{{header.columnType}}</span>
+            <app-entity-bagde [type]="headerInfo.type"></app-entity-bagde>
+            <span style="margin-left: 3px;">{{header.name}}</span>
+          </div>
         </div>
-        <div style="width: 100%; text-align: center;">
-          <span class="badge badge-secondary">{{header.columnType}}</span>
-          <app-entity-bagde [type]="header.elementInfo.type"></app-entity-bagde>
-          <span style="margin-left: 3px;">{{header.name}}</span>
-        </div>
-      </div>
-    </th>
-    <th *ngIf="header.cardinality" style="text-align: center; vertical-align: middle; width: 60px;" class="stick-header stick-top-pad" [ngClass]="{'column-border': index === (list.length - 1), 'inside-border' : index !== (list.length - 1) }">
-      Cardinality
-    </th>
+      </th>
+      <th *ngIf="headerInfo.displayCardinality" style="text-align: center; vertical-align: middle; width: 60px;" class="stick-header stick-top-pad" [ngClass]="{'column-border': index === (list.length - 1), 'inside-border' : index !== (list.length - 1) }">
+        Cardinality
+      </th>
+    </ng-container>
   </ng-template>
 
   <!-- NARRATIVE HEADER -->
@@ -249,7 +251,7 @@
   </ng-template>
 
   <!-- STRUCTURE -->
-  <ng-template #ccGroup let-group let-list="list" let-index="index" let-viewOnly="viewOnly">
+  <ng-template #ccGroup let-cardCells="cardCells" let-group let-list="list" let-index="index" let-viewOnly="viewOnly">
     <tbody>
       <tr style="background-color: gray;" [ngClass]="{
         'row-added': delta && group.delta === 'ADDED',
@@ -277,7 +279,7 @@
         </td>
         <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: group.requirement, usageDelta: group.requirement.usageDelta, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
         <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, cardinalityDelta: group.requirement.cardinalityDelta, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
-        <td [attr.colspan]="numberOfColumns()" style="vertical-align: middle;">
+        <td [attr.colspan]="numberOfColumns() + cardCells" style="vertical-align: middle;">
           <input style="background-color: #f4f4f4;" *ngIf="!delta || !group.nameDelta"  [disabled]="viewOnly" class="form-control" type="text" [name]="'g-' + index + '-name'" [(ngModel)]="group.name" (ngModelChange)="emitChange()" placeholder="Group Name">
           <app-delta-column
             *ngIf="delta && !!group.nameDelta"
@@ -294,7 +296,7 @@
     <ng-container *ngTemplateOutlet="ccList; context: { $implicit: group.coConstraints, group : true, fieldId : 'g-' + index, viewOnly: viewOnly, deltaBody: group.delta }"></ng-container>
   </ng-template>
 
-  <ng-template #ccGroupRef let-group let-list="list" let-index="index" let-viewOnly="viewOnly">
+  <ng-template #ccGroupRef let-cardCells="cardCells" let-group let-list="list" let-index="index" let-viewOnly="viewOnly">
     <ng-container *ngIf="groupsMap[group.refId] as content">
       <tbody>
         <tr style="background-color: gray;">
@@ -304,7 +306,7 @@
           <td *ngIf="vOnly || delta" ></td>
           <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: group.requirement, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
           <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
-          <td [attr.colspan]="numberOfColumns()" style="vertical-align: middle;">
+          <td [attr.colspan]="numberOfColumns() + cardCells" style="vertical-align: middle;">
             <app-entity-bagde [type]="'COCONSTRAINTGROUP'"></app-entity-bagde>
             <strong style="color: white; margin-left: 5px;">{{ content.name }}</strong>
           </td>
@@ -318,25 +320,33 @@
   <ng-template #cellList let-excludeBindingStrength="excludeBindingStrength" let-headers="headers" let-cc let-fieldId="fieldId" let-viewOnly="viewOnly" let-column="column">
     <ng-container *ngIf="headers.length > 0; else emptyColumn">
       <ng-container *ngFor="let header of headers; let i = index">
-
-        <ng-container [ngSwitch]="!cc.cells[header.key] || (cc.cells[header.key] && (header.columnType === cc.cells[header.key].type || (!header.columnType && cc.cells[header.key].type === 'VALUE')))">
-
+        <ng-container [ngSwitch]="column === 'narratives'">
           <ng-container *ngSwitchCase="true">
-            <td style="position: relative;" #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !header.cardinality, 'inside-border' : i !== (headers.length - 1) && !header.cardinality }" *ngIf="cc.cells[header.key]; else emptyColumn" >
-                <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor, excludeBindingStrength: excludeBindingStrength, column: column }"></ng-container>
-            </td>
-            <td *ngIf="header.cardinality" [ngClass]="{'column-border': i === (headers.length - 1), 'inside-border' :  i !== (headers.length - 1) }" style="vertical-align: middle; text-align: center;">
-              <input *ngIf="!viewOnly" type="text" style="width: 100px;" [placeholder]="header.elementInfo.cardinality.max" [name]="fieldId + '-cardinality'" [(ngModel)]="cc.cells[header.key].cardinalityMax" (ngModelChange)="emitChange()" >
-              <strong *ngIf="viewOnly"> {{ cc.cells[header.key].cardinalityMax || header.elementInfo.cardinality.max }}</strong>
+            <td style="position: relative;" #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1), 'inside-border' : i !== (headers.length - 1) }" *ngIf="cc.cells[header.key]; else emptyColumn" >
+              <ng-container *ngTemplateOutlet="narrativeCell; context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor, excludeBindingStrength: excludeBindingStrength, column: column }"></ng-container>
             </td>
           </ng-container>
-
           <ng-container *ngSwitchCase="false">
-            <td #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !header.cardinality, 'inside-border' : i !== (headers.length - 1) && !header.cardinality }">
-              <span style="color: red">
-                Cell type conflicts with header (Header type is {{header.columnType ? header.columnType : 'VALUE'}}, Cell type is {{ cc.cells[header.key].type }})
-              </span>
-            </td>
+            <ng-container *ngIf="getHeaderElementInfo(header) | async as headerInfo">
+              <ng-container [ngSwitch]="!cc.cells[header.key] || (cc.cells[header.key] && (header.columnType === cc.cells[header.key].type || (!header.columnType && cc.cells[header.key].type === 'VALUE')))">
+                <ng-container *ngSwitchCase="true">
+                  <td style="position: relative;" #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !headerInfo.displayCardinality, 'inside-border' : i !== (headers.length - 1) && !headerInfo.displayCardinality }" *ngIf="cc.cells[header.key]; else emptyColumn" >
+                      <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor, excludeBindingStrength: excludeBindingStrength, column: column }"></ng-container>
+                  </td>
+                  <td *ngIf="headerInfo.displayCardinality" [ngClass]="{'column-border': i === (headers.length - 1), 'inside-border' :  i !== (headers.length - 1) }" style="vertical-align: middle; text-align: center;">
+                    <input *ngIf="!viewOnly" class="form-control" type="text" style="width: 100px;" [placeholder]="headerInfo.cardinality.max" [name]="fieldId + '-cardinality'" [(ngModel)]="cc.cells[header.key].cardinalityMax" (ngModelChange)="emitChange()" >
+                    <strong *ngIf="viewOnly"> {{ cc.cells[header.key].cardinalityMax || headerInfo.cardinality.max }}</strong>
+                  </td>
+                </ng-container>
+                <ng-container *ngSwitchCase="false">
+                  <td #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !headerInfo.displayCardinality, 'inside-border' : i !== (headers.length - 1) && !headerInfo.displayCardinality }">
+                    <span style="color: red">
+                      Cell type conflicts with header (Header type is {{header.columnType ? header.columnType : 'VALUE'}}, Cell type is {{ cc.cells[header.key].type }})
+                    </span>
+                  </td>
+                </ng-container>
+              </ng-container>
+            </ng-container>
           </ng-container>
         </ng-container>
       </ng-container>
@@ -344,163 +354,100 @@
   </ng-template>
 
   <!-- CELLS -->
-  <ng-template #codeCell let-overrideBindingInfo="overrideBindingInfo" let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor" let-column="column">
-    <div style="width: 100%; display: flex; justify-content: space-between;" *ngIf="!viewOnly">
-      <input
-        type="text"
-        [name]="fieldId + '-code'"
-        [(ngModel)]="cell.code"
-        (ngModelChange)="emitChange()"
-        class="form-control"
-        placeholder="Code"
-        [required]="column==='selectors'"
-        style="width: 50%;">
-      <input
-        type="text"
-        [name]="fieldId + '-codeSys'"
-        [(ngModel)]="cell.codeSystem"
-        (ngModelChange)="emitChange()"
-        class="form-control"
-        [required]="column==='selectors'"
-        placeholder="Code System"
-        style="width: 50%;">
-    </div>
-    <app-ngx-dropdown
-      *ngIf="!viewOnly"
-      [(ngModel)]="cell.locations"
-      placeholder="Binding Locations"
-      [name]="fieldId + '-location'"
-      (ngModelChange)="emitChange()"
-      [required]="column==='selectors'"
-      [values]="overrideBindingInfo ? overrideBindingInfo.allowedBindingLocations : header?.elementInfo?.bindingInfo?.allowedBindingLocations">
-    </app-ngx-dropdown>
-
-    <div *ngIf="viewOnly" style="width: 100%; display: flex; justify-content: space-between;">
-      <table class="table" style="margin-bottom: 0px;">
-        <tr>
-          <th>Code :</th>
-          <td>{{ cell.code }}</td>
-        </tr>
-        <tr>
-          <th>Code System :</th>
-          <td>{{ cell.codeSystem }}</td>
-        </tr>
-        <tr *ngIf="cell.locations">
-          <th>Locations :</th>
-          <td>{{ cell.locations | json }}</td>
-        </tr>
-      </table>
-    </div>
+  <ng-template #codeCell let-anchor="anchor" let-overrideElementInfo="overrideElementInfo" let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor" let-column="column">
+    <app-code-cell
+      [header]="header"
+      [cellValue]="cell"
+      [elementInfo]="overrideElementInfo ? overrideElementInfo: getHeaderElementInfo(header) | async"
+      [viewOnly]="viewOnly"
+      [fieldId]="fieldId"
+      [column]="column"
+      [id]="header.key"
+      [anchor]="anchor"
+      (cellValueChange)="emitChange()"
+    >
+    </app-code-cell>
   </ng-template>
 
   <ng-template #narrativeCell let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly">
     <textarea class="form-control" [(ngModel)]="cell.value" [name]="fieldId + '-textArea'" (ngModelChange)="emitChange()" [disabled]="viewOnly" ></textarea>
   </ng-template>
 
-  <ng-template #datatypeCell let-header="header" let-id="id" let-row="row" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor" >
-    <table class="table table-sm" style="margin-bottom: 0px;">
-      <tr>
-        <td style="text-align: center; vertical-align: middle; width: 60px;" >
-          <strong>Value</strong>
-        </td>
-        <td>
-          <app-ngx-dropdown
-          *ngIf="!viewOnly"
-          [(ngModel)]="cell.value"
-          placeholder="Datatype"
-          [name]="fieldId + '-dtValue'"
-          (ngModelChange)="datatypeValueChange($event, cell, row)"
-          [filter]="true"
-          [required]="true"
-          [filterFn]="filterDatatypeValue"
-          [values]="datatypeOptions">
-          </app-ngx-dropdown>
-          <span *ngIf="viewOnly"> {{ cell.value }} </span>
-        </td>
-      </tr>
-      <tr *ngIf="cell.value">
-        <td style="text-align: center; vertical-align: middle; width: 60px;">
-          <strong>Flavor</strong>
-        </td>
-        <td>
-          <div #fl ></div>
-          <app-resource-dropdown
-            *ngIf="!viewOnly"
-            [placeholder]="'Flavor'"
-            [name]="fieldId + '-dtFlavor'"
-            [filter]="true"
-            [filterBy]="cell.value"
-            [required]="true"
-            [appendTo]="fl"
-            [(id)]="cell.datatypeId"
-            (valueChange)="datatypeChange($event, row)"
-            [resources]="datatypes"
-          ></app-resource-dropdown>
-          <app-display-section
-            *ngIf="viewOnly && getDatatype(cell.datatypeId) as display"
-            [element]="display"
-            [hideDescription]="true"
-          >
-          </app-display-section>
-        </td>
-      </tr>
-    </table>
+  <ng-template #datatypeCell let-anchor="anchor" let-overrideElementInfo="overrideElementInfo" let-header="header" let-id="id" let-row="row" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor" >
+    <app-datatype-cell
+      [header]="header"
+      [cellValue]="cell"
+      [elementInfo]="overrideElementInfo ? overrideElementInfo: getHeaderElementInfo(header) | async"
+      [viewOnly]="viewOnly"
+      [fieldId]="fieldId"
+      [column]="column"
+      [id]="id"
+      [anchor]="anchor"
+      (cellValueChange)="emitChange()"
+
+      [datatypes]="datatypes"
+      [segment]="segment"
+      [datatypeOptions]="datatypeOptions"
+    >
+    </app-datatype-cell>
   </ng-template>
 
-  <ng-template #valueSetCell let-overrideBindingInfo="overrideBindingInfo" let-excludeBindingStrength="excludeBindingStrength" let-header="header" let-cell let-viewOnly="viewOnly">
-    <div style="width: 100%; display: flex; justify-content: space-between; align-items: start;">
-      <div style="margin-right: 5px; width: 100%;">
-        <ng-container *ngFor="let item of cell.bindings">
-          <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit : item, bindingStrength : bindingStrength }"></ng-container>
-        </ng-container>
-      </div>
-      <button *ngIf="!viewOnly" class="btn btn-sm btn-primary" (click)="openVsPicker(cell, header, excludeBindingStrength, overrideBindingInfo)"><i class="fa fa-pencil"></i></button>
-    </div>
+  <ng-template #valueSetCell let-anchor="anchor" let-overrideElementInfo="overrideElementInfo" let-fieldId="fieldId" let-column="column" let-id="id" let-excludeBindingStrength="excludeBindingStrength" let-header="header" let-cell let-viewOnly="viewOnly">
+    <app-vs-cell
+      [header]="header"
+      [cellValue]="cell"
+      [elementInfo]="overrideElementInfo ? overrideElementInfo: getHeaderElementInfo(header) | async"
+      [viewOnly]="viewOnly"
+      [fieldId]="fieldId"
+      [column]="column"
+      [id]="id"
+      [anchor]="anchor"
+      (cellValueChange)="emitChange()"
+
+      [valueSets]="valueSets"
+      [excludeBindingStrength]="excludeBindingStrength"
+    >
+    </app-vs-cell>
   </ng-template>
 
-  <ng-template #displayVsBinding let-vsBinding>
-    <table class="table table-striped table-sm table-bordered" style="text-align: center; margin-bottom: 0;">
-      <tr>
-        <td pTooltip="Binding Strength" tooltipPosition="top" *ngIf="vsBinding.strength">
-          <strong >{{vsBinding.strength}}</strong>
-        </td>
-        <td *ngIf="!vsBinding.strength"></td>
-        <td pTooltip="Binding Locations" tooltipPosition="top">
-          <strong>{{vsBinding.valuesetLocations.length > 0 ? (vsBinding.valuesetLocations | json) : '.'}}</strong>
-        </td>
-      </tr>
-      <tr *ngFor="let itemId of vsBinding.valueSets" >
-        <td colspan="2" *ngIf="getVsById(itemId) as item">
-          <div [pTooltip]="item.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
-            <app-entity-bagde [type]="item.type"></app-entity-bagde>
-            <app-scope-badge *ngIf="item.domainInfo" [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
-            <strong *ngIf="item.variableName" style="margin-left: 5px; word-break: break-all;"> {{item.variableName}}</strong>
-          </div>
-        </td>
-      </tr>
-    </table>
+  <ng-template #valueCell let-anchor="anchor" let-overrideElementInfo="overrideElementInfo" let-header="header" let-cell let-fieldId="fieldId" let-id="id" let-viewOnly="viewOnly" let-column="column" >
+    <app-value-cell
+      [header]="header"
+      [cellValue]="cell"
+      [elementInfo]="overrideElementInfo ? overrideElementInfo: getHeaderElementInfo(header) | async"
+      [viewOnly]="viewOnly"
+      [fieldId]="fieldId"
+      [column]="column"
+      [id]="id"
+      [anchor]="anchor"
+      (cellValueChange)="emitChange()"
+    >
+    </app-value-cell>
   </ng-template>
 
-  <ng-template #valueCell let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-column="column" >
-    <input type="text" [(ngModel)]="cell.value" class="form-control" [name]="fieldId + '-value'" placeholder="Constant Value" (ngModelChange)="emitChange()" *ngIf="!viewOnly" [required]="column==='selectors'">
-    <div  *ngIf="viewOnly" style="text-align: center; width: 100%;">
-      <span>{{cell.value}}</span>
-    </div>
-  </ng-template>
-
-  <ng-template #variesCell let-header="header" let-id="id" let-cell let-viewOnly="viewOnly">
-    <div class="btn-group" style="width: 100%; border: 1px solid gray;" *ngIf="!viewOnly && !cell.cellType && variesOptionMap[id] && variesOptionMap[id].allowed && variesOptionMap[id].allowed.length > 0">
-      <button *ngFor="let item of variesOptionMap[id].allowed" class="btn btn-sm btn-light" (click)="setTemplateType(cell, item)">{{ item }}</button>
-    </div>
-    <div  style="width: 100%; text-align: center; color: lightgray;" *ngIf="!cell.cellType && (!variesOptionMap[id] || !variesOptionMap[id].allowed || variesOptionMap[id].allowed.length === 0) && !viewOnly">
-      <strong>Select OBX-2 datatype (Coded Element or Primitive)</strong>
-    </div>
-    <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;" *ngIf="cell.cellType">
-      <div style="width: 100%;">
-        <ng-container *ngTemplateOutlet="getCellTemplateForType(cell.cellType); context: { $implicit: cell.cellValue, header: header, viewOnly : viewOnly, overrideBindingInfo: variesOptionMap[id]?.bindingInfo }"></ng-container>
-      </div>
-      <i style="color: red; margin-left: 5px; font-size: 1.2em; cursor: pointer;" class="fa fa-times" (click)="clearVariesCell(cell)" *ngIf="!viewOnly" ></i>
-    </div>
+  <ng-template #variesCell let-row="row" let-anchor="anchor" let-overrideElementInfo="overrideElementInfo"  let-excludeBindingStrength="excludeBindingStrength" let-header="header" let-fieldId="fieldId" let-id="id" let-column="column" let-cell let-viewOnly="viewOnly">
+    <app-varies-cell
+      [header]="header"
+      [cellValue]="cell"
+      [elementInfo]="overrideElementInfo ? overrideElementInfo: getHeaderElementInfo(header) | async"
+      [viewOnly]="viewOnly"
+      [fieldId]="fieldId"
+      [column]="column"
+      [id]="id"
+      [anchor]="anchor"
+      (cellValueChange)="emitChange()"
+      [row]="row"
+      [datatypes]="datatypes"
+      [excludeBindingStrength]="excludeBindingStrength"
+      [codeTmplRef]="codeCell"
+      [valueTmplRef]="valueCell"
+      [valueSetTmplRef]="valueSetCell"
+      [datatypeTmplRef]="datatypeCell"
+      [narrativeTmplRef]="narrativeCell"
+      [variesTmplRef]="variesCell"
+      [datatypeId]="dynamicMappingHeaders.datatype ? row.cells[dynamicMappingHeaders.datatype.key]?.datatypeId : undefined"
+    >
+    </app-varies-cell>
   </ng-template>
 
 </form>

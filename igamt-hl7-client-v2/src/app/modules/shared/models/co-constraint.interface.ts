@@ -95,9 +95,7 @@ export interface ICoConstraintHeader {
 
 export interface IDataElementHeader extends ICoConstraintHeader {
   name: string;
-  cardinality: boolean;
   columnType: CoConstraintColumnType;
-  elementInfo: IDataElementHeaderInfo;
 }
 
 export interface IDataElementHeaderInfo {
@@ -108,6 +106,7 @@ export interface IDataElementHeaderInfo {
   cardinality: ICardinalityRange;
   type: Type;
   bindingInfo: IBindingLocationInfo;
+  displayCardinality: boolean;
 }
 
 export interface INarrativeHeader extends ICoConstraintHeader {
