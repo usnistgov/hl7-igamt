@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { combineLatest, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import * as fromDamActions from 'src/app/modules/dam-framework/store/data/dam.actions';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
@@ -16,9 +16,8 @@ import { OpenEditorService } from '../../modules/core/services/open-editor.servi
 import { MessageService } from '../../modules/dam-framework/services/message.service';
 import { SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { Type } from '../../modules/shared/constants/type.enum';
-import { ConformanceStatementService } from '../../modules/shared/services/conformance-statement.service';
+import { BindingService } from '../../modules/shared/services/binding.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { selectDatatypesById, selectSegmentsById } from '../dam-igamt/igamt.resource-display.selectors';
 import {
   ConformanceProfileEditActions,
   ConformanceProfileEditActionTypes,
@@ -28,7 +27,7 @@ import {
   OpenConformanceProfilePostDefEditor,
   OpenConformanceProfilePreDefEditor,
 } from './conformance-profile-edit.actions';
-import { OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileDeltaEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from './conformance-profile-edit.actions';
+import { OpenConformanceProfileBindingsEditor, OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileDeltaEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from './conformance-profile-edit.actions';
 import { IState } from './conformance-profile-edit.reducer';
 
 @Injectable()
@@ -138,29 +137,21 @@ export class ConformanceProfileEditEffects {
       return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
         take(1),
         mergeMap((documentInfo) => {
-          return this.conformanceProfileService.getConformanceStatements(action.payload.id, documentInfo).pipe(tap((x) => console.log(x)));
-        }),
-        flatMap((data) => {
-          const segments = this.conformanceStatementService.resolveDependantConformanceStatement(data.associatedSEGConformanceStatementMap || {}, selectSegmentsById);
-          const datatypes = this.conformanceStatementService.resolveDependantConformanceStatement(data.associatedDTConformanceStatementMap || {}, selectDatatypesById);
-
-          return combineLatest(
-            (segments.length > 0 ? combineLatest(segments) : of([])),
-            (datatypes.length > 0 ? combineLatest(datatypes) : of([])),
-          ).pipe(
-            take(1),
-            map(([s, d]) => {
-              return {
-                active: this.conformanceStatementService.createEditableNode(data.conformanceStatements || []),
-                dependants: {
-                  segments: s,
-                  datatypes: d,
-                },
-              };
-            }),
-          );
+          return this.conformanceProfileService.getConformanceStatementEditorData(action.payload.id, documentInfo);
         }),
       );
+    },
+    this.ConfPNotFound,
+  );
+
+  @Effect()
+  openCpBindingsEditor$ = this.editorHelper.openBindingsEditor<IConformanceProfile, OpenConformanceProfileBindingsEditor>(
+    ConformanceProfileEditActionTypes.OpenConformanceProfileBindingsEditor,
+    Type.CONFORMANCEPROFILE,
+    fromIgamtDisplaySelectors.selectMessagesById,
+    this.store.select(fromIgamtSelectedSelectors.selectedConformanceProfile),
+    (id, type) => {
+      return this.bindingService.getResourceBindings(type, id);
     },
     this.ConfPNotFound,
   );
@@ -179,7 +170,7 @@ export class ConformanceProfileEditEffects {
     private store: Store<IState>,
     private message: MessageService,
     private deltaService: DeltaService,
-    private conformanceStatementService: ConformanceStatementService,
+    private bindingService: BindingService,
     private conformanceProfileService: ConformanceProfileService,
     private editorHelper: OpenEditorService) { }
 

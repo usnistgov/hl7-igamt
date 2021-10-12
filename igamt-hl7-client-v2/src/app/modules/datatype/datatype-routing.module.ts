@@ -9,17 +9,18 @@ import {
   OpenDatatypePreDefEditor,
   OpenDatatypeStructureEditor,
 } from '../../root-store/datatype-edit/datatype-edit.actions';
-import { OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from '../../root-store/datatype-edit/datatype-edit.actions';
+import { OpenDatatypeBindingsEditor, OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from '../../root-store/datatype-edit/datatype-edit.actions';
 import { DataLoaderGuard } from '../dam-framework/guards/data-loader.guard';
 import { EditorActivateGuard } from '../dam-framework/guards/editor-activate.guard';
 import { EditorDeactivateGuard } from '../dam-framework/guards/editor-deactivate.guard';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { DatatypeConformanceStatementEditorComponent } from './components/conformance-statement-editor/datatype-conformance-statement-editor.component';
+import { DatatypeBindingsEditorComponent } from './components/datatype-bindings-editor/datatype-bindings-editor.component';
 import { DatatypeCrossRefsComponent } from './components/datatype-cross-refs/datatype-cross-refs.component';
 import { DatatypeStructureEditorComponent } from './components/datatype-structure-editor/datatype-structure-editor.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
-import {DtmDeltaEditorComponent} from './components/dtm-delta-editor/dtm-delta-editor.component';
+import { DtmDeltaEditorComponent } from './components/dtm-delta-editor/dtm-delta-editor.component';
 import { MetadataEditComponent } from './components/metadata-edit/metadata-edit.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -151,6 +152,30 @@ const routes: Routes = [
                 saveTableOfContent: true,
               },
               action: OpenDatatypeStructureEditor,
+              idKey: 'datatypeId',
+            },
+          },
+        ],
+      },
+      {
+        path: 'bindings',
+        children: [
+          {
+            path: '',
+            component: DatatypeBindingsEditorComponent,
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
+            data: {
+              editorMetadata: {
+                id: EditorID.DATATYPE_BINDINGS,
+                title: 'Bindings',
+                resourceType: Type.DATATYPE,
+              },
+              onLeave: {
+                saveEditor: true,
+                saveTableOfContent: true,
+              },
+              action: OpenDatatypeBindingsEditor,
               idKey: 'datatypeId',
             },
           },

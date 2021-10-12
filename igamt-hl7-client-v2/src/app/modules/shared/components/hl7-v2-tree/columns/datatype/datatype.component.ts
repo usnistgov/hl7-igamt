@@ -1,9 +1,9 @@
-import {Component} from '@angular/core';
-import {MatDialog} from '@angular/material';
-import {ActiveStatus} from '../../../../models/abstract-domain.interface';
-import {IDisplayElement} from '../../../../models/display-element.interface';
-import {PropertyType} from '../../../../models/save-change';
-import {GroupOptions, ReferenceComponent} from '../reference/reference.component';
+import { Component } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { ActiveStatus } from '../../../../models/abstract-domain.interface';
+import { IDisplayElement } from '../../../../models/display-element.interface';
+import { PropertyType } from '../../../../models/save-change';
+import { GroupOptions, ReferenceComponent } from '../reference/reference.component';
 
 @Component({
   selector: 'app-datatype',
@@ -17,13 +17,13 @@ export class DatatypeComponent extends ReferenceComponent {
   }
 
   filter(opts: IDisplayElement[], selected: IDisplayElement): GroupOptions {
-    opts = opts.filter((x) =>  this.filterByActiveInfo(x));
+    opts = opts.filter((x) => this.filterByActiveInfo(x));
     const same_base = opts.filter((opt) => {
       return opt.fixedName === selected.fixedName;
     });
 
     const different_base = opts.filter((opt) => {
-      return opt.fixedName !== selected.fixedName && (selected.leaf ? true : !opt.leaf);
+      return opt.fixedName !== selected.fixedName;
     });
 
     const itemize = (flavor) => {
@@ -46,7 +46,7 @@ export class DatatypeComponent extends ReferenceComponent {
   }
 
   private filterByActiveInfo(opt: IDisplayElement) {
-    if (opt.activeInfo  && opt.activeInfo.status && opt.activeInfo.status === ActiveStatus.DEPRECATED) {
+    if (opt.activeInfo && opt.activeInfo.status && opt.activeInfo.status === ActiveStatus.DEPRECATED) {
       return false;
     }
     return true;

@@ -4,4 +4,5 @@ export enum Icons {
   POST = 'fa fa-mail-forward',
   LIST = 'fa fa-list',
   EDIT = 'fa fa-edit',
+  BINDING = 'fa fa-link',
 }

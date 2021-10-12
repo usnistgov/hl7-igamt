@@ -84,7 +84,7 @@ export interface IHL7v2TreeNodeData {
   changeable?: boolean;
   viewOnly?: boolean;
   confLength?: string;
-  valueSetBindingsInfo?: Observable<IBindingLocationInfo>;
+  valueSetBindingsInfo?: BehaviorSubject<IBindingLocationInfo>;
   ref?: BehaviorSubject<IResourceRef>;
   bindings?: IElementBinding;
   level?: number;

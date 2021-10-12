@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { getValue } from '@angular/core/src/render3/styling/class_and_style_bindings';
 import { ICardinalityRange, IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { Usage } from '../constants/usage.enum';
@@ -24,6 +25,7 @@ export enum RestrictionType {
   PRIMITIVE = 'PRIMITIVE',
   DATATYPES = 'DATATYPES',
   REPEATABLE = 'REPEATABLE',
+  VALUE_BINDING = 'VALUE_BINDING',
   USAGE = 'USAGE',
   TYPE = 'TYPE',
   PATH = 'PATH',
@@ -34,6 +36,12 @@ export enum RestrictionType {
 export interface IPathValue {
   path: string;
   excludeChildren: boolean;
+}
+
+export interface IValueBinding {
+  allowValueSet: boolean;
+  allowSingleCode: boolean;
+  isCoded: boolean;
 }
 
 @Injectable({
@@ -119,6 +127,8 @@ export class TreeFilterService {
         return this.parents(node, restriction.value);
       case RestrictionType.MULTI:
         return this.multi(node, restriction.value);
+      case RestrictionType.VALUE_BINDING:
+        return this.valueBinding(node, restriction.value);
     }
   }
 
@@ -136,6 +146,22 @@ export class TreeFilterService {
 
   path(node: IHL7v2TreeNode, payload: IPathValue[]): boolean {
     return this.pathIsProhibited(node.data.pathId, payload);
+  }
+
+  valueBinding(node: IHL7v2TreeNode, payload: IValueBinding): boolean {
+    if (!node.data.valueSetBindingsInfo) {
+      return false;
+    }
+    const bindingInfo = node.data.valueSetBindingsInfo.getValue();
+    if (bindingInfo) {
+      return (
+        (bindingInfo.allowValueSets !== undefined ? bindingInfo.allowValueSets === payload.allowValueSet : true) ||
+        (bindingInfo.allowSingleCode !== undefined ? bindingInfo.allowSingleCode === payload.allowSingleCode : true) ||
+        (bindingInfo.coded !== undefined ? bindingInfo.coded === payload.isCoded : true)
+      );
+    } else {
+      return !payload.allowValueSet && !payload.allowSingleCode && !payload.isCoded;
+    }
   }
 
   parents(node: IHL7v2TreeNode, payload: string): boolean {

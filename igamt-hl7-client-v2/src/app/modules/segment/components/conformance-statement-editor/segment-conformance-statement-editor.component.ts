@@ -2,11 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
-import { combineLatest, Observable, of } from 'rxjs';
-import { flatMap, map, take } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { ConformanceStatementEditorComponent } from 'src/app/modules/core/components/conformance-statement-editor/conformance-statement-editor.component';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
-import { selectDatatypesById } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { IConformanceStatementEditorData } from '../../../core/components/conformance-statement-editor/conformance-statement-editor.component';
 import { Message } from '../../../dam-framework/models/messages/message.class';
@@ -56,23 +54,7 @@ export class SegmentConformanceStatementEditorComponent extends ConformanceState
   }
 
   getById(id: string, documentRef: IDocumentRef): Observable<IConformanceStatementEditorData> {
-    return this.segmentService.getConformanceStatements(id, documentRef).pipe(
-      flatMap((data) => {
-        const datatypes = this.conformanceStatementService.resolveDependantConformanceStatement(data.associatedConformanceStatementMap || {}, selectDatatypesById);
-
-        return (datatypes.length > 0 ? combineLatest(datatypes) : of([])).pipe(
-          take(1),
-          map((d) => {
-            return {
-              active: this.conformanceStatementService.createEditableNode(data.conformanceStatements || []),
-              dependants: {
-                datatypes: d,
-              },
-            };
-          }),
-        );
-      }),
-    );
+    return this.segmentService.getConformanceStatementEditorData(id, documentRef);
   }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {

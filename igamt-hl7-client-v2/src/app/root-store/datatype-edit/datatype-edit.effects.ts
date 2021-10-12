@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { combineLatest, of } from 'rxjs';
+import { of } from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
 import { CrossReferencesService } from 'src/app/modules/shared/services/cross-references.service';
@@ -17,10 +17,9 @@ import { DatatypeService } from '../../modules/datatype/services/datatype.servic
 import { Type } from '../../modules/shared/constants/type.enum';
 import { IUsages } from '../../modules/shared/models/cross-reference';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
-import { ConformanceStatementService } from '../../modules/shared/services/conformance-statement.service';
+import { BindingService } from '../../modules/shared/services/binding.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { selectDatatypesById } from '../dam-igamt/igamt.resource-display.selectors';
-import { OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from './datatype-edit.actions';
+import { OpenDatatypeBindingsEditor, OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from './datatype-edit.actions';
 import {
   DatatypeEditActionTypes,
   LoadDatatype,
@@ -126,24 +125,21 @@ export class DatatypeEditEffects {
       return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
         take(1),
         mergeMap((documentInfo) => {
-          return this.datatypeService.getConformanceStatements(action.payload.id, documentInfo);
-        }),
-        flatMap((data) => {
-          const datatypes = this.conformanceStatementService.resolveDependantConformanceStatement(data.associatedConformanceStatementMap || {}, selectDatatypesById);
-
-          return (datatypes.length > 0 ? combineLatest(datatypes) : of([])).pipe(
-            take(1),
-            map((d) => {
-              return {
-                active: this.conformanceStatementService.createEditableNode(data.conformanceStatements || []),
-                dependants: {
-                  datatypes: d,
-                },
-              };
-            }),
-          );
+          return this.datatypeService.getConformanceStatementEditorData(action.payload.id, documentInfo);
         }),
       );
+    },
+    this.DatatypeNotFound,
+  );
+
+  @Effect()
+  openDatatypeBindingsEditor$ = this.editorHelper.openBindingsEditor<IDatatype, OpenDatatypeBindingsEditor>(
+    DatatypeEditActionTypes.OpenDatatypeBindingsEditor,
+    Type.DATATYPE,
+    fromIgamtDisplaySelectors.selectDatatypesById,
+    this.store.select(fromIgamtSelectedSelectors.selectedDatatype),
+    (id, type) => {
+      return this.bindingService.getResourceBindings(type, id);
     },
     this.DatatypeNotFound,
   );
@@ -164,8 +160,8 @@ export class DatatypeEditEffects {
     private editorHelper: OpenEditorService,
     private datatypeService: DatatypeService,
     private deltaService: DeltaService,
-    private conformanceStatementService: ConformanceStatementService,
     private crossReferenceService: CrossReferencesService,
+    private bindingService: BindingService,
   ) { }
 
 }

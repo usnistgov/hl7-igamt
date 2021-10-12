@@ -5,6 +5,7 @@ import { StoreModule } from '@ngrx/store';
 import { DatatypeEditEffects } from '../../root-store/datatype-edit/datatype-edit.effects';
 import { SharedModule } from '../shared/shared.module';
 import { DatatypeConformanceStatementEditorComponent } from './components/conformance-statement-editor/datatype-conformance-statement-editor.component';
+import { DatatypeBindingsEditorComponent } from './components/datatype-bindings-editor/datatype-bindings-editor.component';
 import { DatatypeCrossRefsComponent } from './components/datatype-cross-refs/datatype-cross-refs.component';
 import { DatatypeStructureEditorComponent } from './components/datatype-structure-editor/datatype-structure-editor.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
@@ -16,7 +17,7 @@ import { DatatypeRoutingModule } from './datatype-routing.module';
 import { DatatypeService } from './services/datatype.service';
 
 @NgModule({
-  declarations: [PredefEditorComponent, PostdefEditorComponent, MetadataEditComponent, DatatypeStructureEditorComponent, DatatypeCrossRefsComponent, DatatypeConformanceStatementEditorComponent, DeltaEditorComponent, DtmDeltaEditorComponent],
+  declarations: [PredefEditorComponent, PostdefEditorComponent, MetadataEditComponent, DatatypeStructureEditorComponent, DatatypeCrossRefsComponent, DatatypeConformanceStatementEditorComponent, DeltaEditorComponent, DtmDeltaEditorComponent, DatatypeBindingsEditorComponent],
   imports: [
     CommonModule,
     DatatypeRoutingModule,

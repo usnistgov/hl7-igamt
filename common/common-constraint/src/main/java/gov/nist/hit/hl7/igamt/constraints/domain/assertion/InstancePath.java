@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
 
+import com.google.common.base.Strings;
+
 /**
  * @author jungyubw
  *
@@ -35,7 +37,12 @@ public class InstancePath extends Path {
 
   @Override
   public String toString() {
-    return "InstancePath [instanceParameter=" + instanceParameter + ", toString()="
-        + super.toString() + "]";
+    StringBuilder value = new StringBuilder(getElementId() + "[" + (Strings.isNullOrEmpty(instanceParameter) ? "*" : instanceParameter) + "]");
+    InstancePath child = getChild();
+    while (child != null) {
+      value.append(".").append(child.toString());
+      child = child.getChild();
+    }
+    return value.toString();
   }
 }
