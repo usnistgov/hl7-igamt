@@ -2,17 +2,6 @@
   <p-table #dt1 [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="table" [globalFilterFields]="['name', 'description']" scrollHeight="100%" sortField="name"
            scrollable="true">
     <ng-template pTemplate="caption">
-      <div style="display: flex; margin-bottom: 5px;">
-        <strong style="margin-right: 5px; display: flex; align-items: center;">
-          Scope
-        </strong>
-        <span style="margin-right: 5px; display: flex; align-items: center;">
-          <input [(ngModel)]="selectedScope" (ngModelChange)="selectScope($event)" type="radio" style="margin-right: 5px;" styleClass="'radio-inline'" name="scope" value="HL7STANDARD" /> <app-scope-badge scope="HL7STANDARD"></app-scope-badge>
-        </span>
-        <span style="margin-right: 5px; display: flex; align-items: center;">
-          <input [(ngModel)]="selectedScope" (ngModelChange)="selectScope($event)" type="radio" style="margin-right: 5px;" styleClass="'radio-inline'" name="scope" value="USERCUSTOM" /> <app-scope-badge scope="USERCUSTOM"></app-scope-badge>
-        </span>
-      </div>
       <app-select-versions (selected)="selectVersion($event)" [hl7Versions]="hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
       <div style="text-align: left">
         <div class="input-group" style="margin-left: 10px;">
@@ -29,7 +18,7 @@
         <th>
           Segment
         </th>
-        <th style="width:100px" *ngIf="selectedScope !=='USERCUSTOM'">
+        <th style="width:100px">
           As Is
         </th>
         <th style="width:100px">
@@ -48,7 +37,7 @@
             </ng-container>
           </span>
         </td>
-        <td style="width:100px" *ngIf="selectedScope !=='USERCUSTOM'" >
+        <td style="width:100px" >
           <button class="btn-primary btn btn-sm" (click)="addAsIs(rowData)">
             <i class="fa fa-plus"></i>
           </button>
