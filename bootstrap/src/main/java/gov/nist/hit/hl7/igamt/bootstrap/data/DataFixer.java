@@ -11,8 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.bootstrap.data;
 
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
-
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +21,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
-import org.hibernate.engine.jdbc.spi.TypeSearchability;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +28,6 @@ import com.opencsv.CSVReader;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Status;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
@@ -45,14 +40,12 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepo
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
-import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
-import net.bytebuddy.description.type.TypeDescription.Generic.Visitor.TypeErasing;
 
 /**
  * @author Abdelghani El Ouakili
