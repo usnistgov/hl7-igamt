@@ -37,6 +37,8 @@ export class DisplayService {
       variableName: resource.ext,
       leaf: !resource.components || resource.components.length === 0,
       type: resource.type,
+      flavorExt: resource.fixedExtension,
+      structureIdentifier: resource.structureIdentifier,
       isExpanded: false,
     };
   }
@@ -45,7 +47,7 @@ export class DisplayService {
     return {
       id: resource.id,
       domainInfo: resource.domainInfo,
-      fixedName: resource.name,
+      fixedName: resource.fixedExtension ? resource.name + '#' + resource.fixedExtension : resource.name,
       description: resource.description,
       differential: !!resource.origin,
       origin: resource.origin,
@@ -54,6 +56,8 @@ export class DisplayService {
       variableName: resource.ext,
       leaf: !resource.children || resource.children.length === 0,
       type: resource.type,
+      flavorExt: resource.fixedExtension,
+      structureIdentifier: resource.structureIdentifier,
       isExpanded: false,
     };
   }

@@ -14,6 +14,7 @@ public abstract class Resource extends AbstractDomain {
   private String purposeAndUse;
   private String shortDescription;
   private String fixedExtension;
+  private String structureIdentifier;
   @Transient
   private Set<GenerationDirective> generatedUsing;
   @Transient
@@ -58,6 +59,7 @@ public abstract class Resource extends AbstractDomain {
       elm.shortDescription = shortDescription;
       elm.purposeAndUse = purposeAndUse;
       elm.fixedExtension = fixedExtension;
+      elm.setStructureIdentifier(structureIdentifier);
       elm.setActiveInfo(new ActiveInfo());
   }
 
@@ -148,5 +150,15 @@ public abstract class Resource extends AbstractDomain {
 
   public void setGenerated(boolean generated) {
     this.generated = generated;
+  }
+
+
+  public String getStructureIdentifier() {
+    return structureIdentifier;
+  }
+
+
+  public void setStructureIdentifier(String structureIdentifier) {
+    this.structureIdentifier = structureIdentifier;
   }
 }

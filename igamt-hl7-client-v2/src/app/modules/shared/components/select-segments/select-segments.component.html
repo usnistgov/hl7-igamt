@@ -29,7 +29,7 @@
         <th>
           Segment
         </th>
-        <th style="width:100px">
+        <th style="width:100px" *ngIf="selectedScope !=='USERCUSTOM'">
           As Is
         </th>
         <th style="width:100px">
@@ -42,13 +42,13 @@
         <td>
           <app-scope-badge [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version">
           </app-scope-badge>
-          <span> {{rowData.name + (rowData.ext ? '_' + rowData.ext : '') }}
+          <span> {{rowData.name + (rowData.fixedExtension ? '#' + rowData.fixedExtension : '')+ (rowData.ext ? '_' + rowData.ext : '') }}
             <ng-container *ngIf="rowData.description">
               {{'-' + rowData.description}}
             </ng-container>
           </span>
         </td>
-        <td style="width:100px">
+        <td style="width:100px" *ngIf="selectedScope !=='USERCUSTOM'" >
           <button class="btn-primary btn btn-sm" (click)="addAsIs(rowData)">
             <i class="fa fa-plus"></i>
           </button>
@@ -65,7 +65,7 @@
            dataKey="data.name" scrollHeight="100%" scrollable="true">
     <ng-template pTemplate="caption">
       <div style="text-align: left">
-        <label> Selected Data Types</label>
+        <label> Selected Segments</label>
         <div class="input-group" style="margin-left: 10px;">
           <div class="input-group-prepend" style="height: 35px;">
             <span class="input-group-text"><i class="fa fa-filter"></i></span>
@@ -93,12 +93,12 @@
         <td>
           <app-scope-badge [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version">
           </app-scope-badge>
-          <span> {{rowData.name}}
+          <span> {{rowData.name + (rowData.fixedExt ? '#' + rowData.fixedExt : '')}}
           </span>
         </td>
         <td>
           <ng-container *ngIf="rowData.domainInfo.scope !=='HL7STANDARD' && rowData.domainInfo.scope !=='USERCUSTOM'">
-            <input [name]="rowData.id" [id]="rowData.id" appNamingDuplication appNamingConvention  [type]="'SEGMENT'" [scope]="rowData.domainInfo.scope" [existing]="existing" [fixedName]="rowData.name" [domainInfo]="rowData.domainInfo"  [documentType]="documentType" [master]="master" type="text" style="width: 100%"  [(ngModel)]="rowData.ext" required (input)="emitData()"/>
+            <input [name]="rowData.id" [id]="rowData.id" appNamingDuplication appNamingConvention  [type]="'SEGMENT'" [scope]="rowData.domainInfo.scope" [existing]="existing" [fixedName]="rowData.name + (rowData.fixedExt ? '#' + rowData.fixedExt : '')" [domainInfo]="rowData.domainInfo"  [documentType]="documentType" [master]="master" type="text" style="width: 100%"  [(ngModel)]="rowData.ext" required (input)="emitData()"/>
             <div *ngIf="addingEditForm.controls[rowData.id] && addingEditForm.controls[rowData.id].errors" style="color:red; font-size: 11px">
               <div *ngIf="addingEditForm.controls[rowData.id].errors.required">
                 <span>*extension is required</span>

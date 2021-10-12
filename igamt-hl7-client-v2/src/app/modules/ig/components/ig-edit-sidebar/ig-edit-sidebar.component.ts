@@ -49,6 +49,7 @@ import {AddResourceComponent} from '../../../shared/components/add-resource/add-
 import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
 import {getLabel} from '../../../shared/components/display-section/display-section.component';
 import {ImportCsvValuesetComponent} from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
+import {ImportStructureComponent} from '../../../shared/components/import-structure/import-structure.component';
 import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
 import {UsageDialogComponent} from '../../../shared/components/usage-dialog/usage-dialog.component';
 import {Scope} from '../../../shared/constants/scope.enum';
@@ -104,13 +105,9 @@ export class IgEditSidebarComponent implements OnInit {
   getNodes() {
     return this.deltaMode$.pipe(
       switchMap((x) => {
-        console.log('DELTA');
-        console.log(x);
-
         if (!x) {
           return this.store.select(fromIgDocumentEdit.selectToc);
         } else {
-          console.log(x);
           return this.store.select(fromIgDocumentEdit.selectProfileTree);
         }
       }),
@@ -149,23 +146,14 @@ export class IgEditSidebarComponent implements OnInit {
       withLatestFrom(this.version$),
       take(1),
       map(([versions, selectedVersion]) => {
-        //this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version: selectedVersion }));
-
         const dialogData: IResourcePickerData = {
           hl7Versions: versions,
           existing: event.node.children,
           title: this.getDialogTitle(event),
-          data: this.store.select(fromResource.getData),
           version: selectedVersion,
           scope: event.scope,
           master: false,
           documentType: Type.IGDOCUMENT,
-          versionChange: (version: string) => {
-            this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version }));
-          },
-          versionAndScopeChange: (version: string, scope: Scope) => {
-            this.store.dispatch(new LoadResource({ type: event.type, scope, version }));
-          },
           type: event.type,
         };
         const dialogRef = this.dialog.open(ResourcePickerComponent, {
@@ -174,6 +162,40 @@ export class IgEditSidebarComponent implements OnInit {
         dialogRef.afterClosed().pipe(
           map((result) => {
             this.store.dispatch(new ClearResource());
+            return result;
+          }),
+          filter((x) => x !== undefined),
+          withLatestFrom(this.documentRef$),
+          take(1),
+          map(([result, documentRef]) => {
+            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
+    subscription.unsubscribe();
+  }
+
+  addStructure(event: IAddWrapper) {
+    const subscription = this.hl7Version$.pipe(
+      withLatestFrom(this.version$),
+      take(1),
+      map(([versions, selectedVersion]) => {
+        const dialogData = {
+          hl7Versions: versions,
+          existing: event.node.children,
+          title: this.getDialogTitle(event),
+          version: selectedVersion,
+          scope: Scope.USERCUSTOM,
+          master: false,
+          documentType: Type.IGDOCUMENT,
+          type: event.type,
+        };
+        const dialogRef = this.dialog.open(ImportStructureComponent, {
+          data: dialogData,
+        });
+        dialogRef.afterClosed().pipe(
+          map((result) => {
             return result;
           }),
           filter((x) => x !== undefined),

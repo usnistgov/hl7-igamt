@@ -44,14 +44,14 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
         return resource.name;
       }),
     );
-    this.metadataFormInput$ = combineLatest(this.selectedResource$, name$, this.getOthers(), this.documentRef$, this.admin$).pipe(
+    this.metadataFormInput$ = combineLatest(this.selectedResource$, name$, this.getOthers(), this.documentRef$, this.admin$, this.editorDisplayNode()).pipe(
       take(1),
-      map(([selectedResource, name, existing, ref, admin]) => {
+      map(([selectedResource, name, existing, ref, admin, display]) => {
         return {
           viewOnly: this.viewOnly$,
           data: this.currentSynchronized$.pipe(map((x) => {
             if (x.fixedExtension) {
-            return {...x , name: x.name + '_' + x.fixedExtension};
+            return {...x , name: x.name + '#' + x.fixedExtension};
           } else {
               return x;
             }
@@ -69,7 +69,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
             ext: {
               label: 'Extension',
               placeholder: 'Extension',
-              validators: [validateUnity(existing, name, selectedResource.domainInfo), validateConvention(selectedResource.domainInfo.scope, selectedResource.type, ref.type, admin), Validators.required],
+              validators: [validateUnity(existing, display.fixedName, selectedResource.domainInfo), validateConvention(selectedResource.domainInfo.scope, selectedResource.type, ref.type, admin), Validators.required],
               type: FieldType.TEXT,
               id: 'extension',
               name: 'extension',

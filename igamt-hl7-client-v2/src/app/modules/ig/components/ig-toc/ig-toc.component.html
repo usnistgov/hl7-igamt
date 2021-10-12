@@ -43,7 +43,11 @@
             <span [contextMenu]="conformanceProfilesContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #conformanceProfilesContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="import(node.data, 'EVENTS', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
-                <i class="fa fa-plus"></i>Add Conformance Profiles
+                <i class="fa fa-plus"></i>Add HL7 Conformance Profiles
+              </ng-template>
+
+              <ng-template (execute)="importCustom(node.data, 'EVENTS', 'USERCUSTOM')" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-plus"></i>Add Custom Conformance Profiles
               </ng-template>
             </context-menu>
           </div>
@@ -109,6 +113,9 @@
             <context-menu #segmentsContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="import(node.data, 'SEGMENT', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add HL7 Segments
+              </ng-template>
+              <ng-template (execute)="importCustom(node.data, 'SEGMENT', 'USERCUSTOM')" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-plus"></i> Add Custom Segments
               </ng-template>
             </context-menu>
           </div>

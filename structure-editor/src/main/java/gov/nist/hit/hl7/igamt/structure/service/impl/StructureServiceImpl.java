@@ -262,6 +262,17 @@ public class StructureServiceImpl implements StructureService {
 
        return state;
     }
+    
+    @Override
+    public Set<DisplayElement> getCustomSegments(MessageStructure structure) {
+        MessageStructureState state = new MessageStructureState();
+        state.setStructure(structure);
+
+        Set<Segment> segmentList = this.getDependentSegments(structure);
+        Set<DisplayElement>  ret = segmentList.stream().filter((s) -> s.getDomainInfo().getScope().equals(Scope.USERCUSTOM)).map((segment) -> this.displayInfoService.convertSegment(segment)).collect(Collectors.toSet());
+
+       return ret;
+    }
 
     @Override
     public SegmentStructureState getSegmentStructureState(Segment structure) {
@@ -349,6 +360,7 @@ public class StructureServiceImpl implements StructureService {
             segment.setStatus(Status.PUBLISHED);
             segment.setFixedExtension(segment.getExt());
             segment.setExt(null);
+            segment.setStructureIdentifier(segment.getId());
             this.segmentRepository.save(segment);
             SegmentStructureAndDisplay response = new SegmentStructureAndDisplay();
             response.setDisplayElement(this.displayInfoService.convertSegment(segment));
@@ -364,6 +376,7 @@ public class StructureServiceImpl implements StructureService {
         MessageStructure structure = this.getMessageStructureForUser(id, user);
         if(structure!= null && !Status.PUBLISHED.equals(structure.getStatus())) {
             structure.setStatus(Status.PUBLISHED);
+            structure.setStructureIdentifier(structure.getId());
             this.messageStructureRepository.save(structure);
             MessageStructureAndDisplay response = new MessageStructureAndDisplay();
             response.setDisplayElement(this.createDisplayElement(structure));

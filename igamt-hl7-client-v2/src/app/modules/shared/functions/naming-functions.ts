@@ -6,11 +6,15 @@ import {IDisplayElement} from '../models/display-element.interface';
 import {IDomainInfo} from '../models/domain-info.interface';
 
 export function isDuplicated(fixedName: string, variableName: string, domainInfo: IDomainInfo, existing: IDisplayElement[]) {
+    if (existing && existing.length > 0) {
     const filtered = existing.filter( (x: IDisplayElement) => {
 
       return ( fixedName && x.fixedName ? x.fixedName  === fixedName : true) && x.variableName === variableName && x.domainInfo.version === domainInfo.version;
     });
     return filtered.length > 0;
+    } else {
+      return false;
+    }
 }
 
 export function isDuplicatedLabelStructure(name: string, inputValue: string, domainInfo: IDomainInfo, existing: IDisplayElement[]) {

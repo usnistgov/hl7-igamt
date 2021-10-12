@@ -4,10 +4,20 @@ export enum SourceType {
   INTERNAL = 'INTERNAL',
   EXTERNAL = 'EXTERNAL',
 }
+
+export interface ISubstitution {
+  create: boolean;
+  ext: string;
+  type: Type;
+  originalId: string;
+  newId: string;
+}
+
 export interface IAddingInfo {
   originalId: string;
   id: string;
   name: string;
+  fixedExt?: string;
   structId?: string;
   description?: string;
   type: Type;
@@ -19,4 +29,5 @@ export interface IAddingInfo {
   includeChildren?: boolean;
   url?: string;
   oid?: string;
+  substitutes?: ISubstitution[];
 }

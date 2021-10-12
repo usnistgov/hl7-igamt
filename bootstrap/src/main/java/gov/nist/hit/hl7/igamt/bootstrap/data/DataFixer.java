@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.bootstrap.data;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ import com.opencsv.CSVReader;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
@@ -307,6 +310,43 @@ public class DataFixer {
       }
     }
 
+  }
+
+
+  /**
+   * 
+   */
+  public void addStructureIds() {
+    List<Segment>  segments = this.segmentsService.findAll();
+    if(segments != null) {
+      for(Segment s: segments) {
+        if(s.isCustom()) {
+          if( s.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
+            s.setStructureIdentifier(s.getId());
+          } else {
+            s.setStructureIdentifier(this.findStructureParent(s));
+          }
+          this.segmentsService.save(s);
+        }
+      }
+    }
+  }
+
+
+  private String findStructureParent(Segment s) {
+    if(s.getFrom() != null) {
+      Segment parent =  this.segmentsService.findById(s.getFrom());
+      if(parent != null) {
+        if(parent.getDomainInfo() !=null && parent.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
+          return parent.getId();
+        }else if(parent.getDomainInfo() !=null && parent.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
+          return parent.getId();
+        }else if(parent.getDomainInfo() !=null && parent.getDomainInfo().getScope().equals(Scope.USER)) {
+          return findStructureParent(parent);
+        }
+      }
+    }
+    return null;
   }
 
 

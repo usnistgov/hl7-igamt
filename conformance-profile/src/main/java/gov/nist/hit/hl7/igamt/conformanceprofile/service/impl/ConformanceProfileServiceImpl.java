@@ -60,6 +60,7 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.Substitue;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
@@ -448,7 +449,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         if (newKeys.containsKey(key)) {
           ref.getRef().setId(newKeys.get(key));
         }
-
       }
     } else if (segOrgroup instanceof Group) {
       Group g = (Group) segOrgroup;
@@ -1612,6 +1612,34 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       throw new ApplyChangeException(change);
     }
   }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#subsitute(gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile, java.util.List)
+   */
+  @Override
+  public void subsitute(ConformanceProfile cp, List<Substitue> substitutes, String username) {
+    HashMap<RealKey, String> newKeys = new HashMap<RealKey, String>();
+    for(Substitue sub: substitutes) {
+      RealKey segKey = new RealKey(sub.getOriginalId(), Type.SEGMENT);
+      if(sub.isCreate()) {
+        Segment segment = this.segmentService.findById(sub.getOriginalId());
+        if(segment !=null) {
+          Segment clone = segment.clone();
+          clone.getDomainInfo().setScope(Scope.USER);
+          clone.setUsername(username);
+          clone.setName(segment.getName());
+          clone.setExt(sub.getExt());
+          clone = segmentService.save(clone);
+          newKeys.put(segKey, clone.getId());
+        }
+      }else {
+        newKeys.put(segKey, sub.getNewId());
+      }
+    }
+    this.processAndSubstitute(cp, newKeys);
+    
+  }
+
 
 
 

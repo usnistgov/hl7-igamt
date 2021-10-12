@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.common.base.wrappers;
 
+import java.util.List;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -20,6 +22,8 @@ public class AddingInfo {
 	private SourceType sourceType;
 	private String url;
 	private String oid;
+	private List<Substitue> substitutes;
+	private String fixedExtension;
 	
 	public String getOriginalId() {
 		return originalId;
@@ -105,6 +109,18 @@ public class AddingInfo {
 	}
 	public void setOid(String oid) {
 		this.oid = oid;
-	} 
+	}
+  public List<Substitue> getSubstitutes() {
+    return substitutes;
+  }
+  public void setSubstitutes(List<Substitue> substitutes) {
+    this.substitutes = substitutes;
+  }
+  public String getFixedExtension() {
+    return fixedExtension;
+  }
+  public void setFixedExtension(String fixedExtension) {
+    this.fixedExtension = fixedExtension;
+  } 
 	
 }

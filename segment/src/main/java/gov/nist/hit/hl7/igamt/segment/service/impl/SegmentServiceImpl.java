@@ -475,6 +475,9 @@ public class SegmentServiceImpl implements SegmentService {
     qry.fields().include("name");
     qry.fields().include("ext");
     qry.fields().include("description");
+    qry.fields().include("fixedExtension");
+    qry.fields().include("structureIdentifier");
+
 
     return mongoTemplate.find(qry, Segment.class);
   }
@@ -1286,6 +1289,7 @@ public class SegmentServiceImpl implements SegmentService {
     if(segment.getFixedExtension() !=null && !segment.getFixedExtension().isEmpty()) {
         displayElement.setFixedName(segment.getName() + "#"+ segment.getFixedExtension());
     }
+    displayElement.setStructureIdentifier(segment.getStructureIdentifier());
     displayElement.setFlavorExt(segment.getFixedExtension());
     displayElement.setDifferantial(segment.getOrigin() !=null);
     displayElement.setLeaf(false);
