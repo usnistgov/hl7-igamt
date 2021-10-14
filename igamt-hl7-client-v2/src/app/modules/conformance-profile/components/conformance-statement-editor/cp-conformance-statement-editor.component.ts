@@ -56,28 +56,7 @@ export class CPConformanceStatementEditorComponent extends ConformanceStatementE
   }
 
   getById(id: string, documentRef: IDocumentRef): Observable<IConformanceStatementEditorData> {
-    return this.cpService.getConformanceStatements(id, documentRef).pipe(
-      flatMap((data) => {
-        const segments = this.conformanceStatementService.resolveDependantConformanceStatement(data.associatedSEGConformanceStatementMap || {}, selectSegmentsById);
-        const datatypes = this.conformanceStatementService.resolveDependantConformanceStatement(data.associatedDTConformanceStatementMap || {}, selectDatatypesById);
-
-        return combineLatest(
-          (segments.length > 0 ? combineLatest(segments) : of([])),
-          (datatypes.length > 0 ? combineLatest(datatypes) : of([])),
-        ).pipe(
-          take(1),
-          map(([s, d]) => {
-            return {
-              active: this.conformanceStatementService.createEditableNode(data.conformanceStatements || []),
-              dependants: {
-                segments: s,
-                datatypes: d,
-              },
-            };
-          }),
-        );
-      }),
-    );
+    return this.cpService.getConformanceStatementEditorData(id, documentRef);
   }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {

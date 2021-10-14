@@ -21,7 +21,10 @@ import { AResourceRepositoryService, StoreResourceRepositoryService } from 'src/
 import { selectViewOnly } from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { selectDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { selectContextById } from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
-import { selectSelectedProfileComponent } from '../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
+import {
+  default as fromIgamtSelectedSelectors,
+  selectSelectedProfileComponent,
+} from '../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { MessageType } from '../../../dam-framework/models/messages/message.class';
 import { IPath } from '../../../shared/models/cs.interface';
 import { PathService } from '../../../shared/services/path.service';
@@ -90,9 +93,10 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
 
     this._viewOnly$ = combineLatest(
       this.store.select(selectViewOnly),
-      this.store.select(selectDelta)).pipe(
-        map(([vOnly, delta]) => {
-          return vOnly || delta;
+      this.store.select(selectDelta),
+      this.store.select(selectSelectedProfileComponent)).pipe(
+        map(([vOnly, delta, pc]) => {
+          return vOnly || delta || pc.derived;
         }),
       );
 

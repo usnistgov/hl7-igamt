@@ -18,6 +18,7 @@ import java.util.Map;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -36,6 +37,9 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 @JsonSubTypes({@JsonSubTypes.Type(value = FreeTextConformanceStatement.class, name = "FREE"),
 	@JsonSubTypes.Type(value = AssertionConformanceStatement.class, name = "ASSERTION")})
 public class ConformanceStatement implements Serializable{
+
+
+
 	/**
 	 * 
 	 */
@@ -53,6 +57,9 @@ public class ConformanceStatement implements Serializable{
 	private HashSet<String> sourceIds;
 	@Deprecated
 	private String igDocumentId;
+	
+	@Transient
+	String resourceId;
 
 	private Map<PropertyType, ChangeReason> changeLog;
 
@@ -176,6 +183,14 @@ public class ConformanceStatement implements Serializable{
 	public void setLocked(boolean locked) {
 		this.locked = locked;
 	}
+	
+	public String getResourceId() {
+		return resourceId;
+	}
+
+	public void setResourceId(String resourceId) {
+		this.resourceId = resourceId;
+	} 
 	
 	@Override
 	public int hashCode() {

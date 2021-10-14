@@ -1,11 +1,11 @@
 <div id="toc-container" class="toc-container">
-  <span routerLink="metadata" routerLinkActive="active-node" style="cursor: pointer; width: fit-content;">&emsp; Implementation Guide Document Metadata</span>
+  <span id="TOC-IG" routerLink="metadata" routerLinkActive="active-node" style="cursor: pointer; width: fit-content;">&emsp; Implementation Guide Document Metadata</span>
   <tree-root #treeroot [nodes]="nodes" [options]="options">
     <ng-template #treeNodeTemplate let-index="index" let-node>
       <ng-container [ngSwitch]="node.data.type">
 
         <ng-container *ngSwitchCase="'TEXT'">
-          <span [contextMenu]="textContextMenu" [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"> {{node.data.path}} {{node.data.variableName}}</span>
+          <span [id]="'TOC-TEXT-'+ node.data.id" [contextMenu]="textContextMenu" [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"> {{node.data.path}} {{node.data.variableName}}</span>
           <context-menu #textContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="addSectionToNode(node)" contextMenuItem contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-plus"></i> Add Section
@@ -43,7 +43,11 @@
             <span [contextMenu]="conformanceProfilesContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #conformanceProfilesContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="import(node.data, 'EVENTS', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
-                <i class="fa fa-plus"></i>Add Conformance Profiles
+                <i class="fa fa-plus"></i>Add HL7 Conformance Profiles
+              </ng-template>
+
+              <ng-template (execute)="importCustom(node.data, 'EVENTS', 'USERCUSTOM')" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-plus"></i>Add Custom Conformance Profiles
               </ng-template>
             </context-menu>
           </div>
@@ -110,6 +114,9 @@
               <ng-template (execute)="import(node.data, 'SEGMENT', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add HL7 Segments
               </ng-template>
+              <ng-template (execute)="importCustom(node.data, 'SEGMENT', 'USERCUSTOM')" contextMenuItem [enabled]="!viewOnly&&!delta">
+                <i class="fa fa-plus"></i> Add Custom Segments
+              </ng-template>
             </context-menu>
           </div>
         </ng-container>
@@ -143,9 +150,12 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-          <span [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive>
-            <app-entity-bagde [type]="'COMPOSITEPROFILE'" ></app-entity-bagde>
-            {{node.data.variableName}}
+            <span [id]="'TOC-COMPOSITEPROFILE-'+ node.data.id"  [contextMenu]='cp' [routerLink]="getElementUrl(node.data)" #rla="routerLinkActive" routerLinkActive [ngClass]="{
+                      'delta-changed':node.data.delta === 'UPDATED',
+                       'delta-deleted':node.data.delta === 'DELETED',
+                        'delta-added':node.data.delta === 'ADDED'}" style="cursor: pointer;">
+                   <app-entity-bagde [type]="'COMPOSITEPROFILE'" ></app-entity-bagde>
+              {{node.data.variableName}}
           </span>
           <context-menu #cp [disabled]="viewOnly||delta">
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
@@ -200,11 +210,15 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
-          <span  [contextMenu]='pc' [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node">
+          <span  [id]="'TOC-PROFILECOMPONENT-'+ node.data.id"  [contextMenu]='pc' [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node" [ngClass]="{
+                      'delta-changed':node.data.delta === 'UPDATED',
+                       'delta-deleted':node.data.delta === 'DELETED',
+                        'delta-added':node.data.delta === 'ADDED'}" style="cursor: pointer;">
            <app-entity-bagde [type]="'PROFILECOMPONENT'" ></app-entity-bagde> {{node.data.variableName}}
           </span>
+
           <context-menu #pc [disabled]="viewOnly||delta">
-            <ng-template (execute)="addPcContexts(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
+            <ng-template (execute)="addPcContexts(node)" contextMenuItem [enabled]="!viewOnly&&!delta && node.parent?.data?.derived">
               <i class="fa fa-plus"></i> Add Contexts
             </ng-template>
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">

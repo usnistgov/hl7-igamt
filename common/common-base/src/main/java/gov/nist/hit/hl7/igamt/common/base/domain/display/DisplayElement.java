@@ -33,6 +33,8 @@ public class DisplayElement {
   private Set<String> libraryReferences;
   private List<DisplayElement> children;
   private String flavorExt;
+  private String resourceName;
+  private String structureIdentifier;
 
   public DeltaAction getDelta() {
     return delta;
@@ -199,6 +201,22 @@ public class DisplayElement {
 
   public void setFlavorExt(String flavorExt) {
     this.flavorExt = flavorExt;
+  }
+
+  public String getResourceName() {
+    return resourceName;
+  }
+
+  public void setResourceName(String resourceName) {
+    this.resourceName = resourceName;
+  }
+
+  public String getStructureIdentifier() {
+    return structureIdentifier;
+  }
+
+  public void setStructureIdentifier(String structureIdentifier) {
+    this.structureIdentifier = structureIdentifier;
   }
 
 

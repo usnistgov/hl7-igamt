@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 public class TableCSVGenerator {
@@ -85,6 +86,7 @@ public class TableCSVGenerator {
 			values.add(c.getValue());
 			values.add(c.getDescription());
 			values.add(c.getCodeSystem());
+			if(c.getUsage() == null) c.setUsage(CodeUsage.P);
 			values.add(c.getUsage().toString());
 			values.add(c.getComments());
 			csvString = this.writeLine(csvString, values, ',', '"');	

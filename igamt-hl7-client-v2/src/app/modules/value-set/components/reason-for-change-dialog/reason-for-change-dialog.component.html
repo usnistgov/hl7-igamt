@@ -1,0 +1,33 @@
+<h2 mat-dialog-title>Change Reason</h2>
+
+<div *ngIf="existingChangeReason && existingChangeReason.length" style="padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; border: 1px solid #dee2e6;">
+  <div *ngFor="let reason of existingChangeReason; let i = index">
+    <p-panel  header="{{ reason.date | date }}" [toggleable]="true" [style]="{'margin-bottom':'20px'}">
+      <p-header>
+        <button style="float: right" class="btn btn-sm btn-danger" [disabled]="viewOnly" (click)="remove(i)"><i class="fa fa-trash"></i></button>
+        <button style="float: right" class="btn btn-sm btn-info" *ngIf="!edit[i]"  [disabled]="viewOnly" (click)="toggleEdit(true, i)"><i class="fa fa-pencil"></i></button>
+        <button style="float: right" class="btn btn-sm btn-success"  *ngIf="edit[i]" [disabled]="viewOnly" (click)="toggleEdit(false, i)"><i class="fa fa-check"></i></button>
+      </p-header>
+      <span *ngIf="!edit[i]">{{  reason.reason  }}</span>
+      <textarea *ngIf="edit[i]" class="form-control"
+                [(ngModel)]="reason.reason" placeholder="Enter reason for change"
+                rows="4"
+      ></textarea>
+    </p-panel>
+  </div>
+</div>
+<p-panel  header="New Reason" [toggleable]="true" [style]="{'margin-bottom':'20px'}" *ngIf="!viewOnly">
+  <textarea class="form-control"
+            [(ngModel)]="text" placeholder="Enter reason for change"
+            rows="4"
+  ></textarea>
+</p-panel>
+
+
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button class="btn btn-sm btn-success" style="margin-right: 5px;" (click)="done()">Done</button>
+</mat-dialog-actions>
+
+<ng-template #defaultTemplate let-value>
+  {{ value }}
+</ng-template>

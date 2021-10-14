@@ -1,13 +1,13 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {MatDialog} from '@angular/material';
-import {ActivatedRoute, Router} from '@angular/router';
-import {Actions} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {SelectItem} from 'primeng/api';
-import {combineLatest, Observable, of} from 'rxjs';
-import {concatMap, filter, map, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Actions } from '@ngrx/effects';
+import { Store } from '@ngrx/store';
+import { SelectItem } from 'primeng/api';
+import { combineLatest, Observable, of, Subscription } from 'rxjs';
+import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
-import {selectAllMessages} from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import { selectAllMessages } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
@@ -35,11 +35,11 @@ import {
   CreateCoConstraintGroupSuccess,
 } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
-import {ClearResource, LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';
-import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
+import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import {ConfirmDialogComponent} from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import {RxjsStoreHelperService} from '../../../dam-framework/services/rxjs-store-helper.service';
 import {EditorReset, selectWorkspaceActive} from '../../../dam-framework/store/data';
+import {selectRouterURL} from '../../../dam-framework/store/router';
 import {IAddNewWrapper, IAddWrapper} from '../../../document/models/document/add-wrapper.class';
 import {AddCoConstraintGroupComponent} from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
 import {AddCompositeComponent} from '../../../shared/components/add-composite/add-composite.component';
@@ -49,6 +49,7 @@ import {AddResourceComponent} from '../../../shared/components/add-resource/add-
 import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
 import {getLabel} from '../../../shared/components/display-section/display-section.component';
 import {ImportCsvValuesetComponent} from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
+import {ImportStructureComponent} from '../../../shared/components/import-structure/import-structure.component';
 import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
 import {UsageDialogComponent} from '../../../shared/components/usage-dialog/usage-dialog.component';
 import {Scope} from '../../../shared/constants/scope.enum';
@@ -67,7 +68,7 @@ import {IgTocComponent} from '../ig-toc/ig-toc.component';
   templateUrl: './ig-edit-sidebar.component.html',
   styleUrls: ['./ig-edit-sidebar.component.scss'],
 })
-export class IgEditSidebarComponent implements OnInit {
+export class IgEditSidebarComponent implements OnInit, OnDestroy {
 
   nodes$: Observable<any[]>;
   hl7Version$: Observable<string[]>;
@@ -82,8 +83,10 @@ export class IgEditSidebarComponent implements OnInit {
   deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
   selectedValues = ['UPDATED', 'DELETED', 'ADDED', 'UNCHANGED'];
   deltaMode$: Observable<boolean> = of(false);
-
+  selectedTargetId = 'IG';
   derived: boolean;
+  selectedSubscription: Subscription;
+
   constructor(
     private store: Store<IDocumentDisplayInfo<IgDocument>>,
     private dialog: MatDialog,
@@ -99,6 +102,18 @@ export class IgEditSidebarComponent implements OnInit {
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
     this.viewOnly$ = this.store.select(fromIgamtSelectors.selectViewOnly);
+    this.selectedSubscription = this.store.select(selectRouterURL).pipe(
+      map((url: string) => {
+        const regex = '/ig/[a-z0-9A-Z-]+/(?<type>[a-z]+)/(?<id>[a-z0-9A-Z-]+).*';
+        const match = new RegExp(regex, 'g').exec(url);
+        if (match) {
+          const { groups: { type, id } } = match;
+          this.selectedTargetId = 'TOC-' + type.toUpperCase() + '-' + id;
+        } else {
+          this.selectedTargetId = 'IG';
+        }
+        console.log(this.selectedTargetId);
+      })).subscribe();
   }
 
   getNodes() {
@@ -114,6 +129,12 @@ export class IgEditSidebarComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  findScroll() {
+    if (this.selectedTargetId) {
+      this.toc.scrollById(this.selectedTargetId);
+    }
   }
 
   scrollTo(type) {
@@ -145,23 +166,14 @@ export class IgEditSidebarComponent implements OnInit {
       withLatestFrom(this.version$),
       take(1),
       map(([versions, selectedVersion]) => {
-        this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version: selectedVersion }));
-
         const dialogData: IResourcePickerData = {
           hl7Versions: versions,
           existing: event.node.children,
           title: this.getDialogTitle(event),
-          data: this.store.select(fromResource.getData),
           version: selectedVersion,
           scope: event.scope,
           master: false,
           documentType: Type.IGDOCUMENT,
-          versionChange: (version: string) => {
-            this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version }));
-          },
-          versionAndScopeChange: (version: string, scope: Scope) => {
-            this.store.dispatch(new LoadResource({ type: event.type, scope, version }));
-          },
           type: event.type,
         };
         const dialogRef = this.dialog.open(ResourcePickerComponent, {
@@ -170,6 +182,40 @@ export class IgEditSidebarComponent implements OnInit {
         dialogRef.afterClosed().pipe(
           map((result) => {
             this.store.dispatch(new ClearResource());
+            return result;
+          }),
+          filter((x) => x !== undefined),
+          withLatestFrom(this.documentRef$),
+          take(1),
+          map(([result, documentRef]) => {
+            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
+    subscription.unsubscribe();
+  }
+
+  addStructure(event: IAddWrapper) {
+    const subscription = this.hl7Version$.pipe(
+      withLatestFrom(this.version$),
+      take(1),
+      map(([versions, selectedVersion]) => {
+        const dialogData = {
+          hl7Versions: versions,
+          existing: event.node.children,
+          title: this.getDialogTitle(event),
+          version: selectedVersion,
+          scope: Scope.USERCUSTOM,
+          master: false,
+          documentType: Type.IGDOCUMENT,
+          type: event.type,
+        };
+        const dialogRef = this.dialog.open(ImportStructureComponent, {
+          data: dialogData,
+        });
+        dialogRef.afterClosed().pipe(
+          map((result) => {
             return result;
           }),
           filter((x) => x !== undefined),
@@ -366,7 +412,7 @@ export class IgEditSidebarComponent implements OnInit {
   addCompositeProfile(event: IAddNewWrapper) {
     combineLatest(this.documentRef$, this.store.select(fromIgamtDisplaySelectors.selectAllProfileComponents), this.store.select(fromIgamtDisplaySelectors.selectAllCompositeProfiles), this.store.select(selectAllMessages)).pipe(
       take(1),
-      tap(([{ documentId, type }, profileComponents, compositeProfiles,  messages]) => {
+      tap(([{ documentId, type }, profileComponents, compositeProfiles, messages]) => {
         const dialogRef = this.dialog.open(AddCompositeComponent, {
           data: {
             messages,
@@ -467,7 +513,7 @@ export class IgEditSidebarComponent implements OnInit {
           this.store.dispatch(new EditorReset());
           this.router.navigate(['./' + 'metadata'], { relativeTo: this.activeRoute });
         }
-    }),
+      }),
     ).subscribe();
   }
 
@@ -519,4 +565,11 @@ export class IgEditSidebarComponent implements OnInit {
         );
       })).subscribe();
   }
+
+  ngOnDestroy(): void {
+    if (this.selectedSubscription) {
+      this.selectedSubscription.unsubscribe();
+    }
+  }
+
 }

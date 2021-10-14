@@ -22,6 +22,7 @@ import * as fromDAM from '../../dam-framework/store';
 import * as fromRouterSelector from '../../dam-framework/store/router/router.selectors';
 import { Type } from '../../shared/constants/type.enum';
 import { IDocumentRef } from '../../shared/models/abstract-domain.interface';
+import { IFlatResourceBindings } from '../../shared/models/binding.interface';
 import { ICompositeProfile, ICompositeProfileState } from '../../shared/models/composite-profile';
 import { IConformanceProfile } from '../../shared/models/conformance-profile.interface';
 import { IUsages } from '../../shared/models/cross-reference';
@@ -106,6 +107,50 @@ export class OpenEditorService {
             },
           },
         });
+      },
+    );
+  }
+
+  openBindingsEditor<T extends IResource, A extends OpenEditorBase>(
+    _action: string,
+    type: Type,
+    displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
+    resource$: Observable<T>,
+    getter: (id, type) => Observable<IFlatResourceBindings>,
+    notFoundMessage: string,
+  ): Observable<Action> {
+    return this.openEditor<T, A>(
+      _action,
+      displayElement$,
+      () => resource$,
+      notFoundMessage,
+      (action: A, resource: T, display: IDisplayElement) => {
+        return getter(action.payload.id, type).pipe(
+          flatMap((bindings) => {
+            const openEditor = new OpenEditor({
+              id: action.payload.id,
+              display,
+              editor: action.payload.editor,
+              initial: {
+                changes: {},
+                bindings,
+              },
+            });
+            this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
+              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
+                do: (loadSuccess: LoadResourceReferencesSuccess) => {
+                  return of(openEditor);
+                },
+              },
+              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesFailure]: {
+                do: (loadFailure: LoadResourceReferencesFailure) => {
+                  return of(new OpenEditorFailure({ id: action.payload.id }));
+                },
+              },
+            });
+          }),
+        );
       },
     );
   }
@@ -310,7 +355,7 @@ export class OpenEditorService {
         );
       },
       notFoundMessage,
-      this.openEditorProvider<A, IDelta<any>>(type, true),
+      this.openEditorProvider<A, IDelta<any>>(type, type !== Type.COMPOSITEPROFILE),
     );
   }
 

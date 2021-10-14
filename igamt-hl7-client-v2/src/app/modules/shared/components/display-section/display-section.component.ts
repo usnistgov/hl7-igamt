@@ -19,6 +19,8 @@ export class DisplaySectionComponent implements OnInit {
   compatibility: boolean;
   @Input()
   hideBadge: boolean;
+  @Input()
+  ignoreScope: boolean;
 
   constructor(    private router: Router,
                   private activeRoute: ActivatedRoute) {

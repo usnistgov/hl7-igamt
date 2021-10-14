@@ -1,3 +1,4 @@
+import { Type } from '../constants/type.enum';
 import { IConformanceStatement } from './cs.interface';
 import { IPredicate } from './predicate.interface';
 import { IChangeLog } from './save-change';
@@ -57,4 +58,27 @@ export interface IResourceBinding extends IBinding {
 export enum IBindingType {
   VALUESET = 'VALUESET',
   SINGLECODE = 'SINGLECODE',
+}
+
+export interface IFlatResourceBindings {
+  valueSetBindingContainers: Array<IBindingContainerDisplay<IValuesetBinding[]>>;
+  singleCodeBindingContainers: Array<IBindingContainerDisplay<InternalSingleCode>>;
+  conformanceStatementBindingContainers: Array<IBindingContainerDisplay<IConformanceStatement>>;
+  predicateBindingContainers: Array<IBindingContainerDisplay<IPredicate>>;
+}
+
+export interface IBindingContainerDisplay<T> {
+  locationInfo: IHL7LocationInfo;
+  binding: IBindingContainer<T>;
+}
+
+export interface IBindingContainer<T> {
+  pathId: string;
+  value: T;
+}
+export interface IHL7LocationInfo {
+  name: string;
+  hl7Path: string;
+  type: Type;
+  positionalPath: string;
 }

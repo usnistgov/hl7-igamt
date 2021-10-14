@@ -27,6 +27,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.Substitue;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -111,6 +112,8 @@ public interface ConformanceProfileService {
   DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile, int position);
   Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles, ConformanceProfileRegistry conformanceProfileRegistry);
   Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry);
+
+  void subsitute(ConformanceProfile clone, List<Substitue> substitutes, String username);
 
 
 

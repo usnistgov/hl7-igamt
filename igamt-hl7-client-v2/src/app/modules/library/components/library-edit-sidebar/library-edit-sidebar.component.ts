@@ -131,6 +131,7 @@ export class LibraryEditSidebarComponent implements OnInit {
           master: ms,
           hideAsIs: event.hideAsIs,
           hideFlavor: event.hideFlavor,
+          compatibility: true,
           versionChange: (version: string) => {
             this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version, compatibility: true }));
           },

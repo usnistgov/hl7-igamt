@@ -1068,5 +1068,11 @@ public class BootstrapApplication implements CommandLineRunner {
     this.dataFixer.fixDatatypeConstraintsLevel();
     this.dataFixer.fixConformanceProfileConstaintsLevel();
   }
+  //@PostConstruct
+  void fixStructureIds() {
+    this.dataFixer.addStructureIds();
+  }
+  
+  
   
 }

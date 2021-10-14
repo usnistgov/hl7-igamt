@@ -1517,6 +1517,19 @@ System.out.println("sdsd");
         }
       }
     }
+    
+    for ( Link l: ig.getProfileComponentRegistry().getChildren()) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, ProfileComponent.class);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not publish Profile Components:" +l.getId());
+        }
+    }
+    for ( Link l: ig.getCompositeProfileRegistry().getChildren()) {
+      UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, CompositeProfileStructure.class);
+      if(! updateResult.wasAcknowledged()) {
+        throw new IGUpdateException("Could not publish Composite Profile:" +l.getId());
+      }
+  }
 
     UpdateResult updateResult = this.updateAttribute(ig.getId(), "status", Status.PUBLISHED, Ig.class);
     if(! updateResult.wasAcknowledged()) {
@@ -1525,8 +1538,41 @@ System.out.println("sdsd");
   }
 
   @Override
-  public Set<ConformanceStatement> conformanceStatementsSummary(Ig igdoument) {
-    return this.conformanceStatementRepository.findByIgDocumentId(igdoument.getId());
+  public Set<ConformanceStatement> conformanceStatementsSummary(Ig ig) {
+    Set<ConformanceStatement> ret = new HashSet<ConformanceStatement>();
+    for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        ConformanceProfile cp = this.conformanceProfileService.findById(l.getId());
+        if(cp.getBinding() != null && cp.getBinding().getConformanceStatements() != null) {
+          for(ConformanceStatement cs : cp.getBinding().getConformanceStatements()) {
+            cs.setResourceId(l.getId());
+            ret.add(cs);
+          }
+        }
+      }
+    }
+    for ( Link l: ig.getSegmentRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        Segment s = this.segmentService.findById(l.getId());
+        if(s.getBinding() != null && s.getBinding().getConformanceStatements() != null) {
+          for(ConformanceStatement cs : s.getBinding().getConformanceStatements()) {
+            cs.setResourceId(l.getId());
+            ret.add(cs);
+          }        }   
+      }
+    }
+
+    for ( Link l: ig.getDatatypeRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        Datatype dt = this.datatypeService.findById(l.getId());
+        for(ConformanceStatement cs : dt.getBinding().getConformanceStatements()) {
+          cs.setResourceId(l.getId());
+          ret.add(cs);
+        }   
+      }
+    }
+    
+    return ret;
   }
 
 

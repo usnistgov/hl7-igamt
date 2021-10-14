@@ -1,0 +1,92 @@
+<ng-template #headerControls>
+</ng-template>
+<ng-container *ngIf="delta$ | async as delta">
+  <table class="table table-sm table-bordered table-striped">
+    <tr>
+      <td>Source Document</td>
+      <td>
+        <h6 class="title-text"  [routerLink]="['/', 'ig', delta.source.document.id ]">
+          <app-scope-badge *ngIf="delta.source?.document" [scope]="delta.source?.document?.scope"></app-scope-badge>
+          <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
+          {{ delta.source?.document?.name }}
+        </h6>
+      </td>
+    </tr>
+    <tr>
+      <td>Source Resource</td>
+      <td>
+        <h6 class="title-text" style="cursor: pointer; display: inline;" [routerLink]="['/', 'ig',  delta.source.document.id, url(), delta.source.id ]">
+          <app-scope-badge *ngIf="delta.source?.domainInfo" [scope]="delta.source?.domainInfo.scope" [version]="delta.source?.domainInfo.version"></app-scope-badge>
+          <app-entity-bagde [type]="type"></app-entity-bagde>
+          {{ delta.source?.name }}
+        </h6>
+      </td>
+    </tr>
+  </table>
+
+  <table class="table table-sm table-bordered">
+    <thead>
+    <th>
+      Core Profile
+    </th>
+    <th>
+      Action
+    </th>
+    </thead>
+    <tr>
+      <td>
+        <app-display-section [element]="delta.delta?.coreProfileDisplay" [routerLink]="['/', 'ig',  delta.target.document.id, 'conformanceprofile', delta.delta.coreProfileDisplay.id, 'delta' ]"></app-display-section>
+      </td>
+      <td>
+        <span class="badge badge-secondary" *ngIf="delta.delta?.coreProfileDisplay.delta==='UNCHANGED'"> Unchanged</span>
+        <span class="badge badge-warning" *ngIf="delta.delta?.coreProfileDisplay.delta==='UPDATED'"> Updated</span>
+      </td>
+    </tr>
+
+  </table>
+
+  <p-table  #dt1 [value]="delta?.delta?.children" [sortField]="'position'">
+    <ng-template pTemplate="header">
+      <tr>
+        <th width="200px;">Action</th>
+        <th>Position</th>
+        <th>Applied profile Component</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-node>
+      <tr [ngClass]="{'delta-added': node.delta === 'ADDED', 'delta-deleted': node.delta === 'DELETED'}">
+        <td width="200px;">
+          <span class="badge badge-secondary" *ngIf="node.delta==='UNCHANGED'"> Unchanged</span>
+          <span class="badge badge-danger" *ngIf="node.delta==='DELETED'"> Deleted</span>
+          <span class="badge badge-success" *ngIf="node.delta==='ADDED'"> Added</span>
+          <span class="badge badge-warning" *ngIf="node.delta==='UPDATED'"> Updated</span>
+        </td>
+        <td>
+          <strong>{{node.position}}</strong>
+        </td>
+        <td>
+          <app-delta-column [action]="node.delta" [currentValue]="node.display.current" [previousValue]="node.display.previous" styleClassCurrent="delta-current" styleClassPrevious="delta-previous">
+            <ng-template #default let-value>
+              <app-entity-bagde [type]="'PROFILECOMPONENT'" ></app-entity-bagde> {{value.variableName}}
+
+            </ng-template>
+
+            <ng-template #current let-current>
+              <app-entity-bagde [type]="'PROFILECOMPONENT'" ></app-entity-bagde> {{current.variableName}}
+            </ng-template>
+
+            <ng-template #previous let-previous>
+              <app-entity-bagde [type]="'PROFILECOMPONENT'" ></app-entity-bagde> {{previous.variableName}}
+            </ng-template>
+          </app-delta-column>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+</ng-container>
+<ng-template #noChanges>
+  <div style="padding: 50px; text-align: center;">
+    <span style="color: gray;">No changes were detected</span>
+  </div>
+</ng-template>

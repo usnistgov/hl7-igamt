@@ -2,13 +2,18 @@ package gov.nist.hit.hl7.igamt.delta.service;
 
 import com.google.common.base.Strings;
 import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.*;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -16,6 +21,10 @@ import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.*;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldStructureTreeModel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
@@ -31,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -42,7 +52,10 @@ public class EntityDeltaServiceImpl {
 
   @Autowired
   ValuesetService valueSetService;
-
+  @Autowired
+  ConformanceProfileService conformaneProfileService;
+  @Autowired
+  ProfileComponentService profileComponentService;
 
   public List<StructureDelta> compareDatatype(DatatypeStructureDisplay source, DatatypeStructureDisplay target) {
     return new ArrayList<>(this.compareComponents(source.getStructure(), target.getStructure()));
@@ -686,5 +699,119 @@ public class EntityDeltaServiceImpl {
     result.setData(data);
     return result;
   }
+
+  public List<DynamicMappingItemDelta> compareDynamicMapping(DynamicMappingInfo source,
+      DynamicMappingInfo target) {
+    List<DynamicMappingItemDelta> ret = new ArrayList<DynamicMappingItemDelta>();
+   Map<String, String> sourceMap = new HashMap<String, String>();
+   Map<String, String> targetMap = new HashMap<String, String>();
+  
+   if(source != null && source.getItems() !=null) {
+     sourceMap = source.getItems().stream().collect(Collectors.toMap(x->x.getValue(), x-> x.getDatatypeId()));
+   }
+   if(target != null && target.getItems() !=null) {
+     targetMap = target.getItems().stream().collect(Collectors.toMap(x->x.getValue(), x-> x.getDatatypeId()));
+   }
+   
+   for(String s: sourceMap.keySet() ) {
+     DynamicMappingItemDelta delta = new DynamicMappingItemDelta();
+     DeltaNode<String> node = new  DeltaNode<String>();
+     delta.setFlavorId(node);
+     delta.setDatatypeName(s);
+     node.setPrevious(sourceMap.get(s));
+
+     if(targetMap.containsKey(s)) {
+       node.setCurrent(targetMap.get(s));
+       if(sourceMap.get(s).equals(targetMap.get(s))) {
+         node.setAction(DeltaAction.UNCHANGED);
+       }else {
+         node.setAction(DeltaAction.CHANGED);
+       }
+     }else {
+       node.setCurrent(null);
+       node.setAction(DeltaAction.DELETED);
+     }
+     delta.setAction(node.getAction());
+     ret.add(delta);
+   }
+   
+   for(String t: targetMap.keySet() ) {
+     if(!sourceMap.containsKey(t)) {
+       DynamicMappingItemDelta delta = new DynamicMappingItemDelta();
+       DeltaNode<String> node = new  DeltaNode<String>();
+       node.setCurrent(targetMap.get(t));
+       delta.setFlavorId(node);
+       delta.setDatatypeName(t);
+       node.setAction(DeltaAction.ADDED);
+       delta.setAction(node.getAction());
+       ret.add(delta);
+     }
+   }
+   return ret;
+  }
+
+
+  /**
+   * @param orderedProfileComponents
+   * @param orderedProfileComponents2
+   * @return
+   */
+  public List<ProfileComponentLinkDelta> compareProfileComponents(
+      Set<OrderedProfileComponentLink> source,
+      Set<OrderedProfileComponentLink> target) {
+    
+    List<ProfileComponentLinkDelta> deltas = new ArrayList<>();
+    Map<Integer, OrderedProfileComponentLink> sourceMap = source != null ? source.stream().collect(Collectors.toMap(OrderedProfileComponentLink::getPosition, x-> x)) : new HashMap<>();
+    Map<Integer, OrderedProfileComponentLink> targetMap = target != null ? target.stream().collect(Collectors.toMap(OrderedProfileComponentLink::getPosition, x-> x)) : new HashMap<>();
+
+    sourceMap.values().forEach((pc) -> {
+      ProfileComponentLinkDelta delta = new ProfileComponentLinkDelta();
+      delta.setPosition(pc.getPosition());
+      
+      if(!targetMap.containsKey(pc.getPosition())) {
+        DeltaNode<String> node = new DeltaNode<String>(pc.getProfileComponentId(), null, DeltaAction.DELETED);
+        delta.setNode(node);
+        delta.setDelta(DeltaAction.DELETED);
+      }else {
+        DeltaNode<String> node =  this.comparePcs(pc,targetMap.get(pc.getPosition()));
+        delta.setNode(node);
+        delta.setDelta(node.getAction());
+      }
+      deltas.add(delta);
+    });
+
+    targetMap.values().forEach((pc) -> {
+      
+      if(!sourceMap.containsKey(pc.getPosition())) {
+        ProfileComponentLinkDelta delta = new ProfileComponentLinkDelta();
+        delta.setPosition(pc.getPosition());
+        DeltaNode<String> node = new DeltaNode<String>(null, pc.getProfileComponentId(), DeltaAction.ADDED);
+        delta.setNode(node);
+        delta.setDelta(DeltaAction.ADDED);
+        deltas.add(delta);
+      }
+    });
+
+    return deltas;
+    
+    }
+
+  /**
+   * @param pc
+   * @param orderedProfileComponentLink
+   * @return
+   */
+  private DeltaNode<String> comparePcs(OrderedProfileComponentLink source,
+      OrderedProfileComponentLink target) {
+    
+    ProfileComponent pcTarget = this.profileComponentService.findById(target.getProfileComponentId());
+    if(pcTarget.isDerived() && pcTarget.getOrigin().equals(source.getProfileComponentId())) {
+      return new DeltaNode<String>(pcTarget.getId(), pcTarget.getId(), DeltaAction.UNCHANGED);
+    }else {
+      return new DeltaNode<String>(source.getProfileComponentId(), target.getProfileComponentId(), DeltaAction.UPDATED);
+    }
+  }
+  
+  
 
 }
