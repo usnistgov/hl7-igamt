@@ -36,32 +36,32 @@ import {
 } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
 import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
-import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
-import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
-import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
-import { EditorReset, selectWorkspaceActive } from '../../../dam-framework/store/data';
-import { selectRouterURL } from '../../../dam-framework/store/router/router.selectors';
-import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
-import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
-import { AddCompositeComponent } from '../../../shared/components/add-composite/add-composite.component';
-import { AddProfileComponentContextComponent } from '../../../shared/components/add-profile-component-context/add-profile-component-context.component';
-import { AddProfileComponentComponent } from '../../../shared/components/add-profile-component/add-profile-component.component';
-import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
-import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
-import { getLabel } from '../../../shared/components/display-section/display-section.component';
-import { ImportCsvValuesetComponent } from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
-import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
-import { UsageDialogComponent } from '../../../shared/components/usage-dialog/usage-dialog.component';
-import { Scope } from '../../../shared/constants/scope.enum';
-import { Type } from '../../../shared/constants/type.enum';
-import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
-import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
-import { IUsages } from '../../../shared/models/cross-reference';
-import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
-import { CrossReferencesService } from '../../../shared/services/cross-references.service';
-import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
-import { IgTocComponent } from '../ig-toc/ig-toc.component';
+import {ConfirmDialogComponent} from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import {RxjsStoreHelperService} from '../../../dam-framework/services/rxjs-store-helper.service';
+import {EditorReset, selectWorkspaceActive} from '../../../dam-framework/store/data';
+import {selectRouterURL} from '../../../dam-framework/store/router';
+import {IAddNewWrapper, IAddWrapper} from '../../../document/models/document/add-wrapper.class';
+import {AddCoConstraintGroupComponent} from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
+import {AddCompositeComponent} from '../../../shared/components/add-composite/add-composite.component';
+import {AddProfileComponentContextComponent} from '../../../shared/components/add-profile-component-context/add-profile-component-context.component';
+import {AddProfileComponentComponent} from '../../../shared/components/add-profile-component/add-profile-component.component';
+import {AddResourceComponent} from '../../../shared/components/add-resource/add-resource.component';
+import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
+import {getLabel} from '../../../shared/components/display-section/display-section.component';
+import {ImportCsvValuesetComponent} from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
+import {ImportStructureComponent} from '../../../shared/components/import-structure/import-structure.component';
+import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
+import {UsageDialogComponent} from '../../../shared/components/usage-dialog/usage-dialog.component';
+import {Scope} from '../../../shared/constants/scope.enum';
+import {Type} from '../../../shared/constants/type.enum';
+import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
+import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
+import {IUsages} from '../../../shared/models/cross-reference';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {IResourcePickerData} from '../../../shared/models/resource-picker-data.interface';
+import {CrossReferencesService} from '../../../shared/services/cross-references.service';
+import {IDocumentDisplayInfo, IgDocument} from '../../models/ig/ig-document.class';
+import {IgTocComponent} from '../ig-toc/ig-toc.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -119,13 +119,9 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
   getNodes() {
     return this.deltaMode$.pipe(
       switchMap((x) => {
-        console.log('DELTA');
-        console.log(x);
-
         if (!x) {
           return this.store.select(fromIgDocumentEdit.selectToc);
         } else {
-          console.log(x);
           return this.store.select(fromIgDocumentEdit.selectProfileTree);
         }
       }),
@@ -170,23 +166,14 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
       withLatestFrom(this.version$),
       take(1),
       map(([versions, selectedVersion]) => {
-        this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version: selectedVersion }));
-
         const dialogData: IResourcePickerData = {
           hl7Versions: versions,
           existing: event.node.children,
           title: this.getDialogTitle(event),
-          data: this.store.select(fromResource.getData),
           version: selectedVersion,
           scope: event.scope,
           master: false,
           documentType: Type.IGDOCUMENT,
-          versionChange: (version: string) => {
-            this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version }));
-          },
-          versionAndScopeChange: (version: string, scope: Scope) => {
-            this.store.dispatch(new LoadResource({ type: event.type, scope, version }));
-          },
           type: event.type,
         };
         const dialogRef = this.dialog.open(ResourcePickerComponent, {
@@ -195,6 +182,40 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
         dialogRef.afterClosed().pipe(
           map((result) => {
             this.store.dispatch(new ClearResource());
+            return result;
+          }),
+          filter((x) => x !== undefined),
+          withLatestFrom(this.documentRef$),
+          take(1),
+          map(([result, documentRef]) => {
+            this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: result, type: event.type }));
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
+    subscription.unsubscribe();
+  }
+
+  addStructure(event: IAddWrapper) {
+    const subscription = this.hl7Version$.pipe(
+      withLatestFrom(this.version$),
+      take(1),
+      map(([versions, selectedVersion]) => {
+        const dialogData = {
+          hl7Versions: versions,
+          existing: event.node.children,
+          title: this.getDialogTitle(event),
+          version: selectedVersion,
+          scope: Scope.USERCUSTOM,
+          master: false,
+          documentType: Type.IGDOCUMENT,
+          type: event.type,
+        };
+        const dialogRef = this.dialog.open(ImportStructureComponent, {
+          data: dialogData,
+        });
+        dialogRef.afterClosed().pipe(
+          map((result) => {
             return result;
           }),
           filter((x) => x !== undefined),

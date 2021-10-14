@@ -114,6 +114,17 @@ public class StructureEditorController {
         }
         return structureService.getMessageStructureState(messageStructure);
     }
+    
+
+    @RequestMapping(value = "/api/structure-editor/structure/{id}/custom-children", method = RequestMethod.GET, produces = {
+            "application/json" })
+    public Set<DisplayElement> customChildren(@PathVariable("id") String id, Authentication authentication) {
+        MessageStructure messageStructure = structureService.getMessageStructureForUser(id, authentication.getName());
+        if(messageStructure == null) {
+            throw new IllegalArgumentException("Not Found");
+        }
+        return structureService.getCustomSegments(messageStructure);
+    }
 
     @RequestMapping(value = "/api/structure-editor/segment/{id}/state", method = RequestMethod.GET, produces = {
             "application/json" })

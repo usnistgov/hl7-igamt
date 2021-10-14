@@ -28,6 +28,7 @@ import { SegmentStructureEditorComponent } from './components/segment-structure-
 import { SideBarComponent } from './components/side-bar/side-bar.component';
 import { StructureEditorContainerComponent } from './components/structure-editor-container/structure-editor-container.component';
 import { TableOfContentComponent } from './components/table-of-content/table-of-content.component';
+import {StructureNamingDuplicationDirective} from './directives/structure-naming-duplication.directive';
 import { StructureEditorResourceRepositoryService } from './services/structure-editor-resource-repository.service';
 import { StructureEditorRoutingModule } from './structure-editor-routing.module';
 
@@ -57,6 +58,7 @@ import { StructureEditorRoutingModule } from './structure-editor-routing.module'
     ActiveTitlebarComponent,
     CreateSegmentDialogComponent,
     FieldAddDialogComponent,
+    StructureNamingDuplicationDirective,
   ],
   imports: [
     CommonModule,
@@ -68,7 +70,7 @@ import { StructureEditorRoutingModule } from './structure-editor-routing.module'
   providers: [
     StructureEditorResourceRepositoryService,
   ],
-  exports: [StructureEditorContainerComponent],
+  exports: [StructureEditorContainerComponent, StructureNamingDuplicationDirective],
   entryComponents: [CreateMessageDialogComponent, ResourceSelectDialogComponent, SegmentAddDialogComponent, GroupAddDialogComponent, FieldAddDialogComponent, CreateSegmentDialogComponent, StructureEditorContainerComponent],
 })
 export class StructureEditorModule { }

@@ -78,12 +78,34 @@ public class Segment extends Resource {
     this.dynamicMappingInfo = dynamicMappingInfo;
   }
 
+//  @Override
+//  public String getLabel() {
+//    if (this.ext != null && !this.ext.isEmpty()) {
+//      return this.getName() + "_" + this.ext;
+//    }
+//    return this.getName();
+//  }
+  
+  
   @Override
   public String getLabel() {
-    if (this.ext != null && !this.ext.isEmpty()) {
-      return this.getName() + "_" + this.ext;
+    String entireExt = this.getEntireExtension();
+    if (entireExt != null && !entireExt.isEmpty()) {
+      return  this.getName() + this.getEntireExtension();
     }
     return this.getName();
+  }
+
+  public String getEntireExtension() {
+    if(this.getFixedExtension() !=null && !this.getFixedExtension().isEmpty()) {
+     String fixed = "#"+this.getFixedExtension();
+     if(this.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
+       return fixed;
+     }else if(this.getExt() != null) {
+       return fixed+'_'+ this.getExt();
+     }     
+    }
+    return this.getExt();
   }
   
   @Override
@@ -102,8 +124,4 @@ public class Segment extends Resource {
 	 elm.custom = custom;
  };
   
-  
-  
-  
-
 }

@@ -39,4 +39,9 @@ public interface StructureService {
     CustomStructureRegistry getCustomStructureRegistry(String user);
     List<DisplayElement> getResources(Type type, Scope scope, String version, String user);
     List<DisplayElement> getResourceValueSets(Type type, String id);
+	/**
+	 * @param structure
+	 * @return
+	 */
+	Set<DisplayElement> getCustomSegments(MessageStructure structure);
 }

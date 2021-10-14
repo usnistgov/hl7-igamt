@@ -1038,6 +1038,9 @@ private String token;
       MessageStructure profile = messageStructureRepository.findOneById(ev.getOriginalId());
       if (profile != null) {
         ConformanceProfile clone = new ConformanceProfile(profile, ev.getName());
+        if(ev.getSubstitutes() != null && !ev.getSubstitutes().isEmpty()) {
+          this.conformanceProfileService.subsitute(clone, ev.getSubstitutes(), username);
+        }
         clone.setUsername(username);
         clone.getDomainInfo().setScope(Scope.USER);
         clone.setDescription(ev.getDescription());

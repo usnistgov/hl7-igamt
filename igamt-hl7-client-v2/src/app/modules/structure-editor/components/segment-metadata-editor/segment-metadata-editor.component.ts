@@ -1,17 +1,22 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { Actions } from '@ngrx/effects';
-import { Action, Store } from '@ngrx/store';
-import { combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, take, tap } from 'rxjs/operators';
-import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {Actions} from '@ngrx/effects';
+import {Action, Store} from '@ngrx/store';
+import {combineLatest, Observable, Subscription, throwError} from 'rxjs';
+import {catchError, concatMap, flatMap, map, take, tap, withLatestFrom} from 'rxjs/operators';
+import {MessageService} from 'src/app/modules/dam-framework/services/message.service';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
-import { selectSegmentStructureById } from '../../../../root-store/structure-editor/structure-editor.reducer';
-import { Type } from '../../../shared/constants/type.enum';
-import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { EditorID } from '../../../shared/models/editor.enum';
-import { StructureEditorComponent } from '../../services/structure-editor-component.abstract';
-import { StructureEditorService } from '../../services/structure-editor.service';
+import {
+  selectSegmentStructureById,
+  selectSegmentStructures,
+} from '../../../../root-store/structure-editor/structure-editor.reducer';
+import {Scope} from '../../../shared/constants/scope.enum';
+import {Type} from '../../../shared/constants/type.enum';
+import { validateStructureUnicity} from '../../../shared/functions/unicity-factory';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {EditorID} from '../../../shared/models/editor.enum';
+import {StructureEditorComponent} from '../../services/structure-editor-component.abstract';
+import {StructureEditorService} from '../../services/structure-editor.service';
 
 export interface ISegmentStructureMetadata {
   name: string;
@@ -44,8 +49,10 @@ export class SegmentMetadataEditorComponent extends StructureEditorComponent imp
     }, actions$, store);
 
     this.s_workspace = this.currentSynchronized$.pipe(
-      tap((metadata: ISegmentStructureMetadata) => {
-        this.initFormGroup();
+      withLatestFrom(this.getOthers()),
+
+      tap(([metadata, others]) => {
+        this.initFormGroup(others, metadata.name, metadata.hl7Version);
         this.formGroup.patchValue(metadata);
         this.formGroup.valueChanges.subscribe((changed) => {
           this.editorChange(changed, this.formGroup.valid);
@@ -54,13 +61,23 @@ export class SegmentMetadataEditorComponent extends StructureEditorComponent imp
     ).subscribe();
   }
 
-  initFormGroup() {
+  initFormGroup(others: IDisplayElement[], name: string, version: string) {
     this.formGroup = this.formBuilder.group({
       name: [''],
-      identifier: [''],
+      identifier: ['', [ validateStructureUnicity(others, name, { version, scope: Scope.USERCUSTOM} ), Validators.required]],
       description: [''],
       hl7Version: [''],
     });
+  }
+
+  getOthers(): Observable<IDisplayElement[]> {
+    return  this.store.select(selectSegmentStructures).pipe(
+      take(1),
+      withLatestFrom(this.elementId$),
+      map(([exiting, id]) => {
+        return exiting.filter((x) => x.id !== id);
+      }),
+    );
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {

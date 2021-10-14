@@ -69,9 +69,9 @@
               <i class="fa fa-lock" style="color: red; margin-left: 5px;" *ngIf="node.data.status === 'PUBLISHED'"></i>
             </div>
             <span style="margin-left: 5px;">
-              {{ node.data.fixedName + (node.data.variableName ? '_' + node.data.variableName : '')  }} - {{ node.data.description }}
-            </span>
 
+              {{getLabel(node.data.fixedName, node.data.variableName)}} - {{node.data.description}}
+            </span>
           </div>
 
 <!--          <context-menu #segmentContextMenu>-->

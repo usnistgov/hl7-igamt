@@ -6,6 +6,7 @@ import { Scope } from '../../constants/scope.enum';
 import { Type } from '../../constants/type.enum';
 import { IAddingInfo } from '../../models/adding-info';
 import { IDisplayElement } from '../../models/display-element.interface';
+import {IResource} from '../../models/resource.interface';
 
 @Component({
   selector: 'app-select-segments',
@@ -56,12 +57,13 @@ export class SelectSegmentsComponent implements OnInit {
     this.selectedData.push(element);
     this.emitData();
   }
-  addAsFlavor(obj: any) {
+  addAsFlavor(obj: IResource) {
     const element: IAddingInfo = {
       originalId: obj.id,
       id: Guid.create().toString(),
       type: Type.SEGMENT,
       name: obj.name,
+      fixedExt: obj.fixedExtension,
       description: obj.description,
       domainInfo: { ...obj.domainInfo, scope: Scope.USER },
       flavor: true,
