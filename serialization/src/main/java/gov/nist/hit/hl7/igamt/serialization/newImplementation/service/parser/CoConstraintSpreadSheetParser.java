@@ -17,6 +17,7 @@ public class CoConstraintSpreadSheetParser {
 	private int if_end = 3;
 	private int then_start = 0;
 	private int then_end = 0;
+	private int groupBy = -1;
 	private int narratives_start = 0;
 	private int narratives_end = 0;
 	private int cc_end = 0;
@@ -37,6 +38,8 @@ public class CoConstraintSpreadSheetParser {
 		boolean foundNarrative = false;
 		boolean foundIf = false;
 		boolean foundThen = false;
+		boolean groupBy = false;
+
 		int numberMergedCells = sheet.getNumMergedRegions();
 		if(numberMergedCells == 0) {
 			this.wrongHeaderStructure = true;
@@ -56,6 +59,7 @@ public class CoConstraintSpreadSheetParser {
 				case "IF" :
 					this.if_start = region.getFirstColumn();
 					this.if_end = region.getLastColumn();
+					foundIf = true;
 					break;
 				case "THEN" :
 					foundThen = true;
@@ -72,36 +76,95 @@ public class CoConstraintSpreadSheetParser {
 				}
 			}
 		}
-		Row row1 = sheet.getRow(0);
-		int numberofcells1 = row1.getPhysicalNumberOfCells();
-		Row row2 = sheet.getRow(1);
-		int numberofcells2 = row2.getPhysicalNumberOfCells();
+		int position = -1;
 		
+		position = this.find(sheet, "Group By");
+		if(position == -1) {
+			 groupBy = false;
+			// HANDLE ERROR
+		} else {
+			this.groupBy = position;
+		}
 
-		if(this.then_end == 0) {
-			this.then_start = this.if_end+1;
-			this.then_end = this.if_end+1;
+		if(!foundIf) {
+			position = this.find(sheet, "IF");
+			if(position == -1) {
+				// HANDLE ERROR
+			} else {
+				this.if_start = position;
+				this.if_end = position;
+			}
 		}
-		if(this.narratives_end == 0 && this.then_end+1 < sheet.getRow(0).getPhysicalNumberOfCells() ) {
-			this.narratives_start = this.then_end+1;
-			this.narratives_end = this.then_end+1;
+		
+		if(!foundThen) {
+			position = this.find(sheet, "THEN");
+			if(position == -1) {
+				// HANDLE ERROR
+			} else {
+				this.then_end = position;
+				this.then_end = position;
+			}
 		}
+		
+		if(!foundNarrative) {
+			position = this.find(sheet, "NARRATIVES");
+			if(position == -1) {
+				// HANDLE ERROR
+			} else {
+				this.narratives_start = position;
+				this.narratives_end = position;
+			}
+		}
+		
 		if(this.groupHeader.size() > 0) {
 			this.cc_end = this.groupHeader.stream().reduce(Integer.MAX_VALUE, Math::min) - 1;
 		} else {
 			this.cc_end = sheet.getLastRowNum();
 		}
+
+//		if(this.then_end == 0) {
+//			this.then_start = this.if_end+1;
+//			this.then_end = this.if_end+1;
+//		}
+//		if(this.narratives_end == 0 && this.then_end+1 < sheet.getRow(1).getPhysicalNumberOfCells() ) {
+//			if(row1.getCell(this.then_end+1).getStringCellValue().equals("Group By")) {
+//				this.narratives_start = this.then_end+2;
+//				this.narratives_end = this.then_end+2;
+//			} else if(row1.getCell(this.then_end+1).getStringCellValue().equals("Narratives")){
+//				this.narratives_start = this.then_end+1;
+//				this.narratives_end = this.then_end+1;
+//			}
+//		
+//		}
+
+//		System.out.println("D");
+	}
+
+	public int find(Sheet sheet, String columnType) {
+		Row firstRow = sheet.getRow(0);
+		int width = firstRow.getPhysicalNumberOfCells();
+		for(int i = 3; i < width; i++) {
+			Cell value = firstRow.getCell(i);
+			if(value.getCellType() == Cell.CELL_TYPE_STRING && value.getStringCellValue().equals(columnType)) {
+				return i;
+			}
+		}
+		return -1;
 	}
 
 	public ParsedTable parseTable(Sheet sheet) {
 		ParsedTable table = new ParsedTable();
-
+		table.setGrouperPosition(this.groupBy);
+		table.setHasGrouper(this.groupBy != -1);
 		// Parse Headers
 		Row headers = sheet.getRow(HEADER_ROW);
 		if(headers != null) {
-		table.setIfHeaders(this.parseHeader(headers, if_start, if_end));
-		table.setThenHeaders(this.parseHeader(headers, then_start, then_end));
-		table.setNarrativeHeaders(this.parseHeader(headers, narratives_start, narratives_end));
+			table.setIfHeaders(this.parseHeader(headers, if_start, if_end));
+			table.setThenHeaders(this.parseHeader(headers, then_start, then_end));
+			if(table.isHasGrouper()) {
+				table.setGrouperValue(headers.getCell(this.groupBy).getStringCellValue());
+			}
+			table.setNarrativeHeaders(this.parseHeader(headers, narratives_start, narratives_end));
 		}
 
 		// Parse Table

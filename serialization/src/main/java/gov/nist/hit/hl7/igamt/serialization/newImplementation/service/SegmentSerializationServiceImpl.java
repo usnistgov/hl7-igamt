@@ -281,6 +281,9 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
 
   private Element serializeDynamicMapping(DynamicMappingInfo dynamicMappingInfo, IgDataModel igDataModel)
       throws DatatypeNotFoundException {
+	  Set<DynamicMappingItem> dynamicMappingItemSet = dynamicMappingInfo.getItems();
+	  List<DynamicMappingItem> dynamicMappingList = dynamicMappingItemSet.stream().sorted((e1, e2) -> 
+	  e1.getValue().compareTo(e2.getValue())).collect(Collectors.toList());
     if (dynamicMappingInfo != null && dynamicMappingInfo.getItems() != null) {
       Element dynamicMappingElement = new Element("DynamicMapping");
       dynamicMappingElement.addAttribute(new Attribute("referencePath",
@@ -291,7 +294,7 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
           dynamicMappingInfo.getVariesFieldId() != null
           ? dynamicMappingInfo.getReferenceFieldId()
               : ""));
-      for (DynamicMappingItem dynamicMappingItem : dynamicMappingInfo.getItems()) {
+      for (DynamicMappingItem dynamicMappingItem : dynamicMappingList) {
         if (dynamicMappingItem != null) {
           Element dynamicMappingItemElement = new Element("DynamicMappingItem");
           if (dynamicMappingItem.getDatatypeId() != null) {
