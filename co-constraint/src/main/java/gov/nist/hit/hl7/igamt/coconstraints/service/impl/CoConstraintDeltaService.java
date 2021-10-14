@@ -155,6 +155,7 @@ public class CoConstraintDeltaService {
             source.setDelta(DeltaAction.DELETED);
             source.setNameDelta(new DeltaField<>(source.getName(), null));
             source.setTypeDelta(new DeltaField<>(source.getType(), null));
+            source.setPathIdDelta(new DeltaField<>(source.getPathId(), null));
             return source;
         }
 
@@ -162,6 +163,7 @@ public class CoConstraintDeltaService {
             target.setDelta(DeltaAction.ADDED);
             target.setNameDelta(new DeltaField<>(null, target.getName()));
             target.setTypeDelta(new DeltaField<>(null, target.getType()));
+            target.setPathIdDelta(new DeltaField<>(null, target.getPathId()));
             return target;
         }
 
@@ -169,9 +171,12 @@ public class CoConstraintDeltaService {
             target.setDelta(DeltaAction.ADDED);
             target.setNameDelta(new DeltaField<>(source.getName(), target.getName()));
             target.setTypeDelta(new DeltaField<>(source.getType(), target.getType()));
+            target.setPathIdDelta(new DeltaField<>(source.getPathId(), target.getPathId()));
+
             boolean hasChanges = this.hasChange(Arrays.asList(
                     target.getNameDelta(),
-                    target.getTypeDelta()
+                    target.getTypeDelta(),
+                    target.getPathIdDelta()
             ));
             target.setDelta(hasChanges ? DeltaAction.CHANGED : DeltaAction.UNCHANGED);
             return target;

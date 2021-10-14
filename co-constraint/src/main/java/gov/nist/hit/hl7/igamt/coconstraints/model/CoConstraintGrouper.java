@@ -5,6 +5,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 public class CoConstraintGrouper extends WithDelta {
     private DeltaField<String> nameDelta;
     private DeltaField<Type> typeDelta;
+    private DeltaField<String> pathIdDelta;
 
     private String name;
     private String pathId;
@@ -12,7 +13,6 @@ public class CoConstraintGrouper extends WithDelta {
     private String version;
     private String datatype;
     private Type type;
-
 
     public String getName() {
         return name;
@@ -76,5 +76,13 @@ public class CoConstraintGrouper extends WithDelta {
 
     public void setTypeDelta(DeltaField<Type> typeDelta) {
         this.typeDelta = typeDelta;
+    }
+
+    public DeltaField<String> getPathIdDelta() {
+        return pathIdDelta;
+    }
+
+    public void setPathIdDelta(DeltaField<String> pathIdDelta) {
+        this.pathIdDelta = pathIdDelta;
     }
 }

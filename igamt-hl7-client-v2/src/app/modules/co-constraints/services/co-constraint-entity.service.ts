@@ -162,12 +162,7 @@ export class CoConstraintEntityService {
       const OBX_4 = tree.find((elm) => elm.data.position === 4);
       if (OBX_4 && (OBX_4.leaf || OBX_4.data.ref.getValue().name === 'OG')) {
         return {
-          name: 'OBX-4',
           pathId: OBX_4.data.pathId,
-          description: OBX_4.data.name,
-          version: OBX_4.data.ref.getValue().version,
-          datatype: OBX_4.data.ref.getValue().name,
-          type: OBX_4.data.type,
         };
       }
     }

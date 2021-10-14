@@ -3,16 +3,14 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild 
 import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
-import { combineLatest, Observable, of, Subject } from 'rxjs';
-import { filter, map, take, tap } from 'rxjs/operators';
+import { combineLatest, Observable, of, Subject, EMPTY } from 'rxjs';
+import { filter, map, take, tap, catchError } from 'rxjs/operators';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { SegmentService } from '../../../segment/services/segment.service';
-import { IBindingLocationInfo } from '../../../shared/components/binding-selector/binding-selector.component';
 import { ICardinalityRange, IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import {
-  CoConstraintColumnType,
   CoConstraintGroupBindingType,
   CoConstraintHeaderType,
   CoConstraintMode,
@@ -25,9 +23,8 @@ import {
   IDataElementHeader,
   INarrativeHeader,
 } from '../../../shared/models/co-constraint.interface';
-import { ICoConstraintGroupBinding, ICoConstraintGroupBindingRef, ICoConstraintHeaders, ICoConstraintRequirement, IDataElementHeaderInfo } from '../../../shared/models/co-constraint.interface';
+import { ICoConstraintGroupBinding, ICoConstraintGroupBindingRef, ICoConstraintHeaders, ICoConstraintRequirement, IDataElementHeaderInfo, CoConstraintColumnType } from '../../../shared/models/co-constraint.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { BindingService } from '../../../shared/services/binding.service';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { PathService } from '../../../shared/services/path.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
@@ -121,7 +118,6 @@ export class CoConstraintTableComponent implements OnInit {
   valueChange: EventEmitter<ICoConstraintTable & ICoConstraintGroup>;
   @Output()
   formValue: EventEmitter<NgForm>;
-
   _documentRef: IDocumentRef;
   @Input()
   valueSets: IDisplayElement[];
@@ -188,10 +184,28 @@ export class CoConstraintTableComponent implements OnInit {
     if (this.headersElementInfo[header.key]) {
       return of(this.headersElementInfo[header.key]);
     } else {
-      return this.getDataElementHeaderElementInfo(this.segment.name, this.structure[0].children, header).pipe(
+      return this.getDataElementHeaderElementInfo(this.segment.name, this.structure[0].children, header.columnType, header.key).pipe(
         take(1),
         map((info) => {
           this.headersElementInfo[header.key] = info;
+          return info;
+        }),
+      );
+    }
+  }
+
+  getGrouperElementInfo(grouper: ICoConstraintGrouper): Observable<IDataElementHeaderInfo> {
+    if (!grouper) {
+      return null;
+    }
+
+    if (this.headersElementInfo[grouper.pathId]) {
+      return of(this.headersElementInfo[grouper.pathId]);
+    } else {
+      return this.getDataElementHeaderElementInfo(this.segment.name, this.structure[0].children, CoConstraintColumnType.GROUPER, grouper.pathId).pipe(
+        take(1),
+        map((info) => {
+          this.headersElementInfo[grouper.pathId] = info;
           return info;
         }),
       );
@@ -202,8 +216,8 @@ export class CoConstraintTableComponent implements OnInit {
     return cardinality && cardinality.max && cardinality.max !== '*' && +cardinality.max > 1;
   }
 
-  getDataElementHeaderElementInfo(segment: string, tree: IHL7v2TreeNode[], header: IDataElementHeader): Observable<IDataElementHeaderInfo> {
-    return this.treeService.getNodeByPath(tree, this.pathService.getPathFromPathId(header.key), this.repository).pipe(
+  getDataElementHeaderElementInfo(segment: string, tree: IHL7v2TreeNode[], columnType: CoConstraintColumnType, key: string): Observable<IDataElementHeaderInfo> {
+    return this.treeService.getNodeByPath(tree, this.pathService.getPathFromPathId(key), this.repository).pipe(
       map((node) => {
         const resourceRef = node.data.ref.getValue();
         const parent = node.parent ? node.parent.data.ref.getValue() : undefined;
@@ -215,8 +229,25 @@ export class CoConstraintTableComponent implements OnInit {
           cardinality: node.data.cardinality,
           type: node.data.type,
           bindingInfo: node.data.valueSetBindingsInfo ? node.data.valueSetBindingsInfo.getValue() : null,
-          displayCardinality: this.repeats(node.data.cardinality) && header.columnType === CoConstraintColumnType.VARIES,
+          displayCardinality: this.repeats(node.data.cardinality) && columnType === CoConstraintColumnType.VARIES,
+          name: segment + '-' + (key || '').replace('-', '.'),
+          resolved: true,
         };
+      }),
+      catchError((err) => {
+        return of({
+          resolved: false,
+          error: err && err.message ? err.message : 'Could not find path ' + key,
+          version: undefined,
+          parent: undefined,
+          datatype: undefined,
+          location: undefined,
+          cardinality: undefined,
+          type: undefined,
+          bindingInfo: undefined,
+          displayCardinality: undefined,
+          name: segment + '-' + (key || '').replace('-', '.'),
+        });
       }),
     );
   }
@@ -562,10 +593,10 @@ export class CoConstraintTableComponent implements OnInit {
 
   ngOnInit() {
     this.value.headers.selectors.forEach((header) => {
-      this.getDataElementHeaderElementInfo(this.segment.name, this.structure[0].children, header as IDataElementHeader);
+      this.getDataElementHeaderElementInfo(this.segment.name, this.structure[0].children, (header as IDataElementHeader).columnType, (header as IDataElementHeader).key);
     });
     this.value.headers.constraints.forEach((header) => {
-      this.getDataElementHeaderElementInfo(this.segment.name, this.structure[0].children, header as IDataElementHeader);
+      this.getDataElementHeaderElementInfo(this.segment.name, this.structure[0].children, (header as IDataElementHeader).columnType, (header as IDataElementHeader).key);
     });
   }
 

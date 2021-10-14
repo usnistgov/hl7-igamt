@@ -36,7 +36,7 @@
         [resources]="datatypes"
       ></app-resource-dropdown>
       <app-display-section
-        *ngIf="viewOnly && getDatatype(cell.datatypeId) as display"
+        *ngIf="viewOnly && getDatatype(cellValue.datatypeId) as display"
         [element]="display"
         [hideDescription]="true"
       >

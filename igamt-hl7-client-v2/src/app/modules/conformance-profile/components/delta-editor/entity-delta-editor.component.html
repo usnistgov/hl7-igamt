@@ -76,7 +76,10 @@
             [segments]="segments | async"
             [datatypes]="datatypes | async"
             [valueSets]="valueSets | async"
-            [documentRef]="documentRef$ | async" >
+            [documentRef]="documentRef$ | async"
+            [structure]="structure"
+            [conformanceProfile]="resource"
+            >
           </app-context-co-constraint-binding>
         </div>
       </ng-container>

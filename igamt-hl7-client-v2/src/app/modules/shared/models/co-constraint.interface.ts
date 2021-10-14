@@ -73,15 +73,9 @@ export interface ICoConstraintHeaders {
 }
 
 export interface ICoConstraintGrouper {
-  name: string;
   pathId: string;
-  description: string;
-  version: string;
-  datatype: string;
-  type: Type;
   delta?: DeltaAction;
-  nameDelta?: IDeltaNode<string>;
-  typeDelta?: IDeltaNode<string>;
+  pathIdDelta?: IDeltaNode<string>;
 }
 
 export interface ICoConstraintHeader {
@@ -91,7 +85,6 @@ export interface ICoConstraintHeader {
 }
 
 export interface IDataElementHeader extends ICoConstraintHeader {
-  name: string;
   columnType: CoConstraintColumnType;
 }
 
@@ -104,6 +97,9 @@ export interface IDataElementHeaderInfo {
   type: Type;
   bindingInfo: IBindingLocationInfo;
   displayCardinality: boolean;
+  name: string;
+  error?: string;
+  resolved: boolean;
 }
 
 export interface INarrativeHeader extends ICoConstraintHeader {
@@ -158,6 +154,7 @@ export enum CoConstraintColumnType {
   FLAVOR = 'FLAVOR',
   VARIES = 'VARIES',
   VALUE = 'VALUE',
+  GROUPER = 'GROUPER',
 }
 
 export enum CoConstraintGroupBindingType {

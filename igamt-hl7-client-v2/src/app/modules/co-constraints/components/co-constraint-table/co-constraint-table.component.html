@@ -39,23 +39,37 @@
               <button *ngIf="!vOnly && mode !== 'GROUP' && value.headers.grouper && (!value.groups || value.groups.length === 0)" (click)="clearGrouper()" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
               <button *ngIf="!vOnly && (mode === 'GROUP' || (value.groups && value.groups.length > 0))" class="btn btn-sm btn-primary" (click)="setTableGrouper(false)"><i class="fa fa-pencil"></i></button>
             </div>
-            <div style="width: 100%; text-align: center;" *ngIf="value.headers.grouper" >
-              <span class="badge badge-secondary"> Group Id </span>
-              <app-entity-bagde [type]="value.headers.grouper.type"></app-entity-bagde>
-              <span style="margin-left: 3px;">{{value.headers.grouper.name}}</span>
-            </div>
+            <ng-container *ngIf="getGrouperElementInfo(value.headers.grouper) | async as grouperInfo" >
+              <div style="width: 100%; text-align: center;" *ngIf="grouperInfo.resolved" >
+                <span class="badge badge-secondary"> Group Id </span>
+                <app-entity-bagde [type]="grouperInfo.type"></app-entity-bagde>
+                <span style="margin-left: 3px;">{{grouperInfo.name}}</span>
+              </div>
+              <div style="width: 100%; text-align: center;" *ngIf="!grouperInfo.resolved" >
+                <span style="color: red;">
+                  <i class="fa fa-warning" ></i> {{grouperInfo.error}}
+                </span>
+              </div>
+            </ng-container>
           </div>
           <app-delta-column
               *ngIf="delta && value.headers.grouper"
-              [currentValue]="{ name : value.headers.grouper.nameDelta.current, type : value.headers.grouper.typeDelta.current }"
-              [previousValue]="{ name : value.headers.grouper.nameDelta.previous, type : value.headers.grouper.typeDelta.previous }"
+              [currentValue]="{ pathId : value.headers.grouper.pathIdDelta?.current }"
+              [previousValue]="{ pathId : value.headers.grouper.pathIdDelta?.previous }"
               [action]="value.headers.grouper.delta">
             <ng-template #default let-value>
-              <div style="width: 100%; text-align: center;">
-                <span class="badge badge-secondary"> Group Id </span>
-                <app-entity-bagde [type]="value.type"></app-entity-bagde>
-                <span style="margin-left: 3px;">{{value.name}}</span>
-              </div>
+              <ng-container *ngIf="getGrouperElementInfo(value) | async as grouperInfo" >
+                <div style="width: 100%; text-align: center;" *ngIf="grouperInfo.resolved" >
+                  <span class="badge badge-secondary"> Group Id </span>
+                  <app-entity-bagde [type]="grouperInfo.type"></app-entity-bagde>
+                  <span style="margin-left: 3px;">{{grouperInfo.name}}</span>
+                </div>
+                <div style="width: 100%; text-align: center;" *ngIf="!grouperInfo.resolved" >
+                  <span style="color: red;">
+                    <i class="fa fa-warning" ></i> {{grouperInfo.error}}
+                  </span>
+                </div>
+              </ng-container>
             </ng-template>
           </app-delta-column>
         </th>
@@ -107,10 +121,15 @@
           <div *ngIf="!header._keep">
             <button *ngIf="!vOnly" class="btn btn-sm btn-danger" (click)="deleteColumn(list, header, index)"><i class="fa fa-times"></i></button>
           </div>
-          <div style="width: 100%; text-align: center;">
+          <div style="width: 100%; text-align: center;" *ngIf="headerInfo.resolved">
             <span class="badge badge-secondary">{{header.columnType}}</span>
             <app-entity-bagde [type]="headerInfo.type"></app-entity-bagde>
-            <span style="margin-left: 3px;">{{header.name}}</span>
+            <span style="margin-left: 3px;">{{headerInfo.name}}</span>
+          </div>
+          <div style="width: 100%; text-align: center;" *ngIf="!headerInfo.resolved" >
+            <span style="color: red;">
+              <i class="fa fa-warning" ></i> {{headerInfo.error}}
+            </span>
           </div>
         </div>
       </th>
@@ -331,7 +350,7 @@
               <ng-container [ngSwitch]="!cc.cells[header.key] || (cc.cells[header.key] && (header.columnType === cc.cells[header.key].type || (!header.columnType && cc.cells[header.key].type === 'VALUE')))">
                 <ng-container *ngSwitchCase="true">
                   <td style="position: relative;" #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !headerInfo.displayCardinality, 'inside-border' : i !== (headers.length - 1) && !headerInfo.displayCardinality }" *ngIf="cc.cells[header.key]; else emptyColumn" >
-                      <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor, excludeBindingStrength: excludeBindingStrength, column: column }"></ng-container>
+                      <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly || !headerInfo.resolved , anchor: anchor, excludeBindingStrength: excludeBindingStrength, column: column }"></ng-container>
                   </td>
                   <td *ngIf="headerInfo.displayCardinality" [ngClass]="{'column-border': i === (headers.length - 1), 'inside-border' :  i !== (headers.length - 1) }" style="vertical-align: middle; text-align: center;">
                     <input *ngIf="!viewOnly" class="form-control" type="text" style="width: 100px;" [placeholder]="headerInfo.cardinality.max" [name]="fieldId + '-cardinality'" [(ngModel)]="cc.cells[header.key].cardinalityMax" (ngModelChange)="emitChange()" >
