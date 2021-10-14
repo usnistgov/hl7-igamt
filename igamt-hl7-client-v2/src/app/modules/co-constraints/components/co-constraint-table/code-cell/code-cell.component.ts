@@ -18,7 +18,6 @@ export class CodeCellComponent extends CellComponent<ICoConstraintCodeCell> impl
   }
 
   ngOnInit() {
-    console.log('code', this.elementInfo);
   }
 
 }

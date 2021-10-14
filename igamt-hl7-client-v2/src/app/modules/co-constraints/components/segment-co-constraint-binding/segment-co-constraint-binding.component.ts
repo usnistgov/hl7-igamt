@@ -5,8 +5,8 @@ import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
-import { Observable } from 'rxjs';
-import { map, mergeMap, take, tap } from 'rxjs/operators';
+import { combineLatest, Observable, of, throwError } from 'rxjs';
+import { catchError, flatMap, map, take, tap } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/dam-framework/services/message.service';
 import { MessageType, UserMessage } from '../../../dam-framework/models/messages/message.class';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
@@ -22,8 +22,10 @@ import {
   IStructureElementRef,
 } from '../../../shared/models/co-constraint.interface';
 import { IConformanceProfile } from '../../../shared/models/conformance-profile.interface';
+import { IPath } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { ISegment } from '../../../shared/models/segment.interface';
+import { ElementNamingService, IPathInfo } from '../../../shared/services/element-naming.service';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { PathService } from '../../../shared/services/path.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
@@ -33,6 +35,15 @@ import { CoConstraintGroupSelectorComponent } from '../co-constraint-group-selec
 import { CoConstraintAction, CoConstraintTableComponent } from '../co-constraint-table/co-constraint-table.component';
 import { ImportDialogComponent } from '../import-dialog/import-dialog.component';
 
+export interface ISegmentCoConstraint {
+  resolved: boolean;
+  issue?: string;
+  segment?: ISegment;
+  display?: IDisplayElement;
+  pathInfo?: IPathInfo;
+  name?: string;
+}
+
 @Component({
   selector: 'app-segment-co-constraint-binding',
   templateUrl: './segment-co-constraint-binding.component.html',
@@ -40,7 +51,6 @@ import { ImportDialogComponent } from '../import-dialog/import-dialog.component'
 })
 export class SegmentCoConstraintBindingComponent implements OnInit {
 
-  segment$: Observable<ISegment>;
   binding: ICoConstraintBindingSegment;
   userMessage: UserMessage;
 
@@ -76,10 +86,9 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   tableComponents: QueryList<CoConstraintTableComponent>;
   @Output()
   delete: EventEmitter<boolean>;
-  display$: Observable<IDisplayElement>;
+  segmentCoConstraint$: Observable<ISegmentCoConstraint>;
 
   excelImport = false;
-
   loading = false; // Flag variable
   file: File = null; // Variable to store file
 
@@ -88,48 +97,23 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     this.file = event.target.files[0];
   }
 
-  // OnClick of button Upload
-  onUpload() {
-    console.log(this.file);
-    this.conformanceProfile.pipe(
-      take(1),
-      mergeMap((cp) => {
-        return this.fileUploadService.upload(this.file, this.binding.flavorId, cp.id, this.documentRef.documentId, this.context.pathId).pipe(
-          map((v) => {
-            console.log(v.data);
-            this.store.dispatch(this.messageService.messageToAction(v));
-            this.binding.tables.push({ id: '', delta: undefined, value: v.data, condition: undefined });
-            console.log(this.binding.tables);
-          }),
-        );
-      }),
-    ).subscribe();
-
-  }
-
-  openImportDialog() {
+  openImportDialog(segmentId: string) {
     const dialogRef = this.dialog.open(ImportDialogComponent, {
       maxWidth: '95vw',
       maxHeight: '90vh',
       data: {
         fileUploadService: this.fileUploadService,
-        flavorId: this.binding.flavorId,
+        flavorId: segmentId,
         conformanceProfile: this.conformanceProfile,
         documentId: this.documentRef.documentId,
         pathId: this.context.pathId,
-
       },
     });
     dialogRef.afterClosed().subscribe(
       (coConstraintTable) => {
         if (coConstraintTable) {
-          console.log('in segment class : ', coConstraintTable);
-
-          this.store.dispatch(this.messageService.userMessageToAction(new UserMessage<never>(MessageType.SUCCESS, 'TABLE SAVED SUCCESSFULLY')),
-
-          );
+          this.store.dispatch(this.messageService.userMessageToAction(new UserMessage<never>(MessageType.SUCCESS, 'TABLE SAVED SUCCESSFULLY')));
           this.binding.tables.push({ id: '', delta: undefined, value: coConstraintTable, condition: undefined });
-          console.log(this.binding.tables);
         }
       },
     );
@@ -151,6 +135,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     private messageService: MessageService,
     private treeService: Hl7V2TreeService,
     private pathService: PathService,
+    private elementNamingService: ElementNamingService,
     protected ccService: CoConstraintEntityService) {
     this.valueChange = new EventEmitter<ICoConstraintBindingSegment>();
     this.delete = new EventEmitter<boolean>();
@@ -185,9 +170,8 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     ).subscribe();
   }
 
-  importCoConstraintGroup(binding: ICoConstraintBindingSegment, id: number) {
+  importCoConstraintGroup(id: number, display: IDisplayElement) {
     const component = this.tableComponents.find((table) => table.id === id);
-    const display = this.segments.find((elm) => elm.id === binding.flavorId);
     if (display && component) {
       const dialogRef = this.dialog.open(CoConstraintGroupSelectorComponent, {
         data: {
@@ -227,7 +211,6 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
         context: context.path,
         assertion: conditional.condition,
         resource: this.conformanceProfile,
-
         excludePaths: [this.binding.segment.pathId],
       },
     });
@@ -299,19 +282,94 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     return true;
   }
 
-  ngOnInit() {
-    this.treeService.getNodeByPath(
+  getTargetResource(path: IPath): Observable<{ display: IDisplayElement, segment: ISegment }> {
+    return this.treeService.getNodeByPath(
       this.structure[0].children,
-      this.pathService.straightConcatPath(this.context.path, this.binding.segment.path),
+      path,
       this.repository,
     ).pipe(
       take(1),
-      map((segmentRef) => {
-        const segmentId = segmentRef.data.ref.getValue().id;
-        this.segment$ = this.getSegment(segmentId);
-        this.display$ = this.repository.getResourceDisplay(Type.SEGMENT, segmentId);
+      flatMap((segmentRef) => {
+        if (segmentRef.data.type === Type.SEGMENTREF) {
+          const segmentId = segmentRef.data.ref.getValue().id;
+          return combineLatest(
+            this.getSegment(segmentId),
+            this.repository.getResourceDisplay(Type.SEGMENT, segmentId),
+          ).pipe(
+            map(([segment, display]) => {
+              return { segment, display };
+            }),
+            catchError((error) => {
+              return throwError({
+                message: 'Could not find segment : ' + error.message,
+              });
+            }),
+          );
+        } else {
+          return throwError({
+            message: 'SegmentRef path is not referencing a segment but a : ' + segmentRef.data.type,
+          });
+        }
       }),
-    ).subscribe();
+      catchError((error) => {
+        return throwError({
+          message: 'Invalid segment path : ' + error.message,
+        });
+      }),
+    );
+  }
+
+  getTargetPathName(path: IPath, startFrom: string): Observable<{ pathInfo: IPathInfo, name: string }> {
+    return this.conformanceProfile.pipe(
+      flatMap((conformanceProfile) => {
+        return this.elementNamingService.getPathInfoFromPath(conformanceProfile, this.repository, path).pipe(
+          take(1),
+          map((pathInfo) => {
+            const name = this.elementNamingService.getStringNameFromPathInfo(this.elementNamingService.getStartPathInfo(pathInfo, startFrom));
+            const nodeInfo = this.elementNamingService.getLeaf(pathInfo);
+            return {
+              name,
+              pathInfo: nodeInfo,
+            };
+          }),
+        );
+      }),
+    );
+  }
+
+  getSegmentCoConstraint(contextPath: IPath, segmentPath: IPath): Observable<ISegmentCoConstraint> {
+    const path = this.pathService.straightConcatPath(contextPath, segmentPath);
+    return path ? combineLatest(
+      this.getTargetResource(path),
+      this.getTargetPathName(path, segmentPath.elementId),
+    ).pipe(
+      map(([{ segment, display }, { name, pathInfo }]) => {
+        return {
+          resolved: true,
+          segment,
+          display,
+          pathInfo,
+          name,
+        };
+      }),
+      catchError((error) => {
+        console.log('resolved', {
+          resolved: false,
+          issue: error.message,
+        });
+        return of({
+          resolved: false,
+          issue: error.message,
+        });
+      }),
+    ) : of({
+      resolved: false,
+      issue: 'Invalid segment path',
+    });
+  }
+
+  ngOnInit() {
+    this.segmentCoConstraint$ = this.getSegmentCoConstraint(this.context.path, this.binding.segment.path);
   }
 
 }

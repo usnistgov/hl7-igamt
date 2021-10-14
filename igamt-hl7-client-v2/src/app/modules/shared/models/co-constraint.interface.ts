@@ -8,8 +8,6 @@ import { IResource } from './resource.interface';
 
 export interface IStructureElementRef {
   pathId: string;
-  name: string;
-  type?: Type;
   path: IPath;
 }
 
@@ -21,7 +19,6 @@ export interface ICoConstraintBindingContext {
 
 export interface ICoConstraintBindingSegment {
   segment: IStructureElementRef;
-  flavorId: string;
   name: string;
   tables: ICoConstraintTableConditionalBinding[];
   delta?: DeltaAction;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, ReplaySubject, Subject } from 'rxjs';
-import { flatMap, map, take, tap } from 'rxjs/operators';
+import { Observable, of, ReplaySubject, Subject, throwError } from 'rxjs';
+import { catchError, flatMap, map, take, tap } from 'rxjs/operators';
 import { IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { IConformanceProfile, IGroup, ISegmentRef } from '../models/conformance-profile.interface';
@@ -209,7 +209,7 @@ export class ElementNamingService {
           if (next.leaf) {
             // But child is a leaf
 
-            subject.error(new Error('Path has extra children whereas resource is leaf'));
+            subject.error({ message: 'Path has extra children whereas resource is leaf' });
           } else {
             // If child is not a leaf
 
@@ -221,6 +221,10 @@ export class ElementNamingService {
                   take(1),
                   map((list) => {
                     fn(list, cursor.child, pathInfo.child, subject);
+                  }),
+                  catchError((err) => {
+                    subject.error(err);
+                    return throwError(err);
                   }),
                 ).subscribe();
             } else {
@@ -244,6 +248,10 @@ export class ElementNamingService {
                 subject.next(intialPathInfo);
                 subject.complete();
               }),
+              catchError((err) => {
+                subject.error(err);
+                return throwError(err);
+              }),
             ).subscribe();
           } else {
             // If the path is not segment ref
@@ -263,12 +271,24 @@ export class ElementNamingService {
         map((list) => {
           fn(list, path, intialPathInfo, pathSubject);
         }),
+        catchError((err) => {
+          pathSubject.error(err);
+          return throwError(err);
+        }),
       ).subscribe();
     } else {
       pathSubject.next(intialPathInfo);
       pathSubject.complete();
     }
     return pathSubject.asObservable();
+  }
+
+  getStartPathInfo(pathInfo: IPathInfo, from: string): IPathInfo {
+    if (pathInfo.type === Type.SEGMENTREF || pathInfo.id === from) {
+      return pathInfo;
+    } else {
+      return this.getStartPathInfo(pathInfo.child, from);
+    }
   }
 
   getStringNameFromPath(path: IPath, resource: IResource, repository: AResourceRepositoryService): Observable<string> {
@@ -281,6 +301,14 @@ export class ElementNamingService {
         return this.getStringNameFromPathInfo(pathInfo);
       }),
     );
+  }
+
+  getLeaf(pInfo: IPathInfo): IPathInfo {
+    if (!pInfo.child) {
+      return pInfo;
+    } else {
+      return this.getLeaf(pInfo.child);
+    }
   }
 
 }
