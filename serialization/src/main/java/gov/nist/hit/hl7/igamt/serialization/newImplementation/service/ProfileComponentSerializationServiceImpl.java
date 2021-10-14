@@ -53,6 +53,7 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyValueSet;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertySingleCode;
 
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
@@ -333,7 +334,10 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
             	//Dynamic mapping	
             	if(profileComponentContext.getProfileComponentDynamicMapping() != null) {
                     Element dynamicMapping = new Element("DynamicMappingForProfileComponent");
-                    for(PcDynamicMappingItem pcDynamicMappingItem : profileComponentContext.getProfileComponentDynamicMapping().getItems()){
+                    Set<PcDynamicMappingItem> dynamicMappingItemSet = profileComponentContext.getProfileComponentDynamicMapping().getItems();
+              	  List<PcDynamicMappingItem> dynamicMappingList = dynamicMappingItemSet.stream().sorted((e1, e2) -> 
+              	  e1.getDatatypeName().compareTo(e2.getDatatypeName())).collect(Collectors.toList());
+                    for(PcDynamicMappingItem pcDynamicMappingItem : dynamicMappingList){
                     	if(pcDynamicMappingItem != null){
                             Element dynamicMappingItem = this.serializeDynamicMapping(pcDynamicMappingItem);              
                             if(dynamicMappingItem != null){

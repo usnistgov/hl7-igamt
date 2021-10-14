@@ -9,6 +9,9 @@ public class ParsedTable {
     private Map<Integer, String> ifHeaders = new HashMap<>();
     private Map<Integer, String> thenHeaders = new HashMap<>();
     private Map<Integer, String> narrativeHeaders = new HashMap<>();
+    private int grouperPosition;
+    private String grouperValue;
+    private boolean hasGrouper;
     private List<ParsedCoConstraint> parsedCoConstraints = new ArrayList<>();
     private List<ParsedGroup> parsedGroups = new ArrayList<>();
 
@@ -52,7 +55,31 @@ public class ParsedTable {
         this.narrativeHeaders = narrativeHeaders;
     }
 
-    @Override
+    public int getGrouperPosition() {
+		return grouperPosition;
+	}
+
+	public void setGrouperPosition(int grouperPosition) {
+		this.grouperPosition = grouperPosition;
+	}
+
+	public String getGrouperValue() {
+		return grouperValue;
+	}
+
+	public void setGrouperValue(String grouperValue) {
+		this.grouperValue = grouperValue;
+	}
+
+	public boolean isHasGrouper() {
+		return hasGrouper;
+	}
+
+	public void setHasGrouper(boolean hasGrouper) {
+		this.hasGrouper = hasGrouper;
+	}
+
+	@Override
     public String toString() {
         return "ParsedTable{" +
                 "ifHeaders=" + ifHeaders +
