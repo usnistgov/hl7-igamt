@@ -125,6 +125,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
   @Autowired
   AssertionXMLSerialization assertionXMLSerialization;
+  
   /*
    * (non-Javadoc)
    * 
@@ -1139,16 +1140,6 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                     elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
                   }	  
             }
-
-            if(dModel.getModel().getId().equals("HL7XCN-V2-5-1")) {
-				if(c.getModel().getId().equals("9")) {
-					for(ValuesetBindingDataModel m : c.getValuesets()) {
-						System.out.println("-------------");
-						System.out.println(m);
-						System.out.println(m.getValuesetBinding());
-					}
-				}
-			}
             
             Set<ValuesetBindingDataModel> valueSetBindings = c.getValuesets();
             if (valueSetBindings != null && valueSetBindings.size() > 0) {
@@ -1184,19 +1175,13 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                 }
 
               }
-
-              if(dModel.getModel().getName().equals("XCN") && c.getModel().getName().equals("Assigning Authority")) {
-            	  System.out.println(bindingString);
-            	  System.out.println(bindingStrength);
-            	  System.out.println(bindingLocation);
-              }
               
               if (!bindingString.equals(""))
                 elmComponent.addAttribute(new Attribute("Binding",
                     bindingString.substring(0, bindingString.length() - 1)));
               if (bindingStrength != null)
                 elmComponent.addAttribute(new Attribute("BindingStrength", bindingStrength));
-              if (bindingLocation != null && bindingLocation.size() > 0) {
+              if (!this.isPrimitiveDatatype(c.getDatatype().getName()) && bindingLocation != null && bindingLocation.size() > 0) {
                 String bindingLocationStr = "";
                 for (Integer index : bindingLocation) {
                   bindingLocationStr = bindingLocationStr + index + ":";
@@ -1221,7 +1206,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     }
   }
 
-  private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, Set<Datatype> missingDts, String defaultHL7Version) throws SegmentSerializationException {
+  private boolean isPrimitiveDatatype(String dtName) {
+	  Set<String> primitiveDTs = new HashSet<String>(Arrays.asList(new String[] {"ID","IS","ST","NM"}));
+	return primitiveDTs.contains(dtName);
+}
+
+private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, Set<Datatype> missingDts, String defaultHL7Version) throws SegmentSerializationException {
     try {
       // TODO DynamicMapping Need
       Element elmSegment = new Element("Segment");
@@ -1566,7 +1556,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                     bindingString.substring(0, bindingString.length() - 1)));
               if (bindingStrength != null)
                 elmField.addAttribute(new Attribute("BindingStrength", bindingStrength));
-              if (bindingLocation != null && bindingLocation.size() > 0) {
+              if (!this.isPrimitiveDatatype(f.getDatatype().getName()) && bindingLocation != null && bindingLocation.size() > 0) {
                 String bindingLocationStr = "";
                 for (Integer index : bindingLocation) {
                   bindingLocationStr = bindingLocationStr + index + ":";

@@ -1598,21 +1598,6 @@ private String token;
       CompositeProfileState cps = null;
       Ig selectedIg = this.makeSelectedIg(ig, reqIds, cps);
       IgDataModel igModel = this.igService.generateDataModel(selectedIg);
-      
-	  for(DatatypeDataModel ddm : igModel.getDatatypes()) {
-		  if(ddm.getModel().getId().equals("HL7XCN-V2-5-1")) {
-			  for(ComponentDataModel cdm : ddm.getComponentDataModels()) {
-				  if(cdm.getModel().getId().equals("9")) {
-					  for(ValuesetBindingDataModel m : cdm.getValuesets()) {
-							System.out.println("!!!!!");
-							System.out.println(m);
-							System.out.println(m.getValuesetBinding());
-						}
-				  }
-			  }
-		  }
-	  }
-      
       InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
       response.setContentType("application/zip");
       response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
