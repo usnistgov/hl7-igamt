@@ -112,7 +112,10 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.ComplianceReport;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
@@ -1595,6 +1598,21 @@ private String token;
       CompositeProfileState cps = null;
       Ig selectedIg = this.makeSelectedIg(ig, reqIds, cps);
       IgDataModel igModel = this.igService.generateDataModel(selectedIg);
+      
+	  for(DatatypeDataModel ddm : igModel.getDatatypes()) {
+		  if(ddm.getModel().getId().equals("HL7XCN-V2-5-1")) {
+			  for(ComponentDataModel cdm : ddm.getComponentDataModels()) {
+				  if(cdm.getModel().getId().equals("9")) {
+					  for(ValuesetBindingDataModel m : cdm.getValuesets()) {
+							System.out.println("!!!!!");
+							System.out.println(m);
+							System.out.println(m.getValuesetBinding());
+						}
+				  }
+			  }
+		  }
+	  }
+      
       InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
       response.setContentType("application/zip");
       response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");

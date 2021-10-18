@@ -20,6 +20,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
+import gov.nist.hit.hl7.igamt.service.impl.XMLSerializeServiceImpl;
 
 /**
  * @author jungyubw
@@ -43,7 +44,20 @@ public class ComponentDataModel implements Serializable{
     this.model = c;
     this.predicate = predicate;
     this.singleCode = singleCode;
-    this.valuesets = valuesets;
+    
+    
+    Set<ValuesetBindingDataModel> newValuesets = new HashSet<ValuesetBindingDataModel>();
+    if(valuesets != null) {
+        for(ValuesetBindingDataModel item:valuesets) {
+
+        	ValuesetBindingDataModel newItem = XMLSerializeServiceImpl.cloneThroughJson(item);
+        	newValuesets.add(newItem);
+        }    	
+    }
+
+    
+    this.valuesets = newValuesets;
+    
     this.datatype = datatype;
     
   }

@@ -1140,12 +1140,23 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                   }	  
             }
 
+            if(dModel.getModel().getId().equals("HL7XCN-V2-5-1")) {
+				if(c.getModel().getId().equals("9")) {
+					for(ValuesetBindingDataModel m : c.getValuesets()) {
+						System.out.println("-------------");
+						System.out.println(m);
+						System.out.println(m.getValuesetBinding());
+					}
+				}
+			}
+            
             Set<ValuesetBindingDataModel> valueSetBindings = c.getValuesets();
             if (valueSetBindings != null && valueSetBindings.size() > 0) {
               String bindingString = "";
               String bindingStrength = null;
               Set<Integer> bindingLocation = null;
 
+              
               for (ValuesetBindingDataModel binding : valueSetBindings) {
                 try {
                   if (binding.getValuesetBinding().getStrength() != null)
@@ -1174,6 +1185,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
               }
 
+              if(dModel.getModel().getName().equals("XCN") && c.getModel().getName().equals("Assigning Authority")) {
+            	  System.out.println(bindingString);
+            	  System.out.println(bindingStrength);
+            	  System.out.println(bindingLocation);
+              }
+              
               if (!bindingString.equals(""))
                 elmComponent.addAttribute(new Attribute("Binding",
                     bindingString.substring(0, bindingString.length() - 1)));
@@ -1505,6 +1522,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                     }	  
               }
             
+            
+            
             Set<ValuesetBindingDataModel> valueSetBindings = f.getValuesets();
             if (valueSetBindings != null && valueSetBindings.size() > 0) {
               String bindingString = "";
@@ -1519,6 +1538,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                   if (binding.getValuesetBinding().getValuesetLocations() != null
                       && binding.getValuesetBinding().getValuesetLocations().size() > 0)
                     bindingLocation = binding.getValuesetBinding().getValuesetLocations();
+                  
                   if (binding != null && binding.getBindingIdentifier() != null
                       && !binding.getBindingIdentifier().equals("")) {
                     if (defaultHL7Version != null
@@ -1897,7 +1917,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   }
   
   @SuppressWarnings("unchecked")
-  private static <T> T cloneThroughJson(T t) {
+public
+  static <T> T cloneThroughJson(T t) {
      Gson gson = new Gson();
      String json = gson.toJson(t);
      return (T) gson.fromJson(json, t.getClass());
