@@ -20,7 +20,7 @@
 }
 
 .old-active {
-  background-color: #e4e4e4;
+  background-color: #e4e4e4 !important;
 }
 .value-deprecated{
   background-color: #fff3cd;
