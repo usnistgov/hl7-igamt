@@ -218,7 +218,7 @@
           </span>
 
           <context-menu #pc [disabled]="viewOnly||delta">
-            <ng-template (execute)="addPcContexts(node)" contextMenuItem [enabled]="!viewOnly&&!delta && node.parent?.data?.derived">
+            <ng-template (execute)="addPcContexts(node)" contextMenuItem [enabled]="!viewOnly && !delta && !node.parent?.data?.derived">
               <i class="fa fa-plus"></i> Add Contexts
             </ng-template>
             <ng-template (execute)="deleteResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">

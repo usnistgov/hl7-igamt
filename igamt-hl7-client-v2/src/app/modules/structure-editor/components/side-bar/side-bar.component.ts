@@ -35,11 +35,13 @@ export class SideBarComponent implements OnInit {
           {
             type: Type.CONFORMANCEPROFILEREGISTRY,
             isExpanded: true,
+            id: Type.CONFORMANCEPROFILEREGISTRY,
             children: messageStructures || [],
           },
           {
             type: Type.SEGMENTREGISTRY,
             isExpanded: true,
+            id: Type.SEGMENTREGISTRY,
             children: segmentStructures || [],
           },
         ];

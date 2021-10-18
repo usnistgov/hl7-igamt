@@ -134,7 +134,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
   }
 
   void datatypeCellIdSubstitution(DatatypeCell cell, Map<String, String> datatypes) {
-
+    
   }
 
   void valueSetCellIdSubstitution(ValueSetCell cell, Map<String, String> valueSets) {

@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1305,11 +1306,17 @@ private String token;
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     AddValueSetResponseObject objects = crudService.addValueSets(wrapper.getSelected(), ig, username);
+
     igService.save(ig);
     IGDisplayInfo info = new IGDisplayInfo();
     info.setIg(ig);
-    info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
-
+    if(objects.getValueSets() != null && !objects.getValueSets().isEmpty()) {
+      info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
+      Optional<Valueset> vs = objects.getValueSets().stream().findAny();
+      if(vs.isPresent()) {
+        info.setTargetResourceId(objects.getValueSets().stream().findAny().get().getId());
+      }
+    }
     return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "", "Value Sets Added Succesfully", ig.getId(), false,
         ig.getUpdateDate(), info);
   }
