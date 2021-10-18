@@ -155,9 +155,7 @@ public class BootstrapApplication implements CommandLineRunner {
   DatatypeClassifier datatypeClassifier;
   @Autowired
   CoConstraintService ccService;
-  @Autowired
-  CoConstraintXmlGenerator ccXmlGen;
- 
+
   @Autowired
   DatatypeService dataypeService;
 
