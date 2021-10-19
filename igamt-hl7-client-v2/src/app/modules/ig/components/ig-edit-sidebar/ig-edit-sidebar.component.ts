@@ -9,6 +9,7 @@ import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rx
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectAllMessages } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
+import {AddResourceSuccess} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
@@ -483,6 +484,15 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
       withLatestFrom(this.documentRef$),
       take(1),
       map(([result, documentRef]) => {
+
+        RxjsStoreHelperService.listenAndReact(this.actions, {
+          [IgEditActionTypes.AddResourceSuccess]: {
+            do: (action: AddResourceSuccess) => {
+              this.router.navigate(['./' + Type.VALUESET.toString().toLocaleLowerCase() + '/' + action.payload.targetResourceId], { relativeTo: this.activeRoute });
+              return of();
+            },
+          },
+        }).subscribe();
         this.store.dispatch(new IgEditTocAddResource({ documentId: documentRef.documentId, selected: [result], type: $event.type }));
       }),
     ).subscribe();
