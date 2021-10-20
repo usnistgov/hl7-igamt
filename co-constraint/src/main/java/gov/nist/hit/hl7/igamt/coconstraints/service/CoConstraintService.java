@@ -20,19 +20,19 @@ import java.util.Set;
 
 public interface CoConstraintService {
 
-    public CoConstraintGroup findById(String id) throws CoConstraintGroupNotFoundException;
-    public void delete(CoConstraintGroup ccGroup);
+    CoConstraintGroup findById(String id) throws CoConstraintGroupNotFoundException;
+    void delete(CoConstraintGroup ccGroup);
     List<CoConstraintGroup> findByBaseSegmentAndDocumentIdAndUsername(String baseSegment, String documentId, String username);
-    public CoConstraintGroup saveCoConstraintGroup(CoConstraintGroup group);
-    public CoConstraintTable resolveRefAndMerge(CoConstraintTable table);
-    public CoConstraintGroup clone(String id, Map<String, String> datatypes, Map<String, String> valueSets);
-    public CoConstraintGroup createCoConstraintGroupPrototype(String id) throws SegmentNotFoundException;
-    public Link createIgLink(CoConstraintGroup group, int position, String username);
-    public Set<RelationShip> collectDependencies(ReferenceIndentifier referenceIndentifier,
-        List<CoConstraintBinding> coConstraintsBindings);
-    public List<CoConstraintGroup> findByIdIn(Set<String> ids);
-    public Collection<? extends RelationShip> collectDependencies(CoConstraintGroup ccGroup) ;
-    public Link clone(String string, HashMap<RealKey, String> newKeys, Link l, String username,
+    CoConstraintGroup saveCoConstraintGroup(CoConstraintGroup group);
+    CoConstraintTable resolveRefAndMerge(CoConstraintTable table);
+    CoConstraintGroup clone(String id, Map<String, String> datatypes, Map<String, String> valueSets);
+    CoConstraintGroup createCoConstraintGroupPrototype(String id) throws SegmentNotFoundException;
+    Link createIgLink(CoConstraintGroup group, int position, String username);
+    Set<RelationShip> collectDependencies(ReferenceIndentifier referenceIndentifier,
+                                          List<CoConstraintBinding> coConstraintsBindings);
+    List<CoConstraintGroup> findByIdIn(Set<String> ids);
+    Collection<? extends RelationShip> collectDependencies(CoConstraintGroup ccGroup) ;
+    Link clone(String string, HashMap<RealKey, String> newKeys, Link l, String username,
         Scope user, String documentTarget, CloneMode cloneMode);
     void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys,
         String username, boolean cloned);

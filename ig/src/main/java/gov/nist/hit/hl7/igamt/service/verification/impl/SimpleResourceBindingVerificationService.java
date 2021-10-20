@@ -3,7 +3,6 @@ package gov.nist.hit.hl7.igamt.service.verification.impl;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.service.TriFunction;
 import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
@@ -37,42 +36,46 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
     @Autowired
     VocabularyBindingVerificationService vocabularyBindingVerificationService;
     @Autowired
+    CoConstraintVerificationService coConstraintVerificationService;
+    @Autowired
     ResourceBindingService resourceBindingService;
     @Autowired
     ResourceSkeletonService resourceSkeletonService;
 
     @Override
     public List<IgamtObjectError> verifySegmentBindings(Segment segment) {
-        return this.verifyResourceBindings(
-            segment.getId(),
-            segment.getType(),
-            segment.getBinding()
+        ResourceSkeleton resourceSkeleton = new ResourceSkeleton(
+                new ResourceRef(segment.getType(), segment.getId()),
+                this.resourceSkeletonService
         );
+        return this.verifyResourceBindings(resourceSkeleton, segment.getBinding());
     }
 
     @Override
     public List<IgamtObjectError> verifyDatatypeBindings(Datatype datatype) {
-        return this.verifyResourceBindings(
-                datatype.getId(),
-                datatype.getType(),
-                datatype.getBinding()
+        ResourceSkeleton resourceSkeleton = new ResourceSkeleton(
+                new ResourceRef(datatype.getType(), datatype.getId()),
+                this.resourceSkeletonService
         );
+        return this.verifyResourceBindings(resourceSkeleton, datatype.getBinding());
     }
 
     @Override
     public List<IgamtObjectError> verifyConformanceProfileBindings(ConformanceProfile conformanceProfile) {
-        return this.verifyResourceBindings(
-                conformanceProfile.getId(),
-                conformanceProfile.getType(),
-                conformanceProfile.getBinding()
-        );
-    }
-
-    public List<IgamtObjectError> verifyResourceBindings(String id, Type type, ResourceBinding resourceBinding) {
         ResourceSkeleton resourceSkeleton = new ResourceSkeleton(
-                new ResourceRef(type, id),
+                new ResourceRef(conformanceProfile.getType(), conformanceProfile.getId()),
                 this.resourceSkeletonService
         );
+        List<IgamtObjectError> errors = new ArrayList<>(this.verifyResourceBindings(resourceSkeleton, conformanceProfile.getBinding()));
+        if(conformanceProfile.getCoConstraintsBindings() != null) {
+            for(CoConstraintBinding coConstraintBinding: conformanceProfile.getCoConstraintsBindings()) {
+                errors.addAll(this.verifyCoConstraintBinding(resourceSkeleton, coConstraintBinding));
+            }
+        }
+        return errors;
+    }
+
+    public List<IgamtObjectError> verifyResourceBindings(ResourceSkeleton resourceSkeleton, ResourceBinding resourceBinding) {
         FlatResourceBinding flatResourceBindings = this.resourceBindingService.getFlatResourceBindings(resourceBinding);
         List<IgamtObjectError> issues = new ArrayList<>();
         issues.addAll(this.checkBindings(flatResourceBindings.getSingleCodeBindingContainers(), resourceSkeleton, this::verifySingleCodeBinding));
@@ -143,7 +146,7 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
                                 context,
                                 new Location(
                                         csId,
-                                        null,
+                                        conformanceStatement.getIdentifier(),
                                         PropertyType.STATEMENT
                                 ),
                                 ((AssertionConformanceStatement) conformanceStatement).getAssertion()
@@ -157,7 +160,7 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
 
     @Override
     public List<IgamtObjectError> verifyCoConstraintBinding(ResourceSkeleton resourceSkeleton, CoConstraintBinding coConstraintBinding) {
-        return null;
+        return this.coConstraintVerificationService.checkCoConstraintBinding(resourceSkeleton, coConstraintBinding);
     }
 
 }

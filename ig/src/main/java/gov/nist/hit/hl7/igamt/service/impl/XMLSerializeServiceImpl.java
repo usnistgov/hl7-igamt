@@ -25,8 +25,8 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.service.impl.exception.*;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,14 +71,6 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
-import gov.nist.hit.hl7.igamt.service.impl.exception.DatatypeComponentSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.DatatypeSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.FieldSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.GroupSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.MessageSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.SegmentSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
@@ -115,7 +107,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   ConformanceProfileService conformanceProfileService;
 
   @Autowired
-  CoConstraintXMLSerialization coConstraintXMLSerialization;
+  SimpleCoConstraintXMLSerialization simpleCoConstraintXMLSerialization;
 
   @Autowired
   InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
@@ -173,11 +165,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   }
 
   @Override
-  public Element serializeCoConstraintXML(IgDataModel igModel) {
+  public Element serializeCoConstraintXML(IgDataModel igModel) throws CoConstraintXMLSerializationException {
 
       Element ccc = new Element("CoConstraintContext");
       for(ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
-        Element message = this.coConstraintXMLSerialization.serialize(cpModel.getModel());
+        Element message = this.simpleCoConstraintXMLSerialization.serialize(cpModel.getModel());
         if(message != null) {
           ccc.appendChild(message);
         }

@@ -18,10 +18,11 @@ public class StructureElementRef {
         this.pathId = pathId;
     }
 
+    @Deprecated
     public String getName() {
         return name;
     }
-
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
@@ -34,10 +35,11 @@ public class StructureElementRef {
         this.path = path;
     }
 
+    @Deprecated
     public Type getType() {
         return type;
     }
-
+    @Deprecated
     public void setType(Type type) {
         this.type = type;
     }

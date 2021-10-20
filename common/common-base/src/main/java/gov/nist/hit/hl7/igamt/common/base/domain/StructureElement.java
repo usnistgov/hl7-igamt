@@ -18,10 +18,7 @@ public class StructureElement implements Serializable {
   public void setComments(Set<Comment> comments) {
     this.comments = comments;
   }
-  //childId - childChildId - ...
-  // ORDER.OBX-5
-  // IdOfOrderGroup-IdOfOBXSegmentRef-IdOfField5
-  //
+
   private String id;
   @DeltaField
   private String name;

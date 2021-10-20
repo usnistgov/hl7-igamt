@@ -27,10 +27,12 @@ public class CoConstraintBindingSegment extends WithDelta {
         this.segment = segment;
     }
 
+    @Deprecated
     public String getFlavorId() {
         return flavorId;
     }
 
+    @Deprecated
     public void setFlavorId(String flavorId) {
         this.flavorId = flavorId;
     }

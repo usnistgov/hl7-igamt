@@ -78,12 +78,10 @@ public class AssertionVerificationService extends VerificationUtils {
                         if(!subject.getResource().isLeaf() && subject instanceof ResourceSkeletonBone) {
                             return Collections.singletonList(
                                     this.entry.PathShouldBePrimitive(
-                                            pathId(location),
-                                            propertyType(location),
-                                            info(location),
+                                            new Location(pathId(location), info(location), propertyType(location)),
                                             subject.getResource().getId(),
                                             subject.getResource().getType(),
-                                            ((ResourceSkeletonBone) subject).getLocationInfo().getHl7Path(),
+                                            ((ResourceSkeletonBone) subject).getLocationInfo(),
                                             ((ResourceSkeletonBone) subject).getLocationInfo().getName()
                                     )
                             );
@@ -105,12 +103,10 @@ public class AssertionVerificationService extends VerificationUtils {
                                 if(!complement.getResource().isLeaf()) {
                                     return Collections.singletonList(
                                             this.entry.PathShouldBePrimitive(
-                                                    pathId(location),
-                                                    propertyType(location),
-                                                    info(location),
+                                                    new Location(pathId(location), info(location), propertyType(location)),
                                                     complement.getResource().getId(),
                                                     complement.getResource().getType(),
-                                                    ((ResourceSkeletonBone) complement).getLocationInfo().getHl7Path(),
+                                                    ((ResourceSkeletonBone) complement).getLocationInfo(),
                                                     ((ResourceSkeletonBone) complement).getLocationInfo().getName()
                                             )
                                     );

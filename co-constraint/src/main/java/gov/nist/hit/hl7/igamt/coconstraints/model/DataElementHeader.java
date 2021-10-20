@@ -10,18 +10,19 @@ public class DataElementHeader extends CoConstraintHeader {
         this.type = HeaderType.DATAELEMENT;
     }
 
+    @Deprecated
     public String getName() {
         return name;
     }
-
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }
-
+    @Deprecated
     public boolean isCardinality() {
         return cardinality;
     }
-
+    @Deprecated
     public void setCardinality(boolean cardinality) {
         this.cardinality = cardinality;
     }
@@ -34,10 +35,11 @@ public class DataElementHeader extends CoConstraintHeader {
         this.columnType = columnType;
     }
 
+    @Deprecated
     public DataElementHeaderInfo getElementInfo() {
         return elementInfo;
     }
-
+    @Deprecated
     public void setElementInfo(DataElementHeaderInfo elementInfo) {
         this.elementInfo = elementInfo;
     }
