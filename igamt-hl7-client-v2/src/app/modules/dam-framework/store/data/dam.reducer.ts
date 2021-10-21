@@ -86,6 +86,10 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
           current: {
             ...action.payload.initial,
           },
+          verification: {
+            ...emptyWorkspace.verification,
+            entries: [],
+          },
           changeTime: new Date(),
           flags: {
             changed: false,
@@ -156,6 +160,33 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
           },
           initial: {
             ...(action.payload.value ? action.payload.value : state.workspace.current),
+          },
+        },
+      };
+
+    case DamActionTypes.EditorVerificationResult:
+      return {
+        ...state,
+        workspace: {
+          ...state.workspace,
+          verification: {
+            supported: action.payload.supported,
+            endpoint: action.payload.url,
+            verificationTime: new Date(),
+            entries: action.payload.entries,
+            loading: false,
+          },
+        },
+      };
+
+    case DamActionTypes.EditorVerify:
+      return {
+        ...state,
+        workspace: {
+          ...state.workspace,
+          verification: {
+            ...state.workspace.verification,
+            loading: true,
           },
         },
       };

@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 import { IDamResource } from '../../models/data/repository';
-import { IEditorMetadata } from '../../models/data/workspace';
+import { IEditorMetadata, IVerificationEnty } from '../../models/data/workspace';
 
 export enum DamActionTypes {
   InitWidgetId = '[DAMF] Init Active Widget Id',
@@ -17,6 +17,8 @@ export enum DamActionTypes {
   EditorReset = '[DAMF Editor] Reset Data',
   GlobalSave = '[DAMF Editor] Toolbar Global Save Button',
   EditorSave = '[DAMF Editor] Editor Save',
+  EditorVerify = '[DAMF Editor] Editor Verify',
+  EditorVerificationResult = '[DAMF Editor] Editor Verification Result',
   EditorSaveSuccess = '[DAMF Editor] Editor Save Success',
   EditorSaveFailure = '[DAMF Editor] Editor Save Failure',
   EditorUpdate = '[DAMF Editor] Update editor without changes',
@@ -142,6 +144,24 @@ export class EditorSave implements Action {
   readonly type = DamActionTypes.EditorSave;
 
   constructor(readonly payload?: any) {
+  }
+}
+
+export class EditorVerify implements Action {
+  readonly type = DamActionTypes.EditorVerify;
+
+  constructor(readonly payload?: any) {
+  }
+}
+
+export class EditorVerificationResult implements Action {
+  readonly type = DamActionTypes.EditorVerificationResult;
+
+  constructor(readonly payload: {
+    supported: boolean;
+    url?: string;
+    entries?: IVerificationEnty[];
+  }) {
   }
 }
 
@@ -284,4 +304,6 @@ export type DamActions =
   CollapseSideBar |
   ExpandSideBar |
   DeleteResourcesFromRepostory |
-  ToggleFullScreen;
+  ToggleFullScreen |
+  EditorVerificationResult |
+  EditorVerify;
