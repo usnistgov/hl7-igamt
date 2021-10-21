@@ -49,30 +49,31 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 			Element codesElement = new Element("Codes");
 
 			Valueset valueSet = valuesetDataModel.getModel();
+			String scopeInside = valueSet.getDomainInfo().getScope().name();
 
-			if (deltaMode != null && valueSet.getOrigin() != null && valueSetExportConfiguration.isDeltaMode()) {
-				ValuesetDelta valuesetDelta = deltaService.valuesetDelta(valueSet);
-
-				List<CodeDelta> codeDeltaChanged = valuesetDelta.getCodes().stream()
-						.filter(d -> !d.getAction().equals(DeltaAction.UNCHANGED))
-						.collect(Collectors.toList());
-
-				if (codeDeltaChanged != null && codeDeltaChanged.size() > 0) {
-					Element deltaElement = this.serializeDelta(codeDeltaChanged,
-							valueSetExportConfiguration.getDeltaConfig());
-					if (deltaElement != null) {
-						List<Element> addedRemovedElements = this.getAddedRemovedElements(codeDeltaChanged);
-						if(addedRemovedElements != null) {
-							for (Element el : addedRemovedElements) {
-								codesElement.appendChild(el);
-							}
-						}
-						valueSetElement.appendChild(deltaElement);
-					}
-				} else {
-					return null;
-				}
-			}
+//			if (deltaMode != null && valueSet.getOrigin() != null && valueSetExportConfiguration.isDeltaMode()) {
+//				ValuesetDelta valuesetDelta = deltaService.valuesetDelta(valueSet);
+//
+//				List<CodeDelta> codeDeltaChanged = valuesetDelta.getCodes().stream()
+//						.filter(d -> !d.getAction().equals(DeltaAction.UNCHANGED))
+//						.collect(Collectors.toList());
+//
+//				if (codeDeltaChanged != null && codeDeltaChanged.size() > 0) {
+//					Element deltaElement = this.serializeDelta(codeDeltaChanged,
+//							valueSetExportConfiguration.getDeltaConfig());
+//					if (deltaElement != null) {
+//						List<Element> addedRemovedElements = this.getAddedRemovedElements(codeDeltaChanged);
+//						if(addedRemovedElements != null) {
+//							for (Element el : addedRemovedElements) {
+//								codesElement.appendChild(el);
+//							}
+//						}
+//						valueSetElement.appendChild(deltaElement);
+//					}
+//				} else {
+//					return null;
+//				}
+//			}
 
 			valueSetElement.addAttribute(new Attribute("bindingIdentifier",
 					valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
@@ -83,6 +84,9 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 			}
 			valueSetElement.addAttribute(new Attribute("intensionalComment",
 					valueSet.getIntensionalComment() != null ? valueSet.getIntensionalComment() : ""));
+			String scope2 = valueSet.getDomainInfo().getScope().name();
+			valueSetElement.addAttribute(new Attribute("scope",
+					valueSet.getDomainInfo() != null ? scope2 : ""));
 			if (valueSetExportConfiguration.isuRL()) {
 				valueSetElement.addAttribute(
 						new Attribute("url", valueSet.getUrl() != null ? valueSet.getUrl().toString() : ""));

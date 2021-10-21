@@ -109,6 +109,16 @@ public class DatatypeDataModel implements Serializable, Comparable {
 							childDt = inMemoryDomainExtensionService.findById(c.getRef().getId(), ComplexDatatype.class);
 						}
 						if(childDt != null) {
+							if(d.getId().equals("HL7XCN-V2-5-1")) {
+								if(key.equals("9")) {
+									for(ValuesetBindingDataModel m : this.valuesetMap.get(key)) {
+										System.out.println("+++++++++++++");
+										System.out.println(m);
+										System.out.println(m.getValuesetBinding());
+									}
+								}
+							}
+							
 							this.componentDataModels.add(new ComponentDataModel(
 									c, 
 									this.predicateMap.get(key), 
@@ -197,6 +207,7 @@ public class DatatypeDataModel implements Serializable, Comparable {
 		return null;
 	}
 
+	@Override
 	public int compareTo(Object u) {
 		// TODO Auto-generated method stub
 		if (getModel().getLabel() == null || ((DatatypeDataModel) u).getModel().getLabel() == null) {

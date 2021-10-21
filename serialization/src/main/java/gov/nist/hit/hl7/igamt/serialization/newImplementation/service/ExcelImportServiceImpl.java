@@ -34,6 +34,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintCardinality;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintCell;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBindingContained;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGrouper;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeader;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeaders;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintRequirement;
@@ -123,10 +124,15 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 //		//Iterate through each rows one by one
 		CoConstraintSpreadSheetParser parser = new CoConstraintSpreadSheetParser(sheet);
 		ParserResults parserResults = processCoConstraintTable(parser.parseTable(sheet), segmentID, conformanceProfileID, igID, pathID, sheet, parser.wrongHeaderStructure, parser.emptyCellInRow);
+		
+		
 		CoConstraintTableConditionalBinding coConstraintTableConditionalBinding = new CoConstraintTableConditionalBinding();
 		coConstraintTableConditionalBinding.setValue(parserResults.getCoConstraintTable());
 		ConformanceProfile cs = conformanceProfileService.findById(conformanceProfileID);
 		List<CoConstraintBinding> coConstraintsBindings = cs.getCoConstraintsBindings();
+		if(coConstraintsBindings == null) {
+			coConstraintsBindings = new ArrayList<CoConstraintBinding>();
+		}
 		boolean foundOne=false;
 		for(CoConstraintBinding coConstraintBinding : coConstraintsBindings) {
 			if(coConstraintBinding.getContext().getPathId().equals(pathID)) {
@@ -172,9 +178,21 @@ public class ExcelImportServiceImpl implements ExcelImportService {
 				errors.add(igamtObjectError);
 			}
 			
+			if(table.isHasGrouper()) {
+				coConstraintHeaders.setGrouper(processGrouper(table.getGrouperValue()));
+			}
+			
 			System.out.println("Proccessed all headers");
 			return coConstraintHeaders;  
 	    }
+	 
+	 public CoConstraintGrouper processGrouper(String grouperValue) {
+		 CoConstraintGrouper grouper = new CoConstraintGrouper();
+		 String[] value = grouperValue.split("\\s+");
+		 String pathId = value[1].split("-")[1].replace(".", "-");
+		 grouper.setPathId(pathId);
+		 return grouper;
+	 }
 	 
 private boolean checkCardinalityColumns(List<CoConstraintHeader> constraints) {
 		for(int i = 0; i < constraints.size(); i++ ) {
@@ -197,13 +215,18 @@ private boolean checkCardinalityColumns(List<CoConstraintHeader> constraints) {
 //	        }
 //	    }
 
-	public ParserResults processCoConstraintTable(ParsedTable parsedTable, String segmentID, String conformanceProfileID, String igID, String pathID, XSSFSheet sheet, boolean wrongHeaderStructure, boolean emptyCellInRow) throws Exception{
+	public ParserResults processCoConstraintTable(ParsedTable parsedTable, String segmentID, String conformanceProfileID, String igID, String pathID, XSSFSheet sheet, boolean wrongHeaderStructure, boolean emptyCellInRow) throws Exception{		
 		ParserResults parserResults = new ParserResults();
 		CoConstraintTable coConstraintTable = new CoConstraintTable();
 		VerificationResult verificationResult = new VerificationResult();
 		 List<IgamtObjectError> errors = new ArrayList<IgamtObjectError>();
 		 verificationResult.setErrors(errors);
 		 parserResults.setVerificationResult(verificationResult);
+			if(parsedTable.isHasGrouper() != parsedTable.getParsedGroups().size() > 0) {
+				IgamtObjectError igamtObjectError = new IgamtObjectError("Wrong Table Structure", "Use a template as a starting point", Type.COCONSTRAINTBINDINGS, null, "If coconstraint table contains groups, then table must contain a group By column right after THEN columns",
+					      "first row", "ERROR", "handleBy");
+				errors.add(igamtObjectError);			
+				}
 		
 	     Map<Integer, CoConstraintHeader> headerMap = new HashMap<Integer, CoConstraintHeader>();
 
@@ -548,7 +571,7 @@ private boolean checkCardinalityColumns(List<CoConstraintHeader> constraints) {
 				errors.add(igamtObjectError);
 			} else {
 				if(!columnType.equals("Cardinality")) {
-			String name = splitCellValue[1];
+			String name = splitCellValue[1]; 
 			String stringKey = name.split("-")[1].replace(".", "-");
 //			int key = Integer.parseInt(name.split("-")[1]);
 			String datatype = name.split("-")[0];
@@ -562,6 +585,7 @@ private boolean checkCardinalityColumns(List<CoConstraintHeader> constraints) {
 			}
 			DataElementHeaderInfo dataElementHeaderInfo = processPath(segmentID,name.split("-")[1]);
 			dataElementHeader.setElementInfo(dataElementHeaderInfo);
+			
 			
 			//TODO
 //			dataElementHeader.getElementInfo().setCardinality(cardinality);
@@ -598,7 +622,6 @@ private boolean checkCardinalityColumns(List<CoConstraintHeader> constraints) {
 			}
 			} else{
 				throw new Exception("Invalid path : "+ segment.getName() + "-" + headerName);
-
 			}
 		} else if(path.length == 2) {
 			Field field = fetchDatatypeFromSegment(segment,path[0]);

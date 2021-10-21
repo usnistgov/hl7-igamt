@@ -9,4 +9,5 @@ export interface IResource extends IAbstractDomain {
   parentId: string;
   parentType: Type;
   fixedExtension?: string;
+  structureIdentifier?: string;
 }

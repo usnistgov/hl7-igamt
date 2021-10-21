@@ -308,6 +308,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
     			if (datatypeRegistry != null) {
     				if (!datatypeRegistry.getChildren().isEmpty()) {					
     					List<DatatypeDataModel> datatypeDataModelsList = ((IgDataModel) documentStructureDataModel).getDatatypes().stream().collect(Collectors.toList());
+    					Collections.sort(datatypeDataModelsList);
     					if(exportConfiguration.getCompositeProfileExportConfiguration().getGeneratedDatatypesFlavorsConfiguration().equals(GeneratedFlavorsConfiguration.NOEXPORT)) {
     						datatypeDataModelsList = datatypeDataModelsList.stream().filter((s) -> {
     								return !s.getModel().isGenerated();
@@ -451,27 +452,40 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
             Element valuesetRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
             if (valuesetRegistry != null) {
                 if (!valuesetRegistry.getChildren().isEmpty()) {
-                 	ArrayList<Link> sorted = new ArrayList<>(valuesetRegistry.getChildren());
-                	Collections.sort(sorted);
-                    for (Link valuesetLink : sorted) {
-                        ValuesetDataModel valuesetDataModel = igDataModel.getValuesets().stream()
-                                .filter(vs -> valuesetLink.getId().equals(vs.getModel().getId())).findAny()
-                                .orElseThrow(() -> new ValuesetNotFoundException(valuesetLink.getId()));
+                	
+                	List<ValuesetDataModel> ValuesetDataModelList = igDataModel.getValuesets().stream().collect(Collectors.toList());
+					Collections.sort(ValuesetDataModelList);
+					System.out.println("s");
+                	
+//                 	ArrayList<Link> sorted = new ArrayList<>(valuesetRegistry.getChildren());
+//                	Collections.sort(sorted);
+                    for (ValuesetDataModel valuesetDataModel : ValuesetDataModelList) {
+//                        ValuesetDataModel valuesetDataModel = igDataModel.getValuesets().stream()
+//                                .filter(vs -> valuesetLink.getId().equals(vs.getModel().getId())).findAny()
+//                                .orElseThrow(() -> new ValuesetNotFoundException(valuesetLink.getId()));
                         // SerializableValuesetStructure serializableValuesetStructure =
                         // valuesetsMap.get(valuesetLink.getId());
                         Element valuesetElement;
+            			String scope = valuesetDataModel.getModel().getDomainInfo().getScope().name();
+
                         if (exportFilterDecision != null && exportFilterDecision.getValueSetFilterMap() != null
-                                && exportFilterDecision.getValueSetFilterMap().containsKey(valuesetLink.getId())
-                                && exportFilterDecision.getValueSetFilterMap().get(valuesetLink.getId())) {
+                                && exportFilterDecision.getValueSetFilterMap().containsKey(valuesetDataModel.getModel().getId())
+                                && exportFilterDecision.getValueSetFilterMap().get(valuesetDataModel.getModel().getId())) {
                             
+                			String scope2 = valuesetDataModel.getModel().getDomainInfo().getScope().name();
+
                             if (exportFilterDecision != null && exportFilterDecision.getOveriddedValueSetMap().keySet()
-                                    .contains(valuesetLink.getId())) {
+                                    .contains(valuesetDataModel.getModel().getId())) {
+                    			String scope3 = valuesetDataModel.getModel().getDomainInfo().getScope().name();
+
                                 valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel,
-                                        level + 1, valuesetLink.getPosition(),
-                                        exportFilterDecision.getOveriddedValueSetMap().get(valuesetLink.getId()), exportConfiguration.isDeltaMode());
+                                        level + 1, 0,
+                                        exportFilterDecision.getOveriddedValueSetMap().get(valuesetDataModel.getModel().getId()), exportConfiguration.isDeltaMode());
                             } else {
+                    			String scope4 = valuesetDataModel.getModel().getDomainInfo().getScope().name();
+
                                 valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel,
-                                        level + 1, valuesetLink.getPosition(),
+                                        level + 1, 0,
                                         exportConfiguration.getValueSetExportConfiguration(), exportConfiguration.isDeltaMode());
                             }
                             if (valuesetElement != null) {
@@ -479,7 +493,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
                             }
                         } else if(exportFilterDecision == null) {
                             valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel,
-                                    level + 1, valuesetLink.getPosition(),
+                                    level + 1, 0,
                                     exportConfiguration.getValueSetExportConfiguration(), exportConfiguration.isDeltaMode());
                             if (valuesetElement != null) {
                                 valuesetRegistryElement.appendChild(valuesetElement);
@@ -572,14 +586,12 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
         Registry segmentRegistry = igDataModel.getModel().getSegmentRegistry();
         try {
             Element segmentRegistryElement = SerializeCommonSection(section, level, igDataModel, exportConfiguration);
-            if (segmentRegistry != null) {
+            if(segmentRegistry != null) {
 				if (!segmentRegistry.getChildren().isEmpty()) {					
 					List<SegmentDataModel> segmentDataModelsList = igDataModel.getSegments().stream().collect(Collectors.toList());
 					Collections.sort(segmentDataModelsList);
 					System.out.println("s");
-
-		
-					
+	
 					if(exportConfiguration.getCompositeProfileExportConfiguration().getGeneratedSegmentsFlavorsConfiguration().equals(GeneratedFlavorsConfiguration.NOEXPORT)) {
 						segmentDataModelsList = segmentDataModelsList.stream().filter((s) -> {
 							return !s.getModel().isGenerated();
@@ -587,8 +599,6 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 						Collections.sort(segmentDataModelsList);
 						System.out.println("s");
 					}
-					
-
 					for(SegmentDataModel segmentDataModel : segmentDataModelsList) {
 							Element segmentElement;
 							if(!segmentDataModel.getModel().isGenerated()) {

@@ -111,4 +111,21 @@ export class TableOfContentComponent implements OnInit {
   ngOnInit() {
   }
 
+  getLabel(fixedName, variableName) {
+      if (fixedName && fixedName.length) {
+        if (variableName && variableName.length) {
+          return fixedName + '#' + variableName;
+        } else {
+          return fixedName;
+        }
+      } else {
+        if (variableName) {
+          return variableName;
+        }
+      }
+  }
+
+  print(nodes: TreeNode[]) {
+    console.log(nodes);
+  }
 }

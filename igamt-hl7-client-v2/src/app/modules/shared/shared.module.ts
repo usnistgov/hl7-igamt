@@ -20,7 +20,6 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
-import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import {
   AccordionModule,
   AutoCompleteModule,
@@ -37,6 +36,7 @@ import {
   TooltipModule,
   TreeTableModule,
 } from 'primeng/primeng';
+import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
@@ -85,6 +85,7 @@ import { UsageComponent } from './components/hl7-v2-tree/columns/usage/usage.com
 import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/valueset.component';
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
+import { ImportStructureComponent } from './components/import-structure/import-structure.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
@@ -210,6 +211,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     CsSubcontextComponent,
     FileExcelInputComponent,
     GeneratedNamingDuplicationDirective,
+    ImportStructureComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -382,6 +384,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddPcToList,
     CsSubcontextComponent,
     GeneratedNamingDuplicationDirective,
+    ImportStructureComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -408,6 +411,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddProfileComponentContextComponent,
     AddCompositeComponent,
     AddPcToList,
+    ImportStructureComponent,
   ],
 })
 export class SharedModule {

@@ -165,7 +165,7 @@ public class IgServiceImpl implements IgService {
 
   @Autowired
   ConformanceStatementRepository conformanceStatementRepository;
-  
+
   @Autowired
   ConformanceProfileCompositeService compose;
 
@@ -186,11 +186,11 @@ public class IgServiceImpl implements IgService {
 
   @Autowired
   FhirHandlerService fhirHandlerService;
- 
+
 
   @Autowired
   CommonService commonService;
-  
+
   @Autowired
   CompositeProfileStructureService compositeProfileService;
 
@@ -627,7 +627,7 @@ public class IgServiceImpl implements IgService {
     newReg.setChildren(children);
     return newReg;
   }
-  
+
   private ProfileComponentRegistry copyProfileComponentRegistry(ProfileComponentRegistry profileComponentRegistry,
       HashMap<RealKey, String> newKeys, String username, CloneMode cloneMode) {
     // TODO Auto-generated method stub
@@ -645,8 +645,8 @@ public class IgServiceImpl implements IgService {
     newReg.setChildren(children);
     return newReg;
   }
-  
-  
+
+
   private CompositeProfileRegistry copyCompositeProfileRegistry(CompositeProfileRegistry compositeProfileRegistry,
       HashMap<RealKey, String> newKeys, String username, CloneMode cloneMode) {
     // TODO Auto-generated method stub
@@ -1079,7 +1079,7 @@ public class IgServiceImpl implements IgService {
     for (Link link : ig.getDatatypeRegistry().getChildren()) {
       Datatype d = this.datatypeService.findById(link.getId());
       if(d == null) {
-    	  d = inMemoryDomainExtensionService.findById(link.getId(), ComplexDatatype.class);
+        d = inMemoryDomainExtensionService.findById(link.getId(), ComplexDatatype.class);
       }
       if (d != null) {
         DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
@@ -1115,105 +1115,105 @@ public class IgServiceImpl implements IgService {
       } else
         throw new Exception("ConformanceProfile is missing::::" + link.getId());
     }
-    
+
     for (Link link : ig.getProfileComponentRegistry().getChildren()) {
-        ProfileComponent pc = this.profileComponentService.findById(link.getId());
-        if(pc == null) pc = inMemoryDomainExtensionService.findById(link.getId(), ProfileComponent.class);
-        if (pc != null) {
-        	ProfileComponentDataModel profileComponentDataModel = new ProfileComponentDataModel();
-        	DataElementNamingService dataElementNamingService = new DataElementNamingService(datatypeService, segmentService, conformanceProfileService);
-        	profileComponentDataModel.putModel(pc, dataElementNamingService);
-          profileComponents.add(profileComponentDataModel);
-        } else
-          throw new Exception("ProfileComponent is missing::::" + link.getId());
-      }
-    
+      ProfileComponent pc = this.profileComponentService.findById(link.getId());
+      if(pc == null) pc = inMemoryDomainExtensionService.findById(link.getId(), ProfileComponent.class);
+      if (pc != null) {
+        ProfileComponentDataModel profileComponentDataModel = new ProfileComponentDataModel();
+        DataElementNamingService dataElementNamingService = new DataElementNamingService(datatypeService, segmentService, conformanceProfileService);
+        profileComponentDataModel.putModel(pc, dataElementNamingService);
+        profileComponents.add(profileComponentDataModel);
+      } else
+        throw new Exception("ProfileComponent is missing::::" + link.getId());
+    }
+
     for (Link link : ig.getCompositeProfileRegistry().getChildren()) {
-        CompositeProfileStructure cps = this.compositeProfileService.findById(link.getId());
-        if (cps != null) {
-        	CompositeProfileDataModel compositeProfileDataModel = new CompositeProfileDataModel();
-        	compositeProfileDataModel.putModel(cps, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
+      CompositeProfileStructure cps = this.compositeProfileService.findById(link.getId());
+      if (cps != null) {
+        CompositeProfileDataModel compositeProfileDataModel = new CompositeProfileDataModel();
+        compositeProfileDataModel.putModel(cps, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
+            this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
+        compositeProfiles.add(compositeProfileDataModel);
+
+        ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = compose.create(cps);
+
+        DataFragment<ConformanceProfile> df = profileComponentsEvaluationResult.getResources();
+        List<Datatype> flavoredDatatypes = df.getContext().getResources().stream().filter((r) -> r instanceof Datatype).map((r) -> (Datatype) r).collect(Collectors.toList());
+        List<Segment> flavoredSegments = df.getContext().getResources().stream().filter((r) -> r instanceof Segment).map((r) -> (Segment) r).collect(Collectors.toList());
+
+        ConformanceProfile cp = df.getPayload();
+        if (cp != null) {
+          ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
+          conformanceProfileDataModel.putModel(cp, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
               this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
-          compositeProfiles.add(compositeProfileDataModel);
-          
-          ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = compose.create(cps);
-
-          DataFragment<ConformanceProfile> df = profileComponentsEvaluationResult.getResources();
-          List<Datatype> flavoredDatatypes = df.getContext().getResources().stream().filter((r) -> r instanceof Datatype).map((r) -> (Datatype) r).collect(Collectors.toList());
-          List<Segment> flavoredSegments = df.getContext().getResources().stream().filter((r) -> r instanceof Segment).map((r) -> (Segment) r).collect(Collectors.toList());
-
-          ConformanceProfile cp = df.getPayload();
-          if (cp != null) {
-              ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
-              conformanceProfileDataModel.putModel(cp, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
-                  this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
-//              conformanceProfiles.add(conformanceProfileDataModel);
-              compositeProfileDataModel.setConformanceProfileDataModel(conformanceProfileDataModel);
-            } else {
-              throw new Exception("ConformanceProfile is missing::::" + link.getId());
-          }
-        
-          
-          for(Segment s : flavoredSegments) {
-        	  if (s != null) {
-        	        SegmentDataModel segmentDataModel = new SegmentDataModel();
-        	        segmentDataModel.putModel(s, this.datatypeService, inMemoryDomainExtensionService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
-        	        // CoConstraintTable coConstraintTable =
-        	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
-        	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
-         	       Optional<GeneratedResourceMetadata> generatedResourceMetadata = profileComponentsEvaluationResult.getGeneratedResourceMetadataList().stream().filter((g) ->  {
-       	        	return g.getGeneratedResourceId().equals(segmentDataModel.getModel().getId());
-       	        }).findAny();
-       	       
-       	       if(generatedResourceMetadata.isPresent()) {
-          	        compositeProfileDataModel.getFlavoredSegmentDataModelsMap().put(segmentDataModel, generatedResourceMetadata.get());
-       	       } else {
-             	        compositeProfileDataModel.getFlavoredSegmentDataModelsMap().put(segmentDataModel, null);
-       	       }
-       	       igDataModel.getAllFlavoredSegmentDataModelsMap().putAll(compositeProfileDataModel.getFlavoredSegmentDataModelsMap());
-       	 
-//        	        Link segLink = new Link();
-//        	        segLink.setId(s.getId());
-//        	        ig.getSegmentRegistry().getChildren().add(segLink);
-        	      } else {
-        	        throw new Exception("Segment is missing.");
-        	    }
-          }
-          for(Datatype d : flavoredDatatypes) {
-        	  if (d != null) {
-        	        DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
-        	        datatypeDataModel.putModel(d, this.datatypeService, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
-        	                this.conformanceStatementRepository, this.predicateRepository);
-        	            datatypes.add(datatypeDataModel);        	        // CoConstraintTable coConstraintTable =
-        	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
-        	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
-        	            datatypes.add(datatypeDataModel);
-        	            
-        	            Optional<GeneratedResourceMetadata> generatedResourceMetadata = profileComponentsEvaluationResult.getGeneratedResourceMetadataList().stream().filter((g) ->  {
-            	        	return g.getGeneratedResourceId().equals(datatypeDataModel.getModel().getId());
-            	        }).findAny();
-            	       
-            	       if(generatedResourceMetadata.isPresent()) {
-               	        compositeProfileDataModel.getFlavoredDatatypeDataModelsMap().put(datatypeDataModel, generatedResourceMetadata.get());
-            	       } else {
-                  	        compositeProfileDataModel.getFlavoredDatatypeDataModelsMap().put(datatypeDataModel, null);
-            	       }
-            	       igDataModel.getAllFlavoredDatatypeDataModelsMap().putAll(compositeProfileDataModel.getFlavoredDatatypeDataModelsMap());
-//        	            Link datLink = new Link();
-//            	        datLink.setId(d.getId());
-//            	        ig.getDatatypeRegistry().getChildren().add(datLink);
-        	      } else {
-        	        throw new Exception("Datatype is missing.");
-        	    }
-          } 
-//          generateFlavoredElements(String cpId);
+          //              conformanceProfiles.add(conformanceProfileDataModel);
+          compositeProfileDataModel.setConformanceProfileDataModel(conformanceProfileDataModel);
         } else {
-          throw new Exception("Composite Profile is missing::::" + link.getId());
+          throw new Exception("ConformanceProfile is missing::::" + link.getId());
+        }
+
+
+        for(Segment s : flavoredSegments) {
+          if (s != null) {
+            SegmentDataModel segmentDataModel = new SegmentDataModel();
+            segmentDataModel.putModel(s, this.datatypeService, inMemoryDomainExtensionService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
+            // CoConstraintTable coConstraintTable =
+            // this.coConstraintService.getCoConstraintForSegment(s.getId());
+            // segmentDataModel.setCoConstraintTable(coConstraintTable);
+            Optional<GeneratedResourceMetadata> generatedResourceMetadata = profileComponentsEvaluationResult.getGeneratedResourceMetadataList().stream().filter((g) ->  {
+              return g.getGeneratedResourceId().equals(segmentDataModel.getModel().getId());
+            }).findAny();
+
+            if(generatedResourceMetadata.isPresent()) {
+              compositeProfileDataModel.getFlavoredSegmentDataModelsMap().put(segmentDataModel, generatedResourceMetadata.get());
+            } else {
+              compositeProfileDataModel.getFlavoredSegmentDataModelsMap().put(segmentDataModel, null);
+            }
+            igDataModel.getAllFlavoredSegmentDataModelsMap().putAll(compositeProfileDataModel.getFlavoredSegmentDataModelsMap());
+
+            //        	        Link segLink = new Link();
+            //        	        segLink.setId(s.getId());
+            //        	        ig.getSegmentRegistry().getChildren().add(segLink);
+          } else {
+            throw new Exception("Segment is missing.");
+          }
+        }
+        for(Datatype d : flavoredDatatypes) {
+          if (d != null) {
+            DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
+            datatypeDataModel.putModel(d, this.datatypeService, inMemoryDomainExtensionService, valuesetBindingDataModelMap,
+                this.conformanceStatementRepository, this.predicateRepository);
+            datatypes.add(datatypeDataModel);        	        // CoConstraintTable coConstraintTable =
+            // this.coConstraintService.getCoConstraintForSegment(s.getId());
+            // segmentDataModel.setCoConstraintTable(coConstraintTable);
+            datatypes.add(datatypeDataModel);
+
+            Optional<GeneratedResourceMetadata> generatedResourceMetadata = profileComponentsEvaluationResult.getGeneratedResourceMetadataList().stream().filter((g) ->  {
+              return g.getGeneratedResourceId().equals(datatypeDataModel.getModel().getId());
+            }).findAny();
+
+            if(generatedResourceMetadata.isPresent()) {
+              compositeProfileDataModel.getFlavoredDatatypeDataModelsMap().put(datatypeDataModel, generatedResourceMetadata.get());
+            } else {
+              compositeProfileDataModel.getFlavoredDatatypeDataModelsMap().put(datatypeDataModel, null);
+            }
+            igDataModel.getAllFlavoredDatatypeDataModelsMap().putAll(compositeProfileDataModel.getFlavoredDatatypeDataModelsMap());
+            //        	            Link datLink = new Link();
+            //            	        datLink.setId(d.getId());
+            //            	        ig.getDatatypeRegistry().getChildren().add(datLink);
+          } else {
+            throw new Exception("Datatype is missing.");
+          }
+        } 
+        //          generateFlavoredElements(String cpId);
+      } else {
+        throw new Exception("Composite Profile is missing::::" + link.getId());
       }
-  
 
 
-  }
+
+    }
     igDataModel.setDatatypes(datatypes);
     igDataModel.setSegments(segments);
     igDataModel.setConformanceProfiles(conformanceProfiles);
@@ -1244,13 +1244,13 @@ public class IgServiceImpl implements IgService {
 
     String valueSetXMLStr = this.xmlSerializeService.serializeValueSetXML(igModel).toXML();
 
-//    String coConstraintsXMLStr = this.xmlSerializeService.serializeCoConstraintXML(igModel).toXML();
+    //    String coConstraintsXMLStr = this.xmlSerializeService.serializeCoConstraintXML(igModel).toXML();
 
 
     this.xmlSerializeService.generateIS(out, profileXMLStr, "Profile.xml");
     this.xmlSerializeService.generateIS(out, valueSetXMLStr, "ValueSets.xml");
     this.xmlSerializeService.generateIS(out, constraintXMLStr, "Constraints.xml");
-//    this.xmlSerializeService.generateIS(out, coConstraintsXMLStr, "CoConstraints.xml");
+    //    this.xmlSerializeService.generateIS(out, coConstraintsXMLStr, "CoConstraints.xml");
 
     out.close();
     bytes = outputStream.toByteArray();
@@ -1357,7 +1357,7 @@ public class IgServiceImpl implements IgService {
     Set<RelationShip> ret = new HashSet<RelationShip>();
 
     switch (type) {
-      
+
       case DATATYPE:
         addSegmentsRelations(ig, ret);
         addDatatypesRelations(ig, ret);
@@ -1387,11 +1387,11 @@ public class IgServiceImpl implements IgService {
       case PROFILECOMPONENT:
         addComposoiteProfilesRelations(ig, ret);
         return ret;
-        
+
       case CONFORMANCEPROFILE:
         addComposoiteProfilesRelations(ig, ret);
         return ret;
-        
+
       default:
         return ret;
     }
@@ -1414,11 +1414,11 @@ public class IgServiceImpl implements IgService {
    * @param ret
    */
   private void addComposoiteProfilesRelations(Ig ig, Set<RelationShip> ret) {
-   List<CompositeProfileStructure> composites= this.compositeProfileServie.findByIdIn(ig.getCompositeProfileRegistry().getLinksAsIds());
-   for(CompositeProfileStructure composite: composites) {
-     ret.addAll(compositeProfileServie.collectDependencies(composite));
-   }
-    
+    List<CompositeProfileStructure> composites= this.compositeProfileServie.findByIdIn(ig.getCompositeProfileRegistry().getLinksAsIds());
+    for(CompositeProfileStructure composite: composites) {
+      ret.addAll(compositeProfileServie.collectDependencies(composite));
+    }
+
   }
 
   /**
@@ -1508,7 +1508,7 @@ public class IgServiceImpl implements IgService {
         }
       }
     }
-    
+
     for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
       if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
         UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Valueset.class);
@@ -1517,19 +1517,19 @@ public class IgServiceImpl implements IgService {
         }
       }
     }
-    
+
     for ( Link l: ig.getProfileComponentRegistry().getChildren()) {
-        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, ProfileComponent.class);
-        if(! updateResult.wasAcknowledged()) {
-          throw new IGUpdateException("Could not publish Profile Components:" +l.getId());
-        }
+      UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, ProfileComponent.class);
+      if(! updateResult.wasAcknowledged()) {
+        throw new IGUpdateException("Could not publish Profile Components:" +l.getId());
+      }
     }
     for ( Link l: ig.getCompositeProfileRegistry().getChildren()) {
       UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, CompositeProfileStructure.class);
       if(! updateResult.wasAcknowledged()) {
         throw new IGUpdateException("Could not publish Composite Profile:" +l.getId());
       }
-  }
+    }
 
     UpdateResult updateResult = this.updateAttribute(ig.getId(), "status", Status.PUBLISHED, Ig.class);
     if(! updateResult.wasAcknowledged()) {
@@ -1565,13 +1565,15 @@ public class IgServiceImpl implements IgService {
     for ( Link l: ig.getDatatypeRegistry().getChildren()) {
       if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
         Datatype dt = this.datatypeService.findById(l.getId());
-        for(ConformanceStatement cs : dt.getBinding().getConformanceStatements()) {
-          cs.setResourceId(l.getId());
-          ret.add(cs);
-        }   
+        if(dt.getBinding() != null) {
+          for(ConformanceStatement cs : dt.getBinding().getConformanceStatements()) {
+            cs.setResourceId(l.getId());
+            ret.add(cs);
+          }   
+        }
       }
     }
-    
+
     return ret;
   }
 
@@ -1749,7 +1751,7 @@ public class IgServiceImpl implements IgService {
   @Override
   public CompositeProfileStructure createCompositeProfileSercice(Ig ig,
       CompositeProfileCreationWrapper wrapper) {
-    
+
     CompositeProfileStructure ret = new CompositeProfileStructure();
     ret.setUsername(ig.getUsername());
     ret.setCurrentAuthor(ig.getCurrentAuthor());
@@ -1765,7 +1767,7 @@ public class IgServiceImpl implements IgService {
 
     return ret;
   }
-  
-  
+
+
 
 }

@@ -14,14 +14,15 @@ package gov.nist.hit.hl7.igamt.bootstrap.data;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
-import org.hibernate.engine.jdbc.spi.TypeSearchability;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +30,13 @@ import com.opencsv.CSVReader;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
@@ -43,13 +44,13 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
-import net.bytebuddy.description.type.TypeDescription.Generic.Visitor.TypeErasing;
 
 /**
  * @author Abdelghani El Ouakili
@@ -72,6 +73,8 @@ public class DataFixer {
 
   @Autowired
   MessageStructureRepository  messageStructureRepository;
+  @Autowired
+  ConfigService configService;
 
 
 
@@ -164,9 +167,10 @@ public class DataFixer {
         }
       }
     }
-
   }
 
+  
+  
 
   /**
    * @param seg
@@ -179,19 +183,43 @@ public class DataFixer {
     if(seg.getBinding() !=null && !seg.getBinding().getChildren().isEmpty()) {
       for( StructureElementBinding binding: seg.getBinding().getChildren()) {
         if(binding.getElementId().equals(position)) {
-          if(binding.getChildren() == null) {
-            binding.setChildren(new HashSet<StructureElementBinding>());
+
+          if(binding.getValuesetBindings() !=null ) {
+            if(binding.getChildren() == null) {
+              binding.setChildren(new HashSet<StructureElementBinding>());
+            }
+            StructureElementBinding child = new StructureElementBinding();
+            child.setElementId(childPosition);
+            child.setLocationInfo(new LocationInfo(LocationType.COMPONENT, Integer.valueOf(childPosition),this.getComponentName(seg, position, childPosition)));
+            child.setValuesetBindings(cloneValueSetBinding(binding.getValuesetBindings(), defaultLocation)); 
+            binding.addChild(child);
+            binding.setValuesetBindings(null);
           }
-          StructureElementBinding child = new StructureElementBinding();
-          child.setElementId(childPosition);
-          child.setLocationInfo(new LocationInfo(LocationType.COMPONENT, Integer.valueOf(childPosition),null));
-          child.setValuesetBindings(cloneValueSetBinding(binding.getValuesetBindings(), defaultLocation)); 
-          binding.addChild(child);
-          binding.setValuesetBindings(null);
         }
       }
     }
 
+  }
+
+
+  /**
+   * @param seg
+   * @param childPosition
+   * @return
+   */
+  private String getComponentName(Segment seg, String position, String childPosition) {
+    Optional<Field> f = seg.getChildren().stream().filter(x -> x.getPosition() == Integer.valueOf(position)).findAny();
+    if(f.isPresent()) {
+      Datatype d = this.datatypeService.findById(f.get().getRef().getId());
+      if(d != null && d instanceof ComplexDatatype) {
+        ComplexDatatype complex = (ComplexDatatype)d;
+        Optional<Component> cp = complex.getComponents().stream().filter(x -> x.getPosition() == Integer.valueOf(childPosition)).findAny();
+        if(cp.isPresent()) {
+          return cp.get().getName();
+        }
+      }
+    }
+    return null;
   }
 
 
@@ -207,7 +235,9 @@ public class DataFixer {
       ValuesetBinding newVs = new ValuesetBinding();
       newVs.setStrength(vs.getStrength());
       newVs.setValueSets(vs.getValueSets());
-      newVs.addValuesetLocation(location);
+      if(location != 0) {
+        newVs.addValuesetLocation(location);
+      }
       vsBindings.add(newVs);
     }
     return vsBindings;
@@ -306,9 +336,65 @@ public class DataFixer {
         processAndFixPredicateLevel(Level.CONFORMANCEPROFILE, child.getChildren());
       }
     }
-
   }
 
 
+  /**
+   * 
+   */
+  public void addStructureIds() {
+    List<Segment>  segments = this.segmentsService.findAll();
+    if(segments != null) {
+      for(Segment s: segments) {
+        if(s.isCustom()) {
+          if( s.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
+            s.setStructureIdentifier(s.getId());
+          } else {
+            s.setStructureIdentifier(this.findStructureParent(s));
+          }
+          this.segmentsService.save(s);
+        }
+      }
+    }
+  }
+
+
+  private String findStructureParent(Segment s) {
+    if(s.getFrom() != null) {
+      Segment parent =  this.segmentsService.findById(s.getFrom());
+      if(parent != null) {
+        if(parent.getDomainInfo() !=null && parent.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
+          return parent.getId();
+        }else if(parent.getDomainInfo() !=null && parent.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
+          return parent.getId();
+        }else if(parent.getDomainInfo() !=null && parent.getDomainInfo().getScope().equals(Scope.USER)) {
+          return findStructureParent(parent);
+        }
+      }
+    }
+    return null;
+  }
+
+  public void shiftAllBinding() {
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "ADJ", "6", "2", 1);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.8",  "2.8.1",  "2.8.2")), "CDO", "4", "2", 1);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "PSL", "12", "2", 1);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1", "2.4", "2.5", "2.5.1", "2.6")), "QRD", "7", "2", 1);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.4", "2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "RCP", "2", "2", 1);    
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.4", "2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "ABS", "1", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1", "2.4", "2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "EVN", "5", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1", "2.4", "2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "FT1", "20", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1", "2.4","2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "IN3", "14", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1", "2.4","2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "IN3", "25", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList( "2.3.1", "2.4", "2.5", "2.5.1")), "PR1", "8", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList( "2.3.1", "2.4", "2.5", "2.5.1")), "PR1", "11", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList( "2.3.1", "2.4", "2.5", "2.5.1")), "PR1", "12", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1","2.4", "2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "PV1", "7", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1","2.4", "2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "PV1", "8", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1","2.4", "2.5", "2.5.1", "2.6")), "PV1", "9", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1","2.4", "2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "PV1", "17", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1","2.4", "2.5", "2.5.1", "2.6")), "PV1", "52", "1", 0);
+    this.shiftBinding(new ArrayList<String>(Arrays.asList("2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "SDC", "34", "1", 0);
+  }
 
 }

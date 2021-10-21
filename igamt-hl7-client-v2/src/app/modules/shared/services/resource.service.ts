@@ -5,6 +5,7 @@ import { UserMessage } from 'src/app/modules/dam-framework/models/messages/messa
 import { Message, MessageType } from '../../dam-framework/models/messages/message.class';
 import { Scope } from '../constants/scope.enum';
 import { Type } from '../constants/type.enum';
+import {IDisplayElement} from '../models/display-element.interface';
 import { IResourceInfo } from '../models/resource-info.interface';
 import { IResource } from '../models/resource.interface';
 
@@ -53,6 +54,10 @@ export class ResourceService {
   }
   getProfileComponentContextResources(pcId: string, id: string): Observable<IResource[]> {
     return this.http.get<IResource[]>('api/profile-component/' + pcId + '/context/' + id + this.resource);
+  }
+
+  getReferencesChildStructures(id: string): Observable<IDisplayElement[]> {
+    return this.http.get<IDisplayElement[]>('/api/structure-editor/structure/' + id + '/custom-children');
   }
 
   private getResourcesUrl(type: Type, id: string, documentId: string): string {

@@ -19,7 +19,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
  * @author jungyubw
  *
  */
-public class ValuesetDataModel implements Serializable{
+public class ValuesetDataModel implements Serializable, Comparable{
 
   private Valueset model;
 
@@ -30,6 +30,15 @@ public class ValuesetDataModel implements Serializable{
   public void setModel(Valueset model) {
     this.model = model;
   }
+
+	@Override
+	public int compareTo(Object u) {
+		// TODO Auto-generated method stub
+		if (getModel().getLabel() == null || ((ValuesetDataModel) u).getModel().getLabel() == null) {
+		      return 0;
+		    }
+		    return getModel().getLabel().compareTo(((ValuesetDataModel) u).getModel().getLabel());
+	}
 
 
 }
