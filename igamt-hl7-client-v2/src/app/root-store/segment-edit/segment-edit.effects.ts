@@ -20,7 +20,8 @@ import { ISegment } from '../../modules/shared/models/segment.interface';
 import { BindingService } from '../../modules/shared/services/binding.service';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { OpenSegmentBindingsEditor } from './segment-edit.actions';
+import {SlicingService} from '../../modules/shared/services/slicing.service';
+import {OpenSegmentBindingsEditor, OpenSegmentSlicingEditor} from './segment-edit.actions';
 import {
   LoadSegment,
   LoadSegmentFailure,
@@ -133,6 +134,18 @@ export class SegmentEditEffects {
   );
 
   @Effect()
+  openSlicingEditor$ = this.editorHelper.openSlicingEditor<ISegment, OpenSegmentSlicingEditor>(
+    SegmentEditActionTypes.OpenSegmentSlicingEditor,
+    Type.SEGMENT,
+    fromIgamtDisplaySelectors.selectSegmentsById,
+    this.store.select(fromIgamtSelectedSelectors.selectedSegment),
+    (id, type) => {
+      return this.slicingService.getResoureSlicing(type, id);
+    },
+    this.SegmentNotFound,
+  );
+
+  @Effect()
   openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IConformanceStatementEditorData, OpenSegmentBindingsEditor>(
     SegmentEditActionTypes.OpenSegmentConformanceStatementEditor,
     Type.SEGMENT,
@@ -178,6 +191,7 @@ export class SegmentEditEffects {
     private editorHelper: OpenEditorService,
     private crossReferenceService: CrossReferencesService,
     private bindingService: BindingService,
+    private slicingService: SlicingService,
   ) { }
 
 }

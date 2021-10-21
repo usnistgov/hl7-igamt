@@ -16,6 +16,7 @@ import { PostdefEditorComponent } from './components/postdef-editor/postdef-edit
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
 import { ConformanceProfileRoutingModule } from './conformance-profile-routing.module';
 import { ConformanceProfileService } from './services/conformance-profile.service';
+import { ConformanceProfileSlicingEditorComponent } from './components/conformance-profile-slicing-editor/conformance-profile-slicing-editor.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { ConformanceProfileService } from './services/conformance-profile.servic
     MetadataEditorComponent,
     CoConstraintsBindingEditorComponent,
     ConformanceProfileBindingsEditorComponent,
+    ConformanceProfileSlicingEditorComponent,
   ],
   imports: [
     CommonModule,

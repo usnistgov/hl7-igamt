@@ -17,6 +17,7 @@ import { SegmentBindingsEditorComponent } from './components/segment-bindings-ed
 import { SegmentStructureEditorComponent } from './components/segment-structure-editor/segment-structure-editor.component';
 import { SegmentRoutingModule } from './segment-routing.module';
 import { SegmentService } from './services/segment.service';
+import { SegmentSlicingEditorComponent } from './components/segment-slicing-editor/segment-slicing-editor.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { SegmentService } from './services/segment.service';
     DynamicMappingEditorComponent,
     SegmentBindingsEditorComponent,
     DynamicMappingDeltaComponent,
+    SegmentSlicingEditorComponent,
   ],
   imports: [
     CommonModule,

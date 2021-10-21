@@ -16,6 +16,8 @@ export enum ConformanceProfileEditActionTypes {
   OpenConformanceProfileCoConstraintBindingsEditor = '[ConformanceProfileEdit] Open Conformance Profile CoConstraint Bindings Editor',
   OpenCPConformanceStatementEditor = '[ConformanceProfileEdit] Open Conformance Profile Conformance Statement Editor',
   OpenConformanceProfileBindingsEditor = '[ConformanceProfileEdit] Open ConformanceProfile Bindings Editor',
+  OpenConformanceProfileSlicingEditor = '[ConformanceProfileEdit] Open ConformanceProfile Slicing Editor',
+
 }
 
 export class LoadConformanceProfile implements Action {
@@ -55,6 +57,16 @@ export class OpenConformanceProfileDeltaEditor extends OpenEditorBase {
 
 export class OpenConformanceProfileStructureEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfileStructureEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IHL7EditorMetadata,
+  }) {
+    super();
+  }
+}
+
+export class OpenConformanceProfileSlicingEditor extends OpenEditorBase {
+  readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfileSlicingEditor;
   constructor(readonly payload: {
     id: string,
     editor: IHL7EditorMetadata,
