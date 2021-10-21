@@ -29,6 +29,12 @@ export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   @ContentChild('sideBar')
   sideBarTemplate: TemplateRef<any>;
 
+  @ContentChild('statusBar')
+  statusBarTemplate: TemplateRef<any>;
+
+  @ContentChild('bottomDrawer')
+  bottomDrawerTemplate: TemplateRef<any>;
+
   // --- Resize Attributes
   @ViewChild('resize', { read: ElementRef })
   resize: ElementRef;
@@ -40,10 +46,19 @@ export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   collapsed: boolean;
   tocCollapseSubscription: Subscription;
 
+  bottomDrawerCollapsed: boolean;
+  bottomDrawerCollapseSubscription: Subscription;
+
   constructor(public widget: DamWidgetComponent) {
     if (widget == null) {
       throw new Error('DamLayout should be used inside a DamWidget');
     }
+
+    this.bottomDrawerCollapseSubscription = widget.bottomDrawerCollapseStatus$().subscribe(
+      (collapsed) => {
+        this.bottomDrawerCollapsed = collapsed;
+      },
+    );
 
     this.tocCollapseSubscription = widget.sideBarCollapseStatus$().subscribe(
       (collapsed) => {
@@ -57,10 +72,11 @@ export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    const move$ = fromEvent(document, 'mousemove');
+    const up$ = fromEvent(document, 'mouseup');
+
     if (this.resize) {
-      const move$ = fromEvent(document, 'mousemove');
       const down$ = fromEvent(this.resize.nativeElement, 'mousedown');
-      const up$ = fromEvent(document, 'mouseup');
       if (!this.resizeTocSubscription || this.resizeTocSubscription.closed) {
         this.resizeTocSubscription = move$.pipe(
           skipUntil(down$),
@@ -83,6 +99,8 @@ export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnDestroy() {
     this.resizeTocSubscription.unsubscribe();
+    this.tocCollapseSubscription.unsubscribe();
+    this.bottomDrawerCollapseSubscription.unsubscribe()
   }
 
   ngOnInit() {

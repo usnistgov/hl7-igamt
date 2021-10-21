@@ -54,5 +54,17 @@
       </ng-container>
 
     </div>
+
+    <div class="page-bottom" *ngIf="bottomDrawerTemplate || statusBarTemplate">
+      <div class="status-bar" *ngIf="statusBarTemplate">
+        <div style="flex: 1;">
+          <ng-container *ngTemplateOutlet="statusBarTemplate; context: { }" ></ng-container>
+        </div>
+        <app-dam-bottom-toggle></app-dam-bottom-toggle>
+      </div>
+      <div class="bottom-drawer" *ngIf="bottomDrawerTemplate && !bottomDrawerCollapsed">
+        <ng-container *ngTemplateOutlet="bottomDrawerTemplate; context: { }" ></ng-container>
+      </div>
+    </div>
   </div>
 </div>
