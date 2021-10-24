@@ -126,6 +126,8 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { SelectSlicingContextComponent } from './components/select-sling-context/select-slicing-context.component';
+import { SlicingRowComponent } from './components/slicing-editor/slicing-row.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -212,6 +214,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     FileExcelInputComponent,
     GeneratedNamingDuplicationDirective,
     ImportStructureComponent,
+    SelectSlicingContextComponent,
+    SlicingRowComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -385,6 +389,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     CsSubcontextComponent,
     GeneratedNamingDuplicationDirective,
     ImportStructureComponent,
+    SelectSlicingContextComponent,
+    SlicingRowComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -412,6 +418,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddCompositeComponent,
     AddPcToList,
     ImportStructureComponent,
+    SelectSlicingContextComponent,
   ],
 })
 export class SharedModule {

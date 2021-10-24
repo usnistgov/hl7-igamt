@@ -1,0 +1,17 @@
+.sliceRow-header {
+  padding: 20px;
+  background-color: #eaeaea;
+}
+.sliceRow-body {
+  background-color: white;
+  padding: 20px;
+}
+.sliceRow-body-content{
+  padding: 20px;
+  width: 100%;
+}
+
+.sliceRow-header-border {
+  border: 1px solid;
+  border-color: #eaeaea;
+}

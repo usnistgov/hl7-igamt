@@ -137,7 +137,7 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
   getResourceDisplay(type: Type, id: string): Observable<IDisplayElement> {
     switch (type) {
       case Type.DATATYPE:
-        return this.store.select(selectDatatypesById, { id });
+        return this.store.select(selectDatatypesById, { id }).pipe(take(1));
       case Type.SEGMENT:
         return this.store.select(selectSegmentsById, { id });
       case Type.VALUESET:

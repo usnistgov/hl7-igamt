@@ -1,0 +1,22 @@
+<h2 mat-dialog-title> Select Target </h2>
+
+<div>
+  <p-radioButton name="groupname" [value]="'ASSERTION'" [(ngModel)]="selectType" label="Assertion"></p-radioButton>
+  <p-radioButton name="groupname" [value]="'OCCURENCE'" [(ngModel)]="selectType" label="Occurence"></p-radioButton>
+</div>
+
+
+<mat-dialog-content>
+  <form #form='ngForm'>
+    <app-structure-tree
+      [tree]="data.nodes"
+      [filter]="data.treeFilter"
+      [repository]="repository"
+      (selection)="select($event)"
+    ></app-structure-tree>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button class="btn btn-sm btn-secondary" style="margin-right: 5px;" (click)="cancel()" >Cancel</button>
+  <button class="btn btn-sm btn-success"  (click)="done()" >Done</button>
+</mat-dialog-actions>
