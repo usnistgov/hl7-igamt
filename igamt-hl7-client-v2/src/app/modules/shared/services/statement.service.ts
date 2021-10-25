@@ -206,8 +206,6 @@ export class StatementTarget {
     );
   }
 
-
-
   getDescription(resource: IResource, repository: AResourceRepositoryService, relativeName: boolean = false): Observable<string> {
     return this.getNameFullPath(this.context, this.value.path, resource, repository, relativeName).pipe(
       take(1),

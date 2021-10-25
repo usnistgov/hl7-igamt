@@ -3,8 +3,8 @@ import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild 
 import { NgForm } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
-import { combineLatest, Observable, of, Subject, EMPTY } from 'rxjs';
-import { filter, map, take, tap, catchError } from 'rxjs/operators';
+import { combineLatest, EMPTY, Observable, of, Subject } from 'rxjs';
+import { catchError, filter, map, take, tap } from 'rxjs/operators';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { SegmentService } from '../../../segment/services/segment.service';
 import { ICardinalityRange, IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -23,7 +23,7 @@ import {
   IDataElementHeader,
   INarrativeHeader,
 } from '../../../shared/models/co-constraint.interface';
-import { ICoConstraintGroupBinding, ICoConstraintGroupBindingRef, ICoConstraintHeaders, ICoConstraintRequirement, IDataElementHeaderInfo, CoConstraintColumnType } from '../../../shared/models/co-constraint.interface';
+import { CoConstraintColumnType, ICoConstraintGroupBinding, ICoConstraintGroupBindingRef, ICoConstraintHeaders, ICoConstraintRequirement, IDataElementHeaderInfo } from '../../../shared/models/co-constraint.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
 import { PathService } from '../../../shared/services/path.service';

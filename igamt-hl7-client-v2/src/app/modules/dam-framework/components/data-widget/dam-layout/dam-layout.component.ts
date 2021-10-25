@@ -100,7 +100,7 @@ export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnDestroy() {
     this.resizeTocSubscription.unsubscribe();
     this.tocCollapseSubscription.unsubscribe();
-    this.bottomDrawerCollapseSubscription.unsubscribe()
+    this.bottomDrawerCollapseSubscription.unsubscribe();
   }
 
   ngOnInit() {
