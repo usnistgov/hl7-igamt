@@ -8,6 +8,7 @@ import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index
 import { DamWidgetComponent } from '../../../dam-framework/components/data-widget/dam-widget/dam-widget.component';
 import { IWorkspaceActive } from '../../../dam-framework/models/data/workspace';
 import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.component';
+import { EditorVerify } from '../../../dam-framework/store/data/dam.actions';
 
 export const IG_EDIT_WIDGET_ID = 'IG-EDIT-WIDGET';
 
@@ -32,5 +33,9 @@ export class IgEditContainerComponent extends DamWidgetComponent {
 
   containsUnsavedChanges$(): Observable<boolean> {
     return this.store.select(fromIgDocumentEdit.selectWorkspaceOrTableOfContentChanged);
+  }
+
+  editorVerify() {
+    this.store.dispatch(new EditorVerify());
   }
 }

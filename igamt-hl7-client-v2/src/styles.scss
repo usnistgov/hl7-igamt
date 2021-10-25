@@ -24,6 +24,10 @@ body {
   background-color: #ffd400 !important;
 }
 
+.verification-progress.mat-progress-spinner circle {
+  stroke: #b53f3f !important;
+}
+
 .range-input {
   width: 50px;
 }
@@ -346,15 +350,6 @@ body .ui-panel .ui-panel-titlebar .ui-panel-titlebar-icon {
 //  grid-template-columns: fit-content(10%) fit-content(10%) max-content;
 //}
 
-
-element.style {
-  /* min-width: 300px; */
-  /* z-index: 1001; */
-  /* top: 469.812px; */
-  /* left: 401.578px; */
-  /* transform: translateY(0px); */
-  /* opacity: 1; */
-}
 body .ui-dropdown-panel {
   padding: 0;
   z-index: 9999;

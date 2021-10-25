@@ -1,113 +1,27 @@
 <ng-container *ngIf="bindingsSubject | async as bindings">
-  <ul class="nav nav-pills" style="margin-top: 10px;">
-    <li style="cursor: pointer;" class="nav-item" *ngFor="let item of tabs">
-      <span  class="nav-link active" [ngClass]="{ 'active': item === activeTab }" (click)="activeTab = item">{{ item }}</span>
-    </li>
-  </ul>
+  <ng-container *ngIf="entries$ | async as entries">
+    <ul class="nav nav-pills" style="margin-top: 10px;">
+      <li style="cursor: pointer;" class="nav-item" *ngFor="let item of tabs">
+        <span  class="nav-link active" [ngClass]="{ 'active': item === activeTab }" (click)="activeTab = item">{{ item }}</span>
+      </li>
+    </ul>
 
-  <ng-container *ngIf="activeTab === BindingsTabs.VALUESETS">
-    <ng-container *ngTemplateOutlet="table; context : { $implicit : bindings.valueSetBindingContainers, template: valueSet, property: 'VALUESET' }" ></ng-container>
+    <ng-container *ngIf="activeTab === BindingsTabs.VALUESETS">
+      <ng-container *ngTemplateOutlet="table; context : { $implicit : bindings.valueSetBindingContainers, template: valueSet, property: 'VALUESET', entries: entries['VALUESET'] }" ></ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="activeTab === BindingsTabs.SINGLECODE">
+      <ng-container *ngTemplateOutlet="table; context : { $implicit : bindings.singleCodeBindingContainers, template: singleCode, property: 'SINGLECODE', entries: entries['SINGLECODE'] }" ></ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="activeTab === BindingsTabs.PREDICATE">
+      <ng-container *ngTemplateOutlet="table; context : { $implicit : bindings.predicateBindingContainers, template: predicate, property: 'PREDICATE', entries: entries['PREDICATE'] }" ></ng-container>
+    </ng-container>
+
   </ng-container>
-
-
-  <ng-container *ngIf="activeTab === BindingsTabs.SINGLECODE">
-    <ng-container *ngTemplateOutlet="table; context : { $implicit : bindings.singleCodeBindingContainers, template: singleCode, property: 'SINGLECODE' }" ></ng-container>
-  </ng-container>
-
-
-
-  <ng-container *ngIf="activeTab === BindingsTabs.PREDICATE">
-    <ng-container *ngTemplateOutlet="table; context : { $implicit : bindings.predicateBindingContainers, template: predicate, property: 'PREDICATE' }" ></ng-container>
-  </ng-container>
-
 </ng-container>
 
-<ng-template #vsBindings let-bindings>
-  <ng-container *ngIf="bindings">
-    <table *ngFor="let item of bindings" style="margin-top: 10px;" class="table table-sm table-condensed table-bordered table-striped">
-      <thead>
-        <tr *ngIf="markedForDeletion(item.binding, 'VALUESET') | async as removed" [ngClass]="{'table-danger': removed.flag}">
-          <th style="vertical-align: baseline;">
-            <div style="display: flex; align-items: center;">
-              <button *ngIf="!removed.flag" (click)="delete(item.binding, 'VALUESET')" class="btn btn-sm btn-danger" style="margin-right: 10px;">
-                <i class="fa fa-trash"></i>
-              </button>
-              <button *ngIf="removed.flag" (click)="restore(item.binding, 'VALUESET')" class="btn btn-sm btn-success" style="margin-right: 10px;">
-                <i class="fa fa-refresh"></i>
-              </button>
-              <div *ngIf="item.locationInfo">
-                <span>
-                  <app-entity-bagde [type]="item.locationInfo.type" ></app-entity-bagde>
-                  {{ item.locationInfo.hl7Path }}
-                </span>
-                <span> ({{item.locationInfo.name}}) </span>
-              </div>
-              <span *ngIf="!item.locationInfo"> {{ item.binding.pathId }} </span>
-            </div>
-          </th>
-          <th style="width: 400px;" >
-          <!-- [ngClass]="{'table-danger': item.evaluation && !item.evaluation.valid}"> -->
-            <ng-container *ngTemplateOutlet="valueSet; context : { $implicit : item.binding.value }" ></ng-container>
-          </th>
-        </tr>
-      </thead>
-      <!-- <tbody *ngIf="item.evaluation && !item.evaluation.valid">
-        <tr [ngClass]="{'table-danger': item.evaluation && !item.evaluation.valid}" *ngFor="let error of item.evaluation.errors">
-          <td colspan="2">
-            <span style="color: red;">
-              <i class="fa fa-warning"></i> {{error.target}} - {{error.error}}
-            </span>
-          </td>
-        </tr>
-      </tbody> -->
-    </table>
-  </ng-container>
-</ng-template>
-
-<ng-template #sgBindings let-bindings>
-  <ng-container *ngIf="bindings">
-    <table *ngFor="let item of bindings" style="margin-top: 10px;" class="table table-sm table-condensed table-bordered table-striped">
-      <thead>
-        <tr *ngIf="markedForDeletion(item.binding, 'SINGLECODE') | async as removed" [ngClass]="{'table-danger': removed.flag}">
-          <th style="vertical-align: baseline;">
-            <div style="display: flex; align-items: center;">
-              <button *ngIf="!removed.flag" (click)="delete(item.binding, 'SINGLECODE')" class="btn btn-sm btn-danger" style="margin-right: 10px;">
-                <i class="fa fa-trash"></i>
-              </button>
-              <button *ngIf="removed.flag" (click)="restore(item.binding, 'SINGLECODE')" class="btn btn-sm btn-success" style="margin-right: 10px;">
-                <i class="fa fa-refresh"></i>
-              </button>
-              <div *ngIf="item.locationInfo">
-                <span>
-                  <app-entity-bagde [type]="item.locationInfo.type" ></app-entity-bagde>
-                  {{ item.locationInfo.hl7Path }}
-                </span>
-                <span> ({{item.locationInfo.name}}) </span>
-              </div>
-              <span *ngIf="!item.locationInfo"> {{ item.binding.pathId }} </span>
-            </div>
-          </th>
-          <th style="width: 400px;" >
-          <!-- [ngClass]="{'table-danger': item.evaluation && !item.evaluation.valid}"> -->
-            <ng-container *ngTemplateOutlet="singleCode; context : { $implicit : item.binding.value }" ></ng-container>
-          </th>
-        </tr>
-      </thead>
-      <!-- <tbody *ngIf="item.evaluation && !item.evaluation.valid">
-        <tr [ngClass]="{'table-danger': item.evaluation && !item.evaluation.valid}" *ngFor="let error of item.evaluation.errors">
-          <td colspan="2">
-            <span style="color: red;">
-              <i class="fa fa-warning"></i> {{error.target}} - {{error.error}}
-            </span>
-          </td>
-        </tr>
-      </tbody> -->
-    </table>
-  </ng-container>
-</ng-template>
-
-
-<ng-template #table let-bindings let-template="template" let-property="property">
+<ng-template #table let-bindings let-template="template" let-property="property" let-entries="entries">
   <table *ngIf="bindings && bindings.length > 0" style="margin-top: 15px;" class="table table-sm table-condensed table-bordered table-striped">
     <thead>
       <tr>
@@ -124,7 +38,6 @@
     </thead>
     <tbody>
       <ng-container *ngFor="let item of bindings" >
-        <!-- <tr [ngClass]="{'table-danger': item.evaluation && !item.evaluation.valid}"> -->
         <tr>
           <td >
             <div *ngIf="item.locationInfo">
@@ -151,15 +64,15 @@
             </button>
           </td>
         </tr>
-        <!-- <ng-container *ngIf="item.evaluation && !item.evaluation.valid">
-          <tr>
+        <ng-container *ngIf="entries && entries[item.binding.pathId]">
+          <tr *ngFor="let error of entries[item.binding.pathId]">
             <td colspan="3">
-              <span style="color: red;" *ngFor="let error of item.evaluation.errors" >
-                <i class="fa fa-warning"></i> {{error.target}} - {{error.error}} <br>
+              <span style="color: red;">
+                <app-issue-badge [type]="error.severity"></app-issue-badge> {{error.message}}
               </span>
             </td>
           </tr>
-        </ng-container> -->
+        </ng-container>
       </ng-container>
     </tbody>
   </table>

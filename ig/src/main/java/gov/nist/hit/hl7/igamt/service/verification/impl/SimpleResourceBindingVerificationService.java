@@ -129,7 +129,10 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
                             }
                         }
                 )
-        );
+        ).stream().peek((entry) -> {
+            entry.setTarget(resourceSkeleton.getResource().getId());
+            entry.setTargetType(resourceSkeleton.getResource().getType());
+        }).collect(Collectors.toList());
     }
 
     @Override
@@ -155,7 +158,10 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
                         return this.NoErrors();
                     }
                 }
-        );
+        ).stream().peek((entry) -> {
+            entry.setTarget(resourceSkeleton.getResource().getId());
+            entry.setTargetType(resourceSkeleton.getResource().getType());
+        }).collect(Collectors.toList());
     }
 
     @Override

@@ -7,7 +7,7 @@ import { MatExpansionModule, MatFormFieldModule, MatRadioModule, MatSelectModule
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
@@ -86,6 +86,7 @@ import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/val
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
+import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
@@ -117,8 +118,9 @@ import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.com
 import { UserProfileFormComponent } from './components/user-profile-form/user-profile-form.component';
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
 import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
+import { VerificationEntryTableComponent } from './components/verification-entry-table/verification-entry-table.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
-import {GeneratedNamingDuplicationDirective} from './directives/generated-naming-duplication.directive';
+import { GeneratedNamingDuplicationDirective } from './directives/generated-naming-duplication.directive';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
@@ -212,67 +214,69 @@ import { MinNumberDirective } from './validators/min-number.directive';
     FileExcelInputComponent,
     GeneratedNamingDuplicationDirective,
     ImportStructureComponent,
+    VerificationEntryTableComponent,
+    IssueBadgeComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
   ],
-    imports: [
-        CommonModule,
-        RouterModule,
-        FormsModule,
-        TabViewModule,
-        ReactiveFormsModule,
-        NgbModule,
-        TooltipModule,
-        TreeModule,
-        CardModule,
-        CheckboxModule,
-        ReactiveFormsModule,
-        MatRadioModule,
-        MatDialogModule,
-        MatSliderModule,
-        MatInputModule,
-        FileUploadModule,
-        pTreeModule,
-        DropdownModule,
-        ToastyModule.forRoot(),
-        TreeModule,
-        TreeTableModule,
-        TableModule,
-        SelectButtonModule,
-        ColorPickerModule,
-        ContextMenuModule.forRoot({
-            useBootstrap4: true,
-        }),
-        DamMessagesModule,
-        DamLoaderModule,
-        DamComponentsModule,
-        RadioButtonModule,
-        AccordionModule,
-        ListboxModule,
-        InputSwitchModule,
-        TableModule,
-        SelectButtonModule,
-        ExtendedModule,
-        FroalaEditorModule.forRoot(),
-        FroalaViewModule.forRoot(),
-        ChipsModule,
-        MultiSelectModule,
-        OrganizationChartModule,
-        PanelModule,
-        AutoCompleteModule,
-        PrimeNgDragDrop,
-        DragDropModule,
-        MatSelectModule,
-        MatFormFieldModule,
-        NgxMatSelectSearchModule,
-        TabViewModule,
-        OverlayPanelModule,
-        AvatarModule,
-        PickListModule,
-        MatExpansionModule,
-        MatTooltipModule,
-    ],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TabViewModule,
+    ReactiveFormsModule,
+    NgbModule,
+    TooltipModule,
+    TreeModule,
+    CardModule,
+    CheckboxModule,
+    ReactiveFormsModule,
+    MatRadioModule,
+    MatDialogModule,
+    MatSliderModule,
+    MatInputModule,
+    FileUploadModule,
+    pTreeModule,
+    DropdownModule,
+    ToastyModule.forRoot(),
+    TreeModule,
+    TreeTableModule,
+    TableModule,
+    SelectButtonModule,
+    ColorPickerModule,
+    ContextMenuModule.forRoot({
+      useBootstrap4: true,
+    }),
+    DamMessagesModule,
+    DamLoaderModule,
+    DamComponentsModule,
+    RadioButtonModule,
+    AccordionModule,
+    ListboxModule,
+    InputSwitchModule,
+    TableModule,
+    SelectButtonModule,
+    ExtendedModule,
+    FroalaEditorModule.forRoot(),
+    FroalaViewModule.forRoot(),
+    ChipsModule,
+    MultiSelectModule,
+    OrganizationChartModule,
+    PanelModule,
+    AutoCompleteModule,
+    PrimeNgDragDrop,
+    DragDropModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    NgxMatSelectSearchModule,
+    TabViewModule,
+    OverlayPanelModule,
+    AvatarModule,
+    PickListModule,
+    MatExpansionModule,
+    MatTooltipModule,
+  ],
   exports: [
     MatExpansionModule,
     CommonModule,
@@ -385,6 +389,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     CsSubcontextComponent,
     GeneratedNamingDuplicationDirective,
     ImportStructureComponent,
+    VerificationEntryTableComponent,
+    IssueBadgeComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,

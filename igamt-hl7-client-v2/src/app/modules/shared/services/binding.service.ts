@@ -9,6 +9,7 @@ import { IBindingLocationInfo, ISingleCodeDisplay, IValueSetBindingDisplay } fro
 import { Type } from '../constants/type.enum';
 import { IFlatResourceBindings, InternalSingleCode, IValuesetBinding } from '../models/binding.interface';
 import { IBindingLocationInfoConfig } from '../models/config.class';
+import { IVerificationIssue } from '../models/verification.interface';
 import { AResourceRepositoryService } from './resource-repository.service';
 
 function contains(locationExceptions: IBindingLocationInfoConfig[], version: string, location: number, type: Type, parent: string) {
@@ -26,6 +27,10 @@ export class BindingService {
 
   getResourceBindings = (type: Type, id: string): Observable<IFlatResourceBindings> => {
     return this.http.get<IFlatResourceBindings>('api/bindings/' + type + '/' + id);
+  }
+
+  getVerifyResourceBindings = (type: Type, id: string): Observable<IVerificationIssue[]> => {
+    return this.http.get<IVerificationIssue[]>('api/bindings/' + type + '/' + id + '/verify');
   }
 
   getValueSetBindingDisplay(bindings: IValuesetBinding[], repository: AResourceRepositoryService): Observable<IValueSetBindingDisplay[]> {

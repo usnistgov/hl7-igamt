@@ -84,6 +84,13 @@ export const selectWorkspaceActive = createSelector(
   },
 );
 
+export const selectWorkspaceVerification = createSelector(
+  selectWorkspace,
+  (state: IWorkspace) => {
+    return state.verification;
+  },
+);
+
 export const selectWorkspaceHasActive = createSelector(
   selectWorkspaceActive,
   (state: IWorkspaceActive) => {

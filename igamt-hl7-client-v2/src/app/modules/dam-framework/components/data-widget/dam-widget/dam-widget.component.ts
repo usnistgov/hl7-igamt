@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { IDamDataModel } from '../../../models/data/state';
 import { DamAbstractEditorComponent } from '../../../services/dam-editor.component';
-import { CollapseBottomDrawer, CollapseSideBar, ExpandBottomDrawer, ExpandSideBar, ToggleFullScreen } from '../../../store/data/dam.actions';
+import { CollapseBottomDrawer, CollapseSideBar, EditorVerify, ExpandBottomDrawer, ExpandSideBar, ToggleFullScreen } from '../../../store/data/dam.actions';
 import * as fromDAMF from '../../../store/data/dam.actions';
 import * as fromDAMFSelector from '../../../store/data/dam.selectors';
 import { selecIsSideBarCollaped, selectIsBottomDrawerCollapsed, selectIsFullScreen, selectWidgetId } from '../../../store/data/dam.selectors';
@@ -96,6 +96,8 @@ export abstract class DamWidgetComponent {
       this.activeComponent = $event;
       $event.registerSaveListener();
       $event.registerTitleListener();
+      $event.registerVerifyListener();
+      this.store.dispatch(new EditorVerify());
     }
   }
 
@@ -104,6 +106,7 @@ export abstract class DamWidgetComponent {
       this.activeComponent = undefined;
       $event.unregisterSaveListener();
       $event.unregisterTitleListener();
+      $event.unregisterVerifyListener();
     }
   }
 

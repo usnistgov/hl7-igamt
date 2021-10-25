@@ -4,6 +4,8 @@ import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { ConformanceStatementEditorComponent } from 'src/app/modules/core/components/conformance-statement-editor/conformance-statement-editor.component';
+import { IVerificationIssue } from 'src/app/modules/shared/models/verification.interface';
+import { BindingService } from 'src/app/modules/shared/services/binding.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { IConformanceStatementEditorData } from '../../../core/components/conformance-statement-editor/conformance-statement-editor.component';
@@ -29,6 +31,7 @@ export class DatatypeConformanceStatementEditorComponent extends ConformanceStat
   constructor(
     readonly repository: StoreResourceRepositoryService,
     private datatypeService: DatatypeService,
+    private bindingsService: BindingService,
     conformanceStatementService: ConformanceStatementService,
     dialog: MatDialog,
     messageService: MessageService,
@@ -55,6 +58,10 @@ export class DatatypeConformanceStatementEditorComponent extends ConformanceStat
 
   getById(id: string, documentRef: IDocumentRef): Observable<IConformanceStatementEditorData> {
     return this.datatypeService.getConformanceStatementEditorData(id, documentRef);
+  }
+
+  verify(id: string, documentInfo: IDocumentRef): Observable<IVerificationIssue[]> {
+    return this.bindingsService.getVerifyResourceBindings(Type.DATATYPE, id);
   }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {

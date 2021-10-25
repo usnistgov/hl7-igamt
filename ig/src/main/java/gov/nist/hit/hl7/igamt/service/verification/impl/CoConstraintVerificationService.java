@@ -1,7 +1,6 @@
 package gov.nist.hit.hl7.igamt.service.verification.impl;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Streams;
 import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class CoConstraintVerificationService extends VerificationUtils {
@@ -68,7 +68,10 @@ public class CoConstraintVerificationService extends VerificationUtils {
                     return this.NoErrors();
                 }
             }
-        );
+        ).stream().peek((entry) -> {
+            entry.setTarget(resource.getResource().getId());
+            entry.setTargetType(resource.getResource().getType());
+        }).collect(Collectors.toList());
     }
 
     public List<IgamtObjectError> checkCoConstraintBindingSegment(ResourceSkeleton context, TargetLocation contextLocation, CoConstraintBindingSegment coConstraintBindingSegment) {
@@ -174,7 +177,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
         selectors.values().forEach(errors::addAll);
         constraints.values().forEach(errors::addAll);
 
-        List<DataHeaderElementVerified> valid = Streams.concat(
+        List<DataHeaderElementVerified> valid = Stream.concat(
                 table.getHeaders().getSelectors().stream(),
                 table.getHeaders().getConstraints().stream()
         )
@@ -781,7 +784,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                 }
                 break;
             case VARIES:
-                if(!resource.getFixedName().equalsIgnoreCase("varies")) {
+                if(!resource.getFixedName().equalsIgnoreCase("varies") && !resource.getFixedName().equalsIgnoreCase("var")) {
                     return Collections.singletonList(
                             this.entry.CoConstraintInvalidHeaderType(
                                     headerLocation.pathId,
@@ -831,7 +834,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
         }
 
         static String concatName(String pre, String value) {
-            return pre + "#" + value;
+            return pre + " - " + value;
         }
 
         static TargetLocation makeContextLocation(String pathId, String name) {
@@ -885,7 +888,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
 
         static TargetLocation makeRowLocation(TargetLocation tableLocation, String ccId, int i) {
             TargetLocation location = new TargetLocation();
-            location.name = concatName(tableLocation.name, "#Row(" + i + ")");
+            location.name = concatName(tableLocation.name, "Row(" + i + ")");
             location.pathId = concatPath(tableLocation.pathId, ccId);
             return location;
         }

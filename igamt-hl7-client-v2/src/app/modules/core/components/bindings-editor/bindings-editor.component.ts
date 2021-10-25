@@ -2,15 +2,17 @@ import { OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { EditorVerificationResult, EditorVerify } from 'src/app/modules/dam-framework/store/index';
 import { IValueSetBindingDisplay } from 'src/app/modules/shared/components/binding-selector/binding-selector.component';
 import { IFlatResourceBindings } from 'src/app/modules/shared/models/binding.interface';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
 import { selectDerived, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { IVerificationEnty } from '../../../dam-framework/models/data/workspace';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
@@ -25,6 +27,7 @@ import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
 import { IAssertionPredicate, IFreeTextPredicate, IPredicate } from '../../../shared/models/predicate.interface';
 import { IResource } from '../../../shared/models/resource.interface';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
+import { IVerificationIssue } from '../../../shared/models/verification.interface';
 import { BindingService } from '../../../shared/services/binding.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
@@ -53,6 +56,7 @@ export abstract class BindingsEditorComponent extends AbstractEditorComponent im
   hasOrigin$: Observable<boolean>;
   resourceType: Type;
   derived$: Observable<boolean>;
+  entries$: Observable<Record<string, Record<string, IVerificationEnty[]>>>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -84,6 +88,7 @@ export abstract class BindingsEditorComponent extends AbstractEditorComponent im
         this.changes.next({ ...current.changes });
       }),
     ).subscribe();
+    this.entries$ = this.getGroupedEntries();
   }
 
   ngOnDestroy(): void {
@@ -91,6 +96,26 @@ export abstract class BindingsEditorComponent extends AbstractEditorComponent im
   }
 
   onDeactivate() {
+  }
+
+  getGroupedEntries(): Observable<Record<string, Record<string, IVerificationEnty[]>>> {
+    return this.getEditorVerificationEntries().pipe(
+      map((entries) => {
+        return entries.reduce((acc, entry) => {
+          return {
+            ...acc,
+            [entry.property]: {
+              ...(acc[entry.property] || {}),
+              [entry.pathId]: [
+                ...((acc[entry.property] || {})[entry.pathId] || []),
+                entry,
+              ],
+            },
+          };
+        }, {} as Record<string, Record<string, IVerificationEnty[]>>);
+      }),
+      tap((v) => console.log(v)),
+    );
   }
 
   getCsDescription(cs: IConformanceStatement) {
@@ -175,6 +200,37 @@ export abstract class BindingsEditorComponent extends AbstractEditorComponent im
             );
           }),
           catchError((error) => throwError(this.messageService.actionFromError(error))),
+        );
+      }),
+    );
+  }
+
+  abstract verify(id: string, documentInfo: IDocumentRef): Observable<IVerificationIssue[]>;
+
+  onEditorVerify(action: EditorVerify): Observable<Action> {
+    return combineLatest(this.elementId$, this.documentRef$).pipe(
+      take(1),
+      concatMap(([id, documentRef]) => {
+        return this.verify(id, documentRef).pipe(
+          flatMap((entries) => {
+            return [
+              new EditorVerificationResult({
+                supported: true,
+                entries: entries.map((entry) => ({
+                  code: entry.code,
+                  message: entry.description,
+                  location: entry.locationInfo.name,
+                  pathId: entry.locationInfo.pathId,
+                  property: entry.locationInfo.property,
+                  severity: entry.severity,
+                  targetId: entry.target,
+                  targetType: entry.targetType,
+                }) as IVerificationEnty).filter((entry) => {
+                  return [PropertyType.VALUESET, PropertyType.SINGLECODE, PropertyType.PREDICATE].includes(entry.property as PropertyType);
+                }),
+              }),
+            ];
+          }),
         );
       }),
     );

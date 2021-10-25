@@ -33,7 +33,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
-                .message("Path :" + path + " does not exist" + (Strings.isNullOrEmpty(pathQualifier) ? "" : "("+ pathQualifier +")"))
+                .message("Path : " + path + " does not exist" + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
                 .entry();
     }
 
@@ -44,7 +44,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
-                .message("Path :" + path.getHl7Path() + " should be primitive" + (Strings.isNullOrEmpty(pathQualifier) ? "" : "("+ pathQualifier +")"))
+                .message("Path : " + path.getHl7Path() + " should be primitive" + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
                 .entry();
     }
 
@@ -55,7 +55,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(location)
-                .message("Path :" + path.getHl7Path() + " should be complex" + (Strings.isNullOrEmpty(pathQualifier) ? "" : "("+ pathQualifier +")"))
+                .message("Path : " + path.getHl7Path() + " should be complex" + (Strings.isNullOrEmpty(pathQualifier) ? "" : " ("+ pathQualifier +")"))
                 .entry();
     }
 
@@ -140,11 +140,11 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     public IgamtObjectError InvalidBindingLocation(String pathId, String name, LocationInfo target, String id, Type type, Set<Integer> bindingLocations, String reason) {
         boolean blIsSet = bindingLocations != null && bindingLocations.size() > 0;
         return new IgamtVerificationEntryBuilder("INVALID_BINDING_LOCATION")
-                .warning()
+                .error()
                 .handleInternally()
                 .target(id, type)
                 .locationInfo(pathId, name, PropertyType.VALUESET)
-                .message("Invalid binding location : " + (blIsSet ? bindingLocations : '.') + " at " + target.getHl7Path() + (Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
+                .message("Invalid binding location : " + (blIsSet ? bindingLocations : '.') + " at " + target.getHl7Path() + (!Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
                 .entry();
     }
 
@@ -166,7 +166,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleByUser()
                 .target(id, type)
                 .locationInfo(pathId, name, propertyType)
-                .message("Co-Constraint Table Header " + info.getHl7Path() + " has invalid column type \"" + column + "\" "+ (Strings.isNullOrEmpty(reason) ? "" : "reason : " + reason))
+                .message("Co-Constraint Table Header " + info.getHl7Path() + " has invalid column type \"" + column + "\" "+ (!Strings.isNullOrEmpty(reason) ? "" : "reason : " + reason))
                 .entry();
     }
 
@@ -299,7 +299,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleInternally()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
-                .message("Co-Constraint Code Cell has invalid binding location : " + (blIsSet ? bindingLocations : '.') + " at " + info.getHl7Path() + (Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
+                .message("Co-Constraint Code Cell has invalid binding location : " + (blIsSet ? bindingLocations : '.') + " at " + info.getHl7Path() + (!Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
                 .entry();
     }
 
@@ -344,7 +344,7 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .handleInternally()
                 .target(id, type)
                 .locationInfo(pathId, locationName, PropertyType.COCONSTRAINTBINDING_CELL)
-                .message("Co-Constraint ValueSet Cell has invalid binding location : " + (blIsSet ? bindingLocations : '.')  + " at " + info.getHl7Path() + (Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
+                .message("Co-Constraint ValueSet Cell has invalid binding location : " + (blIsSet ? bindingLocations : '.')  + " at " + info.getHl7Path() + (!Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
                 .entry();
     }
 

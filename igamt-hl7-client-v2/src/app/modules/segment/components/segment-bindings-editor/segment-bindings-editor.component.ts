@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -9,9 +9,10 @@ import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { IDocumentRef } from 'src/app/modules/shared/models/abstract-domain.interface';
 import { IFlatResourceBindings } from 'src/app/modules/shared/models/binding.interface';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
-import { EditorID, IHL7EditorMetadata } from 'src/app/modules/shared/models/editor.enum';
+import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import { IChange } from 'src/app/modules/shared/models/save-change';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
+import { IVerificationIssue } from 'src/app/modules/shared/models/verification.interface';
 import { BindingService } from 'src/app/modules/shared/services/binding.service';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
@@ -56,5 +57,8 @@ export class SegmentBindingsEditorComponent extends BindingsEditorComponent {
   }
   getBindingsById(id: string): Observable<IFlatResourceBindings> {
     return this.bindingsService.getResourceBindings(Type.SEGMENT, id);
+  }
+  verify(id: string, documentInfo: IDocumentRef): Observable<IVerificationIssue[]> {
+    return this.bindingsService.getVerifyResourceBindings(Type.SEGMENT, id);
   }
 }

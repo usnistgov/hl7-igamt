@@ -6,8 +6,11 @@ import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, filter, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import { IVerificationEnty } from 'src/app/modules/dam-framework';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { EditorVerificationResult, EditorVerify } from 'src/app/modules/dam-framework/store/index';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { IVerificationIssue } from 'src/app/modules/shared/models/verification.interface';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
@@ -234,8 +237,38 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     );
   }
 
+  onEditorVerify(action: EditorVerify): Observable<Action> {
+    return combineLatest(this.elementId$, this.documentRef$).pipe(
+      take(1),
+      concatMap(([id, documentRef]) => {
+        return this.verify(id, documentRef).pipe(
+          flatMap((entries) => {
+            return [
+              new EditorVerificationResult({
+                supported: true,
+                entries: entries.map((entry) => ({
+                  code: entry.code,
+                  message: entry.description,
+                  location: entry.locationInfo.name,
+                  pathId: entry.locationInfo.pathId,
+                  property: entry.locationInfo.property,
+                  severity: entry.severity,
+                  targetId: entry.target,
+                  targetType: entry.targetType,
+                }) as IVerificationEnty).filter((entry) => {
+                  return [PropertyType.STATEMENT].includes(entry.property as PropertyType);
+                }),
+              }),
+            ];
+          }),
+        );
+      }),
+    );
+  }
+
   abstract saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message>;
   abstract getById(id: string, documentRef: IDocumentRef): Observable<IConformanceStatementEditorData>;
+  abstract verify(id: string, documentInfo: IDocumentRef): Observable<IVerificationIssue[]>;
 
   convert(active: Array<IEditableListNode<IConformanceStatement>>): IChange[] {
     return active.filter((node) => !!node.changeType).map((node) => {

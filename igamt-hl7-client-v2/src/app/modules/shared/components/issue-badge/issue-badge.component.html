@@ -1,0 +1,22 @@
+<ng-container [ngSwitch]="type">
+  <span *ngSwitchCase="SEVERITY.FATAL" style="color: red; margin-right: 5px;">
+    <span *ngIf="label" style="color: black; margin-right: 3px;"> Fatal </span>
+    <i class="fa fa-exclamation"></i>
+    <span *ngIf="number" style="margin-left: 3px;">{{number}}</span>
+  </span>
+  <span *ngSwitchCase="SEVERITY.ERROR" style="color: rgb(236, 57, 117); margin-right: 5px;">
+    <span *ngIf="label" style="color: black; margin-right: 3px;"> Error </span>
+    <i class="fa fa-exclamation-circle"></i>
+    <span *ngIf="number" style="margin-left: 3px;">{{number}}</span>
+  </span>
+  <span *ngSwitchCase="SEVERITY.WARNING" style="color: #bb990c; margin-right: 5px;">
+    <span *ngIf="label" style="color: black; margin-right: 3px;"> Warning </span>
+    <i class="fa fa-exclamation-triangle"></i>
+    <span *ngIf="number" style="margin-left: 3px;">{{number}}</span>
+  </span>
+  <span *ngSwitchCase="SEVERITY.INFORMATIONAL" style="color: blue; margin-right: 5px;">
+    <span *ngIf="label" style="color: black; margin-right: 3px;"> Informational </span>
+    <i class="fa fa-info"></i>
+    <span *ngIf="number" style="margin-left: 3px;">{{number}}</span>
+  </span>
+</ng-container>
