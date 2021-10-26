@@ -168,8 +168,8 @@ public class CoConstraintVerificationService extends VerificationUtils {
 
     List<IgamtObjectError> checkCoConstraintTable(ResourceSkeleton segment, TargetLocation tableLocation, CoConstraintTable table) {
         List<IgamtObjectError> errors = new ArrayList<>();
-        TargetLocation selectorHeadersLocation = TargetLocation.makeHeadersLocation(tableLocation, "selectors", "IfColumns");
-        TargetLocation constraintHeadersLocation = TargetLocation.makeHeadersLocation(tableLocation, "constraints", "ThenColumns");
+        TargetLocation selectorHeadersLocation = TargetLocation.makeHeadersLocation(tableLocation, "selectors", "IF Columns");
+        TargetLocation constraintHeadersLocation = TargetLocation.makeHeadersLocation(tableLocation, "constraints", "THEN Columns");
 
         Map<String, List<IgamtObjectError>> selectors = checkCoConstraintHeaders(segment, selectorHeadersLocation, table.getHeaders().getSelectors());
         Map<String, List<IgamtObjectError>> constraints = checkCoConstraintHeaders(segment, constraintHeadersLocation, table.getHeaders().getConstraints());
@@ -613,7 +613,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                             varies.target,
                             bindingInfo
                     );
-                    return this.checkCoConstraintCell(segment, verified, cellLocation, cell);
+                    return this.checkCoConstraintCell(segment, verified, cellLocation, cell.getCellValue());
                 }
                 return headerTypeErrors;
             } else {
@@ -846,7 +846,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
 
         static TargetLocation makeSegmentLocation(TargetLocation contextLocation, String segmentPathId, String segmentName) {
             TargetLocation location = new TargetLocation();
-            location.name = segmentName;
+            location.name = concatName(contextLocation.name, Strings.isNullOrEmpty(contextLocation.name) ? segmentName : segmentName.replace(contextLocation.name + ".", ""));
             location.pathId = concatPath(contextLocation.pathId, segmentPathId);
             return location;
         }
