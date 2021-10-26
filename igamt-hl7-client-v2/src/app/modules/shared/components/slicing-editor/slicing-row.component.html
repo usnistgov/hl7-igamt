@@ -1,21 +1,27 @@
 <form #form="ngForm">
-  <div style="display: flex; flex-direction: row; justify-content: flex-start" class="sliceRow-header" *ngIf="node">
-    <div style="width: 5%">
-
+  <div style="display: flex; flex-direction: row; justify-content: space-between" class="sliceRow-header" *ngIf="node">
+    <div style="display: flex; flex-direction: row; justify-content: flex-start; width: 60%" >
     <button class="btn btn-sm btn-primary" style="margin-right: 5px;" (click)="toggleShow()">
       <i *ngIf="!show" class="fa fa-eye"></i>
       <i *ngIf="show" class="fa fa-eye-slash"></i>
     </button>
-    </div>
 
-    <div  style="width: 85%">
-    <span style="display: flex; flex-direction: row; justify-content: flex-start">
-    <app-entity-bagde [type]="node.data.type" >{{ node.data.name }}</app-entity-bagde>
-    <span class="title-text" style="margin-left: 10px !important; margin-top: 4px;" >{{ node.data.name }}</span>
-    </span>
-  </div>
-  <div  style="width: 5%">
-    <button class="btn btn-sm btn-danger" style="margin-right: 15px;">
+    <div  style="display: flex; flex-direction: row; justify-content: flex-start" >
+       <span style="display: flex; flex-direction: row; justify-content: flex-start">
+         <app-entity-bagde [type]="node.data.type" ></app-entity-bagde>
+          <span class="title-text" style="margin-left: 5px !important; margin-right: 3px; margin-top: 1px !important;" >{{ nameDisplay+'.' + node.data.name }}</span>
+       </span>
+        <div style="display: flex; flex-direction: row; justify-content: flex-start; margin-left: 4px; margin-top: 1px !important;" > [ <app-display-section [element]="display$ | async" [hideDescription]="true"></app-display-section> ]</div>
+    </div>
+    </div>
+    <div>
+     <span class="badge badge-warning"> {{sliceRow_.type}}</span>
+    </div>
+  <div  style= "display: flex; flex-direction: row; justify-content: flex-end">
+    <button class="btn btn-sm btn-primary" (click)="addSlice()" pTooltip="Add slice">
+      <i class="fa fa-plus"></i>
+    </button>
+    <button class="btn btn-sm btn-danger" style="margin-left: 5px;" pTooltip="Remove slicing">
       <i class="fa fa-remove"></i>
     </button>
   </div>
@@ -23,85 +29,142 @@
 
 <div class="sliceRow-body" *ngIf="show">
 
-  <table *ngIf="display$ | async as display" class="table table-bordered">
-    <tr>
-      <td>
-        <strong> Slicing Method </strong>
-      </td>
-      <td>
-        <span class="badge badge-secondary">{{sliceRow_.type}} </span>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <strong> Default Datatype </strong>
-      </td>
-      <td>
-        <app-display-section [element]="display" [hideDescription]="true"></app-display-section>
-      </td>
-    </tr>
-
-  </table>
   <div>
-    <button class="btn btn-sm btn-info"  style ="float: right" (click)="addSlice()">
-      <i class="fa fa-plus"></i> Add Slice
-    </button>
+    <div *ngIf="!sliceRow_.slices.length" style="padding: 10px;  background-color: #f1f1f1; color: #888888; text-align: center;">
+      No Slice Defined
+    </div>
+    <ng-container *ngIf="sliceRow_.slices.length">
+<!--      <div>-->
+<!--        <button class="btn btn-sm btn-info"  style ="float: right; margin-bottom: 5px;" (click)="addSlice()">-->
+<!--          <i class="fa fa-plus"></i> Add Slice-->
+<!--        </button>-->
+<!--      </div>-->
+    <ng-container [ngSwitch]="sliceRow_.type">
+      <ng-container *ngSwitchCase="'ASSERTION'">
+        <ng-container *ngTemplateOutlet="assertionSlicing">
+        </ng-container>
+      </ng-container>
+      <ng-container *ngSwitchCase="'OCCURRENCE'">
+        <ng-container *ngTemplateOutlet="occurrenceSlicing">
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    </ng-container>
+
+  </div>
+</div>
+  <ng-template #assertionSlicing let-param>
+
   <table class="table table-bordered table table-striped">
     <thead>
+    <th width="50%">
+      Condition
+    </th>
+    <th width="20%">
+      Flavor
+    </th>
+    <th width="20%">
+      Comments
+    </th>
+    <th width="10%">
+    </th>
+    </thead>
+    <tbody>
+    <tr *ngFor="let slice of sliceRow_.slices; let i= index">
+      <td>
+        {{slice.assertion?.description}}
+        <button class="btn btn-sm btn-info" (click)="addAssertion(slice)">
+          <i class="fa fa-pencil"></i>
+        </button>
+      </td>
+      <td #anchor>
+        <ng-container *ngIf="available_">
+
+          <ng-container *ngTemplateOutlet="flavorSelector; context: { $implicit: {slice: slice, anchor: anchor, index: i }}"></ng-container>
+
+        </ng-container>
+
+      </td>
+      <td>
+        <input  [(ngModel)]="slice.comment"
+                [id]="'comments'+ node.data.id"
+                [name]="'comments'+ node.data.id" class="form-control" placeholder="add comments"
+                type="text"></td>
+      <td>
+        <button class="btn btn-sm btn-danger" style="margin-right: 15px;">
+          <i class="fa fa-remove"></i>
+        </button>
+      </td>
+
+    </tr>
+    </tbody>
+  </table>
+
+  </ng-template>
+
+
+  <ng-template #occurrenceSlicing let-param>
+
+    <table class="table table-bordered table table-striped">
+      <thead>
       <th width="50%">
-        Slice condition
+        Occurrence
       </th>
       <th width="20%">
-        Slice Flavor
+        Flavor
       </th>
       <th width="20%">
-        comments
+        Comments
       </th>
       <th width="10%">
       </th>
-    </thead>
-  <tbody>
-  <tr *ngFor="let slice of sliceRow_.slices; let i= index">
-    <td>
-      <strong> Condition: </strong> {{slice.assertion?.description}}
-      <button class="btn btn-sm btn-info" (click)="addAssertion(slice)">
-        <i class="fa fa-edit"></i>
-      </button>
-     </td>
-    <td #anchor>
-        <ng-container *ngIf="available_">
+      </thead>
+      <tbody>
+      <tr *ngFor="let slice of sliceRow_.slices; let i= index">
+        <td>
+          <input  [(ngModel)]="slice.position"
+                  [id]="'position'+ node.data.id"
+                  [name]="'position'+ node.data.id" class="form-control"
+                  type="text" type="number"></td>
+        <td #anchor>
+          <ng-container *ngIf="available_">
 
-        <p-dropdown [(ngModel)]="slice.flavorId" [appendTo]="anchor" [optionLabel]="'fixedName'"
-                    [options]="available_" [style]="{'minWidth':'100%'}"
-                    [placeholder]="'Select Flavor'" (onChange)="modelChange($event, slice)" (onShow)="getAvailable($event)" [id]="node.data.id+i" [name]="node.data.id+i">
-          <ng-template let-item pTemplate="selectedItem">
-            <ng-container *ngIf="item.value">
-              <app-display-section [element]="map[item.value.id]" [hideDescription]="true"></app-display-section>
-            </ng-container>
-          </ng-template>
-          <ng-template let-item pTemplate="item">
-            <app-display-section [element]="item.value" [hideDescription]="true"></app-display-section>
-          </ng-template>
-        </p-dropdown>
-    </ng-container>
+            <ng-container *ngTemplateOutlet="flavorSelector; context: { $implicit: {slice: slice, anchor: anchor, index: i }}"></ng-container>
 
-    </td>
-    <td>
-      <input  [(ngModel)]="slice.comment"
-             [id]="'comments'+ node.data.id"
-             [name]="'comments'+ node.data.id" class="form-control" placeholder="add comments"
-              type="text"></td>
-    <td>
-      <button class="btn btn-sm btn-danger" style="margin-right: 15px;">
-        <i class="fa fa-remove"></i>
-      </button>
-    </td>
+          </ng-container>
 
-  </tr>
-  </tbody>
-</table>
-  </div>
-</div>
+        </td>
+        <td>
+          <input  [(ngModel)]="slice.comment"
+                  [id]="'comments'+ node.data.id"
+                  [name]="'comments'+ node.data.id" class="form-control" placeholder="add comments"
+                  type="text"></td>
+        <td>
+          <button class="btn btn-sm btn-danger" style="margin-right: 15px;">
+            <i class="fa fa-remove"></i>
+          </button>
+        </td>
+
+      </tr>
+      </tbody>
+    </table>
+
+  </ng-template>
+
+  <ng-template #flavorSelector let-param>
+    <p-dropdown [(ngModel)]="param.slice.flavorId" [appendTo]="param.anchor" [optionLabel]="'fixedName'"
+                [options]="available_" [style]="{'minWidth':'100%'}"
+                [placeholder]="'Select Flavor'" (onChange)="modelChange($event, param.slice)" (onShow)="getAvailable($event)" [id]="node.data.id+param.index" [name]="node.data.id+param.index">
+      <ng-template let-item pTemplate="selectedItem">
+        <ng-container *ngIf="item.value">
+          <app-display-section [element]="map[item.value.id]" [hideDescription]="true"></app-display-section>
+        </ng-container>
+      </ng-template>
+      <ng-template let-item pTemplate="item">
+        <app-display-section [element]="item.value" [hideDescription]="true"></app-display-section>
+      </ng-template>
+    </p-dropdown>
+  </ng-template>
 </form>
 
 

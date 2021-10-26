@@ -1,17 +1,17 @@
 .sliceRow-header {
-  padding: 20px;
-  background-color: #eaeaea;
+  padding: 7px;
+  background-color: #f4f4f4;
 }
 .sliceRow-body {
   background-color: white;
-  padding: 20px;
+  padding: 5px;
+  border: 1px solid #eaeaea;
 }
 .sliceRow-body-content{
-  padding: 20px;
+  padding: 5px;
   width: 100%;
 }
 
 .sliceRow-header-border {
-  border: 1px solid;
-  border-color: #eaeaea;
+
 }

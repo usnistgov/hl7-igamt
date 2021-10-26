@@ -1,22 +1,26 @@
-<h2 mat-dialog-title> Select Target </h2>
-
+<h2 mat-dialog-title> Add Slicing  </h2>
+<mat-dialog-content>
 <div>
-  <p-radioButton name="groupname" [value]="'ASSERTION'" [(ngModel)]="selectType" label="Assertion"></p-radioButton>
-  <p-radioButton name="groupname" [value]="'OCCURENCE'" [(ngModel)]="selectType" label="Occurence"></p-radioButton>
+  <label style="margin-right: 5px;"> <strong> Select slicing method: </strong> </label>
+  <p-radioButton name="groupname" [value]="'ASSERTION'" [(ngModel)]="selectType" label="Assertion"  ></p-radioButton>
+  <p-radioButton name="groupname" [value]="'OCCURRENCE'" [(ngModel)]="selectType" label="Occurrence" [style]="{'margin-left': '10px'}"></p-radioButton>
+</div>
+<div>
+  <label style="margin-right: 5px;"> <strong> Select Target: </strong> </label>
+
+  <app-structure-tree
+    [tree]="data.nodes"
+    [filter]="data.treeFilter"
+    [repository]="repository"
+    [resource]="data.resource$| async"
+    (selection)="select($event)"
+  ></app-structure-tree>
 </div>
 
 
-<mat-dialog-content>
-  <form #form='ngForm'>
-    <app-structure-tree
-      [tree]="data.nodes"
-      [filter]="data.treeFilter"
-      [repository]="repository"
-      (selection)="select($event)"
-    ></app-structure-tree>
-  </form>
+
 </mat-dialog-content>
 <mat-dialog-actions style="justify-content: flex-end;">
   <button class="btn btn-sm btn-secondary" style="margin-right: 5px;" (click)="cancel()" >Cancel</button>
-  <button class="btn btn-sm btn-success"  (click)="done()" >Done</button>
+  <button class="btn btn-sm btn-success" [disabled]="!selected" (click)="done()" >Done</button>
 </mat-dialog-actions>

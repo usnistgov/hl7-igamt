@@ -2,7 +2,7 @@ import {Type} from '../constants/type.enum';
 import {IAssertion, IPath} from './cs.interface';
 
 export enum ISlicingMethodType {
-  ASSERTION = 'ASSERTION', OCCURENCE= 'OCCURENCE',
+  ASSERTION = 'ASSERTION', OCCURRENCE= 'OCCURRENCE',
 }
 
 export interface ISlicing {
@@ -15,7 +15,7 @@ export interface IConditionalSlicing extends ISlicing {
   slices: IConditionalSlice[];
 }
 export interface IOrderedSlicing extends ISlicing {
-  type: ISlicingMethodType.OCCURENCE;
+  type: ISlicingMethodType.OCCURRENCE;
   slices: IOrderedSlice[];
 }
 export interface  ISlice {

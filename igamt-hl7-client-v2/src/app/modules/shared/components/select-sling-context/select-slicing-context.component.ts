@@ -1,6 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
+import {Observable} from 'rxjs';
 import {IPath} from '../../models/cs.interface';
+import {IResource} from '../../models/resource.interface';
 import {ISlicingMethodType} from '../../models/slicing';
 import {StoreResourceRepositoryService} from '../../services/resource-repository.service';
 import {IHL7v2TreeFilter} from '../../services/tree-filter.service';
@@ -18,7 +20,9 @@ export class SelectSlicingContextComponent implements OnInit {
   selectType: ISlicingMethodType = ISlicingMethodType.ASSERTION;
 
   constructor(public dialogRef: MatDialogRef<SelectSlicingContextComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: ISlicingDialogData, readonly repository: StoreResourceRepositoryService ) { }
+              @Inject(MAT_DIALOG_DATA) public data: ISlicingDialogData, readonly repository: StoreResourceRepositoryService) {
+    console.log(data);
+  }
 
   ngOnInit() {
   }
@@ -38,6 +42,7 @@ export class SelectSlicingContextComponent implements OnInit {
 export interface ISlicingDialogData {
    nodes?: IHL7v2TreeNode[];
    treeFilter: IHL7v2TreeFilter;
+   resource$: Observable<IResource>;
 }
 export interface ISlicingReturn {
   path: IPath;

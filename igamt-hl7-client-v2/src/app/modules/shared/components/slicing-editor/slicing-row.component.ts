@@ -12,6 +12,7 @@ import {IPath} from '../../models/cs.interface';
 import {IDisplayElement} from '../../models/display-element.interface';
 import {IResource} from '../../models/resource.interface';
 import {IConditionalSlice, IOrderedSlice, ISlice, ISlicing, ISlicingMethodType} from '../../models/slicing';
+import {ElementNamingService} from '../../services/element-naming.service';
 import {Hl7V2TreeService} from '../../services/hl7-v2-tree.service';
 import {StoreResourceRepositoryService} from '../../services/resource-repository.service';
 import {SlicingService} from '../../services/slicing.service';
@@ -26,7 +27,8 @@ import {IHL7v2TreeNode, IResourceRef} from '../hl7-v2-tree/hl7-v2-tree.component
 export class SlicingRowComponent<T extends ISlice> implements OnInit {
 
   nodes: IHL7v2TreeNode[];
-  show: boolean = true;
+  show = true;
+  nameDisplay: string;
   @Input()
   set sliceParams(event: any) {
     this.sliceRow_ = event.sliceRow;
@@ -35,7 +37,10 @@ export class SlicingRowComponent<T extends ISlice> implements OnInit {
     if ( this.sliceRow_ != null) {
       this.resource$ = this.getNodeResource(this.sliceRow_.path);
       this.node$ = this.getNodeByPath(this.sliceRow_.path);
-      this.node$.subscribe((x) => {this.node = x; });
+      this.node$.subscribe((x) => {
+            this.node = x;
+            this.nameDisplay = this.elementNamingService.getTreeNodeName(this.node);
+      });
       this.display$ = this.getDisplay(this.sliceRow_.path).pipe(take(1));
       this.display$.subscribe((x) => {
         this.available_ = [...this.resources.filter((elm) => x.fixedName === elm.fixedName )];
@@ -60,6 +65,8 @@ export class SlicingRowComponent<T extends ISlice> implements OnInit {
     public hl7V2TreeService: Hl7V2TreeService,
     private dialog: MatDialog,
     private repository: StoreResourceRepositoryService,
+    private elementNamingService: ElementNamingService,
+
   ) {
 
   }
@@ -94,7 +101,7 @@ export class SlicingRowComponent<T extends ISlice> implements OnInit {
     if ( this.sliceRow_.type === ISlicingMethodType.ASSERTION) {
       const conditionalSlice:  IConditionalSlice  = { comment: '', flavorId: null, assertion: null};
       this.sliceRow_.slices.push(conditionalSlice);
-    } else if ( this.sliceRow_.type === ISlicingMethodType.OCCURENCE) {
+    } else if ( this.sliceRow_.type === ISlicingMethodType.OCCURRENCE) {
       const conditionalSlice:  IOrderedSlice  = { comment: '', flavorId: null, position: this.sliceRow_.slices.length + 1};
       this.sliceRow_.slices.push(conditionalSlice);
     }
@@ -113,7 +120,7 @@ export class SlicingRowComponent<T extends ISlice> implements OnInit {
   }
 
   modelChange($event: any, slice: ISlice) {
-    //slice.flavorId = $event.value.id;
+    // slice.flavorId = $event.value.id;
   }
 
   getAvailable() {
