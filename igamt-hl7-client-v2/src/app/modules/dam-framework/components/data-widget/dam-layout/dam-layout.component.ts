@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ContentChild, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ContentChild, ElementRef, Input, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { fromEvent, Subscription } from 'rxjs';
 import { filter, repeat, skipUntil, takeUntil, tap } from 'rxjs/operators';
 import { DamWidgetComponent } from '../dam-widget/dam-widget.component';
@@ -9,6 +9,12 @@ import { DamWidgetComponent } from '../dam-widget/dam-widget.component';
   styleUrls: ['./dam-layout.component.scss'],
 })
 export class DamLayoutComponent implements OnInit, OnDestroy, AfterViewInit {
+
+  @Input()
+  showStatusBar: boolean;
+
+  @Input()
+  showBottomDrawerToggle: boolean;
 
   // --- Templates
   @ContentChild('alerts')

@@ -1,4 +1,4 @@
-<app-dam-layout>
+<app-dam-layout [showStatusBar]="showStatusBar$ | async" [showBottomDrawerToggle]="showBottomDrawer$ | async">
 
   <ng-template #alerts>
     <app-dam-alerts-container></app-dam-alerts-container>

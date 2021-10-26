@@ -24,6 +24,7 @@ export enum DamActionTypes {
   EditorUpdate = '[DAMF Editor] Update editor without changes',
   UpdateActiveResource = '[DAMF Editor] Update Active Resource Display',
   SetValue = '[DAMF State] Set State Value',
+  SetUIStateValue = '[DAMF State] Set UI State Value',
   LoadForRouteSuccess = '[DAMF Route] Load Data For Route Success',
   LoadForRouteFailure = '[DAMF Route] Load Data For Route Failure',
   LoadResourcesInRepostory = '[DAMF Repository] Load Resources In Repository',
@@ -201,6 +202,12 @@ export class SetValue implements Action {
   constructor(readonly payload: any) { }
 }
 
+export class SetUIStateValue implements Action {
+  readonly type = DamActionTypes.SetUIStateValue;
+
+  constructor(readonly payload: any) { }
+}
+
 export class LoadResourcesInRepostory implements Action {
   readonly type = DamActionTypes.LoadResourcesInRepostory;
 
@@ -311,6 +318,7 @@ export type DamActions =
   EditorUpdate |
   UpdateActiveResource |
   SetValue |
+  SetUIStateValue |
   LoadResourcesInRepostory |
   InsertResourcesInRepostory |
   ClearRepository |

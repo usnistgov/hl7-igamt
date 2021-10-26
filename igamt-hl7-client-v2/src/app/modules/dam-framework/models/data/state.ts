@@ -10,6 +10,7 @@ export interface IDamDataModel {
     sideBarCollapsed: boolean,
     fullscreen: boolean,
     bottomDrawerCollapsed: boolean,
+    state: Record<string, any>,
   };
   payload: {
     data: any,
@@ -29,6 +30,7 @@ export const emptyDataModel: IDamDataModel = {
     sideBarCollapsed: false,
     bottomDrawerCollapsed: true,
     fullscreen: false,
+    state: {},
   },
   payload: {
     data: undefined,

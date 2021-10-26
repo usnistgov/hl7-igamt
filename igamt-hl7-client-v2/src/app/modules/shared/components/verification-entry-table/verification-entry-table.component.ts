@@ -54,7 +54,6 @@ export class VerificationEntryTableComponent implements OnInit {
       this.filter.asObservable(),
       this.table,
     ).pipe(
-      tap((a) => console.log(a)),
       map(([filterValue, table]) => {
         return table ? {
           ...table,

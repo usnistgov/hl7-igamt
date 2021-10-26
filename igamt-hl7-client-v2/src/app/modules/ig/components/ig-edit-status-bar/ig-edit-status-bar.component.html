@@ -3,24 +3,28 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;">
-  <ng-container *ngIf="editorVerification$ | async as verification">
-    <div class="summary" [ngClass]="{ active : isDrawerActive$ | async }" *ngIf="!verification.checked || verification.supported" >
-      <div style="margin-right: 10px;" *ngIf="verification.loading">
-        <mat-spinner class="verification-progress" diameter="20" ></mat-spinner>
-      </div>
-      <span style="margin-right: 20px;">{{ verification.title }}</span>
-      <ng-container *ngTemplateOutlet="stats; context : {$implicit: verification.stats}" >
-      </ng-container>
-      <span style="color: gray; margin-left: 20px;" *ngIf="verification.lastUpdate$ | async as lastUpdate">
-        <i class="fa fa-clock-o"></i>
-          {{lastUpdate}}
-      </span>
-      <button class="refresh-btn" (click)="editorVerify()">
-        <i class="fa fa-refresh"></i>
-      </button>
-    </div>
+  <ng-container *ngIf="statusBar$ | async as statusBar">
+    <ng-container *ngTemplateOutlet="verificationPill; context : { $implicit : statusBar.activeEditor, type: TAB.EDITOR, refresh : editorVerify, active: activeTab$ | async }" ></ng-container>
   </ng-container>
 </div>
+
+<ng-template #verificationPill let-verification let-active="active" let-type="type" let-refresh="refresh">
+  <div (click)="openVerificationTab(type, verification.valid)" *ngIf="verification && (!verification.checked || verification.supported)" class="summary" [ngClass]="{ active : active === type, cursor: !verification.valid }">
+    <div style="margin-right: 10px;" *ngIf="verification.loading">
+      <mat-spinner class="verification-progress" diameter="20" ></mat-spinner>
+    </div>
+    <span style="margin-right: 20px;">{{ verification.title }}</span>
+    <ng-container *ngTemplateOutlet="stats; context : {$implicit: verification.stats}" >
+    </ng-container>
+    <span style="color: gray; margin-left: 20px;" *ngIf="verification.lastUpdate$ | async as lastUpdate">
+      <i class="fa fa-clock-o"></i>
+        {{lastUpdate}}
+    </span>
+    <button class="refresh-btn" (click)="refresh()">
+      <i class="fa fa-refresh"></i>
+    </button>
+  </div>
+</ng-template>
 
 <ng-template #stats let-stats>
   <div *ngIf="!stats.fatal && !stats.error && !stats.warning && !stats.informational">

@@ -12,6 +12,11 @@ import { IDisplayElement } from '../models/display-element.interface';
 import { Severity } from '../models/verification.interface';
 import { AResourceRepositoryService } from './resource-repository.service';
 
+export enum VerificationTab {
+  IG = 'IG',
+  EDITOR = 'EDITOR',
+}
+
 export interface IVerificationStats {
   informational?: number;
   error?: number;
@@ -26,9 +31,16 @@ export interface IStatusBarInfo {
   lastUpdate$?: Observable<string>;
   title: string;
   stats?: IVerificationStats;
+  valid: boolean;
+}
+
+export interface IStatusBar {
+  activeEditor?: IStatusBarInfo;
+  ig?: IStatusBarInfo;
 }
 
 export interface IVerificationEntryTable {
+  valid: boolean;
   stats: IVerificationStats;
   resources: IDisplayElement[];
   codes: string[];
@@ -49,6 +61,67 @@ export class VerificationService {
 
   constructor(private http: HttpClient, private store: Store<any>) { }
 
+  getStatusBarActive(): Observable<boolean> {
+    return this.getStatusBarTabs().pipe(
+      map((tabs) => {
+        return tabs && tabs.length > 0;
+      }),
+    );
+  }
+
+  getStatusBarTabs(): Observable<VerificationTab[]> {
+    return combineLatest(
+      this.store.select(selectWorkspaceVerification),
+    ).pipe(
+      map(([activeEditor]) => {
+        return [
+          ...(activeEditor && (!activeEditor.verificationTime || activeEditor.supported)) ? [VerificationTab.EDITOR] : [],
+        ];
+      }),
+    );
+  }
+
+  getBottomDrawerActive(): Observable<boolean> {
+    return this.getStatusBarActive()
+      .pipe(
+        flatMap((active) => {
+          if (active) {
+            return this.getBottomDrawerTabs().pipe(
+              map((tabs) => {
+                return tabs && tabs.length > 0;
+              }),
+            );
+          } else {
+            return of(false);
+          }
+        }),
+      );
+  }
+
+  getBottomDrawerTabs(): Observable<VerificationTab[]> {
+    return combineLatest(
+      this.store.select(selectWorkspaceVerification),
+    ).pipe(
+      map(([activeEditor]) => {
+        return [
+          ...(activeEditor && activeEditor.entries && activeEditor.entries.length > 0) ? [VerificationTab.EDITOR] : [],
+        ];
+      }),
+    );
+  }
+
+  getStatusBarInfo(): Observable<IStatusBar> {
+    return combineLatest(
+      this.getEditorStatusBarInfo(),
+    ).pipe(
+      map(([activeEditor]) => {
+        return {
+          activeEditor,
+        };
+      }),
+    );
+  }
+
   getEditorStatusBarInfo(): Observable<IStatusBarInfo> {
     return combineLatest(
       this.store.select(selectWorkspaceActive),
@@ -57,11 +130,13 @@ export class VerificationService {
       map(([active, verification]) => {
         const supported = verification.supported;
         const checked = !!verification.verificationTime;
+        const stats = this.getVerificationStats(verification.entries || []);
         return {
           supported,
           checked,
           loading: verification.loading,
-          stats: this.getVerificationStats(verification.entries || []),
+          valid: this.isValid(stats),
+          stats,
           title: active.editor.title + ' Editor',
           lastUpdate$: verification.verificationTime ? concat(
             of('just now'),
@@ -78,6 +153,10 @@ export class VerificationService {
     );
   }
 
+  isValid(stats: IVerificationStats): boolean {
+    return !stats || !(stats.error || stats.warning || stats.informational || stats.warning);
+  }
+
   getVerificationStats(entry: IVerificationEnty[]): IVerificationStats {
     return {
       error: entry.filter((e) => e.severity === Severity.ERROR).length,
@@ -87,15 +166,39 @@ export class VerificationService {
     };
   }
 
+  getEntryTable(tab: VerificationTab, repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
+    if (tab === VerificationTab.EDITOR) {
+      return this.getEditorVerificationEntryTable(repository);
+    }
+
+    return of(undefined);
+  }
+
   getEditorVerificationEntryTable(repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
     return this.store.select(selectWorkspaceVerification).pipe(
       flatMap((verification) => {
-        return verification.supported ? this.getVerificationEntryTable(verification.entries || [], repository) : of();
+        return verification.supported ? this.getVerificationEntryTable(verification.entries || [], repository) : of(undefined);
       }),
     );
   }
 
   getVerificationEntryTable(entries: IVerificationEnty[], repository: AResourceRepositoryService): Observable<IVerificationEntryTable> {
+    if (!entries || entries.length === 0) {
+      return of({
+        valid: true,
+        stats: {
+          informational: 0,
+          error: 0,
+          fatal: 0,
+          warning: 0,
+        },
+        resources: [],
+        codes: [],
+        severities: [],
+        entries: [],
+      });
+    }
+
     const keyToStr = (id: string, type: string): string => {
       return `${id}@${type}`;
     };
@@ -142,6 +245,7 @@ export class VerificationService {
         });
 
         return {
+          valid: false,
           stats,
           resources,
           codes,

@@ -353,10 +353,6 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
         };
       }),
       catchError((error) => {
-        console.log('resolved', {
-          resolved: false,
-          issue: error.message,
-        });
         return of({
           resolved: false,
           issue: error.message,

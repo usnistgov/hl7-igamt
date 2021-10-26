@@ -10,6 +10,7 @@ import {
   Status,
 } from '../../modules/shared/models/abstract-domain.interface';
 import { IHL7WorkspaceActive } from '../../modules/shared/models/editor.class';
+import { VerificationTab } from '../../modules/shared/services/verification.service';
 import { selectIgDocument } from '../ig/ig-edit/ig-edit.selectors';
 
 export const selectWorkspaceActive = createSelector(
@@ -44,3 +45,4 @@ export const selectViewOnly = createSelector(
 );
 
 export const selectDelta = fromDAM.selectValue<boolean>('delta');
+export const selectActiveVerificationTab = fromDAM.selectUIValue<VerificationTab>('activeVerificationTab');

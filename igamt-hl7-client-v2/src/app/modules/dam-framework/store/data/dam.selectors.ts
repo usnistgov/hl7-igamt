@@ -2,7 +2,7 @@ import { EntityState } from '@ngrx/entity';
 import { createFeatureSelector, createSelector, MemoizedSelector } from '@ngrx/store';
 import { IDamResource, IRepositoryStore } from '../../models/data/repository';
 import { IDamDataModel } from '../../models/data/state';
-import { IWorkspace, IWorkspaceActive } from '../../models/data/workspace';
+import { IWorkspace, IWorkspaceActive, IWorkspaceVerification } from '../../models/data/workspace';
 
 export const featureName = 'damf-data-editor';
 export const selectDamfFeature = createFeatureSelector(featureName);
@@ -32,6 +32,13 @@ export const selectUI = createSelector(
   selectDamfFeature,
   (state: IDamDataModel) => {
     return state ? state.ui : undefined;
+  },
+);
+
+export const selectUIState = createSelector(
+  selectUI,
+  (state) => {
+    return state ? state.state : undefined;
   },
 );
 
@@ -88,6 +95,13 @@ export const selectWorkspaceVerification = createSelector(
   selectWorkspace,
   (state: IWorkspace) => {
     return state.verification;
+  },
+);
+
+export const selectWorkspaceVerificationLoading = createSelector(
+  selectWorkspaceVerification,
+  (state: IWorkspaceVerification) => {
+    return state ? state.loading : false;
   },
 );
 
@@ -160,12 +174,21 @@ export function selectFromCollection<T extends IDamResource>(collection: string)
 export function selectValue<T>(key: string): MemoizedSelector<object, T> {
   return createSelector(
     selectValues,
-    (values: any) => {
-      if (values[key]) {
-        return values[key] as T;
-      } else {
-        return undefined;
-      }
-    },
+    (values: any) => getValue(values, key),
   );
+}
+
+export function selectUIValue<T>(key: string): MemoizedSelector<object, T> {
+  return createSelector(
+    selectUIState,
+    (values: any) => getValue(values, key),
+  );
+}
+
+function getValue<T>(values: any, key: string): T {
+  if (values && values[key]) {
+    return values[key] as T;
+  } else {
+    return undefined;
+  }
 }

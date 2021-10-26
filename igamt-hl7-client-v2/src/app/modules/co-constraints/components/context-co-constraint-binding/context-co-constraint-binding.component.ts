@@ -144,7 +144,6 @@ export class ContextCoConstraintBindingComponent implements OnInit, OnChanges {
           map((pathInfo) => {
             const name = this.elementNamingService.getStringNameFromPathInfo(pathInfo);
             const nodeInfo = this.elementNamingService.getLeaf(pathInfo);
-            console.log(nodeInfo);
             return {
               resolved: true,
               name,

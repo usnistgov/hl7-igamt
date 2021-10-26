@@ -213,6 +213,18 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
         },
       };
 
+    case DamActionTypes.SetUIStateValue:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          state: {
+            ...state.ui.state,
+            ...action.payload,
+          },
+        },
+      };
+
     case DamActionTypes.LoadResourcesInRepostory:
       const loaded: ICollections = {};
       action.payload.collections.forEach((value) => {
