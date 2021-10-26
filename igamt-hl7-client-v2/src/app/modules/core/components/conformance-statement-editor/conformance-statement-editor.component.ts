@@ -60,6 +60,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     datatypes?: IDependantConformanceStatements[];
   };
   s_workspace: Subscription;
+  entries$: Observable<Record<string, IVerificationEnty[]>>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -92,6 +93,23 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       }),
     ).subscribe();
 
+    this.entries$ = this.getGroupedEntries();
+  }
+
+  getGroupedEntries(): Observable<Record<string, IVerificationEnty[]>> {
+    return this.getEditorVerificationEntries().pipe(
+      map((entries) => {
+        return entries.reduce((acc, entry) => {
+          return {
+            ...acc,
+            [entry.pathId]: [
+              ...(acc[entry.pathId] || []),
+              entry,
+            ],
+          };
+        }, {} as Record<string, IVerificationEnty[]>);
+      }),
+    );
   }
 
   createEditableNode(cs: IConformanceStatement): IEditableListNode<IConformanceStatement> {

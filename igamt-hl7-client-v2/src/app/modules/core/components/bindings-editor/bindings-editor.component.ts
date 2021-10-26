@@ -114,7 +114,6 @@ export abstract class BindingsEditorComponent extends AbstractEditorComponent im
           };
         }, {} as Record<string, Record<string, IVerificationEnty[]>>);
       }),
-      tap((v) => console.log(v)),
     );
   }
 
