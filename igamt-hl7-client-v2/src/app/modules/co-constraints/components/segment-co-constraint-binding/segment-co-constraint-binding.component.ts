@@ -311,6 +311,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
           });
         }
       }),
+      // tslint:disable-next-line: no-identical-functions
       catchError((error) => {
         return throwError({
           message: 'Invalid segment path : ' + error.message,
