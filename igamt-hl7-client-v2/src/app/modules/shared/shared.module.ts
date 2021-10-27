@@ -20,6 +20,7 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
+import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import {
   AccordionModule,
   AutoCompleteModule,
@@ -36,7 +37,6 @@ import {
   TooltipModule,
   TreeTableModule,
 } from 'primeng/primeng';
-import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
@@ -50,7 +50,9 @@ import { BindingBadgeComponent } from './components/binding-badge/binding-badge.
 import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
 import { BuildCompositeComponent } from './components/build-composite/build-composite.component';
 import { ChangeLogInfoComponent } from './components/change-log-info/change-log-info.component';
+import { ChangeLogListInfoComponent } from './components/change-log-list-info/change-log-list-info.component';
 import { ChangeReasonDialogComponent } from './components/change-reason-dialog/change-reason-dialog.component';
+import { ChangeReasonListDialogComponent } from './components/change-reason-list-dialog/change-reason-list-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsListComponent } from './components/cs-list/cs-list.component';
@@ -216,6 +218,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportStructureComponent,
     VerificationEntryTableComponent,
     IssueBadgeComponent,
+    ChangeLogListInfoComponent,
+    ChangeReasonListDialogComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -391,6 +395,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportStructureComponent,
     VerificationEntryTableComponent,
     IssueBadgeComponent,
+    ChangeLogListInfoComponent,
+    ChangeReasonListDialogComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -418,6 +424,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddCompositeComponent,
     AddPcToList,
     ImportStructureComponent,
+    ChangeReasonListDialogComponent,
   ],
 })
 export class SharedModule {

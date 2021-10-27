@@ -1,5 +1,10 @@
 <ng-template #headerControls>
-  <button class="btn btn-success btn-sm" (click)="createCs()" *ngIf="!(viewOnly$ | async)">
+  <app-change-log-list-info
+  [changes]="changeReason$ | async"
+  (editChange)="updateChangeReasons($event)"
+  [viewOnly]="viewOnly$ | async"
+  ></app-change-log-list-info>
+  <button style="margin-left: 5px;" class="btn btn-success btn-sm" (click)="createCs()" *ngIf="!(viewOnly$ | async)">
     <i class="fa fa-plus"></i> New
   </button>
 </ng-template>

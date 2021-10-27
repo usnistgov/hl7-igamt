@@ -109,6 +109,7 @@ public class DatatypeController extends BaseController {
       for (ConformanceStatement cs : datatype.getBinding().getConformanceStatements()) {
         cfs.add(cs);
       }
+      conformanceStatementDisplay.setChangeReason(datatype.getBinding().getConformanceStatementsChangeLog());
     }
     HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
     this.datatypeService.collectAssoicatedConformanceStatements(datatype, associatedConformanceStatementMap);

@@ -283,6 +283,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       result.setConformanceStatements(cfs);
       result.setAvailableConformanceStatements(this.collectAvaliableConformanceStatements(documentId,
           conformanceProfile.getId(), conformanceProfile.getStructID()));
+      result.setChangeReason(conformanceProfile.getBinding().getConformanceStatementsChangeLog());
       return result;
     }
     return null;
