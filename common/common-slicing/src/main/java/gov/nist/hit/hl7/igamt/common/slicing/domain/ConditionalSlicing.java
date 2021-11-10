@@ -12,20 +12,45 @@
 package gov.nist.hit.hl7.igamt.common.slicing.domain;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public class NonSelectiveSlicing extends Slicing {
+public class ConditionalSlicing extends Slicing {
+	
+	private int min;
+	private String max;
+	private List<ConditionalSlice> slices;
 
-	private List<String> flavors;
 
-	public List<String> getFlavors() {
-		return flavors;
+	public ConditionalSlicing() {
+		super();
+		this.type = SlicingMethod.ASSERTION;
+	}
+	public String getMax() {
+		return max;
 	}
 
-	public void setFlavors(List<String> flavors) {
-		this.flavors = flavors;
+	public void setMax(String max) {
+		this.max = max;
 	}
+
+	public int getMin() {
+		return min;
+	}
+
+	public void setMin(int min) {
+		this.min = min;
+	}
+	public List<ConditionalSlice> getSlices() {
+		return slices;
+	}
+	public void setSlices(List<ConditionalSlice> slices) {
+		this.slices = slices;
+	}
+
+
+	
 }

@@ -8,7 +8,7 @@ export enum ISlicingMethodType {
 export interface ISlicing {
   type: ISlicingMethodType;
   slices: ISlice[];
-  path: IPath;
+  path: string;
 }
 export interface IConditionalSlicing extends ISlicing {
   type: ISlicingMethodType.ASSERTION;
@@ -19,7 +19,7 @@ export interface IOrderedSlicing extends ISlicing {
   slices: IOrderedSlice[];
 }
 export interface  ISlice {
-  comment: string;
+  comments?: string;
   flavorId: string;
 }
 export interface IConditionalSlice extends ISlice {

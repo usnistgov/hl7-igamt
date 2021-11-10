@@ -10,49 +10,23 @@
  * that they have been modified.
  */
 package gov.nist.hit.hl7.igamt.common.slicing.domain;
-
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.*;
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public class DiscriminateSlice {
-	
-	
-	private SliceValue value;
-	private String sliceFlavor;
-	private String comments;
-	private int sliceMin;
-	private String sliceMax;
-	
-	
-	public SliceValue getValue() {
-		return value;
+public class ConditionalSlice extends Slice {
+	private Assertion assertion;
+
+	public ConditionalSlice() {
+		super();
 	}
-	public void setValue(SliceValue value) {
-		this.value = value;
+
+	public Assertion getAssertion() {
+		return assertion;
 	}
-	public String getSliceFlavor() {
-		return sliceFlavor;
-	}
-	public void setSliceFlavor(String sliceFlavor) {
-		this.sliceFlavor = sliceFlavor;
-	}
-	public String getComments() {
-		return comments;
-	}
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
-	public int getSliceMin() {
-		return sliceMin;
-	}
-	public void setSliceMin(int sliceMin) {
-		this.sliceMin = sliceMin;
-	}
-	public String getSliceMax() {
-		return sliceMax;
-	}
-	public void setSliceMax(String sliceMax) {
-		this.sliceMax = sliceMax;
+
+	public void setAssertion(Assertion assertion) {
+		this.assertion = assertion;
 	}
 }

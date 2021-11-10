@@ -26,6 +26,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.resource.change.service.ApplyChange;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 
 /**
  *
@@ -47,9 +48,8 @@ public class ConformanceProfile extends Resource {
   private MessageProfileIdentifier preCoordinatedMessageIdentifier;
   private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
   private List<CoConstraintBinding> coConstraintsBindings; 
-
-
   private ResourceBinding binding;
+  private Set<Slicing> slicings;
 
   public String getMessageType() {
     return messageType;
@@ -219,5 +219,13 @@ public void setPreCoordinatedMessageIdentifier(MessageProfileIdentifier preCoord
 
   public void setMessageStructureId(String messageStructureId) {
     this.messageStructureId = messageStructureId;
+  }
+
+  public Set<Slicing> getSlicings() {
+    return slicings;
+  }
+
+  public void setSlicings(Set<Slicing> slicings) {
+    this.slicings = slicings;
   }
 }

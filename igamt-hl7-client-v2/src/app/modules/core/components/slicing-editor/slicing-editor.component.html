@@ -8,7 +8,7 @@
 <ng-container *ngIf="resourceSubject| async as slicings">
   <div *ngFor="let slice of slicings">
     <ng-container *ngIf="nodes && resources$ | async">
-      <app-slicing-row  [sliceParams] = "{sliceRow: slice, nodes: nodes, resources: resources$ | async}" ></app-slicing-row>
+      <app-slicing-row  [sliceParams] = "{sliceRow: slice, nodes: nodes, resources: resources$ | async, parent: selectedResource$ | async , repo: repository}" (change)="change($event)" [viewOnly]="viewOnly$ | async"></app-slicing-row>
     </ng-container>
   </div>
 </ng-container>

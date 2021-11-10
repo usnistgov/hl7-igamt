@@ -11,11 +11,38 @@
  */
 package gov.nist.hit.hl7.igamt.common.slicing.domain;
 
+import java.util.List;
+import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * @author Abdelghani El Ouakili
  *
  */
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", visible = true)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = ConditionalSlicing.class, name = "ASSERTION"),
+        @JsonSubTypes.Type(value = OrderedSlicing.class, name = "OCCURRENCE"),
+})
 public abstract class Slicing {
-	SlicingMethod method;
+	protected SlicingMethod type;
+	protected String path;
 	
+	public SlicingMethod getType() {
+		return type;
+	}
+	public void setType(SlicingMethod type) {
+		this.type = type;
+	}
+	public String getPath() {
+		return path;
+	}
+	public void setPath(String path) {
+		this.path = path;
+	}	
 }

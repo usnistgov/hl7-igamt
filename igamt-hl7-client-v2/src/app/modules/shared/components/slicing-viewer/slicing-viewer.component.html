@@ -1,0 +1,55 @@
+<ng-container *ngIf="slicing">
+  <button [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="hover:hover" placement="bottom" class="btn btn-sm btn-i">
+    <i class="fa fa-scissors"></i>
+  </button>
+  <ng-template #popContent>
+  <table class="table table-bordered table-striped" style="max-width: 700px;">
+    <thead>
+    <tr>
+      <th>
+        <ng-container [ngSwitch]="slicing.type">
+          <span *ngSwitchCase="'ASSERTION'">
+            Assertion
+          </span>
+           <span *ngSwitchCase="'OCCURRENCE'">
+            Occurrence
+          </span>
+        </ng-container>
+      </th>
+      <th>
+        Flavor
+      </th>
+      <th>
+        Comments
+      </th>
+
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let slice of slicing.slices">
+      <td>
+        <ng-container [ngSwitch]="slicing.type">
+          <span *ngSwitchCase="'ASSERTION'">
+        {{slice.assertion?.description}}
+          </span>
+          <span *ngSwitchCase="'OCCURRENCE'">
+            {{slice.position}}
+          </span>
+        </ng-container>
+      </td>
+      <td>
+        <app-display-section *ngIf="map[slice.flavorId]" [element]="map[slice.flavorId]" [hideDescription]="true"></app-display-section>
+      </td>
+      <td>
+        {{slice.comments}}
+      </td>
+    </tr>
+    </tbody>
+
+  </table>
+  </ng-template>
+  <ng-template #popTitle>
+    Slicing
+  </ng-template>
+
+</ng-container>

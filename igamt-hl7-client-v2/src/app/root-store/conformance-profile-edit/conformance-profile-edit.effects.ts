@@ -164,7 +164,7 @@ export class ConformanceProfileEditEffects {
     fromIgamtDisplaySelectors.selectMessagesById,
     this.store.select(fromIgamtSelectedSelectors.selectedConformanceProfile),
     (id, type) => {
-      return this.slicingService.getResoureSlicing(type, id);
+      return this.slicingService.getResoureSlicing(Type.CONFORMANCEPROFILE, id);
     },
     this.ConfPNotFound,
   );

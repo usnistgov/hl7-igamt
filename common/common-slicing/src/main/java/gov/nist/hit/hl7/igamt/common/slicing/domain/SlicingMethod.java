@@ -16,5 +16,5 @@ package gov.nist.hit.hl7.igamt.common.slicing.domain;
  *
  */
 public enum SlicingMethod {
-	DISCRIMINATE, EXISTS, NONSELECTIVE
+	ASSERTION, OCCURRENCE, NONSELECTIVE
 }

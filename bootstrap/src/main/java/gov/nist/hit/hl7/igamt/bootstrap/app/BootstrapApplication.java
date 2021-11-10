@@ -465,7 +465,10 @@ public class BootstrapApplication implements CommandLineRunner {
   void fixStructureIds() {
     this.dataFixer.addStructureIds();
   }
-
+ // @PostConstruct
+  void addFixedExt() {
+    this.dataFixer.addFixedExt();
+  }
 
   //@PostConstruct
   void addVsLocationException() {

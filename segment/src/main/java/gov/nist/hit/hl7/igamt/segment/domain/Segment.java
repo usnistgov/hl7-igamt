@@ -11,6 +11,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 
 
 @Document(collection = "segment")
@@ -22,6 +23,8 @@ public class Segment extends Resource {
   private boolean custom;
 
   private Set<Field> children;
+  
+  private Set<Slicing> slicings;
 
   public Segment() {
     super();
@@ -122,6 +125,14 @@ public class Segment extends Resource {
 	 elm.binding = binding;
 	 elm.children = children;
 	 elm.custom = custom;
- };
+ }
+
+public Set<Slicing> getSlicings() {
+  return slicings;
+}
+
+public void setSlicings(Set<Slicing> slicings) {
+  this.slicings = slicings;
+};
   
 }

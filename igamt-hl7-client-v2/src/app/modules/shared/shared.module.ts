@@ -106,9 +106,12 @@ import { SelectProfileComponentContextComponent } from './components/select-prof
 import { SelectProfileComponentsComponent } from './components/select-profile-components/select-profile-components.component';
 import { SelectResourceIdsComponent } from './components/select-resource-ids/select-resource-ids.component';
 import { SelectSegmentsComponent } from './components/select-segments/select-segments.component';
+import { SelectSlicingContextComponent } from './components/select-sling-context/select-slicing-context.component';
 import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
 import { SharingDialogComponent } from './components/sharing-dialog/sharing-dialog.component';
+import { SlicingRowComponent } from './components/slicing-editor/slicing-row.component';
+import { SlicingViewerComponent } from './components/slicing-viewer/slicing-viewer.component';
 import { StructureTreeComponent } from './components/structure-tree/structure-tree.component';
 import { TextEditorDialogComponent } from './components/text-editor-dialog/text-editor-dialog.component';
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
@@ -126,8 +129,6 @@ import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { SelectSlicingContextComponent } from './components/select-sling-context/select-slicing-context.component';
-import { SlicingRowComponent } from './components/slicing-editor/slicing-row.component';
 @NgModule({
   declarations: [
     UserProfileFormComponent,
@@ -216,6 +217,7 @@ import { SlicingRowComponent } from './components/slicing-editor/slicing-row.com
     ImportStructureComponent,
     SelectSlicingContextComponent,
     SlicingRowComponent,
+    SlicingViewerComponent,
   ],
   providers: [
     StoreResourceRepositoryService,

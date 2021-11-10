@@ -11,12 +11,28 @@
  */
 package gov.nist.hit.hl7.igamt.common.slicing.domain;
 
+import java.util.List;
 import java.util.Set;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public class OrderedSlicing extends Slicing {
-	Set<OrderedSlice> slices;
+public class OrderedSlicing extends Slicing{
+	
+	private List<OrderedSlice> slices;
+	
+	public OrderedSlicing() {
+		super();
+		this.type = SlicingMethod.OCCURRENCE;
+	}
+
+	public List<OrderedSlice> getSlices() {
+		return slices;
+	}
+
+	public void setSlices(List<OrderedSlice> slices) {
+		this.slices = slices;
+	}
+
 }

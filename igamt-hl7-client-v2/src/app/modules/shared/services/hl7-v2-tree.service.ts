@@ -161,6 +161,8 @@ export class Hl7V2TreeService {
     const changeLog = child.changeLog || (elementBindings && elementBindings.values.changeLog) ?
       this.mergeElmAndBindingChangeLog(child.changeLog || {}, context, elementBindings && elementBindings.values.changeLog ? elementBindings.values.changeLog : []) :
       {};
+    const pathId = (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id;
+    const resourcePathId = (parent && parent.data.resourcePathId) ? parent.data.resourcePathId + '-' + child.id : child.id;
 
     return {
       id: child.id,
@@ -180,8 +182,10 @@ export class Hl7V2TreeService {
       changeable,
       viewOnly,
       level,
-      pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
+      pathId,
+      slicing: resource.slicings ? resource.slicings.find((x) => x.path === resourcePathId) : null,
       bindings: elementBindings,
+      resourcePathId,
     };
   }
 
@@ -295,6 +299,7 @@ export class Hl7V2TreeService {
       constantValue: {
         value: child.constantValue,
       },
+      resourcePathId: child.id,
     };
   }
 
@@ -321,6 +326,7 @@ export class Hl7V2TreeService {
       constantValue: {
         value: child.constantValue,
       },
+      resourcePathId: child.id,
     };
   }
 

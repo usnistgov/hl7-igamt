@@ -27,12 +27,6 @@ export const selectDatatypesById = createSelector(
     return dictionary[props.id];
   },
 );
-export const selectDatatypesByFixedName = createSelector(
-  selectDatatypesEntites,
-  (dictionary: Dictionary<IDisplayElement>, props: { fixedName: string }) => {
-    return dictionary[props.fixedName];
-  },
-);
 
 // SEGMENT DISPLAY GETTERS
 export const selectSegments = fromDAM.selectFromCollection<IDisplayElement>('segments');

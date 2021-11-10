@@ -1,203 +1,69 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {Actions} from '@ngrx/effects';
-import {Action, MemoizedSelector, Store} from '@ngrx/store';
-import {BehaviorSubject, combineLatest, Observable, ReplaySubject, Subscription} from 'rxjs';
-import {concatMap, filter, flatMap, map, mergeMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {MemoizedSelectorWithProps, Store} from '@ngrx/store';
+import {Observable} from 'rxjs';
 import {
-  selectAllDatatypes, selectDatatypes,
-  selectDatatypesByFixedName,
+  selectAllDatatypes,
+  selectSegmentsById,
 } from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
-import {selectSelectedResource} from '../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
-import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import {SlicingEditorComponent} from '../../../core/components/slicing-editor/slicing-editor.component';
+import {Message} from '../../../dam-framework/models/messages/message.class';
 import {MessageService} from '../../../dam-framework/services/message.service';
-import {EditorSave} from '../../../dam-framework/store/data';
-import {IHL7v2TreeNode, IResourceRef} from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import {
-  ISlicingReturn,
-  SelectSlicingContextComponent,
-} from '../../../shared/components/select-sling-context/select-slicing-context.component';
-import {IStructureTreeSelect} from '../../../shared/components/structure-tree/structure-tree.component';
 import {Type} from '../../../shared/constants/type.enum';
-import {IPath} from '../../../shared/models/cs.interface';
+import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
+import {IConformanceProfile} from '../../../shared/models/conformance-profile.interface';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {EditorID, IHL7EditorMetadata} from '../../../shared/models/editor.enum';
-import {IResource} from '../../../shared/models/resource.interface';
-import {ISlicing} from '../../../shared/models/slicing';
-import {ElementNamingService} from '../../../shared/services/element-naming.service';
+import {EditorID } from '../../../shared/models/editor.enum';
+import {IChange} from '../../../shared/models/save-change';
+import {ISegment} from '../../../shared/models/segment.interface';
 import {Hl7V2TreeService} from '../../../shared/services/hl7-v2-tree.service';
 import {PathService} from '../../../shared/services/path.service';
 import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
 import {SlicingService} from '../../../shared/services/slicing.service';
-import {IHL7v2TreeFilter, RestrictionCombinator, RestrictionType} from '../../../shared/services/tree-filter.service';
-import {IStructureChanges} from '../segment-structure-editor/segment-structure-editor.component';
+import {SegmentService} from '../../services/segment.service';
 
 @Component({
   selector: 'app-segment-slicing-editor',
-  templateUrl: './segment-slicing-editor.component.html',
-  styleUrls: ['./segment-slicing-editor.component.css'],
+  templateUrl: '../../../core/components/slicing-editor/slicing-editor.component.html',
+  styleUrls: ['../../../core/components/slicing-editor/slicing-editor.component.css'],
 })
-export class SegmentSlicingEditorComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
+export class SegmentSlicingEditorComponent extends SlicingEditorComponent implements OnInit {
 
-  selectedResource$: Observable<IResource>;
-  s_workspace: Subscription;
-  tree_s: Subscription;
-  resourceType: Type;
-  derived$: Observable<boolean>;
-  resource$: Observable<IResource>;
-  nodes: IHL7v2TreeNode[];
-  resourceSubject: ReplaySubject<ISlicing[]>;
-  datatypes$: Observable<IDisplayElement[]>;
-  changes: ReplaySubject<IStructureChanges>;
-  segmentTreeFilter: IHL7v2TreeFilter = {
-    hide: false,
-    restrictions: [
-      {
-        criterion: RestrictionType.TYPE,
-        allow: true,
-        value: [Type.FIELD],
-      },
-    ],
-  };
   constructor(
     readonly repository: StoreResourceRepositoryService,
-    private messageService: MessageService,
-    private slicingService: SlicingService,
-    public hl7V2TreeService: Hl7V2TreeService,
-    private pathService: PathService,
-    private dialog: MatDialog,
+    messageService: MessageService,
+    slicingService: SlicingService,
+    hl7V2TreeService: Hl7V2TreeService,
+    pathService: PathService,
+    dialog: MatDialog,
     actions$: Actions,
-    store: Store<any>) {
-    super(    {
+    store: Store<any>,
+    private segmentService: SegmentService,
+  ) {
+    super(repository, messageService, slicingService, hl7V2TreeService, pathService, dialog, actions$, store, {
       id: EditorID.SEGMENT_SLICING,
       title: 'Slicing',
       resourceType: Type.SEGMENT,
-    }, actions$, store);
+    });
+  }
+  getAllResources(): Observable<IDisplayElement[]> {
+    return this.store.select(selectAllDatatypes);
+  }
 
-    this.resourceSubject = new ReplaySubject<ISlicing[]>(1);
-    this.changes = new ReplaySubject<IStructureChanges>(1);
-    this.selectedResource$ = this.store.select(selectSelectedResource);
-    this.s_workspace = this.currentSynchronized$.pipe(
-      map((current) => {
-        this.resourceSubject.next(current.slicing);
-        this.changes.next({...current.changes});
-      }),
-    ).subscribe();
-    this.datatypes$ = this.store.select(selectAllDatatypes).pipe(take(1));
-    this.selectedResource$.pipe(take(1), tap((resource) => {
-        this.tree_s = this.hl7V2TreeService.getTree(resource, this.repository, true, true, (value) => {
-          this.nodes = [
-            {
-              data: {
-                id: resource.id,
-                pathId: resource.id,
-                name: resource.name,
-                type: resource.type,
-                rootPath: {elementId: resource.id},
-                position: 0,
-              },
-              children: [...value],
-              leaf: false,
-              key: resource.id,
-              expanded: true,
-            },
-          ];
-        });
-      },
-    )).subscribe();
+  getReferenceType(): Type {
+    return Type.FIELD;
+  }
+  saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message<any>> {
+    return this.segmentService.saveChanges(id, documentRef, changes);
+  }
+  getById(id: string): Observable<ISegment> {
+    return this.segmentService.getById(id);
+  }
+  elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
+    return selectSegmentsById;
   }
   ngOnInit() {
   }
 
-  editorDisplayNode(): Observable<IDisplayElement>;
-  editorDisplayNode(): Observable<any>;
-  editorDisplayNode(): Observable<IDisplayElement> | Observable<any> {
-    return undefined;
-  }
-
-  ngOnDestroy(): void {
-  }
-
-  onDeactivate(): void {
-  }
-
-  onEditorSave(action: EditorSave): Observable<Action> {
-    return undefined;
-  }
-
-  selectSegment($event: IStructureTreeSelect) {
-    console.log($event);
-  }
-
-  addItems() {
-    this.resourceSubject.pipe(take(1), map((slicing) => {
-        const dialogRef = this.dialog.open(SelectSlicingContextComponent, {
-          data: {nodes: this.nodes, treeFilter: {
-              hide: false,
-              restrictions: [
-                {
-                  criterion: RestrictionType.TYPE,
-                  allow: true,
-                  value: [Type.FIELD],
-                },
-                {
-                  criterion: RestrictionType.PATH,
-                  allow: false,
-                  combine: RestrictionCombinator.ENFORCE,
-                  value: slicing.map((x) =>  this.pathService.pathToString(this.pathService.trimPathRoot(x.path))).map((path) => {
-                    return {
-                      path,
-                    };
-                  }),
-                },
-              ],
-            }, resource$: this.selectedResource$},
-        });
-        dialogRef.afterClosed().pipe(
-          filter((x) => x !== undefined),
-          take(1),
-          tap(( x) => {
-            this.updateSlicing(x, slicing);
-          }),
-        ).subscribe();
-    })).subscribe();
-  }
-
-  private updateSlicing(ret: ISlicingReturn, slicings: ISlicing[]) {
-    slicings.push({
-      type: ret.slicingType,
-      path: ret.path,
-      slices: [],
-    });
-    this.resourceSubject.next(slicings);
-  }
-
-  getNodeByPath(path: IPath): Observable<IHL7v2TreeNode> {
-    return this.hl7V2TreeService.getNodeByPath(this.nodes, path, this.repository).pipe(take(1));
-  }
-
-  getDisplay(path: IPath): Observable<IDisplayElement> {
-    return this.hl7V2TreeService.getNodeByPath(this.nodes, path, this.repository).pipe(
-      take(1),
-      mergeMap((node) => {
-        const ref: IResourceRef = node.data.ref.getValue();
-        return this.repository.getResourceDisplay(ref.type, ref.id);
-      }));
-  }
-
-  getAvailable(path: IPath): Observable<IDisplayElement[]> {
-    return this.getDisplay(path).pipe(
-      take(1),
-      withLatestFrom(this.datatypes$),
-      take(1),
-      map(([dt, all] ) => {
-        const ret = [];
-        return [... all].filter((x) => x.fixedName === dt.fixedName);
-      })).pipe(take(1));
-  }
-}
-export interface IPathOptions {
-  path: IPath;
-  options: IDisplayElement[];
-  display: IDisplayElement;
 }

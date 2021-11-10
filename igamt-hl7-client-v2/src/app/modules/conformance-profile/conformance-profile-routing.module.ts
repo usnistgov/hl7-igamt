@@ -4,7 +4,7 @@ import {
   LoadConformanceProfile,
   OpenConformanceProfileDeltaEditor,
   OpenConformanceProfilePreDefEditor,
-  OpenConformanceProfileSlicingEditor
+  OpenConformanceProfileSlicingEditor,
 } from 'src/app/root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import { ConformanceProfileEditActionTypes, OpenConformanceProfileBindingsEditor, OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfilePostDefEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from '../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import {OpenSegmentSlicingEditor} from '../../root-store/segment-edit/segment-edit.actions';

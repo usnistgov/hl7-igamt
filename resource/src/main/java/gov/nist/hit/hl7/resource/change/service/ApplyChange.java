@@ -22,10 +22,12 @@ import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 
 /**
@@ -208,6 +210,17 @@ public interface ApplyChange {
 	 * @return
 	 */
 	 <T extends StructureElement> T findStructElementById(Set<T> structureElments, String location);
+
+
+	/**
+	 * @param map
+	 * @param slicings
+	 * @param documentId
+	 * @param segment
+	 * @throws ApplyChangeException 
+	 */
+	 <T extends Slicing>  void applySlicingChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> slicings, String documentId,
+			Type segment) throws ApplyChangeException;
 
 
 }

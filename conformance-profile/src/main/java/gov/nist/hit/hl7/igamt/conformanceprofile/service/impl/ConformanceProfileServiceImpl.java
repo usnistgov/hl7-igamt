@@ -70,6 +70,8 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
+import gov.nist.hit.hl7.igamt.common.slicing.service.SlicingService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageProfileIdentifier;
@@ -143,6 +145,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Autowired
   ApplyChange applyChange;
+  
+  @Autowired
+  SlicingService slicingService;
 
   @Override
   public ConformanceProfile create(ConformanceProfile conformanceProfile) {
@@ -410,6 +415,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       if(cloneMode.equals(CloneMode.DERIVE)) {
         this.bindingService.lockConformanceStatements(elm.getBinding());
       }
+    }
+    if(elm.getSlicings() != null) {
+      this.slicingService.updateSlicing(elm.getSlicings(), newKeys, Type.SEGMENT);
     }
     if (elm.getCoConstraintsBindings() != null) {
       for (CoConstraintBinding binding : elm.getCoConstraintsBindings()) {
@@ -1349,6 +1357,12 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
       used.addAll(CoConstraintsDependencies);
     }
+    
+    if(cp.getSlicings() != null ) {
+      Set<RelationShip> slicingDependencies = this.slicingService.collectDependencies(
+          new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE), cp.getSlicings(), Type.SEGMENT);
+      used.addAll(slicingDependencies);  
+    }
     return used;
 
   }
@@ -1480,6 +1494,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       this.applyCoConstraintsBindingChanges(conformanceProfile, map.get(PropertyType.COCONSTRAINTBINDINGS) , documentId);
     }
     applyChange.applyBindingChanges(map, conformanceProfile.getBinding(), documentId, Level.CONFORMANCEPROFILE);
+    if (map.containsKey(PropertyType.SLICING)) {
+          if(conformanceProfile.getSlicings() == null) {
+            conformanceProfile.setSlicings(new HashSet<Slicing>());
+          }
+          applyChange.applySlicingChanges(map, conformanceProfile.getSlicings(), documentId, Type.CONFORMANCEPROFILE);
+
+    }   
     conformanceProfile.setBinding(this.makeLocationInfo(conformanceProfile));
     this.save(conformanceProfile);
   }

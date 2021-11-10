@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SlicingEditorComponent } from './slicing-editor.component';
+import { SlicingViewerComponent } from './slicing-viewer.component';
 
-describe('SlicingEditorComponent', () => {
-  let component: SlicingEditorComponent;
-  let fixture: ComponentFixture<SlicingEditorComponent>;
+describe('SlicingViewerComponent', () => {
+  let component: SlicingViewerComponent;
+  let fixture: ComponentFixture<SlicingViewerComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SlicingEditorComponent ],
+      declarations: [ SlicingViewerComponent ],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SlicingEditorComponent);
+    fixture = TestBed.createComponent(SlicingViewerComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

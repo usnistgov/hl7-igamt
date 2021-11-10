@@ -15,7 +15,33 @@ package gov.nist.hit.hl7.igamt.common.slicing.domain;
  * @author Abdelghani El Ouakili
  *
  */
-public enum DiscriminateMethod {
-	VALUE, EXISTS, ASSERTION, PATTERN
+abstract public class Slice {
+	protected String id;
+	protected String comments;
+	protected String flavorId;
+	
+	public Slice() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	
+	public String getComments() {
+		return comments;
+	}
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
+	public String getFlavorId() {
+		return flavorId;
+	}
+	public void setFlavorId(String flavorId) {
+		this.flavorId = flavorId;
+	}
 
 }
