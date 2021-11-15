@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
-import { Icons } from '../../constants/icons.enum';
-import { Type } from '../../constants/type.enum';
-import { IDisplayElement } from '../../models/display-element.interface';
-import { SubMenu } from '../../models/sub-menu.class';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {Icons} from '../../constants/icons.enum';
+import {Scope} from '../../constants/scope.enum';
+import {Type} from '../../constants/type.enum';
+import {IDisplayElement} from '../../models/display-element.interface';
+import {SubMenu} from '../../models/sub-menu.class';
 
 @Component({
   selector: 'app-toc-sub-menu',
@@ -49,7 +50,9 @@ export class TocSubMenuComponent implements OnInit {
       if ([Type.DATATYPE.toLowerCase(), Type.SEGMENT.toLowerCase(), Type.CONFORMANCEPROFILE.toLowerCase()].includes(type)) {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'bindings', 'Bindings', Icons.BINDING));
       }
-
+      if ([Type.SEGMENT.toLowerCase(), Type.CONFORMANCEPROFILE.toLowerCase()].includes(type) && this.element.domainInfo !== null && this.element.domainInfo.scope !== Scope.HL7STANDARD) {
+        ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'slicing', 'Slicing', Icons.SLICING));
+      }
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'post-def', 'Post-definition', Icons.POST));
 
       if (type !== Type.VALUESET.toLowerCase() && type !== Type.COMPOSITEPROFILE.toLowerCase()) {
@@ -94,7 +97,7 @@ export class TocSubMenuComponent implements OnInit {
 
     ret.push(new SubMenu(url + '/structure', 'Structure', Icons.TABLE));
     ret.push(new SubMenu(url + '/conformance-statement', 'Conformance statements', Icons.TABLE));
-    if (this.element.type === Type.SEGMENTCONTEXT) {
+    if (this.element.type === Type.SEGMENTCONTEXT && this.element.fixedName.startsWith('OBX')) {
       ret.push(new SubMenu(url + '/dynamic-mapping', 'Dynamic Mapping', Icons.LIST));
     }
     if (this.element.type === Type.MESSAGECONTEXT) {

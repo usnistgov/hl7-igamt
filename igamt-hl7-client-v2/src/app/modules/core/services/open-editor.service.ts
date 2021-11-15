@@ -521,4 +521,47 @@ export class OpenEditorService {
     );
   }
 
+  openSlicingEditor<T extends IResource, A extends OpenEditorBase>(
+    _action: string,
+    type: Type,
+    displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
+    resource$: Observable<T>,
+    getter: (id, type) => Observable<any>,
+    notFoundMessage: string,
+  ): Observable<Action> {
+    return this.openEditor<T, A>(
+      _action,
+      displayElement$,
+      () => resource$,
+      notFoundMessage,
+      (action: A, resource: T, display: IDisplayElement) => {
+        return getter(action.payload.id, type).pipe(
+          flatMap((slicing) => {
+            const openEditor = new OpenEditor({
+              id: action.payload.id,
+              display,
+              editor: action.payload.editor,
+              initial: {
+                changes: {},
+                slicing,
+              },
+            });
+            this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
+            return RxjsStoreHelperService.listenAndReact(this.actions$, {
+              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {
+                do: (loadSuccess: LoadResourceReferencesSuccess) => {
+                  return of(openEditor);
+                },
+              },
+              [IgamtLoadedResourcesActionTypes.LoadResourceReferencesFailure]: {
+                do: (loadFailure: LoadResourceReferencesFailure) => {
+                  return of(new OpenEditorFailure({ id: action.payload.id }));
+                },
+              },
+            });
+          }),
+        );
+      },
+    );
+  }
 }

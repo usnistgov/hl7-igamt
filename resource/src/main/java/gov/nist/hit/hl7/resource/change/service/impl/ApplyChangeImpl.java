@@ -20,12 +20,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.*;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.LengthType;
@@ -34,6 +38,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
@@ -522,5 +527,49 @@ public class ApplyChangeImpl implements ApplyChange {
 			throw new ApplyChangeException(change);
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see gov.nist.hit.hl7.resource.change.service.ApplyChange#applySlicingChanges(java.util.Map, java.util.Set, java.lang.String, gov.nist.hit.hl7.igamt.common.base.domain.Type)
+	 */
+	@Override
+	public <T extends Slicing> void applySlicingChanges(Map<PropertyType, List<ChangeItemDomain>> map, Set<T> slicings,
+			String documentId, Type type) throws ApplyChangeException {
+			if(map.get(PropertyType.SLICING) != null && !map.get(PropertyType.SLICING).isEmpty()) {
+				for(ChangeItemDomain change : map.get(PropertyType.SLICING)) {
+					this.applySlicingChanges(change, slicings, documentId, type);
+				}
+			}
+	}
+
+	/**
+	 * @param change
+	 * @param slicings
+	 * @param documentId
+	 * @param type
+	 * @throws ApplyChangeException 
+	 */
+	@SuppressWarnings("unchecked")
+	private  <T extends Slicing> void  applySlicingChanges(ChangeItemDomain change, Set<T> slicings, String documentId, Type type) throws ApplyChangeException {
+		try {
+			ObjectMapper mapper = new ObjectMapper();
+			//mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+			String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
+			if (change.getChangeType().equals(ChangeType.ADD)) {
+				Slicing slc = mapper.readValue(jsonInString, Slicing.class);
+				slicings.add((T) slc);
+			} else if (change.getChangeType().equals(ChangeType.DELETE)) {
+				slicings.removeIf((x) -> x.getPath().equals(change.getLocation()));
+			} else if (change.getChangeType().equals(ChangeType.UPDATE)) {
+				slicings.removeIf((x) -> x.getPath().equals(change.getLocation()));
+				Slicing slc = mapper.readValue(jsonInString, Slicing.class);
+				slicings.add((T) slc);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new ApplyChangeException(change);
+		}
+	}
+
 
 }

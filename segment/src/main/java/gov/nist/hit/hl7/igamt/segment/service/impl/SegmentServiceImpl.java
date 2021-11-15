@@ -63,6 +63,9 @@ import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slice;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
+import gov.nist.hit.hl7.igamt.common.slicing.service.SlicingService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.ViewScope;
@@ -126,6 +129,9 @@ public class SegmentServiceImpl implements SegmentService {
   ValuesetService valueSetService;
   @Autowired
   ApplyChange applyChange;
+  @Autowired
+  SlicingService slicingService;
+
 
   @Override
   public Segment findById(String key) {
@@ -536,7 +542,6 @@ public class SegmentServiceImpl implements SegmentService {
         });
       }
     }
-
   }
 
   /**
@@ -562,6 +567,9 @@ public class SegmentServiceImpl implements SegmentService {
     this.bindingService.substitute(elm.getBinding(), newKeys);
     if(cloneMode.equals(CloneMode.DERIVE)) {
       this.bindingService.lockConformanceStatements(elm.getBinding());
+    }
+    if(elm.getSlicings() != null) {
+      this.slicingService.updateSlicing(elm.getSlicings(), newKeys, Type.DATATYPE);
     }
   }
 
@@ -967,7 +975,12 @@ public class SegmentServiceImpl implements SegmentService {
       used.addAll(bindingDependencies);
 
     }
-    return used;
+    if(elm.getSlicings() != null ) {
+      Set<RelationShip> slicingDependencies = slicingService.collectDependencies(
+          new ReferenceIndentifier(elm.getId(), Type.SEGMENT), elm.getSlicings(), Type.DATATYPE);
+      used.addAll(slicingDependencies);  
+    }
+     return used;
   }
 
   private void collectDynamicMappingDependencies(String id, DynamicMappingInfo dynamicMappingInfo,
@@ -1116,7 +1129,12 @@ public class SegmentServiceImpl implements SegmentService {
     this.applyChildrenChange(map, s.getChildren(), documentId);
 
     applyChange.applyBindingChanges(map, s.getBinding(), documentId, Level.SEGMENT);
-
+    if(map.containsKey(PropertyType.SLICING)) {
+    if(s.getSlicings() == null) {
+      s.setSlicings(new HashSet<Slicing>());
+    }
+    applyChange.applySlicingChanges(map, s.getSlicings(), documentId, Type.SEGMENT);
+    }
     if(s.getName().equals("OBX")) {
       this.applyDynamicMappingChanges(map, s, documentId);
     }

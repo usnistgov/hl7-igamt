@@ -311,4 +311,9 @@ export class ElementNamingService {
     }
   }
 
+  getPositionalPath(pathInfo: IPathInfo): string {
+    const child = pathInfo.child ? `.${this.getPositionalPath(pathInfo.child)}` : '';
+    return `${pathInfo.position}${child}`;
+  }
+
 }

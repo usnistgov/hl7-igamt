@@ -1086,7 +1086,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 			}
 			return dt.getBinding();
 		}
-		return null;
+		else return dt.getBinding();
 	}
 
 	/**

@@ -5,6 +5,7 @@ import { filter, map, tap } from 'rxjs/operators';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { IChange } from 'src/app/modules/shared/models/save-change';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
+import {ISlicing} from '../../../../models/slicing';
 import { IChangeReasonDialogDisplay } from '../../../change-reason-dialog/change-reason-dialog.component';
 import { IResourceRef } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
@@ -28,6 +29,8 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
 
   @Input()
   anchor: TemplateRef<any>;
+  @Input()
+  slicing: ISlicing;
 
   @ViewChild('display', { read: TemplateRef })
   displayTemplate: TemplateRef<any>;
@@ -115,6 +118,10 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
         context: this.all.find((elm) => elm.id === change.oldPropertyValue.id),
       },
     });
+  }
+
+  print() {
+    console.log(this.slicing);
   }
 
   ngOnInit() {

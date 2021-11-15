@@ -30,6 +30,7 @@ import com.opencsv.CSVReader;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
@@ -395,6 +396,21 @@ public class DataFixer {
     this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1","2.4", "2.5", "2.5.1", "2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "PV1", "17", "1", 0);
     this.shiftBinding(new ArrayList<String>(Arrays.asList("2.3.1","2.4", "2.5", "2.5.1", "2.6")), "PV1", "52", "1", 0);
     this.shiftBinding(new ArrayList<String>(Arrays.asList("2.6",  "2.7",  "2.7.1", "2.8",  "2.8.1",  "2.8.2")), "SDC", "34", "1", 0);
+  }
+
+
+  /**
+   * 
+   */
+  public void addFixedExt() {
+    List<Segment> segments =  this.segmentsService.findByDomainInfoScope("USERCUSTOM");
+    
+    for(Segment s: segments) {
+      if(s.getStatus().equals(Status.PUBLISHED)){
+        s.setFixedExtension(s.getExt());
+        this.segmentsService.save(s);
+      }
+    }
   }
 
 }

@@ -148,6 +148,9 @@ private String token;
       Ig ig = findIgById(id);
 
   	  if (ig != null)  {
+
+  		  System.out.println(reqIds);
+  		  
   		  CompositeProfileState cps = null;
   		  Ig selectedIg = this.makeSelectedIg(ig, reqIds, cps);
   		  IgDataModel igModel = this.igService.generateDataModel(selectedIg);	
@@ -262,6 +265,24 @@ private String token;
 						  this.visitSegment(s.getChildren(), selectedIg, all);
 						  if(s.getBinding() != null && s.getBinding().getChildren() != null) this.collectVS(s.getBinding().getChildren(), selectedIg, all);
 					  }
+					//For Dynamic Mapping
+			            if (s != null && s.getDynamicMappingInfo() != null && s.getDynamicMappingInfo().getItems() != null) {
+			              s.getDynamicMappingInfo().getItems().forEach(item -> {
+			                Link link = all.getDatatypeRegistry().getLinkById(item.getDatatypeId());
+			                if(link != null) {
+			                  selectedIg.getDatatypeRegistry().getChildren().add(link);
+			                  Datatype dt = this.datatypeService.findById(link.getId());
+			                  if (dt != null && dt instanceof ComplexDatatype) {
+			                    ComplexDatatype cdt = (ComplexDatatype)dt;
+			                    if(cdt.getComponents() != null) {
+			                      this.visitDatatype(cdt.getComponents(), selectedIg, all);
+			                      if(cdt.getBinding() != null && cdt.getBinding().getChildren() != null) this.collectVS(cdt.getBinding().getChildren(), selectedIg, all);
+			                    }
+			                  }
+
+			                }           		
+			              });
+			            }
 				  }
 			  }
 		  }

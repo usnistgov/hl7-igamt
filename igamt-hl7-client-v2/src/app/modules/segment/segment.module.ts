@@ -14,6 +14,7 @@ import { MetadataEditorComponent } from './components/metadata-editor/metadata-e
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
 import { SegmentBindingsEditorComponent } from './components/segment-bindings-editor/segment-bindings-editor.component';
+import { SegmentSlicingEditorComponent } from './components/segment-slicing-editor/segment-slicing-editor.component';
 import { SegmentStructureEditorComponent } from './components/segment-structure-editor/segment-structure-editor.component';
 import { SegmentRoutingModule } from './segment-routing.module';
 import { SegmentService } from './services/segment.service';
@@ -30,6 +31,7 @@ import { SegmentService } from './services/segment.service';
     DynamicMappingEditorComponent,
     SegmentBindingsEditorComponent,
     DynamicMappingDeltaComponent,
+    SegmentSlicingEditorComponent,
   ],
   imports: [
     CommonModule,

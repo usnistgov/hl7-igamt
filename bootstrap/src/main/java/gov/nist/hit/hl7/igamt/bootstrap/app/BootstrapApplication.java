@@ -447,7 +447,7 @@ public class BootstrapApplication implements CommandLineRunner {
   void shiftBinding() {
     this.dataFixer.shiftAllBinding();
   }
-  // @PostConstruct
+  //@PostConstruct
   void updateSegmentDatatype() {
     this.dataFixer.changeHL7SegmentDatatype("OMC", "9", "ID", "2.8.2");
 
@@ -465,7 +465,10 @@ public class BootstrapApplication implements CommandLineRunner {
   void fixStructureIds() {
     this.dataFixer.addStructureIds();
   }
-
+ // @PostConstruct
+  void addFixedExt() {
+    this.dataFixer.addFixedExt();
+  }
 
   //@PostConstruct
   void addVsLocationException() {

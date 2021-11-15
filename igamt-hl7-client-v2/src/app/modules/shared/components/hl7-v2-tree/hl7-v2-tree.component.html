@@ -195,6 +195,7 @@
                       [options]="datatypes"
                       [anchor]="anchor"
                       [context]="type"
+                      [slicing]="rowData.slicing"
                       (valueChange)="datatypeChange($event, rowNode)"
                     ></app-datatype>
                   </ng-container>
@@ -217,6 +218,7 @@
                         [anchor]="anchor"
                         [options]="segments"
                         [context]="type"
+                        [slicing]="rowData.slicing"
                         (valueChange)="segmentChange($event, rowNode)"
                       ></app-segment>
                     </ng-container>

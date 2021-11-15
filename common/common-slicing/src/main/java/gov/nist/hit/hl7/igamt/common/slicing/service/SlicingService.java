@@ -9,32 +9,28 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.slicing.domain;
+package gov.nist.hit.hl7.igamt.common.slicing.service;
 
-import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
-public class SliceValue {
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 
-	private String value;
-	private String valueSetId;
-	private Assertion assertion;
+/**
+ * @author Abdelghani El Ouakili
+ *
+ */
+public interface SlicingService {
 	
-	public String getValue() {
-		return value;
-	}
-	public void setValue(String value) {
-		this.value = value;
-	}
-	public String getValueSetId() {
-		return valueSetId;
-	}
-	public void setValueSetId(String valueSetId) {
-		this.valueSetId = valueSetId;
-	}
-	public Assertion getAssertion() {
-		return assertion;
-	}
-	public void setAssertion(Assertion assertion) {
-		this.assertion = assertion;
-	}
+	public void updateSlicing(Set<Slicing> set, HashMap<RealKey, String> newKeys, Type flavorsType );
+
+	public Set<RelationShip> collectDependencies(ReferenceIndentifier referenceIndentifier, Set<Slicing> slicings,
+			Type flavorsType);
+
+
 }

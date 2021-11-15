@@ -7,7 +7,7 @@ import {
   OpenSegmentDynamicMappingEditor,
   OpenSegmentMetadataEditor,
   OpenSegmentPostDefEditor,
-  OpenSegmentPreDefEditor,
+  OpenSegmentPreDefEditor, OpenSegmentSlicingEditor,
   OpenSegmentStructureEditor,
   SegmentEditActionTypes,
 } from '../../root-store/segment-edit/segment-edit.actions';
@@ -25,6 +25,7 @@ import { MetadataEditorComponent } from './components/metadata-editor/metadata-e
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
 import { SegmentBindingsEditorComponent } from './components/segment-bindings-editor/segment-bindings-editor.component';
+import {SegmentSlicingEditorComponent} from './components/segment-slicing-editor/segment-slicing-editor.component';
 import { SegmentStructureEditorComponent } from './components/segment-structure-editor/segment-structure-editor.component';
 
 const routes: Routes = [
@@ -125,6 +126,31 @@ const routes: Routes = [
                 saveTableOfContent: true,
               },
               action: OpenSegmentBindingsEditor,
+              idKey: 'segmentId',
+            },
+          },
+        ],
+      },
+
+      {
+        path: 'slicing',
+        children: [
+          {
+            path: '',
+            component: SegmentSlicingEditorComponent,
+            canActivate: [EditorActivateGuard],
+            canDeactivate: [EditorDeactivateGuard],
+            data: {
+              editorMetadata: {
+                id: EditorID.SEGMENT_SLICING,
+                title: 'Slicing',
+                resourceType: Type.SEGMENT,
+              },
+              onLeave: {
+                saveEditor: true,
+                saveTableOfContent: true,
+              },
+              action: OpenSegmentSlicingEditor,
               idKey: 'segmentId',
             },
           },

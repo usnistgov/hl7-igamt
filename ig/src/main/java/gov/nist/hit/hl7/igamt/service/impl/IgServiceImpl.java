@@ -1238,6 +1238,8 @@ public class IgServiceImpl implements IgService {
     ZipOutputStream out = new ZipOutputStream(outputStream);
 
     String profileXMLStr = this.xmlSerializeService.serializeProfileToDoc(igModel).toXML();
+    
+    System.out.println(profileXMLStr);
     String constraintXMLStr = this.xmlSerializeService.serializeConstraintsXML(igModel).toXML();
 
     constraintXMLStr = this.addValuesetsFromConstraints(constraintXMLStr, igModel, 0);
