@@ -1,9 +1,12 @@
 package gov.nist.hit.hl7.igamt.coconstraints.model;
 
 public class DataElementHeader extends CoConstraintHeader {
+    @Deprecated
     protected String name;
+    @Deprecated
     protected boolean cardinality;
     protected ColumnType columnType;
+    @Deprecated
     protected DataElementHeaderInfo elementInfo;
 
     public DataElementHeader() {

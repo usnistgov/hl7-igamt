@@ -6,11 +6,16 @@ public class CoConstraintGrouper extends WithDelta {
     private DeltaField<String> nameDelta;
     private DeltaField<Type> typeDelta;
     private DeltaField<String> pathIdDelta;
+    @Deprecated
     private String name;
     private String pathId;
+    @Deprecated
     private String description;
+    @Deprecated
     private String version;
+    @Deprecated
     private String datatype;
+    @Deprecated
     private Type type;
 
     @Deprecated

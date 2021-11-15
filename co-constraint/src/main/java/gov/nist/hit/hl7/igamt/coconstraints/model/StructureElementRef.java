@@ -6,7 +6,9 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 public class StructureElementRef {
     private String pathId;
+    @Deprecated
     private Type type;
+    @Deprecated
     private String name; // This is always null, instead I use segment Name from StructureElementRef segment
     private InstancePath path;
 
