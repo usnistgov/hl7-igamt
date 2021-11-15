@@ -1600,6 +1600,7 @@ private String token;
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
+    System.out.println(reqIds);
     Ig ig = findIgById(id);
     if (ig != null)  {
       CompositeProfileState cps = null;

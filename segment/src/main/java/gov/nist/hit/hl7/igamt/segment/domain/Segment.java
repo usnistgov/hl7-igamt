@@ -94,7 +94,7 @@ public class Segment extends Resource {
   public String getLabel() {
     String entireExt = this.getEntireExtension();
     if (entireExt != null && !entireExt.isEmpty()) {
-      return  this.getName() + this.getEntireExtension();
+      return  this.getName() + "_" + this.getEntireExtension();
     }
     return this.getName();
   }
