@@ -21,7 +21,7 @@ public class CoConstraintTable extends CoConstraintCollection {
 
     public CoConstraintTable clone() {
         CoConstraintTable clone = new CoConstraintTable();
-        clone.setBaseSegment(baseSegment);
+//        clone.setBaseSegment(baseSegment);
         clone.setHeaders(headers.clone());
 
         clone.setCoConstraints(this.coConstraints.stream().map(cc -> {

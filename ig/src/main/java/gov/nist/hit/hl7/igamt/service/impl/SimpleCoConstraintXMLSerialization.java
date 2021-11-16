@@ -12,6 +12,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
+import gov.nist.hit.hl7.igamt.service.CoConstraintXMLSerialization;
 import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import nu.xom.*;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class SimpleCoConstraintXMLSerialization implements gov.nist.hit.hl7.igamt.service.CoConstraintXMLSerialization {
+public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerialization {
 
     @Autowired
     CoConstraintService coConstraintService;
