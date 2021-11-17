@@ -48,7 +48,16 @@ public class SimpleCoConstraintService implements CoConstraintService {
 
   @Override
   public List<CoConstraintGroup> findByBaseSegmentAndDocumentIdAndUsername(String baseSegment, String documentId, String username) {
-    return this.coConstraintGroupRepository.findByBaseSegmentAndDocumentIdAndUsername(baseSegment, documentId, username);
+    Segment target = this.segmentService.findById(baseSegment);
+    if(target != null) {
+      List<CoConstraintGroup> igGroups = this.coConstraintGroupRepository.findByDocumentIdAndUsername(documentId, username);
+      return igGroups.stream().filter((group) -> {
+        Segment groupTarget = this.segmentService.findById(group.getBaseSegment());
+        return groupTarget != null && groupTarget.getName().equals(target.getName());
+      }).collect(Collectors.toList());
+    } else {
+      return Collections.emptyList();
+    }
   }
 
   @Override
@@ -58,8 +67,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
 
   @Override
   public CoConstraintTable resolveRefAndMerge(CoConstraintTable table) {
-    CoConstraintHeaders headers = new CoConstraintHeaders();
-    this.mergeHeaders(headers, table.getHeaders());
+    CoConstraintHeaders headers = table.getHeaders();
 
     List<CoConstraintGroupBinding> bindings = new ArrayList<>();
     for(CoConstraintGroupBinding binding : table.getGroups()) {
@@ -73,7 +81,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
           contained.setName(group.getName());
           contained.setId(binding.getId());
           contained.setCoConstraints(group.getCoConstraints());
-          this.mergeHeaders(headers, group.getHeaders());
+          this.mergeHeaders(headers, group.getHeaders(), ((CoConstraintGroupBindingRef) binding));
           bindings.add(contained);
         } catch (CoConstraintGroupNotFoundException e) {
           e.printStackTrace();
@@ -91,20 +99,20 @@ public class SimpleCoConstraintService implements CoConstraintService {
     return clone;
   }
 
-  public void mergeHeaders(CoConstraintHeaders origin, CoConstraintHeaders target) {
-    this.mergeHeader(origin.getSelectors(), target.getSelectors());
-    this.mergeHeader(origin.getConstraints(), target.getConstraints());
-    this.mergeHeader(origin.getNarratives(), target.getNarratives());
+  public void mergeHeaders(CoConstraintHeaders origin, CoConstraintHeaders target, CoConstraintGroupBindingRef ref) {
+    this.mergeHeader(origin.getSelectors(), target.getSelectors(), ref.getExcludeIfColumns());
+    this.mergeHeader(origin.getConstraints(), target.getConstraints(), ref.getExcludeThenColumns());
+    this.mergeHeader(origin.getNarratives(), target.getNarratives(), ref.getExcludeNarrativeColumns());
     if(origin.getGrouper() == null) {
       origin.setGrouper(target.getGrouper());
     }
   }
 
-  public void mergeHeader(List<CoConstraintHeader> origin, List<CoConstraintHeader>  target) {
+  public void mergeHeader(List<CoConstraintHeader> origin, List<CoConstraintHeader>  target, Set<String> exclude) {
     target.forEach((header) -> {
       boolean exists = origin.stream().anyMatch((elm) -> elm.getKey().equals(header.getKey()));
 
-      if(!exists) {
+      if(!exists && (exclude == null || !exclude.contains(header.getKey()))) {
         origin.add(header);
       }
     });

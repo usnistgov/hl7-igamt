@@ -286,15 +286,18 @@ public class CoConstraintVerificationService extends VerificationUtils {
             errors.addAll(this.checkCoConstraintRequirement(segment, ccLocation, cc.getRequirement(), false, (i == 1) && group));
 
             for(DataHeaderElementVerified header: headers) {
-                TargetLocation cellLocation = TargetLocation.makeCellLocation(
-                        ccLocation,
-                        header.header.getKey(),
-                        header.target.getLocationInfo(),
-                        header.header.getColumnType()
-                );
-                errors.addAll(
-                        this.checkCoConstraintCell(segment, header, cellLocation, cc.getCells().get(header.header.getKey()))
-                );
+                if(cc.getCells().get(header.header.getKey()) != null) {
+                    TargetLocation cellLocation = TargetLocation.makeCellLocation(
+                            ccLocation,
+                            header.header.getKey(),
+                            header.target.getLocationInfo(),
+                            header.header.getColumnType()
+                    );
+
+                    errors.addAll(
+                            this.checkCoConstraintCell(segment, header, cellLocation, cc.getCells().get(header.header.getKey()))
+                    );
+                }
             }
 
             if(verifyDatatypeAndVaries) {

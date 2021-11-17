@@ -97,7 +97,7 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
     this.file = event.target.files[0];
   }
 
-  openImportDialog(segmentId: string) {
+  openImportDialog() {
     const dialogRef = this.dialog.open(ImportDialogComponent, {
       maxWidth: '95vw',
       maxHeight: '90vh',

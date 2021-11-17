@@ -31,8 +31,8 @@
         <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'Narratives', list: value.headers.narratives, isDataHeader: false  }"></ng-container>
       </tr>
       <tr>
-        <ng-container *ngTemplateOutlet="value.headers.selectors.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.selectors, template: dataHeader }"></ng-container>
-        <ng-container *ngTemplateOutlet="value.headers.constraints.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.constraints, template: dataHeader }"></ng-container>
+        <ng-container *ngTemplateOutlet="value.headers.selectors.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.selectors, type: 'selectors', template: dataHeader }"></ng-container>
+        <ng-container *ngTemplateOutlet="value.headers.constraints.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.constraints, type: 'constraints', template: dataHeader }"></ng-container>
         <th class="column column-border stick-header stick-top-none">
           <div *ngIf="!delta" style="width: 100%; display: flex; justify-content: space-between;">
             <div>
@@ -73,7 +73,7 @@
             </ng-template>
           </app-delta-column>
         </th>
-        <ng-container *ngTemplateOutlet="value.headers.narratives.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.narratives, template: narrativeHeader }"></ng-container>
+        <ng-container *ngTemplateOutlet="value.headers.narratives.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.narratives, type: 'narratives', template: narrativeHeader }"></ng-container>
       </tr>
     </thead>
     <ng-container *ngTemplateOutlet="ccList; context: { $implicit: value.coConstraints, group : mode === 'GROUP', fieldId : 'ind', viewOnly: vOnly }"></ng-container>
@@ -102,9 +102,9 @@
   </ng-template>
 
   <!-- COLUMNS DYNAMIC COLLUMN -->
-  <ng-template #columns let-list let-template="template">
+  <ng-template #columns let-type="type" let-list let-template="template">
     <ng-container *ngFor="let header of list; let i = index">
-        <ng-container *ngTemplateOutlet="template; context: { $implicit: header, list: list, index : i }"></ng-container>
+        <ng-container *ngTemplateOutlet="template; context: { $implicit: header, list: list, index : i, type: type }"></ng-container>
     </ng-container>
   </ng-template>
 
@@ -114,12 +114,12 @@
   </ng-template>
 
   <!-- DATA HEADER -->
-  <ng-template #dataHeader let-header let-list="list" let-index="index">
+  <ng-template #dataHeader let-type="type" let-header let-list="list" let-index="index">
     <ng-container *ngIf="getHeaderElementInfo(header) | async as headerInfo" >
       <th  class="column stick-header stick-top-pad" [ngClass]="{'column-border': index === (list.length - 1) && !headerInfo.displayCardinality, 'inside-border' :  index !== (list.length - 1) && !headerInfo.displayCardinality }">
         <div style="width: 100%; display: flex; justify-content: space-between;">
           <div *ngIf="!header._keep">
-            <button *ngIf="!vOnly" class="btn btn-sm btn-danger" (click)="deleteColumn(list, header, index)"><i class="fa fa-times"></i></button>
+            <button *ngIf="!vOnly" class="btn btn-sm btn-danger" (click)="deleteColumn(list, header, index, type)"><i class="fa fa-times"></i></button>
           </div>
           <div style="width: 100%; text-align: center;" *ngIf="headerInfo.resolved">
             <span class="badge badge-secondary">{{header.columnType}}</span>
@@ -140,10 +140,10 @@
   </ng-template>
 
   <!-- NARRATIVE HEADER -->
-  <ng-template #narrativeHeader let-header let-list="list" let-index="index">
+  <ng-template #narrativeHeader let-type="type" let-header let-list="list" let-index="index">
     <th class="column" [ngClass]="{'column-border': index === (list.length - 1)}">
       <div style="width: 100%; text-align: center; display: flex;  align-items: center; justify-content: space-between;" >
-        <button *ngIf="!header._keep && !vOnly" class="btn btn-sm btn-danger" (click)="deleteColumn(list, header, index)"><i class="fa fa-times"></i></button>
+        <button *ngIf="!header._keep && !vOnly" class="btn btn-sm btn-danger" (click)="deleteColumn(list, header, index, type)"><i class="fa fa-times"></i></button>
         <div style="width: 100%; text-align: center;" >
           <span class="badge badge-secondary">TEXT</span>
           <span style="margin-left: 3px;">{{header.title}}</span>

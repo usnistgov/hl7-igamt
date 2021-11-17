@@ -72,30 +72,27 @@ export class CoConstraintEntityService {
     form.submit();
   }
 
-  mergeGroupWithTable(ccTable: ICoConstraintTable & ICoConstraintGroup, group: ICoConstraintGroup) {
-    this.mergeHeaders(ccTable, ccTable.headers.selectors, group.headers.selectors);
-    this.mergeHeaders(ccTable, ccTable.headers.constraints, group.headers.constraints);
-    this.mergeHeaders(ccTable, ccTable.headers.narratives, group.headers.narratives);
+  mergeGroupWithTable(groupRef: ICoConstraintGroupBindingRef, ccTable: ICoConstraintTable & ICoConstraintGroup, group: ICoConstraintGroup) {
+    this.mergeHeaders(ccTable, ccTable.headers.selectors, group.headers.selectors, groupRef.excludeIfColumns || []);
+    this.mergeHeaders(ccTable, ccTable.headers.constraints, group.headers.constraints, groupRef.excludeThenColumns || []);
+    this.mergeHeaders(ccTable, ccTable.headers.narratives, group.headers.narratives, groupRef.excludeNarrativeColumns || []);
     if (!ccTable.headers.grouper) {
       ccTable.headers.grouper = group.headers.grouper;
     }
   }
 
-  mergeHeaders(collection: ICoConstraintTable & ICoConstraintGroup, table: ICoConstraintHeader[], group: ICoConstraintHeader[]) {
+  mergeHeaders(collection: ICoConstraintTable & ICoConstraintGroup, table: ICoConstraintHeader[], group: ICoConstraintHeader[], exclude: string[]) {
     group.forEach((groupHeader) => {
 
       const header = table.find((tableHeader) => {
         return groupHeader.key === tableHeader.key;
       });
 
-      if (!header) {
+      if (!header && !exclude.includes(groupHeader.key)) {
         table.push({
           ...groupHeader,
-          _keep: true,
         });
         this.addColumn(groupHeader, collection);
-      } else {
-        header._keep = true;
       }
 
     });
@@ -107,13 +104,15 @@ export class CoConstraintEntityService {
       requirement: this.createEmptyRequirements(),
       type: CoConstraintGroupBindingType.REF,
       refId: id,
+      excludeIfColumns: [],
+      excludeNarrativeColumns: [],
+      excludeThenColumns: [],
     };
   }
 
   createOBXCoConstraintTable(segment: ISegment, repository: AResourceRepositoryService): Observable<ICoConstraintTable> {
     const table: ICoConstraintTable = {
       tableType: CoConstraintMode.TABLE,
-      baseSegment: segment.id,
       headers: {
         selectors: [],
         constraints: [],
@@ -158,7 +157,6 @@ export class CoConstraintEntityService {
   createEmptyCoConstraintTable(segment: ISegment): ICoConstraintTable {
     return {
       tableType: CoConstraintMode.TABLE,
-      baseSegment: segment.id,
       headers: {
         selectors: [],
         constraints: [],

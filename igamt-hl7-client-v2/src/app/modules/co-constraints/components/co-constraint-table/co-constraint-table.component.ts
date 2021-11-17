@@ -345,7 +345,7 @@ export class CoConstraintTableComponent implements OnInit {
     const id = group.refId;
     this.getGroup(id).pipe(
       tap((value) => {
-        this.coconstraintEntity.mergeGroupWithTable(this.value, value);
+        this.coconstraintEntity.mergeGroupWithTable(group, this.value, value);
         this.groupsMap[id] = value;
       }),
     ).subscribe();
@@ -570,7 +570,7 @@ export class CoConstraintTableComponent implements OnInit {
     }
   }
 
-  deleteColumn(list: ICoConstraintHeader[], header: ICoConstraintHeader, index: number) {
+  deleteColumn(list: ICoConstraintHeader[], header: ICoConstraintHeader, index: number, type: string) {
     this.value.coConstraints.forEach((cc) => {
       delete cc.cells[header.key];
     });
@@ -584,11 +584,34 @@ export class CoConstraintTableComponent implements OnInit {
             delete cc.cells[header.key];
           });
         }
+
+        if (group.type === CoConstraintGroupBindingType.REF) {
+          const ref = group as ICoConstraintGroupBindingRef;
+          switch (type) {
+            case 'selectors':
+              ref.excludeIfColumns = this.excludeColumn(ref.excludeIfColumns, header.key);
+              break;
+            case 'constraints':
+              ref.excludeThenColumns = this.excludeColumn(ref.excludeThenColumns, header.key);
+              break;
+            case 'narratives':
+              ref.excludeNarrativeColumns = this.excludeColumn(ref.excludeNarrativeColumns, header.key);
+              break;
+          }
+        }
       });
     }
 
     list.splice(index, 1);
     this.emitChange();
+  }
+
+  excludeColumn(list: string[], column: string): string[] {
+    if (list) {
+      return list.includes(column) ? list : [...list, column];
+    } else {
+      return [column];
+    }
   }
 
   ngOnInit() {

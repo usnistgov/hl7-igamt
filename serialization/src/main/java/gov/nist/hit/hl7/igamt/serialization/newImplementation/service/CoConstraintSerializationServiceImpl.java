@@ -174,11 +174,11 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		th = new Element("th");
 //		th.addAttribute(new Attribute("class", "ifContentThead"));
 		th.addAttribute(
-				new Attribute("colspan", String.valueOf(calculateHeadersNumber(coConstraintTable.getHeaders().getSelectors()))));
+				new Attribute("colspan", String.valueOf(calculateHeadersNumber(coConstraintTable.getHeaders().getSerializableSelectors()))));
 		th.appendChild("IF");
 		tr.appendChild(th);
 		th = new Element("th");
-		th.addAttribute(new Attribute("colspan", String.valueOf(calculateHeadersNumber(coConstraintTable.getHeaders().getConstraints()))));
+		th.addAttribute(new Attribute("colspan", String.valueOf(calculateHeadersNumber(coConstraintTable.getHeaders().getSerializableConstraints()))));
 		th.appendChild("THEN");
 		tr.appendChild(th);
 		if (!coConstraintTable.getGroups().isEmpty()) {
@@ -238,7 +238,6 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		}
 		if (!coConstraintTable.getGroups().isEmpty()) {
 			Element thGroupBy = new Element("th");
-			thGroupBy.addAttribute(new Attribute("class", "contentThead"));
 			String headerLabel = "Group Id :  " + coConstraintTable.getHeaders().getGrouper().getName();
 			thGroupBy.appendChild(headerLabel);
 			tr.appendChild(thGroupBy);
@@ -1050,11 +1049,11 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 
 	public List<String> generateHeadersIDs(SerializableCoConstraintTable coConstraintTable) {
 		List<String> headerIds = new ArrayList<String>();
-		for (CoConstraintHeader header : coConstraintTable.getHeaders().getSelectors()) {
+		for (CoConstraintHeader header : coConstraintTable.getHeaders().getSerializableSelectors()) {
 			String id = header.getKey();
 			headerIds.add(id);
 		}
-		for (CoConstraintHeader header : coConstraintTable.getHeaders().getConstraints()) {
+		for (CoConstraintHeader header : coConstraintTable.getHeaders().getSerializableConstraints()) {
 			String id = header.getKey();
 			headerIds.add(id);
 		}
@@ -1066,8 +1065,8 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 	}
 
 	public int calculateGroupNameColspan(SerializableCoConstraintTable coConstraintTable) {
-		int i = calculateHeadersNumber(coConstraintTable.getHeaders().getSelectors()) + calculateHeadersNumber(coConstraintTable.getHeaders().getConstraints())
-		+ calculateHeadersNumber(coConstraintTable.getHeaders().getNarratives());
+		int i = calculateHeadersNumber(coConstraintTable.getHeaders().getSerializableSelectors()) + calculateHeadersNumber(coConstraintTable.getHeaders().getSerializableConstraints())
+		+ coConstraintTable.getHeaders().getNarratives().size();
 		if(!coConstraintTable.getGroups().isEmpty()) {
 			i++;
 		}
@@ -1087,7 +1086,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return valuesetBindings.toString();
 	}
 
-	public int calculateHeadersNumber(List<CoConstraintHeader> headers) {
+	public int calculateHeadersNumber(List<SerializableDataElementHeader> headers) {
 		int number = headers.size();
 		for (CoConstraintHeader header : headers) {
 			if (header.getType().equals(HeaderType.DATAELEMENT)) {
