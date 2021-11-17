@@ -406,8 +406,9 @@ public class DataFixer {
     List<Segment> segments =  this.segmentsService.findByDomainInfoScope("USERCUSTOM");
     
     for(Segment s: segments) {
-      if(s.getStatus().equals(Status.PUBLISHED)){
+      if(s.getStatus() != null &&s.getStatus().equals(Status.PUBLISHED)){
         s.setFixedExtension(s.getExt());
+        s.setExt(null);
         this.segmentsService.save(s);
       }
     }
