@@ -22,19 +22,19 @@ export class ImportDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     this.fileUploadService = data.fileUploadService;
-    this.flavorId = data.flavorId;
+    this.segmentRef = data.segmentRef;
     this.conformanceProfile = data.conformanceProfile;
     this.documentId = data.documentId;
-    this.pathId = data.pathId;
+    this.contextId = data.contextId;
   }
   file: File = null; // Variable to store file
 
   private fileUploadService: FileUploadService;
 
-  flavorId: any;
+  segmentRef: string;
   conformanceProfile: Observable<IConformanceProfile>;
   documentId: any;
-  pathId: any;
+  contextId: any;
 
   uploadClicked = false;
   hasErrors = false;
@@ -46,30 +46,30 @@ export class ImportDialogComponent implements OnInit {
   ngOnInit() {
   }
 
-   // On file Select
-   onChange(event) {
+  // On file Select
+  onChange(event) {
     this.file = event.target.files[0];
-}
+  }
 
-handleFile(file: File) {
-  this.file = file;
-}
+  handleFile(file: File) {
+    this.file = file;
+  }
 
   onUpload() {
     this.hasErrors = false;
     this.detectionList = [];
-    this. coConstraintTable = undefined;
+    this.coConstraintTable = undefined;
     this.uploadClicked = true;
 
     this.conformanceProfile.pipe(
       take(1),
       mergeMap((cp) => {
-        return this.fileUploadService.upload(this.file, this.flavorId, cp.id, this.documentId, this.pathId).pipe(
+        return this.fileUploadService.upload(this.file, this.segmentRef, cp.id, this.documentId, this.contextId).pipe(
           map((parseResult) => {
-            console.log('ERRORS : ', parseResult );
+            console.log('ERRORS : ', parseResult);
             if (parseResult.coConstraintTable) {
               this.coConstraintTable = parseResult.coConstraintTable;
-          }
+            }
 
             if (parseResult.verificationResult) {
               this.hasErrors = parseResult.verificationResult.errors.filter((err) => err.severity === 'ERROR').length > 0;
@@ -78,28 +78,28 @@ handleFile(file: File) {
               this.detectionList = parseResult.verificationResult.errors;
               if (this.isEmptyErrorList) {
                 this.close();
-                            }
-              console.log('second if for errors' );
+              }
+              console.log('second if for errors');
 
-          } else {
+            } else {
               this.close();
-          }
+            }
           }),
         );
       }),
-  ).subscribe();
+    ).subscribe();
 
-}
+  }
 
-close() {
-  console.log('we closed dialog with table' ,  this.coConstraintTable);
-  this.dialogRef.close(this.coConstraintTable);
+  close() {
+    console.log('we closed dialog with table', this.coConstraintTable);
+    this.dialogRef.close(this.coConstraintTable);
 
-}
-cancel() {
-  console.log('we closed dialog' );
-  this.dialogRef.close();
+  }
+  cancel() {
+    console.log('we closed dialog');
+    this.dialogRef.close();
 
-}
+  }
 
 }

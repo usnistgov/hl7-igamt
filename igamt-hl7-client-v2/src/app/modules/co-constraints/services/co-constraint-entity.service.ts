@@ -38,15 +38,35 @@ export class CoConstraintEntityService {
 
   constructor() { }
 
-  exportAsExcel(table: ICoConstraintTable) {
+  exportAsExcel(table: ICoConstraintTable, conformanceProfileId: string, contextId: string, segmentRef: string) {
     const form = document.createElement('form');
     form.action = '/api/export/coconstraintTable';
     form.method = 'POST';
+
     const json = document.createElement('input');
     json.type = 'hidden';
     json.name = 'json';
     json.value = JSON.stringify(table);
     form.appendChild(json);
+
+    const conformanceProfileIdElm = document.createElement('input');
+    conformanceProfileIdElm.type = 'hidden';
+    conformanceProfileIdElm.name = 'conformanceProfileId';
+    conformanceProfileIdElm.value = conformanceProfileId;
+    form.appendChild(conformanceProfileIdElm);
+
+    const contextIdElm = document.createElement('input');
+    contextIdElm.type = 'hidden';
+    contextIdElm.name = 'contextId';
+    contextIdElm.value = contextId;
+    form.appendChild(contextIdElm);
+
+    const segmentRefElm = document.createElement('input');
+    segmentRefElm.type = 'hidden';
+    segmentRefElm.name = 'segmentRef';
+    segmentRefElm.value = segmentRef;
+    form.appendChild(segmentRefElm);
+
     form.style.display = 'none';
     document.body.appendChild(form);
     form.submit();

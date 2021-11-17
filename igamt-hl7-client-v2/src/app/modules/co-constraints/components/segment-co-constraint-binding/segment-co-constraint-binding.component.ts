@@ -103,10 +103,10 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
       maxHeight: '90vh',
       data: {
         fileUploadService: this.fileUploadService,
-        flavorId: segmentId,
+        segmentRef: this.binding.segment.pathId,
         conformanceProfile: this.conformanceProfile,
         documentId: this.documentRef.documentId,
-        pathId: this.context.pathId,
+        contextId: this.context.pathId,
       },
     });
     dialogRef.afterClosed().subscribe(
@@ -143,7 +143,12 @@ export class SegmentCoConstraintBindingComponent implements OnInit {
   }
 
   exportAsExcel(table: ICoConstraintTable) {
-    this.ccService.exportAsExcel(table);
+    this.conformanceProfile.pipe(
+      take(1),
+      tap((cp) => {
+        this.ccService.exportAsExcel(table, cp.id, this.context.pathId, this.binding.segment.pathId);
+      }),
+    ).subscribe();
   }
   importAsExcel() {
     this.excelImport = true;

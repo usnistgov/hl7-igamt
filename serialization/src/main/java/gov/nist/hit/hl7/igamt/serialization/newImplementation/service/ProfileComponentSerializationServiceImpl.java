@@ -1,4 +1,5 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
+import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraintTable;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentContextDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentItemDataModel;
 
@@ -9,6 +10,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
+import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -85,8 +89,9 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
 	
 	@Autowired
 	CoConstraintService coConstraintService;
-	
-	
+
+	@Autowired
+	CoConstraintSerializationHelper coConstraintSerializationHelper;
 	
 	@Autowired
 	private ProfileComponentBindingSerializationService profileComponentBindingSerializationService;
@@ -352,7 +357,11 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
             	
             	//Coconstraints	
             	if (profileComponentContext.getProfileComponentCoConstraints() != null && profileComponentContext.getProfileComponentCoConstraints().getBindings()  != null) {
-                    Element coConstraintsBindingsElement = new Element("coConstraintsBindingsElement");
+                    if(!profileComponentContext.getLevel().equals(Type.CONFORMANCEPROFILE)) {
+                    	throw new Exception("Could not serialize profile component co-constraint at " + profileComponentContext.getLevel() + " context");
+					}
+					ResourceSkeleton conformanceProfileSkeleton = this.coConstraintSerializationHelper.getConformanceProfileSkeleton(profileComponentContext.getSourceId());
+            		Element coConstraintsBindingsElement = new Element("coConstraintsBindingsElement");
                     profileComponentContextElement.appendChild(coConstraintsBindingsElement);
                     for (CoConstraintBinding coConstraintBinding : profileComponentContext.getProfileComponentCoConstraints().getBindings() ) {
                         Element coConstraintBindingElement = new Element("coConstraintBindingElement");
@@ -360,7 +369,8 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                         if (coConstraintBinding != null) {
                             if (coConstraintBinding.getContext() != null) {
                                 Element coConstraintContext = new Element("coConstraintContext");
-                                coConstraintContext.appendChild(coConstraintBinding.getContext().getName());
+								ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
+                                coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
                                 coConstraintBindingElement.appendChild(coConstraintContext);
                             }
                             if (coConstraintBinding.getBindings() != null) {
@@ -370,7 +380,9 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                                         coConstraintBindingElement.appendChild(coConstraintBindingSegmentElement);
 //            							coConstraintBindingSegmentElement.appendChild(coConstraintContext);
                                         Element coConstraintSegmentName = new Element("coConstraintSegmentName");
-                                        coConstraintSegmentName.appendChild(coConstraintBindingSegment.getSegment().getName());
+                                        ResourceSkeletonBone segmentRef = this.coConstraintSerializationHelper.getSegmentRef(conformanceProfileSkeleton, coConstraintBinding.getContext(), coConstraintBindingSegment.getSegment());
+                                        ResourceSkeleton segmentSkeleton = this.coConstraintSerializationHelper.getSegmentSkeleton(segmentRef.getResource().getId());
+                                        coConstraintSegmentName.appendChild(segmentRef.getLocationInfo().getHl7Path());
                                         coConstraintBindingSegmentElement.appendChild(coConstraintSegmentName);
                                         for (CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {
                                             CoConstraintTable mergedCoConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableConditionalBinding.getValue());
@@ -382,9 +394,10 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                                                 coConstraintTableConditionalBindingElement.appendChild(coConstraintCondition);
                                             }
     
-                                                Element coConstraintsTable = new Element("coConstraintsTable");
-                                                coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintCompact(mergedCoConstraintTable));
-                                                coConstraintTableConditionalBindingElement.appendChild(coConstraintsTable);
+											Element coConstraintsTable = new Element("coConstraintsTable");
+											SerializableCoConstraintTable serializableCoConstraintTable = this.coConstraintSerializationHelper.getSerializableCoConstraintTable(mergedCoConstraintTable ,segmentSkeleton);
+											coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintCompact(serializableCoConstraintTable));
+											coConstraintTableConditionalBindingElement.appendChild(coConstraintsTable);
                                             
 //            	    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("NOEXPORT")) {
 //            		    						 coConstraintsElement = new Element("");

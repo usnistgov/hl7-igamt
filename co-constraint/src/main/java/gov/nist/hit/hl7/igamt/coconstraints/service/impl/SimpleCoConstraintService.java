@@ -82,7 +82,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
     }
 
     CoConstraintTable clone = new CoConstraintTable();
-    clone.setBaseSegment(table.getBaseSegment());
     clone.setId(table.getId());
     clone.setCoConstraints(table.getCoConstraints());
     clone.setTableType(table.getTableType());
@@ -221,7 +220,8 @@ public class SimpleCoConstraintService implements CoConstraintService {
     for(CoConstraintBinding binding:coConstraintsBindings) {
       if(binding.getBindings()!=null) {
         for(CoConstraintBindingSegment segBinding: binding.getBindings()) {
-          rel.add(new RelationShip(new ReferenceIndentifier(segBinding.getFlavorId(), Type.SEGMENT), parent, new ReferenceLocation(Type.COCONSTRAINTGROUP,segBinding.getName(), null)));
+          // TODO Review Line Below :
+          //          rel.add(new RelationShip(new ReferenceIndentifier(segBinding.getFlavorId(), Type.SEGMENT), parent, new ReferenceLocation(Type.COCONSTRAINTGROUP,segBinding.getName(), null)));
           if(segBinding.getTables() !=null) {
             for( CoConstraintTableConditionalBinding CoConstraintTableConditionalBinding : segBinding.getTables()) {
               if(CoConstraintTableConditionalBinding.getValue() !=null) {
@@ -266,12 +266,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
     return rel;
   }
 
-  /**
-   * @param coConstraints
-   * @param parent
-   * @param name
-   * @return
-   */
   private Collection<? extends RelationShip> collectDependencies(List<CoConstraint> coConstraints,
       ReferenceIndentifier parent, String path) {
     HashSet<RelationShip> rel = new HashSet<RelationShip>();
@@ -282,12 +276,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
     return rel;
   }
 
-  /**
-   * @param cc
-   * @param parent
-   * @param path
-   * @return
-   */
   private Collection<? extends RelationShip> collectDependencies(CoConstraint cc,
       ReferenceIndentifier parent, String path) {
     HashSet<RelationShip> rel = new HashSet<RelationShip>();
@@ -300,13 +288,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
     return rel;
   }
 
-  /**
-   * @param value
-   * @param value2
-   * @param parent
-   * @param path
-   * @return
-   */
   private Collection<? extends RelationShip> collectDependencies(CoConstraintCell cell,
       ReferenceIndentifier parent, String path) {
     // TODO Auto-generated method stub
@@ -412,11 +393,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
       }); 
     }
   }
-  /**
-   * @param type
-   * @param cell
-   * @param newKeys
-   */
+
   private void updateDepenedencies(CoConstraintCell cell,
       HashMap<RealKey, String> newKeys) {
     if(cell instanceof ValueSetCell) {

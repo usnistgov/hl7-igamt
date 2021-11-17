@@ -14,7 +14,6 @@ import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import gov.nist.hit.hl7.igamt.service.CoConstraintXMLSerialization;
 import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import nu.xom.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,47 +55,6 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
             }
         }
         return ".";
-    }
-
-    @Override
-    public ResourceSkeletonBone getSegmentRef(String conformanceProfileId, StructureElementRef context, StructureElementRef segment) throws ResourceNotFoundException, PathNotFoundException {
-        ResourceSkeleton skeleton = new ResourceSkeleton(
-                new ResourceRef(Type.CONFORMANCEPROFILE, conformanceProfileId),
-                this.resourceSkeletonService
-        );
-
-        ResourceSkeleton contextRef = skeleton.get(context.getPathId());
-        if(contextRef != null) {
-            ResourceSkeletonBone segmentRef = contextRef.get(segment.getPathId());
-            if(segmentRef != null) {
-                return segmentRef;
-            } else {
-                throw new PathNotFoundException("Segment Ref at Path " + context.getPathId() + " was not found");
-            }
-        } else {
-            throw new PathNotFoundException("CoConstraint Context at Path " + context.getPathId() + " was not found");
-        }
-    }
-
-    @Override
-    public DataElementHeaderInfo getDataElementHeaderInfo(String segmentId, DataElementHeader header) throws ResourceNotFoundException, PathNotFoundException {
-        ResourceSkeleton skeleton = new ResourceSkeleton(
-                new ResourceRef(Type.SEGMENT, segmentId),
-                this.resourceSkeletonService
-        );
-        ResourceSkeletonBone target = skeleton.get(header.getKey());
-        if(target != null) {
-            DataElementHeaderInfo info = new DataElementHeaderInfo();
-            info.setDatatype(target.getResource().getFixedName());
-            info.setVersion(target.getResource().getDomainInfo().getVersion());
-            info.setLocation(target.getPosition());
-            info.setType(target.getLocationInfo().getType());
-            info.setParent(target.getParent().getFixedName());
-            info.setCardinality(target.getCardinality() != null ? new CoConstraintCardinality(target.getCardinality().getMin(), target.getCardinality().getMax()) : null);
-            return info;
-        } else {
-            throw new PathNotFoundException("CoConstraint Header at Path " + header.getKey() + " was not found");
-        }
     }
 
     @Override
@@ -377,7 +335,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     public Element serializeCodeCell(ResourceSkeleton segment, DataElementHeader header, CodeCell cell) throws CoConstraintXMLSerializationException {
         return this.processDataElementHeader(segment, header, (target) -> {
             Element code = new Element("Code");
-            code.addAttribute(attr("Name", header.getName()));
+            code.addAttribute(attr("Name", target.getLocationInfo().getHl7Path()));
             code.addAttribute(attr("Code", cell.getCode()));
             code.addAttribute(attr("CodeSystem", cell.getCodeSystem()));
             code.addAttribute(attr("Path", this.getXMLPathFromPositionalPath(target.getLocationInfo().getPositionalPath())));
@@ -396,7 +354,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     public Element serializeValueSetCell(ResourceSkeleton segment, DataElementHeader header, ValueSetCell cell) throws CoConstraintXMLSerializationException {
         return this.processDataElementHeader(segment, header, (target) -> {
             Element valueSet = new Element("ValueSet");
-            valueSet.addAttribute(attr("Name", header.getName()));
+            valueSet.addAttribute(attr("Name", target.getLocationInfo().getHl7Path()));
             valueSet.addAttribute(attr("Path", this.getXMLPathFromPositionalPath(target.getLocationInfo().getPositionalPath())));
             cell.getBindings().stream().map((binding) -> {
                 Element vsBinding = new Element("ValueSetBinding");
@@ -432,7 +390,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     public Element serializeDatatypeCell(ResourceSkeleton segment, DataElementHeader header, DatatypeCell cell) throws CoConstraintXMLSerializationException {
         return this.processDataElementHeader(segment, header, (target) -> {
             Element datatype = new Element("PlainText");
-            datatype.addAttribute(attr("Name", header.getName()));
+            datatype.addAttribute(attr("Name", target.getLocationInfo().getHl7Path()));
             datatype.addAttribute(attr("Path", this.getXMLPathFromPositionalPath(target.getLocationInfo().getPositionalPath())));
             datatype.addAttribute(attr("Value", cell.getValue()));
             return datatype;
@@ -443,7 +401,7 @@ public class SimpleCoConstraintXMLSerialization implements CoConstraintXMLSerial
     public Element serializeValueCell(ResourceSkeleton segment, DataElementHeader header, ValueCell cell) throws CoConstraintXMLSerializationException {
         return this.processDataElementHeader(segment, header, (target) -> {
             Element value = new Element("PlainText");
-            value.addAttribute(attr("Name", header.getName()));
+            value.addAttribute(attr("Name", target.getLocationInfo().getHl7Path()));
             value.addAttribute(attr("Path", this.getXMLPathFromPositionalPath(target.getLocationInfo().getPositionalPath())));
             value.addAttribute(attr("Value", cell.getValue()));
             return value;

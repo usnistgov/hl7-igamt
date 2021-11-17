@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
+import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableDataElementHeader;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.DeltaExportConfigMode;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +39,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 
 
 	@Override
-	public Element SerializeCoConstraintCompactDelta(CoConstraintTable coConstraintsTable, List<CoConstraintBinding> coConstraintDeltaChanged, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) {
+	public Element SerializeCoConstraintCompactDelta(SerializableCoConstraintTable coConstraintsTable, List<CoConstraintBinding> coConstraintDeltaChanged, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) {
 		if (coConstraintsTable != null) {
 			Element coConstraintsElement = new Element("coconstraints");
 			Element tableElement = new Element("table");
@@ -55,7 +58,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 	}
 
 	@Override
-	public Element SerializeCoConstraintCompact(CoConstraintTable coConstraintsTable) {
+	public Element SerializeCoConstraintCompact(SerializableCoConstraintTable coConstraintsTable) {
 		if (coConstraintsTable != null) {
 			Element coConstraintsElement = new Element("coconstraints");
 			Element tableElement = new Element("table");
@@ -74,7 +77,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 	}
 
 	@Override
-	public Element SerializeCoConstraintVerbose(CoConstraintTable coConstraintsTable) {
+	public Element SerializeCoConstraintVerbose(SerializableCoConstraintTable coConstraintsTable) {
 		if (coConstraintsTable != null) {
 			Element coConstraintsElement = new Element("coconstraints");
 			Element tableElement = new Element("table");
@@ -104,8 +107,8 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return null;
 	}
 
-	private Element serializeCoConstraintsTableContentCompactDelta(CoConstraintTable coConstraintsTable,
-			List<CoConstraintHeader> headersList, int calculateGroupNameColspan, List<CoConstraintBinding> coConstraintDeltaChanged, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) {
+	private Element serializeCoConstraintsTableContentCompactDelta(SerializableCoConstraintTable coConstraintsTable,
+			List<SerializableDataElementHeader> headersList, int calculateGroupNameColspan, List<CoConstraintBinding> coConstraintDeltaChanged, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) {
 		Element tableContent = new Element("tbody");
 		if (coConstraintsTable.getCoConstraints() != null) {
 			int position = 0;
@@ -126,8 +129,8 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return tableContent;
 	}
 
-	private Element serializeCoConstraintsTableContentCompact(CoConstraintTable coConstraintsTable,
-			List<CoConstraintHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativeHeadersList, int calculateGroupNameColspan) {
+	private Element serializeCoConstraintsTableContentCompact(SerializableCoConstraintTable coConstraintsTable,
+			List<SerializableDataElementHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativeHeadersList, int calculateGroupNameColspan) {
 		Element tableContent = new Element("tbody");
 		boolean isGroup = false;
 		if(coConstraintsTable.getGroups().isEmpty()) {
@@ -151,7 +154,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return tableContent;
 	}
 
-	public Element serializeCoConstraintsTableHeaderCompact(CoConstraintTable coConstraintTable) {
+	public Element serializeCoConstraintsTableHeaderCompact(SerializableCoConstraintTable coConstraintTable) {
 		Element thead = new Element("thead");
 		thead.addAttribute(new Attribute("class", "contentThead"));
 		Element tr = new Element("tr");
@@ -194,12 +197,12 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		}
 		thead.appendChild(tr);
 		tr = new Element("tr");
-		for (CoConstraintHeader coConstraintHeader : coConstraintTable.getHeaders().getSelectors()) {
+		for (SerializableDataElementHeader coConstraintHeader : coConstraintTable.getHeaders().getSerializableSelectors()) {
 			if (coConstraintHeader != null) {
-				if (((DataElementHeader) coConstraintHeader).isCardinality()) {
+				if (coConstraintHeader.isCardinality()) {
 					Element thIF = new Element("th");
 					thIF.addAttribute(new Attribute("class", "ifContentThead"));
-					String headerLabel = ((DataElementHeader) coConstraintHeader).getColumnType().name() + " " + ((DataElementHeader) coConstraintHeader).getName();
+					String headerLabel = ((DataElementHeader) coConstraintHeader).getColumnType().name() + " " + coConstraintHeader.getName();
 					thIF.appendChild(headerLabel);
 					tr.appendChild(thIF);
 					Element thCard = new Element("th");
@@ -209,17 +212,17 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 				} else {
 					Element thIF = new Element("th");
 					thIF.addAttribute(new Attribute("class", "ifContentThead"));
-					String headerLabel = ((DataElementHeader) coConstraintHeader).getColumnType().name() + " " + ((DataElementHeader) coConstraintHeader).getName();
+					String headerLabel = coConstraintHeader.getColumnType().name() + " " + coConstraintHeader.getName();
 					thIF.appendChild(headerLabel);
 					tr.appendChild(thIF);
 				}
 			}
 		}
-		for (CoConstraintHeader coConstraintHeader : coConstraintTable.getHeaders().getConstraints()) {
+		for (SerializableDataElementHeader coConstraintHeader : coConstraintTable.getHeaders().getSerializableConstraints()) {
 			if (coConstraintHeader != null) {
-				if (((DataElementHeader) coConstraintHeader).isCardinality()) {
+				if (coConstraintHeader.isCardinality()) {
 					Element thThen = new Element("th");
-					String headerLabel = ((DataElementHeader) coConstraintHeader).getColumnType().name() + " " + ((DataElementHeader) coConstraintHeader).getName();
+					String headerLabel = coConstraintHeader.getColumnType().name() + " " + coConstraintHeader.getName();
 					thThen.appendChild(headerLabel);
 					tr.appendChild(thThen);
 					Element thCard = new Element("th");
@@ -227,7 +230,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 					tr.appendChild(thCard);
 				} else {
 					Element thThen = new Element("th");
-					String headerLabel = ((DataElementHeader) coConstraintHeader).getColumnType().name() + " " + ((DataElementHeader) coConstraintHeader).getName();
+					String headerLabel = coConstraintHeader.getColumnType().name() + " " + coConstraintHeader.getName();
 					thThen.appendChild(headerLabel);
 					tr.appendChild(thThen);
 				}
@@ -368,7 +371,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 			trD1.appendChild(tdD1);
 			trD2.appendChild(tdD2);
 			DatatypeCell datatypeCell = (DatatypeCell) coConstraintTableCell;
-			if (datatypeCell.getDatatypeId() != null) {
+			if (datatypeCell.getDatatypeId() != null && !Strings.isNullOrEmpty(datatypeCell.getDatatypeId())) {
 				Datatype datatype = datatypeService.findById(datatypeCell.getDatatypeId());
 				tdD1.appendChild("Value : " + datatype.getName());
 				tdD2.appendChild("Flavor : " + datatype.getLabel());
@@ -383,7 +386,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return tdCell;
 	}
 
-	public Element serializeRowCompactDelta(CoConstraint coConstraintTableRow, List<CoConstraintHeader> headersList, int position, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) {
+	public Element serializeRowCompactDelta(CoConstraint coConstraintTableRow, List<SerializableDataElementHeader> headersList, int position, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) {
 		if (conformanceProfileExportConfiguration.getDeltaConfig().getMode().equals(DeltaExportConfigMode.HIDE) ||
 				conformanceProfileExportConfiguration.getDeltaConfig().getMode().equals(DeltaExportConfigMode.HIDE_WITH_CHANGED_ONLY) ||
 				conformanceProfileExportConfiguration.getDeltaConfig().getMode().equals(DeltaExportConfigMode.HIDE_WITH_OLD_VALUES)) {
@@ -415,17 +418,15 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 			td.appendChild(coConstraintTableRow.getRequirement().getCardinality().getMax());
 			tr.appendChild(td);
 
-			for (CoConstraintHeader header : headersList) {
+			for (SerializableDataElementHeader header : headersList) {
 				if (coConstraintTableRow.getCells().containsKey(header.getKey())) {
 					CoConstraintCell coConstraintTableCell = coConstraintTableRow.getCells().get(header.getKey());
 					Element tdCell = serializeCellCompact(coConstraintTableCell, coConstraintTableCell.getType());
 					tr.appendChild(tdCell);
-					if (header.getType().equals(HeaderType.DATAELEMENT)) {
-						if (((DataElementHeader) header).isCardinality()) {
-							Element tdCard = new Element("td");
-							tdCard.appendChild(coConstraintTableCell.getCardinalityMax());
-							tr.appendChild(tdCard);
-						}
+					if (header.isCardinality()) {
+						Element tdCard = new Element("td");
+						tdCard.appendChild(coConstraintTableCell.getCardinalityMax());
+						tr.appendChild(tdCard);
 					}
 				} else {
 					Element tdEmpty = new Element("td");
@@ -591,7 +592,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 			}
 
 
-			for (CoConstraintHeader header : headersList) {
+			for (SerializableDataElementHeader header : headersList) {
 				if (coConstraintTableRow.getCells().containsKey(header.getKey())) {
 					CoConstraintCell coConstraintTableCell = coConstraintTableRow.getCells().get(header.getKey());
 					// I added this if close because it throws an error in a context outside of Delta where coConstraintTableCell is null
@@ -599,12 +600,10 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 						Element tdCell = serializeCellCompact(coConstraintTableCell, coConstraintTableCell.getType());
 						tr.appendChild(tdCell);
 					}
-					if (header.getType().equals(HeaderType.DATAELEMENT)) {
-						if (((DataElementHeader) header).isCardinality()) {
-							Element tdCard = new Element("td");
-							tdCard.appendChild(coConstraintTableCell.getCardinalityMax());
-							tr.appendChild(tdCard);
-						}
+					if (header.isCardinality()) {
+						Element tdCard = new Element("td");
+						tdCard.appendChild(coConstraintTableCell.getCardinalityMax());
+						tr.appendChild(tdCard);
 					}
 				} else {
 					Element tdEmpty = new Element("td");
@@ -619,7 +618,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 	}
 
 
-	public Element serializeRowCompact(CoConstraint coConstraintTableRow, List<CoConstraintHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList, boolean isGroup, boolean isWithinGroup, int position) {
+	public Element serializeRowCompact(CoConstraint coConstraintTableRow, List<SerializableDataElementHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList, boolean isGroup, boolean isWithinGroup, int position) {
 		Element tr = new Element("tr");
 		Element td = new Element("td");
 		if (position == 1) {
@@ -637,7 +636,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		td = new Element("td");
 		td.appendChild(coConstraintTableRow.getRequirement().getCardinality().getMax());
 		tr.appendChild(td);
-		for (CoConstraintHeader header : ifAndThenHeadersList) {
+		for (SerializableDataElementHeader header : ifAndThenHeadersList) {
 			if (coConstraintTableRow.getCells().containsKey(header.getKey())) {
 				CoConstraintCell coConstraintTableCell = coConstraintTableRow.getCells().get(header.getKey());
 				if(coConstraintTableCell != null) {
@@ -645,7 +644,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 					tr.appendChild(tdCell);
 				}
 				if (header.getType().equals(HeaderType.DATAELEMENT)) {
-					if (((DataElementHeader) header).isCardinality()) {
+					if (header.isCardinality()) {
 						Element tdCard = new Element("td");
 						tdCard.appendChild(coConstraintTableCell.getCardinalityMax());
 						tr.appendChild(tdCard);
@@ -674,13 +673,6 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 					Element tdCell = serializeCellCompact(coConstraintTableCell, coConstraintTableCell.getType());
 					tr.appendChild(tdCell);
 				}
-				if (header.getType().equals(HeaderType.DATAELEMENT)) {
-					if (((DataElementHeader) header).isCardinality()) {
-						Element tdCard = new Element("td");
-						tdCard.appendChild(coConstraintTableCell.getCardinalityMax());
-						tr.appendChild(tdCard);
-					}
-				}
 			} else {
 				Element tdEmpty = new Element("td");
 				tr.appendChild(tdEmpty);
@@ -692,7 +684,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 	}
 
 
-	public Element serializeGroupCompactDelta(CoConstraintGroupBinding coConstraintGroupBinding, List<CoConstraintHeader> headersList,
+	public Element serializeGroupCompactDelta(CoConstraintGroupBinding coConstraintGroupBinding, List<SerializableDataElementHeader> headersList,
 			int colspanTableWidth, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) {
 		return null;
 		//        Element groupElement = new Element("tr");
@@ -727,7 +719,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		//        return groupElement;
 	}
 
-	public Element serializeGroupCompact(CoConstraintGroupBinding coConstraintGroupBinding, List<CoConstraintHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList, boolean isGroup, boolean isWithinGroup,
+	public Element serializeGroupCompact(CoConstraintGroupBinding coConstraintGroupBinding, List<SerializableDataElementHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList, boolean isGroup, boolean isWithinGroup,
 			int colspanTableWidth) {
 		Element groupElement = new Element("tr");
 		// groupElement.addAttribute(new Attribute("class", "contentTable"));
@@ -772,7 +764,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 	}
 
 
-	public Element serializeGroupContentCompactDelta(List<CoConstraint> coConstraints, List<CoConstraintHeader> headersList, int colspanTableWidth, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) {
+	public Element serializeGroupContentCompactDelta(List<CoConstraint> coConstraints, List<SerializableDataElementHeader> headersList, int colspanTableWidth, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) {
 		Element tableContent = new Element("tbody");
 		if (coConstraints != null) {
 			int position = 0;
@@ -788,7 +780,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return tableContent;
 	}
 
-	public Element serializeGroupContentCompact(List<CoConstraint> coConstraints, List<CoConstraintHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList, boolean isGroup, int colspanTableWidth) {
+	public Element serializeGroupContentCompact(List<CoConstraint> coConstraints, List<SerializableDataElementHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList, boolean isGroup, int colspanTableWidth) {
 		Element tableContent = new Element("tbody");
 		if (coConstraints != null) {
 			int position = 0;
@@ -807,7 +799,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return tableContent;
 	}
 
-	private Element serializeGroupContentVerbose(CoConstraintTable coConstraintTable, List<CoConstraint> coConstraints, List<CoConstraintHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList,
+	private Element serializeGroupContentVerbose(SerializableCoConstraintTable coConstraintTable, List<CoConstraint> coConstraints, List<SerializableDataElementHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList,
 			int colspanTableWidth) {
 		Element tableContent = new Element("tbody");
 		if (coConstraints != null) {
@@ -818,7 +810,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return tableContent;
 	}
 
-	private Element serializeGroupVerbose(CoConstraintTable coConstraintTable, CoConstraintGroupBinding coConstraintGroupBinding, List<CoConstraintHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList, boolean isGroup, int colspanTableWidth) {
+	private Element serializeGroupVerbose(SerializableCoConstraintTable coConstraintTable, CoConstraintGroupBinding coConstraintGroupBinding, List<SerializableDataElementHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList, boolean isGroup, int colspanTableWidth) {
 		Element groupElement = new Element("table");
 		groupElement.addAttribute(new Attribute("class", "contentTable"));
 		Element groupeTableHeader = serializeGroupHeaderVerbose(coConstraintGroupBinding, colspanTableWidth);
@@ -848,7 +840,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return thead;
 	}
 
-	private void serializeRowVerbose(CoConstraintTable coConstraintsTable, CoConstraint coConstraintTableRow, List<CoConstraintHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList, Boolean isGroup, Element tableContent) {
+	private void serializeRowVerbose(SerializableCoConstraintTable coConstraintsTable, CoConstraint coConstraintTableRow, List<SerializableDataElementHeader> ifAndThenHeadersList, List<CoConstraintHeader> narrativesHeadersList, Boolean isGroup, Element tableContent) {
 		Map<String, List<String>> headerIdsMap = filterHeadersIds(coConstraintsTable);
 		Map<String, String> mapIdToLabel = generateMapIdToLabel(coConstraintsTable);
 		// Element thColumn = new Element("th");
@@ -980,7 +972,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return;
 	}
 
-	private Element serializeCoConstraintsTableHeaderVerbose(CoConstraintTable coConstraintsTable) {
+	private Element serializeCoConstraintsTableHeaderVerbose(SerializableCoConstraintTable coConstraintsTable) {
 		Element thead = new Element("thead");
 		thead.addAttribute(new Attribute("class", "contentThead"));
 		Element tr = new Element("tr");
@@ -1056,7 +1048,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 	//		return thead;
 	//	}
 
-	public List<String> generateHeadersIDs(CoConstraintTable coConstraintTable) {
+	public List<String> generateHeadersIDs(SerializableCoConstraintTable coConstraintTable) {
 		List<String> headerIds = new ArrayList<String>();
 		for (CoConstraintHeader header : coConstraintTable.getHeaders().getSelectors()) {
 			String id = header.getKey();
@@ -1073,7 +1065,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return headerIds;
 	}
 
-	public int calculateGroupNameColspan(CoConstraintTable coConstraintTable) {
+	public int calculateGroupNameColspan(SerializableCoConstraintTable coConstraintTable) {
 		int i = calculateHeadersNumber(coConstraintTable.getHeaders().getSelectors()) + calculateHeadersNumber(coConstraintTable.getHeaders().getConstraints())
 		+ calculateHeadersNumber(coConstraintTable.getHeaders().getNarratives());
 		if(!coConstraintTable.getGroups().isEmpty()) {
@@ -1099,7 +1091,7 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		int number = headers.size();
 		for (CoConstraintHeader header : headers) {
 			if (header.getType().equals(HeaderType.DATAELEMENT)) {
-				if (((DataElementHeader) header).isCardinality()) {
+				if (((SerializableDataElementHeader) header).isCardinality()) {
 					number = number + 1;
 				}
 			}
@@ -1107,14 +1099,10 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return number;
 	}
 
-	private List<CoConstraintHeader> generateHeadersList(CoConstraintTable coConstraintTable) {
-		List<CoConstraintHeader> headersList = new ArrayList<CoConstraintHeader>();
-		for (CoConstraintHeader header : coConstraintTable.getHeaders().getSelectors()) {
-			headersList.add(header);
-		}
-		for (CoConstraintHeader header : coConstraintTable.getHeaders().getConstraints()) {
-			headersList.add(header);
-		}
+	private List<SerializableDataElementHeader> generateHeadersList(SerializableCoConstraintTable coConstraintTable) {
+		List<SerializableDataElementHeader> headersList = new ArrayList<SerializableDataElementHeader>();
+		headersList.addAll(coConstraintTable.getHeaders().getSerializableSelectors());
+		headersList.addAll(coConstraintTable.getHeaders().getSerializableConstraints());
 		//        for (CoConstraintHeader header : coConstraintTable.getHeaders().getNarratives()) {
 		//            headersList.add(header);
 		//        }
@@ -1128,16 +1116,16 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 	//		return null;
 	//	}
 
-	public Map<String, List<String>> filterHeadersIds(CoConstraintTable coConstraintTable) {
+	public Map<String, List<String>> filterHeadersIds(SerializableCoConstraintTable coConstraintTable) {
 		Map<String, List<String>> headerIdsMap = new HashMap<>();
 		List<String> ifListIds = new ArrayList<>();
 		List<String> thenListIds = new ArrayList<>();
 		List<String> narrativeListIds = new ArrayList<>();
-		for (CoConstraintHeader coConstraintTableHeader : coConstraintTable.getHeaders().getSelectors()) {
+		for (SerializableDataElementHeader coConstraintTableHeader : coConstraintTable.getHeaders().getSerializableSelectors()) {
 			String id = coConstraintTableHeader.getKey();
 			ifListIds.add(id);
 		}
-		for (CoConstraintHeader coConstraintTableHeader : coConstraintTable.getHeaders().getConstraints()) {
+		for (SerializableDataElementHeader coConstraintTableHeader : coConstraintTable.getHeaders().getSerializableConstraints()) {
 			String id = coConstraintTableHeader.getKey();
 			thenListIds.add(id);
 		}
@@ -1151,14 +1139,14 @@ public class CoConstraintSerializationServiceImpl implements CoConstraintSeriali
 		return headerIdsMap;
 	}
 
-	public Map<String, String> generateMapIdToLabel(CoConstraintTable coConstraintTable) {
+	public Map<String, String> generateMapIdToLabel(SerializableCoConstraintTable coConstraintTable) {
 		Map<String, String> mapIdToLabel = new HashMap<>();
-		for (CoConstraintHeader coConstraintTableHeader : coConstraintTable.getHeaders().getSelectors()) {
-			String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name() + " " + ((DataElementHeader) coConstraintTableHeader).getName();
+		for (SerializableDataElementHeader coConstraintTableHeader : coConstraintTable.getHeaders().getSerializableSelectors()) {
+			String headerLabel = coConstraintTableHeader.getColumnType().name() + " " + coConstraintTableHeader.getName();
 			mapIdToLabel.put(coConstraintTableHeader.getKey(), headerLabel);
 		}
-		for (CoConstraintHeader coConstraintTableHeader : coConstraintTable.getHeaders().getConstraints()) {
-			String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name() + " " + ((DataElementHeader) coConstraintTableHeader).getName();
+		for (SerializableDataElementHeader coConstraintTableHeader : coConstraintTable.getHeaders().getSerializableConstraints()) {
+			String headerLabel = coConstraintTableHeader.getColumnType().name() + " " + coConstraintTableHeader.getName();
 			mapIdToLabel.put(coConstraintTableHeader.getKey(), headerLabel);
 		}
 		for (CoConstraintHeader coConstraintTableHeader : coConstraintTable.getHeaders().getNarratives()) {

@@ -1,8 +1,10 @@
 package gov.nist.hit.hl7.igamt.ig.service;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGrouper;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.coconstraints.model.DataElementHeader;
 import gov.nist.hit.hl7.igamt.coconstraints.model.StructureElementRef;
+import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraintTable;
 import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableDataElementHeader;
 import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableGrouper;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
@@ -21,4 +23,8 @@ public interface CoConstraintSerializationHelper {
     SerializableGrouper getSerializableGrouper(CoConstraintGrouper grouper, ResourceSkeleton segment) throws ResourceNotFoundException, PathNotFoundException;
 
     ResourceSkeletonBone getStructureElementRef(ResourceSkeleton root, StructureElementRef structureElementRef) throws ResourceNotFoundException, PathNotFoundException;
+
+    ResourceSkeletonBone getSegmentRef(ResourceSkeleton root, StructureElementRef context, StructureElementRef segmentRef) throws ResourceNotFoundException, PathNotFoundException;
+
+    SerializableCoConstraintTable getSerializableCoConstraintTable(CoConstraintTable table, ResourceSkeleton segment) throws ResourceNotFoundException, PathNotFoundException;
 }

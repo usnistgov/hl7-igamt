@@ -2,8 +2,10 @@ package gov.nist.hit.hl7.igamt.service.impl;
 
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
+import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraintTable;
 import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableDataElementHeader;
 import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableGrouper;
+import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableHeaders;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
@@ -14,6 +16,10 @@ import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
 import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class SimpleCoConstraintSerializationHelper implements CoConstraintSerializationHelper {
@@ -91,6 +97,60 @@ public class SimpleCoConstraintSerializationHelper implements CoConstraintSerial
             return target;
         }
     }
+
+    @Override
+    public ResourceSkeletonBone getSegmentRef(ResourceSkeleton root, StructureElementRef context, StructureElementRef segmentRef) throws ResourceNotFoundException, PathNotFoundException {
+        ResourceSkeletonBone contextSkeleton = getStructureElementRef(root, context);
+        return getStructureElementRef(contextSkeleton, segmentRef);
+    }
+
+    @Override
+    public SerializableCoConstraintTable getSerializableCoConstraintTable(CoConstraintTable table, ResourceSkeleton segment) throws ResourceNotFoundException, PathNotFoundException {
+        SerializableCoConstraintTable coConstraintTable = new SerializableCoConstraintTable();
+        coConstraintTable.setId(table.getId());
+        coConstraintTable.setTableType(table.getTableType());
+        coConstraintTable.setCoConstraints(table.getCoConstraints());
+        coConstraintTable.setDelta(table.getDelta());
+        coConstraintTable.setGroups(table.getGroups());
+        coConstraintTable.setHeaders(getSerializableHeaders(table.getHeaders(), segment));
+        return coConstraintTable;
+    }
+
+    public SerializableHeaders getSerializableHeaders(CoConstraintHeaders headers, ResourceSkeleton segment) throws ResourceNotFoundException, PathNotFoundException {
+        SerializableHeaders serializableHeaders = new SerializableHeaders();
+        serializableHeaders.setNarratives(headers.getNarratives());
+        serializableHeaders.setSerializableSelectors(
+                getSerializableDataElementHeaders(
+                        headers.getSelectors().stream()
+                                .map((h) -> (DataElementHeader) h)
+                                .collect(Collectors.toList()),
+                        segment
+                )
+        );
+        serializableHeaders.setSerializableConstraints(
+                getSerializableDataElementHeaders(
+                        headers.getConstraints().stream()
+                                .map((h) -> (DataElementHeader) h)
+                                .collect(Collectors.toList()),
+                        segment
+                )
+        );
+        if(headers.getGrouper() != null) {
+            serializableHeaders.setGrouper(
+                    getSerializableGrouper(headers.getGrouper(), segment)
+            );
+        }
+        return serializableHeaders;
+    }
+
+    public List<SerializableDataElementHeader> getSerializableDataElementHeaders(List<DataElementHeader> headers, ResourceSkeleton segment) throws ResourceNotFoundException, PathNotFoundException {
+        List<SerializableDataElementHeader> serializableDataElementHeaders = new ArrayList<>();
+        for (DataElementHeader header : headers) {
+            serializableDataElementHeaders.add(getSerializableDataElementHeader(header, segment));
+        }
+        return serializableDataElementHeaders;
+    }
+
 
     boolean hasCardinalityColumn(DataElementHeader header, ResourceSkeletonBoneCardinality cardinality) {
         try {

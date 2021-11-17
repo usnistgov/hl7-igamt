@@ -1,10 +1,10 @@
 package gov.nist.hit.hl7.igamt.coconstraints.serialization;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGrouper;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
-public class SerializableGrouper {
+public class SerializableGrouper extends CoConstraintGrouper  {
     private String name;
-    private String pathId;
     private String description;
     private String version;
     private String datatype;
@@ -16,14 +16,6 @@ public class SerializableGrouper {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getPathId() {
-        return pathId;
-    }
-
-    public void setPathId(String pathId) {
-        this.pathId = pathId;
     }
 
     public String getDescription() {

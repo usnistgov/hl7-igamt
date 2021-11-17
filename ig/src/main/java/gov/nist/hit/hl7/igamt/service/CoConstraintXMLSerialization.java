@@ -14,9 +14,6 @@ import java.util.List;
 
 public interface CoConstraintXMLSerialization {
 
-    ResourceSkeletonBone getSegmentRef(String conformanceProfileId, StructureElementRef context, StructureElementRef segment) throws ResourceNotFoundException, PathNotFoundException;
-    DataElementHeaderInfo getDataElementHeaderInfo(String segmentId, DataElementHeader header) throws ResourceNotFoundException, PathNotFoundException;
-
     Element serialize(ConformanceProfile conformanceProfile) throws CoConstraintXMLSerializationException;
 
     Element serializeBinding(ResourceSkeleton conformanceProfile, CoConstraintBinding coConstraintBinding, String cpId) throws CoConstraintXMLSerializationException;

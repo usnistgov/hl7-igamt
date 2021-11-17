@@ -6,11 +6,15 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 public class StructureElementRef {
     private String pathId;
-//    @Deprecated
-//    private Type type;
-//    @Deprecated
-//    private String name; // This is always null, instead I use segment Name from StructureElementRef segment
     private InstancePath path;
+
+    public StructureElementRef() {
+    }
+
+    public StructureElementRef(String pathId) {
+        this.pathId = pathId;
+        this.path = InstancePath.fromString(pathId);
+    }
 
     public String getPathId() {
         return pathId;
@@ -20,15 +24,6 @@ public class StructureElementRef {
         this.pathId = pathId;
     }
 
-//    @Deprecated
-//    public String getName() {
-//        return name;
-//    }
-//    @Deprecated
-//    public void setName(String name) {
-//        this.name = name;
-//    }
-
     public InstancePath getPath() {
         return path;
     }
@@ -37,12 +32,4 @@ public class StructureElementRef {
         this.path = path;
     }
 
-//    @Deprecated
-//    public Type getType() {
-//        return type;
-//    }
-//    @Deprecated
-//    public void setType(Type type) {
-//        this.type = type;
-//    }
 }

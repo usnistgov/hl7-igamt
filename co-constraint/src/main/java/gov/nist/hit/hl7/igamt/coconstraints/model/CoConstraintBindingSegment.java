@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 public class CoConstraintBindingSegment extends WithDelta {
     private StructureElementRef segment;
-//    private String flavorId;
     private String name;
     private DeltaField<String> nameDelta;
     private List<CoConstraintTableConditionalBinding> tables;
@@ -27,16 +26,6 @@ public class CoConstraintBindingSegment extends WithDelta {
         this.segment = segment;
     }
 
-//    @Deprecated
-//    public String getFlavorId() {
-//        return flavorId;
-//    }
-//
-//    @Deprecated
-//    public void setFlavorId(String flavorId) {
-//        this.flavorId = flavorId;
-//    }
-
     public List<CoConstraintTableConditionalBinding> getTables() {
         return tables;
     }
@@ -48,7 +37,6 @@ public class CoConstraintBindingSegment extends WithDelta {
     public CoConstraintBindingSegment clone() {
         CoConstraintBindingSegment clone = new CoConstraintBindingSegment();
         clone.setSegment(segment);
-//        clone.setFlavorId(flavorId);
         clone.setName(name);
         clone.setTables(tables.stream().map(CoConstraintTableConditionalBinding::clone).collect(Collectors.toList()));
         return clone;

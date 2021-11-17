@@ -522,7 +522,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	    for(CoConstraintBinding binding:coConstraintsBindings) {
 	      if(binding.getBindings()!=null) {
 	        for(CoConstraintBindingSegment segBinding: binding.getBindings()) {
-	          decision.getSegmentFilterMap().put(segBinding.getFlavorId(), true);
+	        	// TODO Do we want to force export of whatever flavor is used in CP at CoConstraint binding location?
+//	          decision.getSegmentFilterMap().put(segBinding.getFlavorId(), true);
 	          for( CoConstraintTableConditionalBinding CoConstraintTableConditionalBinding : segBinding.getTables()) {
 	            if(CoConstraintTableConditionalBinding.getValue() !=null) {
 	              this.processCoConstraintTable(CoConstraintTableConditionalBinding.getValue(), decision, config);
@@ -534,7 +535,6 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	  }
 
 	  /**
-	   * @param parent
 	   * @param value
 	   * @return
 	   * @throws CoConstraintGroupNotFoundException 

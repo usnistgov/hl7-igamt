@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service.parser;
 
+import com.google.common.base.Strings;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -7,10 +8,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CoConstraintSpreadSheetParser {
 	private int if_start = 3;
@@ -142,11 +140,11 @@ public class CoConstraintSpreadSheetParser {
 
 	public int find(Sheet sheet, String columnType) {
 		Row firstRow = sheet.getRow(0);
-		int width = firstRow.getPhysicalNumberOfCells();
-		for(int i = 3; i < width; i++) {
-			Cell value = firstRow.getCell(i);
-			if(value.getCellType() == Cell.CELL_TYPE_STRING && value.getStringCellValue().equals(columnType)) {
-				return i;
+		Iterator<Cell> iterator = firstRow.cellIterator();
+		while (iterator.hasNext()) {
+			Cell value = iterator.next();
+			if(value != null && value.getCellType() == Cell.CELL_TYPE_STRING && !Strings.isNullOrEmpty(value.getStringCellValue()) && value.getStringCellValue().equals(columnType)) {
+				return value.getColumnIndex();
 			}
 		}
 		return -1;
