@@ -99,7 +99,7 @@ public class CoConstraintSpreadSheetParser {
 			if(position == -1) {
 				// HANDLE ERROR
 			} else {
-				this.then_end = position;
+				this.then_start = position;
 				this.then_end = position;
 			}
 		}
