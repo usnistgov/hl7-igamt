@@ -145,7 +145,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Autowired
   ApplyChange applyChange;
-  
+
   @Autowired
   SlicingService slicingService;
 
@@ -1047,12 +1047,16 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   public SegmentRefOrGroup findSegmentRefOrGroupById(Set<SegmentRefOrGroup> children, String idPath) {
     if (idPath.contains("-")) {
+      String[] pathTable = idPath.split("\\-");
+
       for (SegmentRefOrGroup srog : children) {
         if (srog instanceof Group) {
           Group g = (Group) srog;
-          if (srog.getId().equals(idPath.split("\\-")[0]))
-            return this.findSegmentRefOrGroupById(g.getChildren(),
-                idPath.replace(idPath.split("\\-")[0] + "-", ""));
+          if(pathTable != null &&  pathTable.length>0) {
+            if (srog.getId().equals(pathTable[0])) {       
+              return this.findSegmentRefOrGroupById(g.getChildren(),idPath.substring(pathTable[0].length()+1));
+            }
+          }
         }
       }
     } else {
@@ -1359,7 +1363,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
       used.addAll(CoConstraintsDependencies);
     }
-    
+
     if(cp.getSlicings() != null ) {
       Set<RelationShip> slicingDependencies = this.slicingService.collectDependencies(
           new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE), cp.getSlicings(), Type.SEGMENT);
@@ -1497,10 +1501,10 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
     applyChange.applyBindingChanges(map, conformanceProfile.getBinding(), documentId, Level.CONFORMANCEPROFILE);
     if (map.containsKey(PropertyType.SLICING)) {
-          if(conformanceProfile.getSlicings() == null) {
-            conformanceProfile.setSlicings(new HashSet<Slicing>());
-          }
-          applyChange.applySlicingChanges(map, conformanceProfile.getSlicings(), documentId, Type.CONFORMANCEPROFILE);
+      if(conformanceProfile.getSlicings() == null) {
+        conformanceProfile.setSlicings(new HashSet<Slicing>());
+      }
+      applyChange.applySlicingChanges(map, conformanceProfile.getSlicings(), documentId, Type.CONFORMANCEPROFILE);
 
     }   
     conformanceProfile.setBinding(this.makeLocationInfo(conformanceProfile));
@@ -1508,9 +1512,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   private void applyCoConstraintsBindingChanges(
-          ConformanceProfile conformanceProfile,
-          List<ChangeItemDomain> items, String documentId
-  ) throws ApplyChangeException {
+      ConformanceProfile conformanceProfile,
+      List<ChangeItemDomain> items, String documentId
+      ) throws ApplyChangeException {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     for(ChangeItemDomain item : items) {
@@ -1527,10 +1531,10 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
 
   private void applyMetaData(
-          ConformanceProfile cp,
-          Map<PropertyType, ChangeItemDomain> singlePropertyMap,
-          String documentId
-  ) throws ApplyChangeException{
+      ConformanceProfile cp,
+      Map<PropertyType, ChangeItemDomain> singlePropertyMap,
+      String documentId
+      ) throws ApplyChangeException{
 
     applyChange.applyResourceChanges(cp, singlePropertyMap , documentId);
     ObjectMapper mapper = new ObjectMapper();
@@ -1660,7 +1664,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       }
     }
     this.processAndSubstitute(cp, newKeys);
-    
+
   }
 
 

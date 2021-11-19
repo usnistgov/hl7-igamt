@@ -437,12 +437,16 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
 
-
+  //@PostConstruct
+  void fixData() {
+    this.dataFixer.fixDatatypeConstraintsLevel();
+    this.dataFixer.fixConformanceProfileConstaintsLevel();
+  }
   //@PostConstruct
   void shiftBinding() {
     this.dataFixer.shiftAllBinding();
   }
-  //@PostConstruct
+ // @PostConstruct
   void updateSegmentDatatype() {
     this.dataFixer.changeHL7SegmentDatatype("OMC", "9", "ID", "2.8.2");
 
@@ -451,16 +455,12 @@ public class BootstrapApplication implements CommandLineRunner {
   void publishStructures() {
     this.dataFixer.publishStructure("607da0e88b87bc00073b4ba6");
   }
-  //@PostConstruct
-  void fixData() {
-    this.dataFixer.fixDatatypeConstraintsLevel();
-    this.dataFixer.fixConformanceProfileConstaintsLevel();
-  }
+
   //@PostConstruct
   void fixStructureIds() {
     this.dataFixer.addStructureIds();
   }
- // @PostConstruct
+  //@PostConstruct
   void addFixedExt() {
     this.dataFixer.addFixedExt();
   }

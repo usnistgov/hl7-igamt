@@ -61,6 +61,7 @@ export class FroalaService {
             type: active.editor.resourceType,
             id: active.display.id,
           },
+          height: 300,
           events: {
             ... this.config.events,
             'froalaEditor.image.removed': ($img, obj1, obj2) => {
