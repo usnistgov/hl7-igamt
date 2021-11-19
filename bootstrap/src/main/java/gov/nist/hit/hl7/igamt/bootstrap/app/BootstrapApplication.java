@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import gov.nist.hit.hl7.igamt.ig.data.fix.CoConstraintsFixes;
 import gov.nist.hit.hl7.igamt.ig.data.fix.PathFixes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -113,6 +114,8 @@ public class BootstrapApplication implements CommandLineRunner {
   ConfigUpdater configUpdater;
   @Autowired
   private PathFixes pathFixes;
+  @Autowired
+  private CoConstraintsFixes coConstraintsFixes;
 
   @Autowired
   private ExportConfigurationRepository exportConfigurationRepository;
@@ -250,6 +253,11 @@ public class BootstrapApplication implements CommandLineRunner {
       }
     }
   }
+
+//  @PostConstruct
+//  void fixCoConstraints() {
+//    this.coConstraintsFixes.fix();
+//  }
 
   //@PostConstruct
   void fixPaths() {
