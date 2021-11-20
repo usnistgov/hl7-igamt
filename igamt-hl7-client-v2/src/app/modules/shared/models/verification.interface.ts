@@ -29,5 +29,6 @@ export enum Severity {
 export interface ILocation {
   pathId: string;
   info: IHL7LocationInfo;
+  name: string;
   property: PropertyType;
 }

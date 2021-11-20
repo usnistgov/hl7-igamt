@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { ColorPickerModule } from 'primeng/colorpicker';
-import {ContextMenuModule, PanelModule, RadioButtonModule} from 'primeng/primeng';
+import { ContextMenuModule, PanelModule, RadioButtonModule } from 'primeng/primeng';
 import { StepsModule } from 'primeng/steps';
 import { TableModule } from 'primeng/table';
 import { TabViewModule } from 'primeng/tabview';
@@ -16,11 +17,13 @@ import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
 import { ConformanceStatementsSummaryEditorComponent } from './components/conformance-statements-summary-editor/conformance-statements-summary-editor.component';
 import { CreateIGComponent } from './components/create-ig/create-ig.component';
-import {DeriveDialogComponent} from './components/derive-dialog/derive-dialog.component';
+import { DeriveDialogComponent } from './components/derive-dialog/derive-dialog.component';
 import { ExportGvtComponent } from './components/export-gvt/export-gvt.component';
 import { IgEditActiveTitlebarComponent } from './components/ig-edit-active-titlebar/ig-edit-active-titlebar.component';
 import { IgEditContainerComponent } from './components/ig-edit-container/ig-edit-container.component';
+import { IgEditDrawerComponent } from './components/ig-edit-drawer/ig-edit-drawer.component';
 import { IgEditSidebarComponent } from './components/ig-edit-sidebar/ig-edit-sidebar.component';
+import { IgEditStatusBarComponent } from './components/ig-edit-status-bar/ig-edit-status-bar.component';
 import { IgEditTitlebarComponent } from './components/ig-edit-titlebar/ig-edit-titlebar.component';
 import { IgEditToolbarComponent } from './components/ig-edit-toolbar/ig-edit-toolbar.component';
 import { IgListContainerComponent } from './components/ig-list-container/ig-list-container.component';
@@ -50,6 +53,8 @@ import { IgService } from './services/ig.service';
     ExportGvtComponent,
     ConformanceStatementsSummaryEditorComponent,
     DeriveDialogComponent,
+    IgEditStatusBarComponent,
+    IgEditDrawerComponent,
   ],
   imports: [
     DamFrameworkModule.forRoot(),
@@ -66,6 +71,7 @@ import { IgService } from './services/ig.service';
     ContextMenuModule,
     ExportConfigurationModule,
     PanelModule,
+    MatProgressSpinnerModule,
   ],
   entryComponents: [
     IgEditContainerComponent, DeriveDialogComponent,

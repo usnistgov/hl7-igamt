@@ -22,7 +22,6 @@ import { selectViewOnly } from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { selectDelta } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { selectContextById } from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import {
-  default as fromIgamtSelectedSelectors,
   selectSelectedProfileComponent,
 } from '../../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { MessageType } from '../../../dam-framework/models/messages/message.class';

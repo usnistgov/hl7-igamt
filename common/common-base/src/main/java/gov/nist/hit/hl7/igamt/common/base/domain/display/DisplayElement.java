@@ -36,6 +36,9 @@ public class DisplayElement {
   private String resourceName;
   private String structureIdentifier;
 
+  public DisplayElement() {
+  }
+
   public DeltaAction getDelta() {
     return delta;
   }

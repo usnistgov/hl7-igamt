@@ -5,7 +5,6 @@ import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { ElementNamingService } from 'src/app/modules/shared/services/element-naming.service';
 import { AResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { IHL7v2TreeFilter, RestrictionCombinator, RestrictionType } from 'src/app/modules/shared/services/tree-filter.service';
-import { CoConstraintEntityService } from '../../services/co-constraint-entity.service';
 import { DataHeaderDialogComponent } from '../data-header-dialog/data-header-dialog.component';
 
 @Component({
@@ -39,7 +38,6 @@ export class GrouperDialogComponent implements OnInit {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    private ccEntityService: CoConstraintEntityService,
     private elementNamingService: ElementNamingService,
     public dialogRef: MatDialogRef<DataHeaderDialogComponent>) {
     this.structure = data.structure;
@@ -68,12 +66,7 @@ export class GrouperDialogComponent implements OnInit {
 
   done() {
     this.dialogRef.close({
-      name: this.elementNamingService.getTreeNodeName(this.selectedNode),
       pathId: this.selectedNode.data.pathId,
-      description: this.selectedNode.data.name,
-      version: this.selectedNode.data.ref.getValue().version,
-      datatype: this.selectedNode.data.ref.getValue().name,
-      type: this.selectedNode.data.type,
     });
   }
 

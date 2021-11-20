@@ -14,6 +14,7 @@ public interface CoConstraintGroupRepository extends MongoRepository<CoConstrain
 
     public Optional<CoConstraintGroup> findById(String key);
     public List<CoConstraintGroup> findByBaseSegmentAndDocumentIdAndUsername(String baseSegment, String documentId, String username);
+    public List<CoConstraintGroup> findByDocumentIdAndUsername(String documentId, String username);
     public List<CoConstraintGroup> findByIdIn(Set<String> ids);
 
 

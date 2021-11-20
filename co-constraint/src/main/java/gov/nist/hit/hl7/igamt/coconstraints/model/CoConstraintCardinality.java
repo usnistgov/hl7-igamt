@@ -6,7 +6,15 @@ public class CoConstraintCardinality {
 
 	private int min;
 	private String max;
-	
+
+	public CoConstraintCardinality(int min, String max) {
+		this.min = min;
+		this.max = max;
+	}
+
+	public CoConstraintCardinality() {
+	}
+
 	public int getMin() {
 		return min;
 	}

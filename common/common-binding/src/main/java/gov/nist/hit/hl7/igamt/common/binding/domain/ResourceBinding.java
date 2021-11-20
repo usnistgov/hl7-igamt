@@ -11,10 +11,13 @@
  */
 package gov.nist.hit.hl7.igamt.common.binding.domain;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextConformanceStatement;
@@ -22,66 +25,74 @@ import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextConformanceStatement;
 
 /**
  * @author jungyubw
- *
  */
 public class ResourceBinding extends Binding {
-  /**
-	 * 
-	 */
-  private static final long serialVersionUID = 1L;
-  @Deprecated
-  private Set<String> conformanceStatementIds;
-  private Set<ConformanceStatement> conformanceStatements;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    @Deprecated
+    private Set<String> conformanceStatementIds;
+    private Set<ConformanceStatement> conformanceStatements;
+    private List<ChangeReason> conformanceStatementsChangeLog;
 
-  public ResourceBinding() {
-    super();
-  }
-
-  public ResourceBinding(String elementId, Set<StructureElementBinding> children, Set<ConformanceStatement> conformanceStatements) {
-    super(elementId, children);
-    this.conformanceStatements = conformanceStatements;
-  }
-
-  @Deprecated
-  public Set<String> getConformanceStatementIds() {
-    return conformanceStatementIds;
-  }
-
-  @Deprecated
-  public void setConformanceStatementIds(Set<String> conformanceStatementIds) {
-    this.conformanceStatementIds = conformanceStatementIds;
-  }
-
-
-  public void addConformanceStatement(ConformanceStatement cs) {
-    if (conformanceStatements == null) {
-      this.conformanceStatements = new HashSet<ConformanceStatement>();
+    public ResourceBinding() {
+        super();
     }
-    if(cs.getType().equals(ConstraintType.FREE)){
-        this.conformanceStatements.add((FreeTextConformanceStatement)cs);    	
-    } else if(cs.getType().equals(ConstraintType.ASSERTION)){
-        this.conformanceStatements.add((AssertionConformanceStatement)cs);    	
-    } else {
-    	System.out.println("wrong!!!");
-    
+
+    public ResourceBinding(String elementId, Set<StructureElementBinding> children, Set<ConformanceStatement> conformanceStatements) {
+        super(elementId, children);
+        this.conformanceStatements = conformanceStatements;
+    }
+
+    @Deprecated
+    public Set<String> getConformanceStatementIds() {
+        return conformanceStatementIds;
+    }
+
+    @Deprecated
+    public void setConformanceStatementIds(Set<String> conformanceStatementIds) {
+        this.conformanceStatementIds = conformanceStatementIds;
     }
 
 
-  }
-  
-  
-@Override
-public String toString() {
-	return "ResourceBinding [conformanceStatementIds=" + conformanceStatementIds + ", conformanceStatements="
-			+ conformanceStatements + ", elementId=" + elementId + ", locationInfo=" + locationInfo + ", children="
-			+ children + "]";
-}
+    public void addConformanceStatement(ConformanceStatement cs) {
+        if (conformanceStatements == null) {
+            this.conformanceStatements = new HashSet<ConformanceStatement>();
+        }
+        if (cs.getType().equals(ConstraintType.FREE)) {
+            this.conformanceStatements.add((FreeTextConformanceStatement) cs);
+        } else if (cs.getType().equals(ConstraintType.ASSERTION)) {
+            this.conformanceStatements.add((AssertionConformanceStatement) cs);
+        } else {
+            System.out.println("wrong!!!");
 
-public Set<ConformanceStatement> getConformanceStatements() {
-	return conformanceStatements;
+        }
+    }
+
+  public List<ChangeReason> getConformanceStatementsChangeLog() {
+      if(conformanceStatementsChangeLog == null) {
+        conformanceStatementsChangeLog = new ArrayList<>();
+      }
+      return conformanceStatementsChangeLog;
   }
-  
-  public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
-	this.conformanceStatements = conformanceStatements;
+
+  public void setConformanceStatementsChangeLog(List<ChangeReason> conformanceStatementsChangeLog) {
+    this.conformanceStatementsChangeLog = conformanceStatementsChangeLog;
   }
+
+  @Override
+    public String toString() {
+        return "ResourceBinding [conformanceStatementIds=" + conformanceStatementIds + ", conformanceStatements="
+                + conformanceStatements + ", elementId=" + elementId + ", locationInfo=" + locationInfo + ", children="
+                + children + "]";
+    }
+
+    public Set<ConformanceStatement> getConformanceStatements() {
+        return conformanceStatements;
+    }
+
+    public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
+        this.conformanceStatements = conformanceStatements;
+    }
 }

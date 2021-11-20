@@ -1,30 +1,30 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {Actions} from '@ngrx/effects';
-import {Action, MemoizedSelectorWithProps, Store} from '@ngrx/store';
-import {SelectItem} from 'primeng/api';
-import {combineLatest, concat, Observable, of, ReplaySubject, Subscription, throwError} from 'rxjs';
-import {catchError, concatMap, flatMap, map, mergeMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Actions } from '@ngrx/effects';
+import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import { SelectItem } from 'primeng/api';
+import { combineLatest, concat, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
-import {getHl7ConfigState} from '../../../../root-store/config/config.reducer';
-import {selectDerived} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import {Message} from '../../../dam-framework/models/messages/message.class';
-import {MessageService} from '../../../dam-framework/services/message.service';
+import { getHl7ConfigState } from '../../../../root-store/config/config.reducer';
+import { selectDerived } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
 import * as fromDam from '../../../dam-framework/store';
 import * as fromAuth from '../../../dam-framework/store/authentication';
-import {Type} from '../../../shared/constants/type.enum';
-import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
-import {SourceType} from '../../../shared/models/adding-info';
-import {Hl7Config} from '../../../shared/models/config.class';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {EditorID} from '../../../shared/models/editor.enum';
-import {ChangeType, IChange, IChangeReason, PropertyType} from '../../../shared/models/save-change';
-import {IValueSet} from '../../../shared/models/value-set.interface';
-import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
-import {ValueSetService} from '../../service/value-set.service';
-import {ReasonForChangeDialogComponent} from '../reason-for-change-dialog/reason-for-change-dialog.component';
+import { ChangeReasonListDialogComponent } from '../../../shared/components/change-reason-list-dialog/change-reason-list-dialog.component';
+import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
+import { SourceType } from '../../../shared/models/adding-info';
+import { Hl7Config } from '../../../shared/models/config.class';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { EditorID } from '../../../shared/models/editor.enum';
+import { ChangeType, IChange, IChangeReason, PropertyType } from '../../../shared/models/save-change';
+import { IValueSet } from '../../../shared/models/value-set.interface';
+import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
+import { ValueSetService } from '../../service/value-set.service';
 
 @Component({
   selector: 'app-value-set-structure-editor',
@@ -55,7 +55,7 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
     actions$: Actions,
     private dialog: MatDialog,
     store: Store<any>) {
-    super(     {
+    super({
       id: EditorID.VALUESET_STRUCTURE,
       title: 'Structure',
       resourceType: Type.VALUESET,
@@ -148,31 +148,34 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
       }),
     );
   }
-  change(change: IChange) {
-    this.getChange(change, false).pipe(
+
+  change(change: IChange, skipReason: boolean = false) {
+    this.getChange(change, skipReason).pipe(
       mergeMap((ch) => {
-        console.log(ch);
         return combineLatest(this.changes, this.resource$).pipe(
           take(1),
-            tap(([changes, resource]) => {
-              const newchanges = {...changes};
-              newchanges[ch.propertyType] = ch;
-              this.resourceSubject.next(resource);
-              this.changes.next(newchanges);
-              this.editorChange({changes: newchanges, resource}, true);
-            }),
-          );
-        },
+          tap(([changes, resource]) => {
+            const newchanges = { ...changes };
+            newchanges[ch.propertyType] = ch;
+            this.resourceSubject.next(resource);
+            this.changes.next(newchanges);
+            this.editorChange({ changes: newchanges, resource }, true);
+          }),
+        );
+      },
       )).subscribe();
   }
-  getChange( change: IChange, skipReason: boolean = false): Observable<IChange> {
+
+  getChange(change: IChange, skipReason: boolean = false): Observable<IChange> {
     return this.derived$.pipe(
       take(1),
-      mergeMap((x) => {if (x) {
-      return concat(of(change), this.getChangeReasonForPropertyChange(change, false));
-    } else {
-        return of(change);
-    }}),
+      mergeMap((x) => {
+        if (x && !skipReason) {
+          return concat(of(change), this.getChangeReasonForPropertyChange(change, skipReason));
+        } else {
+          return of(change);
+        }
+      }),
     );
   }
 
@@ -204,7 +207,7 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
               flatMap((resource) => {
                 this.changes.next({});
                 this.resourceSubject.next(resource);
-                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {} , resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
+                return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
               }),
             );
           }),
@@ -215,21 +218,19 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
   }
 
   private isActualChange(change: IChange) {
-   return  change.propertyType !== PropertyType.CHANGEREASON;
-  }
-
-  viewReasons() {
-    this.openReasonsDialog().subscribe();
+    return change.propertyType !== PropertyType.CHANGEREASON;
   }
 
   openReasonsDialog(): Observable<IChange> {
-    return combineLatest(this.resource$, this.changes.asObservable(), this.viewOnly$).pipe(
+    return this.resource$.pipe(
       take(1),
-      mergeMap(([vs, changes, viewOnly]) => {
-        return this.dialog.open(ReasonForChangeDialogComponent, {
+      mergeMap((vs) => {
+        return this.dialog.open(ChangeReasonListDialogComponent, {
+          maxWidth: '95vw',
+          maxHeight: '90vh',
           data: {
-            existing: vs.changeLogs ?  vs.changeLogs : [],
-            viewOnly,
+            changeReason: vs.changeLogs,
+            edit: false,
           },
         }).afterClosed().pipe(
           take(1),
@@ -241,8 +242,12 @@ export class ValueSetStructureEditorComponent extends AbstractEditorComponent im
       }),
     );
   }
+
+  updateChangeReason(changeReason: IChangeReason[]) {
+    this.change(this.createReasonForChange(changeReason), true);
+  }
 }
 
 export interface IRootChanges {
-    [property: string]: IChange;
+  [property: string]: IChange;
 }

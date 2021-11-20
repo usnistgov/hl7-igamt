@@ -9,7 +9,7 @@ import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rx
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectAllMessages } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
-import {AddResourceSuccess} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { AddResourceSuccess } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
@@ -36,33 +36,33 @@ import {
   CreateCoConstraintGroupSuccess,
 } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
-import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
-import {ConfirmDialogComponent} from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
-import {RxjsStoreHelperService} from '../../../dam-framework/services/rxjs-store-helper.service';
-import {EditorReset, selectWorkspaceActive} from '../../../dam-framework/store/data';
-import {selectRouterURL} from '../../../dam-framework/store/router';
-import {IAddNewWrapper, IAddWrapper} from '../../../document/models/document/add-wrapper.class';
-import {AddCoConstraintGroupComponent} from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
-import {AddCompositeComponent} from '../../../shared/components/add-composite/add-composite.component';
-import {AddProfileComponentContextComponent} from '../../../shared/components/add-profile-component-context/add-profile-component-context.component';
-import {AddProfileComponentComponent} from '../../../shared/components/add-profile-component/add-profile-component.component';
-import {AddResourceComponent} from '../../../shared/components/add-resource/add-resource.component';
-import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
-import {getLabel} from '../../../shared/components/display-section/display-section.component';
-import {ImportCsvValuesetComponent} from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
-import {ImportStructureComponent} from '../../../shared/components/import-structure/import-structure.component';
-import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
-import {UsageDialogComponent} from '../../../shared/components/usage-dialog/usage-dialog.component';
-import {Scope} from '../../../shared/constants/scope.enum';
-import {Type} from '../../../shared/constants/type.enum';
-import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
-import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
-import {IUsages} from '../../../shared/models/cross-reference';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {IResourcePickerData} from '../../../shared/models/resource-picker-data.interface';
-import {CrossReferencesService} from '../../../shared/services/cross-references.service';
-import {IDocumentDisplayInfo, IgDocument} from '../../models/ig/ig-document.class';
-import {IgTocComponent} from '../ig-toc/ig-toc.component';
+import { ClearResource } from '../../../../root-store/resource-loader/resource-loader.actions';
+import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
+import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
+import { EditorReset, selectWorkspaceActive } from '../../../dam-framework/store/data';
+import { selectRouterURL } from '../../../dam-framework/store/router';
+import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
+import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
+import { AddCompositeComponent } from '../../../shared/components/add-composite/add-composite.component';
+import { AddProfileComponentContextComponent } from '../../../shared/components/add-profile-component-context/add-profile-component-context.component';
+import { AddProfileComponentComponent } from '../../../shared/components/add-profile-component/add-profile-component.component';
+import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
+import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
+import { getLabel } from '../../../shared/components/display-section/display-section.component';
+import { ImportCsvValuesetComponent } from '../../../shared/components/import-csv-valueset/import-csv-valueset.component';
+import { ImportStructureComponent } from '../../../shared/components/import-structure/import-structure.component';
+import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
+import { UsageDialogComponent } from '../../../shared/components/usage-dialog/usage-dialog.component';
+import { Scope } from '../../../shared/constants/scope.enum';
+import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
+import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
+import { IUsages } from '../../../shared/models/cross-reference';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
+import { CrossReferencesService } from '../../../shared/services/cross-references.service';
+import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
+import { IgTocComponent } from '../ig-toc/ig-toc.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -113,7 +113,6 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
         } else {
           this.selectedTargetId = 'IG';
         }
-        console.log(this.selectedTargetId);
       })).subscribe();
   }
 
@@ -542,7 +541,6 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
           take(1),
           map((result) => {
             if (result) {
-              console.log(result);
               this.store.dispatch(new AddProfileComponentContext({ documentId, pcId: $event.id, added: result }));
             }
           }),

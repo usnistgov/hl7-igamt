@@ -50,6 +50,10 @@ export class ConformanceProfileService {
                 segments: s,
                 datatypes: d,
               },
+              changeReasons: {
+                reasons: data.changeReason,
+                updated: null,
+              },
             };
           }),
         );

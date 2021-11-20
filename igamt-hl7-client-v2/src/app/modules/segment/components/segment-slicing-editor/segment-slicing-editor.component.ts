@@ -1,27 +1,26 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatDialog} from '@angular/material/dialog';
-import {Actions} from '@ngrx/effects';
-import {MemoizedSelectorWithProps, Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
+import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { Actions } from '@ngrx/effects';
+import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
 import {
   selectAllDatatypes,
   selectSegmentsById,
 } from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
-import {SlicingEditorComponent} from '../../../core/components/slicing-editor/slicing-editor.component';
-import {Message} from '../../../dam-framework/models/messages/message.class';
-import {MessageService} from '../../../dam-framework/services/message.service';
-import {Type} from '../../../shared/constants/type.enum';
-import {IDocumentRef} from '../../../shared/models/abstract-domain.interface';
-import {IConformanceProfile} from '../../../shared/models/conformance-profile.interface';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {EditorID } from '../../../shared/models/editor.enum';
-import {IChange} from '../../../shared/models/save-change';
-import {ISegment} from '../../../shared/models/segment.interface';
-import {Hl7V2TreeService} from '../../../shared/services/hl7-v2-tree.service';
-import {PathService} from '../../../shared/services/path.service';
-import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
-import {SlicingService} from '../../../shared/services/slicing.service';
-import {SegmentService} from '../../services/segment.service';
+import { SlicingEditorComponent } from '../../../core/components/slicing-editor/slicing-editor.component';
+import { Message } from '../../../dam-framework/models/messages/message.class';
+import { MessageService } from '../../../dam-framework/services/message.service';
+import { Type } from '../../../shared/constants/type.enum';
+import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { EditorID } from '../../../shared/models/editor.enum';
+import { IChange } from '../../../shared/models/save-change';
+import { ISegment } from '../../../shared/models/segment.interface';
+import { Hl7V2TreeService } from '../../../shared/services/hl7-v2-tree.service';
+import { PathService } from '../../../shared/services/path.service';
+import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
+import { SlicingService } from '../../../shared/services/slicing.service';
+import { SegmentService } from '../../services/segment.service';
 
 @Component({
   selector: 'app-segment-slicing-editor',

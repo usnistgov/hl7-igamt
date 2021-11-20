@@ -188,14 +188,6 @@ export class StatementTarget {
     return this.getPathName(this.pathService.straightConcatPath(pre, post), resource, repository, relativeName ? post ? post.elementId : undefined : undefined);
   }
 
-  getStartPathInfo(pathInfo: IPathInfo, from: string): IPathInfo {
-    if (pathInfo.type === Type.SEGMENTREF || pathInfo.id === from) {
-      return pathInfo;
-    } else {
-      return this.getStartPathInfo(pathInfo.child, from);
-    }
-  }
-
   getPathName(path: IPath, resource: IResource, repository: AResourceRepositoryService, startFrom?: string): Observable<{ name: string, nodeInfo: IPathInfo }> {
     if (!path) {
       return of({ name: '', nodeInfo: undefined });
@@ -204,22 +196,14 @@ export class StatementTarget {
     return this.elementNamingService.getPathInfoFromPath(resource, repository, path).pipe(
       take(1),
       map((pathInfo) => {
-        const name = this.elementNamingService.getStringNameFromPathInfo(startFrom ? this.getStartPathInfo(pathInfo, startFrom) : pathInfo);
-        const nodeInfo = this.getLeaf(pathInfo);
+        const name = this.elementNamingService.getStringNameFromPathInfo(startFrom ? this.elementNamingService.getStartPathInfo(pathInfo, startFrom) : pathInfo);
+        const nodeInfo = this.elementNamingService.getLeaf(pathInfo);
         return {
           name,
           nodeInfo,
         };
       }),
     );
-  }
-
-  getLeaf(pInfo: IPathInfo): IPathInfo {
-    if (!pInfo.child) {
-      return pInfo;
-    } else {
-      return this.getLeaf(pInfo.child);
-    }
   }
 
   getDescription(resource: IResource, repository: AResourceRepositoryService, relativeName: boolean = false): Observable<string> {

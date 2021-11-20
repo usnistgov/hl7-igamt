@@ -316,7 +316,6 @@ export class OpenEditorService {
                 profileComponent: context.profileComponentCoConstraints ? context.profileComponentCoConstraints.bindings : undefined,
               },
             });
-            console.log({ resourceType: type, id: resource.id });
             this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: resource.id }));
             return RxjsStoreHelperService.listenAndReact(this.actions$, {
               [IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess]: {

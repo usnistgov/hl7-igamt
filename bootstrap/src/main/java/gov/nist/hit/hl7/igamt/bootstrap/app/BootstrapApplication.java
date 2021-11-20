@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import gov.nist.hit.hl7.igamt.ig.data.fix.CoConstraintsFixes;
 import gov.nist.hit.hl7.igamt.ig.data.fix.PathFixes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -46,32 +47,19 @@ import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
-import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
-import gov.nist.hit.hl7.igamt.common.config.domain.BindingInfo;
-import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationInfo;
-import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
-import gov.nist.hit.hl7.igamt.common.config.domain.ConnectingInfo;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.constraints.domain.AssertionPredicate;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextPredicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
@@ -126,6 +114,8 @@ public class BootstrapApplication implements CommandLineRunner {
   ConfigUpdater configUpdater;
   @Autowired
   private PathFixes pathFixes;
+  @Autowired
+  private CoConstraintsFixes coConstraintsFixes;
 
   @Autowired
   private ExportConfigurationRepository exportConfigurationRepository;
@@ -264,6 +254,11 @@ public class BootstrapApplication implements CommandLineRunner {
     }
   }
 
+//  @PostConstruct
+//  void fixCoConstraints() {
+//    this.coConstraintsFixes.fix();
+//  }
+
   //@PostConstruct
   void fixPaths() {
     this.pathFixes.fix();
@@ -300,7 +295,7 @@ public class BootstrapApplication implements CommandLineRunner {
     tableFixes.removeSegmentsDuplicatedBinding();
   }
 
-  //@PostConstruct
+//  @PostConstruct
   void generateDefaultExportConfig() {
     exportConfigurationRepository.deleteByType(ExportType.IGDOCUMENT);
     ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(false, ExportType.IGDOCUMENT);
@@ -314,7 +309,7 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
 
-  //@PostConstruct
+//  @PostConstruct
   void generateDiffrentialExportConfig() {
     exportConfigurationRepository.deleteByType(ExportType.DIFFERENTIAL);
     ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, ExportType.DIFFERENTIAL);
@@ -327,7 +322,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
   }
 
-  //@PostConstruct
+//  @PostConstruct
   void generateDTLConfig() {
     exportConfigurationRepository.deleteByType(ExportType.DATATYPELIBRARY);
     ExportConfiguration basicExportConfiguration = ExportConfiguration.getBasicExportConfiguration(true, ExportType.DATATYPELIBRARY);

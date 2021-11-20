@@ -1,16 +1,19 @@
 import { TemplateRef, ViewChild } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { distinctUntilChanged, filter, map, takeWhile, tap, withLatestFrom } from 'rxjs/operators';
 import { IWorkspaceCurrent } from 'src/app/modules/dam-framework';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromDAM from 'src/app/modules/dam-framework/store/index';
-import { IEditorMetadata, IWorkspaceActive } from '../models/data/workspace';
+import { IEditorMetadata, IVerificationEnty, IWorkspaceActive } from '../models/data/workspace';
+import { EditorVerificationResult, EditorVerify } from '../store/data/dam.actions';
+import { selectWorkspaceVerification } from '../store/data/dam.selectors';
 
 export abstract class DamAbstractEditorComponent {
 
   saveSubscription: Subscription;
+  verifySubscription: Subscription;
   titleSubsription: Subscription;
   protected changeTime: Date;
   readonly active$: Observable<IWorkspaceActive>;
@@ -58,6 +61,24 @@ export abstract class DamAbstractEditorComponent {
   abstract onEditorSave(action: fromDam.EditorSave): Observable<Action>;
   abstract editorDisplayNode(): Observable<any>;
   abstract onDeactivate(): void;
+  // To Override
+  onEditorVerify(action: EditorVerify): Observable<Action> {
+    return of(new EditorVerificationResult({
+      supported: false,
+    }));
+  }
+
+  getEditorVerificationEntries(): Observable<IVerificationEnty[]> {
+    return this.store.select(selectWorkspaceVerification).pipe(
+      map((verification) => {
+        if (verification && verification.supported) {
+          return verification.entries || [];
+        } else {
+          return [];
+        }
+      }),
+    );
+  }
 
   registerSaveListener() {
     this.saveSubscription = this.actions$.pipe(
@@ -71,8 +92,25 @@ export abstract class DamAbstractEditorComponent {
               this.store.dispatch(result);
               this.store.dispatch(new fromDam.EditorSaveFailure());
             },
-            () => this.store.dispatch(new fromDam.EditorSaveSuccess()));
+            () => {
+              this.store.dispatch(new fromDam.EditorSaveSuccess());
+              this.store.dispatch(new EditorVerify());
+            });
         }
+      }),
+    ).subscribe();
+  }
+
+  registerVerifyListener() {
+    this.verifySubscription = this.actions$.pipe(
+      ofType(fromDam.DamActionTypes.EditorVerify),
+      tap((action) => {
+        this.onEditorVerify(action).subscribe(
+          (result) => this.store.dispatch(result),
+          (result) => {
+            this.store.dispatch(result);
+          },
+        );
       }),
     ).subscribe();
   }
@@ -92,6 +130,12 @@ export abstract class DamAbstractEditorComponent {
   unregisterTitleListener() {
     if (this.titleSubsription && !this.titleSubsription.closed) {
       this.titleSubsription.unsubscribe();
+    }
+  }
+
+  unregisterVerifyListener() {
+    if (this.verifySubscription && !this.verifySubscription.closed) {
+      this.verifySubscription.unsubscribe();
     }
   }
 

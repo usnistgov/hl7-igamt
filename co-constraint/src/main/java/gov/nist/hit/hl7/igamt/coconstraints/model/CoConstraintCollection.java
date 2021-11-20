@@ -17,7 +17,7 @@ import java.util.List;
 public abstract class CoConstraintCollection extends WithDelta {
     protected String id;
     protected CollectionType tableType;
-    protected String baseSegment;
+//    protected String baseSegment;
     protected CoConstraintHeaders headers;
     protected List<CoConstraint> coConstraints;
 
@@ -42,13 +42,13 @@ public abstract class CoConstraintCollection extends WithDelta {
         this.tableType = tableType;
     }
 
-    public String getBaseSegment() {
-        return baseSegment;
-    }
-
-    public void setBaseSegment(String baseSegment) {
-        this.baseSegment = baseSegment;
-    }
+//    public String getBaseSegment() {
+//        return baseSegment;
+//    }
+//
+//    public void setBaseSegment(String baseSegment) {
+//        this.baseSegment = baseSegment;
+//    }
 
     public CoConstraintHeaders getHeaders() {
         return headers;

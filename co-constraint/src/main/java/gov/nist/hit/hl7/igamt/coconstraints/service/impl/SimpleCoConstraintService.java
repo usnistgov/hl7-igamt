@@ -16,7 +16,6 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.PrimitiveDatatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -24,7 +23,6 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,9 +38,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
 
   @Override
   public CoConstraintGroup findById(String id) throws CoConstraintGroupNotFoundException {
-    return this.coConstraintGroupRepository.findById(id).orElseThrow(() -> {
-      return new CoConstraintGroupNotFoundException(id);
-    });
+    return this.coConstraintGroupRepository.findById(id).orElseThrow(() -> new CoConstraintGroupNotFoundException(id));
   }
 
   @Override
@@ -52,7 +48,16 @@ public class SimpleCoConstraintService implements CoConstraintService {
 
   @Override
   public List<CoConstraintGroup> findByBaseSegmentAndDocumentIdAndUsername(String baseSegment, String documentId, String username) {
-    return this.coConstraintGroupRepository.findByBaseSegmentAndDocumentIdAndUsername(baseSegment, documentId, username);
+    Segment target = this.segmentService.findById(baseSegment);
+    if(target != null) {
+      List<CoConstraintGroup> igGroups = this.coConstraintGroupRepository.findByDocumentIdAndUsername(documentId, username);
+      return igGroups.stream().filter((group) -> {
+        Segment groupTarget = this.segmentService.findById(group.getBaseSegment());
+        return groupTarget != null && groupTarget.getName().equals(target.getName());
+      }).collect(Collectors.toList());
+    } else {
+      return Collections.emptyList();
+    }
   }
 
   @Override
@@ -62,33 +67,29 @@ public class SimpleCoConstraintService implements CoConstraintService {
 
   @Override
   public CoConstraintTable resolveRefAndMerge(CoConstraintTable table) {
-    CoConstraintHeaders headers = new CoConstraintHeaders();
-    this.mergeHeaders(headers, table.getHeaders());
+    CoConstraintHeaders headers = table.getHeaders();
 
-    List<CoConstraintGroupBinding> bindings = table.getGroups().stream().map((binding) -> {
-      if(binding instanceof CoConstraintGroupBindingContained) {
-        return (CoConstraintGroupBindingContained) binding;
+    List<CoConstraintGroupBinding> bindings = new ArrayList<>();
+    for(CoConstraintGroupBinding binding : table.getGroups()) {
+      if (binding instanceof CoConstraintGroupBindingContained) {
+        bindings.add(binding);
       } else {
-        CoConstraintGroupBindingContained contained = new CoConstraintGroupBindingContained();
-        contained.setRequirement(binding.getRequirement());
-
         try {
+          CoConstraintGroupBindingContained contained = new CoConstraintGroupBindingContained();
+          contained.setRequirement(binding.getRequirement());
           CoConstraintGroup group = this.findById(((CoConstraintGroupBindingRef) binding).getRefId());
           contained.setName(group.getName());
           contained.setId(binding.getId());
           contained.setCoConstraints(group.getCoConstraints());
-          this.mergeHeaders(headers, group.getHeaders());
-
-          return contained;
+          this.mergeHeaders(headers, group.getHeaders(), ((CoConstraintGroupBindingRef) binding));
+          bindings.add(contained);
         } catch (CoConstraintGroupNotFoundException e) {
           e.printStackTrace();
-          return null;
         }
       }
-    }).filter(Objects::nonNull).collect(Collectors.toList());
+    }
 
     CoConstraintTable clone = new CoConstraintTable();
-    clone.setBaseSegment(table.getBaseSegment());
     clone.setId(table.getId());
     clone.setCoConstraints(table.getCoConstraints());
     clone.setTableType(table.getTableType());
@@ -98,22 +99,20 @@ public class SimpleCoConstraintService implements CoConstraintService {
     return clone;
   }
 
-  public void mergeHeaders(CoConstraintHeaders origin, CoConstraintHeaders target) {
-    this.mergeHeader(origin.getSelectors(), target.getSelectors());
-    this.mergeHeader(origin.getConstraints(), target.getConstraints());
-    this.mergeHeader(origin.getNarratives(), target.getNarratives());
+  public void mergeHeaders(CoConstraintHeaders origin, CoConstraintHeaders target, CoConstraintGroupBindingRef ref) {
+    this.mergeHeader(origin.getSelectors(), target.getSelectors(), ref.getExcludeIfColumns());
+    this.mergeHeader(origin.getConstraints(), target.getConstraints(), ref.getExcludeThenColumns());
+    this.mergeHeader(origin.getNarratives(), target.getNarratives(), ref.getExcludeNarrativeColumns());
     if(origin.getGrouper() == null) {
       origin.setGrouper(target.getGrouper());
     }
   }
 
-  public void mergeHeader(List<CoConstraintHeader> origin, List<CoConstraintHeader>  target) {
+  public void mergeHeader(List<CoConstraintHeader> origin, List<CoConstraintHeader>  target, Set<String> exclude) {
     target.forEach((header) -> {
-      boolean exists = origin.stream().anyMatch((elm) -> {
-        return elm.getKey().equals(header.getKey());
-      });
+      boolean exists = origin.stream().anyMatch((elm) -> elm.getKey().equals(header.getKey()));
 
-      if(!exists) {
+      if(!exists && (exclude == null || !exclude.contains(header.getKey()))) {
         origin.add(header);
       }
     });
@@ -193,36 +192,16 @@ public class SimpleCoConstraintService implements CoConstraintService {
     Field obx_5 = obx.getChildren().stream().filter(field -> field.getPosition() == 5).findFirst().get();
     Field obx_4 = obx.getChildren().stream().filter(field -> field.getPosition() == 4).findFirst().get();
 
-    if(obx_2 != null && obx_3 != null && obx_5 != null) {
-      group.getHeaders().getSelectors().add(this.OBXHeader(obx_3, ColumnType.CODE, false));
-      group.getHeaders().getConstraints().add(this.OBXHeader(obx_2, ColumnType.DATATYPE, false));
-      group.getHeaders().getConstraints().add(this.OBXHeader(obx_5, ColumnType.VARIES, true));
-      group.getHeaders().setGrouper(this.OBXGrouper(obx_4));
-    }
+    group.getHeaders().getSelectors().add(this.OBXHeader(obx_3, ColumnType.CODE, false));
+    group.getHeaders().getConstraints().add(this.OBXHeader(obx_2, ColumnType.DATATYPE, false));
+    group.getHeaders().getConstraints().add(this.OBXHeader(obx_5, ColumnType.VARIES, true));
+    group.getHeaders().setGrouper(this.OBXGrouper(obx_4));
   }
 
   public DataElementHeader OBXHeader(Field field, ColumnType type, boolean cardinalityHeader) {
     DataElementHeader obx_header = new DataElementHeader();
-    Datatype obx_dt = this.datatypeService.findById(field.getRef().getId());
-
-    obx_header.setName("OBX-"+field.getPosition());
-    obx_header.setCardinality(cardinalityHeader);
     obx_header.setColumnType(type);
     obx_header.setKey(field.getId());
-
-    CoConstraintCardinality cardinality = new CoConstraintCardinality();
-    cardinality.setMin(field.getMin());
-    cardinality.setMax(field.getMax());
-
-    DataElementHeaderInfo obx_info = new DataElementHeaderInfo();
-    obx_info.setType(Type.FIELD);
-    obx_info.setLocation(field.getPosition());
-    obx_info.setParent("OBX");
-    obx_info.setDatatype(obx_dt.getName());
-    obx_info.setVersion(obx_dt.getDomainInfo().getVersion());
-    obx_info.setCardinality(cardinality);
-    obx_header.setElementInfo(obx_info);
-
     return obx_header;
   }
 
@@ -231,12 +210,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
     Datatype obx_dt = this.datatypeService.findById(field.getRef().getId());
 
     if(!(obx_dt instanceof ComplexDatatype) || obx_dt.getFixedName().equals("OG")) {
-      obx_grouper.setName("OBX-"+field.getPosition());
       obx_grouper.setPathId(field.getId());
-      obx_grouper.setVersion(obx_dt.getDomainInfo().getVersion());
-      obx_grouper.setDescription(field.getName());
-      obx_grouper.setType(Type.FIELD);
-
       return obx_grouper;
     }
     return null;
@@ -254,7 +228,8 @@ public class SimpleCoConstraintService implements CoConstraintService {
     for(CoConstraintBinding binding:coConstraintsBindings) {
       if(binding.getBindings()!=null) {
         for(CoConstraintBindingSegment segBinding: binding.getBindings()) {
-          rel.add(new RelationShip(new ReferenceIndentifier(segBinding.getFlavorId(), Type.SEGMENT), parent, new ReferenceLocation(Type.COCONSTRAINTGROUP,segBinding.getName(), null)));
+          // TODO Review Line Below :
+          //          rel.add(new RelationShip(new ReferenceIndentifier(segBinding.getFlavorId(), Type.SEGMENT), parent, new ReferenceLocation(Type.COCONSTRAINTGROUP,segBinding.getName(), null)));
           if(segBinding.getTables() !=null) {
             for( CoConstraintTableConditionalBinding CoConstraintTableConditionalBinding : segBinding.getTables()) {
               if(CoConstraintTableConditionalBinding.getValue() !=null) {
@@ -299,12 +274,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
     return rel;
   }
 
-  /**
-   * @param coConstraints
-   * @param parent
-   * @param name
-   * @return
-   */
   private Collection<? extends RelationShip> collectDependencies(List<CoConstraint> coConstraints,
       ReferenceIndentifier parent, String path) {
     HashSet<RelationShip> rel = new HashSet<RelationShip>();
@@ -315,12 +284,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
     return rel;
   }
 
-  /**
-   * @param cc
-   * @param parent
-   * @param path
-   * @return
-   */
   private Collection<? extends RelationShip> collectDependencies(CoConstraint cc,
       ReferenceIndentifier parent, String path) {
     HashSet<RelationShip> rel = new HashSet<RelationShip>();
@@ -333,13 +296,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
     return rel;
   }
 
-  /**
-   * @param value
-   * @param value2
-   * @param parent
-   * @param path
-   * @return
-   */
   private Collection<? extends RelationShip> collectDependencies(CoConstraintCell cell,
       ReferenceIndentifier parent, String path) {
     // TODO Auto-generated method stub
@@ -445,11 +401,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
       }); 
     }
   }
-  /**
-   * @param type
-   * @param cell
-   * @param newKeys
-   */
+
   private void updateDepenedencies(CoConstraintCell cell,
       HashMap<RealKey, String> newKeys) {
     if(cell instanceof ValueSetCell) {

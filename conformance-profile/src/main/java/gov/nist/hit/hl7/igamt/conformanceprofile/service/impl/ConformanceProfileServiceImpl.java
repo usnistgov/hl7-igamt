@@ -288,6 +288,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       result.setConformanceStatements(cfs);
       result.setAvailableConformanceStatements(this.collectAvaliableConformanceStatements(documentId,
           conformanceProfile.getId(), conformanceProfile.getStructID()));
+      result.setChangeReason(conformanceProfile.getBinding().getConformanceStatementsChangeLog());
       return result;
     }
     return null;
@@ -423,10 +424,11 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       for (CoConstraintBinding binding : elm.getCoConstraintsBindings()) {
         if (binding.getBindings() != null) {
           for (CoConstraintBindingSegment segBinding : binding.getBindings()) {
-            RealKey segKey = new RealKey(segBinding.getFlavorId(), Type.SEGMENT);
-            if (segBinding.getFlavorId() != null && newKeys.containsKey(segKey)) {
-              segBinding.setFlavorId(newKeys.get(segKey));
-            }
+            // TODO Review Line Below
+//            RealKey segKey = new RealKey(segBinding.getFlavorId(), Type.SEGMENT);
+//            if (segBinding.getFlavorId() != null && newKeys.containsKey(segKey)) {
+//              segBinding.setFlavorId(newKeys.get(segKey));
+//            }
             if (segBinding.getTables() != null) {
               for (CoConstraintTableConditionalBinding ccBinding : segBinding.getTables()) {
                 if (ccBinding.getValue() != null) {

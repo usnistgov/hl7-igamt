@@ -245,6 +245,9 @@ public class ApplyChangeImpl implements ApplyChange {
 		if(map.containsKey(PropertyType.CHANGEREASON)) {
 			applyChangeReason(map.get(PropertyType.CHANGEREASON), binding);
 		}
+		if(map.containsKey(PropertyType.CSCHANGEREASON)) {
+			applyConformanceStatementChangeReason(map.get(PropertyType.CSCHANGEREASON), binding);
+		}
 	}
 
 	//------------- Property Apply Changes ------------
@@ -396,6 +399,24 @@ public class ApplyChangeImpl implements ApplyChange {
 				ChangeReason changeReason = mapper.readValue(jsonInString, ChangeReason.class);
 				StructureElementBinding elm = bindingService.findAndCreateStructureElementBindingByIdPath(resourceBinding, target.getPath());
 				this.applyChangeReasonBinding(changeReason, target.getProperty(), elm);
+			} catch (Exception exception) {
+				exception.printStackTrace();
+				throw new ApplyChangeException(change);
+			}
+		}
+	}
+
+	public void applyConformanceStatementChangeReason(List<ChangeItemDomain> changes, ResourceBinding resourceBinding) throws ApplyChangeException {
+		for(ChangeItemDomain change: changes) {
+			try {
+				ObjectMapper mapper = new ObjectMapper();
+				String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
+				if (change.getChangeType().equals(ChangeType.DELETE)) {
+					resourceBinding.setConformanceStatementsChangeLog(null);
+				} else {
+					List<ChangeReason> changeReasons = Arrays.asList(mapper.readValue(jsonInString, ChangeReason[].class));
+					resourceBinding.setConformanceStatementsChangeLog(changeReasons);
+				}
 			} catch (Exception exception) {
 				exception.printStackTrace();
 				throw new ApplyChangeException(change);

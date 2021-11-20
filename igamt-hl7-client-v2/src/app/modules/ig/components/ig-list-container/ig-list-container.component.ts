@@ -201,7 +201,6 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
 
                       dialogRef.afterClosed().subscribe((result) => {
                         if (result) {
-                          console.log(result);
                           this.ig.cloneIg(item.id, CloneModeEnum.DERIVE, { inherit: result['inherit'], mode: CloneModeEnum.DERIVE, template: result.template }).subscribe(
                             (response: Message<string>) => {
                               this.store.dispatch(this.message.messageToAction(response));

@@ -60,7 +60,6 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
       };
 
     case DamActionTypes.LoadPayloadData:
-      console.log('LOAD PAYLOAD DATA');
       return {
         ...state,
         payload: {
@@ -85,6 +84,10 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
           },
           current: {
             ...action.payload.initial,
+          },
+          verification: {
+            ...emptyWorkspace.verification,
+            entries: [],
           },
           changeTime: new Date(),
           flags: {
@@ -160,6 +163,33 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
         },
       };
 
+    case DamActionTypes.EditorVerificationResult:
+      return {
+        ...state,
+        workspace: {
+          ...state.workspace,
+          verification: {
+            supported: action.payload.supported,
+            endpoint: action.payload.url,
+            verificationTime: new Date(),
+            entries: action.payload.entries,
+            loading: false,
+          },
+        },
+      };
+
+    case DamActionTypes.EditorVerify:
+      return {
+        ...state,
+        workspace: {
+          ...state.workspace,
+          verification: {
+            ...state.workspace.verification,
+            loading: true,
+          },
+        },
+      };
+
     case DamActionTypes.UpdateActiveResource:
       return {
         ...state,
@@ -180,6 +210,18 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
         values: {
           ...state.values,
           ...action.payload,
+        },
+      };
+
+    case DamActionTypes.SetUIStateValue:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          state: {
+            ...state.ui.state,
+            ...action.payload,
+          },
         },
       };
 
@@ -249,6 +291,15 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
         },
       };
 
+    case DamActionTypes.CollapseBottomDrawer:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          bottomDrawerCollapsed: true,
+        },
+      };
+
     case DamActionTypes.ToggleFullScreen:
       return {
         ...state,
@@ -265,6 +316,15 @@ export function reducer(state = initialState, action: DamActions): IDamDataModel
         ui: {
           ...state.ui,
           sideBarCollapsed: false,
+        },
+      };
+
+    case DamActionTypes.ExpandBottomDrawer:
+      return {
+        ...state,
+        ui: {
+          ...state.ui,
+          bottomDrawerCollapsed: false,
         },
       };
     default:

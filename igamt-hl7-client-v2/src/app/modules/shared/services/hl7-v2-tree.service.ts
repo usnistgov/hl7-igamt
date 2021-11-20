@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, EMPTY, from, Observable, of, ReplaySubject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, EMPTY, from, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
 import { filter, flatMap, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
 import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
@@ -627,7 +627,9 @@ export class Hl7V2TreeService {
         const elm = nodes.filter((e: IHL7v2TreeNode) => e.data.id === path.elementId);
         if (!elm || elm.length !== 1) {
           // If no node found for current node in path then the path is unresolvable
-          return EMPTY;
+          return throwError({
+            message: 'path not found ' + this.pathService.pathToString(fullPath),
+          });
         } else {
           const node = elm[0];
           // if current node in path has children

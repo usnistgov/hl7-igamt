@@ -5,18 +5,24 @@ import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngr
 import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
 import { BehaviorSubject, combineLatest, Observable, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, filter, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import { catchError, concatMap, filter, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
+import { IVerificationEnty } from 'src/app/modules/dam-framework';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { EditorVerificationResult, EditorVerify } from 'src/app/modules/dam-framework/store/index';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { IVerificationIssue } from 'src/app/modules/shared/models/verification.interface';
+import { selectedResourceHasOrigin } from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
+import { selectDerived } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
+import { ChangeReasonListDialogComponent } from '../../../shared/components/change-reason-list-dialog/change-reason-list-dialog.component';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
 import { ConstraintType, IConformanceStatement, IPath } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IHL7EditorMetadata } from '../../../shared/models/editor.enum';
-import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
+import { ChangeType, IChange, IChangeReason, PropertyType } from '../../../shared/models/save-change';
 import { ConformanceStatementService } from '../../../shared/services/conformance-statement.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { AbstractEditorComponent } from '../abstract-editor-component/abstract-editor-component.component';
@@ -28,6 +34,10 @@ export interface IDependantConformanceStatements {
 
 export interface IConformanceStatementEditorData {
   active: Array<IEditableListNode<IConformanceStatement>>;
+  changeReasons: {
+    reasons: IChangeReason[];
+    updated: IChangeReason[];
+  };
   dependants: {
     segments?: IDependantConformanceStatements[];
     datatypes?: IDependantConformanceStatements[];
@@ -52,11 +62,14 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   selectedResource$: Observable<IResource>;
   conformanceStatementWorkspace$: BehaviorSubject<IConformanceStatementEditorData>;
   conformanceStatementWorkspaceGrouped$: Observable<IEditableConformanceStatementGroup[]>;
+  changeReason$: BehaviorSubject<IChangeReason[]>;
   dependants: {
     segments?: IDependantConformanceStatements[];
     datatypes?: IDependantConformanceStatements[];
   };
   s_workspace: Subscription;
+  entries$: Observable<Record<string, IVerificationEnty[]>>;
+  derived$: Observable<boolean>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -70,6 +83,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     super(editorMetadata, actions$, store);
     this.selectedResource$ = this.store.select(this.resource$);
     this.conformanceStatementWorkspace$ = new BehaviorSubject(undefined);
+    this.changeReason$ = new BehaviorSubject(undefined);
 
     this.conformanceStatementWorkspaceGrouped$ = combineLatest(
       this.conformanceStatementWorkspace$.pipe(
@@ -85,10 +99,37 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     this.s_workspace = this.currentSynchronized$.pipe(
       map((data: IConformanceStatementEditorData) => {
         this.conformanceStatementWorkspace$.next(data);
+        this.changeReason$.next(data.changeReasons ? data.changeReasons.reasons : undefined);
         this.dependants = data.dependants;
       }),
     ).subscribe();
 
+    this.derived$ = combineLatest(
+      this.store.select(selectDerived),
+      this.store.select(selectedResourceHasOrigin),
+    ).pipe(
+      map(([derivedIg, elmHadOrigin]) => {
+        return derivedIg && elmHadOrigin;
+      }),
+    );
+
+    this.entries$ = this.getGroupedEntries();
+  }
+
+  getGroupedEntries(): Observable<Record<string, IVerificationEnty[]>> {
+    return this.getEditorVerificationEntries().pipe(
+      map((entries) => {
+        return entries.reduce((acc, entry) => {
+          return {
+            ...acc,
+            [entry.pathId]: [
+              ...(acc[entry.pathId] || []),
+              entry,
+            ],
+          };
+        }, {} as Record<string, IVerificationEnty[]>);
+      }),
+    );
   }
 
   createEditableNode(cs: IConformanceStatement): IEditableListNode<IConformanceStatement> {
@@ -112,6 +153,20 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     this.registerChange(ws);
   }
 
+  updateChangeReasons(reasons: IChangeReason[]) {
+    const ws: IConformanceStatementEditorData = this.getCurrentWorkspace();
+    const updated: IConformanceStatementEditorData = {
+      ...this.getCurrentWorkspace(),
+      changeReasons: {
+        ...ws.changeReasons,
+        updated: reasons,
+      },
+    };
+    this.changeReason$.next(reasons);
+    this.conformanceStatementWorkspace$.next(updated);
+    this.registerChange(updated);
+  }
+
   removeNode(node: IEditableListNode<IConformanceStatement>) {
     const ws = this.getCurrentWorkspace();
     const at = ws.active.findIndex((elm) => elm.id === node.id);
@@ -125,6 +180,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     }
     this.conformanceStatementWorkspace$.next(ws);
     this.registerChange(ws);
+    this.toggleChangeReason(undefined, node.original);
   }
 
   updateNode(node: IEditableListNode<IConformanceStatement>, cs: IConformanceStatement) {
@@ -150,6 +206,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       });
       this.conformanceStatementWorkspace$.next(ws);
       this.registerChange(ws);
+      this.toggleChangeReason(node.original, undefined);
     }
   }
 
@@ -180,6 +237,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       (changed: IConformanceStatement) => {
         if (changed) {
           this.updateNode(node, changed);
+          this.toggleChangeReason(changed, node.original);
         }
       },
     );
@@ -199,9 +257,44 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       (cs: IConformanceStatement) => {
         if (cs) {
           this.addConformanceStatement(cs);
+          this.toggleChangeReason(cs, undefined);
         }
       },
     );
+  }
+
+  toggleChangeReason(current: IConformanceStatement, previous: IConformanceStatement) {
+    this.derived$.pipe(
+      take(1),
+      filter((derived) => derived),
+      tap(() => {
+        const dialogRef = this.dialog.open(ChangeReasonListDialogComponent, {
+          maxWidth: '95vw',
+          maxHeight: '90vh',
+          data: {
+            changeReason: this.changeReason$.getValue(),
+            edit: false,
+            current: this.getCsDescriptor(current),
+            previous: this.getCsDescriptor(previous),
+          },
+        });
+
+        dialogRef.afterClosed().subscribe(
+          (changes) => {
+            if (changes) {
+              this.updateChangeReasons(changes);
+            }
+          },
+        );
+      }),
+    ).subscribe();
+  }
+
+  getCsDescriptor(value: IConformanceStatement): { id: string, description: string } {
+    return value ? {
+      id: value.identifier,
+      description: this.getDescription(value),
+    } : undefined;
   }
 
   abstract elementSelector(): MemoizedSelectorWithProps<object, { id: string }, IDisplayElement>;
@@ -218,7 +311,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     return combineLatest(this.elementId$, this.documentRef$, this.current$).pipe(
       take(1),
       concatMap(([id, documentRef, current]) => {
-        return this.saveChanges(id, documentRef, this.convert(current.data.active)).pipe(
+        return this.saveChanges(id, documentRef, this.convert(current.data)).pipe(
           mergeMap((message) => {
             return this.getById(id, documentRef).pipe(
               flatMap((resource) => {
@@ -234,11 +327,42 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     );
   }
 
+  onEditorVerify(action: EditorVerify): Observable<Action> {
+    return combineLatest(this.elementId$, this.documentRef$).pipe(
+      take(1),
+      concatMap(([id, documentRef]) => {
+        return this.verify(id, documentRef).pipe(
+          flatMap((entries) => {
+            return [
+              new EditorVerificationResult({
+                supported: true,
+                entries: entries.map((entry) => ({
+                  code: entry.code,
+                  message: entry.description,
+                  location: entry.locationInfo.name,
+                  pathId: entry.locationInfo.pathId,
+                  property: entry.locationInfo.property,
+                  severity: entry.severity,
+                  targetId: entry.target,
+                  targetType: entry.targetType,
+                }) as IVerificationEnty).filter((entry) => {
+                  return [PropertyType.STATEMENT].includes(entry.property as PropertyType);
+                }),
+              }),
+            ];
+          }),
+        );
+      }),
+    );
+  }
+
   abstract saveChanges(id: string, documentRef: IDocumentRef, changes: IChange[]): Observable<Message>;
   abstract getById(id: string, documentRef: IDocumentRef): Observable<IConformanceStatementEditorData>;
+  abstract verify(id: string, documentInfo: IDocumentRef): Observable<IVerificationIssue[]>;
 
-  convert(active: Array<IEditableListNode<IConformanceStatement>>): IChange[] {
-    return active.filter((node) => !!node.changeType).map((node) => {
+  convert(ws: IConformanceStatementEditorData): Array<IChange<IConformanceStatement | IChangeReason[]>> {
+    const active = ws.active;
+    const changes: Array<IChange<IConformanceStatement | IChangeReason[]>> = active.filter((node) => !!node.changeType).map((node) => {
       return {
         location: node.original ? node.original.id : undefined,
         propertyType: PropertyType.STATEMENT,
@@ -247,6 +371,18 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
         changeType: node.changeType,
       };
     });
+
+    if (ws.changeReasons && ws.changeReasons.updated) {
+      changes.push({
+        location: undefined,
+        propertyType: PropertyType.CSCHANGEREASON,
+        propertyValue: ws.changeReasons.updated,
+        oldPropertyValue: ws.changeReasons.reasons,
+        changeType: ChangeType.UPDATE,
+      });
+    }
+
+    return changes;
   }
 
   ngOnInit() {

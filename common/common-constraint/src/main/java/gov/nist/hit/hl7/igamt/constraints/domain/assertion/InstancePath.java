@@ -13,6 +13,8 @@ package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
 
 import com.google.common.base.Strings;
 
+import java.util.Arrays;
+
 /**
  * @author jungyubw
  *
@@ -44,5 +46,21 @@ public class InstancePath extends Path {
       child = child.getChild();
     }
     return value.toString();
+  }
+
+  public static InstancePath fromString(String pathId) {
+      String[] pathIdSplit = pathId.split("-");
+      return fromString(pathIdSplit);
+  }
+
+  public static InstancePath fromString(String[] pathIdSplit) {
+    if(pathIdSplit.length > 0) {
+      InstancePath instancePath = new InstancePath();
+      instancePath.setElementId(pathIdSplit[0]);
+      instancePath.setChild(fromString(Arrays.copyOfRange(pathIdSplit, 1, pathIdSplit.length)));
+      return instancePath;
+    } else {
+      return null;
+    }
   }
 }

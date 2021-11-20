@@ -45,7 +45,6 @@ export class AddProfileComponentItemComponent {
         },
       ],
     };
-    console.log(this.filter);
   }
 
   select(event: IStructureTreeSelect) {
