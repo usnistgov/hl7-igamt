@@ -1,0 +1,11 @@
+<h5 mat-dialog-title> {{data.title}}</h5>
+<mat-dialog-content>
+  <app-select-name [element]="data.element" [existing]="data.existing" [targetScope]="data.targetScope" (flavor)="selected($event)" [master]="data.master" [documentType]="data.documentType"></app-select-name>
+</mat-dialog-content>
+<mat-dialog-actions  style=" display: flex;justify-content: space-between">
+  <p-checkbox [(ngModel)]="redirect" binary="true" label="redirect to the flavor"></p-checkbox>
+  <div style="justify-content: flex-end;">
+    <button  class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="cancel()">Cancel</button>
+    <button  class="btn btn-sm btn-success" [disabled]="!isValid()" (click)="submit()">Submit</button>
+  </div>
+</mat-dialog-actions>

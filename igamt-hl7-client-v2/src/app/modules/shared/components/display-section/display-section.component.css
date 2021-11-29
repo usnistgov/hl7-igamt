@@ -1,0 +1,12 @@
+.relative-label {
+  display: flex;
+  align-content: flex-start;
+  flex-direction: row;
+
+}
+
+.inline-label {
+  display: grid;
+  align-content: flex-start;
+  grid-template-columns: fit-content(10%) fit-content(10%) max-content;
+}

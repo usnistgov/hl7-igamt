@@ -1,0 +1,25 @@
+<ConformanceProfile position="1" title="test_name"
+	comment="comment_test" createdFrom="created_from_test" description="description_test"
+	name="test_name" postDef="postdef_test" preDef="predef_test"
+	domainVersion="version_test" domainCompatibilityVersions="version_2,version_1"
+	domainScope="USER" id="test_id" publicationVersion="publication_version_test"
+	publicationDate="03/26/2018" username="username_test" identifier="test_identifier"
+	messageType="test_messageType" event="test_event" structID="test_structID">
+	<MsgStructElements>
+		<SegmentRef datatype="test_segmentref2_datatype" id="test_segmentref2_id"
+			position="2" name="test_segmentref2_name" text="test_segmentref2_text"
+			type="SEGMENTREF" usage="O" min="76" max="test_segmentref2_max" />
+		<Group name="test_group_name" min="1" max="test_group_max">
+			<Binding />
+			<SegmentRef datatype="test_segmentref2_datatype" id="test_segmentref2_id"
+				position="2" name="test_segmentref2_name" text="test_segmentref2_text"
+				type="SEGMENTREF" usage="O" min="76" max="test_segmentref2_max" />
+			<SegmentRef datatype="test_segmentref1_datatype" id="test_segmentref1_id"
+				position="1" name="test_segmentref1_name" text="test_segmentref1_text"
+				type="SEGMENTREF" usage="O" min="14" max="test_segmentref1_max" />
+		</Group>
+		<SegmentRef datatype="test_segmentref1_datatype" id="test_segmentref1_id"
+			position="1" name="test_segmentref1_name" text="test_segmentref1_text"
+			type="SEGMENTREF" usage="O" min="14" max="test_segmentref1_max" />
+	</MsgStructElements>
+</ConformanceProfile>

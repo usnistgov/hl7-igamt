@@ -1,0 +1,8 @@
+<h2 mat-dialog-title>Add Profile Component</h2>
+<mat-dialog-content>
+  <app-select-profile-components (selected)="onSelect($event)" [availablePcs]="data.available" [selectedMap]="data.selected"></app-select-profile-components>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

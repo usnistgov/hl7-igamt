@@ -1,0 +1,8 @@
+<div style="text-align: start;">
+
+  <span *ngIf="getScopeLabel()" class="badge"  [ngClass]="{'label-HL7' : getScopeLabel()==='HL7', 'label-USE': getScopeLabel()==='USR','label-MASTER':getScopeLabel()==='SDTF','label-PRL':getScopeLabel()==='PRL','label-PVS':getScopeLabel()==='PVS'}">
+
+  {{getScopeLabel()}} {{getVersion()}}</span> {{getElementLabel()}}
+
+</div>
+

@@ -1,0 +1,51 @@
+<div>
+
+  <label for="type" style="font-weight: bold;"> Select Context : </label>
+  <div *ngIf="!selectedContextNode">
+    <div style="width: 300px; height: 400px;">
+      <app-structure-tree
+        [tree]="structure"
+        [filter]="contextFilter"
+        [repository]="repository"
+        (selection)="selectContext($event)"
+      ></app-structure-tree>
+    </div>
+  </div>
+
+  <div *ngIf="selectedContextNode" style="display: flex; justify-content: space-between;">
+    <div>
+      <app-entity-bagde [type]="selectedContextNode.node.data.type"></app-entity-bagde>
+      {{selectedContextNodeName}}
+    </div>
+    <button class="btn btn-sm btn-primary" (click)="clearContextNode()" style="margin-left: 5px;" ><i class="fa fa-pencil"></i></button>
+  </div>
+
+  <ng-container *ngIf="selectedContextNode">
+    <label for="type" style="font-weight: bold;"> Select Segment : </label>
+    <div *ngIf="!selectedSegmentNode">
+      <div style="width: 300px; height: 400px;">
+        <app-structure-tree
+          [tree]="segmentTree"
+          [filter]="segmentFilter"
+          [repository]="repository"
+          (selection)="selectSegment($event)"
+        ></app-structure-tree>
+      </div>
+    </div>
+    <div *ngIf="selectedSegmentNode" style="display: flex; justify-content: space-between;">
+      <div>
+        <app-entity-bagde [type]="selectedSegmentNode.node.data.type"></app-entity-bagde>
+        {{selectedSegmentNodeName}}
+      </div>
+      <button class="btn btn-sm btn-primary" (click)="clearSegmentNode()" style="margin-left: 10px;" ><i class="fa fa-pencil"></i></button>
+    </div>
+  </ng-container>
+
+  <div style="width: 100%; display: flex; justify-content: flex-end; margin-top: 10px;">
+    <button class="btn btn-sm btn-success" (click)="finish()" [disabled]="!selectedSegmentNode || !selectedContextNode" > Finish </button>
+    <!-- <button style="margin-left: 5px;" *ngIf="step === 1" class="btn btn-sm btn-primary" (click)="next()" [disabled]="!selectedSegmentNode || !selectedContextNode" >
+      Next
+      <i class="fa fa-chevron-right"></i>
+    </button> -->
+  </div>
+</div>

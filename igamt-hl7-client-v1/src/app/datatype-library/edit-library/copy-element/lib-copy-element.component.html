@@ -1,0 +1,53 @@
+<p-dialog [(visible)]="_visible">
+  <p-header>
+    Choose Name of your flavor
+  </p-header>
+  <form #namingForm="ngForm" novalidate>
+
+    <ng-container [ngSwitch]="type">
+      <ng-container *ngSwitchCase="'TEXT'">
+        <input class="ui-g-12" name="name" id="name" required pInputText #label="ngModel"
+               [(ngModel)]="name">
+      </ng-container>
+      <ng-container *ngSwitchCase="'DATATYPE'">
+        <div class="ui-g" style="margin-top:30px; padding: 4px;">
+          <input class="ui-g-5" name="name" id="name" pInputText #label="ngModel"
+                 [(ngModel)]="name" disabled>
+          <span style=" border-bottom: 1px solid;width: 20px;"></span>
+          <input class="ui-g-6" name="ext" id="ext" #ext="ngModel" DatatypeNamingConvention [scope]="scope" NamingDuplication [existing]="namingIndicators" [label]="name"  type="text" pInputText [(ngModel)]="userExt" required/>
+          <div class="ui-g-12">
+          <div *ngIf="namingForm.controls.ext&& namingForm.controls.ext.errors" class="ui-g-offset-5">
+            <div *ngIf="namingForm.controls.ext.errors.required">
+              <p-message severity="error" text="extension is required"></p-message>
+            </div>
+            <div *ngIf="namingForm.controls.ext.errors.maxlength">
+              <p-message severity="error" text="extension is too long"></p-message>
+            </div>
+            <div *ngIf="namingForm.controls.ext.errors.minlength">
+              <p-message severity="error" text="extension is too short"></p-message>
+            </div>
+            <div *ngIf="namingForm.controls.ext.errors.duplicated">
+              <p-message severity="error" text="extension is duplicated"></p-message>
+            </div>
+            <div *ngIf="namingForm.controls.ext.errors.invalidConvention">
+              <p-message severity="error" text="invalid convention (LAAA)"></p-message>
+            </div>
+          </div>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+
+
+  </form>
+
+
+  <p-footer>
+    <p-button styleClass="green-btn" (onClick)="submit()" [disabled]="!namingForm.valid" label="Submit"
+              icon="fa fa-check" iconPos="left"></p-button>
+  </p-footer>
+
+
+</p-dialog>
+
+

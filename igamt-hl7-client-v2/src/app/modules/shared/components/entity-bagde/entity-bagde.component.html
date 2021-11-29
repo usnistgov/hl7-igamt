@@ -1,0 +1,53 @@
+<ng-container [ngSwitch]="type">
+  <span *ngSwitchCase="'GROUP'" class="badge entity-badge-dark entity-badge-group">
+    G
+  </span>
+  <span *ngSwitchCase="'SEGMENT'" class="badge entity-badge-dark entity-badge-segment">
+    S
+  </span>
+  <span *ngSwitchCase="'SEGMENTREF'" class="badge entity-badge-dark entity-badge-segment">
+    S
+  </span>
+  <span *ngSwitchCase="'FIELD'" class="badge entity-badge-dark entity-badge-field">
+    F
+  </span>
+  <span *ngSwitchCase="'COMPONENT'" class="badge entity-badge-dark entity-badge-component">
+    C
+  </span>
+  <span *ngSwitchCase="'SUBCOMPONENT'" class="badge entity-badge-dark entity-badge-subcomponent">
+    S
+  </span>
+  <span *ngSwitchCase="'IGDOCUMENT'" class="badge entity-badge-dark entity-badge-ig">
+    IG
+  </span>
+  <span *ngSwitchCase="'DATATYPELIBRARY'" class="badge entity-badge-dark entity-badge-ig">
+    LIB
+  </span>
+  <span *ngSwitchCase="'DATATYPE'" class="badge entity-badge-dark entity-badge-datatype">
+    DT
+  </span>
+  <span *ngSwitchCase="'VALUESET'" class="badge entity-badge-dark entity-badge-valueset">
+    VS
+  </span>
+  <span *ngSwitchCase="'CONFORMANCEPROFILE'" class="badge entity-badge-dark entity-badge-conformance-profile">
+    CP
+  </span>
+  <span *ngSwitchCase="'PREDICATE'" class="badge entity-badge-dark entity-badge-predicate">
+    Pr
+  </span>
+  <span *ngSwitchCase="'COCONSTRAINTGROUP'" class="badge entity-badge-dark entity-badge-co-constraint-group">
+    CCG
+  </span>
+  <span *ngSwitchCase="'SEGMENTCONTEXT'" class="badge entity-badge-dark entity-badge-segment">
+    <i class="fa fa-puzzle-piece entity-badge-profile-component-icon" aria-hidden="true"></i> S
+  </span>
+  <span *ngSwitchCase="'MESSAGECONTEXT'" class="badge entity-badge-dark entity-badge-conformance-profile">
+    <i class="fa fa-puzzle-piece entity-badge-profile-component-icon" aria-hidden="true"></i> CP
+  </span>
+  <span *ngSwitchCase="'COMPOSITEPROFILE'" class="badge entity-badge-dark entity-badge-composite-profile">
+    <i class="fa fa-sitemap entity-badge-composite-profile-icon" aria-hidden="true"></i> CP
+  </span>
+  <span *ngSwitchCase="'PROFILECOMPONENT'" class="badge entity-badge-dark entity-badge-profile-component">
+    PC
+  </span>
+</ng-container>

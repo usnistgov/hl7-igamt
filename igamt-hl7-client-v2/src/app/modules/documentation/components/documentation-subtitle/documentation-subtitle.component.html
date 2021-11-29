@@ -1,0 +1,6 @@
+<app-metadata-date [updateDate]="updateInfo.time"></app-metadata-date>
+<span class="badge badge" style="font-weight: 300; color: #afafaf;" *ngIf="updateInfo">
+  <span *ngIf="updateInfo.author">
+      by <i class="fa fa-user"></i> {{updateInfo.author}}
+  </span>
+</span>

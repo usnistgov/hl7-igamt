@@ -1,0 +1,30 @@
+<p-tree [style]="{'width':'100%'}" [value]="_tree" (onNodeSelect)="selected($event)" [(selection)]="selectedNode" selectionMode="single" >
+
+  <ng-template let-node pTemplate="default">
+
+    <display-badge [type]="node.data.type"></display-badge>
+    <span *ngIf="node.data.type !== 'FIELD' && node.data.type !== 'SEGMENTREF' && node.data.type !== 'GROUP'" [ngStyle]="{ 'color' : node.selectable === true ? 'black' : node.data.container === true ? 'darkgray' : 'lightgray', 'font-weight' : node.data.container === true ? 'bold' : 'initial'}">
+      {{node.data.position}}. {{'['+node.data.usage+']'}} {{node.data.name}}
+    </span>
+    <span *ngIf="node.data.type === 'FIELD'" [ngStyle]="{ 'color' : node.selectable === true ? 'black' : node.data.container === true ? 'darkgray' : 'lightgray', 'font-weight' : node.data.container === true ? 'bold' : 'initial'}">
+      {{node.data.position}}. {{'['+node.data.min+'..'+node.data.max+','+node.data.usage+']'}} {{node.data.name}}
+    </span>
+    <span *ngIf="node.data.type === 'SEGMENTREF'" [ngStyle]="{ 'color' : node.selectable === true ? 'black' : node.data.container === true ? 'darkgray' : 'lightgray', 'font-weight' : node.data.container === true ? 'bold' : 'initial'}">
+      {{node.data.position}}. {{'['+node.data.min+'..'+node.data.max+','+node.data.usage+']'}} {{node.data.name}}
+    </span>
+    <span *ngIf="node.data.type === 'GROUP'" [ngStyle]="{ 'color' : node.selectable === true ? 'black' : node.data.container === true ? 'darkgray' : 'lightgray', 'font-weight' : node.data.container === true ? 'bold' : 'initial'}">
+      {{node.data.position}}. {{'['+node.data.min+'..'+node.data.max+','+node.data.usage+']'}} {{node.data.name}}
+    </span>
+
+  </ng-template>
+
+  <ng-template let-node pTemplate="root">
+
+    <ng-container>
+      <display-badge [type]="node.data.type"></display-badge>
+      <span [ngStyle]="{ 'color' : node.selectable === true ? 'black' : node.data.container === true ? 'darkgray' : 'lightgray', 'font-weight' : node.data.container === true ? 'bold' : 'initial' }">{{node.label}}</span>
+    </ng-container>
+
+  </ng-template>
+
+</p-tree>

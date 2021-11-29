@@ -1,0 +1,449 @@
+/* You can add global styles to this file, and also import other style files */
+@import "./app/igdocuments/igdocument-edit/toc/toc.component.css";
+@import "./app/igdocuments/igdocument-edit/igdocument-edit.component.css";
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
+body{
+  font-family: 'Open Sans', sans-serif;
+
+}
+span.ig-list-title{
+  color: #5c6bc0 !important;
+  font-weight: 600;
+}
+span:hover.ig-list-title{
+  text-decoration: underline !important;
+}
+
+
+.ig-list-date{
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ig-list-user{
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 500;
+}
+.ig-list-image{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.ig-list-image-container{
+  padding-right: 0px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 0px;
+}
+
+.ig-list-cp-badge{
+  margin-right: 4px;
+  margin-bottom: 4px;
+  border-radius: 5.25rem;
+  background: gray;
+  color: white;
+}
+
+.ig-list-more-info-title{
+
+  color: black;
+  font-size: 13px;
+  font-weight: bold;
+
+}
+.ui-dataview .ui-dataview-header, .ui-dataview .ui-dataview-footer {
+  padding: 1px;
+  margin: 0px;
+}
+.panel-gray{
+  background-color: #d8d8d8 !important;
+}
+
+.list-ig .ui-dataview .ui-dataview-header, .ui-dataview .ui-dataview-footer {
+  padding: 2px;
+  margin: 2px;
+  background-color: #d8d8d8;
+}
+.ig-list-border{
+  border-bottom: #d8d8d8 1px dashed;
+}
+
+
+.metadata-label{
+  color: black;
+  float: left;
+  font-weight: 700;
+}
+
+.delta-current {
+  background-color: lightgreen;
+}
+
+.delta-previous {
+  background-color: lightpink;
+}
+
+.input-box{
+  margin-top: 4px;
+}
+
+.cp-badge{
+  background-color: #5C6BC0;
+  color: white;
+}
+
+.cp-remove{
+  cursor: pointer;
+}
+
+body .ui-breadcrumb {
+  background-color: #e9ecef;
+  border: 1px solid #d8d8d8;
+  height: 20px;
+  padding: 0px;
+  font-size: 11px;
+  line-height: 1;
+}
+.modal-dialog {
+  max-width: fit-content;
+  margin: 30px auto;
+}
+
+.label-USE {
+  background-color: green;
+  font-weight: 400;
+}
+
+.label-USER {
+  background-color: green;
+  color: white;
+  font-weight: 400;
+}
+
+.label-HL7 {
+  background-color: #f4867e;
+  color: white;
+  font-weight: 400;
+}
+.label-PRL {
+  background: cornflowerblue;
+  font-weight: 400;
+}
+
+.label-PVS {
+  background: #ed0bea;
+  font-weight: 400;
+}
+
+.label-MASTER {
+  background: #ff7400; /* Old browsers */
+  background: -moz-linear-gradient(top, #ff7400 0%, #ff7400 100%);
+  /* FF3.6-15 */
+  background: -webkit-linear-gradient(top, #ff7400 0%, #ff7400 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom, #ff7400 0%, #ff7400 100%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff7400',
+    endColorstr='#ff7400', GradientType=0); /* IE6-9 */
+  font-weight: 400;
+}
+
+
+.name-col{
+  width: 400px;
+}
+.usage-col{
+  width: 200px;
+
+}
+.segment-col{
+  width: 200px;
+
+}
+.card-col{
+  width: 200px;
+
+}
+.length-col{
+  width: 200px;
+
+}
+.conf-col{
+  width: 130px;
+
+}
+.dt-col{
+  width: 180px;
+}
+.vs-col{
+  width: 200px;
+}
+.single-code-col{
+  width: 200px;
+}
+.const-value-col{
+  width: 200px;
+}
+.pred-col{
+  width: 200px;
+}
+.text-col{
+  width: 200px;
+}
+.comment-col{
+  width: 200px;
+}
+.ui-treetable .ui-treetable-tbody > tr > td {
+  background: inherit;
+  border: 1px solid #c8c8c8;
+}
+.ui-treetable .ui-treetable-thead > tr > th {
+  padding: 0.571em 0.857em;
+  border: 1px solid #c8c8c8;
+  font-weight: 700;
+  color: #333333;
+  background-color: #f4f4f4;
+}
+.ui-dropdown .ui-dropdown-label {
+  display: block;
+  /* border: 0; */
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: 900;
+  width: 100%;
+  padding-right: 2.5em;
+}
+
+body .ui-radiobutton .ui-radiobutton-box.ui-state-active .ui-radiobutton-icon {
+  background-color: #5C6BC0;
+  margin: -5px -5px;
+}
+.cp-header{
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+  padding: 4px;
+  height: 70px;
+}
+.cp-header-title{
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.ui-messages-error{
+  background-color:red ;
+}
+.ui-messages-success{
+  background-color: #2EB872;
+}
+
+ig-title {
+  font-size: 20px !important;
+  font-weight: 800 !important;
+  padding: 10px !important;
+}
+
+//
+//body .layout-wrapper .layout-menu-container {
+//  background-color: #ffffff;
+//  position: fixed;
+//  z-index: 101;
+//  border-bottom: 1px solid #5b69c3;
+//  top: 50px;
+//  box-sizing: border-box;
+//  box-shadow: unset !important;
+//  -webkit-box-shadow: unset !important;
+//  -moz-box-shadow: 0 1px 2px 4px rgba(0, 0, 0, 0.3);
+//}
+
+input.ng-invalid {
+  border: 1px solid red;
+  border-left: 5px solid #a94442; /* red */
+}
+
+
+.cp-badge{
+  background-color: #447d1d;
+}
+.valueset-badge{
+  background-color: #0e141c;
+}
+.segment-badge{
+  background-color: blue;
+}
+.datatype-badge{
+  background-color: saddlebrown;
+}
+
+.parentMenu{
+  color: #5c6bc0;
+  font-weight:700;
+}
+
+body .layout-wrapper .layout-menu-container .layout-menu li > a span {
+  display: unset;
+  vertical-align: middle;
+  margin-left: 6px;
+  word-break: keep-all;
+}
+
+body .layout-wrapper.layout-horizontal .layout-menu-container .layout-menu > li.active-menuitem > a {
+  background-color: white;
+  color: #5c6bc0;
+}
+
+.layout-menu-container{
+  background-color: #eac800 !important;
+}
+
+.pattern.ui-organizationchart .ui-organizationchart-node-content.ui-operator {
+  padding: 0;
+  background-color:#495ebb;
+  color: white;
+  text-align: center;
+  border: 1px solid #495ebb;
+}
+
+.pattern.ui-organizationchart .ui-organizationchart-node-content.ui-statement {
+  padding: 0;
+  //background-color:#495ebb;
+  //color: white;
+  //text-align: center;
+  //border: 1px solid #495ebb;
+}
+
+.node-content {
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
+
+.operator-drop-area {
+  padding: 5px;
+  min-width: 100px;
+  min-height: 30px;
+  background-color: #97caf552;
+  border: 2px dashed rgba(60, 47, 203, 0.92);
+  text-align: center;
+  vertical-align: center;
+  color: #9e9e9e;
+}
+
+.pattern-dialog .ui-dialog-content {
+  padding: 0 !important;
+}
+
+.cs-dialog .ui-dialog-content {
+  padding: 0 !important;
+}
+
+.pattern {
+  max-height: 450px;
+  min-height: 450px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  border-bottom: 1px solid darkgrey;
+}
+
+.ui-dropdown .ui-dropdown-label {
+  display: block;
+  /* border: 0; */
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: 900;
+  width: 100%;
+  padding-right: 0.5em;
+  margin-bottom: 1px;
+}
+
+body .ui-dialog .ui-dialog-titlebar {
+  padding: 1em;
+  background-color: #6e72bd36;
+}
+
+.scroll-badge{
+  color :white;
+  margin: 2px;
+}
+.scroll-badge-vs{
+  background-color: #007bff;
+
+}
+.scroll-badge-cp{
+  background-color: #17a2b8;
+}
+.scroll-badge-dt{
+background-color: saddlebrown;
+}
+
+.scroll-badge-s{
+background-color: blue;
+}
+.section-content{
+  max-height: 600px;
+  overflow: scroll;
+  padding: 5px;
+}
+
+body .ui-panel .ui-panel-content {
+  height: 100%;
+  box-sizing: border-box;
+   padding: 0em 0em;
+}
+
+p-dialog{
+  z-index: 9999!important;
+}
+.ui-scrollpanel-content {
+  height: calc(100% + 18px);
+  width: calc(100% + 18px);
+  padding: 0 0px 0px 0;
+  position: relative;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+.toc-panel-header{
+  height: 55px;
+}
+.toc-panel-body{
+  overflow: auto;
+  max-height: 700px;
+  border-right: 1px solid #d4d4d4;
+}
+
+.document-container {
+  border-bottom: 1px solid #d4d4d4;
+  padding-bottom: 100px;
+  position: relative;
+}
+
+.header-color {
+  background-color: #e0e0e0 !important;
+  border-color: #e0e0e0 !important;
+}
+ .ig-toolbar .ui-toolbar {
+   background-color:  #e0e0e0 !important;
+ }
+body .toc .ui-widget-header {
+  background-color:  #e0e0e0 !important;
+
+}
+.fixed-ig-header
+{
+  top: 100px !important;
+  position: fixed;
+  z-index: 320;
+  height: 60px;
+  width: 100%;
+  background-color: wheat;
+}
+.fixed-ig-sub-header{
+  top: 160px !important;
+  position: fixed;
+  z-index: 320;
+  height: 100px;
+}

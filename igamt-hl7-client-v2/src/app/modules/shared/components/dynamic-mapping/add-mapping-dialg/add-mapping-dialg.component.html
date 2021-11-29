@@ -1,0 +1,65 @@
+<h2  mat-dialog-title>Add Dynamic mapping </h2>
+
+  <mat-dialog-content style="overflow-y:scroll">
+    <table class="table table-bordered">
+      <tr>
+        <td>
+          <strong>OBX-2 Value Set</strong>
+        </td>
+        <td>
+          <app-display-ref *ngIf="data.display" [element]="data.display" [hideDescription]="true" [documentType]="data.documentType" [documentId]="data.documentId"></app-display-ref>
+        </td>
+
+      </tr>
+    </table>
+    <div class="default-mapping" *ngIf="data.display">
+      <p-table #dt1 [resizableColumns]="false" [globalFilterFields]="['value']"  sortField="value"
+               [value]="data.values">
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 20%">
+              Codes Value
+            </th>
+            <th>Available Data Types</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="caption">
+          <div style="text-align: left">
+            <div class="input-group" style="margin-left: 10px;">
+              <div class="input-group-prepend" style="height: 35px;">
+                <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+              </div>
+              <input (input)="dt1.filterGlobal($event.target.value, 'contains')" class="form-control" placeholder="Search by name"
+                     style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
+            </div>
+          </div>
+        </ng-template>
+        <ng-template let-rowData pTemplate="body">
+          <tr style="width: 20%">
+            <td>{{rowData}}</td>
+            <td #anchor>
+              <ng-container *ngIf="data.namingMap[rowData]">
+                <div *ngFor="let dt  of data.namingMap[rowData]" style="display: flex; flex-direction: row">
+                  <div style="display: flex">
+                    <app-display-section [element]="dt" [hideDescription]="true"></app-display-section>
+                  </div>
+                  <div style="justify-content: flex-end;width: 100%;">
+                    <button (click)="select(rowData, dt)" class="btn btn-primary btn-sm" style="float: right"><i
+                      class="fa fa-plug"></i></button>
+                  </div>
+                </div>
+              </ng-container>
+              <ng-container *ngIf="!data.namingMap[rowData]">
+              <span style="color: red"><i class="fa fa-warning"></i> No Data type found in the IG</span>
+              </ng-container>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+  </mat-dialog-content>
+  <mat-dialog-actions style="justify-content: flex-end;">
+    <button class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="cancel()">Cancel</button>
+  </mat-dialog-actions>

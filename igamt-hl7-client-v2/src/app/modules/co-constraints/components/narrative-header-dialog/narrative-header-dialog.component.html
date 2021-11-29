@@ -1,0 +1,5 @@
+<label for="type"> Column Title : </label>
+<input type="text" class="form-control" [(ngModel)]="title">
+<div style="width: 100%; display: flex; justify-content: flex-end; margin-top: 5px;">
+  <button class="btn btn-sm btn-success" (click)="done()" [disabled]="!title" >Done</button>
+</div>

@@ -1,0 +1,13 @@
+<ng-container [ngSwitch]="_op">
+  <div *ngSwitchCase="'UNCHANGED'" class="delta-unchanged">
+    <ng-container *ngTemplateOutlet="unchangedTmpl ? unchangedTmpl : defaultTmpl; context: { $implicit: _current }"></ng-container>
+  </div>
+  <ng-container *ngSwitchDefault>
+    <div *ngIf="_current && _op !== 'DELETED'" class="delta-current">
+      <ng-container *ngTemplateOutlet="currentTmpl ? currentTmpl : defaultTmpl; context: { $implicit: _current }"></ng-container>
+    </div>
+    <div *ngIf="_previous && _op !== 'ADDED'" class="delta-previous">
+      <ng-container *ngTemplateOutlet="previousTmpl ? previousTmpl : defaultTmpl; context: { $implicit: _previous }"></ng-container>
+    </div>
+  </ng-container>
+</ng-container>

@@ -1,0 +1,34 @@
+<div *ngIf="verification$ | async as verification" style="padding: 20px;">
+  <div *ngIf="filter | async as filterValue" style="display: flex;">
+    <ng-container *ngFor="let item of severity">
+      <div class="severity-filter" *ngIf="verification.stats[item.key]" >
+        <p-checkbox [style]="{ 'margin-right' : '5px'}" [(ngModel)]="filterValue.severity[item.key]" (ngModelChange)="updateFilter()" binary="true"></p-checkbox>
+        <app-issue-badge [type]="item.type" [number]="verification.stats[item.key]" label="true"></app-issue-badge>
+      </div>
+    </ng-container>
+  </div>
+  <table class="table table-sm table-bordered table-striped" style="margin-top: 10px;">
+    <tbody *ngFor="let item of verification.entries">
+      <tr style="background-color: white;">
+        <th colspan="4">
+          <app-display-section [element]="item.target"></app-display-section>
+        </th>
+      </tr>
+      <tr>
+        <th>Location</th>
+        <th>Property</th>
+        <th>Message</th>
+        <th>Code</th>
+      </tr>
+      <tr *ngFor="let entry of item.entries">
+        <td>
+          <app-issue-badge [type]="entry.severity"></app-issue-badge>
+          <span style="margin-left: 5px;"> {{entry.location}} </span>
+        </td>
+        <td>{{entry.property}}</td>
+        <td>{{entry.message}}</td>
+        <td>{{entry.code}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

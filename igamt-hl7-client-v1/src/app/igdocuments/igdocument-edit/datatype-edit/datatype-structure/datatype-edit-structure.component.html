@@ -1,0 +1,153 @@
+<div *ngIf="datatypeStructure">
+  <form #editForm="ngForm">
+    <entity-header [elm]="datatypeStructure"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()" [differential]="diffable" [diffToggled]="false"></entity-header>
+    <div class="section-content">
+
+
+    <p-treeTable *ngIf="!datatypeStructure.readOnly"  [value]="datatypeStructure.structure" [scrollable]="true"  [columns]="selectedColumns" [style]="{width:'100%'}" scrollHeight="600px">
+      <ng-template pTemplate="caption">
+        <div style="text-align:right">
+          <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()" selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+          <col *ngFor="let col of columns" class="{{col.style}}">
+        </colgroup>
+      </ng-template>
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th *ngFor="let col of columns">
+            {{col.header}}
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body"  let-node="node" let-rowNode let-rowData="rowData" let-columns="columns">
+        <tr>
+          <td *ngFor="let col of columns; let i = index" [ngSwitch]="col.field">
+            <ng-container *ngSwitchCase="'name'">
+              <i (click)="print(node);print(changeItems);"><name-col [type]="node.data.type" [rowNode]="rowNode" [index] = "i" [position]="node.data.position" [description]="node.data.name"></name-col></i>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'usage'">
+              <usage-col *ngIf="node.data.type === 'COMPONENT'" [(usage)]="node.data.usage" [(trueUsage)]="node.data.trueUsage" [(falseUsage)]="node.data.falseUsage" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="datatypeStructure.id"></usage-col>
+              <usage-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [(usage)]="node.data.usage" [(trueUsage)]="node.data.trueUsage" [(falseUsage)]="node.data.falseUsage" [idPath]="node.data.idPath"></usage-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'length'">
+              <length-col *ngIf="node.data.type === 'COMPONENT'"  [(minLength)]="node.data.minLength" [(maxLength)]="node.data.maxLength" [(confLength)]="node.data.confLength" [idPath]="node.data.idPath" [leaf]="node.data.datatypeLabel.leaf" [(changeItems)]="changeItems"></length-col>
+              <length-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [minLength]="node.data.minLength" [maxLength]="node.data.maxLength" [leaf]="node.data.datatypeLabel.leaf"></length-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'confLength'">
+              <conflength-col *ngIf="node.data.type === 'COMPONENT'" [(minLength)]="node.data.minLength" [(maxLength)]="node.data.maxLength" [(confLength)]="node.data.confLength" [idPath]="node.data.idPath" [leaf]="node.data.datatypeLabel.leaf" [(changeItems)]="changeItems"></conflength-col>
+              <conflength-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [confLength]="node.data.confLength" [leaf]="node.data.datatypeLabel.leaf"></conflength-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'datatype'">
+              <datatype-col *ngIf="node.data.type === 'COMPONENT'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [documentId] ="igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems" [documentType]="documentType"></datatype-col>
+              <datatype-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" [documentType]="documentType" ></datatype-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'valueSet'">
+              <valueset-col *ngIf="configService.isValueSetAllow(node.data.datatypeLabel.name, node.data.position, node.parent, datatypeStructure.name, node.data.type)" [datatypeLabel]="node.data.datatypeLabel" [igId] = "igId" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "datatypeStructure.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></valueset-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'singleCode'">
+              <singlecode-col *ngIf="configService.isSingleCodeAllow(node.data.datatypeLabel.name, node.data.position, node.parent, datatypeStructure.name, node.data.type,node.data.datatypeLabel.leaf, node.data.bindings)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "datatypeStructure.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></singlecode-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'constantValue'">
+              <constantvalue-col *ngIf="configService.isConstantValueAllow(node.data.datatypeLabel.name, node.data.position, node.parent, datatypeStructure.name, node.data.type,node.data.datatypeLabel.leaf)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "datatypeStructure.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></constantvalue-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'predicate'">
+              <predicate-col *ngIf="node.data.usage === 'C'" [(trueUsage)]="node.data.trueUsage" [(falseUsage)]="node.data.falseUsage" [(predicate)]="node.data.predicate" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="datatypeStructure.id" [structure]="datatypeStructure"></predicate-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'textDef'">
+              <textdef-col *ngIf="node.data.type === 'COMPONENT'" [(text)]="node.data.text" [(changeItems)] = "changeItems" [idPath]="node.data.idPath"></textdef-col>
+              <textdef-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [text]="node.data.text"></textdef-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'comment'">
+              <comment-col [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "datatypeStructure.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></comment-col>
+            </ng-container>
+          </td>
+        </tr>
+      </ng-template>
+    </p-treeTable>
+
+    <p-treeTable *ngIf="datatypeStructure.readOnly"  [value]="datatypeStructure.structure" [scrollable]="true"  [columns]="selectedColumns" [style]="{width:'100%'}" scrollHeight="600px">
+      <ng-template pTemplate="caption">
+        <div style="text-align:right">
+          <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()" selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
+        </div>
+      </ng-template>
+
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+          <col *ngFor="let col of columns" class="{{col.style}}">
+        </colgroup>
+      </ng-template>
+
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th *ngFor="let col of columns">
+            {{col.header}}
+          </th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body"  let-node="node" let-rowNode let-rowData="rowData" let-columns="columns">
+        <tr>
+          <td *ngFor="let col of columns; let i = index" [ngSwitch]="col.field">
+            <ng-container *ngSwitchCase="'name'">
+              <i (click)="print(node);print(changeItems);"><name-col [type]="node.data.type" [rowNode]="rowNode" [index] = "i" [position]="node.data.position" [description]="node.data.name"></name-col></i>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'usage'">
+              <usage-readonly-col [usage]="node.data.usage" [bindings]="node.data.bindings" [idPath]="node.data.idPath"></usage-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'length'">
+              <length-readonly-col [minLength]="node.data.minLength" [maxLength]="node.data.maxLength" [leaf]="node.data.datatypeLabel.leaf"></length-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'confLength'">
+              <conflength-readonly-col [confLength]="node.data.confLength" [leaf]="node.data.datatypeLabel.leaf"></conflength-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'datatype'">
+              <datatype-readonly-col [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" [documentType]="documentType" ></datatype-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'valueSet'">
+              <valueset-readonly-col [(bindings)]="node.data.bindings"></valueset-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'singleCode'">
+              <singlecode-readonly-col [(bindings)]="node.data.bindings"></singlecode-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'constantValue'">
+              <constantvalue-readonly-col [(bindings)]="node.data.bindings"></constantvalue-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'textDef'">
+              <textdef-readonly-col [text]="node.data.text"></textdef-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'comment'">
+              <comment-readonly-col [(bindings)]="node.data.bindings"></comment-readonly-col>
+            </ng-container>
+          </td>
+        </tr>
+      </ng-template>
+    </p-treeTable>
+    </div>
+  </form>
+</div>

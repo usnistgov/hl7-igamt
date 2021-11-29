@@ -1,0 +1,12 @@
+<app-ngx-dropdown type="Entity" [values]="filtered" [filter]="true" [required]="required" [filterFn]="filterFn" [placeholder]="placeholder" [(ngModel)]="selectedResource" (ngModelChange)="change($event)">
+  <ng-template #selected let-item>
+    <app-scope-badge *ngIf="item.domainInfo" [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
+    <app-entity-bagde [type]="item.type"></app-entity-bagde>
+    <span *ngIf="item.fixedName"> {{item.fixedName}}</span><span *ngIf="item.variableName">{{ '_' + item.variableName}}</span>
+  </ng-template>
+  <ng-template #item let-item>
+    <app-scope-badge *ngIf="item.domainInfo" [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
+    <app-entity-bagde [type]="item.type"></app-entity-bagde>
+    <span *ngIf="item.fixedName"> {{item.fixedName}}</span><span *ngIf="item.variableName">{{ '_' + item.variableName}}</span>
+  </ng-template>
+</app-ngx-dropdown>

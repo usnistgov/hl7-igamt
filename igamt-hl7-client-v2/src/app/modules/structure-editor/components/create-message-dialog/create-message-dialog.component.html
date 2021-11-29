@@ -1,0 +1,73 @@
+<h2 mat-dialog-title>Create Custom Message Structure</h2>
+<mat-dialog-content>
+  <form #form='ngForm'>
+
+    <ng-container *ngIf="!messageStructure" >
+      <label for="selectVersion" style="font-weight: bold;"> Select Structure To Start From </label>
+      <app-resource-list
+        (selectionChange)="getMessages($event)"
+        [hl7Versions]="hl7Version$ | async"
+        [selectedVersion]="selectedVersion"
+        [selectedScope]="selectedScope"
+        [displayScope]="true"
+        [filters]="[ 'data.name', 'data.description' ]"
+        [table]="messages$ | async"
+        resourceLabel="Structure">
+        <ng-template #display let-item >
+          {{ item.data.name }} - {{  item.data.description  }}
+        </ng-template>
+        <ng-template #actions let-item >
+          <button class="btn btn-sm btn-primary" (click)="startFrom(item)" > Start From </button>
+        </ng-template>
+      </app-resource-list>
+    </ng-container>
+
+    <ng-container *ngIf="messageStructure" >
+      <span> Selected Structure </span>
+      <span class="badge badge-secondary"> {{ messageStructure.hl7Version }} </span>
+      <strong> {{ messageStructure.name }} </strong>
+      <button class="btn btn-sm btn-danger" (click)="clearSelection()" >
+        <i class="fa fa-times"></i>
+      </button>
+      <br><br>
+      <label for="name" style="font-weight: bold;"> Structure ID </label>
+      <input name="name" id="name"  type="text" [(ngModel)]="messageStructure.name" type="text" style="width: 100%" class="form-control" required />
+      <label for="description" style="font-weight: bold;"> Description </label>
+      <input name="description" id="description"  type="text" [(ngModel)]="messageStructure.description" type="text" style="width: 100%" class="form-control" required />
+      <table class="table table-striped table-bordered table-sm" style="margin-top: 10px;">
+        <tr>
+          <th> Structure Events </th>
+          <th> Description </th>
+          <th> Action </th>
+        </tr>
+        <tr *ngFor="let item of messageEvents; let i = index">
+          <td> {{ item.name }} </td>
+          <td> {{ item.description }} </td>
+          <td>
+            <button class="btn btn-sm btn-danger" (click)="deleteEvent(i)" >
+              <i class="fa fa-minus"></i>
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input name="eventN" id="eventN"  type="text" [(ngModel)]="eventStub.name" type="text" style="width: 100%" class="form-control" />
+          </td>
+          <td>
+            <input name="eventD" id="eventD"  type="text" [(ngModel)]="eventStub.description" type="text" style="width: 100%" class="form-control" />
+          </td>
+          <td>
+            <button class="btn btn-sm btn-primary" [disabled]="eventStub.name === ''" (click)="addEvent(eventStub)" >
+              <i class="fa fa-plus"></i>
+            </button>
+          </td>
+        </tr>
+      </table>
+    </ng-container>
+
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" [disabled]="!form || form.invalid || !messageStructure || messageEvents.length === 0"  class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

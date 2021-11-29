@@ -1,0 +1,10 @@
+<ng-container *ngIf="value$ | async as value">
+  <div style="height: 100%; overflow: scroll;" *ngIf="active$ | async as active">
+
+    <ng-container *ngFor="let tab of tabs$ | async">
+      <app-verification-entry-table *ngIf="active === tab && value[tab]" [value]="value[tab]"></app-verification-entry-table>
+    </ng-container>
+
+  </div>
+</ng-container>
+

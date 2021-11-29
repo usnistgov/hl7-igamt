@@ -1,0 +1,56 @@
+<h2 mat-dialog-title> Add Field to <app-entity-bagde [type]="type" ></app-entity-bagde> {{ root }} at position {{ blueprint.position }}</h2>
+<mat-dialog-content>
+  <form #form='ngForm'>
+    <div class="form-group">
+      <label for="segment" style="font-weight: bold;"> Name </label>
+      <input required class="form-control" type="text" name="name" placeholder="Name" [(ngModel)]="blueprint.name">
+    </div>
+    <div class="form-group" style="display: flex; justify-content: space-between;">
+      <label for="segment" style="font-weight: bold;"> Datatype </label>
+      <button *ngIf="!resource" class="btn btn-sm btn-primary" (click)="pickResource()">
+        Pick Resource
+      </button>
+    </div>
+    <div *ngIf="resource" style="display: flex; justify-content: space-between;">
+      <app-display-section [element]="resource"></app-display-section>
+      <button class="btn btn-sm btn-danger" (click)="clearResource()">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+    <div class="form-group">
+      <label for="segment" style="font-weight: bold;" #pos> Position </label>
+      <p-dropdown
+      [style]="{'min-width': '100%'}"
+      [autoDisplayFirst]="false"
+      [name]="'position'"
+      required
+      [options]="positionOptions"
+      [(ngModel)]="blueprint.position"
+      (ngModelChange)="positionChange($event)"
+      [appendTo]="pos" ></p-dropdown>
+    </div>
+    <div class="form-group">
+      <label for="segment" style="font-weight: bold;" #ust> Usage </label>
+      <p-dropdown
+      [style]="{'min-width': '100%'}"
+      [autoDisplayFirst]="false"
+      [name]="'usage'"
+      required
+      [options]="usageOptions"
+      [(ngModel)]="blueprint.usage"
+      (ngModelChange)="usageChange($event)"
+      [appendTo]="ust" ></p-dropdown>
+    </div>
+    <div class="form-group">
+      <label for="segment" style="font-weight: bold;"> Cardinality </label>
+      <div style="display: flex; align-items: center;">
+        <input required class="range-input" type="number" name="min" placeholder="Min" min="0" [(ngModel)]="blueprint.min"> ..
+        <input required class="range-input" type="text" name="max" placeholder="Max" [(ngModel)]="blueprint.max">
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button class="btn btn-sm btn-secondary" style="margin-right: 5px;" (click)="cancel()" >Cancel</button>
+  <button class="btn btn-sm btn-success" [disabled]="!isValid()" (click)="done()" >Done</button>
+</mat-dialog-actions>

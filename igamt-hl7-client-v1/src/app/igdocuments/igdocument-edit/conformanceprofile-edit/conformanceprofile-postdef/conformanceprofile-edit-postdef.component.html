@@ -1,0 +1,16 @@
+<div *ngIf="current">
+  <form #editForm="ngForm">
+    <entity-header [elm]="current"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
+
+
+    <div class="section-content">
+
+      <div class="ui-g input-box">
+
+        <div class="ui-g-12" [froalaEditor]="getOptions()" [(froalaModel)]="current.text"></div>
+
+      </div>
+    </div>
+  </form>
+
+</div>

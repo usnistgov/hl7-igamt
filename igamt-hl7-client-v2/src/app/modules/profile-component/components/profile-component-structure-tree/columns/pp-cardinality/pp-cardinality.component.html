@@ -1,0 +1,25 @@
+<div style="display: flex; justify-content: space-between; align-items: center;" *ngIf="range">
+  <div style="display: flex; align-items: center; margin-right: 5px;" [ngClass]="{'inactive-cell-dim' : !active }">
+
+    <ng-container [ngSwitch]="globalViewOnly || !active">
+      <ng-container *ngSwitchCase="false">
+
+
+          <form #cardinalityForm="ngForm" style="flex-grow: 1;">
+            <input class="range-input" type="number" [name]="location + 'min'" [id]="location + 'min'"  placeholder="Min" min="0" [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="range.min" (ngModelChange)="minChange($event)"> ..
+            <input class="range-input" type="text" [name]="location + 'max'" [id]="location + 'max'" placeholder="Max" [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="range.max" (ngModelChange)="maxChange($event)">
+          </form>
+
+      </ng-container>
+      <ng-container *ngSwitchCase="true">
+        <strong style="flex-grow: 1;" *ngIf="hasValue(range)">[{{range.min}} .. {{range.max}}]</strong>
+      </ng-container>
+    </ng-container>
+  </div>
+  <button *ngIf="!globalViewOnly && !active" class="btn btn-sm btn-primary profile-component-cell-btn" (click)="activate()">
+    <i class="fa fa-plus"></i>
+  </button>
+  <button *ngIf="!globalViewOnly && active" class="btn btn-sm btn-danger profile-component-cell-btn" style="background-color: red !important;" (click)="clear()">
+    <i class="fa fa-trash"></i>
+  </button>
+</div>

@@ -1,0 +1,42 @@
+<div style="width: 100%; display: flex; align-items: flex-start;">
+  <div style="width: 100%;">
+
+    <div class="card card-configuration" style="flex-grow: 1; margin-bottom: 10px;" *ngIf="!delta">
+      <h5 class="card-title title-text custom-card-title">Usages (Codes Export)</h5>
+      <ul class="list-group list-group-flush">
+
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="R" binary="true" [(ngModel)]="config.codesExport.r" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="P" binary="true" [(ngModel)]="config.codesExport.p" (onChange)="triggerChange()"></p-checkbox></li>
+        <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="E" binary="true" [(ngModel)]="config.codesExport.e" (onChange)="triggerChange()"></p-checkbox></li>
+
+      </ul>
+    </div>
+
+    <div style="display: flex;">
+      <div class="card card-configuration" style="flex-grow: 1; margin-right: 10px;">
+        <h5 class="card-title title-text custom-card-title">Metadata</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Stability" binary="true" [(ngModel)]="config.stability" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Extensibility" binary="true" [(ngModel)]="config.extensibility" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Content Definition" binary="true" [(ngModel)]="config.contentDefinition" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="URL" binary="true" [(ngModel)]="config.url" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Type Internal/External" binary="true" [(ngModel)]="config.vsType" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Pre-Definition" binary="true" [(ngModel)]="config.preDef" (onChange)="triggerChange()"></p-checkbox></li>
+          <li class="list-group-item"><p-checkbox [disabled]="viewOnly" label="Post-Definition" binary="true" [(ngModel)]="config.postDef" (onChange)="triggerChange()"></p-checkbox></li>
+
+        </ul>
+      </div>
+      <div class="card card-configuration" style="flex-grow: 1;" *ngIf="displayColumns && !delta" >
+        <h5 class="card-title title-text custom-card-title">Columns to export</h5>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item" *ngFor="let c of config.columns">
+            <p-checkbox [disabled]="viewOnly" label= {{c.name}} binary="true" [(ngModel)]="c.present" (onChange)="triggerChange()"></p-checkbox>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <app-delta-export-configuration *ngIf="derived && origin && delta" [active]="config.deltaMode" [config]="config.deltaConfig" (updateDelta)="applyChange($event)"></app-delta-export-configuration>
+
+  </div>
+</div>

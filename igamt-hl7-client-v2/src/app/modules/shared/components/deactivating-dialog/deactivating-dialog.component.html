@@ -1,0 +1,17 @@
+<h5 mat-dialog-title> {{data.title}}
+</h5>
+
+<mat-dialog-content>
+
+  <app-usage-viewer [refs]="data.usages" [igId]="data.documentId"></app-usage-viewer>
+</mat-dialog-content>
+
+<div class="alert alert-danger">
+  This Data type is used in the following Data Types, Deactivating this data types would imply deactivation all the flavors referencing it.
+  Do you want to proceed ?
+</div>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button class="btn btn-sm btn-danger" (click)="cancel()"> cancel </button>
+  <button class="btn btn-sm btn-success" (click)="proceed()"> proceed </button>
+
+</mat-dialog-actions>

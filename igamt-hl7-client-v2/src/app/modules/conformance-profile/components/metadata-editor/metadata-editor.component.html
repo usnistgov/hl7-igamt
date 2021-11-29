@@ -1,0 +1,91 @@
+<form [formGroup]="formGroup" style="display: flex; flex-direction: column; height: 100%;">
+
+  <table class="table table-striped table-bordered table-sm">
+    <tr>
+      <th style="text-align: center;">Message Code</th>
+      <th style="text-align: center;">Trigger Event</th>
+      <th style="text-align: center;">Message Structure</th>
+    </tr>
+    <tr>
+      <td style="text-align: center;">{{ formGroup.controls.messageType.value }}</td>
+      <td style="text-align: center;">{{ formGroup.controls.event.value }}</td>
+      <td style="text-align: center;">{{ formGroup.controls.structID.value }}</td>
+    </tr>
+  </table>
+
+  <app-form-input formControlName="name" id="name" name="name"
+    placeholder="Name" label="Name" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <app-form-input formControlName="description" id="description" name="description"
+                  placeholder="Description" label="Description" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <app-form-input formControlName="displayName" id="displayName" name="displayName"
+                  placeholder="Display Name" label="Display Name" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <div class="form-group">
+    <label for="hl7Version" class="form-label-lg"> HL7 Version </label>
+    <div><span class="badge badge-secondary">{{ formGroup.controls.hl7Version.value }}</span></div>
+  </div>
+
+  <app-form-input formControlName="organization" id="organization" name="organization"
+    placeholder="Organization" label="Organization" [viewOnly]="viewOnly$ | async">
+  </app-form-input>
+
+  <div class="form-group">
+    <label for="authors" class="form-label-lg"> Author </label>
+    <p-chips *ngIf="!(viewOnly$ | async)" [styleClass]="'string-list'" formControlName="authors" [placeholder]="'Authors'"></p-chips>
+    <span *ngIf="viewOnly$ | async">
+      <br>
+      <span *ngFor="let item of formGroup.controls.authors.value" class="badge badge-secondary">
+        {{item}}
+      </span>
+    </span>
+  </div>
+
+  <div class="form-group">
+    <label for="type" class="form-label-lg"> Type </label>
+    <p-dropdown  *ngIf="!(viewOnly$ | async)" [options]="typeOptions"
+      [styleClass]="'form-control form-control-dropdown'" formControlName="profileType" name="type"
+      placeholder="Type"></p-dropdown>
+    <span *ngIf="viewOnly$ | async">{{formGroup.controls.profileType.value}}</span>
+  </div>
+
+  <div class="form-group">
+    <label for="type" class="form-label-lg"> Role </label>
+    <p-dropdown  *ngIf="!(viewOnly$ | async)" [options]="roleOptions"
+      [styleClass]="'form-control form-control-dropdown'" formControlName="role" name="Role"
+      placeholder="Role"></p-dropdown>
+    <span *ngIf="viewOnly$ | async">{{formGroup.controls.role.value}}</span>
+  </div>
+
+  <strong> Message Profile Identifier </strong>
+
+  <div>
+    <table formGroupName="profileIdentifier"  class="table table-condensed table-sm">
+      <tr>
+        <th style="text-align: center;">Entity Identifier</th>
+        <th style="text-align: center;">Namespace ID</th>
+        <th style="text-align: center;">Universal ID</th>
+        <th style="text-align: center;">Universal ID Type</th>
+      </tr>
+      <tr>
+        <td>
+          <input class="form-control" formControlName="entityIdentifier" id="EntityIdentifier" name="EntityIdentifier" placeholder="Entity Identifier" label="Entity Identifier" [disabled]="viewOnly$ | async">
+        </td>
+        <td>
+          <input class="form-control" formControlName="namespaceId" id="NamespaceId" name="NamespaceId" placeholder="Namespace Id" label="Namespace Id" [disabled]="viewOnly$ | async">
+        </td>
+        <td>
+          <input class="form-control" formControlName="universalId" id="UniversalId" name="UniversalId" placeholder="Universal Id" label="Universal Id" [disabled]="viewOnly$ | async">
+        </td>
+        <td>
+          <input class="form-control" formControlName="universalIdType" id="UniversalIdType" name="UniversalIdType" placeholder="Universal Id Type" label="Universal Id Type" [disabled]="viewOnly$ | async">
+        </td>
+      </tr>
+    </table>
+  </div>
+
+</form>

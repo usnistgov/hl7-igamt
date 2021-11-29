@@ -1,0 +1,18 @@
+<div class="tt-cell">
+  <app-change-log-info style="margin-right: 5px;"
+    *ngIf="!edit"
+    [sections]="changeDisplaySections$ | async"
+    [context]="context"
+    [viewOnly]="viewOnly"
+    (editChange)="updateReasonForChange($event)"
+  ></app-change-log-info>
+  <strong style="text-align: center; flex-grow: 1;" *ngIf="!edit">{{constant?.value}}</strong>
+  <div class="input-group" *ngIf="edit">
+    <input type="text" class="form-control" placeholder="value" aria-describedby="button-addon2" [(ngModel)]="tmp" [ngModelOptions]="{updateOn: 'blur'}">
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="toggleEdit()"><i class="fa fa-check" style="color: green;"></i></button>
+    </div>
+  </div>
+  <button class="btn btn-sm btn-primary" *ngIf="!viewOnly && !edit" (click)="toggleEdit()"><i class="fa fa-pencil"></i></button>
+</div>
+

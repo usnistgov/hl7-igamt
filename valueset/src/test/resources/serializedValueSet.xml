@@ -1,0 +1,14 @@
+<Valueset position="123" title="test_name" comment="" createdFrom="" description="" name="test_name" postDef="" preDef="" domainVersion="" domainCompatibilityVersions="" domainScope="" id="test_id" publicationVersion="" publicationDate="" username="" bindingIdentifier="test_binding_id" oid="test_oid" intensionalComment="test_intensional_comment" url="http://test.com" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="4" codeSystemIds="test_code_2,test_code_1">
+    <CodeRefs>
+        <CodeRef codeId="test_code_1" codeSystemId="test_code_system_1" position="1" usage="E" />
+        <CodeRef codeId="test_code_2" codeSystemId="test_code_system_1" position="2" usage="E" />
+    </CodeRefs>
+    <InternalCodeSystems>
+        <InternalCodeSystem identifier="test_indentifier_code_system_2" description="test_description_code_system_2" url="http://test.com" />
+        <InternalCodeSystem identifier="test_indentifier_code_system_1" description="test_description_code_system_1" url="http://test.com" />
+    </InternalCodeSystems>
+    <InternalCodes>
+        <InternalCode codeSystemId="test_code_system_1" description="test_description2" id="test_id2" value="test_value2" usage="R" />
+        <InternalCode codeSystemId="test_code_system_1" description="test_description1" id="test_id1" value="test_value1" usage="P" />
+    </InternalCodes>
+</Valueset>

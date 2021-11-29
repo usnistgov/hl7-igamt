@@ -1,0 +1,183 @@
+<h2 mat-dialog-title>{{ title }}</h2>
+<form #csForm="ngForm">
+  <div style="display: flex; justify-content: space-between;">
+    <label for="free" class="form-label-lg"> Assertion Type </label>
+    <div style="border-radius: 5px; margin-left: 10px;">
+      <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.SIMPLE" (ngModelChange)="changeTab($event)" name="activeTab" /> Simple
+      <ng-container *ngIf="!predicateMode" >
+        <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.CONDITIONAL" (ngModelChange)="changeTab($event)" name="activeTab" /> Conditional
+      </ng-container>
+      <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.COMPLEX" (ngModelChange)="changeTab($event)" name="activeTab" /> Complex
+      <input type="radio"  [(ngModel)]="activeTab" [style]="{'margin-left': '10px'}" styleClass="'radio-inline'" [value]="tabType.FREE" (ngModelChange)="changeTab($event)" name="activeTab" /> Free Text
+    </div>
+  </div>
+  <ng-container *ngIf="cs">
+    <div class="form-group" *ngIf="!predicateMode && !assertionMode">
+      <label for="free" class="form-label-lg"> Identifier </label>
+      <input type="text" class="form-control" id="id" name="id" placeholder="Assertion Identifier" required #identifier="ngModel" [(ngModel)]="cs.identifier">
+    </div>
+    <table *ngIf="predicateMode && !assertionMode" class="table table-sm table-bordered">
+      <tr>
+        <th style="text-align: center;">True Usage</th>
+        <th style="text-align: center;">False Usage</th>
+      </tr>
+      <tr>
+        <td style="text-align: center;">
+          <p-dropdown
+          [style]="{'min-width': '70px'}"
+          [options]="options"
+          [autoDisplayFirst]="false"
+          name="trueUsage"
+          [(ngModel)]="cs.trueUsage"
+          [appendTo]="anchor" ></p-dropdown>
+        </td>
+        <td style="text-align: center;">
+          <p-dropdown
+          [style]="{'min-width': '70px'}"
+          [options]="options"
+          [autoDisplayFirst]="false"
+          name="falseUsage"
+          [(ngModel)]="cs.falseUsage"
+          [appendTo]="anchor" ></p-dropdown>
+        </td>
+      </tr>
+    </table>
+    <div class="form-group" *ngIf="resourceType === 'CONFORMANCEPROFILE' && !assertionMode">
+      <label for="free" class="form-label-lg"> Context </label>
+      <span>
+          <span style="margin-left: 5px;" ><app-entity-bagde [type]="contextType" ></app-entity-bagde> {{ contextName }}</span>
+        </span>
+      <button class="btn btn-primary" (click)="showContext = true;" style="margin-left: 10px;" *ngIf="!showContext">
+        <i class="fa fa-pencil"></i>
+      </button>
+      <div *ngIf="showContext" style="height: 100px;">
+        <app-structure-tree
+          [tree]="context"
+          [filter]="contextFilter"
+          [resourceType]="resourceType"
+          [repository]="repository"
+          (selection)="selectContextNode($event)"
+        ></app-structure-tree>
+      </div>
+    </div>
+    <div *ngIf="activeTab === tabType.FREE">
+      <div class="form-group">
+        <label for="free" class="form-label-lg"> Description </label>
+        <input type="text" class="form-control" id="free" name="free" placeholder="Assertion Free Text Description" required #description="ngModel" [(ngModel)]="cs.freeText">
+      </div>
+      <div style="margin-top: 30px; margin-bottom: 20px; cursor: pointer;" (click)="hideAdvanced = !hideAdvanced">
+        <hr style="margin-bottom: -14px; margin-left: 110px;"> <span style="margin-left: 5px; color: gray;"><i class="fa" [ngClass]="{'fa-chevron-down': hideAdvanced, 'fa-chevron-right': !hideAdvanced }"></i> Advanced </span>
+      </div>
+      <div class="form-group" *ngIf="hideAdvanced">
+        <label for="free" class="form-label-lg"> Script </label>
+        <textarea type="text" class="form-control" id="script" rows="6" name="script" placeholder="XML Script" [required]="required" [(ngModel)]="cs.assertionScript"></textarea>
+      </div>
+    </div>
+    <div *ngIf="cs.type === csType.ASSERTION">
+      <div class="form-group">
+        <label for="free" class="form-label-lg"> Description </label><br>
+        <div style="padding: 10px; background-color: #f7f7f7; border: 1px solid #e7e7e7; border-radius: 3px;">
+          <span>{{cs.assertion.description}}</span>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="cs.type === csType.ASSERTION">
+      <div class="form-group">
+        <label for="free" class="form-label-lg"> Assertion Pattern </label>
+        <span *ngIf="pattern" style="margin-left: 5px;">
+          <ng-container *ngTemplateOutlet="tokenized; context : { $implicit :  pattern.tokens }" ></ng-container>
+        </span>
+        <button class="btn btn-primary" style="margin-left: 10px;" (click)="openPatternDialog()" *ngIf="activeTab === tabType.COMPLEX">
+          <i class="fa fa-pencil"></i>
+        </button>
+      </div>
+      <mat-dialog-content>
+        <ng-container *ngIf="activeStatement !== -1" >
+          <div style="width: 100%;" *ngFor="let token of pattern.statements">
+            <ng-container *ngTemplateOutlet="complexStatementLeaf; context : {
+              $implicit :  token,
+              context: token.dependency && token.dependency.payload?.contextPath ? token.dependency.payload.contextPath : cs.context
+            }"
+            ></ng-container>
+          </div>
+        </ng-container>
+      </mat-dialog-content>
+    </div>
+    <div *ngIf="statementsValid()" class="form-group">
+      <div *ngIf="xmlExpression | async as xml" style="padding: 10px; background-color: #f7f7f7; border: 1px solid #e7e7e7; border-radius: 3px; display: flex; flex-direction: column; align-items: center;">
+        <div style="display: flex; width: 100%;">
+          <button style="margin-right: 5px;" class="btn btn-sm btn-success" *ngIf="!xmlVisible && xml.isSet" (click)="xmlVisible = true;">
+            <i class="fa fa-eye"></i>
+          </button>
+          <button style="margin-right: 5px;" class="btn btn-sm btn-danger" *ngIf="xmlVisible && xml.isSet" (click)="xmlVisible = false;">
+            <i class="fa fa-eye-slash"></i>
+          </button>
+          <button style="flex: 1;" class="btn btn-sm btn-primary" (click)="generateXMLExpression()">
+            <i class="fa fa-refresh"></i> Generate XML Assertion
+          </button>
+        </div>
+        <pre style="margin-top: 5px; margin-bottom: 0;" *ngIf="xml.isSet && xmlVisible" lang="xml">{{xml.value}}</pre>
+      </div>
+    </div>
+  </ng-container>
+</form>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="reset()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Reset</button>
+  <button (click)="cancel()" class="btn btn-sm btn-secondary" style="margin-right: 5px;">Cancel</button>
+  <button (click)="done()" [disabled]="!valid()" class="btn btn-sm btn-success">Done</button>
+</mat-dialog-actions>
+
+<ng-template #tokenized let-tokens>
+  <ng-container *ngFor="let token of tokens" >
+    <span *ngIf="token.type === 'TEXT'">{{ token.value }}</span>
+    <button
+      *ngIf="token.type === 'STATEMENT'"
+      [ngStyle]="{ color : token.value.data.color}"
+      class="btn statement-btn"
+      [ngClass]="{'btn-statement-selected': token.value.data.id === activeStatement }"
+      [disabled]="token.dependency && !token.dependency.valid"
+      (click)="toggleStatement(token.value.data.id)">
+      <i *ngIf="!token.valid" class="fa fa-times-circle-o" style="color: red; margin-right: 5px;"></i>
+      <i *ngIf="token.valid" class="fa fa-check" style="color: green; margin-right: 5px;"></i>
+      {{ token.name }}
+    </button>
+  </ng-container>
+</ng-template>
+
+<ng-template #complexStatementLeaf let-context="context" let-token >
+  <table
+    [ngClass]="{'hide': token.value.data.id !== activeStatement }"
+    class="table table-bordered table-sm">
+    <tr>
+      <td style="text-align: center;">
+        <strong [ngStyle]="{ color : token.value.data.color}">{{ token.name }}</strong>
+      </td>
+    </tr>
+    <tr>
+      <app-cs-proposition
+      *ngIf="token.value.data.branch !== 'CONTEXT'"
+      [resourceType]="resourceType"
+      [excludePaths]="excludePaths"
+      [predicateMode]="predicateMode"
+      [resource]="resource"
+      [rootTree]="structure"
+      [repository]="repository"
+      [type]="token.value.data.branch"
+      [collapsed]="false"
+      [token]="token"
+      (valueChange)="change()"
+      ></app-cs-proposition>
+      <app-cs-subcontext
+      *ngIf="token.value.data.branch === 'CONTEXT'"
+      [resourceType]="resourceType"
+      [excludePaths]="excludePaths"
+      [resource]="resource"
+      [rootTree]="structure"
+      [repository]="repository"
+      [collapsed]="false"
+      [token]="token"
+      (valueChange)="change()"
+      ></app-cs-subcontext>
+    </tr>
+  </table>
+</ng-template>

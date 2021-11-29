@@ -1,0 +1,6 @@
+<button *ngIf="collapsed" (click)= "widget.showSideBar()" class="btn btn-sm btn-default side-bar-btn">
+  <i class="fa fa-chevron-right"></i>
+</button>
+<button *ngIf="!collapsed" (click)="widget.hideSideBar()" class="btn btn-sm btn-default side-bar-btn">
+  <i class="fa fa-chevron-left"></i>
+</button>

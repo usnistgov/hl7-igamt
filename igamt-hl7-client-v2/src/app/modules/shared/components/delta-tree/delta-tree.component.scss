@@ -1,0 +1,44 @@
+@import '../../../../../assets/variables';
+
+
+.binding-vs {
+  background-color: $vs_binding_color;
+}
+
+.binding-sg {
+  background-color: $single_code_binding_color;
+}
+
+.delta-current {
+  background-color: lightgreen;
+  width: 100%;
+}
+
+.delta-previous {
+  background-color: lightpink;
+  width: 100%;
+}
+
+.delta-unchanged {
+  background-color: #f4f4f4;
+  width: 100%;
+}
+
+.delta-changed {
+  background-color: bisque;
+  width: 100%;
+}
+
+.delta-updated {
+  padding: 0.571em 0.857em;
+}
+
+.active-tree-view {
+  background-color: #5fff5f;
+}
+
+.btn-i {
+  background-color: aliceblue;
+  color: darkblue;
+  border-color: blue;
+}

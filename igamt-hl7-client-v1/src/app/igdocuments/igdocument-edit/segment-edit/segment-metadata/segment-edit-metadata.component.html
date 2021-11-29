@@ -1,0 +1,75 @@
+<div *ngIf="segmentMetadata">
+    <form #editForm="ngForm">
+      <entity-header [elm]="segmentMetadata"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
+
+
+      <div class="section-content">
+
+        <div *ngIf="!segmentMetadata.readOnly">
+            <div class="ui-g input-box">
+                <label class="metadata-label ui-g-2">
+                    Name
+                </label>
+                <input name="name" id="name" pInputText type="text" disabled class="ui-g-10" #name="ngModel" [(ngModel)]="segmentMetadata.name" required />
+                <div class="ui-g-offset-1" *ngIf="name.invalid&& (name.dirty || name.touched)">
+                    <p-message severity="error" text="Name is required"></p-message>
+                </div>
+            </div>
+
+            <div class="ui-g input-box">
+                <label class="metadata-label ui-g-2">
+                    Flavor Name (Ext)
+                </label>
+                <input name="ext" id="ext" pInputText type="text" class="ui-g-10" #ext="ngModel" [(ngModel)]="segmentMetadata.ext" required />
+                <div class="ui-g-offset-2" *ngIf="ext.invalid && (ext.dirty || ext.touched)">
+                    <p-message severity="error" text="Extension is required"></p-message>
+                </div>
+            </div>
+
+            <div class="ui-g input-box">
+                <label class="metadata-label ui-g-2">
+                    Description
+                </label>
+                <input name="description" id="description" pInputText type="text" class="ui-g-10" #description="ngModel" [(ngModel)]="segmentMetadata.description" disabled />
+            </div>
+
+            <div class="ui-g input-box">
+                <label class="metadata-label ui-g-2">
+                    Author Notes
+                </label>
+                <div class="ui-g-10" [froalaEditor]="getOptions(editForm)" [(froalaModel)]="segmentMetadata.authorNote"></div>
+            </div>
+        </div>
+
+        <div *ngIf="segmentMetadata.readOnly">
+            <div class="ui-g input-box">
+                <label class="metadata-label ui-g-2">
+                    Name
+                </label>
+                <input name="name" id="name" pInputText type="text" class="ui-g-10" #name="ngModel" [(ngModel)]="segmentMetadata.name" disabled />
+            </div>
+
+            <div class="ui-g input-box">
+                <label class="metadata-label ui-g-2">
+                    Flavor Name (Ext)
+                </label>
+                <input name="ext" id="ext" pInputText type="text" class="ui-g-10" #ext="ngModel" [(ngModel)]="segmentMetadata.ext" disabled />
+            </div>
+
+            <div class="ui-g input-box">
+                <label class="metadata-label ui-g-2">
+                    Description
+                </label>
+                <input name="description" id="description" pInputText type="text" class="ui-g-10" #description="ngModel" [(ngModel)]="segmentMetadata.description" disabled />
+            </div>
+
+            <div class="ui-g input-box">
+                <label class="metadata-label ui-g-2">
+                    Author Notes
+                </label>
+                <div class="ui-g-10" [froalaEditor]="getOptions(editForm)" [(froalaModel)]="segmentMetadata.authorNote"></div>
+            </div>
+        </div>
+      </div>
+    </form>
+</div>

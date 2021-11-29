@@ -1,0 +1,107 @@
+<div class="page-container-nopad page-container">
+  <div class="alerts">
+    <app-dam-alerts-container></app-dam-alerts-container>
+  </div>
+
+  <div class="top-bar">
+
+    <h4 *ngIf="type === 'IGDOCUMENT'" class="title-text" >Implementation Guide Export Configuration</h4>
+    <h4 *ngIf="type === 'DATATYPELIBRARY'" class="title-text" >Datatype Library Export Configuration</h4>
+    <h4 *ngIf="type === 'DIFFERENTIAL'" class="title-text" >Differential Export Configuration</h4>
+
+
+    <div>
+      <button (click)="reset()" class="btn btn-sm btn-danger" style="margin-right:5px;" [disabled]="!hasChanges || currentConfiguration.original"> <i class="fa fa-trash"></i> Reset</button>
+      <button (click)="save()" class="btn btn-sm btn-success" style="margin-right:5px;" [disabled]="!hasChanges || currentConfiguration.original">  <i class="fa fa-save"></i> Save</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="config-list">
+      <div class="list-control">
+        <button (click)="create(type)" class="btn btn-sm btn-primary" style="margin-right:5px;"> <i class="fa fa-plus"></i> Create Configuration </button>
+      </div>
+      <div class="input-group list-filter">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+        </div>
+        <input [(ngModel)]="filter" class="form-control" placeholder="Filter" required style="background-color: #f0f0f0;" type="text">
+      </div>
+      <div class="list-content">
+        <ng-container *ngFor="let item of filteredList()" >
+          <div [contextMenu]="contextMenu" class="config-list-item" (click)="open(item.id)" [ngClass]="{'config-list-item-selected': item.id === currentConfiguration?.id, 'config-list-item-default': isDefault(item) }">
+            {{item.configName}}
+          </div>
+          <context-menu #contextMenu>
+            <ng-template (execute)="delete(item)" contextMenuItem>
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
+            <ng-template (execute)="useAsDefaultConfiguration(item)" contextMenuItem>
+                <i class="fa fa-check-square"></i> Use As Default Configuration
+              </ng-template>
+          </context-menu>
+        </ng-container>
+      </div>
+    </div>
+    <div class="config-content" >
+      <div class="edit" >
+        <div *ngIf="currentConfiguration">
+          <label class="form-label-lg"> Configuration name  </label>
+          <input  type="text"  class="form-control" style="margin-bottom: 10px;" [(ngModel)]="currentConfiguration.configName" (ngModelChange)="change($event)" [disabled]="currentConfiguration.original">
+          <p-tabView *ngIf="type === 'IGDOCUMENT'" [styleClass]="'configuration-tab-view'" >
+              <p-tabPanel header="Ig Display" [selected]="true">
+                  <app-ig-general-display-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.igGeneralConfiguration"  (detectChange)="change($event)" ></app-ig-general-display-configuration>
+                </p-tabPanel>
+            <p-tabPanel header="Conformance Profile">
+              <app-conformance-profile-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.conformamceProfileExportConfiguration" [displayColumns]="true" (detectChange)="change($event)" ></app-conformance-profile-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="Composite Profile">
+              <app-composite-profile-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.compositeProfileExportConfiguration" [displayFlavors]="true" [displayColumns]="true" (detectChange)="change($event)"></app-composite-profile-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="Segment" >
+              <app-segment-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.segmentExportConfiguration" [displayColumns]="true" (detectChange)="change($event)" ></app-segment-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="Datatype">
+              <app-datatype-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.datatypeExportConfiguration" [displayColumns]="true" (detectChange)="change($event)"></app-datatype-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="ValueSet">
+              <app-value-set-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.valueSetExportConfiguration" [displayColumns]="true" (detectChange)="change($event)" ></app-value-set-export-configuration>
+            </p-tabPanel>
+              <p-tabPanel header="Font">
+                <app-font-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.exportFontConfiguration" (detectChange)="change($event)"></app-font-export-configuration>
+              </p-tabPanel>
+          </p-tabView>
+          <p-tabView *ngIf="type === 'DATATYPELIBRARY'" [styleClass]="'configuration-tab-view'" >
+              <p-tabPanel header="Datatype Library Datatypes" [selected]="true">
+                <app-datatype-library-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.datatypeExportConfiguration" [displayUsages]="true" (detectChange)="change($event)" ></app-datatype-library-export-configuration>
+              </p-tabPanel>
+              <p-tabPanel header="Font">
+                  <app-font-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.exportFontConfiguration" (detectChange)="change($event)"></app-font-export-configuration>
+                </p-tabPanel>
+          </p-tabView>
+
+          <p-tabView *ngIf="type === 'DIFFERENTIAL'" [styleClass]="'configuration-tab-view'" >
+            <p-tabPanel header="Delta">
+              <app-delta-export-configuration [active]="true" [config]="currentConfiguration.deltaConfig" (updateDelta)="updateDelta($event)" [viewOnly]="currentConfiguration.original"></app-delta-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="Conformance Profile">
+              <app-conformance-profile-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.conformamceProfileExportConfiguration" [displayColumns]="false" (detectChange)="change($event)" [delta]="true" ></app-conformance-profile-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="Segment" >
+              <app-segment-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.segmentExportConfiguration" [displayColumns]="false" (detectChange)="change($event)" [delta]="true" ></app-segment-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="Datatype">
+              <app-datatype-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.datatypeExportConfiguration" [displayColumns]="false" (detectChange)="change($event)" [delta]="true" ></app-datatype-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="ValueSet">
+              <app-value-set-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.valueSetExportConfiguration" [displayColumns]="false" (detectChange)="change($event)" [delta]="true"  ></app-value-set-export-configuration>
+            </p-tabPanel>
+            <p-tabPanel header="Font">
+              <app-font-export-configuration [viewOnly]="currentConfiguration.original" [config]="currentConfiguration.exportFontConfiguration" (detectChange)="change($event)"></app-font-export-configuration>
+            </p-tabPanel>
+          </p-tabView>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

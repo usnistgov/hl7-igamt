@@ -1,0 +1,122 @@
+<p-card>
+  <p-header>
+    <h1>
+      <p-checkbox [(ngModel)]="tableOptions.includeDatatypeTable" binary="true"
+                  (onChange)="setChanged()" label="Include Datatype Table Options"></p-checkbox>
+    </h1>
+  </p-header>
+
+  <div>
+    <!-- Usages card -->
+    <div>
+      <p-card>
+        <h2>Usages</h2>
+        <hr/>
+        <div>
+          <h3>Datatypes to export</h3>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.datatypesExport.r"
+              (onChange)="setChanged()" disabled="true" label="R" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.datatypesExport.re"
+              (onChange)="setChanged()" disabled="true" label="RE" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.datatypesExport.c"
+              (onChange)="setChanged()" disabled="true" label="C" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.datatypesExport.o"
+              (onChange)="setChanged()" label="O" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.datatypesExport.x"
+              (onChange)="setChanged()" label="X" binary="true"></p-checkbox>
+          </div>
+        </div>
+        <p-checkbox
+          [(ngModel)]="tableOptions.includeVaries"
+          (onChange)="setChanged()" label="Include varies" binary="true"></p-checkbox>
+        <hr/>
+        <div>
+          <h3>Components to export</h3>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.componentExport.r"
+              (onChange)="setChanged()" disabled="true" label="R" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.componentExport.re"
+              (onChange)="setChanged()" disabled="true" label="RE" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.componentExport.c"
+              (onChange)="setChanged()" disabled="true" label="C" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.componentExport.o"
+              (onChange)="setChanged()" label="O" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.componentExport.x"
+              (onChange)="setChanged()" label="X" binary="true"></p-checkbox>
+          </div>
+        </div>
+      </p-card>
+      <p-card>
+        <h2>Metadata</h2>
+        <hr/>
+        <div layout="column">
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.hl7version"
+              (onChange)="setChanged()" label="HL7 Version" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.publicationDate"
+              (onChange)="setChanged()" label="Publication Date" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.publicationVersion"
+              (onChange)="setChanged()" label="Publication Version" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.scope"
+              (onChange)="setChanged()" label="Scope" binary="true"></p-checkbox>
+          </div>
+        </div>
+      </p-card>
+    </div>
+    <!-- Columns card-->
+    <div flex>
+      <p-card>
+        <h2>Columns</h2>
+        <hr/>
+        <div layout="column" style="width: 100%">
+          <div *ngFor="let column of tableOptions.columns">
+            <p-checkbox [(ngModel)]="column.present" binary="true" [disabled]="column.disabled"
+                        (onChange)="setChanged()" [label]="column.name">
+            </p-checkbox>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <p-footer>
+    <p-button label="Save" (onClick)="save($event)" [disabled]="!changed"></p-button>
+  </p-footer>
+</p-card>

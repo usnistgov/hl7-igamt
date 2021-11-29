@@ -1,0 +1,37 @@
+<mat-form-field floatLabel="never" style="width: 100%; margin-bottom: -10px;">
+  <mat-select
+    [placeholder]="placeholder"
+    [disabled]="disabled"
+    (openedChange)="touchedFn()"
+    (selectionChange)="doChange($event)"
+    [compareWith]="controls.compare"
+    [name]="name"
+    [(ngModel)]="selected"
+    [required]="required"
+    [disableRipple]="true">
+
+    <mat-option *ngIf="filter">
+      <ngx-mat-select-search [(ngModel)]="filterTxt" [noEntriesFoundLabel]="'No Entry Found'" [placeholderLabel]="searchTxt ? searchTxt : 'Search'" (ngModelChange)="doFilter($event)">
+        <i ngxMatSelectSearchClear class="fa fa-trash"></i>
+      </ngx-mat-select-search>
+    </mat-option>
+    <mat-select-trigger *ngIf="selectedItem">
+      <ng-container *ngTemplateOutlet="selectedTemplate ? selectedTemplate : standard; context : { $implicit : selectedItem }"></ng-container>
+    </mat-select-trigger>
+    <ng-container *ngIf="!group" >
+      <mat-option *ngFor="let item of _filtered" [value]="item">
+        <ng-container *ngTemplateOutlet="itemTemplate ? itemTemplate : standard; context : { $implicit : item }"></ng-container>
+      </mat-option>
+    </ng-container>
+    <ng-container *ngIf="group">
+      <mat-optgroup *ngFor="let group of _filtered" [label]="group.label">
+        <mat-option *ngFor="let item of group.items" [value]="item">
+          <ng-container *ngTemplateOutlet="itemTemplate ? itemTemplate : standard; context : { $implicit : item }"></ng-container>
+        </mat-option>
+      </mat-optgroup>
+    </ng-container>
+  </mat-select>
+</mat-form-field>
+<ng-template #standard let-item>
+  {{item.label}}
+</ng-template>

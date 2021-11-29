@@ -1,0 +1,5 @@
+<span (click)="goTo()">
+
+<span *ngIf="domainInfo" class="badge" [ngClass]="{'label-HL7' : domainInfo.scope === 'HL7STANDARD', 'label-USER': domainInfo.scope === 'USER'}">{{domainInfo.version}}</span>
+<span>{{label}}</span>
+</span>

@@ -1,0 +1,32 @@
+<form #namingForm='ngForm'>
+  <div *ngIf="namingForm.dirty && namingForm.controls['variableName'] && namingForm.controls['variableName'].errors" class="alert alert-danger" style="margin-top: 5px;">
+    <div *ngIf="namingForm.controls['variableName'].errors.required">
+      <span> {{getVariableNameLabel()}} is required</span>
+    </div>
+    <div *ngIf="namingForm.controls['variableName'].errors.duplicated">
+      <span> {{getVariableNameLabel()}} is duplicated</span>
+    </div>
+    <div *ngIf="namingForm.controls['variableName'].errors.invalidConvention">
+      <span> {{namingForm.controls['variableName'].errors.invalidConvention}}</span>
+    </div>
+  </div>
+  <div style="display: flex; flex-direction: row;">
+    <div style="display: flex; flex-direction: column; justify-content: center">
+
+      <div style="display: flex; flex-direction: row;">
+
+        <app-entity-bagde [type]="element.type"></app-entity-bagde>
+        <app-scope-badge [scope]="targetScope" [version]="element.domainInfo.version" style="margin-right:5px;">
+        </app-scope-badge>
+        <span *ngIf="element.fixedName">{{element.fixedName}}_</span>
+
+      </div>
+    </div>
+
+    <input (ngModelChange)="emitData($event)" [(ngModel)]="element.variableName" [domainInfo]="element.domainInfo" [existing]="existing" [fixedName]="element.fixedName"
+           [id]="element.id" [scope]="targetScope" [type]="element.type" [master]="master" [documentType]="documentType" appNamingConvention
+           appNamingDuplication class="form-control" name="variableName" required style="width: 100%"
+           type="text"/>
+  </div>
+
+</form>

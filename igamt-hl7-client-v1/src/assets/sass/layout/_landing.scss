@@ -1,0 +1,572 @@
+/* Landing */
+.landing-body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background-color: #141d26;
+}
+
+.landing-wrapper {
+    #menu-button {
+        display: none;
+        font-size: 28px;
+        float: right;
+        text-decoration: none;
+        color: $primaryTextColor;
+        @include transition(color $transitionDuration);
+        margin-top: -5px;
+    }
+
+    .landing-header {
+        height: 80px;
+        background-color: $primaryColor;
+        position: fixed;
+        left: 0;
+        width: 100%;
+        z-index: 101;
+
+        .landing-header-content {
+            width: 960px;
+            margin: 0 auto;
+            padding-top: 30px;
+            box-sizing: border-box;
+
+            img {
+                display: inline-block;
+                margin-top: -15px;
+                width: 50px;
+                height: 50px;
+            }
+
+            ul {
+                list-style-type: none;
+                float: right;
+                margin: 2px 0 0 0;
+                padding: 0;
+
+                li {
+                    float: left;
+                    margin-left: 10px;
+
+                    a {
+                        text-decoration: none;
+                        padding: 8px 10px;
+                        color: $primaryTextColor;
+                        @include border-radius(2px);
+
+                        .menu-icon {
+                            display: none;
+                        }
+
+                        &:hover {
+                            background-color: $primaryTextColor;
+                            color: darken($primaryColor, 5%);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    #introduction {
+        padding-top: 80px;
+        height: 623px;
+        box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.2);
+        background: {
+            image: url("../images/landing/landing.jpg");
+            position: center;
+            repeat: no-repeat;
+            size: cover;
+        }
+        width: 100%;
+
+        .introduction-content {
+            width: 960px;
+            margin: 0 auto;
+            color: #d8d8d8;
+            text-align: center;
+
+            .title {
+                font-size: 64px;
+                margin: 200px 0 0 0;
+            }
+
+            .subtitle {
+                font-size: 24px;
+                margin-bottom: 30px;
+                font-weight: lighter;
+            }
+
+            .ui-button {
+                .ui-button-text {
+                    font-size: 16px;
+                    padding: 14px 70px;
+                }
+            }
+        }
+    }
+
+    #landing-feature {
+        padding: 100px 0;
+        text-align: center;
+
+        .landing-container {
+            width: 960px;
+            margin-left: auto;
+            margin-right: auto;
+
+            .centerText {
+              img {
+                margin-bottom: 20px;
+                width: 80px;
+                height: 80px;
+              }
+            }
+        }
+
+        h2 {
+            color: #ffffff;
+            padding-bottom: 15px;
+            font-weight: normal;
+        }
+
+        p {
+            color: #ffffff;
+        }
+
+        .fa-feature {
+            font-size: 80px;
+            margin-bottom: 20px;
+            color: $primaryColor;
+        }
+    }
+
+    #mobile {
+        background: {
+            color: darken($primaryColor, 15%);
+            image: url("../images/landing/landing_s2.png");
+            repeat: no-repeat;
+            position: right;
+        }
+        height: 570px;
+        overflow: hidden;
+
+        .mobile-content {
+            width: 960px;
+            margin: 0 auto;
+            position: relative;
+
+            .title {
+                font-size: 32px;
+                position: absolute;
+                top: 200px;
+                color: #fff;
+            }
+
+            .subtitle {
+                font-size: 18px;
+                position: absolute;
+                top: 250px;
+                color: #fff;
+                font-weight: lighter;
+            }
+
+            img {
+                position: absolute;
+                left: 0px;
+                top: 75px;
+            }
+
+            .ui-button {
+                position: absolute;;
+                top: 300px;
+
+                .ui-button-text {
+                    font-size: 16px;
+                    padding: 14px 70px;
+                }
+            }
+        }
+    }
+
+    #testimonials {
+        text-align: center;
+        color: #ffffff;
+
+        .testimonials-container {
+            width: 960px;
+            margin: 0 auto;
+            text-align: center;
+            padding-bottom: 100px;
+
+            .testimonials-content {
+                background-color: #243447;
+            }
+            h1 {
+                padding: 64px 0 0px 0;
+            }
+
+            p {
+                font-size: 18px;
+                padding-bottom: 32px;
+                font-weight: lighter;
+            }
+
+            #testimonials-text {
+                padding: 32px 64px 0 64px;
+            }
+
+            p:last-child {
+                padding-bottom: 50px;
+            }
+
+            .testimonials-title {
+                font-size: 32px;
+            }
+        }
+    }
+
+    #pricing {
+        background-color: #ffffff;
+        padding: 100px 0;
+        color: #424242;
+
+        .pricing-content {
+            width: 960px;
+            margin: 0 auto;
+            text-align: center;
+
+            .ui-g {
+                margin-top: 50px;
+            }
+
+            > p {
+                font-size: 20px;
+            }
+
+            .pricing-title {
+                font-size: 32px;
+            }
+
+            .pricing-name {
+                font-size: 24px;
+            }
+
+            .pricing-box {
+                @include border-radius(3px);
+                padding: 40px 0;
+                background-color: #e1e6e9;
+                @include transition(background-color $transitionDuration);
+
+                .pricing-fee {
+                    @include border-radius(50px);
+                    background-color: $primaryColor;
+                    color: #ffffff;
+                    width: 100px;
+                    height: 100px;
+                    margin: 30px auto;
+                    font-size: 22px;
+                    line-height: 100px;
+                }
+
+                &:hover {
+                    background-color: $primaryColor;
+                    color: #ffffff;
+
+                    p {
+                        color: #ffffff;
+                    }
+
+                    .pricing-fee {
+                        background-color: #eaeeef;
+                        color: $primaryColor;
+                    }
+                }
+            }
+        }
+    }
+
+    #video {
+        background-color: #282929;
+        padding: 64px 0 100px 0;
+        color: #fff;
+
+        .video-content {
+            width: 960px;
+            margin: 0 auto;
+            text-align: center;
+
+            p {
+                color: #fff;
+                font-size: 20px;
+                font-weight: lighter;
+            }
+
+            .video-title {
+                font-size: 32px;
+            }
+
+            .video-container {
+                margin-top: 50px;
+
+                iframe {
+                    width: 580px;
+                    height: 330px;
+                }
+            }
+        }
+    }
+
+    .landing-footer {
+        background: {
+            color: $primaryColor;
+            image: url("../images/landing/landing_cloud.png");
+            repeat: no-repeat;
+            position: bottom center;
+            size: cover;
+        }
+
+        .landing-footer-content {
+            width: 960px;
+            margin: 0 auto;
+            color: #fff;
+
+            .footer-logo {
+                height: 50px;
+            }
+
+            .footer-top {
+                padding: 30px 0;
+            }
+        }
+    }
+}
+
+@media (max-width: 1024px) {
+    .landing-wrapper {
+        #menu-button {
+            display: block;
+        }
+
+        .landing-header {
+            height: 80px;
+            background-color: $primaryColor;
+
+            .landing-header-content {
+                width: 100%;
+                padding: 30px 20px 0 20px;
+
+                ul {
+                    float: none;
+                    position: fixed;
+                    top: 80px;
+                    right: 0px;
+                    width: 200px;
+                    height: 100%;
+                    background-color: #243447;
+                    padding-top: 15px;
+                    width: 0;
+                    margin: 0;
+                    @include transition(width 0$transitionDuration);
+
+                    &.overlay-menu {
+                        height: 100%;
+                        width: 200px;
+                    }
+
+                    li {
+                        float: none;
+                        margin: 0;
+
+                        a {
+                            display: block;
+                            font-size: 18px;
+                            padding-left: 15px;
+                            box-sizing: border-box;
+                            width: 200px;
+
+                            .menu-icon {
+                                margin-right: 10px;
+                                text-align: center;
+                                font-size: 18px;
+                                width: 15px;
+                            }
+
+                            .fa {
+                                display: inline-block;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        #introduction {
+            height: 603px;
+
+            .introduction-content {
+                width: 100%;
+                margin: 130px auto;
+                text-align: center;
+
+                .title {
+                    padding: 30px 0 20px 0;
+                    font-size: 36px;
+                    position: static;
+                    display: block;
+                }
+
+                .subtitle {
+                    padding-bottom: 30px;
+                    font-size: 20px;
+                    position: static;
+                    display: block;
+                }
+
+                img {
+                    position: static;
+                    display: inline-block;
+                    padding-bottom: 30px;
+                }
+
+                .ui-button {
+                    display: block;
+                    position: static;
+                    width: 250px;
+                    margin: 0 auto;
+                }
+            }
+        }
+
+        #landing-feature {
+            .landing-container {
+                padding: 0 100px;
+                width: 90%;
+            }
+        }
+
+        #mobile {
+            height: 600px;
+            background-size: cover;
+
+            .mobile-content {
+                width: 100%;
+                margin: 120px auto;
+                text-align: center;
+
+                .title {
+                    font-size: 32px;
+                    position: static;
+                    display: block;
+                    padding: 30px 0 20px 0;
+                }
+
+                .subtitle {
+                    font-size: 18px;
+                    position: static;
+                    display: block;
+                    padding-bottom: 30px;
+                }
+
+                img {
+                    position: absolute;
+                    top: 300px;
+                    left: 30%;
+                }
+
+                .ui-button {
+                    position: static;
+                    display: block;
+                    width: 250px;
+                    margin: 0 auto;
+                }
+            }
+        }
+
+        #testimonials {
+            text-align: center;
+            .testimonials-container {
+                width: 100%;
+            }
+            .testimonials-content {
+                margin: 0 auto;
+                width: 75%;
+            }
+        }
+
+        #pricing {
+            padding: 30px 0;
+
+            .pricing-content {
+                width: 100%;
+            }
+        }
+
+        #video {
+            padding: 30px 0;
+
+            .video-content {
+                width: 100%;
+
+                .video-container {
+                    iframe {
+                      width: 350px;
+                      height: 220px;
+                    }
+                }
+            }
+        }
+
+        .landing-footer {
+            padding: 0px 20px;
+
+            .landing-footer-content {
+                width: 100%;
+            }
+        }
+
+    }
+}
+
+@media (max-width: 640px) {
+    .landing-wrapper {
+        #landing-feature {
+            text-align: center;
+            padding: 50px 0;
+            .landing-container {
+                padding: 0;
+            }
+        }
+
+        #mobile {
+            .mobile-content {
+                img {
+                    left: 15%;
+                }
+            }
+        }
+
+        .landing-footer {
+            img {
+                width: 150px;
+            }
+        }
+    }
+}
+
+.ui-button {
+  display: inline-block;
+  position: relative;
+  padding: 0;
+  margin-right: .1em;
+  text-decoration: none !important;
+  cursor: pointer;
+  text-align: center;
+  zoom: 1;
+  overflow: visible; /* the overflow property removes extra width in IE */
+}
+
+.ui-button-text-only .ui-button-text {
+  padding: .25em 1em;
+  display: block;
+}

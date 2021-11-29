@@ -1,0 +1,189 @@
+<!--<p-breadcrumb [model]="breadCurmp" [home]="{'icon': 'fa fa-home'}"></p-breadcrumb>-->
+
+
+<p-steps [model]="items" [(activeIndex)]="activeIndex" [readonly]="true"></p-steps>
+<div *ngIf="activeIndex==1">
+  <div >
+    <label class="metadata-label"> Select Hl7 Version</label>  <p-radioButton [style]="{'margin-left':'10px'}" *ngFor="let v of hl7Versions" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (click)="getMessages(v)"></p-radioButton>
+  </div>
+
+  <div class="ui-g-12">
+
+  <div>
+    <label class="metadata-label"> Selected Messages: </label>
+  </div>
+  <ng-container *ngFor="let selected of selectedEvents" >
+    <label class="badge cp-badge" style="margin-left: 10px;">
+      <span style="background-color: red; border-radius: 25%" class="mini-badge">{{selected.hl7Version}}</span> {{selected.name}}-{{selected.parentStructId}}
+      <i class="fa fa-remove cp-remove" (click)="unselect(selected)"></i>
+    </label>
+
+  </ng-container>
+
+
+  </div>
+
+    <div class="ui-g-12">
+
+
+      <p-table #dt *ngIf="selcetedVersion" [value]="tableValue" dataKey="data.name" [globalFilterFields]="['data.name','children.data.name']" scrollable="true" scrollHeight="400px">
+        <ng-template pTemplate="caption">
+          <div style="text-align: left">
+            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+            <input type="text" pInputText size="50" placeholder="search by message structure" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th>
+              Message Structure
+            </th>
+            <th>
+              Message Event
+            </th>
+            <th>
+              Description
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body"  let-node="node" let-rowNode let-expanded="expanded" let-rowData let-columns="columns">
+          <tr>
+            <td>
+
+              <!--<a [pRowToggler]="rowData">-->
+              <!--<i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>-->
+              <!--</a>-->
+              {{rowData.data.name}}
+
+            </td>
+            <td>
+              <!--<span *ngIf="rowData.data.type=='EVENT' ">  {{rowData.data.name}}</span>-->
+
+              <div *ngFor="let i of rowData.children">
+                <input type="checkbox" [checked]="isSelected(i.data)" (change)="toggleEvent(i.data)" />
+                {{i.data.name}}
+              </div>
+            </td>
+
+            <td>
+
+              {{rowData.data.description}}
+            </td>
+          </tr>
+        </ng-template>
+
+
+
+        <!--<ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">-->
+        <!--<tr>-->
+        <!--<td [attr.colspan]="1">-->
+
+        <!--</td>-->
+        <!--<td [attr.colspan]="1">-->
+
+        <!--<div *ngFor="let i of rowData.children">-->
+        <!--<input type="checkbox" [checked]="isSelected(i.data)" (change)="toggleEvent(i.data)" />-->
+        <!--{{i.data.name}}-->
+        <!--</div>-->
+        <!--</td>-->
+        <!--<td [attr.colspan]="1">-->
+
+        <!--</td>-->
+        <!--</tr>-->
+        <!--</ng-template>-->
+      </p-table>
+
+
+
+    </div>
+  <div class="ui-g-offset-10">
+
+    <p-button   styleClass="indigo-btn" (onClick)="previous($event)" label="Previous" icon="fa fa-hand-o-left" iconPos="left"></p-button>
+
+    <p-button    styleClass="green-btn" (onClick)="create()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
+
+  </div>
+
+
+
+
+
+
+
+</div>
+<div  *ngIf="activeIndex==0" class=" ui-g-12 card">
+  <form  #f="ngForm" novalidate>
+
+    <div class="ui-g input-box">
+      <label class="metadata-label ui-g-2">
+       Cover Picture <p-fileUpload mode="basic" name="file" url="./uploaded_files/upload" auto="auto"  accept="image/*"  maxFileSize="1000000" (onUpload)="upload($event)">
+      </p-fileUpload>
+      </label>
+      <div class="ui-g-offset-3">
+        <img *ngIf="metaData.coverPicture" src={{metaData.coverPicture}} width="80" height="80">
+        <span *ngIf="!metaData.coverPicture" > No Image Selected </span>
+      </div>
+
+    </div>
+
+
+    <!--<img *ngIf="metaData.coverPicture" src={{metaData.coverPicture}} >-->
+    <!--<img *ngIf="!metaData.coverPicture"  src="../../../assets/layout/images/404.png">-->
+
+    <div class="ui-g input-box">
+      <label class="metadata-label ui-g-1">
+        Title
+      </label>
+
+      <input name="title" id="title" pInputText placeholder="title"
+               [(ngModel)]="metaData.title" class="ui-g-10" #title="ngModel" required>
+
+      <div class="ui-g-offset-1" *ngIf="title.invalid&&  (title.dirty || title.touched)">
+        <p-message severity="error" text="Title is required"></p-message>
+
+      </div>
+
+    </div>
+
+    <div class="ui-g input-box">
+      <label class="metadata-label ui-g-1">
+        Sub-Title
+      </label>
+
+      <input name="subTitle" id="subTitle" pInputText placeholder="Sub Title "
+             [(ngModel)]="metaData.subTitle" class="ui-g-10" #subTitle="ngModel">
+
+    </div>
+
+    <div class="ui-g input-box">
+      <label class="metadata-label ui-g-1">
+        Organization
+      </label>
+
+      <input name="orgName" id="orgName" pInputText placeholder="title"
+             [(ngModel)]="metaData.orgName" class="ui-g-10" #orgName="ngModel">
+
+
+    </div>
+
+    <div class="ui-g input-box">
+      <label class="metadata-label ui-g-1">
+        Author Notes
+      </label>
+      <div  class="ui-g-10" [froalaEditor] [(froalaModel)]="metaData.implementationNotes"></div>
+    </div>
+
+  </form>
+
+  <div class="ui-g-offset-10">
+
+
+  <p-button  [disabled]= "f.invalid" styleClass="indigo-btn" (onClick)="next($event)" label="Next" icon="fa fa-hand-o-right" iconPos="right"></p-button>
+
+  <p-button    [disabled]= "f.invalid" styleClass="green-btn" (onClick)="create()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
+  </div>
+</div>
+
+
+
+

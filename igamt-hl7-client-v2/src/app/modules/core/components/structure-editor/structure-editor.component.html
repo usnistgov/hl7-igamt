@@ -1,0 +1,35 @@
+<ng-container [ngSwitch]="isDTM() | async">
+  <ng-container *ngSwitchCase="false">
+    <strong>Binding Context Legend : </strong>
+    <div style="display: flex; flex-direction: row; align-items: center;">
+      <div *ngFor="let item of legend" style="display: flex; flex-direction: row; align-items: center; margin-right: 5px;">
+        <app-binding-badge [context]="item.context"></app-binding-badge>
+        <span style="margin-left: 5px;">{{ item.label }}</span>
+      </div>
+    </div>
+
+    <app-hl7-v2-tree
+    [columns]="columns"
+    [documentRef]="documentRef$ | async"
+    [derived]="derived$ | async"
+    [datatypes]="datatypes | async"
+    [segments]="segments | async"
+    [valueSets]="valueSets | async"
+    [repository]="repository"
+    [viewOnly]="viewOnly$ | async"
+    (changes)="change($event)"
+    [resource]="resource$ | async"
+    [config]="config | async"
+    [bindingConfig]= "bindingConfig | async"
+    [username]="username | async">
+    </app-hl7-v2-tree>
+  </ng-container>
+  <ng-container *ngSwitchCase="true">
+    <app-dtm-structure
+            [resource]="resource$ | async"
+            [viewOnly]="viewOnly$ | async"
+            (changes)="change($event)">
+    </app-dtm-structure>
+  </ng-container>
+</ng-container>
+

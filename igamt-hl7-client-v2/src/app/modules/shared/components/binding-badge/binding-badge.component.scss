@@ -1,0 +1,31 @@
+@import '../../../../../assets/variables';
+
+.binding {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+}
+
+.binding-message {
+  background-color: $comformance_profile_color;
+}
+
+.binding-segment {
+  background-color: $segment_color;
+}
+
+.binding-datatype-component {
+  background-color: $component_color;
+}
+
+.binding-datatype {
+  background-color: $datatype_color;
+}
+
+.binding-datatype-subcomponent {
+  background-color: $subcomponent_color;
+}
+
+.binding-datatype-field {
+  background-color: $field_color;
+}

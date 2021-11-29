@@ -1,0 +1,30 @@
+<div class="ui-g ui-fluid" >
+  <div class="ui-g-10">
+
+    <p-dropdown #dd *ngIf="editing" [options]="groupedLabels" [(ngModel)]="datatypeLabel" placeholder="Select Data Type"  [filter]="true" filterBy="label" (onHide)="resetDropDown()" [group]="true" (onChange)="update()">
+
+      <ng-template let-item pTemplate="selectedItem">
+
+        <element-label [label]="item.value.label" [domainInfo]="item.value.domainInfo" [type]="DATATYPE" [documentId]="igId"></element-label>
+
+      </ng-template>
+      <ng-template let-item pTemplate="item">
+        <element-label [label]="item.value.label" [domainInfo]="item.value.domainInfo" [type]="DATATYPE" [documentId]="igId"></element-label>
+
+      </ng-template>
+
+    </p-dropdown>
+    <element-label  *ngIf="!editing" [label]="datatypeLabel.label" [domainInfo]="datatypeLabel.domainInfo" [type]="DATATYPE" [documentId]="igId"></element-label>
+  </div>
+  <div class="ui-g-2" *ngIf="!editing">
+        <i *ngIf="!editing" class="fa fa-pencil" (click)="makeEditModeForDatatype()"></i>
+
+  </div>
+
+
+
+</div>
+<div class="ui-g" *ngIf="editing">
+  <i class="fa fa-remove" (click)="resetDropDown()"></i>
+</div>
+

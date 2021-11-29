@@ -1,0 +1,472 @@
+<ng-container *ngIf="mode === 'GROUP'">
+  <label for="groupName" style="font-weight: bold;" >Co-Constraint Group Name : </label>
+  <input *ngIf="!delta || !value.nameDelta" [disabled]="vOnly" name="groupName" type="text" class="form-control" style="margin-bottom: 5px;" [(ngModel)]="value.name" (ngModelChange)="emitChange()" >
+  <app-delta-column
+    *ngIf="delta && !!value.nameDelta"
+    [currentValue]="value.nameDelta.current"
+    [previousValue]="value.nameDelta.previous"
+    [action]="value.nameDelta.delta">
+    <ng-template #default let-value>
+      {{value}}
+    </ng-template>
+  </app-delta-column>
+  <label style="font-weight: bold;" >Table : </label>
+</ng-container>
+<form #tableForm="ngForm" >
+
+  <table *ngIf="value" class="table table-bordered table-striped table-sm">
+    <thead>
+      <tr>
+        <th rowspan="2" style="width: 54px;" class="stick-header stick-top-none" *ngIf="!vOnly && !delta">
+          <button *ngIf="!vOnly" class="btn btn-sm btn-primary" (click)="addCoConstraint(value.coConstraints)">
+            <i class="fa fa-plus"></i>
+          </button>
+        </th>
+        <th rowspan="2" class="requirement-cell stick-header stick-top-none">ID</th>
+        <th rowspan="2" class="requirement-cell stick-header stick-top-none">Usage</th>
+        <th rowspan="2" class="requirement-cell column-border stick-header stick-top-none">Cardinality</th>
+        <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'If', list: value.headers.selectors, isDataHeader: true, selector: true }"></ng-container>
+        <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'Then', list: value.headers.constraints, isDataHeader: true  }"></ng-container>
+        <th class="column-border stick-header stick-top-none" style="vertical-align: middle; text-align: center;">Group By</th>
+        <ng-container *ngTemplateOutlet="columnHeader; context: { $implicit: 'Narratives', list: value.headers.narratives, isDataHeader: false  }"></ng-container>
+      </tr>
+      <tr>
+        <ng-container *ngTemplateOutlet="value.headers.selectors.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.selectors, type: 'selectors', template: dataHeader }"></ng-container>
+        <ng-container *ngTemplateOutlet="value.headers.constraints.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.constraints, type: 'constraints', template: dataHeader }"></ng-container>
+        <th class="column column-border stick-header stick-top-none">
+          <div *ngIf="!delta" style="width: 100%; display: flex; justify-content: space-between;">
+            <div>
+              <button *ngIf="!vOnly && mode !== 'GROUP' && value.headers.grouper && (!value.groups || value.groups.length === 0)" (click)="clearGrouper()" class="btn btn-sm btn-danger"><i class="fa fa-times"></i></button>
+              <button *ngIf="!vOnly && (mode === 'GROUP' || (value.groups && value.groups.length > 0))" class="btn btn-sm btn-primary" (click)="setTableGrouper(false)"><i class="fa fa-pencil"></i></button>
+            </div>
+            <ng-container *ngIf="getGrouperElementInfo(value.headers.grouper) | async as grouperInfo" >
+              <div style="width: 100%; text-align: center;" *ngIf="grouperInfo.resolved" >
+                <span class="badge badge-secondary"> Group Id </span>
+                <app-entity-bagde [type]="grouperInfo.type"></app-entity-bagde>
+                <span style="margin-left: 3px;">{{grouperInfo.name}}</span>
+              </div>
+              <div style="width: 100%; text-align: center;" *ngIf="!grouperInfo.resolved" >
+                <span style="color: red;">
+                  <i class="fa fa-warning" ></i> {{grouperInfo.error}}
+                </span>
+              </div>
+            </ng-container>
+          </div>
+          <app-delta-column
+              *ngIf="delta && value.headers.grouper"
+              [currentValue]="{ pathId : value.headers.grouper.pathIdDelta?.current }"
+              [previousValue]="{ pathId : value.headers.grouper.pathIdDelta?.previous }"
+              [action]="value.headers.grouper.delta">
+            <ng-template #default let-value>
+              <ng-container *ngIf="getGrouperElementInfo(value) | async as grouperInfo" >
+                <div style="width: 100%; text-align: center;" *ngIf="grouperInfo.resolved" >
+                  <span class="badge badge-secondary"> Group Id </span>
+                  <app-entity-bagde [type]="grouperInfo.type"></app-entity-bagde>
+                  <span style="margin-left: 3px;">{{grouperInfo.name}}</span>
+                </div>
+                <div style="width: 100%; text-align: center;" *ngIf="!grouperInfo.resolved" >
+                  <span style="color: red;">
+                    <i class="fa fa-warning" ></i> {{grouperInfo.error}}
+                  </span>
+                </div>
+              </ng-container>
+            </ng-template>
+          </app-delta-column>
+        </th>
+        <ng-container *ngTemplateOutlet="value.headers.narratives.length > 0 ? columns : emptyColumn; context: { $implicit: value.headers.narratives, type: 'narratives', template: narrativeHeader }"></ng-container>
+      </tr>
+    </thead>
+    <ng-container *ngTemplateOutlet="ccList; context: { $implicit: value.coConstraints, group : mode === 'GROUP', fieldId : 'ind', viewOnly: vOnly }"></ng-container>
+    <ng-container *ngFor="let group of value.groups; let i = index">
+      <ng-container [ngSwitch]="group.type" >
+        <ng-container *ngSwitchCase="'REF'">
+          <ng-container *ngTemplateOutlet="ccGroupRef; context: { $implicit: group, list : value.groups, index: i, viewOnly: vOnly, cardCells: numberOfCardinalityColumns(value.headers) | async }"></ng-container>
+        </ng-container>
+        <ng-container *ngSwitchCase="'CONTAINED'">
+          <ng-container *ngTemplateOutlet="ccGroup; context: { $implicit: group, list : value.groups, index: i, viewOnly: vOnly, cardCells: numberOfCardinalityColumns(value.headers) | async }"></ng-container>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </table>
+
+  <!-- COLUMNS TOP HEADER -->
+  <ng-template #columnHeader let-selector="selector" let-label let-list="list" let-isDataHeader="isDataHeader">
+    <th [attr.colspan]="listSize(list)" class="column-border stick-header stick-top-none">
+      <div style="display: flex; justify-content: space-between;">
+        <span>{{label}}</span>
+        <button *ngIf="!vOnly" class="btn btn-sm btn-primary" (click)="isDataHeader ? openDataColumnDialog(list, selector) : openNarrativeColumnDialog(list)">
+          <i class="fa fa-plus"></i>
+        </button>
+      </div>
+    </th>
+  </ng-template>
+
+  <!-- COLUMNS DYNAMIC COLLUMN -->
+  <ng-template #columns let-type="type" let-list let-template="template">
+    <ng-container *ngFor="let header of list; let i = index">
+        <ng-container *ngTemplateOutlet="template; context: { $implicit: header, list: list, index : i, type: type }"></ng-container>
+    </ng-container>
+  </ng-template>
+
+  <!-- EMPTY COLUMN -->
+  <ng-template #emptyColumn>
+    <th class="column empty-column column-border stick-header stick-top-pad"></th>
+  </ng-template>
+
+  <!-- DATA HEADER -->
+  <ng-template #dataHeader let-type="type" let-header let-list="list" let-index="index">
+    <ng-container *ngIf="getHeaderElementInfo(header) | async as headerInfo" >
+      <th  class="column stick-header stick-top-pad" [ngClass]="{'column-border': index === (list.length - 1) && !headerInfo.displayCardinality, 'inside-border' :  index !== (list.length - 1) && !headerInfo.displayCardinality }">
+        <div style="width: 100%; display: flex; justify-content: space-between;">
+          <div *ngIf="!header._keep">
+            <button *ngIf="!vOnly" class="btn btn-sm btn-danger" (click)="deleteColumn(list, header, index, type)"><i class="fa fa-times"></i></button>
+          </div>
+          <div style="width: 100%; text-align: center;" *ngIf="headerInfo.resolved">
+            <span class="badge badge-secondary">{{header.columnType}}</span>
+            <app-entity-bagde [type]="headerInfo.type"></app-entity-bagde>
+            <span style="margin-left: 3px;">{{headerInfo.name}}</span>
+          </div>
+          <div style="width: 100%; text-align: center;" *ngIf="!headerInfo.resolved" >
+            <span style="color: red;">
+              <i class="fa fa-warning" ></i> {{headerInfo.error}}
+            </span>
+          </div>
+        </div>
+      </th>
+      <th *ngIf="headerInfo.displayCardinality" style="text-align: center; vertical-align: middle; width: 60px;" class="stick-header stick-top-pad" [ngClass]="{'column-border': index === (list.length - 1), 'inside-border' : index !== (list.length - 1) }">
+        Cardinality
+      </th>
+    </ng-container>
+  </ng-template>
+
+  <!-- NARRATIVE HEADER -->
+  <ng-template #narrativeHeader let-type="type" let-header let-list="list" let-index="index">
+    <th class="column" [ngClass]="{'column-border': index === (list.length - 1)}">
+      <div style="width: 100%; text-align: center; display: flex;  align-items: center; justify-content: space-between;" >
+        <button *ngIf="!header._keep && !vOnly" class="btn btn-sm btn-danger" (click)="deleteColumn(list, header, index, type)"><i class="fa fa-times"></i></button>
+        <div style="width: 100%; text-align: center;" >
+          <span class="badge badge-secondary">TEXT</span>
+          <span style="margin-left: 3px;">{{header.title}}</span>
+        </div>
+      </div>
+    </th>
+  </ng-template>
+
+  <!-- REQUIREMENTS -->
+  <ng-template #usage let-usageDelta="usageDelta" let-elm let-disabled="disabled" let-fieldId="fieldId" let-viewOnly="viewOnly" >
+    <!-- {{usages | json}} -->
+    <div style="width: 60px;">
+      <app-ngx-dropdown
+        *ngIf="!viewOnly && !delta"
+        [(ngModel)]="elm.usage"
+        [name]="fieldId + '-usage'"
+        [disabled]="disabled"
+        (ngModelChange)="usageChange($event, elm)"
+        [required]="true"
+        [values]="usages">
+      </app-ngx-dropdown>
+    </div>
+
+    <strong *ngIf="viewOnly && (!delta || !usageDelta)">{{elm.usage}}</strong>
+
+    <app-delta-column
+        *ngIf="delta && !!usageDelta"
+        [currentValue]="usageDelta.current"
+        [previousValue]="usageDelta.previous"
+        [action]="usageDelta.delta">
+      <ng-template #default let-value>
+        {{value}}
+      </ng-template>
+    </app-delta-column>
+  </ng-template>
+
+  <ng-template #cardinality let-cardinalityDelta="cardinalityDelta" let-elm let-fieldId="fieldId" let-viewOnly="viewOnly" >
+    <div style="width : 100%; display: flex;" *ngIf="!viewOnly && !delta">
+      <input
+        style="width: 50px;"
+        type="number"
+        [(ngModel)]="elm.cardinality.min"
+        [name]="fieldId + '-min'"
+        (ngModelChange)="emitChange()"
+        class="form-control"
+        required >
+      <input
+        style="width: 50px;"
+        type="text"
+        [(ngModel)]="elm.cardinality.max"
+        [name]="fieldId + '-max'"
+        (ngModelChange)="emitChange()"
+        class="form-control"
+        required >
+    </div>
+    <div style="width : 100%;" *ngIf="viewOnly && (!delta || !cardinalityDelta)">
+      <strong>{{elm.cardinality.min}}</strong>
+      <span>..</span>
+      <strong>{{elm.cardinality.max}}</strong>
+    </div>
+    <app-delta-column
+      *ngIf="delta && !!cardinalityDelta"
+      [currentValue]="cardinalityDelta.current"
+      [previousValue]="cardinalityDelta.previous"
+      [action]="cardinalityDelta.delta">
+        <ng-template #default let-value>
+          <div style="width : 100%;">
+            <strong>{{value.min}}</strong>
+            <span>..</span>
+            <strong>{{value.max}}</strong>
+          </div>
+        </ng-template>
+    </app-delta-column>
+  </ng-template>
+
+  <!-- STRUCTURE -->
+  <ng-template #ccList let-list let-group="group" let-fieldId="fieldId" let-viewOnly="viewOnly" let-deltaBody="deltaBody" >
+    <tbody cdkDropList [cdkDropListData]="list" (cdkDropListDropped)="drop($event)" [ngClass]="{
+      'row-added': delta && deltaBody === 'ADDED',
+      'row-deleted': delta && deltaBody === 'DELETED',
+      'row-changed': delta && deltaBody === 'CHANGED'
+    }">
+      <tr *ngFor="let cc of list; let i = index" cdkDrag [cdkDragDisabled]="viewOnly"
+      [ngClass]="{
+        'row-added': delta && cc.delta === 'ADDED',
+        'row-deleted': delta && cc.delta === 'DELETED',
+        'row-changed': delta && cc.delta === 'CHANGED'
+      }"
+      >
+        <div *cdkDragPreview style="padding: 10px; background-color: lightcoral;"> Co-Constraint ({{ i + 1 }}) </div>
+        <td class="btn-cell" *ngIf="!vOnly && !delta" ><button *ngIf="!viewOnly" class="btn btn-sm btn-danger" (click)="deleteCoConstraint(list, i)"><i class="fa fa-times"></i></button></td>
+        <td class="requirement-cell" style="text-align: center;">
+          <table style="width: 100%;">
+            <tr *ngIf="delta && cc.delta === 'ADDED'" class="table-success">
+              <td> ADDED </td>
+            </tr>
+            <tr *ngIf="delta && cc.delta === 'DELETED'" class="table-removed">
+              <td> DELETED </td>
+            </tr>
+            <tr *ngIf="delta && cc.delta === 'CHANGED'" class="table-warning">
+              <td> CHANGED </td>
+            </tr>
+            <tr *ngIf="i === 0 && group" class="table-primary">
+              <td> PRIMARY </td>
+            </tr>
+            <tr *ngIf="cc.cloned && derived" class="table-info">
+              <td> DERIVED </td>
+            </tr>
+            <tr>
+              <td>{{i + 1}}</td>
+            </tr>
+          </table>
+        </td>
+        <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: cc.requirement, usageDelta: cc.requirement.usageDelta, disabled :  i === 0 && group, fieldId : fieldId + '-req-' + i, viewOnly : viewOnly || vOnly }"></ng-container></td>
+        <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: cc.requirement, cardinalityDelta: cc.requirement.cardinalityDelta, fieldId : fieldId + '-req-' + i, viewOnly : viewOnly || vOnly }"></ng-container></td>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.selectors, fieldId : fieldId + '-if-' + i, viewOnly : viewOnly || vOnly || (cc.cloned && derived), excludeBindingStrength: true, column:'selectors'}"></ng-container>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.constraints, fieldId : fieldId + '-then-' + i, viewOnly : viewOnly || vOnly || (cc.cloned && derived), column:'constraints' }"></ng-container>
+        <td class="column-border" style="vertical-align: middle; text-align: center; font-weight: bold;">
+          <span *ngIf="value.headers.grouper"> {{ group ? 'Same Within Group' : 'Distinct'}}</span>
+        </td>
+        <ng-container *ngTemplateOutlet="cellList; context: { $implicit: cc, headers: value.headers.narratives, fieldId : fieldId + '-nar-' + i, viewOnly : viewOnly || vOnly || (cc.cloned && derived), column:'narratives'}"></ng-container>
+      </tr>
+    </tbody>
+  </ng-template>
+
+  <!-- STRUCTURE -->
+  <ng-template #ccGroup let-cardCells="cardCells" let-group let-list="list" let-index="index" let-viewOnly="viewOnly">
+    <tbody>
+      <tr style="background-color: gray;" [ngClass]="{
+        'row-added': delta && group.delta === 'ADDED',
+        'row-deleted': delta && group.delta === 'DELETED',
+        'row-changed': delta && group.delta === 'CHANGED'
+      }">
+        <td class="btn-cell" colspan="2" *ngIf="!vOnly && !delta">
+          <button *ngIf="!viewOnly" class="btn btn-sm btn-primary" (click)="addCoConstraint(group.coConstraints)">
+            <i class="fa fa-plus"></i>
+          </button>
+          <button *ngIf="!viewOnly" class="btn btn-sm btn-danger" (click)="deleteCoConstraintGroup(list, index)"><i class="fa fa-minus"></i></button>
+        </td>
+        <td *ngIf="vOnly || delta" >
+          <table style="width: 100%;" *ngIf="delta">
+            <tr *ngIf="delta && group.delta === 'ADDED'" class="table-success">
+              <td class="table-success"> ADDED </td>
+            </tr>
+            <tr *ngIf="delta && group.delta === 'DELETED'" class="table-removed">
+              <td> DELETED </td>
+            </tr>
+            <tr *ngIf="delta && group.delta === 'CHANGED'" class="table-warning">
+              <td> CHANGED </td>
+            </tr>
+          </table>
+        </td>
+        <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: group.requirement, usageDelta: group.requirement.usageDelta, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
+        <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, cardinalityDelta: group.requirement.cardinalityDelta, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
+        <td [attr.colspan]="numberOfColumns() + cardCells" style="vertical-align: middle;">
+          <input style="background-color: #f4f4f4;" *ngIf="!delta || !group.nameDelta"  [disabled]="viewOnly" class="form-control" type="text" [name]="'g-' + index + '-name'" [(ngModel)]="group.name" (ngModelChange)="emitChange()" placeholder="Group Name">
+          <app-delta-column
+            *ngIf="delta && !!group.nameDelta"
+            [currentValue]="group.nameDelta.current"
+            [previousValue]="group.nameDelta.previous"
+            [action]="group.nameDelta.delta">
+            <ng-template #default let-value>
+              {{value}}
+            </ng-template>
+          </app-delta-column>
+        </td>
+      </tr>
+    </tbody>
+    <ng-container *ngTemplateOutlet="ccList; context: { $implicit: group.coConstraints, group : true, fieldId : 'g-' + index, viewOnly: viewOnly, deltaBody: group.delta }"></ng-container>
+  </ng-template>
+
+  <ng-template #ccGroupRef let-cardCells="cardCells" let-group let-list="list" let-index="index" let-viewOnly="viewOnly">
+    <ng-container *ngIf="groupsMap[group.refId] as content">
+      <tbody>
+        <tr style="background-color: gray;">
+          <td class="btn-cell" colspan="2" *ngIf="!vOnly && !delta">
+            <button *ngIf="!viewOnly" class="btn btn-sm btn-danger" (click)="deleteCoConstraintGroup(list, index)"><i class="fa fa-minus"></i></button>
+          </td>
+          <td *ngIf="vOnly || delta" ></td>
+          <td class="requirement-cell"><ng-container *ngTemplateOutlet="usage; context: { $implicit: group.requirement, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
+          <td class="requirement-cell column-border"><ng-container *ngTemplateOutlet="cardinality; context: { $implicit: group.requirement, fieldId : 'g-' + index, viewOnly: viewOnly  }"></ng-container></td>
+          <td [attr.colspan]="numberOfColumns() + cardCells" style="vertical-align: middle;">
+            <app-entity-bagde [type]="'COCONSTRAINTGROUP'"></app-entity-bagde>
+            <strong style="color: white; margin-left: 5px;">{{ content.name }}</strong>
+          </td>
+        </tr>
+      </tbody>
+      <ng-container *ngTemplateOutlet="ccList; context: { $implicit: content.coConstraints, group : true, fieldId : 'g-' + index, viewOnly: true }"></ng-container>
+    </ng-container>
+  </ng-template>
+
+  <!-- CELLS -->
+  <ng-template #cellList let-excludeBindingStrength="excludeBindingStrength" let-headers="headers" let-cc let-fieldId="fieldId" let-viewOnly="viewOnly" let-column="column">
+    <ng-container *ngIf="headers.length > 0; else emptyColumn">
+      <ng-container *ngFor="let header of headers; let i = index">
+        <ng-container [ngSwitch]="column === 'narratives'">
+          <ng-container *ngSwitchCase="true">
+            <td style="position: relative;" #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1), 'inside-border' : i !== (headers.length - 1) }" *ngIf="cc.cells[header.key]; else emptyColumn" >
+              <ng-container *ngTemplateOutlet="narrativeCell; context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly, anchor: anchor, excludeBindingStrength: excludeBindingStrength, column: column }"></ng-container>
+            </td>
+          </ng-container>
+          <ng-container *ngSwitchCase="false">
+            <ng-container *ngIf="getHeaderElementInfo(header) | async as headerInfo">
+              <ng-container [ngSwitch]="!cc.cells[header.key] || (cc.cells[header.key] && (header.columnType === cc.cells[header.key].type || (!header.columnType && cc.cells[header.key].type === 'VALUE')))">
+                <ng-container *ngSwitchCase="true">
+                  <td style="position: relative;" #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !headerInfo.displayCardinality, 'inside-border' : i !== (headers.length - 1) && !headerInfo.displayCardinality }" *ngIf="cc.cells[header.key]; else emptyColumn" >
+                      <ng-container *ngTemplateOutlet="getCellTemplate(header); context: { $implicit: cc.cells[header.key], header: header, id: cc.id, row: cc, fieldId : fieldId + '-' + header.key, viewOnly: viewOnly || !headerInfo.resolved , anchor: anchor, excludeBindingStrength: excludeBindingStrength, column: column }"></ng-container>
+                  </td>
+                  <td *ngIf="headerInfo.displayCardinality" [ngClass]="{'column-border': i === (headers.length - 1), 'inside-border' :  i !== (headers.length - 1) }" style="vertical-align: middle; text-align: center;">
+                    <input *ngIf="!viewOnly" class="form-control" type="text" style="width: 100px;" [placeholder]="headerInfo.cardinality.max" [name]="fieldId + '-cardinality'" [(ngModel)]="cc.cells[header.key].cardinalityMax" (ngModelChange)="emitChange()" >
+                    <strong *ngIf="viewOnly"> {{ cc.cells[header.key].cardinalityMax || headerInfo.cardinality.max }}</strong>
+                  </td>
+                </ng-container>
+                <ng-container *ngSwitchCase="false">
+                  <td #anchor class="column"  [ngClass]="{'column-border': i === (headers.length - 1) && !headerInfo.displayCardinality, 'inside-border' : i !== (headers.length - 1) && !headerInfo.displayCardinality }">
+                    <span style="color: red">
+                      Cell type conflicts with header (Header type is {{header.columnType ? header.columnType : 'VALUE'}}, Cell type is {{ cc.cells[header.key].type }})
+                    </span>
+                  </td>
+                </ng-container>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+  </ng-template>
+
+  <!-- CELLS -->
+  <ng-template #codeCell let-anchor="anchor" let-overrideElementInfo="overrideElementInfo" let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor" let-column="column">
+    <app-code-cell
+      [header]="header"
+      [cellValue]="cell"
+      [elementInfo]="overrideElementInfo ? overrideElementInfo: getHeaderElementInfo(header) | async"
+      [viewOnly]="viewOnly"
+      [fieldId]="fieldId"
+      [column]="column"
+      [id]="header.key"
+      [anchor]="anchor"
+      (cellValueChange)="emitChange()"
+    >
+    </app-code-cell>
+  </ng-template>
+
+  <ng-template #narrativeCell let-header="header" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly">
+    <textarea class="form-control" [(ngModel)]="cell.value" [name]="fieldId + '-textArea'" (ngModelChange)="emitChange()" [disabled]="viewOnly" ></textarea>
+  </ng-template>
+
+  <ng-template #datatypeCell let-anchor="anchor" let-overrideElementInfo="overrideElementInfo" let-header="header" let-id="id" let-row="row" let-cell let-fieldId="fieldId" let-viewOnly="viewOnly" let-anchor="anchor" >
+    <app-datatype-cell
+      [header]="header"
+      [cellValue]="cell"
+      [elementInfo]="overrideElementInfo ? overrideElementInfo: getHeaderElementInfo(header) | async"
+      [viewOnly]="viewOnly"
+      [fieldId]="fieldId"
+      [column]="column"
+      [id]="id"
+      [anchor]="anchor"
+      (cellValueChange)="emitChange()"
+
+      [datatypes]="datatypes"
+      [segment]="segment"
+      [datatypeOptions]="datatypeOptions"
+    >
+    </app-datatype-cell>
+  </ng-template>
+
+  <ng-template #valueSetCell let-anchor="anchor" let-overrideElementInfo="overrideElementInfo" let-fieldId="fieldId" let-column="column" let-id="id" let-excludeBindingStrength="excludeBindingStrength" let-header="header" let-cell let-viewOnly="viewOnly">
+    <app-vs-cell
+      [header]="header"
+      [cellValue]="cell"
+      [elementInfo]="overrideElementInfo ? overrideElementInfo: getHeaderElementInfo(header) | async"
+      [viewOnly]="viewOnly"
+      [fieldId]="fieldId"
+      [column]="column"
+      [id]="id"
+      [anchor]="anchor"
+      (cellValueChange)="emitChange()"
+
+      [valueSets]="valueSets"
+      [excludeBindingStrength]="excludeBindingStrength"
+    >
+    </app-vs-cell>
+  </ng-template>
+
+  <ng-template #valueCell let-anchor="anchor" let-overrideElementInfo="overrideElementInfo" let-header="header" let-cell let-fieldId="fieldId" let-id="id" let-viewOnly="viewOnly" let-column="column" >
+    <app-value-cell
+      [header]="header"
+      [cellValue]="cell"
+      [elementInfo]="overrideElementInfo ? overrideElementInfo: getHeaderElementInfo(header) | async"
+      [viewOnly]="viewOnly"
+      [fieldId]="fieldId"
+      [column]="column"
+      [id]="id"
+      [anchor]="anchor"
+      (cellValueChange)="emitChange()"
+    >
+    </app-value-cell>
+  </ng-template>
+
+  <ng-template #variesCell let-row="row" let-anchor="anchor" let-overrideElementInfo="overrideElementInfo"  let-excludeBindingStrength="excludeBindingStrength" let-header="header" let-fieldId="fieldId" let-id="id" let-column="column" let-cell let-viewOnly="viewOnly">
+    <app-varies-cell
+      [header]="header"
+      [cellValue]="cell"
+      [elementInfo]="overrideElementInfo ? overrideElementInfo: getHeaderElementInfo(header) | async"
+      [viewOnly]="viewOnly"
+      [fieldId]="fieldId"
+      [column]="column"
+      [id]="id"
+      [anchor]="anchor"
+      (cellValueChange)="emitChange()"
+      [row]="row"
+      [datatypes]="datatypes"
+      [excludeBindingStrength]="excludeBindingStrength"
+      [codeTmplRef]="codeCell"
+      [valueTmplRef]="valueCell"
+      [valueSetTmplRef]="valueSetCell"
+      [datatypeTmplRef]="datatypeCell"
+      [narrativeTmplRef]="narrativeCell"
+      [variesTmplRef]="variesCell"
+      [datatypeId]="dynamicMappingHeaders.datatype ? row.cells[dynamicMappingHeaders.datatype.key]?.datatypeId : undefined"
+    >
+    </app-varies-cell>
+  </ng-template>
+
+</form>

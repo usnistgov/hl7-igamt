@@ -1,0 +1,51 @@
+<p-blockUI [blocked]="routerLoading || httpLoading">
+
+  <p-progressBar mode="indeterminate"></p-progressBar>
+  <p-progressSpinner [style]="{'position':'absolute','top':'25%','left':'50%'}" strokeWidth="5" fill="#EEEEEE"></p-progressSpinner>
+
+
+</p-blockUI>
+<p-growl [(value)]="msgs" id="topLeft" key="topLeft"></p-growl>
+
+
+<div class="layout-wrapper" (click)="onLayoutClick()"
+     [ngClass]="{'layout-horizontal': isHorizontal(),
+                 'layout-overlay': isOverlay(),
+                 'layout-static': isStatic(),
+                 'layout-slim':isSlim(),
+                 'layout-static-inactive': staticMenuDesktopInactive,
+                 'layout-mobile-active': staticMenuMobileActive,
+                 'layout-overlay-active':overlayMenuActive}">
+
+  <app-topbar></app-topbar>
+  <div class="layout-menu-container" (click)="onMenuClick($event)">
+    <p-scrollPanel #layoutMenuScroller [style]="{height: '100%'}">
+      <div class="layout-menu-content">
+        <div class="layout-menu-title">MENU</div>
+        <app-menu [reset]="resetMenu"></app-menu>
+        <div class="layout-menu-footer">
+          <div class="layout-menu-footer-title">TASKS</div>
+
+          <div class="layout-menu-footer-content">
+            <p-progressBar [value]="50" [showValue]="false"></p-progressBar>
+            Today
+
+            <p-progressBar [value]="80" [showValue]="false"></p-progressBar>
+            Overall
+          </div>
+        </div>
+      </div>
+    </p-scrollPanel>
+  </div>
+
+  <div class="layout-content">
+
+    <div class="layout-content-container">
+      <p-messages [(value)]="msgs" id="topAlert" key="topAlert"></p-messages>
+
+      <router-outlet></router-outlet>
+    </div>
+    <app-footer></app-footer>
+    <div class="layout-mask" *ngIf="staticMenuMobileActive"></div>
+  </div>
+</div>

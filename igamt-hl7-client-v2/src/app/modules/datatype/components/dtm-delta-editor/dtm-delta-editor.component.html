@@ -1,0 +1,75 @@
+<ng-template #headerControls>
+  <button [class]="'btn btn-sm btn-default toggle-btn toggled-delta'" style="margin-left: 10px; border: 1px solid black;" [routerLink]="'../'">
+    <span style="font-weight: bold;" ><span style="font-size: 1em;" >Δ</span> delta</span>
+  </button>
+</ng-template>
+<ng-container *ngIf="delta$ | async as delta">
+  <ng-template #headerTitle let-active let-defaultTemplate="defaultTemplate">
+
+    <ng-container *ngTemplateOutlet="defaultTemplate; context: {
+      $implicit: active,
+      options: {
+        excludeTitle: true
+      }
+    }"></ng-container>
+
+    &nbsp;&nbsp;
+    <h6 class="title-text">compare to</h6>
+    &nbsp;&nbsp;
+    <div style="cursor: pointer;" [routerLink]="['/', 'ig',  delta.source.document.id, url(), delta.source.id ]">
+      <h6 class="title-text">
+        <app-scope-badge *ngIf="delta.source?.domainInfo" [scope]="delta.source?.domainInfo.scope" [version]="delta.source?.domainInfo.version"></app-scope-badge>
+        <app-entity-bagde [type]="type"></app-entity-bagde>
+        {{ delta.source?.name }}
+      </h6>
+    </div>
+    &nbsp;
+    <h6 class="title-text"> from </h6>
+    &nbsp;
+    <div style="cursor: pointer;" [routerLink]="['/', 'ig', delta.source.document.id ]">
+      <h6 class="title-text">
+        <app-scope-badge *ngIf="delta.source?.document" [scope]="delta.source?.document?.scope"></app-scope-badge>
+        <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
+        {{ delta.source?.document?.name }}
+      </h6>
+    </div>
+
+  </ng-template>
+  <p-table  [value]="delta.delta" [sortField]="'data.position'">
+    <ng-template pTemplate="header">
+      <tr>
+        <th style="width: 15em">Name</th>
+        <th style="width: 15em">Format</th>
+        <th>Usage</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData>
+      <tr [ngClass]="{'delta-added': rowData.data.action === 'ADDED', 'delta-deleted': rowData.action === 'DELETED'}">
+
+        <td [class]="cellClass(rowData.data.name?.action)">
+          <ng-container *ngTemplateOutlet="diff; context : { $implicit: rowData.data.name }"></ng-container>
+        </td>
+        <td [class]="cellClass(rowData.data.format?.action)">
+          <ng-container *ngTemplateOutlet="diff; context : { $implicit: rowData.data.format }"></ng-container>
+        </td>
+        <td [class]="cellClass(rowData.data.usage?.action)">
+          <ng-container *ngTemplateOutlet="diff; context : { $implicit: rowData.data.usage }"></ng-container>
+        </td>
+
+      </tr>
+    </ng-template>
+  </p-table>
+  <div style="padding: 50px; text-align: center;">
+    <span style="color: gray;" *ngIf="delta.delta.length === 0">No changes were detected</span>
+  </div>
+</ng-container>
+
+<ng-template #diff let-delta let-styleCurrent="styleCurrent" let-stylePrevious="stylePrevious" let-styleUnchanged="styleUnchanged" >
+  <ng-container *ngIf="delta">
+    <app-delta-column [action]="delta.action" [currentValue]="delta.current" [previousValue]="delta.previous" [styleClassCurrent]="styleCurrent" [styleClassPrevious]="stylePrevious" [styleClassUnchanged]="styleUnchanged" >
+      <ng-template #default let-value>
+        {{value}}
+      </ng-template>
+    </app-delta-column>
+  </ng-container>
+</ng-template>

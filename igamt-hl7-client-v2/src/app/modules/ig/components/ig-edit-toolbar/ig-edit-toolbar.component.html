@@ -1,0 +1,40 @@
+<div>
+    <app-dam-fullscreen-button></app-dam-fullscreen-button>
+</div>
+<div>
+
+  <button class="btn btn-info btn-sm toolbar-button" type="button" (click)="exportTool()">
+    <i class="fa fa-plug"></i>
+    Connect
+  </button>
+  <div ngbDropdown class="d-inline-block">
+    <button class="btn btn-secondary btn-sm toolbar-button" id="differentialExport" ngbDropdownToggle>Export</button>
+    <div ngbDropdownMenu aria-labelledby="exportDropDown">
+      <button ngbDropdownItem (click)="export(exportTypes.IGDOCUMENT, 'word')">Word</button>
+      <button ngbDropdownItem (click)="quickExport(exportTypes.IGDOCUMENT, 'word')">WORD (Quick)</button>
+      <button ngbDropdownItem (click)="export(exportTypes.IGDOCUMENT, 'html')">HTML</button>
+      <button ngbDropdownItem (click)="quickExport(exportTypes.IGDOCUMENT, 'html')">HTML (Quick)</button>
+      <button ngbDropdownItem (click)="exportXML()">XML</button>
+    </div>
+  </div>
+  <div ngbDropdown class="d-inline-block" *ngIf="derived$ | async">
+    <button class="btn btn-warning btn-sm toolbar-button" id="exportDropDown" ngbDropdownToggle> Differential Export</button>
+    <div ngbDropdownMenu aria-labelledby="exportDropDown">
+      <button ngbDropdownItem (click)="export(exportTypes.DIFFERENTIAL, 'word')">Word</button>
+      <button ngbDropdownItem (click)="quickExport(exportTypes.DIFFERENTIAL, 'word')">WORD (Quick)</button>
+      <button ngbDropdownItem (click)="export(exportTypes.DIFFERENTIAL, 'html')">HTML</button>
+      <button ngbDropdownItem (click)="quickExport(exportTypes.DIFFERENTIAL, 'html')">HTML (Quick)</button>
+    </div>
+  </div>
+  <div ngbDropdown class="d-inline-block">
+    <button class="btn btn-info btn-sm toolbar-button" id="verifyDown" ngbDropdownToggle> Verify </button>
+    <div ngbDropdownMenu aria-labelledby="exportDropDown">
+      <button ngbDropdownItem (click)="verifyIG('Verification')"> Verification </button>
+      <button ngbDropdownItem (click)="verifyIG('Compliance')"> Compliance </button>
+    </div>
+  </div>
+  <app-dam-reset-button *ngIf="!viewOnly"></app-dam-reset-button>
+  <app-dam-save-button *ngIf="!viewOnly"></app-dam-save-button>
+</div>
+
+

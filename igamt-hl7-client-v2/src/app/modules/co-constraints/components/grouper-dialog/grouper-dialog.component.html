@@ -1,0 +1,23 @@
+<div>
+  <label for="type" style="font-weight: bold;"> Select Group Id Element </label>
+  <div style="width: 300px; height: 400px;">
+    <app-structure-tree
+      [tree]="structure"
+      [filter]="treeFilter"
+      [repository]="repository"
+      (selection)="selectNode($event)"
+    ></app-structure-tree>
+  </div>
+
+  <div *ngIf="selectedNode" style="margin-top: 10px;">
+    <strong> Selected Element : </strong>
+    <div style="display: flex; justify-content: space-between;">
+      <app-entity-bagde [type]="selectedNode.data.type"></app-entity-bagde>
+      {{selectedNodeName}}
+    </div>
+  </div>
+
+  <div style="width: 100%; display: flex; justify-content: flex-end; margin-top: 5px;">
+    <button class="btn btn-sm btn-success" (click)="done()" [disabled]="!selectedNode" >Done</button>
+  </div>
+</div>

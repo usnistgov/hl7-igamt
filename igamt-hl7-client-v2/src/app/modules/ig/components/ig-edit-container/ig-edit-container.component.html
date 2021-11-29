@@ -1,0 +1,40 @@
+<app-dam-layout [showStatusBar]="showStatusBar$ | async" [showBottomDrawerToggle]="showBottomDrawer$ | async">
+
+  <ng-template #alerts>
+    <app-dam-alerts-container></app-dam-alerts-container>
+  </ng-template>
+  <ng-template #titleBar>
+    <app-ig-edit-titlebar [metadata]="titleBar$ | async"></app-ig-edit-titlebar>
+  </ng-template>
+
+  <ng-template #toolbar>
+    <app-ig-edit-toolbar></app-ig-edit-toolbar>
+  </ng-template>
+
+  <ng-template #activeTitleBar>
+    <app-ig-edit-active-titlebar
+    [active]="activeWorkspace | async"
+    [controls]="activeComponent?.controls"
+    [header]="activeComponent?.header"
+    ></app-ig-edit-active-titlebar>
+  </ng-template>
+
+  <ng-template #editorContent>
+    <app-dam-editor-outlet></app-dam-editor-outlet>
+  </ng-template>
+
+  <ng-template #sideBar>
+    <app-ig-edit-sidebar [deltaMode]="deltaMode$ |async"></app-ig-edit-sidebar>
+  </ng-template>
+
+  <ng-template #statusBar>
+    <app-ig-edit-status-bar>
+    </app-ig-edit-status-bar>
+  </ng-template>
+
+  <ng-template #bottomDrawer>
+    <app-ig-edit-drawer>
+    </app-ig-edit-drawer>
+  </ng-template>
+
+</app-dam-layout>

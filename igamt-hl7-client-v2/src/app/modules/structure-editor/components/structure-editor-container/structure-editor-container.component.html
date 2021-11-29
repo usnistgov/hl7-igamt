@@ -1,0 +1,43 @@
+<app-dam-layout>
+
+  <ng-template #alerts>
+    <app-dam-alerts-container></app-dam-alerts-container>
+  </ng-template>
+
+  <ng-template #titleBar>
+    <div style="padding-left: 10px; display: flex; align-items: center;">
+      <h5 class="title-text"> <i class="fa fa-cubes" style="color: purple;"></i> Structure Editor </h5>
+    </div>
+  </ng-template>
+
+  <ng-template #toolbar>
+    <div>
+      <app-dam-fullscreen-button></app-dam-fullscreen-button>
+    </div>
+    <div>
+      <button class="btn btn-sm btn-dark" style="margin-right: 5px;" (click)="publish()" [disabled]="!(lockEnabled$ | async)" >
+        <i class="fa fa-lock"></i>
+        Lock Structure
+      </button>
+      <app-dam-reset-button></app-dam-reset-button>
+      <app-dam-save-button></app-dam-save-button>
+    </div>
+  </ng-template>
+
+  <ng-template #activeTitleBar>
+    <app-active-titlebar
+    [active]="activeWorkspace | async"
+    [controls]="activeComponent?.controls"
+    [header]="activeComponent?.header"
+    ></app-active-titlebar>
+  </ng-template>
+
+  <ng-template #editorContent>
+    <app-dam-editor-outlet></app-dam-editor-outlet>
+  </ng-template>
+
+  <ng-template #sideBar>
+    <app-side-bar></app-side-bar>
+  </ng-template>
+
+</app-dam-layout>

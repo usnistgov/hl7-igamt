@@ -1,0 +1,4 @@
+<button class="btn btn-danger btn-sm toolbar-button" type="button" (click)="widget.reset()" [disabled]="!(widget.containsUnsavedChanges$() | async)">
+  <i class="fa fa-trash"></i>
+  Reset
+</button>
