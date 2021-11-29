@@ -1,0 +1,94 @@
+<p-dialog [(visible)]="_visible" positionTop="200">
+    <p-header>
+      Add Conformance Profile
+    </p-header>
+  <div>
+    <label class="metadata-label"> Select Hl7 Version</label>
+
+
+    <p-radioButton [style]="{'margin-left':'10px'}" *ngFor="let v of hl7Versions" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (click)="getMessages(v)">
+
+    </p-radioButton>
+  </div>
+
+  <div>
+    <ng-container *ngFor="let selected of getSelected()">
+      <label class="badge cp-badge" (click)="unselect(selected)" *ngIf="!selected.children">
+        <span style="background-color: red; border-radius: 25%" class="mini-badge">{{selected.parent.data.hl7Version}}</span>    {{selected.data.name}}-{{selected.data.parentStructId}}
+        <i class="fa fa-remove cp-remove"></i>
+      </label>
+    </ng-container>
+  </div>
+
+  <p-table #dt *ngIf="selcetedVersion" [value]="tableValue" dataKey="data.name" [globalFilterFields]="['data.name','children.data.name']" scrollable="true" scrollHeight="500px">
+    <ng-template pTemplate="caption">
+      <div style="text-align: left">
+        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+        <input type="text" pInputText size="50" placeholder="search by message structure" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th>
+          Message Structure
+        </th>
+        <th>
+          Message Event
+        </th>
+        <th>
+          Description
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body"  let-node="node" let-rowNode let-expanded="expanded" let-rowData let-columns="columns">
+      <tr>
+        <td>
+
+          <!--<a [pRowToggler]="rowData">-->
+          <!--<i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>-->
+          <!--</a>-->
+          {{rowData.data.name}}
+
+        </td>
+        <td>
+          <!--<span *ngIf="rowData.data.type=='EVENT' ">  {{rowData.data.name}}</span>-->
+
+          <div *ngFor="let i of rowData.children">
+            <input type="checkbox" [checked]="isSelected(i.data)" (change)="toggleEvent(i.data)" />
+            {{i.data.name}}
+          </div>
+        </td>
+
+        <td>
+
+          {{rowData.data.description}}
+        </td>
+      </tr>
+    </ng-template>
+
+
+
+    <!--<ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">-->
+    <!--<tr>-->
+    <!--<td [attr.colspan]="1">-->
+
+    <!--</td>-->
+    <!--<td [attr.colspan]="1">-->
+
+    <!--<div *ngFor="let i of rowData.children">-->
+    <!--<input type="checkbox" [checked]="isSelected(i.data)" (change)="toggleEvent(i.data)" />-->
+    <!--{{i.data.name}}-->
+    <!--</div>-->
+    <!--</td>-->
+    <!--<td [attr.colspan]="1">-->
+
+    <!--</td>-->
+    <!--</tr>-->
+    <!--</ng-template>-->
+  </p-table>
+
+  <p-footer>
+    <p-button    styleClass="green-btn" [disabled] ="selectedEvents.length==0" (onClick)="addMessages()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
+  </p-footer>
+
+</p-dialog>

@@ -1,0 +1,57 @@
+<div style="width: 800px; height: 100%; margin: auto; background-color: white;" >
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <strong>Drag Operators     <i class="fa fa-hand-o-right" aria-hidden="true" style="font-size: 1.2em;"></i></strong>
+    <div class="btn-group" role="group" >
+      <ng-container *ngFor="let op of operatorList; let i = index" >
+        <button pDraggable="operator" type="button" class="btn btn-dark" *ngIf="!condition || op.data.type !== 'IF-THEN'"  (onDragStart)="dragStartOp($event,op)" (onDragEnd)="dragEndOp($event)">
+          {{op.data.type}}
+        </button>
+      </ng-container>
+
+
+    </div>
+  </div>
+  <p-organizationChart [style]="{'width' : '100%', 'background-color' : 'white', 'padding' : '20px', 'min-height' : '500px', 'max-height' : '65vh', 'overflow' : 'scroll'}" [value]="[ assertion ]" styleClass="pattern" *ngIf="assertion" >
+
+    <ng-template let-node pTemplate="statement">
+      <div class="operator-drop-area" pDroppable="operator"  (onDrop)="dropOp($event, node)">
+        Drop Here
+      </div>
+      <div class="node-content" pDroppable="statement" (onDrop)="dropSta($event, node)"  pDraggable="statement" (onDragStart)="dragStartSta($event,node)" (onDragEnd)="dragEndSta($event)">
+        <strong [ngStyle]="{ color : node.data.color}">{{ node.name() }}</strong>
+      </div>
+    </ng-template>
+
+    <ng-template let-node pTemplate="operator" style="background-color: #0c7ed5;">
+      <div style="width: 100%; text-align: right; padding-right: 5px;">
+        <i class="fa fa-minus" style="color: red; right: 5px; cursor: pointer;" (click)="remove(node)"></i>
+      </div>
+      <div class="node-content" >
+        <div>{{node.data.type}}</div>
+      </div>
+      <div class="node-content" style="background-color: lemonchiffon;" *ngIf="node.data.type === 'SUBCONTEXT'" >
+          <strong [ngStyle]="{ color : node.context.data.color}">{{ node.context.name() }}</strong>
+      </div>
+      <div style="width: 100%; text-align: right; padding-right: 5px;">
+        <i *ngIf="isNary(node)" class="fa fa-plus" style="color: lightgreen; right: 5px; cursor: pointer;" (click)="add(node)"></i>
+      </div>
+    </ng-template>
+
+  </p-organizationChart>
+
+  <div style="width: 100%;">
+    <div style="padding: 10px;">
+      <strong>Assertion Canonical Form</strong>
+    </div>
+    <div disabled="true" style="text-align: center; overflow: scroll;">
+      <strong *ngIf="assertion" [innerHTML]="html(assertion.write())"></strong>
+    </div>
+  </div>
+
+
+  <mat-dialog-actions style="justify-content: flex-end;">
+    <button class="btn btn-sm btn-success" style="margin-right: 5px;" (click)="finish()">Ok</button>
+    <button class="btn btn-sm btn-secondary" style="margin-right: 5px;" (click)="reset()">Reset</button>
+    <button class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="cancel()">Discard</button>
+  </mat-dialog-actions>
+</div>

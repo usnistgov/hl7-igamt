@@ -1,0 +1,82 @@
+<p-card>
+
+  <!-- CARD CONTENT -->
+  <div style="display: flex; flex-direction: row;">
+
+    <!-- ITEM COVER IMAGE -->
+    <div *ngIf="!igListItem.coverpage"
+         style="height: 60px; width: 60px; background-color: #feec9d; text-align: center; display: flex; flex-direction: column; justify-content: center;">
+      <strong style="color: #c9c9c9;">HL7</strong>
+    </div>
+    <img *ngIf="igListItem.coverpage" [src]="igListItem.coverpage" height="60px" >
+
+    <!-- ITEM DETAILS -->
+    <div style="display: flex; flex-direction: column;">
+      <h6 style="margin-left: 10px; margin-bottom: 0;" class="link" (click)="doDefault()"><strong>{{igListItem.title}}</strong></h6>
+      <span style="margin-left: 10px; color: #818181;">{{igListItem.subtitle}}</span>
+      <span *ngIf="igListItem.username" style="margin-left: 10px; color: #818181;">
+        <i class="fa fa-user"></i>
+         {{igListItem.username}}
+      </span>
+      <span *ngIf="igListItem.dateUpdated" style="margin-left: 10px; color: #818181;">
+        <i class="fa fa-calendar"></i>
+         updated on:  {{igListItem.dateUpdated | date}}
+      </span>
+      <span *ngIf="igListItem.participants" style="margin-left: 10px;">
+        <i class="fa fa-users"></i>
+        <span *ngFor="let participant of igListItem.participants">{{participant}} </span>
+      </span>
+    </div>
+
+  </div>
+
+
+  <!-- CARD FOOTER -->
+  <p-footer>
+    <div style="width: 100%; display: flex; flex-direction: column; justify-content: flex-start;">
+
+      <!-- BUTTONS ROW -->
+      <div style="width: 100%; display: flex; flex-direction: row; justify-content: space-between;">
+
+        <!-- ITEM MORE INFO BUTTON -->
+        <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-start;">
+          <button (click)="moreInfo = !moreInfo" class="btn btn-sm btn-light border-gray" style="margin-right: 5px;">
+            <i [class]="'fa ' + (moreInfo ? 'fa-chevron-down' : 'fa-chevron-right')"></i>
+            More Info
+          </button>
+        </div>
+
+        <!-- ITEM CONTROL BUTTONS -->
+        <div style="width: 100%; display: flex; flex-direction: row; justify-content: flex-end;">
+          <ng-container *ngFor="let control of controls" >
+
+
+          <button (click)="control.action(igListItem)" [class]="'btn btn-sm ' + control.class"
+                  [disabled]="control.disabled(igListItem)" style="margin-right: 5px;" *ngIf ="!control.hide || control.hide(igListItem) ==false">
+            <i [class]="'fa ' + control.icon"></i>
+
+            {{ control.label }}
+
+          </button>
+          </ng-container>
+        </div>
+
+      </div>
+
+      <!-- ITEM MORE INFO ROW -->
+      <div *ngIf="moreInfo" style="display: flex; flex-direction: column; margin-top: 5px;">
+        <table class="table table-sm table-striped table-bordered">
+          <tr>
+            <th>
+              <app-entity-bagde [type]="'CONFORMANCEPROFILE'"></app-entity-bagde>
+              Conformance Profiles
+            </th>
+          </tr>
+          <tr *ngFor=" let cp of igListItem.elements">
+            <td>{{cp}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </p-footer>
+</p-card>

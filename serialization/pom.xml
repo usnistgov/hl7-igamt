@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>gov.nist.hit.hl7</groupId>
+		<artifactId>igamt</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>serialization</artifactId>
+	<version>${parent.version}</version>
+	<name>serialization</name>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<dependencies>
+<dependency>
+    <groupId>org.apache.poi</groupId>
+    <artifactId>poi-ooxml</artifactId>
+    <version>3.9</version>
+</dependency>
+
+
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.9.2</version>
+		</dependency>
+		<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>2.6</version>
+</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-base</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>ig</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-binding</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-exception</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>constraint</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>delta</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-change-entity</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>file-storage</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>datatype-library</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	
+	</dependencies>
+</project>

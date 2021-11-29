@@ -1,0 +1,117 @@
+<ng-template #headerTitle let-active let-defaultTemplate="defaultTemplate">
+  <div style="display: flex; align-items: center; justify-content: center;">
+    <h5 style="display: inline;" class="title-text">
+      <app-entity-bagde [type]="active.display.type"></app-entity-bagde>
+      {{active.display.variableName}}
+    </h5>
+    <ng-container *ngIf="selected" >
+      <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>
+      <h5 class="title-text">
+        <app-display-section [element]="selected.display" [hideDescription]="true" [inline]="true" ></app-display-section>
+      </h5>
+      <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>
+      <h5 style="display: inline;" class="title-text"> {{active.editor.title}} </h5>
+    </ng-container>
+  </div>
+</ng-template>
+<div style="overflow-x: hidden;">
+  <ng-container *ngIf="resource$ | async as resources">
+    <strong style="margin-right: 10px;"> Select Generated Structure </strong>
+    <div style="display: inline;">
+      <p-dropdown [options]="resources" [(ngModel)]="selected" (ngModelChange)="selectItem($event)" [group]="true" [filter]="true" filterBy="value.fixedName,value.variableName">
+        <ng-template let-item pTemplate="selectedItem">
+          <ng-container *ngIf="item.value">
+            <app-display-section [element]="item.value.display" [hideDescription]="true" [inline]="true" ></app-display-section>
+          </ng-container>
+        </ng-template>
+        <ng-template let-item pTemplate="item">
+          <ng-container *ngIf="item.value">
+            <app-display-section [element]="item.value.display" [hideDescription]="true" [inline]="true" ></app-display-section>
+          </ng-container>
+        </ng-template>
+      </p-dropdown>
+    </div><br>
+
+    <ng-container *ngIf="selected" >
+      <ul class="nav nav-pills" style="margin-top: 10px;">
+        <li style="cursor: pointer;" class="nav-item" *ngFor="let item of tabs">
+          <span  class="nav-link active" [ngClass]="{ 'active': item === activeTab }" (click)="activeTab = item">{{ item }}</span>
+        </li>
+      </ul>
+
+
+
+      <ng-container [ngSwitch]="activeTab" style="margin-top: 10px;">
+
+        <div *ngSwitchCase="TABS.STRUCTURE" style="margin-top: 10px;">
+          <strong>Binding Context Legend : </strong>
+          <div style="display: flex; flex-direction: row; align-items: center;">
+            <div *ngFor="let item of legend" style="display: flex; flex-direction: row; align-items: center; margin-right: 5px;">
+              <app-binding-badge [context]="item.context"></app-binding-badge>
+              <span style="margin-left: 5px;">{{ item.label }}</span>
+            </div>
+          </div>
+
+          <app-hl7-v2-tree
+            [columns]="columns"
+            [documentRef]="documentRef$ | async"
+            [derived]="false"
+            [datatypes]="datatypes | async"
+            [segments]="segments | async"
+            [valueSets]="valueSets | async"
+            [repository]="repository"
+            [viewOnly]="true"
+            (changes)="change($event)"
+            [resource]="selected.resource"
+            [config]="config | async"
+            [bindingConfig]= "bindingConfig | async"
+            [username]="username | async">
+          </app-hl7-v2-tree>
+        </div>
+
+        <div *ngSwitchCase="TABS.CONFORMANCE_STATEMENTS" style="margin-top: 10px;">
+
+          <table class="table table-sm table-striped" *ngIf="selected.resource?.binding?.conformanceStatements && selected.resource?.binding?.conformanceStatements.length > 0">
+            <thead>
+              <tr>
+                <th>Identifier</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of selected.resource.binding.conformanceStatements">
+                <td>
+                  {{item.identifier}} <br>
+                  <span class="badge badge-secondary" *ngIf="item.type === 'FREE'">free-text</span>
+                  <span class="badge badge-success" *ngIf="item.type === 'FREE' && item.assertionScript">script</span>
+                </td>
+                <td>{{getDescription(item)}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div *ngSwitchCase="TABS.DYNAMIC_MAPPING" style="margin-top: 10px;">
+          <app-dynamic-mapping [datatypes] ="datatypes |async" [dynamicMapping]="selected.resource.dynamicMappingInfo" [hl7Version]="selected.resource.domainInfo?.version"  [viewOnly]="true"  [documentId]="documentId$ |async" [documentType]="(documentRef$ |async).type"> </app-dynamic-mapping>
+
+        </div>
+        <div *ngSwitchCase="TABS.COCONSTRAINTS" style="margin-top: 10px; overflow: hidden;">
+          <div style="overflow: scroll; height: 100%;" *ngIf="selected.resource.coConstraintsBindings">
+            <app-context-co-constraint-binding
+              [viewOnly]="true"
+              [bindings]="selected.resource.coConstraintsBindings"
+              [derived]="derived$ | async"
+              [segments]="segments | async"
+              [datatypes]="datatypes | async"
+              [valueSets]="valueSets | async"
+              [documentRef]="documentRef$ | async"
+              [conformanceProfile]="selected.resource">
+            </app-context-co-constraint-binding>
+          </div>
+        </div>
+      </ng-container>
+    </ng-container>
+  </ng-container>
+
+</div>
+

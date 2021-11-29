@@ -1,0 +1,29 @@
+.header-title {
+  margin: -10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+}
+
+.table-locked {
+  background-color: lightgray !important;
+}
+
+.panel-body {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.deleted {
+  color: red;
+  cursor: pointer;
+}
+
+.old-active {
+  background-color: #e4e4e4 !important;
+}
+.value-deprecated{
+  background-color: #fff3cd;
+  text-decoration: line-through !important;
+  font-style: italic !important;
+}

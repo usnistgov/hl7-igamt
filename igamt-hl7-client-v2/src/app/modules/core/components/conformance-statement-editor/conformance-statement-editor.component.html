@@ -1,0 +1,152 @@
+<ng-template #headerControls>
+  <app-change-log-list-info
+  [changes]="changeReason$ | async"
+  (editChange)="updateChangeReasons($event)"
+  [viewOnly]="viewOnly$ | async"
+  ></app-change-log-list-info>
+  <button style="margin-left: 5px;" class="btn btn-success btn-sm" (click)="createCs()" *ngIf="!(viewOnly$ | async)">
+    <i class="fa fa-plus"></i> New
+  </button>
+</ng-template>
+
+
+<!-- RESOURCE CS -->
+<ng-container *ngIf="conformanceStatementWorkspaceGrouped$ | async as groupCs">
+  <div class="header-title">
+    <h5>List of conformance statements</h5>
+    <div></div>
+  </div>
+  <div class="panel-body">
+    <ng-container *ngTemplateOutlet="group; context: { $implicit: groupCs, entries : entries$ | async }"></ng-container>
+  </div>
+</ng-container>
+
+<!-- ASSOCIATED CS -->
+<ng-container *ngIf="dependants">
+
+  <!-- ASSOCIATED -->
+
+    <div *ngIf="dependants.segments" style="margin-top: 10px;">
+      <div class="header-title">
+        <h5>Associated segments conformance statements</h5>
+        <hr>
+      </div>
+      <div class="panel-body">
+        <div *ngIf="dependants.segments.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+          <span> No Conformance Statement </span>
+        </div>
+        <ng-container *ngFor="let segment of dependants.segments" >
+          <app-display-section [element]="segment.resource" [hideDescription]="true"></app-display-section>
+          <ng-container *ngTemplateOutlet="csListAssociated; context: { $implicit: segment.conformanceStatements, type: 'SEGMENT' }"></ng-container>
+        </ng-container>
+      </div>
+    </div>
+    <div *ngIf="dependants.datatypes" style="margin-top: 10px;">
+      <div class="header-title">
+        <h5>Associated datatypes conformance statements</h5>
+      </div>
+      <div class="panel-body">
+        <div *ngIf="dependants.datatypes.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+          <span> No Conformance Statement </span>
+        </div>
+        <ng-container *ngFor="let dt of dependants.datatypes" >
+          <app-display-section [element]="dt.resource" [hideDescription]="true"></app-display-section>
+          <ng-container *ngTemplateOutlet="csListAssociated; context: { $implicit: dt.conformanceStatements, type: 'DATATYPE' }"></ng-container>
+        </ng-container>
+      </div>
+    </div>
+
+</ng-container>
+
+<ng-template #csList let-csList let-entries="entries" let-tmpl="tmpl">
+  <div *ngIf="!csList || csList.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+    <span> No Conformance Statement </span>
+  </div>
+  <table class="table table-striped table-bordered table-sm" *ngIf="csList && csList.length > 0">
+    <tr>
+      <th style="width: 100px;">ID</th>
+      <th>Description</th>
+      <th *ngIf="tmpl && !(viewOnly$ | async)" style="width: 190px;"></th>
+    </tr>
+    <ng-container *ngFor="let cs of csList; let i = index;" >
+      <tr [ngClass]="{
+        'table-warning': cs.changeType === 'UPDATE',
+        'table-success': cs.changeType === 'ADD',
+        'table-danger': cs.changeType === 'DELETE',
+        'table-locked' : cs.payload && cs.payload.locked
+      }">
+        <td>
+          {{ cs.payload.identifier }}
+          <span class="badge badge-secondary" *ngIf="cs.payload?.type === 'FREE'">free-text</span>
+          <span class="badge badge-success" *ngIf="cs.payload?.type === 'FREE' && cs.payload?.assertionScript">script</span>
+          <span class="badge badge-warning" *ngIf="cs.payload?.locked">derived</span>
+        </td>
+        <td>{{ getDescription(cs.payload) }}</td>
+        <ng-container *ngIf="tmpl && !(viewOnly$ | async)">
+          <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: cs, index: i }"></ng-container>
+        </ng-container>
+      </tr>
+      <ng-container *ngIf="entries && entries[cs.payload.id]">
+        <tr *ngFor="let error of entries[cs.payload.id]">
+          <td colspan="3">
+            <span style="color: red;">
+              <app-issue-badge [type]="error.severity"></app-issue-badge> {{error.message}}
+            </span>
+          </td>
+        </tr>
+      </ng-container>
+    </ng-container>
+  </table>
+</ng-template>
+
+<ng-template #csListAssociated let-csList>
+  <div *ngIf="!csList || csList.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+    <span> No Conformance Statement </span>
+  </div>
+  <table class="table table-striped table-bordered table-sm" *ngIf="csList && csList.length > 0">
+    <tr>
+      <th style="width: 100px;">ID</th>
+      <th>Description</th>
+    </tr>
+    <tr *ngFor="let cs of csList; let i = index;" [ngClass]="{
+      'table-locked' : cs.locked
+    }">
+      <td>
+        {{ cs.identifier }}
+        <span class="badge badge-secondary" *ngIf="cs.type === 'FREE'">free-text</span>
+        <span class="badge badge-success" *ngIf="cs.type === 'FREE' && cs.assertionScript">script</span>
+        <span class="badge badge-warning" *ngIf="cs.locked">derived</span>
+      </td>
+      <td>{{ getDescription(cs) }}</td>
+    </tr>
+  </table>
+</ng-template>
+
+<ng-template #group let-csGroup let-entries="entries" let-header="header">
+  <ng-container *ngFor="let item of csGroup" >
+    <div *ngIf="item.context" style="display: flex; align-items: center; margin-bottom: 10px;">
+      <app-entity-bagde style="display: flex;" [type]="'GROUP'"></app-entity-bagde>
+      <span style="margin-left: 5px;"> {{ item.name }} </span>
+    </div>
+    <div *ngIf="!item.context && item.list && item.list.length > 0" style="display: flex; align-items: center; margin-bottom: 10px;">
+      <ng-container *ngIf="editorDisplayNode() | async as current">
+        <app-display-section [element]="current" [hideDescription]="true"></app-display-section>
+      </ng-container>
+    </div>
+    <ng-container *ngTemplateOutlet="csList; context: { $implicit: item.list, tmpl: editable, entries: entries }"></ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #editable let-cs>
+  <td style="width: 190px;">
+    <button *ngIf="cs.changeType !== 'DELETE'" [disabled]="cs?.payload.locked" class="btn btn-sm btn-primary" (click)="editDialog(cs)">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+    <button *ngIf="cs.changeType !== 'DELETE'" class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="removeNode(cs)">
+      <i class="fa fa-trash"></i> Delete
+    </button>
+    <button *ngIf="cs.changeType === 'DELETE'" class="btn btn-sm btn-success" style="margin-left: 5px;" (click)="restore(cs)">
+      <i class="fa fa-refresh"></i> Restore
+    </button>
+  </td>
+</ng-template>

@@ -1,0 +1,23 @@
+<div style="display: flex; align-items: center;">
+  <app-change-log-info style="margin-right: 5px;"
+    [sections]="changeDisplaySections$ | async"
+    [context]="context"
+    [viewOnly]="viewOnly"
+    (editChange)="updateReasonForChange($event)"
+  ></app-change-log-info>
+
+  <ng-container *ngIf="range" [ngSwitch]="viewOnly">
+    <ng-container *ngSwitchCase="false">
+
+
+        <form #cardinalityForm="ngForm" style="flex-grow: 1;">
+          <input class="range-input" type="number" [name]="location + 'min'" [id]="location + 'min'"  placeholder="Min" min="0" [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="range.min" (ngModelChange)="minChange($event)"> ..
+          <input class="range-input" type="text" [name]="location + 'max'" [id]="location + 'max'" placeholder="Max" [ngModelOptions]="{updateOn: 'blur'}" [(ngModel)]="range.max" (ngModelChange)="maxChange($event)">
+        </form>
+
+    </ng-container>
+    <ng-container *ngSwitchCase="true">
+      <strong style="flex-grow: 1;" *ngIf="hasValue(range)">[{{range.min}} .. {{range.max}}]</strong>
+    </ng-container>
+  </ng-container>
+</div>

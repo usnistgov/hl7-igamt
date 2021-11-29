@@ -1,0 +1,29 @@
+<div class="input-group sidebar-filter">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+  </div>
+  <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername"
+          placeholder="Filter" required style="background-color: #f0f0f0;" type="text">
+</div>
+<div class="sidebar-controls">
+  <app-dam-side-bar-toggle></app-dam-side-bar-toggle>
+  <div class="btn-group mr-2" role="group">
+
+    <button (click)="scrollTo('datatypes')" class="btn btn-text btn-sm entity-badge-datatype" type="button">
+      DT
+    </button>
+    <button  class="btn btn-text btn-sm btn-primary" (click)="expandAll()">
+      <i class="fa fa-expand"></i>
+    </button>
+    <button  class="btn btn-text btn-sm btn-primary"  (click)="collapseAll()">
+      <i class="fa fa-compress"></i>
+    </button>
+    <button  class="btn btn-text btn-sm btn-primary" type="button" (click)="addSection()">
+      <i class="fa fa-plus"></i>
+    </button>
+  </div>
+
+</div>
+<div class="sidebar-content" id="sidebar-content">
+  <app-library-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (copy)="copy($event)" (delete)="delete($event)" [viewOnly]="viewOnly$ | async" (deleteNarrative)="checkDeleteNarrative($event)" (deactivateNode)="deactivate($event)"></app-library-toc>
+</div>

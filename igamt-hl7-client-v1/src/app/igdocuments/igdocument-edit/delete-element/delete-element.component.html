@@ -1,0 +1,42 @@
+<p-dialog [(visible)]="_visible" *ngIf="xreferences==null">
+
+  <p-header>
+    Delete Confirmation
+  </p-header>
+  <form #namingForm="ngForm" novalidate>
+
+      Are You sure You want to delete <display-label *ngIf="node" [elm]="node" [igId]="igId"></display-label>
+
+  </form>
+
+
+  <p-footer>
+    <p-button styleClass="green-btn" (onClick)="submit()" label="Submit"
+              icon="fa fa-check" iconPos="left"></p-button>
+  </p-footer>
+
+
+</p-dialog>
+
+
+
+<p-dialog [(visible)]="_visible" *ngIf="xreferences!==null" (onHide)="xreferences=null">
+
+  <p-header>
+    Cross Reference found
+  </p-header>
+
+<div *ngIf="xreferences">
+
+  <cross-reference [crossReference]="xreferences"></cross-reference>
+
+</div>
+
+  <p-footer>
+  </p-footer>
+
+
+</p-dialog>
+
+
+

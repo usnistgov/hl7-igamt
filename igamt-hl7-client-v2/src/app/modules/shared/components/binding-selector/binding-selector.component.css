@@ -1,0 +1,26 @@
+.single-container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+  height: 100%;
+}
+
+.selected-code {
+}
+
+.loaded-codes {
+  height: 100%;
+
+}
+.single-code-info{
+  padding: 5px;
+  background-color: #eaeaea;
+  display: flex;
+  flex-direction: column;
+  border: 2px dashed;
+}
+.vs-binding {
+  padding-top: 10px;
+}
+
+

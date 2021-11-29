@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>gov.nist.hit.hl7</groupId>
+		<artifactId>igamt</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<artifactId>legacy</artifactId>
+	<name>legacy</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+	<dependencies>
+	
+		<dependency>
+		
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>valueset</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>datatype</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+				<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>ig</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+			<dependency>
+		  <groupId>gov.nist.hit.hl7</groupId>
+  			<artifactId>auth</artifactId>
+  			<version>0.0.1-SNAPSHOT</version>
+  		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>segment</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>conformance-profile</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>composite-profile</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>profile-component</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.healthcare.tools.hl7.v2.igamt.lite</groupId>
+			<artifactId>igamt-lite-domain</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		
+<!-- 		 <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+    Hibernate 5.2.9 Final
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+    </dependency> -->
+	</dependencies>
+</project>

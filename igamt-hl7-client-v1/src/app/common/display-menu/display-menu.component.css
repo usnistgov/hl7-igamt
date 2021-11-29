@@ -1,0 +1,14 @@
+
+.custom-menu .ui-panelmenu .ui-panelmenu-header.ui-state-active > a {
+  background-color: #ffffff;
+  color: #343a40;
+}
+
+.custom-menu .ui-panelmenu .ui-panelmenu-header > a {
+  padding: 0.429em 0.857em;
+  background-color: #ffffff;
+  color: #424242;
+  border: 1px solid #ffffff;
+  outline: 0 none;
+}
+

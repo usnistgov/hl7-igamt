@@ -1,0 +1,16 @@
+Value Set Metadata,,,,
+Mapping Identifier,PHVS_CodingSystem_HL7_2x_Table0396_IZ_8848299,,,
+Name,Coding System HL7 2x Table 0396,,,
+Description,List of all the code systems identifier from HL7 Table 0396.,,,
+OID,2.16.840.1.114222.4.11.3338,,,
+Version,3,,,
+Extensibility,Closed,,,
+Stability,Static,,,
+Content Definition,Extensional,,,
+Comment,Updated based on HL70396 in HL7 v2.8.2; Added HCPTNUCC to support legacy implementation guides. HCPT was set up for use in HL7 V3.  Later HL7 decided to have this be an external code table (not maintained by HL7) so it was abandoned for V2.  The plan was to set up HCPTNUCC for this purpose but that activity was not completed.  ,,,
+,,,,
+Value Set Definition,,,,
+Value,Description,CodeSystem,Usage,Comments
+ACR,American College of Radiology finding codes,HL70396,P,"Index for Radiological Diagnosis Revised, 3rd Edition 1986, American College of Radiology, Reston, VA."
+ATC,American Type Culture Collection,HL70396,P,"Reference cultures (microorganisms, tissue cultures, etc.), related biological materials and associated data. American Type Culture Collection, 12301 Parklawn Dr, Rockville MD, 20852. (301) 881-2600."
+AS4E,AS4 Neurophysiology Codes,HL70396,P,"ASTM?s diagnostic codes and test result coding/grading systems for clinical neurophysiology. See ASTM Specification E1467, Appendix 2."

@@ -1,0 +1,34 @@
+@import '../../../../../assets/variables';
+
+.text-cell {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.binding {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+}
+
+.binding-vs {
+  background-color: $vs_binding_color;
+}
+
+.binding-sg {
+  background-color: $single_code_binding_color;
+}
+
+.trash-active {
+  color: red;
+  cursor: pointer;
+}
+
+.trash-inactive {
+  color: grey;
+  cursor: not-allowed;
+}
+
+.inactive {
+  background-color: #e4e4e4 !important;
+}

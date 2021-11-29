@@ -1,0 +1,34 @@
+<div>
+  <label for="type" style="font-weight: bold;"> Select Data Element : </label>
+  <div *ngIf="editMode">
+    <div style="width: 300px; height: 400px;">
+      <app-structure-tree
+        [tree]="structure"
+        [filter]="treeFilter"
+        [repository]="repository"
+        (selection)="selectNode($event)"
+      ></app-structure-tree>
+    </div>
+  </div>
+
+  <div *ngIf="selectedNode && !editMode" style="display: flex; justify-content: space-between;">
+    <div>
+      <app-entity-bagde [type]="selectedNode.data.type"></app-entity-bagde>
+      {{selectedNodeName}}
+    </div>
+    <button class="btn btn-sm btn-primary" (click)="editSelectedElement()" style="margin-left: 5px;" ><i class="fa fa-pencil"></i></button>
+  </div>
+
+  <label for="type" style="font-weight: bold; margin-top: 10px;" #main > Constraint Type : </label><br>
+  <p-dropdown
+    [options]="constraints"
+    [autoDisplayFirst]="false"
+    [disabled]="editMode"
+    [appendTo]="main"
+    [style]="{'width': '100%', 'min-width': 'inherit', 'margin-bottom': '5px'}"
+    [(ngModel)]="type" ></p-dropdown><br>
+
+  <div style="width: 100%; display: flex; justify-content: flex-end; margin-top: 5px;">
+    <button class="btn btn-sm btn-success" (click)="done()" [disabled]="!type || !selectedNode" >Done</button>
+  </div>
+</div>

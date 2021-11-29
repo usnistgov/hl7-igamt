@@ -1,0 +1,40 @@
+<p-messages [(value)]="msgs" id="LOGINERROR"></p-messages>
+
+
+
+<div class="body-container">
+  <div class="ui-g">
+    <div class="ui-g-12">
+      <div class="login-wrapper">
+        <div class="card">
+          <h3 class="title">Sign In</h3>
+          <form name="form" #f="ngForm" novalidate>
+
+          <div class="ui-g ui-fluid">
+            <div class="ui-g-12">
+              <input type="text" autocomplete="off" placeholder="Username" name="username" [(ngModel)]="username" class="ui-inputtext ui-widget" required/>
+            </div>
+            <div class="ui-g-12">
+              <input type="password" autocomplete="off" placeholder="Password"  name="password" class="ui-inputtext ui-widget"  [(ngModel)]="password" required />
+            </div>
+            <div class="ui-g-6">
+              <button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only blue-btn" (click)="login()" [disabled]="!f.valid">
+                                  <span class="ui-button-text ui-c">
+                                    <img src="assets/layout/images/check.svg" alt="login" style="height: 13px;width: 16px;float: left;margin-top: 3px">
+                                    Login
+                                  </span>
+              </button>
+            </div>
+            <div class="ui-g-6 password-container">
+              <a [routerLink]="['/register']">New User?</a>
+              <br> <a [routerLink]="['/reset-password']">Forgot Password?</a>
+
+            </div>
+          </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

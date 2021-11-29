@@ -1,0 +1,33 @@
+.value {
+  font-weight: bold;
+  color: lightgray;
+  text-align: center;
+}
+
+.asteriks {
+  color: red;
+  font-size: 0.7em;
+  vertical-align: top;
+}
+
+table .values-row td {
+  vertical-align: middle;
+}
+
+.invalid {
+  background-color: #fff1f3;
+}
+
+.table-font {
+  font-size: 14px;
+}
+
+input.ng-invalid {
+  background-color: #ffe9ec;
+  border-left: 5px solid red;
+}
+
+table .form-control{
+  display: unset !important;
+  width: unset !important;
+}

@@ -1,0 +1,19 @@
+<div class="hl7-versions-layout">
+  <div class="version-label">
+    <label>HL7 Versions </label>
+  </div>
+  <div class="radio-buttons">
+
+<!--    <mat-radio-group aria-label="Select an option" style="padding: 0">-->
+<!--      <mat-radio-button *ngFor="let v of hl7Versions" [value]="v" (change)="select(v)" [checked]="v == selectedVersion" style ="margin-left: 10px">{{v}}</mat-radio-button>-->
+<!--    </mat-radio-group>-->
+
+    <ng-container *ngFor="let v of hl7Versions">
+      <p-radioButton (ngModelChange)="select($event)" [(ngModel)]="selectedVersion" [style]="{'margin-left': '10px'}" [label]="v"
+                     styleClass="'radio-inline'" [value]="v">
+      </p-radioButton>
+
+    </ng-container>
+
+  </div>
+</div>

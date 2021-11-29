@@ -1,0 +1,31 @@
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-8">
+        <div *ngIf="currentBindings && currentBindings.constantValue">
+            <i class="fa fa-circle" [ngClass]="{'first-priority' : currentBindings.priority === 1, 'second-priority' : currentBindings.priority === 2, 'third-priority' : currentBindings.priority === 3, 'fourth-priority' : currentBindings.priority === 4}"></i>
+            {{currentBindings.constantValue}}
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-2">
+        <i *ngIf="currentBindings && currentBindings.constantValue" class="fa fa-times" (click)="deleteConstantValue()"></i>
+    </div>
+
+    <div class="ui-g-12 ui-md-2">
+        <i class="fa fa-pencil" (click)="editConstantValueBindings()"></i>
+    </div>
+</div>
+
+<p-dialog *ngIf="constantvalueEditDialogOpen" header="Edit Constant Value" [(visible)]="constantvalueEditDialogOpen" [modal]="true" [closable]="false" [responsive]="true" [width]="800">
+    <div class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-4">
+            <label>Value: </label>
+        </div>
+        <div class="ui-g-12 ui-md-8">
+            <input [(ngModel)]="currentBindings.constantValue" type="text" style="width:100%;border-width:0px 0px 1px 0px"/>
+        </div>
+    </div>
+
+    <p-footer>
+        <button type="button" pButton icon="fa fa-check" (click)="constantvalueEditDialogOpen=false;updateConstantValueBinding();" label="Update"></button>
+        <button type="button" pButton icon="fa fa-close" (click)="constantvalueEditDialogOpen=false;resetConstantValue()" label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>

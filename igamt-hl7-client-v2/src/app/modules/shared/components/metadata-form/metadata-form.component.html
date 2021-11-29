@@ -1,0 +1,50 @@
+<form [formGroup]="metadataForm" style="display: flex; flex-direction: column; height: 100%;">
+  <ng-container *ngFor="let field of model">
+    <ng-container [ngSwitch]="field.data.type">
+      <ng-container *ngSwitchCase="'TEXT'">
+        <app-form-input [formControlName]="field.key" [id]="field.data.id" [name]="field.data.name"
+          [placeholder]="field.data.placeholder" [label]="field.data.label" [viewOnly]="viewOnly || field.data.disabled">
+        </app-form-input>
+      </ng-container>
+      <ng-container *ngSwitchCase="'RICH'">
+        <label [for]="field.data.id"><strong>{{field.data.label}}</strong></label>
+        <div *ngIf="!viewOnly && !field.data.disabled" [id]="field.data.id" [froalaEditor]="froalaConfig" [formControlName]="field.key" style="flex-grow: 1; display: flex; flex-direction: column;"></div>
+        <div *ngIf="(viewOnly || field.data.disabled) && metadataForm[field.key]" [froalaView]="metadataForm[field.key]" [froalaEditor]="froalaConfig" ></div>
+      </ng-container>
+      <ng-container *ngSwitchCase="'SELECT'">
+        <div class="form-group">
+          <label [for]="field.data.id" class="form-label-lg">{{field.data.label}}</label>
+          <p-dropdown *ngIf="!viewOnly && !field.data.disabled" [options]="field.data.enum"
+            [styleClass]="'form-control form-control-dropdown'" [formControlName]=" field.key" [name]="field.data.name"
+            [placeholder]="field.data.placeholder"></p-dropdown>
+          <span *ngIf="viewOnly || field.data.disabled">{{field.data.value}}</span>
+        </div>
+
+      </ng-container>
+      <ng-container *ngSwitchCase="'STRING_LIST'">
+        <div class="form-group">
+          <label [for]="field.data.id" class="form-label-lg">{{field.data.label}}</label>
+          <p-chips *ngIf="!viewOnly && !field.data.disabled" [styleClass]="'string-list'" [formControlName]="field.key"
+            [placeholder]="field.data.placeholder">
+          </p-chips>
+          <span *ngIf="viewOnly || field.data.disabled">
+            <br>
+            <span *ngFor="let item of metadataForm.controls[field.key].value" class="badge badge-secondary">
+              {{item}}
+            </span>
+          </span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'FILE'">
+        <div class="form-group">
+          <label [for]="field.data.id" class="form-label-lg">{{field.data.label}}</label>
+          <div>
+            <app-file-select-input [formControlName]="field.key" [viewOnly]="viewOnly || field.data.disabled"></app-file-select-input>
+          </div>
+        </div>
+      </ng-container>
+
+    </ng-container>
+  </ng-container>
+</form>

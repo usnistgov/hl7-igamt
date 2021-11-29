@@ -1,0 +1,66 @@
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"><head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+
+        @import "compass/css3";
+
+
+
+                table, th, td {
+                border: 2px solid black;
+                border-collapse: collapse;
+                width: 50%;
+                box-shadow: 0px 0px 20px rgba(0,0,0,0.10),
+     0px 10px 20px rgba(0,0,0,0.05),
+     0px 20px 20px rgba(0,0,0,0.05),
+     0px 30px 20px rgba(0,0,0,0.05);
+}
+                
+                
+                th, td, p {
+                padding: 5px;
+                text-align: left;    
+                }
+                .grisfonce {
+                background-color:#c1c1d7;
+                }
+                .rose {
+                background-color:#ffcccc;
+                }
+                
+                * {
+    box-sizing: border-box;
+}
+
+/* Create four equal columns that floats next to each other */
+.column {
+            width: 100%;
+            padding: 10px;
+            display:flex;
+            /* Should be removed. Only for demonstration */
+        }
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+                
+                #customers tr:nth-child(even){background-color: #ffcccc;}
+                
+                #customers tr:hover {background-color: #ddd;}
+    
+    
+       </style>
+    <body>
+
+        <!-- <div class="row"  > -->
+            <TagToReplaceForAllLeafTable></TagToReplaceForAllLeafTable>
+          <!-- </div> -->
+       
+      
+      </body></html>

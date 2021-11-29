@@ -1,0 +1,14 @@
+{
+  "id": {
+    "id": "mock_ARBITRARY_0001",
+    "version": 1
+  },
+  "scope": "USER",
+  "version": null,
+  "bindingIdentifier": "0001",
+  "name": "mock_ARBITRARY_0001",
+  "oid": "1234567890",
+  "type": "INTERNAL",
+  "url": "",
+  "authorNotes": "note"
+}

@@ -1,0 +1,10 @@
+<div class="badge">
+    <app-scope-badge [scope]="metadata?.domainInfo?.scope"></app-scope-badge>
+    <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
+</div>
+<div>
+    <span class="title-text">
+      {{ metadata.title }}
+    </span>
+    <app-metadata-date [updateDate]="metadata.updateDate" [creationDate]="metadata.creationDate"></app-metadata-date>
+</div>

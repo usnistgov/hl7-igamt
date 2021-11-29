@@ -1,0 +1,40 @@
+<app-delta-display [operation]="datatypeLabel['_.operation']"
+                   [currentValue]="{ datatypeLabel : datatypeLabel }"
+                   [previousValue]="{ datatypeLabel : datatypeLabel }">
+  <ng-template #current #unchanged let-value>
+    <div class="ui-g ui-fluid">
+      <div class="ui-g-12 ui-md-3">
+        <span  class="badge"  [ngClass]="{'label-HL7' : value.datatypeLabel.domainInfo.scope.current === 'HL7STANDARD', 'label-USER': value.datatypeLabel.domainInfo.scope.current === 'USER'}">{{ value.datatypeLabel.domainInfo.version.current }}</span>
+      </div>
+      <div class="ui-g-12 ui-md-7">
+        {{datatypeLabel.label.current}}
+      </div>
+      <div class="ui-g-12 ui-md-2">
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #previous let-value>
+    <div class="ui-g ui-fluid">
+      <div class="ui-g-12 ui-md-3">
+        <span  class="badge"  [ngClass]="{'label-HL7' : value.datatypeLabel.domainInfo.scope.previous === 'HL7STANDARD', 'label-USER': value.datatypeLabel.domainInfo.scope.previous === 'USER'}">{{ value.datatypeLabel.domainInfo.version.previous }}</span>
+      </div>
+      <div class="ui-g-12 ui-md-7">
+        {{value.datatypeLabel.label.previous}}
+      </div>
+      <div class="ui-g-12 ui-md-2">
+      </div>
+    </div>
+  </ng-template>
+  <ng-template #unchanged let-value>
+    <div class="ui-g ui-fluid">
+      <div class="ui-g-12 ui-md-3">
+        <span  class="badge"  [ngClass]="{'label-HL7' : value.datatypeLabel.domainInfo.scope.current === 'HL7STANDARD', 'label-USER': value.datatypeLabel.domainInfo.scope.current === 'USER'}">{{ value.datatypeLabel.domainInfo.version.current }}</span>
+      </div>
+      <div class="ui-g-12 ui-md-7">
+        {{datatypeLabel.label.current}}
+      </div>
+      <div class="ui-g-12 ui-md-2">
+      </div>
+    </div>
+  </ng-template>
+</app-delta-display>

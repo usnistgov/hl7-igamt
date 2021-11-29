@@ -1,0 +1,46 @@
+<div style="width: 100%; display: flex; justify-content: space-between;" *ngIf="!viewOnly">
+  <input
+    type="text"
+    [name]="fieldId + '-code'"
+    [(ngModel)]="cellValue.code"
+    (ngModelChange)="emitChange()"
+    class="form-control"
+    placeholder="Code"
+    [required]="column==='selectors'"
+    style="width: 50%;">
+  <input
+    type="text"
+    [name]="fieldId + '-codeSys'"
+    [(ngModel)]="cellValue.codeSystem"
+    (ngModelChange)="emitChange()"
+    class="form-control"
+    [required]="column==='selectors'"
+    placeholder="Code System"
+    style="width: 50%;">
+</div>
+<app-ngx-dropdown
+  *ngIf="!viewOnly"
+  [(ngModel)]="cellValue.locations"
+  placeholder="Binding Locations"
+  [name]="fieldId + '-location'"
+  (ngModelChange)="emitChange()"
+  [required]="column==='selectors'"
+  [values]="elementInfo.bindingInfo?.allowedBindingLocations ? elementInfo.bindingInfo?.allowedBindingLocations : []">
+</app-ngx-dropdown>
+
+<div *ngIf="viewOnly" style="width: 100%; display: flex; justify-content: space-between;">
+  <table class="table" style="margin-bottom: 0px;">
+    <tr>
+      <th>Code :</th>
+      <td>{{ cellValue.code }}</td>
+    </tr>
+    <tr>
+      <th>Code System :</th>
+      <td>{{ cellValue.codeSystem }}</td>
+    </tr>
+    <tr *ngIf="cellValue.locations">
+      <th>Locations :</th>
+      <td>{{ cellValue.locations | json }}</td>
+    </tr>
+  </table>
+</div>

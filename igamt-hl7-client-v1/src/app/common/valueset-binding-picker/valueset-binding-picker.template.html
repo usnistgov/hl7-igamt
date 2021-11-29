@@ -1,0 +1,80 @@
+<p-dialog [(visible)]="_visible" modal="modal" [responsive]="true" [resizable]="false" [draggable]="false" appendTo="body">
+    <p-header>
+        Value Set Picker
+    </p-header>
+    <strong>Pick Value Set Bindings for {{elm}}</strong>
+    <div class="g-row">
+      <p-table #tVs styleClass="ui-g-6" [(selection)]="selectedTables" selectionMode="multiple" (onRowSelect)="selectRow($event)"  [value]="tables" [scrollable]="true" scrollHeight="200px" [globalFilterFields]="['bindingIdentifier','hl7Version', 'name']" dataKey="bindingIdentifier" >
+        <ng-template pTemplate="caption">
+          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+          <input type="text" pInputText placeholder="Search" (input)="tVs.filterGlobal($event.target.value, 'contains')"  style="width: 70%;">
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pResizableColumn width="250px">
+              Binding Identifier
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-vs>
+          <tr [pSelectableRow]="vs">
+            <td class="ui-resizable-column" width="250px">
+              <span class="badge" [ngClass]="{'label-HL7' : getScopeLabel(vs)==='HL7', 'label-USE': getScopeLabel(vs)==='USR','label-MASTER':getScopeLabel(vs)==='MAS','label-PRL':getScopeLabel(vs)==='PRL','label-PVS':getScopeLabel(vs)==='PVS'}">{{getScopeLabel(vs)}} {{hasSameVersion(vs)}}</span> {{vs.bindingIdentifier}} {{vs.name}}
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <form #myForm="ngForm">
+        <p-table #tsVs styleClass="ui-g-6"  [value]="selectedTables" [scrollable]="true" scrollHeight="200px" [globalFilterFields]="['bindingIdentifier','hl7Version', 'name']" >
+          <ng-template pTemplate="caption">
+            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+            <input type="text" pInputText placeholder="Search" (input)="tsVs.filterGlobal($event.target.value, 'contains')" style="width: 70%;">
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th pResizableColumn width="250px">
+                Binding Identifier
+              </th>
+              <th pResizableColumn width="250px">
+                Binding Strength
+              </th>
+              <th pResizableColumn width="250px">
+                Binding Location
+              </th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-vs>
+            <tr [pSelectableRow]="vs">
+              <td class="ui-resizable-column" width="250px">
+                <span class="badge" [ngClass]="{'label-HL7' : getScopeLabel(vs)==='HL7', 'label-USE': getScopeLabel(vs)==='USR','label-MASTER':getScopeLabel(vs)==='MAS','label-PRL':getScopeLabel(vs)==='PRL','label-PVS':getScopeLabel(vs)==='PVS'}">{{getScopeLabel(vs)}} {{hasSameVersion(vs)}}</span> {{vs.bindingIdentifier}} {{vs.name}}
+              </td>
+              <td class="ui-resizable-column" width="250px">
+                <p-dropdown #bl="ngModel" [options]="bindingStrength" [required]="true" [id]="'bs'+vs.id" [name]="'bs'+vs.id" [(ngModel)]="vs.bindingStrength" placeholder="Binding Strength" [style]="{'width' : '100%', 'overflow' : 'visible'}" [appendTo]="'body'"></p-dropdown>
+                <p *ngIf="bl.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+                  {{bl.control.errors.required ? 'This field is required' : ''}}
+                </p>
+              </td>
+              <td class="ui-resizable-column" width="250px" *ngIf="coded || varies" >
+                <p-dropdown #bs="ngModel" [required]="true" [id]="'bl'+vs.id" [name]="'bl'+vs.id" [options]="bindingLocation" [(ngModel)]="vs.bindingLocation" placeholder="Binding Location" [style]="{'width' : '100%', 'overflow' : 'visible'}" [appendTo]="'body'"></p-dropdown>
+                <p *ngIf="bs.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+                  {{bs.control.errors.required ? 'This field is required' : ''}}
+                </p>
+              </td>
+              <td class="ui-resizable-column" width="250px" *ngIf="!coded && complex && !varies" >
+                <input   #bs="ngModel" [required]="true"  [id]="'bl'+vs.id" [name]="'bl'+vs.id" [(ngModel)]="vs.bindingLocation" placeholder="Binding Location" style="width : 100%; overflow : visible;" type="number" min="1">
+                <p *ngIf="bs.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+                  {{bs.control.errors.required ? 'This field is required' : ''}}
+                </p>
+              </td>
+              <td class="ui-resizable-column" width="250px" *ngIf="!coded && !complex && !varies" >
+                <strong  *ngIf="!coded && !complex && !varies">.</strong>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </form>
+    </div>
+    <p-footer>
+      <button type="button" class="btn btn-success" (click)="select()" [disabled]="!myForm.valid || !selectedTables || selectedTables.length === 0"> Select </button>
+    </p-footer>
+</p-dialog>

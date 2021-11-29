@@ -1,0 +1,36 @@
+<div>
+  <div style="font-weight: bold; display: flex;">
+    <span> Select Co-Constraint Groups for Segment </span>
+    <div style="margin-left: 5px;">
+      <app-display-section [element]="segment" ></app-display-section>
+    </div>
+  </div>
+
+  <p-table [value]="groups$ | async" [(selection)]="selected" [style]="{ 'width' : '900px', 'margin-top' : '20px' }">
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th style="width: 50px;">
+          <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+        </th>
+        <th>
+          Co-Constraint Group Name
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData>
+      <tr>
+        <td>
+          <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+        </td>
+        <td>
+          <app-entity-bagde [type]="rowData.type" ></app-entity-bagde>
+          {{ rowData.variableName }}
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+
+  <div style="width: 100%; display: flex; justify-content: flex-end; margin-top: 5px;">
+    <button class="btn btn-sm btn-success" [mat-dialog-close]="selected" >Done</button>
+  </div>
+</div>

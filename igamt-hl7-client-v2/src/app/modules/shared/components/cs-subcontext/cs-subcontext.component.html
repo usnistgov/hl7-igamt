@@ -1,0 +1,88 @@
+<table class="table table-sm table-condensed table-striped" *ngIf="token.payload | async as treeDisplay">
+  <tr>
+    <th style="width: 15px;"><i [class]="'fa ' + (collapsed ? 'fa-chevron-right' : 'fa-chevron-down')" style="cursor: pointer;" (click)="collapsed = !collapsed"></i></th>
+
+    <!-- Occurrence -->
+    <th style="white-space: nowrap;" *ngIf="(subject.value && subject.value.occurenceType) || subject.repeatMax > 0" >Target Occurrence Declarative Statement <strong class="asteriks">*</strong></th>
+
+    <!-- Location -->
+    <th style="white-space: nowrap;">Target Node Location  <strong class="asteriks">*</strong></th>
+
+  </tr>
+  <tr class="values-row">
+
+    <td>
+      <span [ngSwitch]="complete()">
+        <i *ngSwitchCase="false" class="fa fa-times-circle-o" style="color: red;"></i>
+        <i *ngSwitchCase="true" class="fa fa-check" style="color: green;"></i>
+      </span>
+    </td>
+
+    <!-- Occurrence -->
+    <td style="white-space: nowrap;" *ngIf="(subject && subject.value.occurenceType) || subject.repeatMax > 0" [ngClass]="{'invalid': !subject.occurenceValid()}">
+      <span class="value" *ngIf="!subject.value.occurenceType"> SELECT </span>
+      <form #targetOccurenceValues="ngForm">
+        <ng-container [ngSwitch]="subject.value.occurenceType">
+          <ng-container *ngSwitchCase="_occurrenceType.INSTANCE">
+            The <input #occ="ngModel" (ngModelChange)="change()" name="target-occurence" required type="number" [(ngModel)]="subject.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="min(8, subject.repeatMax)" [appMaxNumber]="min(8, subject.repeatMax)"> occurrence of
+            <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
+              <span *ngIf="occ.errors.min">
+                  the minimum value is 1
+              </span>
+              <span *ngIf="occ.errors.max">
+                  the maximum value is {{  min(8, subject.repeatMax)  }}
+              </span>
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="_occurrenceType.COUNT">
+            <input #occ="ngModel" (ngModelChange)="change()" type="number" name="target-occurence" required [(ngModel)]="subject.value.occurenceValue" [min]="1" [appMinNumber]="1" [max]="subject.repeatMax" [appMaxNumber]="subject.repeatMax"> occurrence(s) of
+            <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
+              <span *ngIf="occ.errors.min">
+                  the minimum value is 1
+              </span>
+              <span *ngIf="occ.errors.max">
+                  the maximum value is {{  subject.repeatMax }}
+              </span>
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            {{ subject.occurrenceValuesMap[subject.value.occurenceType] }}
+          </ng-container>
+        </ng-container>
+      </form>
+    </td>
+
+    <!-- Location -->
+    <td style="white-space: nowrap;" [ngClass]="{'invalid': !subject.nodeValid() }">
+      <span class="value" *ngIf="!subject.value.path"> SELECT </span>
+      <span *ngIf="subject.value.path"> {{ subject.name }} </span>
+    </td>
+
+  </tr>
+  <tr *ngIf="!collapsed">
+
+    <td></td>
+
+    <!-- Occurrence -->
+    <td *ngIf="(subject.value && subject.value.occurenceType) || subject.repeatMax > 0" class="table-font">
+      <ng-container *ngFor="let occurence of occurences">
+        <input type="radio" [name]="id + 'target-occurences'" [value]="occurence.value" [(ngModel)]="subject.value.occurenceType" (ngModelChange)="changeOccurrenceType()"/> {{ occurence.label }}<br>
+      </ng-container>
+    </td>
+
+    <!-- Location -->
+    <td>
+      <div style="height: 200px; width: 100%;">
+        <app-structure-tree
+          #structureTree
+          [tree]="treeDisplay.effectiveTree"
+          [filter]="treeFilter"
+          [resourceType]="resourceType"
+          [repository]="repository"
+          (selection)="targetElement($event)"
+        ></app-structure-tree>
+      </div>
+    </td>
+
+  </tr>
+</table>

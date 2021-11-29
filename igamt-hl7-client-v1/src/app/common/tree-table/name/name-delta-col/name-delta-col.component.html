@@ -1,0 +1,15 @@
+<app-delta-display [operation]="deltaOp()"
+                   [currentValue]="{ position: position.current, description:  description.current}"
+                   [previousValue]="{ position: position.previous, description:  description.previous}">
+  <ng-template let-value>
+    <div [ngStyle]="{'background-color': elmDeltaOp !== 'UNCHANGED' && deltaOp() === 'UNCHANGED' ? '#fff0c4' : ''}">
+      <name-col [type]="type"
+                [rowNode]="rowNode"
+                [index] = "index"
+                [position]="value.position"
+                [description]="value.description"></name-col>
+    </div>
+
+  </ng-template>
+</app-delta-display>
+

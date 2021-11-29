@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="285px" height="50px" viewBox="0 0 285 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>mask</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="286" height="104"></rect>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-3">
+            <stop stop-color="#FFFFFF" stop-opacity="0.8" offset="0%"></stop>
+            <stop stop-color="#D99936" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="apollo-2---vertical-/-dark" transform="translate(-828.000000, -117.000000)">
+            <g id="boxes" transform="translate(215.000000, 63.000000)">
+                <g id="box-/-users" transform="translate(612.000000, 0.000000)">
+                    <g id="mask">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <g id="bg-box"></g>
+                        <path d="M-5.90392792,107.711481 C3.1775168,107.711481 7.54506516,88.8329084 20.7026559,89.0431811 C33.8602466,89.2534539 30.7809669,97.1006614 47.1876681,97.2412582 C63.5943693,97.381855 57.1571783,85.6590535 74.0234814,85.3940997 C90.8897844,85.129146 86.9279191,70.1531575 101.084804,70.1531575 C115.241689,70.1531575 110.088122,83.2216236 128.396695,83.1980352 C146.705267,83.1744469 139.996648,98.5407132 153.956993,98.6301439 C167.917339,98.7195747 164.635179,73.8897179 179.906762,73.8113796 C195.178345,73.7330413 194.753295,54.1179191 207.049934,54.0863933 C219.346574,54.0548675 220.049889,78.0462551 233.308858,77.9965478 C246.567827,77.9468405 247.089356,100.376585 259.809298,100.215269 C272.529239,100.053952 274.731012,83.1843251 286.842464,83.1980352 C294.916764,83.2071754 296.159699,75.4400735 290.571268,59.8967295 L290.571268,124 L-10.5380012,124 C-13.5029155,113.140987 -11.9582244,107.711481 -5.90392792,107.711481 Z" id="Primary-3" fill="url(#linearGradient-3)" opacity="0.600000024" mask="url(#mask-2)"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

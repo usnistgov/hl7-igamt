@@ -1,0 +1,17 @@
+<p-dialog [(visible)]="_visible" modal="modal" [responsive]="true" [resizable]="false" [draggable]="false" appendTo="body">
+    <p-header>
+        Select Datatype
+    </p-header>
+    <div class="g-row">
+        <p-dropdown [options]="options" appendTo="body" [(ngModel)]="selectedDatatype" [style]="{'width':'300px'}" filter="true">
+            <ng-template let-dt pTemplate="body">
+                <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                    <display-label [elm]="dt.value"></display-label>
+                </div>
+            </ng-template>
+        </p-dropdown>
+    </div>
+    <p-footer>
+        <button pButton class="btn btn-success" (click)="select()">Select</button>
+    </p-footer>
+</p-dialog>

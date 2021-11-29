@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: hl7-igamt
+  main: 
+    allow-bean-definition-overriding: true
+
+server: 
+    port: 9000
+    servlet:
+      context-path: /
+    error:
+      include-stacktrace: never
+    connection-timeout: 60000
+    max-http-header-size: 8192
+    tomcat:
+      accesslog:
+        directory: logs
+        enabled: false
+
+logging:
+  file: hl7-igamt.log
+  path: /var/log/hl7-igamt/
+  exception-conversion-word: '%wEx'
+  
+db:
+  name: igamt-hl7
+  port: 27017
+  host: localhost
+  
+key: 
+  public: /usr/local/etc/hit/auth/publicKey.txt
+auth:
+  url: http://localhost:8090
+   
+email:
+   port: 25
+   protocol: smtp
+   host: smtp.nist.gov
+   admin: robert.snelick@nist.gov
+   from: hl7-igamt@nist.gov
+   subject: NIST HL7 Auth Notification
+   
+gvt:
+   export-endpoint: api/cf/hl7v2/management/uploadZip
+   create-domain-endpoint: api/domains/new
+   domain-endpoint: api/domains/findByUser
+   login-endpoint: api/accounts/login
+   apps: GVT|https://hl7v2.gvt.nist.gov/gvt/;GVT-DEV|https://hit-dev.nist.gov:8099/gvt/;IZ-TOOL-DEV|https://hit-dev.nist.gov:8098/iztool/;IZ-TOOL|https://hl7v2-iz-r1.5-testing.nist.gov/iztool/

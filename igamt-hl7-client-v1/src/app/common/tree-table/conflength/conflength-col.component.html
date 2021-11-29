@@ -1,0 +1,4 @@
+<div *ngIf="confLength !== 'NA' && leaf">
+    <input id="{{idPath}}-confLength" name="{{idPath}}-confLength" [(ngModel)]="confLength" (ngModelChange)="onConfLengthChange()" type="text" style="width: 80%;border-width:0px 0px 1px 0px"/>
+    <i class="fa fa-times" (click)="delConfLength()" style="width:15%;"></i>
+</div>

@@ -1,0 +1,150 @@
+<div>
+  <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" [closable]="true"  key ='UNSAVEDDATA'>
+
+  </p-confirmDialog>
+
+  <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" [closable]="true"  #cd  key ='INVALIDDATA'>
+
+    <p-footer>
+      <button type="button" pButton icon="fa fa-check" label="OK" (click)="cd.reject()"></button>
+    </p-footer>
+  </p-confirmDialog>
+
+  <lib-datatype-add></lib-datatype-add>
+  <lib-copy-element></lib-copy-element>
+  <lib-delete-element></lib-delete-element>
+
+  <div>
+    <span class="ig-title">{{metadata.title}}</span>
+    <hr style="margin-top: 0rem;
+    margin-bottom: 0rem;
+    border: 0;
+    border-top: 1px solid #f5f5f5;"/>
+    <span class="ig-date" *ngIf="lib.dateUpdated">
+            <i class="fa fa-calendar"></i> Date Updated:   {{lib.dateUpdated|date }}
+    </span>
+  </div>
+
+
+  <p-toolbar class="toc-filter-toolbar">
+    <div class="multiselect-adapter ui-toolbar-group-left">
+
+      <input   type="text" [(ngModel)]="searchFilter" pInputText placeholder="Filter By Name"  id="filter" #filter (keyup)="filterFn()" pTooltip="Filter by name"  tooltipPosition="top" >
+      <p-multiSelect defaultLabel="Types"  [style]="{'vertical-align' : 'top' }" [options]="types" [(ngModel)]="selectedTypes" (onChange)="filterFn()" pTooltip="Filter by Type" tooltipPosition="top" ></p-multiSelect>
+
+      <p-multiSelect defaultLabel="Scopes"  [style]="{'vertical-align' : 'top' }"  [options]="scopes" [(ngModel)]="selectedScopes" (onChange)="filterFn()" pTooltip="Filter by Scope" tooltipPosition="top" ></p-multiSelect>
+    </div>
+    <div class="ui-toolbar-group-right">
+
+      <button   pButton type="button" label="verify" class="blue-btn" icon="fa fa-check"></button>
+      <button   pButton type="button" label="share"  icon="fa fa-share"></button>
+
+      <p-splitButton   label="Export"  icon="fa fa-download" [model]="exportModel"></p-splitButton>
+
+      <button  (click)="print(igForm)"  pButton type="button" label="Publish" class="green-btn" icon="fa fa-floppy-o"></button>
+      <button  pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>
+    </div>
+  </p-toolbar>
+  <p-toolbar class="toc-filter-toolbar">
+    <p-messages [(value)]="msgs" id="IGERROR"></p-messages>
+  </p-toolbar>
+
+</div>
+<div class="ui-g">
+  <div *ngIf="hideToc"  style="width: 50px">
+
+    <div (click)="toggleHideToc()"   class="panel-leftheading ">
+      <p-header class="panel-lefttitle" pTooltip="Show TOC "  tooltipPosition="bottom" > <i class="fa fa-eye"></i>Table of Content</p-header>
+    </div>
+
+
+  </div>
+
+  <div [ngClass]="{'ui-g-12 ':!hideToc, 'ui-g-11':hideToc}" style="padding : 0;">
+    <div class="ui-g-3 no-margin"   *ngIf="!hideToc">
+      <p-panel [toggleable]="false">
+        <p-header class="toc-panel-header">
+          Table Of Content
+          <button  style="float: right; padding: 0px" pButton type="button"  icon="fa fa-arrow-left"  pTooltip="Hide TOC" tooltipPosition="top" (click)="toggleHideToc()"></button>
+          <button style="float: right;padding: 0px" pButton type="button"  icon="fa fa-compress" pTooltip="Collapse All" tooltipPosition="top"  (click)="collapseAll()"></button>
+          <button  style="float: right; padding: 0px" pButton type="button"  icon="fa fa-expand"  pTooltip="Expand All" tooltipPosition="top" (click)="expandAll()"></button>
+          <button  style="float: right;padding: 0px" pButton type="button"  icon="fa fa-plus"  pTooltip="Add new Section"  tooltipPosition="top"  (click)="addSection()"></button>
+        </p-header>
+        <span  style="cursor: pointer" (click)="goToMetaData()">Library Metadata</span>
+        <div style="padding : 0; max-height: 800px; overflow: scroll">
+          <tree-root [nodes]="nodes"  #treeroot [options]="options">
+
+          <ng-template #treeNodeTemplate let-node let-index="index">
+            <ng-container [ngSwitch]="node.data.data.type">
+
+
+              <ng-container *ngSwitchCase="'TEXT'">
+                <span [contextMenu]="textcontextmenu" [routerLink]="getSectionUrl(node.id)" routerLinkActive="active-node"> {{getPath(node)}}{{node.data.data.label}}</span>
+                <context-menu #textcontextmenu>
+                  <ng-template contextMenuItem (execute)="addSectionToNode(node)">
+                    <i class="fa fa-plus"></i> Add Section
+                  </ng-template>
+                  <ng-template contextMenuItem (execute)="copySection(node)">
+                    <i class="fa fa-copy"></i> Copy Section
+                  </ng-template>
+                  <ng-template contextMenuItem (execute)="deleteSection(node)">
+                    <i class="fa fa-remove"></i> Delete Section
+                  </ng-template>
+
+                </context-menu>
+
+              </ng-container>
+
+
+              <ng-container *ngSwitchCase="'PROFILE'">
+                <span (click)="print(node)"> {{getPath(node)}} {{node.data.data.label}}</span>
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
+                <span [contextMenu]="addDatatypeContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
+
+                <context-menu  #addDatatypeContextMenu>
+                  <ng-template contextMenuItem (execute)="createHl7Datatypes()">
+                    <i class="fa fa-plus"> Add HL7 Data Type</i>
+                  </ng-template>
+                  <ng-template contextMenuItem (execute)="createHl7Datatypes()">
+                    <i class="fa fa-plus"> Add From Existing Librairies</i>
+                  </ng-template>
+                </context-menu>
+              </ng-container>
+              <ng-container *ngSwitchCase="'DERIVEDDATATYPEREGISTRY'">
+                <span> {{getPath(node)}} {{node.data.data.label}}</span>
+
+              </ng-container>
+
+              <ng-container *ngSwitchCase="'DATATYPE'">
+                <display-label [elm]="node.data.data" [igId]="libId"   [contextMenu]="datatypeContextMenu" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive"></display-label>
+                <context-menu  #datatypeContextMenu>
+                  <ng-template contextMenuItem  (execute)="copyDatatype(node)">
+                    <i class="fa fa-copy"></i> Copy
+                  </ng-template>
+                  <ng-template contextMenuItem (execute)="deleteDatatype(node)">
+                    <i class="fa fa-remove"></i> Delete
+                  </ng-template>
+                </context-menu>
+                <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
+              </ng-container>
+
+            </ng-container>
+
+          </ng-template>
+
+        </tree-root>
+        </div>
+      </p-panel>
+    </div>
+
+    <!--ROUTE-->
+
+    <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0; max-height: 800px;overflow: scroll" >
+      <div>
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>

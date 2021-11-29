@@ -1,0 +1,55 @@
+{
+  "_id" : "59ce56c784ae3adc43b87c7e",
+  "includeMessageTable" : true,
+  "segmentORGroupsMessageExport" : {
+    "r" : true,
+    "re" : true,
+    "c" : true,
+    "x" : true,
+    "o" : true
+  },
+  "columns" : [
+    {
+      "name" : "Segment",
+      "position" : 1,
+      "present" : true,
+      "disabled" : true
+    },
+    {
+      "name" : "Flavor",
+      "position" : 2,
+      "present" : true,
+      "disabled" : true
+    },
+    {
+      "name" : "Element Name",
+      "position" : 3,
+      "present" : true,
+      "disabled" : true
+    },
+    {
+      "name" : "Cardinality",
+      "position" : 4,
+      "present" : true,
+      "disabled" : false
+    },
+    {
+      "name" : "Usage",
+      "position" : 5,
+      "present" : true,
+      "disabled" : false
+    },
+    {
+      "name" : "Comment",
+      "position" : 1,
+      "present" : true,
+      "disabled" : false
+    }
+  ],
+  "metadataConfig" : {
+    "hl7version" : true,
+    "publicationDate" : true,
+    "publicationVersion" : false,
+    "scope" : true
+  }
+}

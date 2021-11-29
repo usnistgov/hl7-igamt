@@ -1,0 +1,47 @@
+<h2 mat-dialog-title>Create Co-Constraint Group</h2>
+<mat-dialog-content>
+  <form #form='ngForm'>
+    <div class="form-group">
+      <label for="groupName" style="font-weight: bold;"> Co-Constraint Group Name : </label>
+      <input name="groupName" id="groupName"  type="text" [(ngModel)]="model.name" type="text" style="width: 100%" class="form-control" required />
+      <div *ngIf="form.controls['variableName'] && form.controls['variableName'].errors" style="color:red; font-size: 11px">
+        <div *ngIf="form.controls['variableName'].errors.required">
+          <span>*Group name is required</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="groupName" style="font-weight: bold;" #anchor> Base Segment </label>
+      <p-dropdown
+      [options]="segments"
+      [appendTo]="anchor"
+      [autoDisplayFirst]="false"
+      [style]="{'width': '100%', 'min-width': 'inherit'}"
+      [dataKey]="'id'"
+      [optionLabel]="'id'"
+      [(ngModel)]="selected"
+      (ngModelChange)="modelChange($event)"
+      name="baseSegment"
+      [filter]="true"
+      required
+      filterBy="value.fixedName,value.variableName">
+        <ng-template let-item pTemplate="selectedItem">
+          <ng-container *ngIf="item.value">
+            <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
+            <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
+            <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
+          </ng-container>
+        </ng-template>
+        <ng-template let-item pTemplate="item">
+          <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
+          <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
+          <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
+        </ng-template>
+      </p-dropdown>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" [disabled]="form && form.invalid"  class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

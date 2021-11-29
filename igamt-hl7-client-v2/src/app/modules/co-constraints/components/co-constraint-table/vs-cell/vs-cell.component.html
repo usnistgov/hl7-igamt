@@ -1,0 +1,31 @@
+<div style="width: 100%; display: flex; justify-content: space-between; align-items: start;">
+  <div style="margin-right: 5px; width: 100%;">
+    <ng-container *ngFor="let item of cellValue.bindings">
+      <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit : item, bindingStrength : bindingStrength }"></ng-container>
+    </ng-container>
+  </div>
+  <button *ngIf="!viewOnly" class="btn btn-sm btn-primary" (click)="openVsPicker(cellValue, header, excludeBindingStrength, overrideBindingInfo)"><i class="fa fa-pencil"></i></button>
+</div>
+
+<ng-template #displayVsBinding let-vsBinding>
+  <table class="table table-striped table-sm table-bordered" style="text-align: center; margin-bottom: 0;">
+    <tr>
+      <td pTooltip="Binding Strength" tooltipPosition="top" *ngIf="vsBinding.strength">
+        <strong >{{vsBinding.strength}}</strong>
+      </td>
+      <td *ngIf="!vsBinding.strength"></td>
+      <td pTooltip="Binding Locations" tooltipPosition="top">
+        <strong>{{vsBinding.valuesetLocations.length > 0 ? (vsBinding.valuesetLocations | json) : '.'}}</strong>
+      </td>
+    </tr>
+    <tr *ngFor="let itemId of vsBinding.valueSets" >
+      <td colspan="2" *ngIf="getVsById(itemId) as item">
+        <div [pTooltip]="item.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
+          <app-entity-bagde [type]="item.type"></app-entity-bagde>
+          <app-scope-badge *ngIf="item.domainInfo" [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
+          <strong *ngIf="item.variableName" style="margin-left: 5px; word-break: break-all;"> {{item.variableName}}</strong>
+        </div>
+      </td>
+    </tr>
+  </table>
+</ng-template>

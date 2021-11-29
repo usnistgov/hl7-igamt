@@ -1,0 +1,17 @@
+<!--<app-delta-display [operation]="deltaOp()"-->
+<!--[currentValue]="{ noChange: noChange, deleted: deleted, added: added }"-->
+<!--[previousValue]="{ confLength : confLength.previous, leaf: leaf.previous }">-->
+<!--<ng-template let-value>-->
+<!--<conflength-readonly-col [confLength]="value.confLength" [leaf]="value.leaf"></conflength-readonly-col>-->
+<!--</ng-template>-->
+<!--</app-delta-display>-->
+<div *ngFor="let vsBinding of currentBindings?.valuesetBindings">
+  <app-delta-display [operation]="vsBinding['_.operation']"
+                     [currentValue]="{ vs: vsBinding }"
+                     [previousValue]="{ vs: vsBinding }">
+    <ng-template let-value>
+      <i class="fa fa-circle" [ngClass]="{'first-priority' : currentBindings.priority.current === 1 || currentBindings.priority.previous === 1, 'second-priority' : currentBindings.priority.current === 2 || currentBindings.priority.previous === 2, 'third-priority' : currentBindings.priority.current === 3 || currentBindings.priority.previous === 3, 'fourth-priority' : currentBindings.priority.current === 4 || currentBindings.priority.previous === 4}"></i>
+      {{value.vs.label.current ?  value.vs.label.current : value.vs.label.previous}}
+    </ng-template>
+  </app-delta-display>
+</div>

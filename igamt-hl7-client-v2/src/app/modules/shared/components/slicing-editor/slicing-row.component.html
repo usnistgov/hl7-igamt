@@ -1,0 +1,176 @@
+<form #form="ngForm">
+  <div style="display: flex; flex-direction: row; justify-content: space-between" class="sliceRow-header" *ngIf="node">
+    <div style="display: flex; flex-direction: row; justify-content: flex-start; width: 60%" >
+    <button class="btn btn-sm btn-primary" style="margin-right: 5px;" (click)="toggleShow()">
+      <i *ngIf="!show" class="fa fa-eye"></i>
+      <i *ngIf="show" class="fa fa-eye-slash"></i>
+    </button>
+
+    <div  style="display: flex; flex-direction: row; justify-content: flex-start" >
+       <span style="display: flex; flex-direction: row; justify-content: flex-start">
+         <app-entity-bagde [type]="node.data.type" ></app-entity-bagde>
+          <span class="title-text" style="margin-left: 5px !important; margin-right: 3px; margin-top: 1px !important;" >  {{position}}.{{ nameDisplay }}</span>
+       </span>
+        <div style="display: flex; flex-direction: row; justify-content: flex-start; margin-left: 4px; margin-top: 1px !important;" > [ <app-display-section [element]="display$ | async" [hideDescription]="true"></app-display-section> ]</div>
+    </div>
+    </div>
+    <div>
+     <span class="badge badge-secondary"> {{sliceRow_.type}}</span>
+    </div>
+  <div  style= "display: flex; flex-direction: row; justify-content: flex-end">
+    <button class="btn btn-sm btn-primary" (click)="addSlice()" pTooltip="Add slice">
+      <i class="fa fa-plus"></i>
+    </button>
+    <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="delete()" pTooltip="Remove slicing">
+      <i class="fa fa-remove"></i>
+    </button>
+  </div>
+</div>
+
+<div class="sliceRow-body" *ngIf="show">
+
+  <div>
+    <div *ngIf="!sliceRow_.slices.length" style="padding: 10px;  background-color: #f1f1f1; color: #888888; text-align: center;">
+      No Slice Defined
+    </div>
+    <ng-container *ngIf="sliceRow_.slices.length">
+    <ng-container [ngSwitch]="sliceRow_.type">
+      <ng-container *ngSwitchCase="'ASSERTION'">
+        <ng-container *ngTemplateOutlet="assertionSlicing">
+        </ng-container>
+      </ng-container>
+      <ng-container *ngSwitchCase="'OCCURRENCE'">
+        <ng-container *ngTemplateOutlet="occurrenceSlicing">
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    </ng-container>
+
+  </div>
+</div>
+  <ng-template #assertionSlicing let-param>
+
+  <table class="table table-bordered table table-striped">
+    <thead>
+    <th width="50%">
+      Condition
+    </th>
+    <th width="20%">
+      Flavor
+    </th>
+    <th width="20%">
+      Comments
+    </th>
+    <th width="10%">
+    </th>
+    </thead>
+    <tbody cdkDropList  [cdkDropListData]="sliceRow_.slices" (cdkDropListDropped)="drop($event)">
+    <ng-container *ngFor="let slice of sliceRow_.slices; let i= index">
+
+    <tr cdkDrag style="cursor: move">
+      <td>
+        {{slice.assertion?.description}}
+        <button class="btn btn-sm btn-info" (click)="addAssertion(slice)" [disabled]="viewOnly">
+          <i class="fa fa-pencil"></i>
+        </button>
+      </td>
+      <td #anchor>
+        <ng-container *ngIf="available_">
+
+          <ng-container *ngTemplateOutlet="flavorSelector; context: { $implicit: {slice: slice, anchor: anchor, index: i }}"></ng-container>
+
+        </ng-container>
+
+      </td>
+      <td>
+
+        <ng-container *ngTemplateOutlet="comments; context: { $implicit: {slice: slice, anchor: anchor, index: i }}"></ng-container>
+
+      </td>
+      <td>
+        <button class="btn btn-sm btn-danger" style="margin-right: 15px;" (click)="deleteSlice(i)" [disabled]="viewOnly">
+          <i class="fa fa-remove"></i>
+        </button>
+      </td>
+
+    </tr>
+    </ng-container>
+    </tbody>
+  </table>
+
+  </ng-template>
+
+
+  <ng-template #occurrenceSlicing let-param>
+
+    <table class="table table-bordered table table-striped">
+      <thead>
+      <th width="50%">
+        Occurrence
+      </th>
+      <th width="20%">
+        Flavor
+      </th>
+      <th width="20%">
+        Comments
+      </th>
+      <th width="10%">
+      </th>
+      </thead>
+      <tbody cdkDropList  [cdkDropListData]="sliceRow_.slices" (cdkDropListDropped)="drop($event)">
+      <ng-container *ngFor="let slice of sliceRow_.slices; let i= index">
+      <tr cdkDrag style="cursor: move">
+
+        <td>
+          <input  [(ngModel)]="slice.position"
+                  [id]="'position'+ node.data.id+i"
+                  [name]="'position'+ node.data.id+i" class="form-control"
+                  type="text" type="number" (ngModelChange)="update()" [disabled]="viewOnly"></td>
+        <td #anchor>
+          <ng-container *ngIf="available_">
+
+            <ng-container *ngTemplateOutlet="flavorSelector; context: { $implicit: {slice: slice, anchor: anchor, index: i }}"></ng-container>
+
+          </ng-container>
+
+        </td>
+        <td>
+          <ng-container *ngTemplateOutlet="comments; context: { $implicit: {slice: slice, anchor: anchor, index: i }}"></ng-container>
+        <td>
+          <button class="btn btn-sm btn-danger" style="margin-right: 15px;">
+            <i class="fa fa-remove"></i>
+          </button>
+        </td>
+
+      </tr>
+      </ng-container>
+      </tbody>
+    </table>
+
+  </ng-template>
+
+  <ng-template #flavorSelector let-param>
+    <p-dropdown [(ngModel)]="map[param.slice.flavorId]" [appendTo]="param.anchor" [optionLabel]="'fixedName'"
+                [options]="available_" [style]="{'minWidth':'100%'}"
+                [placeholder]="'Select Flavor'" (ngModelChange)="modelChange($event, param.slice)" [id]="node.data.id+param.index" [name]="node.data.id+param.index" [disabled]="viewOnly">
+      <ng-template let-item pTemplate="selectedItem">
+          <ng-container>
+            <app-display-section [element]="map[param.slice.flavorId]" [hideDescription]="true"></app-display-section>
+          </ng-container>
+      </ng-template>
+      <ng-template let-item pTemplate="item">
+        <app-display-section [element]="item.value" [hideDescription]="true"></app-display-section>
+      </ng-template>
+    </p-dropdown>
+
+  </ng-template>
+  <ng-template #comments let-param>
+    <input  [(ngModel)]="param.slice.comments"
+            [id]="'commments'+ node.data.id+param.index" [name]="'commments'+node.data.id+param.index"
+            class="form-control" placeholder="add comments"
+            type="text" (change)="update()" [disabled]="viewOnly">
+  </ng-template>
+
+</form>
+
+

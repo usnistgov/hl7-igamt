@@ -1,0 +1,19 @@
+{
+  "id": {
+    "id": "mock_TEST_VXU_V04",
+    "version": 1
+  },
+  "domainInfo": {
+    "version": "2.8.2",
+    "compatibilityVersion": [],
+    "scope": "USER"
+  },
+  "name": "VXU^V04^VXU_V04",
+  "identifier": "Z22",
+  "description": "Send an Unsolicited Immunization Event",
+  "messageType": "VXU",
+  "messageEvent": "V04",
+  "structId": "VXU_V04",
+  "authorNotes": null,
+  "usageNote": null
+}

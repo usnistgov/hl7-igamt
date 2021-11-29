@@ -1,0 +1,82 @@
+body {
+    .card {
+        background-color: $contentBgColor;
+    }
+    .ui-widget,
+    .ui-widget .ui-widget {
+        font-family: $fontFamily;
+        text-decoration: none;
+    }
+
+    .ui-widget-content {
+        background-color: $contentBgColor;
+        border: 1px solid $contentBorderColor;
+    }
+
+    .ui-widget-header {
+        background: $headerBgColor;
+        color: $headerTextColor;
+        border: 1px solid $headerBorderColor;
+        font-weight: 700;
+    }
+
+    .ui-state-active, .ui-state-highlight {
+        background-color: $primaryColor;
+        color: $primaryTextColor;
+    }
+
+    .ui-state-error, .ui-state-default.ui-state-error {
+        border: solid 1px red;
+    }
+
+    .ui-state-disabled,
+    .ui-widget:disabled {
+        opacity: .35;
+        filter: Alpha(Opacity= 35);
+        background-image: none;
+        cursor: default !important;
+
+        * {
+            cursor: default !important;
+        }
+    }
+
+    .ui-corner-all {
+        @include border-radius($borderRadius);
+    }
+
+    .ui-corner-top {
+        @include border-radius-top($borderRadius);
+    }
+
+    .ui-corner-bottom {
+        @include border-radius-bottom($borderRadius);
+    }
+
+    .ui-corner-left {
+        @include border-radius-left($borderRadius);
+    }
+
+    .ui-corner-right {
+        @include border-radius-right($borderRadius);
+    }
+
+    .ui-widget-overlay {
+        background-color: $textColor;
+        @include opacity(.7);
+    }
+
+    a {
+        color: darken($primaryColor,10%);
+        text-decoration: none;
+
+        &:hover {
+            color: darken($primaryColor,10%);
+        }
+    }
+
+    .ajax-loader {
+        font-size: 28px;
+        color: $primaryColor;
+    }
+}

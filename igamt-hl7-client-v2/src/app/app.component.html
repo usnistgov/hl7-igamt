@@ -1,0 +1,15 @@
+<!-- Header -->
+<app-header *ngIf="!fullscreen"></app-header>
+  <block-ui>
+    <div [class]="'page-container-layout ' + (fullscreen ? 'page-container-nopad' : 'page-container-pad')">
+
+      <!-- Content -->
+      <div class="page-content">
+        <router-outlet></router-outlet>
+      </div>
+
+    </div>
+  </block-ui>
+<!-- Footer -->
+<footer></footer>
+<ng2-toasty [position]="'top-right'"></ng2-toasty>

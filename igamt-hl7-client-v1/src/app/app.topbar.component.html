@@ -1,0 +1,59 @@
+<div class="topbar clearfix">
+
+    <!--<img class="logo" alt="apollo-layout" src="assets/layout/images/apollo_logo.png" />-->
+  <span style="color:#F3C60D; font-size: 24px; font-weight: 900">IGAMT </span>
+
+
+    <a id="menu-button" (click)="app.onMenuButtonClick($event)">
+        <i class="fa fa-align-left"></i>
+    </a>
+
+    <a  class="profile" (click)="app.onTopbarMenuButtonClick($event)">
+        <span class="username">{{getUsername()}} </span>
+        <i class="fa fa-angle-down"></i>
+    </a>
+
+
+
+    <!--<span class="topbar-search">-->
+        <!--<input type="text" pInputText placeholder="Search"/>-->
+        <!--<span class="fa fa-search"></span>-->
+    <!--</span>-->
+
+    <!--<span class="topbar-themeswitcher">-->
+        <!--<p-inputSwitch [(ngModel)]="url.darkTheme" (onChange)="themeChange($event)"></p-inputSwitch>-->
+    <!--</span>-->
+
+    <ul class="topbar-menu fadeInDown" [ngClass]="{'topbar-menu-visible': app.topbarMenuActive}">
+        <li #profile [ngClass]="{'menuitem-active':app.activeTopbarItem === profile}" (click)="app.onTopbarItemClick($event, profile)" *ngIf="isAuthenticated()">
+            <a href="#">
+                <i class="topbar-icon fa fa-fw fa-user"></i>
+                <span class="topbar-item-name">Profile</span>
+            </a>
+        </li>
+      <li  *ngIf="isAuthenticated()" (click)="logout()">
+        <a href="#">
+          <i class="topbar-icon fa-fw fa-sign-out"></i>
+          <span class="topbar-item-name">Logout</span>
+        </a>
+
+      </li>
+
+      <li #login [ngClass]="{'menuitem-active':app.activeTopbarItem === login}" (click)="app.onTopbarItemClick($event, register)" *ngIf="!isAuthenticated()" [routerLink]="['/login']">
+        <a href="#">
+          <i class="topbar-icon fa-fw fa-sign-in"></i>
+          <span class="topbar-item-name">Login</span>
+        </a>
+
+      </li>
+
+      <li #register [ngClass]="{'menuitem-active':app.activeTopbarItem === register}" (click)="app.onTopbarItemClick($event, register)" *ngIf="!isAuthenticated()" [routerLink]="['/register']">
+        <a href="#">
+          <i class="topbar-icon fa-fw fa-sign-in"></i>
+          <span class="topbar-item-name">Register</span>
+        </a>
+
+      </li>
+
+    </ul>
+</div>

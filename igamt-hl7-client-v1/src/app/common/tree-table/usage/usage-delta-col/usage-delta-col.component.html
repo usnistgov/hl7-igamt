@@ -1,0 +1,29 @@
+<!--<ng-container [ngSwitch]="deltaOp()">-->
+  <!--<span *ngSwitchCase="'UNCHANGED'">-->
+    <!--<ng-container *ngTemplateOutlet="usage; context: { $implicit: usage.current, predicate: currentPredicate }"></ng-container>-->
+  <!--</span>-->
+  <!--<ng-container *ngSwitchDefault>-->
+    <!--<span *ngIf="usage.current">-->
+      <!--<ng-container *ngTemplateOutlet="usage; context: { $implicit: usage.current, predicate: currentPredicate }"></ng-container>-->
+    <!--</span>-->
+    <!--<span *ngIf="usage.previous">-->
+      <!--<ng-container *ngTemplateOutlet="usage; context: { $implicit: usage.previous, predicate: previousPredicate }"></ng-container>-->
+    <!--</span>-->
+  <!--</ng-container>-->
+<!--</ng-container>-->
+
+<app-delta-display *ngIf="usage" [operation]="deltaOp()" [currentValue]="usage.current" [previousValue]="usage.previous">
+  <ng-template #current let-usage>
+    <ng-container *ngTemplateOutlet="usageTmp; context: { $implicit: usage, predicate: currentPredicate }"></ng-container>
+  </ng-template>
+  <ng-template #previous let-usage>
+    <ng-container *ngTemplateOutlet="usageTmp; context: { $implicit: usage, predicate: previousPredicate }"></ng-container>
+  </ng-template>
+  <ng-template #unchanged let-usage>
+    <ng-container *ngTemplateOutlet="usageTmp; context: { $implicit: usage, predicate: currentPredicate }"></ng-container>
+  </ng-template>
+</app-delta-display>
+
+<ng-template #usageTmp let-usage let-predicate="predicate">
+  {{usage}} <span *ngIf="usage === 'C' && predicate">({{predicate.trueUsage}}/{{predicate.falseUsage}})</span>
+</ng-template>

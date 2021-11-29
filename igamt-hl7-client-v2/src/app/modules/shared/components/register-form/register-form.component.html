@@ -1,0 +1,33 @@
+<form [formGroup]="registrationForm" novalidate>
+
+  <app-form-input formControlName="fullName" id="fullName" label="Full Name*" name="Full name" placeholder="Enter Name"
+                  type="text"></app-form-input>
+  <app-form-input formControlName="email" id="email" label="E-mail" name="Email" placeholder="Enter Email" type="text">
+  </app-form-input>
+  <app-form-input formControlName="username" id="username" label="Username*" name="Username" placeholder="Enter Username"
+                  type="text"></app-form-input>
+  <app-form-input (change)="refreshConfirmPasswordValidation()" formControlName="password" id="password" label="Password*"
+                  name="Password" placeholder="Enter Password" type="password">
+  </app-form-input>
+  <app-form-input formControlName="confirm" id="confirmpassword" label="Confirm password*" name="Password confirmation"
+                  placeholder="Confirm Password" type="password">
+  </app-form-input>
+
+
+  <div class="form-group p-col p-grid">
+    <label class="form-label-lg" for="notice"> Notice to Applicant Regarding IGAMT Terms of Use</label>
+    <div aria-label="With textarea" class="form-control user-notice" disabled id="notice">{{notice}}</div>
+    <p-checkbox [formControl]="registrationForm.controls['signedConfidentialityAgreement']" [style]="{ 'margin-top' : '5px'}" binary="true"
+                name="signedConfidentialityAgreement"></p-checkbox>
+    <span style="margin-left: 5px; margin-top: 5px;"> I have read the Notice to Applicant and Accept the Terms of Use
+      for the
+      IGAMT</span>
+  </div>
+
+  <div class="p-grid p-col p-justify-end">
+    <button (click)="submit()" [disabled]="registrationForm.invalid" class="btn btn-primary" type="submit">Submit
+      Application
+    </button>
+  </div>
+
+</form>

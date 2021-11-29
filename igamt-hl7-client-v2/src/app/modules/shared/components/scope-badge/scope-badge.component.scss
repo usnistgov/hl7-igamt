@@ -1,0 +1,25 @@
+@import '../../../../../assets/variables';
+
+.scope-badge-user {
+  background-color: $user_scope_color;
+}
+
+.scope-badge-custom {
+  background-color: $custom_scope_color;
+  color: white;
+}
+
+.scope-badge-hl7 {
+  background-color: $hl7_scope_color;
+}
+.scope-badge-dynamic {
+  background-color: $hl7_version_dynamic;
+}
+
+.scope-badge-preloaded {
+  background-color: $preloaded_scope_color;
+}
+.scope-badge-phinvads {
+  background-color: $phinvads_scope_color;
+  color: $phinvads_color;
+}
