@@ -2,18 +2,13 @@ package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
-import gov.nist.hit.hl7.igamt.ig.data.fix.CoConstraintsFixes;
-import gov.nist.hit.hl7.igamt.ig.data.fix.PathFixes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -41,6 +36,7 @@ import gov.nist.hit.hl7.igamt.bootstrap.data.ConfigUpdater;
 import gov.nist.hit.hl7.igamt.bootstrap.data.ConformanceStatementFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DynamicMappingFixer;
+import gov.nist.hit.hl7.igamt.bootstrap.data.FixIGAttribute;
 import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
@@ -69,6 +65,8 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguratio
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportType;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
+import gov.nist.hit.hl7.igamt.ig.data.fix.CoConstraintsFixes;
+import gov.nist.hit.hl7.igamt.ig.data.fix.PathFixes;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
@@ -116,6 +114,10 @@ public class BootstrapApplication implements CommandLineRunner {
   private PathFixes pathFixes;
   @Autowired
   private CoConstraintsFixes coConstraintsFixes;
+  
+  @Autowired
+  FixIGAttribute fixAttributes;
+  
 
   @Autowired
   private ExportConfigurationRepository exportConfigurationRepository;
@@ -254,10 +256,6 @@ public class BootstrapApplication implements CommandLineRunner {
     }
   }
 
-//  @PostConstruct
-//  void fixCoConstraints() {
-//    this.coConstraintsFixes.fix();
-//  }
 
   //@PostConstruct
   void fixPaths() {
@@ -446,12 +444,12 @@ public class BootstrapApplication implements CommandLineRunner {
   void shiftBinding() {
     this.dataFixer.shiftAllBinding();
   }
- // @PostConstruct
+  //@PostConstruct
   void updateSegmentDatatype() {
     this.dataFixer.changeHL7SegmentDatatype("OMC", "9", "ID", "2.8.2");
 
   }
-  //@PostConstruct
+ // @PostConstruct
   void publishStructures() {
     this.dataFixer.publishStructure("607da0e88b87bc00073b4ba6");
   }
@@ -465,11 +463,23 @@ public class BootstrapApplication implements CommandLineRunner {
     this.dataFixer.addFixedExt();
   }
 
-  //@PostConstruct
+ // @PostConstruct
   void addVsLocationException() {
     Config config = this.sharedConstantService.findOne();
     this.configUpdater.updateValueSetLoctaionException(config, "ST","CQ_NIST", Type.DATATYPE, 2, config.getHl7Versions());
     this.sharedConstantService.save(config);
   }
+  
+   //@PostConstruct
+  void fixCoConstraints() {
+    this.coConstraintsFixes.fix();
+  }
+  
+ @PostConstruct
+  void fixAttributes() throws JsonParseException, JsonMappingException, IOException {
+     //this.fixAttributes.createJson();
+     this.fixAttributes.updateDates();
+  }
+
 
 }
