@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraintTable;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
@@ -382,8 +383,12 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                             if (coConstraintBinding != null) {
                                 if (coConstraintBinding.getContext() != null) {
                                     Element coConstraintContext = new Element("coConstraintContext");
-                                    ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
-                                    coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
+                                    if(coConstraintBinding.getContext() == null || Strings.isNullOrEmpty(coConstraintBinding.getContext().getPathId())) {
+                                        coConstraintContext.appendChild(conformanceProfileSkeleton.get().getResource().getVariableName());
+                                    } else {
+                                        ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
+                                        coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
+                                    }
                                     coConstraintBindingElement.appendChild(coConstraintContext);
                                 }
                                 if (coConstraintBinding.getBindings() != null) {
