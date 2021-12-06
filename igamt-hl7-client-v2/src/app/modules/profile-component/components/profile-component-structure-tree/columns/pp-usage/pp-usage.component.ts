@@ -2,7 +2,7 @@ import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
 import { Observable, of } from 'rxjs';
-import { flatMap, take, tap, map } from 'rxjs/operators';
+import { flatMap, map, take, tap } from 'rxjs/operators';
 import { CsDialogComponent } from 'src/app/modules/shared/components/cs-dialog/cs-dialog.component';
 import { IUsageOption } from 'src/app/modules/shared/components/hl7-v2-tree/columns/usage/usage.component';
 import { IHL7v2TreeNode, IStringValue } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
