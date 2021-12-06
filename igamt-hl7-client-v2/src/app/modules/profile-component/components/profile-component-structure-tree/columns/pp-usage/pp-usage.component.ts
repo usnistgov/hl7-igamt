@@ -2,7 +2,7 @@ import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import * as _ from 'lodash';
 import { Observable, of } from 'rxjs';
-import { flatMap, take, tap } from 'rxjs/operators';
+import { flatMap, take, tap, map } from 'rxjs/operators';
 import { CsDialogComponent } from 'src/app/modules/shared/components/cs-dialog/cs-dialog.component';
 import { IUsageOption } from 'src/app/modules/shared/components/hl7-v2-tree/columns/usage/usage.component';
 import { IHL7v2TreeNode, IStringValue } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -160,49 +160,70 @@ export class PpUsageComponent extends PPColumn<IUsageAndPredicate> implements On
     }
   }
 
-  getTargetResource(path: string): Observable<IResource> {
-    if (path) {
-      const pathObj = this.pathService.getPathFromPathId(path);
+  getPathName(resource: IResource, path: string): Observable<string> {
+    return this.elementNamingService.getPathInfoFromPathId(resource, this.repository, path).pipe(
+      take(1),
+      map((pathInfo) => {
+        return this.elementNamingService.getStringNameFromPathInfo(pathInfo);
+      }),
+    );
+  }
+
+  getPredicateTarget({ location, target }): Observable<{ resource: IResource, name: string }> {
+    if (location) {
+      const pathObj = this.pathService.getPathFromPathId(location);
       return this.treeService.getNodeByPath(this.tree[0].children, pathObj, this.repository).pipe(
         take(1),
         flatMap((node) => {
+          if (node.data.type === Type.GROUP) {
+            return this.getPathName(this.resource, this.location).pipe(
+              map((name) => ({
+                name,
+                resource: this.resource,
+              })),
+            );
+          }
+
           return node.$hl7V2TreeHelpers.ref$.pipe(
             take(1),
             flatMap((ref) => {
               return this.repository.fetchResource(ref.type, ref.id).pipe(
                 take(1),
+                flatMap((resource) => {
+                  return this.getPathName(resource, target).pipe(
+                    map((name) => ({
+                      name,
+                      resource,
+                    })),
+                  );
+                }),
               );
             }),
           );
         }),
       );
     } else {
-      return of(this.resource);
+      return this.getPathName(this.resource, target).pipe(
+        map((name) => ({
+          name,
+          resource: this.resource,
+        })),
+      );
     }
   }
 
   createPredicateDialog() {
-    this.getTargetResource(this.predicateBindingLocation.location).pipe(
-      flatMap((resource) => {
-        return this.elementNamingService.getPathInfoFromPathId(resource, this.repository, this.predicateBindingLocation.target).pipe(
-          take(1),
-          tap((pathInfo) => {
-            this.openDialog('Create Predicate for ' + this.elementNamingService.getStringNameFromPathInfo(pathInfo), resource, undefined);
-          }),
-        );
+    this.getPredicateTarget(this.predicateBindingLocation).pipe(
+      tap(({ resource, name }) => {
+        this.openDialog(`Create Predicate for ${name}`, resource, undefined);
       }),
     ).subscribe();
   }
 
   editPredicateDialog(predicate: IPredicate) {
-    this.getTargetResource(this.predicateBindingLocation.location).pipe(
-      flatMap((resource) => {
-        return this.elementNamingService.getPathInfoFromPathId(resource, this.repository, this.predicateBindingLocation.target).pipe(
-          take(1),
-          tap((path) => {
-            this.openDialog('Edit Predicate for ' + this.elementNamingService.getStringNameFromPathInfo(path), resource, predicate);
-          }),
-        );
+    this.getPredicateTarget(this.predicateBindingLocation).pipe(
+      tap(({ resource, name }) => {
+        this.openDialog(`Create Predicate for ${name}`, resource, predicate);
       }),
     ).subscribe();
   }
