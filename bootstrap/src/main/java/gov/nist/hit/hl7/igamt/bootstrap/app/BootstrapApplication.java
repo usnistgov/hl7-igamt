@@ -475,7 +475,7 @@ public class BootstrapApplication implements CommandLineRunner {
     this.coConstraintsFixes.fix();
   }
   
- @PostConstruct
+ //@PostConstruct
   void fixAttributes() throws JsonParseException, JsonMappingException, IOException {
      //this.fixAttributes.createJson();
      this.fixAttributes.updateDates();
