@@ -1977,10 +1977,11 @@ public
       }
     } else if (c instanceof AssertionConformanceStatement) {
       AssertionConformanceStatement cs = (AssertionConformanceStatement) c;
-      if (cs.getAssertion() != null)
-        return "<Assertion>" + this.assertionXMLSerialization
-            .generateAssertionScript(cs.getAssertion(), cs.getLevel(), targetId, cs.getContext(), false)
-            .replace("\n", "").replace("\r", "") + "</Assertion>";
+      if (cs.getAssertion() != null) {
+    	  String asserionScript = this.assertionXMLSerialization.generateAssertionScript(cs.getAssertion(), cs.getLevel(), targetId, cs.getContext(), false);
+    	  if(asserionScript != null) 
+    		  return "<Assertion>" + asserionScript.replace("\n", "").replace("\r", "") + "</Assertion>";
+      }
     }
     return null;
   }
