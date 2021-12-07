@@ -292,7 +292,7 @@ export class Hl7V2TreeStructureComponent implements OnInit, OnDestroy {
     if (this.type === Type.SEGMENT) {
       this.removeFieldFromSegment(this._resource as ISegment, node);
     } else if (this.type === Type.MESSAGESTRUCT) {
-      this.removeElmFromMessage(this._resource as IMessageStructure, node, node.parent ? node.parent.data.id : '');
+      this.removeElmFromMessage(this._resource as IMessageStructure, node, node.parent ? node.parent.data.pathId : '');
     }
   }
 

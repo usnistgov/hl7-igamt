@@ -100,8 +100,12 @@ public class SimpleCoConstraintSerializationHelper implements CoConstraintSerial
 
     @Override
     public ResourceSkeletonBone getSegmentRef(ResourceSkeleton root, StructureElementRef context, StructureElementRef segmentRef) throws ResourceNotFoundException, PathNotFoundException {
-        ResourceSkeletonBone contextSkeleton = getStructureElementRef(root, context);
-        return getStructureElementRef(contextSkeleton, segmentRef);
+        if(context == null || Strings.isNullOrEmpty(context.getPathId())) {
+            return getStructureElementRef(root, segmentRef);
+        } else {
+            ResourceSkeletonBone contextSkeleton = getStructureElementRef(root, context);
+            return getStructureElementRef(contextSkeleton, segmentRef);
+        }
     }
 
     @Override

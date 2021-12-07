@@ -1,4 +1,5 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
+import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraintTable;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentContextDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ProfileComponentItemDataModel;
@@ -369,9 +370,13 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
                         if (coConstraintBinding != null) {
                             if (coConstraintBinding.getContext() != null) {
                                 Element coConstraintContext = new Element("coConstraintContext");
-								ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
-                                coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
-                                coConstraintBindingElement.appendChild(coConstraintContext);
+								if(coConstraintBinding.getContext() == null || Strings.isNullOrEmpty(coConstraintBinding.getContext().getPathId())) {
+									coConstraintContext.appendChild(conformanceProfileSkeleton.get().getResource().getVariableName());
+								} else {
+									ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
+									coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
+								}
+								coConstraintBindingElement.appendChild(coConstraintContext);
                             }
                             if (coConstraintBinding.getBindings() != null) {
                                 for (CoConstraintBindingSegment coConstraintBindingSegment : coConstraintBinding.getBindings()) {
