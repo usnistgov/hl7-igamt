@@ -56,7 +56,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
             "CoConstraint Binding Context",
             (target) -> {
                 if (coConstraintBinding.getBindings() != null) {
-                    String name = (target instanceof ResourceSkeletonBone) ? ((ResourceSkeletonBone) target).getLocationInfo().getHl7Path() : target.getResource().getFixedName();
+                    String name = (target instanceof ResourceSkeletonBone) ? ((ResourceSkeletonBone) target).getLocationInfo().getHl7Path() : target.getResource().getVariableName();
                     return coConstraintBinding.getBindings().stream().flatMap(
                             (coConstraintBindingSegment) -> checkCoConstraintBindingSegment(
                                                                     target,

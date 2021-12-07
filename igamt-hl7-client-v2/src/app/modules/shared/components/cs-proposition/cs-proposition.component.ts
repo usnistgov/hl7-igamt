@@ -160,7 +160,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
       map(([node, compNode]) => {
         const verb = this.labelsMap[this.assertion.verbKey];
         const statement = this.getStatementLiteral(this.assertion.complement);
-        this.assertion.description = `${node} ${this.csType === LeafStatementType.DECLARATION ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)} ${this.statementType === StatementType.COMPARATIVE ? compNode.toLowerCase() : ''}`;
+        this.assertion.description = `${node} ${this.csType === LeafStatementType.DECLARATION ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)} ${this.statementType === StatementType.COMPARATIVE ? compNode : ''}`;
         Object.assign(this.assertion.subject, {
           ...this.subject.value,
         });
