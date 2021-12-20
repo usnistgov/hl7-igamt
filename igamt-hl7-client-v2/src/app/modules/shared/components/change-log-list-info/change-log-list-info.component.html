@@ -1,0 +1,38 @@
+<ng-container *ngIf="changes && changes.length > 0" >
+  <button [ngbPopover]="popContent" [popoverTitle]="popTitle" triggers="click:click" placement="left" container="body" class="btn btn-sm btn-i">
+    <i class="fa fa-info"></i>
+     Change Reasons
+  </button>
+
+  <ng-template #popContent>
+    <table style="table-layout: auto;" class="table table-sm table-striped table-bordered">
+      <thead>
+        <tr>
+          <th *ngIf="!viewOnly"></th>
+          <th>Date</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of changes; let i = index;">
+          <td *ngIf="!viewOnly">
+            <button class="btn btn-sm btn-danger" (click)="delete(i)">
+              <i class="fa fa-trash"></i>
+            </button>
+          </td>
+          <td>
+            {{ item.date | date }}
+          </td>
+          <td style="vertical-align: center;">{{ item.reason }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
+  <ng-template #popTitle>
+    <button *ngIf="!viewOnly" class="btn btn-sm btn-dark" style="margin-right: 5px;" (click)="edit()">
+      <i class="fa fa-pencil"></i>
+    </button>
+    Change Log
+  </ng-template>
+
+</ng-container>

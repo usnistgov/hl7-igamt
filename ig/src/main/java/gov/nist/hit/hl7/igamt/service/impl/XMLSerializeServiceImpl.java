@@ -25,8 +25,8 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import gov.nist.hit.hl7.igamt.service.impl.exception.*;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,14 +71,6 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
-import gov.nist.hit.hl7.igamt.service.impl.exception.DatatypeComponentSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.DatatypeSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.FieldSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.GroupSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.MessageSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.SegmentSerializationException;
-import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
@@ -115,7 +107,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   ConformanceProfileService conformanceProfileService;
 
   @Autowired
-  CoConstraintXMLSerialization coConstraintXMLSerialization;
+  SimpleCoConstraintXMLSerialization simpleCoConstraintXMLSerialization;
 
   @Autowired
   InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
@@ -125,6 +117,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
   @Autowired
   AssertionXMLSerialization assertionXMLSerialization;
+  
   /*
    * (non-Javadoc)
    * 
@@ -173,11 +166,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   }
 
   @Override
-  public Element serializeCoConstraintXML(IgDataModel igModel) {
+  public Element serializeCoConstraintXML(IgDataModel igModel) throws CoConstraintXMLSerializationException {
 
       Element ccc = new Element("CoConstraintContext");
       for(ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
-        Element message = this.coConstraintXMLSerialization.serialize(cpModel.getModel());
+        Element message = this.simpleCoConstraintXMLSerialization.serialize(cpModel.getModel());
         if(message != null) {
           ccc.appendChild(message);
         }
@@ -1139,13 +1132,14 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                     elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
                   }	  
             }
-
+            
             Set<ValuesetBindingDataModel> valueSetBindings = c.getValuesets();
             if (valueSetBindings != null && valueSetBindings.size() > 0) {
               String bindingString = "";
               String bindingStrength = null;
               Set<Integer> bindingLocation = null;
 
+              
               for (ValuesetBindingDataModel binding : valueSetBindings) {
                 try {
                   if (binding.getValuesetBinding().getStrength() != null)
@@ -1173,13 +1167,13 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                 }
 
               }
-
+              
               if (!bindingString.equals(""))
                 elmComponent.addAttribute(new Attribute("Binding",
                     bindingString.substring(0, bindingString.length() - 1)));
               if (bindingStrength != null)
                 elmComponent.addAttribute(new Attribute("BindingStrength", bindingStrength));
-              if (bindingLocation != null && bindingLocation.size() > 0) {
+              if (!this.isPrimitiveDatatype(c.getDatatype().getName()) && bindingLocation != null && bindingLocation.size() > 0) {
                 String bindingLocationStr = "";
                 for (Integer index : bindingLocation) {
                   bindingLocationStr = bindingLocationStr + index + ":";
@@ -1204,7 +1198,12 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
     }
   }
 
-  private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, Set<Datatype> missingDts, String defaultHL7Version) throws SegmentSerializationException {
+  private boolean isPrimitiveDatatype(String dtName) {
+	  Set<String> primitiveDTs = new HashSet<String>(Arrays.asList(new String[] {"ID","IS","ST","NM"}));
+	return primitiveDTs.contains(dtName);
+}
+
+private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, Set<Datatype> missingDts, String defaultHL7Version) throws SegmentSerializationException {
     try {
       // TODO DynamicMapping Need
       Element elmSegment = new Element("Segment");
@@ -1505,6 +1504,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                     }	  
               }
             
+            
+            
             Set<ValuesetBindingDataModel> valueSetBindings = f.getValuesets();
             if (valueSetBindings != null && valueSetBindings.size() > 0) {
               String bindingString = "";
@@ -1519,6 +1520,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                   if (binding.getValuesetBinding().getValuesetLocations() != null
                       && binding.getValuesetBinding().getValuesetLocations().size() > 0)
                     bindingLocation = binding.getValuesetBinding().getValuesetLocations();
+                  
                   if (binding != null && binding.getBindingIdentifier() != null
                       && !binding.getBindingIdentifier().equals("")) {
                     if (defaultHL7Version != null
@@ -1546,7 +1548,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                     bindingString.substring(0, bindingString.length() - 1)));
               if (bindingStrength != null)
                 elmField.addAttribute(new Attribute("BindingStrength", bindingStrength));
-              if (bindingLocation != null && bindingLocation.size() > 0) {
+              if (!this.isPrimitiveDatatype(f.getDatatype().getName()) && bindingLocation != null && bindingLocation.size() > 0) {
                 String bindingLocationStr = "";
                 for (Integer index : bindingLocation) {
                   bindingLocationStr = bindingLocationStr + index + ":";
@@ -1897,7 +1899,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   }
   
   @SuppressWarnings("unchecked")
-  private static <T> T cloneThroughJson(T t) {
+public
+  static <T> T cloneThroughJson(T t) {
      Gson gson = new Gson();
      String json = gson.toJson(t);
      return (T) gson.fromJson(json, t.getClass());
@@ -1974,10 +1977,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       }
     } else if (c instanceof AssertionConformanceStatement) {
       AssertionConformanceStatement cs = (AssertionConformanceStatement) c;
-      if (cs.getAssertion() != null)
-        return "<Assertion>" + this.assertionXMLSerialization
-            .generateAssertionScript(cs.getAssertion(), cs.getLevel(), targetId, cs.getContext(), false)
-            .replace("\n", "").replace("\r", "") + "</Assertion>";
+      if (cs.getAssertion() != null) {
+    	  String asserionScript = this.assertionXMLSerialization.generateAssertionScript(cs.getAssertion(), cs.getLevel(), targetId, cs.getContext(), false);
+    	  if(asserionScript != null) 
+    		  return "<Assertion>" + asserionScript.replace("\n", "").replace("\r", "") + "</Assertion>";
+      }
     }
     return null;
   }

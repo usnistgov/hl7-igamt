@@ -15,9 +15,14 @@ package gov.nist.hit.hl7.igamt.common.slicing.domain;
  * @author Abdelghani El Ouakili
  *
  */
-public class OrderedSlice {
+public class OrderedSlice extends Slice{
+	private int position;
 
-	private int position; 
-	private String flavorId; 
+	public int getPosition() {
+		return position;
+	}
 
+	public void setPosition(int position) {
+		this.position = position;
+	}
 }

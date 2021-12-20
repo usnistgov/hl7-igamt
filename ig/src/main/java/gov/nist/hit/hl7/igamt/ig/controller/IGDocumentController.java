@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -112,7 +113,10 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.IgTemplate;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.ComplianceReport;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.VerificationReport;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
@@ -1302,11 +1306,17 @@ private String token;
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
     AddValueSetResponseObject objects = crudService.addValueSets(wrapper.getSelected(), ig, username);
+
     igService.save(ig);
     IGDisplayInfo info = new IGDisplayInfo();
     info.setIg(ig);
-    info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
-
+    if(objects.getValueSets() != null && !objects.getValueSets().isEmpty()) {
+      info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
+      Optional<Valueset> vs = objects.getValueSets().stream().findAny();
+      if(vs.isPresent()) {
+        info.setTargetResourceId(objects.getValueSets().stream().findAny().get().getId());
+      }
+    }
     return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "", "Value Sets Added Succesfully", ig.getId(), false,
         ig.getUpdateDate(), info);
   }
@@ -1590,6 +1600,7 @@ private String token;
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
+    System.out.println(reqIds);
     Ig ig = findIgById(id);
     if (ig != null)  {
       CompositeProfileState cps = null;

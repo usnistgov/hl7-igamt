@@ -360,6 +360,7 @@ public class ValuesetServiceImpl implements ValuesetService {
         displayElement.setFlavor(valueset.isFlavor());
         displayElement.setParentId(valueset.getParentId());
         displayElement.setParentType(valueset.getParentType());
+        displayElement.setResourceName(valueset.getName());
         return displayElement;
     }
 

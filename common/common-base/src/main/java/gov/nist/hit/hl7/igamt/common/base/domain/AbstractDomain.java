@@ -17,7 +17,6 @@ public abstract class AbstractDomain implements Serializable{
 	private String id;
 	@CreatedDate
 	private Date creationDate;
-	@LastModifiedDate
 	private Date updateDate;
 	private String name;
 	private Type type;

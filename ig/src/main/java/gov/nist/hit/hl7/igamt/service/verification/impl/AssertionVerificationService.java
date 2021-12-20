@@ -1,6 +1,5 @@
 package gov.nist.hit.hl7.igamt.service.verification.impl;
 
-import com.google.common.collect.Streams;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.*;
@@ -15,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class AssertionVerificationService extends VerificationUtils {
@@ -36,7 +36,7 @@ public class AssertionVerificationService extends VerificationUtils {
     }
 
     public List<IgamtObjectError> checkIfThenAssertion(ResourceSkeleton skeleton, Location location, IfThenAssertion assertion) {
-        return Streams.concat(
+        return Stream.concat(
                 this.checkAssertion(skeleton, location, assertion.getIfAssertion()).stream(),
                 this.checkAssertion(skeleton, location, assertion.getThenAssertion()).stream()
         ).collect(Collectors.toList());
@@ -68,8 +68,9 @@ public class AssertionVerificationService extends VerificationUtils {
     public List<IgamtObjectError> checkSingleAssertion(ResourceSkeleton skeleton, Location location, SingleAssertion assertion) {
         List<IgamtObjectError> issues = this.getTargetOrFailAndVerify(
                 skeleton,
-                propertyType(location),
-                pathId(location),
+                location.getProperty(),
+                location.getPathId(),
+                location.getName(),
                 assertion.getSubject().getPath(),
                 "Assertion Subject",
                 (subject) -> {
@@ -78,12 +79,10 @@ public class AssertionVerificationService extends VerificationUtils {
                         if(!subject.getResource().isLeaf() && subject instanceof ResourceSkeletonBone) {
                             return Collections.singletonList(
                                     this.entry.PathShouldBePrimitive(
-                                            pathId(location),
-                                            propertyType(location),
-                                            info(location),
+                                            location,
                                             subject.getResource().getId(),
                                             subject.getResource().getType(),
-                                            ((ResourceSkeletonBone) subject).getLocationInfo().getHl7Path(),
+                                            ((ResourceSkeletonBone) subject).getLocationInfo(),
                                             ((ResourceSkeletonBone) subject).getLocationInfo().getName()
                                     )
                             );
@@ -97,20 +96,19 @@ public class AssertionVerificationService extends VerificationUtils {
             issues.addAll(
                     this.getTargetOrFailAndVerify(
                             skeleton,
-                            propertyType(location),
-                            pathId(location),
+                            location.getProperty(),
+                            location.getPathId(),
+                            location.getName(),
                             assertion.getComplement().getPath(),
                             "Assertion Complement",
                             (complement) -> {
                                 if(!complement.getResource().isLeaf()) {
                                     return Collections.singletonList(
                                             this.entry.PathShouldBePrimitive(
-                                                    pathId(location),
-                                                    propertyType(location),
-                                                    info(location),
+                                                    location,
                                                     complement.getResource().getId(),
                                                     complement.getResource().getType(),
-                                                    ((ResourceSkeletonBone) complement).getLocationInfo().getHl7Path(),
+                                                    ((ResourceSkeletonBone) complement).getLocationInfo(),
                                                     ((ResourceSkeletonBone) complement).getLocationInfo().getName()
                                             )
                                     );

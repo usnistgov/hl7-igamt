@@ -3,13 +3,11 @@ import { ICardinalityRange } from '../components/hl7-v2-tree/hl7-v2-tree.compone
 import { Type } from '../constants/type.enum';
 import { IValuesetBinding } from './binding.interface';
 import { IAssertion, IPath } from './cs.interface';
-import { DeltaAction, IDeltaInfo, IDeltaNode } from './delta';
+import { DeltaAction, IDeltaNode } from './delta';
 import { IResource } from './resource.interface';
 
 export interface IStructureElementRef {
   pathId: string;
-  name: string;
-  type?: Type;
   path: IPath;
 }
 
@@ -21,7 +19,6 @@ export interface ICoConstraintBindingContext {
 
 export interface ICoConstraintBindingSegment {
   segment: IStructureElementRef;
-  flavorId: string;
   name: string;
   tables: ICoConstraintTableConditionalBinding[];
   delta?: DeltaAction;
@@ -37,7 +34,6 @@ export interface ICoConstraintTableConditionalBinding {
 export interface ICoConstraintTable {
   id?: string;
   tableType: CoConstraintMode;
-  baseSegment: string;
   headers: ICoConstraintHeaders;
   coConstraints: ICoConstraint[];
   groups: ICoConstraintGroupBinding[];
@@ -61,6 +57,9 @@ export interface ICoConstraintGroupBinding {
 
 export interface ICoConstraintGroupBindingRef extends ICoConstraintGroupBinding {
   refId: string;
+  excludeIfColumns: string[];
+  excludeThenColumns: string[];
+  excludeNarrativeColumns: string[];
 }
 
 export interface ICoConstraintGroupBindingContained extends ICoConstraintGroupBinding {
@@ -76,15 +75,9 @@ export interface ICoConstraintHeaders {
 }
 
 export interface ICoConstraintGrouper {
-  name: string;
   pathId: string;
-  description: string;
-  version: string;
-  datatype: string;
-  type: Type;
   delta?: DeltaAction;
-  nameDelta?: IDeltaNode<string>;
-  typeDelta?: IDeltaNode<string>;
+  pathIdDelta?: IDeltaNode<string>;
 }
 
 export interface ICoConstraintHeader {
@@ -94,10 +87,7 @@ export interface ICoConstraintHeader {
 }
 
 export interface IDataElementHeader extends ICoConstraintHeader {
-  name: string;
-  cardinality: boolean;
   columnType: CoConstraintColumnType;
-  elementInfo: IDataElementHeaderInfo;
 }
 
 export interface IDataElementHeaderInfo {
@@ -108,6 +98,10 @@ export interface IDataElementHeaderInfo {
   cardinality: ICardinalityRange;
   type: Type;
   bindingInfo: IBindingLocationInfo;
+  displayCardinality: boolean;
+  name: string;
+  error?: string;
+  resolved: boolean;
 }
 
 export interface INarrativeHeader extends ICoConstraintHeader {
@@ -162,6 +156,7 @@ export enum CoConstraintColumnType {
   FLAVOR = 'FLAVOR',
   VARIES = 'VARIES',
   VALUE = 'VALUE',
+  GROUPER = 'GROUPER',
 }
 
 export enum CoConstraintGroupBindingType {

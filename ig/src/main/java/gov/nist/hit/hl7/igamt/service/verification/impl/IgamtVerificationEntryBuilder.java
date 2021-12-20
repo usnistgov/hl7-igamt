@@ -69,6 +69,11 @@ public class IgamtVerificationEntryBuilder {
         return this;
     }
 
+    public IgamtVerificationEntryBuilder locationInfo(String pathId, String name, PropertyType propertyType) {
+        this.error.setLocationInfo(new Location(pathId, name, propertyType));
+        return this;
+    }
+
     public IgamtVerificationEntryBuilder locationInfo(String pathId, LocationInfo info) {
         this.error.setLocationInfo(new Location(pathId, info));
         return this;
@@ -76,6 +81,11 @@ public class IgamtVerificationEntryBuilder {
 
     public IgamtVerificationEntryBuilder locationInfo(String pathId) {
         this.error.setLocationInfo(new Location(pathId));
+        return this;
+    }
+
+    public IgamtVerificationEntryBuilder locationInfo(Location locationInfo) {
+        this.error.setLocationInfo(locationInfo);
         return this;
     }
 

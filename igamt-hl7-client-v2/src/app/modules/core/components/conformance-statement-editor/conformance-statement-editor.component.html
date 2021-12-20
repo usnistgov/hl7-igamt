@@ -1,5 +1,10 @@
 <ng-template #headerControls>
-  <button class="btn btn-success btn-sm" (click)="createCs()" *ngIf="!(viewOnly$ | async)">
+  <app-change-log-list-info
+  [changes]="changeReason$ | async"
+  (editChange)="updateChangeReasons($event)"
+  [viewOnly]="viewOnly$ | async"
+  ></app-change-log-list-info>
+  <button style="margin-left: 5px;" class="btn btn-success btn-sm" (click)="createCs()" *ngIf="!(viewOnly$ | async)">
     <i class="fa fa-plus"></i> New
   </button>
 </ng-template>
@@ -12,7 +17,7 @@
     <div></div>
   </div>
   <div class="panel-body">
-    <ng-container *ngTemplateOutlet="group; context: { $implicit: groupCs }"></ng-container>
+    <ng-container *ngTemplateOutlet="group; context: { $implicit: groupCs, entries : entries$ | async }"></ng-container>
   </div>
 </ng-container>
 
@@ -53,7 +58,7 @@
 
 </ng-container>
 
-<ng-template #csList let-csList let-tmpl="tmpl">
+<ng-template #csList let-csList let-entries="entries" let-tmpl="tmpl">
   <div *ngIf="!csList || csList.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
     <span> No Conformance Statement </span>
   </div>
@@ -63,23 +68,34 @@
       <th>Description</th>
       <th *ngIf="tmpl && !(viewOnly$ | async)" style="width: 190px;"></th>
     </tr>
-    <tr *ngFor="let cs of csList; let i = index;" [ngClass]="{
-      'table-warning': cs.changeType === 'UPDATE',
-      'table-success': cs.changeType === 'ADD',
-      'table-danger': cs.changeType === 'DELETE',
-      'table-locked' : cs.payload && cs.payload.locked
-    }">
-      <td>
-        {{ cs.payload.identifier }}
-        <span class="badge badge-secondary" *ngIf="cs.payload?.type === 'FREE'">free-text</span>
-        <span class="badge badge-success" *ngIf="cs.payload?.type === 'FREE' && cs.payload?.assertionScript">script</span>
-        <span class="badge badge-warning" *ngIf="cs.payload?.locked">derived</span>
-      </td>
-      <td>{{ getDescription(cs.payload) }}</td>
-      <ng-container *ngIf="tmpl && !(viewOnly$ | async)">
-        <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: cs, index: i }"></ng-container>
+    <ng-container *ngFor="let cs of csList; let i = index;" >
+      <tr [ngClass]="{
+        'table-warning': cs.changeType === 'UPDATE',
+        'table-success': cs.changeType === 'ADD',
+        'table-danger': cs.changeType === 'DELETE',
+        'table-locked' : cs.payload && cs.payload.locked
+      }">
+        <td>
+          {{ cs.payload.identifier }}
+          <span class="badge badge-secondary" *ngIf="cs.payload?.type === 'FREE'">free-text</span>
+          <span class="badge badge-success" *ngIf="cs.payload?.type === 'FREE' && cs.payload?.assertionScript">script</span>
+          <span class="badge badge-warning" *ngIf="cs.payload?.locked">derived</span>
+        </td>
+        <td>{{ getDescription(cs.payload) }}</td>
+        <ng-container *ngIf="tmpl && !(viewOnly$ | async)">
+          <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: cs, index: i }"></ng-container>
+        </ng-container>
+      </tr>
+      <ng-container *ngIf="entries && entries[cs.payload.id]">
+        <tr *ngFor="let error of entries[cs.payload.id]">
+          <td colspan="3">
+            <span style="color: red;">
+              <app-issue-badge [type]="error.severity"></app-issue-badge> {{error.message}}
+            </span>
+          </td>
+        </tr>
       </ng-container>
-    </tr>
+    </ng-container>
   </table>
 </ng-template>
 
@@ -106,7 +122,7 @@
   </table>
 </ng-template>
 
-<ng-template #group let-csGroup let-header="header">
+<ng-template #group let-csGroup let-entries="entries" let-header="header">
   <ng-container *ngFor="let item of csGroup" >
     <div *ngIf="item.context" style="display: flex; align-items: center; margin-bottom: 10px;">
       <app-entity-bagde style="display: flex;" [type]="'GROUP'"></app-entity-bagde>
@@ -117,7 +133,7 @@
         <app-display-section [element]="current" [hideDescription]="true"></app-display-section>
       </ng-container>
     </div>
-    <ng-container *ngTemplateOutlet="csList; context: { $implicit: item.list, tmpl: editable }"></ng-container>
+    <ng-container *ngTemplateOutlet="csList; context: { $implicit: item.list, tmpl: editable, entries: entries }"></ng-container>
   </ng-container>
 </ng-template>
 

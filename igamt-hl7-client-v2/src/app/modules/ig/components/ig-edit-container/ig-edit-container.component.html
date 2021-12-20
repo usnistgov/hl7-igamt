@@ -1,4 +1,4 @@
-<app-dam-layout>
+<app-dam-layout [showStatusBar]="showStatusBar$ | async" [showBottomDrawerToggle]="showBottomDrawer$ | async">
 
   <ng-template #alerts>
     <app-dam-alerts-container></app-dam-alerts-container>
@@ -25,6 +25,16 @@
 
   <ng-template #sideBar>
     <app-ig-edit-sidebar [deltaMode]="deltaMode$ |async"></app-ig-edit-sidebar>
+  </ng-template>
+
+  <ng-template #statusBar>
+    <app-ig-edit-status-bar>
+    </app-ig-edit-status-bar>
+  </ng-template>
+
+  <ng-template #bottomDrawer>
+    <app-ig-edit-drawer>
+    </app-ig-edit-drawer>
   </ng-template>
 
 </app-dam-layout>

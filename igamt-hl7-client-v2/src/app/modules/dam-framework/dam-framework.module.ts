@@ -19,6 +19,7 @@ import { LoginFormComponent } from './components/authentication/login-form/login
 import { LoginComponent } from './components/authentication/login/login.component';
 import { TimeoutLoginDialogComponent } from './components/authentication/timeout-login-dialog/timeout-login-dialog.component';
 import { UserManagementHeaderComponent } from './components/authentication/user-management-header/user-management-header.component';
+import { DamBottomToggleComponent } from './components/data-widget/dam-bottom-toggle/dam-bottom-toggle.component';
 import { DamEditorOutletComponent } from './components/data-widget/dam-editor-outlet/dam-editor-outlet.component';
 import { DamFullscreenButtonComponent } from './components/data-widget/dam-fullscreen-button/dam-fullscreen-button.component';
 import { DamLayoutComponent } from './components/data-widget/dam-layout/dam-layout.component';
@@ -91,6 +92,7 @@ export class DamRoutingModule {
     DamFullscreenButtonComponent,
     DamSideBarToggleComponent,
     DamWidgetContainerComponent,
+    DamBottomToggleComponent,
   ],
   imports: [
     CommonModule,
@@ -106,6 +108,7 @@ export class DamRoutingModule {
     DamFullscreenButtonComponent,
     DamSideBarToggleComponent,
     DamWidgetContainerComponent,
+    DamBottomToggleComponent,
   ],
 })
 export class DamFrameworkModule {

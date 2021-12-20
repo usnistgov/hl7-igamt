@@ -45,6 +45,10 @@ export class DatatypeService {
               dependants: {
                 datatypes: d,
               },
+              changeReasons: {
+                reasons: data.changeReason,
+                updated: null,
+              },
             };
           }),
         );

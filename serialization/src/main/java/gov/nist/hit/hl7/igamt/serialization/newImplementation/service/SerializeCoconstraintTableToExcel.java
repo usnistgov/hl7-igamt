@@ -7,11 +7,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.coconstraints.model.*;
+import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableDataElementHeader;
+import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableGrouper;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
+import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
+import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -22,31 +27,13 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintCell;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBinding;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupBindingContained;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeader;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintHeaders;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CodeCell;
-import gov.nist.hit.hl7.igamt.coconstraints.model.ColumnType;
-import gov.nist.hit.hl7.igamt.coconstraints.model.DataElementHeader;
-import gov.nist.hit.hl7.igamt.coconstraints.model.DatatypeCell;
-import gov.nist.hit.hl7.igamt.coconstraints.model.NarrativeHeader;
-import gov.nist.hit.hl7.igamt.coconstraints.model.ValueCell;
-import gov.nist.hit.hl7.igamt.coconstraints.model.ValueSetCell;
-import gov.nist.hit.hl7.igamt.coconstraints.model.VariesCell;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
-import nu.xom.Attribute;
-import nu.xom.Element;
 
 
 @Service
@@ -64,7 +51,10 @@ public class SerializeCoconstraintTableToExcel {
 	@Autowired
 	ValuesetService valuesetService;
 
-	public ByteArrayOutputStream exportToExcel(CoConstraintTable coConstraintTableNotMerged) {
+	@Autowired
+	CoConstraintSerializationHelper coConstraintSerializationHelper;
+
+	public ByteArrayOutputStream exportToExcel(String conformanceProfileId, String contextId, String segmentRef, CoConstraintTable coConstraintTableNotMerged) throws ResourceNotFoundException, PathNotFoundException {
 		//		final String FILE_NAME = "/Users/ynb4/Desktop/MyFirstExcelTryout.xlsx";
 		final int HEADER_FONT_SIZE = 20;
 		//		if (coConstraintService.getCoConstraintForSegment(id) != null) {
@@ -74,6 +64,13 @@ public class SerializeCoconstraintTableToExcel {
 		//		CoConstraintTable coConstraintTable = conformanceProfile.getCoConstraintsBindings().get(0).getBindings().get(0).getTables().get(0).getValue();
 
 		CoConstraintTable coConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableNotMerged);
+		ResourceSkeleton segment = this.coConstraintSerializationHelper.getSegmentSkeleton(
+				this.coConstraintSerializationHelper.getSegmentRef(
+					this.coConstraintSerializationHelper.getConformanceProfileSkeleton(conformanceProfileId),
+					new StructureElementRef(contextId),
+					new StructureElementRef(segmentRef)
+				).getResource().getId()
+		);
 
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet("Coconstaints Export");
@@ -209,7 +206,8 @@ public class SerializeCoconstraintTableToExcel {
 			////					headerCellNumber++;
 			//				}else
 			{
-				String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name()  + " " + ((DataElementHeader) coConstraintTableHeader).getName();
+				SerializableDataElementHeader serializableDataElementHeader = this.coConstraintSerializationHelper.getSerializableDataElementHeader(((DataElementHeader) coConstraintTableHeader), segment);
+				String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name()  + " " + serializableDataElementHeader.getName();
 				Cell cell = headerRow2.createCell(headerCellNumber++);
 				cell.setCellValue(headerLabel);
 				cell.setCellStyle(ifHeaderStyle);
@@ -228,7 +226,8 @@ public class SerializeCoconstraintTableToExcel {
 			////					headerCellNumber++;
 			//				}else
 			{
-				String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name()  + " " + ((DataElementHeader) coConstraintTableHeader).getName();
+				SerializableDataElementHeader serializableDataElementHeader = this.coConstraintSerializationHelper.getSerializableDataElementHeader(((DataElementHeader) coConstraintTableHeader), segment);
+				String headerLabel = ((DataElementHeader) coConstraintTableHeader).getColumnType().name()  + " " + serializableDataElementHeader.getName();
 				Cell cell = headerRow2.createCell(headerCellNumber++);
 				cell.setCellValue(headerLabel);
 				cell.setCellStyle(thenHeaderStyle);
@@ -243,7 +242,8 @@ public class SerializeCoconstraintTableToExcel {
 		if(!coConstraintTable.getGroups().isEmpty()) {		
 			Cell cell = headerRow2.createCell(headerCellNumber++);
 			if(coConstraintTable.getHeaders().getGrouper()!= null) {
-				String headerLabel =  "Group Id : " + coConstraintTable.getHeaders().getGrouper().getName();
+				SerializableGrouper serializableGrouper = this.coConstraintSerializationHelper.getSerializableGrouper(coConstraintTable.getHeaders().getGrouper(), segment);
+				String headerLabel =  "Group Id : " + serializableGrouper.getName();
 				cell.setCellValue(headerLabel);
 				}
 			cell.setCellStyle(thenHeaderStyle);

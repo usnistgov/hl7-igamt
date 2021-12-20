@@ -1,6 +1,6 @@
 import { Action } from '@ngrx/store';
 import { IDamResource } from '../../models/data/repository';
-import { IEditorMetadata } from '../../models/data/workspace';
+import { IEditorMetadata, IVerificationEnty } from '../../models/data/workspace';
 
 export enum DamActionTypes {
   InitWidgetId = '[DAMF] Init Active Widget Id',
@@ -17,11 +17,14 @@ export enum DamActionTypes {
   EditorReset = '[DAMF Editor] Reset Data',
   GlobalSave = '[DAMF Editor] Toolbar Global Save Button',
   EditorSave = '[DAMF Editor] Editor Save',
+  EditorVerify = '[DAMF Editor] Editor Verify',
+  EditorVerificationResult = '[DAMF Editor] Editor Verification Result',
   EditorSaveSuccess = '[DAMF Editor] Editor Save Success',
   EditorSaveFailure = '[DAMF Editor] Editor Save Failure',
   EditorUpdate = '[DAMF Editor] Update editor without changes',
   UpdateActiveResource = '[DAMF Editor] Update Active Resource Display',
   SetValue = '[DAMF State] Set State Value',
+  SetUIStateValue = '[DAMF State] Set UI State Value',
   LoadForRouteSuccess = '[DAMF Route] Load Data For Route Success',
   LoadForRouteFailure = '[DAMF Route] Load Data For Route Failure',
   LoadResourcesInRepostory = '[DAMF Repository] Load Resources In Repository',
@@ -30,6 +33,8 @@ export enum DamActionTypes {
   ClearRepository = '[DAMF Repository] Clear Repository',
   CollapseSideBar = '[DAMF Layout] Collapse Side Bar',
   ExpandSideBar = '[DAMF Layout] Expand Side Bar',
+  CollapseBottomDrawer = '[DAMF Layout] Collapse Bottom Drawer',
+  ExpandBottomDrawer = '[DAMF Layout] Expand Bottom Drawer',
   ToggleFullScreen = '[DAMF Layout] Toggle Fullscreen',
 }
 
@@ -145,6 +150,24 @@ export class EditorSave implements Action {
   }
 }
 
+export class EditorVerify implements Action {
+  readonly type = DamActionTypes.EditorVerify;
+
+  constructor(readonly payload?: any) {
+  }
+}
+
+export class EditorVerificationResult implements Action {
+  readonly type = DamActionTypes.EditorVerificationResult;
+
+  constructor(readonly payload: {
+    supported: boolean;
+    url?: string;
+    entries?: IVerificationEnty[];
+  }) {
+  }
+}
+
 export class EditorUpdate implements Action {
   readonly type = DamActionTypes.EditorUpdate;
   constructor(readonly payload: {
@@ -175,6 +198,12 @@ export class UpdateActiveResource implements Action {
 
 export class SetValue implements Action {
   readonly type = DamActionTypes.SetValue;
+
+  constructor(readonly payload: any) { }
+}
+
+export class SetUIStateValue implements Action {
+  readonly type = DamActionTypes.SetUIStateValue;
 
   constructor(readonly payload: any) { }
 }
@@ -250,6 +279,20 @@ export class ExpandSideBar implements Action {
 
 }
 
+export class CollapseBottomDrawer implements Action {
+  readonly type = DamActionTypes.CollapseBottomDrawer;
+  constructor() {
+  }
+}
+
+export class ExpandBottomDrawer implements Action {
+  readonly type = DamActionTypes.ExpandBottomDrawer;
+
+  constructor() {
+  }
+
+}
+
 export class ToggleFullScreen implements Action {
   readonly type = DamActionTypes.ToggleFullScreen;
   constructor() {
@@ -275,6 +318,7 @@ export type DamActions =
   EditorUpdate |
   UpdateActiveResource |
   SetValue |
+  SetUIStateValue |
   LoadResourcesInRepostory |
   InsertResourcesInRepostory |
   ClearRepository |
@@ -283,5 +327,9 @@ export type DamActions =
   LoadForRouteFailure |
   CollapseSideBar |
   ExpandSideBar |
+  CollapseBottomDrawer |
+  ExpandBottomDrawer |
   DeleteResourcesFromRepostory |
-  ToggleFullScreen;
+  ToggleFullScreen |
+  EditorVerificationResult |
+  EditorVerify;

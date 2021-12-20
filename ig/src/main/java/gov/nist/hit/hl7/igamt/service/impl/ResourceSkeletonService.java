@@ -13,10 +13,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
-import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
-import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
-import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonInfo;
+import gov.nist.hit.hl7.igamt.ig.model.*;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +64,8 @@ public class ResourceSkeletonService {
                     component.getPosition(),
                     makeLocationInfo(parentLocationInfo, resource, component.getType(), component.getName(), component.getPosition()),
                    resource,
+                   component.getUsage(),
+                   null,
                    this
             )).collect(Collectors.toList());
             return new ResourceSkeletonInfo(children, resource);
@@ -88,6 +87,8 @@ public class ResourceSkeletonService {
                 field.getPosition(),
                 makeLocationInfo(parentLocationInfo, resource, field.getType(), field.getName(), field.getPosition()),
                 resource,
+                field.getUsage(),
+                new ResourceSkeletonBoneCardinality(field.getMin(), field.getMax()),
                 this
         )).collect(Collectors.toList());
         return new ResourceSkeletonInfo(children, resource);
@@ -103,7 +104,7 @@ public class ResourceSkeletonService {
         return new ResourceSkeletonInfo(getGroupChildren(resource, conformanceProfile.getChildren(), null), resource);
     }
 
-    public List<ResourceSkeletonBone> getGroupChildren(DisplayElement parent, Set<SegmentRefOrGroup> segmentRefOrGroups, LocationInfo parentLocationInfo) throws ResourceNotFoundException {
+    public List<ResourceSkeletonBone> getGroupChildren(DisplayElement parent, Set<SegmentRefOrGroup> segmentRefOrGroups, LocationInfo parentLocationInfo) {
         List<ResourceSkeletonBone> children = new ArrayList<>();
         for(SegmentRefOrGroup element: segmentRefOrGroups) {
             if(element instanceof Group) {
@@ -115,6 +116,8 @@ public class ResourceSkeletonService {
                             element.getPosition(),
                             groupLocationInfo,
                             parent,
+                            element.getUsage(),
+                            new ResourceSkeletonBoneCardinality(element.getMin(), element.getMax()),
                             this
                         )
                 );
@@ -125,6 +128,8 @@ public class ResourceSkeletonService {
                         element.getPosition(),
                         makeLocationInfo(parentLocationInfo, null, element.getType(), element.getName(), element.getPosition()),
                         parent,
+                        element.getUsage(),
+                        new ResourceSkeletonBoneCardinality(element.getMin(), element.getMax()),
                         this
                 ));
             }

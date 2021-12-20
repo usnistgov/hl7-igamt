@@ -12,8 +12,11 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletResponse;
 
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
+import gov.nist.hit.hl7.igamt.export.domain.CoConstraintExcelExportFormData;
 import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
+import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -233,7 +236,7 @@ public class ExportController {
   }
 
   @RequestMapping(value = "/api/export/coconstraintTable", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-  public @ResponseBody void exportCoconstraintTable(FormData formData, HttpServletResponse response) throws ExportException, JsonParseException, JsonMappingException, IOException {
+  public @ResponseBody void exportCoconstraintTable(CoConstraintExcelExportFormData formData, HttpServletResponse response) throws ExportException, JsonParseException, JsonMappingException, IOException, ResourceNotFoundException, PathNotFoundException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if(formData.getJson() != null) {
       ObjectMapper mapper = new ObjectMapper();
@@ -241,7 +244,12 @@ public class ExportController {
       CoConstraintTable coConstraintTable = mapper.readValue(formData.getJson(), CoConstraintTable.class);
       if (authentication != null) {
         String username = authentication.getPrincipal().toString();
-        ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(coConstraintTable);
+        ByteArrayOutputStream excelFile = serializeCoconstraintTableToExcel.exportToExcel(
+                formData.getConformanceProfileId(),
+                formData.getContextId(),
+                formData.getSegmentRef(),
+                coConstraintTable
+        );
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-disposition",
             "attachment;filename=" + "CoConstraintsExcelFile.xlsx");
@@ -261,18 +269,19 @@ public class ExportController {
   @RequestMapping(value="/api/import/coconstraintTable", method=RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @ResponseBody
   public ParserResults handleFileUpload(@RequestPart("file") MultipartFile file,
-      @RequestParam("segmentID") String segmentID,
+      @RequestParam("segmentRef") String segmentRef,
       @RequestParam("conformanceProfileID") String conformanceProfileID,
       @RequestParam("igID") String igID,
-      @RequestParam("pathID") String pathID) throws IOException{
+      @RequestParam("contextId") String contextId) throws IOException{
     String message;
-    System.out.println("file name : " + 	        	 segmentID);
-    System.out.println("file name : " + 	        	 conformanceProfileID);
-    System.out.println("file name : " + 	        	 igID);
+    System.out.println("SegmentRef : " + 	        	 segmentRef);
+    System.out.println("conformanceProfileID : " + 	        	 conformanceProfileID);
+    System.out.println("contextId : " + 	        	 contextId);
+    System.out.println("igId : " + 	        	 igID);
 
     InputStream stream = file.getInputStream();
     try {
-      ParserResults parserResults = excelImportService.readFromExcel(stream, segmentID, conformanceProfileID, igID, pathID );
+      ParserResults parserResults = excelImportService.readFromExcel(stream, igID, conformanceProfileID, contextId, segmentRef);
       //			return new ResponseMessage(Status.SUCCESS, "Table imported succesfully", conformanceProfileID, parserResults, new Date());
       Optional<IgamtObjectError> match =  parserResults.getVerificationResult().getErrors().stream().filter((error) ->
       { 

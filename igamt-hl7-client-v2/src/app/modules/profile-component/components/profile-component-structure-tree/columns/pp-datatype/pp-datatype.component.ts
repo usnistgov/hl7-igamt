@@ -1,13 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { map, take } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { ProfileComponentService } from 'src/app/modules/profile-component/services/profile-component.service';
 import { GroupOptions } from 'src/app/modules/shared/components/hl7-v2-tree/columns/reference/reference.component';
 import { ActiveStatus } from 'src/app/modules/shared/models/abstract-domain.interface';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { IItemProperty, IPropertyDatatype } from 'src/app/modules/shared/models/profile.component';
 import { PropertyType } from 'src/app/modules/shared/models/save-change';
-import { AResourceRepositoryService, StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
+import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { PpReferenceComponent } from '../pp-reference/pp-reference.component';
 
 @Component({
@@ -24,7 +24,11 @@ export class PpDatatypeComponent extends PpReferenceComponent implements OnInit 
   filter(opts: IDisplayElement[], selected: IDisplayElement): GroupOptions {
     opts = opts.filter((x) => this.filterByActiveInfo(x));
     const same_base = opts.filter((opt) => {
-      return opt.fixedName === selected.fixedName && opt.domainInfo.version === selected.domainInfo.version;
+      return opt.fixedName === selected.fixedName;
+    });
+
+    const different_base = opts.filter((opt) => {
+      return opt.fixedName !== selected.fixedName;
     });
 
     const itemize = (flavor) => {
@@ -36,8 +40,12 @@ export class PpDatatypeComponent extends PpReferenceComponent implements OnInit 
 
     return [
       {
-        label: 'Datatypes',
+        label: 'Same base',
         items: same_base.map(itemize).sort(this.sort),
+      },
+      {
+        label: 'Others',
+        items: different_base.map(itemize).sort(this.sort),
       },
     ];
   }

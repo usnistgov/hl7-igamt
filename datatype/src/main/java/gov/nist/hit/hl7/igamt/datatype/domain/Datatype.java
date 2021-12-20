@@ -40,6 +40,9 @@ public class Datatype extends Resource {
 
 
   public ResourceBinding getBinding() {
+    if (this.binding == null) {
+      this.setBinding(new ResourceBinding());
+    }
     return binding;
   }
 

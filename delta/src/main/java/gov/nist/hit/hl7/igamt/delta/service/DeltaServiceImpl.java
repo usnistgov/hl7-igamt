@@ -494,7 +494,7 @@ public class DeltaServiceImpl implements DeltaService {
         DisplayElement elm= this.displayInfoService.convertSegment(target);
         List<ConformanceStatementDelta> cfs = entityDeltaService.compareConformanceStatements(sourceDisplay.getConformanceStatements(), targetDisplay.getConformanceStatements());
         elm.setDelta(summarize(structure,cfs, null));
-        if(elm.getFixedName().equalsIgnoreCase("OBX") && !elm.getDelta().equals(DeltaAction.UNCHANGED)) {
+        if(target.getName().equalsIgnoreCase("OBX") && elm.getDelta().equals(DeltaAction.UNCHANGED)) {
           List<DynamicMappingItemDelta> dynamicMappingDelta = entityDeltaService.compareDynamicMapping(source.getDynamicMappingInfo(), target.getDynamicMappingInfo());
           for(DynamicMappingItemDelta dyn: dynamicMappingDelta) {
             if(dyn.getAction() != null && !dyn.getAction().equals(DeltaAction.UNCHANGED)) {

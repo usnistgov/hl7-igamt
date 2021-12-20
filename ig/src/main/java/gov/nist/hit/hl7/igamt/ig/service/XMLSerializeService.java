@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.zip.ZipOutputStream;
 
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import nu.xom.Document;
@@ -30,7 +31,7 @@ public interface XMLSerializeService {
 
   Element serializeValueSetXML(IgDataModel igModel) throws TableSerializationException ;
 
-  Element serializeCoConstraintXML(IgDataModel igModel) throws TableSerializationException ;
+  Element serializeCoConstraintXML(IgDataModel igModel) throws TableSerializationException, CoConstraintXMLSerializationException;
 
   Element serializeConstraintsXML(IgDataModel igModel);
 

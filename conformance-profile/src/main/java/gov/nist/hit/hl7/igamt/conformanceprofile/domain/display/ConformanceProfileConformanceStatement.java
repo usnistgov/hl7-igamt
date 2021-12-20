@@ -1,9 +1,11 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 
@@ -19,6 +21,7 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
   private Set<SegmentRefOrGroupStructureTreeModel> structure;
   private HashMap<String, ConformanceStatementsContainer> associatedSEGConformanceStatementMap;
   private HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap;
+  private List<ChangeReason> changeReason;
 
   public String getName() {
     return name;
@@ -94,6 +97,12 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
     this.availableConformanceStatements = availableConformanceStatements;
   }
 
+  public List<ChangeReason> getChangeReason() {
+    return changeReason;
+  }
 
+  public void setChangeReason(List<ChangeReason> changeReason) {
+    this.changeReason = changeReason;
+  }
 }
 

@@ -1,7 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { take, tap } from 'rxjs/operators';
-import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { CoConstraintColumnType } from 'src/app/modules/shared/models/co-constraint.interface';
 import { IHL7v2TreeNode } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { IResource } from '../../../shared/models/resource.interface';
@@ -34,9 +33,12 @@ export class DataHeaderDialogComponent implements OnInit {
         value: true,
       },
       {
-        criterion: RestrictionType.DATATYPES,
+        criterion: RestrictionType.VALUE_BINDING,
         allow: true,
-        value: ['CE', 'CWE', 'CNE', 'VARIES'],
+        value: {
+          allowValueSets: true,
+          isCoded: true,
+        },
       },
     ],
   };
@@ -83,15 +85,19 @@ export class DataHeaderDialogComponent implements OnInit {
     this.selectedNode = $event.node;
     this.selectedNodeName = this.elementNamingService.getTreeNodeName(this.selectedNode, true);
     this.editMode = false;
-    if (this.selectedNode.leaf) {
+    const bindingInfo = this.selectedNode.data.valueSetBindingsInfo.getValue();
+    if (bindingInfo) {
+      this.constraints = [
+        ...(bindingInfo.coded ? [{ label: 'Code', value: CoConstraintColumnType.CODE }] : []),
+        ...(bindingInfo.allowValueSets ? [{ label: 'Value Set', value: CoConstraintColumnType.VALUESET }] : []),
+        ...(this.selectedNode.leaf ? [{ label: 'Constant Value', value: CoConstraintColumnType.VALUE }] : []),
+      ];
+    } else if (this.selectedNode.leaf) {
       this.constraints = this.primitive;
       this.type = CoConstraintColumnType.VALUE;
-    } else if (this.selectedNode.data.ref) {
-      const ref = this.selectedNode.data.ref.getValue();
-      const regex = new RegExp('^C.*E$');
-      if (ref.type === Type.DATATYPE && regex.test(ref.name)) {
-        this.constraints = this.coded;
-      }
+    } else {
+      this.constraints = [];
+      this.type = null;
     }
   }
 
@@ -100,7 +106,7 @@ export class DataHeaderDialogComponent implements OnInit {
   }
 
   done() {
-    this.ccEntityService.createDataElementHeader(this.selectedNode, this.segment, this.elementNamingService.getTreeNodeName(this.selectedNode), this.repository, false, this.type).pipe(
+    this.ccEntityService.createDataElementHeader(this.selectedNode, this.elementNamingService.getTreeNodeName(this.selectedNode), this.type).pipe(
       take(1),
       tap((x) => {
         this.dialogRef.close(x);

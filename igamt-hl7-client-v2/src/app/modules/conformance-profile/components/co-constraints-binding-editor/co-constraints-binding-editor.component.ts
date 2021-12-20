@@ -3,11 +3,14 @@ import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import { combineLatest, Observable, ReplaySubject, Subject, Subscription, throwError } from 'rxjs';
+import { combineLatest, Observable, Subscription, throwError } from 'rxjs';
 import { catchError, concatMap, flatMap, mergeMap, take, tap } from 'rxjs/operators';
+import { IVerificationEnty } from 'src/app/modules/dam-framework';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
+import { EditorVerificationResult, EditorVerify } from 'src/app/modules/dam-framework/store/index';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
+import { BindingService } from 'src/app/modules/shared/services/binding.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { CoConstraintEntityService } from '../../../co-constraints/services/co-constraint-entity.service';
 import { MessageService } from '../../../dam-framework/services/message.service';
@@ -36,6 +39,7 @@ export class CoConstraintsBindingEditorComponent extends CoConstraintEditorServi
     store: Store<any>,
     repository: StoreResourceRepositoryService,
     private conformanceProfileService: ConformanceProfileService,
+    private bindingsService: BindingService,
     private messageService: MessageService,
     private treeService: Hl7V2TreeService,
     pathService: PathService,
@@ -111,6 +115,45 @@ export class CoConstraintsBindingEditorComponent extends CoConstraintEditorServi
             );
           }),
           catchError((error) => throwError(this.messageService.actionFromError(error))),
+        );
+      }),
+    );
+  }
+
+  onEditorVerify(action: EditorVerify): Observable<Action> {
+    return combineLatest(this.elementId$, this.documentRef$).pipe(
+      take(1),
+      concatMap(([id, documentRef]) => {
+        return this.bindingsService.getVerifyResourceBindings(Type.CONFORMANCEPROFILE, id).pipe(
+          flatMap((entries) => {
+            return [
+              new EditorVerificationResult({
+                supported: true,
+                entries: entries.map((entry) => ({
+                  code: entry.code,
+                  message: entry.description,
+                  location: entry.locationInfo.name,
+                  pathId: entry.locationInfo.pathId,
+                  property: entry.locationInfo.property,
+                  severity: entry.severity,
+                  targetId: entry.target,
+                  targetType: entry.targetType,
+                }) as IVerificationEnty).filter((entry) => {
+                  return [
+                    PropertyType.COCONSTRAINTBINDINGS,
+                    PropertyType.COCONSTRAINTBINDING_CONTEXT,
+                    PropertyType.COCONSTRAINTBINDING_SEGMENT,
+                    PropertyType.COCONSTRAINTBINDING_CONDITION,
+                    PropertyType.COCONSTRAINTBINDING_TABLE,
+                    PropertyType.COCONSTRAINTBINDING_HEADER,
+                    PropertyType.COCONSTRAINTBINDING_GROUP,
+                    PropertyType.COCONSTRAINTBINDING_ROW,
+                    PropertyType.COCONSTRAINTBINDING_CELL,
+                  ].includes(entry.property as PropertyType);
+                }),
+              }),
+            ];
+          }),
         );
       }),
     );

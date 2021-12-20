@@ -70,6 +70,8 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
+import gov.nist.hit.hl7.igamt.common.slicing.service.SlicingService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageProfileIdentifier;
@@ -143,6 +145,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Autowired
   ApplyChange applyChange;
+
+  @Autowired
+  SlicingService slicingService;
 
   @Override
   public ConformanceProfile create(ConformanceProfile conformanceProfile) {
@@ -283,6 +288,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       result.setConformanceStatements(cfs);
       result.setAvailableConformanceStatements(this.collectAvaliableConformanceStatements(documentId,
           conformanceProfile.getId(), conformanceProfile.getStructID()));
+      result.setChangeReason(conformanceProfile.getBinding().getConformanceStatementsChangeLog());
       return result;
     }
     return null;
@@ -411,14 +417,18 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         this.bindingService.lockConformanceStatements(elm.getBinding());
       }
     }
+    if(elm.getSlicings() != null) {
+      this.slicingService.updateSlicing(elm.getSlicings(), newKeys, Type.SEGMENT);
+    }
     if (elm.getCoConstraintsBindings() != null) {
       for (CoConstraintBinding binding : elm.getCoConstraintsBindings()) {
         if (binding.getBindings() != null) {
           for (CoConstraintBindingSegment segBinding : binding.getBindings()) {
-            RealKey segKey = new RealKey(segBinding.getFlavorId(), Type.SEGMENT);
-            if (segBinding.getFlavorId() != null && newKeys.containsKey(segKey)) {
-              segBinding.setFlavorId(newKeys.get(segKey));
-            }
+            // TODO Review Line Below
+//            RealKey segKey = new RealKey(segBinding.getFlavorId(), Type.SEGMENT);
+//            if (segBinding.getFlavorId() != null && newKeys.containsKey(segKey)) {
+//              segBinding.setFlavorId(newKeys.get(segKey));
+//            }
             if (segBinding.getTables() != null) {
               for (CoConstraintTableConditionalBinding ccBinding : segBinding.getTables()) {
                 if (ccBinding.getValue() != null) {
@@ -1037,12 +1047,16 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   public SegmentRefOrGroup findSegmentRefOrGroupById(Set<SegmentRefOrGroup> children, String idPath) {
     if (idPath.contains("-")) {
+      String[] pathTable = idPath.split("\\-");
+
       for (SegmentRefOrGroup srog : children) {
         if (srog instanceof Group) {
           Group g = (Group) srog;
-          if (srog.getId().equals(idPath.split("\\-")[0]))
-            return this.findSegmentRefOrGroupById(g.getChildren(),
-                idPath.replace(idPath.split("\\-")[0] + "-", ""));
+          if(pathTable != null &&  pathTable.length>0) {
+            if (srog.getId().equals(pathTable[0])) {       
+              return this.findSegmentRefOrGroupById(g.getChildren(),idPath.substring(pathTable[0].length()+1));
+            }
+          }
         }
       }
     } else {
@@ -1349,6 +1363,12 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
       used.addAll(CoConstraintsDependencies);
     }
+
+    if(cp.getSlicings() != null ) {
+      Set<RelationShip> slicingDependencies = this.slicingService.collectDependencies(
+          new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE), cp.getSlicings(), Type.SEGMENT);
+      used.addAll(slicingDependencies);  
+    }
     return used;
 
   }
@@ -1480,14 +1500,21 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       this.applyCoConstraintsBindingChanges(conformanceProfile, map.get(PropertyType.COCONSTRAINTBINDINGS) , documentId);
     }
     applyChange.applyBindingChanges(map, conformanceProfile.getBinding(), documentId, Level.CONFORMANCEPROFILE);
+    if (map.containsKey(PropertyType.SLICING)) {
+      if(conformanceProfile.getSlicings() == null) {
+        conformanceProfile.setSlicings(new HashSet<Slicing>());
+      }
+      applyChange.applySlicingChanges(map, conformanceProfile.getSlicings(), documentId, Type.CONFORMANCEPROFILE);
+
+    }   
     conformanceProfile.setBinding(this.makeLocationInfo(conformanceProfile));
     this.save(conformanceProfile);
   }
 
   private void applyCoConstraintsBindingChanges(
-          ConformanceProfile conformanceProfile,
-          List<ChangeItemDomain> items, String documentId
-  ) throws ApplyChangeException {
+      ConformanceProfile conformanceProfile,
+      List<ChangeItemDomain> items, String documentId
+      ) throws ApplyChangeException {
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     for(ChangeItemDomain item : items) {
@@ -1504,10 +1531,10 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
 
   private void applyMetaData(
-          ConformanceProfile cp,
-          Map<PropertyType, ChangeItemDomain> singlePropertyMap,
-          String documentId
-  ) throws ApplyChangeException{
+      ConformanceProfile cp,
+      Map<PropertyType, ChangeItemDomain> singlePropertyMap,
+      String documentId
+      ) throws ApplyChangeException{
 
     applyChange.applyResourceChanges(cp, singlePropertyMap , documentId);
     ObjectMapper mapper = new ObjectMapper();
@@ -1637,7 +1664,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       }
     }
     this.processAndSubstitute(cp, newKeys);
-    
+
   }
 
 

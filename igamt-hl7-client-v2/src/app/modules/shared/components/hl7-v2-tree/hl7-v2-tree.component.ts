@@ -17,6 +17,7 @@ import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
 import { ChangeType, IChange, IChangeLog, ILocationChangeLog, PropertyType } from '../../models/save-change';
 import { IField, ISegment } from '../../models/segment.interface';
+import {ISlicing} from '../../models/slicing';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { IStructCreateDialogResult } from '../../services/struct-create-dialog.abstract';
@@ -91,6 +92,8 @@ export interface IHL7v2TreeNodeData {
   custom?: boolean;
   changeLog?: ILocationChangeLog;
   rootPath: IPath;
+  slicing?: ISlicing;
+  resourcePathId?: string;
 }
 
 export interface IHL7v2TreeNode extends TreeNode {

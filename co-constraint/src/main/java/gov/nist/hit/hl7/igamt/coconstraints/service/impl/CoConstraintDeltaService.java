@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.coconstraints.service.impl;
 
 import com.google.common.base.Strings;
 import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.service.TriFunction;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
@@ -153,25 +154,22 @@ public class CoConstraintDeltaService {
     public CoConstraintGrouper deltaCoConstraintGrouper(CoConstraintGrouper source, CoConstraintGrouper target) {
         if(source != null && target == null) {
             source.setDelta(DeltaAction.DELETED);
-            source.setNameDelta(new DeltaField<>(source.getName(), null));
-            source.setTypeDelta(new DeltaField<>(source.getType(), null));
+            source.setPathIdDelta(new DeltaField<>(source.getPathId(), null));
             return source;
         }
 
         if(source == null && target != null) {
             target.setDelta(DeltaAction.ADDED);
-            target.setNameDelta(new DeltaField<>(null, target.getName()));
-            target.setTypeDelta(new DeltaField<>(null, target.getType()));
+            target.setPathIdDelta(new DeltaField<>(null, target.getPathId()));
             return target;
         }
 
         if(source != null && target != null) {
             target.setDelta(DeltaAction.ADDED);
-            target.setNameDelta(new DeltaField<>(source.getName(), target.getName()));
-            target.setTypeDelta(new DeltaField<>(source.getType(), target.getType()));
+            target.setPathIdDelta(new DeltaField<>(source.getPathId(), target.getPathId()));
+
             boolean hasChanges = this.hasChange(Arrays.asList(
-                    target.getNameDelta(),
-                    target.getTypeDelta()
+                    target.getPathIdDelta()
             ));
             target.setDelta(hasChanges ? DeltaAction.CHANGED : DeltaAction.UNCHANGED);
             return target;

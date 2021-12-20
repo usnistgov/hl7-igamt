@@ -1086,7 +1086,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 			}
 			return dt.getBinding();
 		}
-		return null;
+		else return dt.getBinding();
 	}
 
 	/**
@@ -1226,6 +1226,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 		displayElement.setOrigin(datatype.getOrigin());
 		displayElement.setParentId(datatype.getParentId());
 		displayElement.setParentType(datatype.getParentType());
+		displayElement.setResourceName(datatype.getName());
 		return displayElement;
 	}
 

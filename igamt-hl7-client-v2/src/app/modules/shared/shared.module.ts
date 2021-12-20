@@ -7,7 +7,7 @@ import { MatExpansionModule, MatFormFieldModule, MatRadioModule, MatSelectModule
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatSliderModule } from '@angular/material/slider';
-import {MatTooltipModule} from '@angular/material/tooltip';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterModule } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
@@ -20,6 +20,7 @@ import { CardModule } from 'primeng/card';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { DragDropModule as PrimeNgDragDrop } from 'primeng/dragdrop';
 import { DropdownModule } from 'primeng/dropdown';
+import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import {
   AccordionModule,
   AutoCompleteModule,
@@ -36,7 +37,6 @@ import {
   TooltipModule,
   TreeTableModule,
 } from 'primeng/primeng';
-import { ListboxModule, OverlayPanelModule } from 'primeng/primeng';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
@@ -50,7 +50,9 @@ import { BindingBadgeComponent } from './components/binding-badge/binding-badge.
 import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
 import { BuildCompositeComponent } from './components/build-composite/build-composite.component';
 import { ChangeLogInfoComponent } from './components/change-log-info/change-log-info.component';
+import { ChangeLogListInfoComponent } from './components/change-log-list-info/change-log-list-info.component';
 import { ChangeReasonDialogComponent } from './components/change-reason-dialog/change-reason-dialog.component';
+import { ChangeReasonListDialogComponent } from './components/change-reason-list-dialog/change-reason-list-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsListComponent } from './components/cs-list/cs-list.component';
@@ -86,6 +88,7 @@ import { ValuesetComponent } from './components/hl7-v2-tree/columns/valueset/val
 import { Hl7V2TreeComponent } from './components/hl7-v2-tree/hl7-v2-tree.component';
 import { ImportCsvValuesetComponent } from './components/import-csv-valueset/import-csv-valueset.component';
 import { ImportStructureComponent } from './components/import-structure/import-structure.component';
+import { IssueBadgeComponent } from './components/issue-badge/issue-badge.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
@@ -106,9 +109,12 @@ import { SelectProfileComponentContextComponent } from './components/select-prof
 import { SelectProfileComponentsComponent } from './components/select-profile-components/select-profile-components.component';
 import { SelectResourceIdsComponent } from './components/select-resource-ids/select-resource-ids.component';
 import { SelectSegmentsComponent } from './components/select-segments/select-segments.component';
+import { SelectSlicingContextComponent } from './components/select-sling-context/select-slicing-context.component';
 import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
 import { SharingDialogComponent } from './components/sharing-dialog/sharing-dialog.component';
+import { SlicingRowComponent } from './components/slicing-editor/slicing-row.component';
+import { SlicingViewerComponent } from './components/slicing-viewer/slicing-viewer.component';
 import { StructureTreeComponent } from './components/structure-tree/structure-tree.component';
 import { TextEditorDialogComponent } from './components/text-editor-dialog/text-editor-dialog.component';
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
@@ -117,8 +123,9 @@ import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.com
 import { UserProfileFormComponent } from './components/user-profile-form/user-profile-form.component';
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
 import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
+import { VerificationEntryTableComponent } from './components/verification-entry-table/verification-entry-table.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
-import {GeneratedNamingDuplicationDirective} from './directives/generated-naming-duplication.directive';
+import { GeneratedNamingDuplicationDirective } from './directives/generated-naming-duplication.directive';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
@@ -212,67 +219,74 @@ import { MinNumberDirective } from './validators/min-number.directive';
     FileExcelInputComponent,
     GeneratedNamingDuplicationDirective,
     ImportStructureComponent,
+    VerificationEntryTableComponent,
+    IssueBadgeComponent,
+    ChangeLogListInfoComponent,
+    ChangeReasonListDialogComponent,
+    SelectSlicingContextComponent,
+    SlicingRowComponent,
+    SlicingViewerComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
   ],
-    imports: [
-        CommonModule,
-        RouterModule,
-        FormsModule,
-        TabViewModule,
-        ReactiveFormsModule,
-        NgbModule,
-        TooltipModule,
-        TreeModule,
-        CardModule,
-        CheckboxModule,
-        ReactiveFormsModule,
-        MatRadioModule,
-        MatDialogModule,
-        MatSliderModule,
-        MatInputModule,
-        FileUploadModule,
-        pTreeModule,
-        DropdownModule,
-        ToastyModule.forRoot(),
-        TreeModule,
-        TreeTableModule,
-        TableModule,
-        SelectButtonModule,
-        ColorPickerModule,
-        ContextMenuModule.forRoot({
-            useBootstrap4: true,
-        }),
-        DamMessagesModule,
-        DamLoaderModule,
-        DamComponentsModule,
-        RadioButtonModule,
-        AccordionModule,
-        ListboxModule,
-        InputSwitchModule,
-        TableModule,
-        SelectButtonModule,
-        ExtendedModule,
-        FroalaEditorModule.forRoot(),
-        FroalaViewModule.forRoot(),
-        ChipsModule,
-        MultiSelectModule,
-        OrganizationChartModule,
-        PanelModule,
-        AutoCompleteModule,
-        PrimeNgDragDrop,
-        DragDropModule,
-        MatSelectModule,
-        MatFormFieldModule,
-        NgxMatSelectSearchModule,
-        TabViewModule,
-        OverlayPanelModule,
-        AvatarModule,
-        PickListModule,
-        MatExpansionModule,
-        MatTooltipModule,
-    ],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    TabViewModule,
+    ReactiveFormsModule,
+    NgbModule,
+    TooltipModule,
+    TreeModule,
+    CardModule,
+    CheckboxModule,
+    ReactiveFormsModule,
+    MatRadioModule,
+    MatDialogModule,
+    MatSliderModule,
+    MatInputModule,
+    FileUploadModule,
+    pTreeModule,
+    DropdownModule,
+    ToastyModule.forRoot(),
+    TreeModule,
+    TreeTableModule,
+    TableModule,
+    SelectButtonModule,
+    ColorPickerModule,
+    ContextMenuModule.forRoot({
+      useBootstrap4: true,
+    }),
+    DamMessagesModule,
+    DamLoaderModule,
+    DamComponentsModule,
+    RadioButtonModule,
+    AccordionModule,
+    ListboxModule,
+    InputSwitchModule,
+    TableModule,
+    SelectButtonModule,
+    ExtendedModule,
+    FroalaEditorModule.forRoot(),
+    FroalaViewModule.forRoot(),
+    ChipsModule,
+    MultiSelectModule,
+    OrganizationChartModule,
+    PanelModule,
+    AutoCompleteModule,
+    PrimeNgDragDrop,
+    DragDropModule,
+    MatSelectModule,
+    MatFormFieldModule,
+    NgxMatSelectSearchModule,
+    TabViewModule,
+    OverlayPanelModule,
+    AvatarModule,
+    PickListModule,
+    MatExpansionModule,
+    MatTooltipModule,
+  ],
   exports: [
     MatExpansionModule,
     CommonModule,
@@ -385,6 +399,12 @@ import { MinNumberDirective } from './validators/min-number.directive';
     CsSubcontextComponent,
     GeneratedNamingDuplicationDirective,
     ImportStructureComponent,
+    VerificationEntryTableComponent,
+    IssueBadgeComponent,
+    ChangeLogListInfoComponent,
+    ChangeReasonListDialogComponent,
+    SelectSlicingContextComponent,
+    SlicingRowComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -412,6 +432,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     AddCompositeComponent,
     AddPcToList,
     ImportStructureComponent,
+    ChangeReasonListDialogComponent,
+    SelectSlicingContextComponent,
   ],
 })
 export class SharedModule {

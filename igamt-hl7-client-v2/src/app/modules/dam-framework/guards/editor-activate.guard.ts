@@ -10,6 +10,16 @@ import { DamActionTypes, OpenEditor, OpenEditorFailure } from '../store/data/dam
 import { TurnOffLoader, TurnOnLoader } from '../store/loader/loader.actions';
 import * as fromRouterSelector from '../store/router/router.selectors';
 
+export interface IRouteData {
+  editorMetadata: IEditorMetadata;
+  onLeave: {
+    saveEditor: boolean,
+    saveTableOfContent: boolean,
+  };
+  action: CoreType<Action>;
+  idKey: string;
+}
+
 @Injectable()
 export class EditorActivateGuard implements CanActivate {
   constructor(

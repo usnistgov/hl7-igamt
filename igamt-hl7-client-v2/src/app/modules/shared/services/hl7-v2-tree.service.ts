@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, EMPTY, from, Observable, of, ReplaySubject, Subscription } from 'rxjs';
+import { BehaviorSubject, combineLatest, EMPTY, from, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
 import { filter, flatMap, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
 import { IHL7v2TreeNode, IHL7v2TreeNodeData, IResourceRef } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
@@ -161,6 +161,8 @@ export class Hl7V2TreeService {
     const changeLog = child.changeLog || (elementBindings && elementBindings.values.changeLog) ?
       this.mergeElmAndBindingChangeLog(child.changeLog || {}, context, elementBindings && elementBindings.values.changeLog ? elementBindings.values.changeLog : []) :
       {};
+    const pathId = (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id;
+    const resourcePathId = (parent && parent.data.resourcePathId) ? parent.data.resourcePathId + '-' + child.id : child.id;
 
     return {
       id: child.id,
@@ -180,8 +182,10 @@ export class Hl7V2TreeService {
       changeable,
       viewOnly,
       level,
-      pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
+      pathId,
+      slicing: resource.slicings ? resource.slicings.find((x) => x.path === resourcePathId) : null,
       bindings: elementBindings,
+      resourcePathId,
     };
   }
 
@@ -295,6 +299,7 @@ export class Hl7V2TreeService {
       constantValue: {
         value: child.constantValue,
       },
+      resourcePathId: child.id,
     };
   }
 
@@ -321,6 +326,7 @@ export class Hl7V2TreeService {
       constantValue: {
         value: child.constantValue,
       },
+      resourcePathId: child.id,
     };
   }
 
@@ -621,7 +627,9 @@ export class Hl7V2TreeService {
         const elm = nodes.filter((e: IHL7v2TreeNode) => e.data.id === path.elementId);
         if (!elm || elm.length !== 1) {
           // If no node found for current node in path then the path is unresolvable
-          return EMPTY;
+          return throwError({
+            message: 'path not found ' + this.pathService.pathToString(fullPath),
+          });
         } else {
           const node = elm[0];
           // if current node in path has children

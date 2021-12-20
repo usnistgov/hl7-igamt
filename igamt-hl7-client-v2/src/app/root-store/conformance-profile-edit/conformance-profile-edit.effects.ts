@@ -18,6 +18,7 @@ import { SetValue } from '../../modules/dam-framework/store/data/dam.actions';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { BindingService } from '../../modules/shared/services/binding.service';
 import { DeltaService } from '../../modules/shared/services/delta.service';
+import {SlicingService} from '../../modules/shared/services/slicing.service';
 import {
   ConformanceProfileEditActions,
   ConformanceProfileEditActionTypes,
@@ -25,7 +26,7 @@ import {
   LoadConformanceProfileFailure,
   LoadConformanceProfileSuccess,
   OpenConformanceProfilePostDefEditor,
-  OpenConformanceProfilePreDefEditor,
+  OpenConformanceProfilePreDefEditor, OpenConformanceProfileSlicingEditor,
 } from './conformance-profile-edit.actions';
 import { OpenConformanceProfileBindingsEditor, OpenConformanceProfileCoConstraintBindingsEditor, OpenConformanceProfileDeltaEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from './conformance-profile-edit.actions';
 import { IState } from './conformance-profile-edit.reducer';
@@ -157,6 +158,17 @@ export class ConformanceProfileEditEffects {
   );
 
   @Effect()
+  openSlicingEditor$ = this.editorHelper.openSlicingEditor<IConformanceProfile, OpenConformanceProfileSlicingEditor>(
+    ConformanceProfileEditActionTypes.OpenConformanceProfileSlicingEditor,
+    Type.CONFORMANCEPROFILE,
+    fromIgamtDisplaySelectors.selectMessagesById,
+    this.store.select(fromIgamtSelectedSelectors.selectedConformanceProfile),
+    (id, type) => {
+      return this.slicingService.getResoureSlicing(Type.CONFORMANCEPROFILE, id);
+    },
+    this.ConfPNotFound,
+  );
+  @Effect()
   openDeltaEditor$ = this.editorHelper.openDeltaEditor<OpenConformanceProfileDeltaEditor>(
     ConformanceProfileEditActionTypes.OpenConformanceProfileDeltaEditor,
     Type.CONFORMANCEPROFILE,
@@ -172,6 +184,7 @@ export class ConformanceProfileEditEffects {
     private deltaService: DeltaService,
     private bindingService: BindingService,
     private conformanceProfileService: ConformanceProfileService,
-    private editorHelper: OpenEditorService) { }
+    private editorHelper: OpenEditorService,
+    private slicingService: SlicingService) { }
 
 }

@@ -124,4 +124,8 @@ export class TableOfContentComponent implements OnInit {
         }
       }
   }
+
+  print(nodes: TreeNode[]) {
+    console.log(nodes);
+  }
 }

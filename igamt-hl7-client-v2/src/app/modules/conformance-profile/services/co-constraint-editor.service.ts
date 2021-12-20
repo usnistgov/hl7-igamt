@@ -136,24 +136,20 @@ export abstract class CoConstraintEditorService extends AbstractEditorComponent 
           const contextId = this.pathService.pathToString(result.context.path);
           const segmentId = this.pathService.pathToString(result.segment.path);
 
-          const contextNode = {
+          const contextNode: ICoConstraintBindingContext = {
             context: {
               pathId: contextId,
               path: result.context.path,
-              name: result.context.name,
-              type: result.context.node.data.type,
             },
             bindings: [],
           };
 
-          const segmentNode = {
+          const segmentNode: ICoConstraintBindingSegment = {
             segment: {
               pathId: segmentId,
               path: result.segment.path,
-              name: result.segment.name,
             },
             name: '',
-            flavorId: result.segment.flavorId,
             tables: [],
           };
 
@@ -173,7 +169,6 @@ export abstract class CoConstraintEditorService extends AbstractEditorComponent 
               this.openPanel(contextNode.context.pathId);
             }
           } else {
-
             contexts.push({
               ...contextNode,
               bindings: [

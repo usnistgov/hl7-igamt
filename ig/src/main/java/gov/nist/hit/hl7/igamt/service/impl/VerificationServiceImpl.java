@@ -1823,7 +1823,7 @@ public class VerificationServiceImpl implements VerificationService {
 	}
 	
 	private boolean containWhiteSpace(final String string) {
-		return !string.matches("\\S+");
+		return string != null && !string.matches("\\S+");
 	}
 
 	private boolean isInt(String s) {

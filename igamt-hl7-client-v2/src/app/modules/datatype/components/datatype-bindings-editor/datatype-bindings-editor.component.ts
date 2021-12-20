@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -11,6 +11,7 @@ import { IFlatResourceBindings } from 'src/app/modules/shared/models/binding.int
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import { IChange } from 'src/app/modules/shared/models/save-change';
+import { IVerificationIssue } from 'src/app/modules/shared/models/verification.interface';
 import { BindingService } from 'src/app/modules/shared/services/binding.service';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
@@ -56,5 +57,8 @@ export class DatatypeBindingsEditorComponent extends BindingsEditorComponent {
   }
   getBindingsById(id: string): Observable<IFlatResourceBindings> {
     return this.bindingsService.getResourceBindings(Type.DATATYPE, id);
+  }
+  verify(id: string, documentInfo: IDocumentRef): Observable<IVerificationIssue[]> {
+    return this.bindingsService.getVerifyResourceBindings(Type.DATATYPE, id);
   }
 }

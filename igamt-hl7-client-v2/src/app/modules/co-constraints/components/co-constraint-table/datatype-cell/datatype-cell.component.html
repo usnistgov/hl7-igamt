@@ -1,0 +1,46 @@
+<table class="table table-sm" style="margin-bottom: 0px;">
+  <tr>
+    <td style="text-align: center; vertical-align: middle; width: 60px;" >
+      <strong>Value</strong>
+    </td>
+    <td>
+      <app-ngx-dropdown
+      *ngIf="!viewOnly"
+      [(ngModel)]="cellValue.value"
+      placeholder="Datatype"
+      [name]="fieldId + '-dtValue'"
+      (ngModelChange)="datatypeValueChange($event, cellValue)"
+      [filter]="true"
+      [required]="true"
+      [filterFn]="filterDatatypeValue"
+      [values]="datatypeOptions">
+      </app-ngx-dropdown>
+      <span *ngIf="viewOnly"> {{ cellValue.value }} </span>
+    </td>
+  </tr>
+  <tr *ngIf="cellValue.value">
+    <td style="text-align: center; vertical-align: middle; width: 60px;">
+      <strong>Flavor</strong>
+    </td>
+    <td>
+      <div #fl ></div>
+      <app-resource-dropdown
+        *ngIf="!viewOnly"
+        [placeholder]="'Flavor'"
+        [name]="fieldId + '-dtFlavor'"
+        [filter]="true"
+        [filterBy]="cellValue.value"
+        [required]="true"
+        [appendTo]="fl"
+        [(id)]="cellValue.datatypeId"
+        [resources]="datatypes"
+      ></app-resource-dropdown>
+      <app-display-section
+        *ngIf="viewOnly && getDatatype(cellValue.datatypeId) as display"
+        [element]="display"
+        [hideDescription]="true"
+      >
+      </app-display-section>
+    </td>
+  </tr>
+</table>

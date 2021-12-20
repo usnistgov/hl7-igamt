@@ -5,6 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
+import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraintTable;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
+import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,11 +75,15 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
 
     @Autowired
     private ReasonForChangeSerializationService reasonForChangeSerializationService;
+
+    @Autowired
+    private CoConstraintSerializationHelper coConstraintSerializationHelper;
     
     @Override
     public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level, int position,
                                                ConformanceProfileExportConfiguration conformanceProfileExportConfiguration, Boolean deltaMode) throws ResourceSerializationException {
         ConformanceProfile conformanceProfile = conformanceProfileDataModel.getModel();
+        ResourceSkeleton conformanceProfileSkeleton = this.coConstraintSerializationHelper.getConformanceProfileSkeleton(conformanceProfile.getId());
         if (conformanceProfile != null) {
             try {
                 Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, position, conformanceProfileExportConfiguration);
@@ -257,7 +266,8 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                         if (coConstraintBinding != null) {
                             if (coConstraintBinding.getContext() != null) {
                                 Element coConstraintContext = new Element("coConstraintContext");
-                                coConstraintContext.appendChild(coConstraintBinding.getContext().getName());
+                                ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
+                                coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
                                 coConstraintBindingElement.appendChild(coConstraintContext);
                             }
                             if (coConstraintBinding.getBindings() != null) {
@@ -271,7 +281,9 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                                         Element coConstraintBindingSegmentElement = new Element("coConstraintBindingSegmentElement");
                                         coConstraintBindingElement.appendChild(coConstraintBindingSegmentElement);
                                         Element coConstraintSegmentName = new Element("coConstraintSegmentName");
-                                        coConstraintSegmentName.appendChild(coConstraintBindingSegment.getSegment().getName());
+                                        ResourceSkeletonBone segmentRef = this.coConstraintSerializationHelper.getSegmentRef(conformanceProfileSkeleton, coConstraintBinding.getContext(), coConstraintBindingSegment.getSegment());
+                                        ResourceSkeleton segment = this.coConstraintSerializationHelper.getSegmentSkeleton(segmentRef.getResource().getId());
+                                        coConstraintSegmentName.appendChild(segmentRef.getLocationInfo().getHl7Path());
                                         coConstraintBindingSegmentElement.appendChild(coConstraintSegmentName);
                                         if (conformanceProfileExportConfiguration.getDeltaConfig().getMode().equals(DeltaExportConfigMode.HIDE) ||
                                                 conformanceProfileExportConfiguration.getDeltaConfig().getMode().equals(DeltaExportConfigMode.HIDE_WITH_CHANGED_ONLY) ||
@@ -335,16 +347,17 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                                                 }
                                             }
 
+                                            SerializableCoConstraintTable serializableCoConstraintTable = this.coConstraintSerializationHelper.getSerializableCoConstraintTable(mergedCoConstraintTable, segment);
+
                                             if (conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("COMPACT")) {
                                                 Element coConstraintsTable = new Element("coConstraintsTable");
-                                                coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintCompactDelta(mergedCoConstraintTable, coConstraintDelta, conformanceProfileExportConfiguration));
-
+                                                coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintCompactDelta(serializableCoConstraintTable, coConstraintDelta, conformanceProfileExportConfiguration));
                                                 coConstraintTableConditionalBindingElement.appendChild(coConstraintsTable);
                                             }
                                             if (conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("VERBOSE")) {
 //
                                                 Element coConstraintsTable = new Element("coConstraintsTable");
-                                                coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintVerbose(mergedCoConstraintTable));
+                                                coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintVerbose(serializableCoConstraintTable));
                                                 coConstraintTableConditionalBindingElement.appendChild(coConstraintsTable);
                                             }
 //
@@ -370,7 +383,12 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                             if (coConstraintBinding != null) {
                                 if (coConstraintBinding.getContext() != null) {
                                     Element coConstraintContext = new Element("coConstraintContext");
-                                    coConstraintContext.appendChild(coConstraintBinding.getContext().getName());
+                                    if(coConstraintBinding.getContext() == null || Strings.isNullOrEmpty(coConstraintBinding.getContext().getPathId())) {
+                                        coConstraintContext.appendChild(conformanceProfileSkeleton.get().getResource().getVariableName());
+                                    } else {
+                                        ResourceSkeletonBone context = this.coConstraintSerializationHelper.getStructureElementRef(conformanceProfileSkeleton, coConstraintBinding.getContext());
+                                        coConstraintContext.appendChild(context.getLocationInfo().getHl7Path());
+                                    }
                                     coConstraintBindingElement.appendChild(coConstraintContext);
                                 }
                                 if (coConstraintBinding.getBindings() != null) {
@@ -380,7 +398,9 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                                             coConstraintBindingElement.appendChild(coConstraintBindingSegmentElement);
 //		    								coConstraintBindingSegmentElement.appendChild(coConstraintContext);
                                             Element coConstraintSegmentName = new Element("coConstraintSegmentName");
-                                            coConstraintSegmentName.appendChild(coConstraintBindingSegment.getSegment().getName());
+                                            ResourceSkeletonBone segmentRef = this.coConstraintSerializationHelper.getSegmentRef(conformanceProfileSkeleton, coConstraintBinding.getContext(), coConstraintBindingSegment.getSegment());
+                                            ResourceSkeleton segment = this.coConstraintSerializationHelper.getSegmentSkeleton(segmentRef.getResource().getId());
+                                            coConstraintSegmentName.appendChild(segmentRef.getLocationInfo().getHl7Path());
                                             coConstraintBindingSegmentElement.appendChild(coConstraintSegmentName);
                                             for (CoConstraintTableConditionalBinding coConstraintTableConditionalBinding : coConstraintBindingSegment.getTables()) {
                                                 CoConstraintTable mergedCoConstraintTable = coConstraintService.resolveRefAndMerge(coConstraintTableConditionalBinding.getValue());
@@ -391,9 +411,11 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                                                     coConstraintCondition.appendChild(coConstraintTableConditionalBinding.getCondition().getDescription());
                                                     coConstraintTableConditionalBindingElement.appendChild(coConstraintCondition);
                                                 }
+                                                SerializableCoConstraintTable serializableCoConstraintTable = this.coConstraintSerializationHelper.getSerializableCoConstraintTable(mergedCoConstraintTable, segment);
+
                                                 if (conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("COMPACT")) {
                                                     Element coConstraintsTable = new Element("coConstraintsTable");
-                                                    coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintCompact(mergedCoConstraintTable));
+                                                    coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintCompact(serializableCoConstraintTable));
 
                                                     coConstraintTableConditionalBindingElement.appendChild(coConstraintsTable);
                                                 }
@@ -404,7 +426,7 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
 //				    		    						coConstraintsElement.appendChild(coConstraintCondition);
 //		    		    							}
                                                     Element coConstraintsTable = new Element("coConstraintsTable");
-                                                    coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintVerbose(mergedCoConstraintTable));
+                                                    coConstraintsTable.appendChild(coConstraintSerializationService.SerializeCoConstraintVerbose(serializableCoConstraintTable));
                                                     coConstraintTableConditionalBindingElement.appendChild(coConstraintsTable);
                                                 }
 //		    		    						if(conformanceProfileExportConfiguration.getCoConstraintExportMode().name().equals("NOEXPORT")) {

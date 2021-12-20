@@ -97,6 +97,10 @@ export class SegmentService {
               dependants: {
                 datatypes: d,
               },
+              changeReasons: {
+                reasons: data.changeReason,
+                updated: null,
+              },
             };
           }),
         );

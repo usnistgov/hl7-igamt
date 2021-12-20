@@ -102,6 +102,7 @@ public class SegmentController extends BaseController {
 			for (ConformanceStatement cs : segment.getBinding().getConformanceStatements()) {
 				cfs.add(cs);
 			}
+			conformanceStatementDisplay.setChangeReason(segment.getBinding().getConformanceStatementsChangeLog());
 		}
 		HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
 		this.segmentService.collectAssoicatedConformanceStatements(segment, associatedConformanceStatementMap);

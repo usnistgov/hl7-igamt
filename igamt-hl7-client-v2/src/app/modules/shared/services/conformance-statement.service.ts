@@ -173,15 +173,7 @@ export class ConformanceStatementService {
   }
 
   getCsPattern(assertion: IAssertion, predicate: boolean): Pattern {
-    const pattern = new Pattern(this.getCsViewAssertion(assertion, { counter: 0 }));
-    if (predicate) {
-      pattern.leafs.filter((leaf) => {
-        return leaf.data.branch !== LeafStatementType.CONTEXT;
-      }).forEach((leaf) => {
-        leaf.data.branch = LeafStatementType.PROPOSITION;
-      });
-    }
-    return pattern;
+    return new Pattern(this.getCsViewAssertion(assertion, { counter: 0 }, predicate));
   }
 
   createSimpleAssertion(): ISimpleAssertion {
@@ -352,50 +344,50 @@ export class ConformanceStatementService {
     throw new Error('Unrecognized assertion');
   }
 
-  getCsViewAssertion(assertion: IAssertion, idsRef: { counter: number }, parent?: Operator, position?: number): Assertion {
+  getCsViewAssertion(assertion: IAssertion, idsRef: { counter: number }, predicate: boolean, parent?: Operator, position?: number): Assertion {
     switch (assertion.mode) {
       case AssertionMode.SIMPLE:
-        return this.getCsSimplePattern(assertion as ISimpleAssertion, idsRef.counter++, parent, position);
+        return this.getCsSimplePattern(assertion as ISimpleAssertion, idsRef.counter++, predicate, parent, position);
       case AssertionMode.IFTHEN:
         const ifThenAssertion = assertion as IIfThenAssertion;
-        const ifThen = this.getCsConditionalPattern(ifThenAssertion, parent, position);
-        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.ifAssertion, idsRef, ifThen, Position.LEFT), Position.LEFT);
-        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.thenAssertion, idsRef, ifThen, Position.RIGHT), Position.RIGHT);
+        const ifThen = this.getCsConditionalPattern(ifThenAssertion, predicate, parent, position);
+        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.ifAssertion, idsRef, predicate, ifThen, Position.LEFT), Position.LEFT);
+        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.thenAssertion, idsRef, predicate, ifThen, Position.RIGHT), Position.RIGHT);
         return ifThen;
       case AssertionMode.NOT:
         const notAssertion = assertion as INotAssertion;
-        const not = this.getCsNotPattern(notAssertion, parent, position);
-        not.putOne(this.getCsViewAssertion(notAssertion.child, idsRef, not, Position.LEFT), Position.LEFT);
+        const not = this.getCsNotPattern(notAssertion, predicate, parent, position);
+        not.putOne(this.getCsViewAssertion(notAssertion.child, idsRef, predicate, not, Position.LEFT), Position.LEFT);
         return not;
       case AssertionMode.ANDOR:
         const opAssertion = assertion as IOperatorAssertion;
         if (opAssertion.assertions) {
           if (opAssertion.assertions.length > 2) {
-            const nOp = this.getCsNaryOpPattern(opAssertion, parent, position);
+            const nOp = this.getCsNaryOpPattern(opAssertion, predicate, parent, position);
             opAssertion.assertions.forEach((a, i) => {
-              nOp.putOne(this.getCsViewAssertion(a, idsRef, nOp, i), i);
+              nOp.putOne(this.getCsViewAssertion(a, idsRef, predicate, nOp, i), i);
             });
             return nOp;
           } else {
-            const biOp = this.getCsBinaryOpPattern(opAssertion, parent, position);
+            const biOp = this.getCsBinaryOpPattern(opAssertion, predicate, parent, position);
             opAssertion.assertions.forEach((a, i) => {
-              biOp.putOne(this.getCsViewAssertion(a, idsRef, biOp, i), i);
+              biOp.putOne(this.getCsViewAssertion(a, idsRef, predicate, biOp, i), i);
             });
             return biOp;
           }
         }
-        return this.getCsBinaryOpPattern(opAssertion, parent, position);
+        return this.getCsBinaryOpPattern(opAssertion, predicate, parent, position);
       case AssertionMode.SUBCONTEXT:
         const subContext = assertion as ISubContextAssertion;
-        const subC = this.getCsSubContextPattern(subContext, parent, position);
-        subC.setOperand(this.getCsViewAssertion(subContext.child, idsRef, not, Position.LEFT));
+        const subC = this.getCsSubContextPattern(subContext, predicate, parent, position);
+        subC.setOperand(this.getCsViewAssertion(subContext.child, idsRef, predicate, not, Position.LEFT));
         subC.context = this.getCsContextPattern(subContext.context, idsRef.counter++, subC);
         return subC;
     }
   }
 
-  getCsSimplePattern(assertion: ISimpleAssertion, id: number, parent?: Operator, position?: number): Statement {
-    const statement = new Statement(LeafStatementType.DECLARATION, id, parent, position || 1);
+  getCsSimplePattern(assertion: ISimpleAssertion, id: number, predicate: boolean, parent?: Operator, position?: number): Statement {
+    const statement = new Statement(this.statementType(predicate), id, parent, position || 1);
     statement.payload = assertion;
     return statement;
   }
@@ -406,27 +398,31 @@ export class ConformanceStatementService {
     return statement;
   }
 
-  getCsConditionalPattern(assertion: IIfThenAssertion, parent?: Operator, position?: number): IfThenOperator {
-    return new IfThenOperator(LeafStatementType.DECLARATION, parent, position);
+  getCsConditionalPattern(assertion: IIfThenAssertion, predicate: boolean, parent?: Operator, position?: number): IfThenOperator {
+    return new IfThenOperator(this.statementType(predicate), parent, position);
   }
 
-  getCsNotPattern(assertion: INotAssertion, parent?: Operator, position?: number): UnaryOperator {
-    return new UnaryOperator(LeafStatementType.DECLARATION, OperatorType.NOT, parent, position);
+  getCsNotPattern(assertion: INotAssertion, predicate: boolean, parent?: Operator, position?: number): UnaryOperator {
+    return new UnaryOperator(this.statementType(predicate), OperatorType.NOT, parent, position);
   }
 
-  getCsSubContextPattern(assertion: ISubContextAssertion, parent?: Operator, position?: number): SubContextOperator {
-    return new SubContextOperator(LeafStatementType.DECLARATION, parent, position);
+  getCsSubContextPattern(assertion: ISubContextAssertion, predicate: boolean, parent?: Operator, position?: number): SubContextOperator {
+    return new SubContextOperator(this.statementType(predicate), parent, position);
   }
 
-  getCsBinaryOpPattern(assertion: IOperatorAssertion, parent?: Operator, position?: number): BinaryOperator {
-    return new BinaryOperator(LeafStatementType.DECLARATION, assertion.operator.toString() as OperatorType, parent, position);
+  getCsBinaryOpPattern(assertion: IOperatorAssertion, predicate: boolean, parent?: Operator, position?: number): BinaryOperator {
+    return new BinaryOperator(this.statementType(predicate), assertion.operator.toString() as OperatorType, parent, position);
   }
 
-  getCsNaryOpPattern(assertion: IOperatorAssertion, parent?: Operator, position?: number): NaryOperator {
+  getCsNaryOpPattern(assertion: IOperatorAssertion, predicate: boolean, parent?: Operator, position?: number): NaryOperator {
     const op = assertion.operator === 'AND' ? 'ALL' : assertion.operator === 'OR' ? 'EXISTS' : undefined;
     if (!op) {
       throw Error(assertion.operator + ' is not Nary Op');
     }
-    return new NaryOperator(LeafStatementType.DECLARATION, op as OperatorType, parent, position);
+    return new NaryOperator(this.statementType(predicate), op as OperatorType, parent, position);
+  }
+
+  statementType(predicate: boolean): LeafStatementType {
+    return predicate ? LeafStatementType.PROPOSITION : LeafStatementType.DECLARATION;
   }
 }

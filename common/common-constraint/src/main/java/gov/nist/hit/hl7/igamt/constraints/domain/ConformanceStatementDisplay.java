@@ -1,15 +1,18 @@
 package gov.nist.hit.hl7.igamt.constraints.domain;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 
 public class ConformanceStatementDisplay extends SectionInfo {
   private Set<ConformanceStatement> conformanceStatements;
   private Set<ConformanceStatement> availableConformanceStatements;
+  private List<ChangeReason> changeReason;
   private HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap;
   private String name;
 
@@ -52,5 +55,13 @@ public class ConformanceStatementDisplay extends SectionInfo {
     this.setAvailableConformanceStatements(availableConformanceStatements);
     this.setAssociatedConformanceStatementMap(associatedConformanceStatementMap);
     this.name = elm.getName();
+  }
+
+  public List<ChangeReason> getChangeReason() {
+    return changeReason;
+  }
+
+  public void setChangeReason(List<ChangeReason> changeReason) {
+    this.changeReason = changeReason;
   }
 }

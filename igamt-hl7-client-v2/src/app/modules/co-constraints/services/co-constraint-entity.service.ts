@@ -3,9 +3,8 @@ import { Guid } from 'guid-typescript';
 import * as _ from 'lodash';
 import { Md5 } from 'md5-typescript';
 import { combineLatest, Observable, of } from 'rxjs';
-import { flatMap, map, take } from 'rxjs/operators';
-import { ICardinalityRange, IHL7v2TreeNode, IResourceKey } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
-import { Type } from '../../shared/constants/type.enum';
+import { map, take } from 'rxjs/operators';
+import { IHL7v2TreeNode } from '../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { ICoConstraintGroupBindingRef, ICoConstraintGrouper, ICoConstraintVariesCell, INarrativeHeader } from '../../shared/models/co-constraint.interface';
 import {
   CoConstraintGroupBindingType,
@@ -29,10 +28,7 @@ import {
   ICoConstraintValueSetCell,
   IDataElementHeader,
 } from '../../shared/models/co-constraint.interface';
-import { IResource } from '../../shared/models/resource.interface';
 import { IField, ISegment } from '../../shared/models/segment.interface';
-import { BindingService } from '../../shared/services/binding.service';
-import { ElementNamingService } from '../../shared/services/element-naming.service';
 import { AResourceRepositoryService } from '../../shared/services/resource-repository.service';
 
 @Injectable({
@@ -40,49 +36,63 @@ import { AResourceRepositoryService } from '../../shared/services/resource-repos
 })
 export class CoConstraintEntityService {
 
-  constructor(
-    private binding: BindingService,
-    private elementNamingService: ElementNamingService,
-  ) { }
+  constructor() { }
 
-  exportAsExcel(table: ICoConstraintTable) {
+  exportAsExcel(table: ICoConstraintTable, conformanceProfileId: string, contextId: string, segmentRef: string) {
     const form = document.createElement('form');
     form.action = '/api/export/coconstraintTable';
     form.method = 'POST';
+
     const json = document.createElement('input');
     json.type = 'hidden';
     json.name = 'json';
     json.value = JSON.stringify(table);
     form.appendChild(json);
+
+    const conformanceProfileIdElm = document.createElement('input');
+    conformanceProfileIdElm.type = 'hidden';
+    conformanceProfileIdElm.name = 'conformanceProfileId';
+    conformanceProfileIdElm.value = conformanceProfileId;
+    form.appendChild(conformanceProfileIdElm);
+
+    const contextIdElm = document.createElement('input');
+    contextIdElm.type = 'hidden';
+    contextIdElm.name = 'contextId';
+    contextIdElm.value = contextId;
+    form.appendChild(contextIdElm);
+
+    const segmentRefElm = document.createElement('input');
+    segmentRefElm.type = 'hidden';
+    segmentRefElm.name = 'segmentRef';
+    segmentRefElm.value = segmentRef;
+    form.appendChild(segmentRefElm);
+
     form.style.display = 'none';
     document.body.appendChild(form);
     form.submit();
   }
 
-  mergeGroupWithTable(ccTable: ICoConstraintTable & ICoConstraintGroup, group: ICoConstraintGroup) {
-    this.mergeHeaders(ccTable, ccTable.headers.selectors, group.headers.selectors);
-    this.mergeHeaders(ccTable, ccTable.headers.constraints, group.headers.constraints);
-    this.mergeHeaders(ccTable, ccTable.headers.narratives, group.headers.narratives);
+  mergeGroupWithTable(groupRef: ICoConstraintGroupBindingRef, ccTable: ICoConstraintTable & ICoConstraintGroup, group: ICoConstraintGroup) {
+    this.mergeHeaders(ccTable, ccTable.headers.selectors, group.headers.selectors, groupRef.excludeIfColumns || []);
+    this.mergeHeaders(ccTable, ccTable.headers.constraints, group.headers.constraints, groupRef.excludeThenColumns || []);
+    this.mergeHeaders(ccTable, ccTable.headers.narratives, group.headers.narratives, groupRef.excludeNarrativeColumns || []);
     if (!ccTable.headers.grouper) {
       ccTable.headers.grouper = group.headers.grouper;
     }
   }
 
-  mergeHeaders(collection: ICoConstraintTable & ICoConstraintGroup, table: ICoConstraintHeader[], group: ICoConstraintHeader[]) {
+  mergeHeaders(collection: ICoConstraintTable & ICoConstraintGroup, table: ICoConstraintHeader[], group: ICoConstraintHeader[], exclude: string[]) {
     group.forEach((groupHeader) => {
 
       const header = table.find((tableHeader) => {
         return groupHeader.key === tableHeader.key;
       });
 
-      if (!header) {
+      if (!header && !exclude.includes(groupHeader.key)) {
         table.push({
           ...groupHeader,
-          _keep: true,
         });
         this.addColumn(groupHeader, collection);
-      } else {
-        header._keep = true;
       }
 
     });
@@ -94,13 +104,15 @@ export class CoConstraintEntityService {
       requirement: this.createEmptyRequirements(),
       type: CoConstraintGroupBindingType.REF,
       refId: id,
+      excludeIfColumns: [],
+      excludeNarrativeColumns: [],
+      excludeThenColumns: [],
     };
   }
 
   createOBXCoConstraintTable(segment: ISegment, repository: AResourceRepositoryService): Observable<ICoConstraintTable> {
     const table: ICoConstraintTable = {
       tableType: CoConstraintMode.TABLE,
-      baseSegment: segment.id,
       headers: {
         selectors: [],
         constraints: [],
@@ -123,9 +135,9 @@ export class CoConstraintEntityService {
     });
 
     return combineLatest(
-      this.createHeaderForField(segment, obx3, repository, false, CoConstraintColumnType.CODE),
-      this.createHeaderForField(segment, obx2, repository, false, CoConstraintColumnType.DATATYPE),
-      this.createHeaderForField(segment, obx5, repository, true, CoConstraintColumnType.VARIES),
+      this.createHeaderForField(segment, obx3, CoConstraintColumnType.CODE),
+      this.createHeaderForField(segment, obx2, CoConstraintColumnType.DATATYPE),
+      this.createHeaderForField(segment, obx5, CoConstraintColumnType.VARIES),
     ).pipe(
       take(1),
       map(([_obx3, _obx2, _obx5]) => {
@@ -138,30 +150,13 @@ export class CoConstraintEntityService {
     );
   }
 
-  createHeaderForField(segment: ISegment, field: IField, repository: AResourceRepositoryService, cardinalityConstraint: boolean, type: CoConstraintColumnType): Observable<IDataElementHeader> {
-    return this.createDataElementHeaderFromValues(
-      {
-        pathId: field.id,
-        position: field.position,
-        type: field.type,
-        cardinality: {
-          min: field.min,
-          max: field.max,
-        },
-      },
-      { id: field.ref.id, type: Type.DATATYPE },
-      of(segment),
-      'OBX-' + field.position,
-      repository,
-      cardinalityConstraint,
-      type,
-    );
+  createHeaderForField(segment: ISegment, field: IField, type: CoConstraintColumnType): Observable<IDataElementHeader> {
+    return this.createDataElementHeaderFromValues(field.id, segment.name + '-' + field.position, type);
   }
 
   createEmptyCoConstraintTable(segment: ISegment): ICoConstraintTable {
     return {
       tableType: CoConstraintMode.TABLE,
-      baseSegment: segment.id,
       headers: {
         selectors: [],
         constraints: [],
@@ -185,12 +180,7 @@ export class CoConstraintEntityService {
       const OBX_4 = tree.find((elm) => elm.data.position === 4);
       if (OBX_4 && (OBX_4.leaf || OBX_4.data.ref.getValue().name === 'OG')) {
         return {
-          name: 'OBX-4',
           pathId: OBX_4.data.pathId,
-          description: OBX_4.data.name,
-          version: OBX_4.data.ref.getValue().version,
-          datatype: OBX_4.data.ref.getValue().name,
-          type: OBX_4.data.type,
         };
       }
     }
@@ -217,22 +207,8 @@ export class CoConstraintEntityService {
     return cells;
   }
 
-  createDataElementHeader(node: IHL7v2TreeNode, parent: IResource, name: string, repository: AResourceRepositoryService, cardinalityConstraint: boolean, columnType: CoConstraintColumnType): Observable<IDataElementHeader> {
-    const parentRef = node.parent.data.ref;
-    return this.createDataElementHeaderFromValues(
-      {
-        pathId: node.data.pathId,
-        position: node.data.position,
-        type: node.data.type,
-        cardinality: node.data.cardinality,
-      },
-      node.data.ref.value,
-      !parentRef ? of(parent) : repository.fetchResource(parentRef.value.type, parentRef.value.id),
-      name,
-      repository,
-      cardinalityConstraint,
-      columnType,
-    );
+  createDataElementHeader(node: IHL7v2TreeNode, name: string, columnType: CoConstraintColumnType): Observable<IDataElementHeader> {
+    return this.createDataElementHeaderFromValues(node.data.pathId, name, columnType);
   }
 
   createNarrativeHeader(title: string): INarrativeHeader {
@@ -243,34 +219,13 @@ export class CoConstraintEntityService {
     };
   }
 
-  createDataElementHeaderFromValues({ pathId, position, cardinality, type }: { pathId: string, position: number, cardinality: ICardinalityRange, type: Type }, elmRef: IResourceKey, parent: Observable<IResource>, name: string, repository: AResourceRepositoryService, cardinalityConstraint: boolean, columnType: CoConstraintColumnType): Observable<IDataElementHeader> {
-    return combineLatest(
-      parent,
-      repository.fetchResource(elmRef.type, elmRef.id)).pipe(
-        take(1),
-        flatMap(([p, resource]) => {
-          return this.binding.getBingdingInfo(resource.domainInfo.version, p.name, resource.name, position, type).pipe(
-            map((bindingInfo) => {
-              return {
-                key: pathId,
-                type: CoConstraintHeaderType.DATAELEMENT,
-                columnType,
-                cardinality: cardinalityConstraint,
-                name,
-                elementInfo: {
-                  version: resource.domainInfo.version,
-                  parent: p.name,
-                  datatype: resource.name,
-                  location: position,
-                  cardinality,
-                  type,
-                  bindingInfo,
-                },
-              };
-            }),
-          );
-        }),
-      );
+  createDataElementHeaderFromValues(pathId: string, name: string, columnType: CoConstraintColumnType): Observable<IDataElementHeader> {
+    return of({
+      key: pathId,
+      type: CoConstraintHeaderType.DATAELEMENT,
+      columnType,
+      name,
+    });
   }
 
   getCoConstraintRowList(collection: ICoConstraintTable & ICoConstraintGroup): ICoConstraint[] {
