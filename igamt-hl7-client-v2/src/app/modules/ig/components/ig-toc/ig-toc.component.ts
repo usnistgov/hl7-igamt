@@ -10,9 +10,12 @@ import {
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
 import { ContextMenuComponent } from 'ngx-contextmenu';
 import { SelectItem } from 'primeng/api';
+import { map, take } from 'rxjs/operators';
+import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
 import { IClickInfo } from '../../../document/models/toc/click-info.interface';
 import { Scope } from '../../../shared/constants/scope.enum';
@@ -22,9 +25,6 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { NodeHelperService } from '../../../shared/services/node-helper.service';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IgService } from '../../services/ig.service';
-import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { Store } from '@ngrx/store';
-import { take, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-ig-toc',
