@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import gov.nist.hit.hl7.igamt.ig.data.fix.PcConformanceStatementsIdFixes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -176,6 +177,10 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   ConformanceStatementFixer conformanceStatementFixer;
+
+  @Autowired
+  PcConformanceStatementsIdFixes pcConformanceStatementsIdFixes;
+
   @Autowired
   CodeFixer codeFixer;
 
@@ -473,6 +478,11 @@ public class BootstrapApplication implements CommandLineRunner {
    //@PostConstruct
   void fixCoConstraints() {
     this.coConstraintsFixes.fix();
+  }
+
+//  @PostConstruct
+  void fixPcCsIds() throws Exception {
+    this.pcConformanceStatementsIdFixes.fix();
   }
   
  //@PostConstruct
