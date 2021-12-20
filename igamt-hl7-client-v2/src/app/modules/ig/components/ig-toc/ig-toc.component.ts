@@ -21,6 +21,10 @@ import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { NodeHelperService } from '../../../shared/services/node-helper.service';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
+import { IgService } from '../../services/ig.service';
+import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { Store } from '@ngrx/store';
+import { take, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-ig-toc',
@@ -75,7 +79,15 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
   // tslint:disable-next-line:cognitive-complexity
-  constructor(private nodeHelperService: NodeHelperService, private valueSetService: ValueSetService, private cd: ChangeDetectorRef, private router: Router, private activatedRoute: ActivatedRoute) {
+  constructor(
+    private nodeHelperService: NodeHelperService,
+    private valueSetService: ValueSetService,
+    private cd: ChangeDetectorRef,
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
+    private igService: IgService,
+    private store: Store<any>,
+  ) {
     this.options = {
       allowDrag: (node: TreeNode) => {
         return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
@@ -153,6 +165,14 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   copyResource(node: TreeNode) {
     this.copy.emit({ element: { ...node.data }, existing: node.parent.data.children });
+  }
+
+  exportDiffProfileXML(node: TreeNode) {
+    this.store.select(fromIgDocumentEdit.selectIgId).pipe(
+      take(1),
+      map((id) => this.igService.exportProfileDiffXML(id, node.data.id)),
+    )
+      .subscribe();
   }
 
   exportCSVFileForVS(node: TreeNode) {
