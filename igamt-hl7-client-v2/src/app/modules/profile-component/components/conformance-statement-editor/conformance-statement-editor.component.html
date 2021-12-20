@@ -104,8 +104,12 @@
       </td>
       <td>{{ getDescription(cs?.conformanceStatement) }}</td>
       <td style="width: 190px;">
+        <button *ngIf="cs.item.change === 'ADD'" class="btn btn-sm btn-primary" style="margin-left: 5px;" (click)="editItem(cs.item)">
+          <i class="fa fa-pencil"></i> Edit
+        </button>
         <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteItem(cs.item)">
-          <i class="fa fa-trash"></i> Delete
+          <span *ngIf="cs.item.change === 'ADD'" ><i  class="fa fa-trash"></i> Delete</span>
+          <span *ngIf="cs.item.change === 'DELETE'"><i  class="fa fa-refresh"></i> Restore</span>
         </button>
       </td>
     </tr>
