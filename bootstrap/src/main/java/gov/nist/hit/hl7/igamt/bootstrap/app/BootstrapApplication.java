@@ -480,7 +480,7 @@ public class BootstrapApplication implements CommandLineRunner {
     this.coConstraintsFixes.fix();
   }
 
-  @PostConstruct
+//  @PostConstruct
   void fixPcCsIds() throws Exception {
     this.pcConformanceStatementsIdFixes.fix();
   }
