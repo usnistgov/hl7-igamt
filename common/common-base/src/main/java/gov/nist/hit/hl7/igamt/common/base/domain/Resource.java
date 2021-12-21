@@ -19,6 +19,8 @@ public abstract class Resource extends AbstractDomain {
   private Set<GenerationDirective> generatedUsing;
   @Transient
   private boolean generated;
+  
+  private ResourceOrigin resourceOrigin;
 
   public Resource() {
     super();
@@ -61,6 +63,7 @@ public abstract class Resource extends AbstractDomain {
       elm.fixedExtension = fixedExtension;
       elm.setStructureIdentifier(structureIdentifier);
       elm.setActiveInfo(new ActiveInfo());
+      elm.setResourceOrigin(resourceOrigin);
   }
 
 
@@ -160,5 +163,15 @@ public abstract class Resource extends AbstractDomain {
 
   public void setStructureIdentifier(String structureIdentifier) {
     this.structureIdentifier = structureIdentifier;
+  }
+
+
+  public ResourceOrigin getResourceOrigin() {
+    return resourceOrigin;
+  }
+
+
+  public void setResourceOrigin(ResourceOrigin resourceOrigin) {
+    this.resourceOrigin = resourceOrigin;
   }
 }

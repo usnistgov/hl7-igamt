@@ -39,6 +39,7 @@ import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DynamicMappingFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.FixIGAttribute;
 import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
+import gov.nist.hit.hl7.igamt.bootstrap.data.PhinvadFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
@@ -125,6 +126,9 @@ public class BootstrapApplication implements CommandLineRunner {
 
   @Autowired
   MessageEventFacory messageEventFactory;
+  
+  @Autowired
+  PhinvadFixer phinvadFixer;
 
   @Autowired
   Environment env;
@@ -480,16 +484,25 @@ public class BootstrapApplication implements CommandLineRunner {
     this.coConstraintsFixes.fix();
   }
 
-//  @PostConstruct
-  void fixPcCsIds() throws Exception {
-    this.pcConformanceStatementsIdFixes.fix();
-  }
+
   
  //@PostConstruct
   void fixAttributes() throws JsonParseException, JsonMappingException, IOException {
      //this.fixAttributes.createJson();
      this.fixAttributes.updateDates();
   }
+  
+  //@PostConstruct
+  void fixPcCsIds() throws Exception {
+    this.pcConformanceStatementsIdFixes.fix();
+  }
 
+  //@PostConstruct
+  void updateValueSets() throws CoConstraintGroupNotFoundException {
+    
+    phinvadFixer.update();
+    phinvadFixer.setValueSetOrigins();
+
+  }
 
 }

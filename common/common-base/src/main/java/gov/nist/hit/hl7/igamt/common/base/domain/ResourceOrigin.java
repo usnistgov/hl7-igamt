@@ -9,49 +9,12 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.slicing.domain;
-
-import java.util.List;
-import java.util.Set;
+package gov.nist.hit.hl7.igamt.common.base.domain;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public class ConditionalSlicing extends Slicing {
-	
-	private int min;
-	private String max;
-	
-	private List<ConditionalSlice> slices;
-
-
-	public ConditionalSlicing() {
-		super();
-		this.type = SlicingMethod.ASSERTION;
-	}
-	public String getMax() {
-		return max;
-	}
-
-	public void setMax(String max) {
-		this.max = max;
-	}
-
-	public int getMin() {
-		return min;
-	}
-
-	public void setMin(int min) {
-		this.min = min;
-	}
-	public List<ConditionalSlice> getSlices() {
-		return slices;
-	}
-	public void setSlices(List<ConditionalSlice> slices) {
-		this.slices = slices;
-	}
-
-
-	
+public enum ResourceOrigin {
+  PHINVADS,HL7,CSV
 }

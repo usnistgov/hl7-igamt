@@ -98,7 +98,6 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 
   private Set<DisplayElement> convertPofileComponentRegistry(
       ProfileComponentRegistry registry) {
-    // TODO Auto-generated method stub
     Map<String, Integer> positionMap= this.gatherIdsAndPositions(registry.getChildren());
     Set<DisplayElement> ret = new HashSet<DisplayElement>();
     List<ProfileComponent> pcs = profileComponentService.findByIdIn(positionMap.keySet());
