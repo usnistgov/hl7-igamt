@@ -118,6 +118,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   @Autowired
   AssertionXMLSerialization assertionXMLSerialization;
   
+  private static final int limitSizeOfVS = 1000;
+  
   /*
    * (non-Javadoc)
    * 
@@ -394,7 +396,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         Valueset t = vsm.getModel();
 
         if (t != null) {
-          if (t.getCodes() == null || t.getCodes().size() == 0 || t.getCodes().size() > 500
+          if (t.getCodes() == null || t.getCodes().size() == 0 || t.getCodes().size() > limitSizeOfVS
               || (t.getCodes().size() == 1
                   && new ArrayList<Code>(t.getCodes()).get(0).getValue().equals("..."))) {
             // || (codePresenceMap.containsKey(t.getId()) &&
@@ -411,6 +413,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             } else {
               elmBindingIdentifier.appendChild(this.str(t.getBindingIdentifier()));
             }
+            System.out.println(t.getBindingIdentifier());            
             elmNoValidation.appendChild(elmBindingIdentifier);
           }
 
@@ -475,7 +478,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             elmValueSetDefinitionsHL7Other.appendChild(elmValueSetDefinition);
           }
 
-          if (t.getCodes() != null && t.getCodes().size() <= 500) {
+          if (t.getCodes() != null && t.getCodes().size() <= limitSizeOfVS) {
             for (Code c : t.getCodes()) {
               Element elmValueElement = new Element("ValueElement");
               elmValueElement.addAttribute(new Attribute("Value", this.str(c.getValue())));
