@@ -1,6 +1,6 @@
 <ng-container *ngIf="mode === 'GROUP'">
   <label for="groupName" style="font-weight: bold;" >Co-Constraint Group Name : </label>
-  <input *ngIf="!delta || !value.nameDelta" [disabled]="vOnly" name="groupName" type="text" class="form-control" style="margin-bottom: 5px;" [(ngModel)]="value.name" (ngModelChange)="emitChange()" >
+  <input *ngIf="!delta || !value.nameDelta" [disabled]="vOnly" name="groupName" type="text" class="form-control" style="margin-bottom: 5px;" [(ngModel)]="value.name" [ngModelOptions]="{updateOn: 'blur'}" (ngModelChange)="emitChange()" >
   <app-delta-column
     *ngIf="delta && !!value.nameDelta"
     [currentValue]="value.nameDelta.current"

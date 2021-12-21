@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.coconstraints.model;
 
 import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class CoConstraintGroup extends Resource {
     protected CoConstraintHeaders headers;
     protected List<CoConstraint> coConstraints;
     protected DeltaAction delta;
+    protected List<ChangeReason> changeLog;
 
     public CoConstraintGroup() {
         this.headers = new CoConstraintHeaders();
@@ -81,5 +83,13 @@ public class CoConstraintGroup extends Resource {
 
     public void setCoConstraints(List<CoConstraint> coConstraints) {
         this.coConstraints = coConstraints;
+    }
+
+    public List<ChangeReason> getChangeLog() {
+        return changeLog;
+    }
+
+    public void setChangeLog(List<ChangeReason> changeLog) {
+        this.changeLog = changeLog;
     }
 }

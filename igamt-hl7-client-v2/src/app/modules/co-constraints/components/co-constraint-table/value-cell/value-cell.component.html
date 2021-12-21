@@ -1,4 +1,4 @@
-<input type="text" [(ngModel)]="cellValue.value" class="form-control" [name]="fieldId + '-value'" placeholder="Constant Value" (ngModelChange)="emitChange()" *ngIf="!viewOnly" [required]="column==='selectors'">
+<input type="text" [(ngModel)]="cellValue.value"  [ngModelOptions]="{updateOn: 'blur'}" class="form-control" [name]="fieldId + '-value'" placeholder="Constant Value" (ngModelChange)="emitChange()" *ngIf="!viewOnly" [required]="column==='selectors'">
 <div  *ngIf="viewOnly" style="text-align: center; width: 100%;">
   <span>{{cellValue.value}}</span>
 </div>

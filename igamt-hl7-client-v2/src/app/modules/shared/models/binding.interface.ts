@@ -1,7 +1,7 @@
 import { Type } from '../constants/type.enum';
 import { IConformanceStatement } from './cs.interface';
 import { IPredicate } from './predicate.interface';
-import { IChangeLog } from './save-change';
+import { IChangeLog, IChangeReason } from './save-change';
 
 export enum LocationType {
   FIELD = 'FIELD', COMPONENT = 'COMPONENT', SUBCOMPONENT = 'SUBCOMPONENT', SEGREF = 'SEGREF', GROUP = 'GROUP',
@@ -53,6 +53,7 @@ export interface IStructureElementBinding extends IBinding, IStructureElementBin
 
 export interface IResourceBinding extends IBinding {
   conformanceStatements: IConformanceStatement[];
+  conformanceStatementsChangeLog: IChangeReason[];
 }
 
 export enum IBindingType {

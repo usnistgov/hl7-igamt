@@ -4,6 +4,7 @@ import { ICoConstraintBindingContext } from './co-constraint.interface';
 import { IComment } from './comment.interface';
 import { IRef } from './ref.interface';
 import { IResource } from './resource.interface';
+import { IChangeReason } from './save-change';
 import { IStructureElement } from './structure-element.interface';
 
 export interface IMsgStructElement extends IStructureElement {
@@ -34,6 +35,7 @@ export interface IHL7MessageProfile extends IResource {
 
 export interface IConformanceProfile extends IHL7MessageProfile {
   coConstraintsBindings: ICoConstraintBindingContext[];
+  coConstraintBindingsChangeLog: IChangeReason[];
 }
 
 export interface IMessageStructure extends IHL7MessageProfile {

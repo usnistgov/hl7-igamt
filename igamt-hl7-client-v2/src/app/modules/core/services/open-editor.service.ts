@@ -270,6 +270,7 @@ export class OpenEditorService {
           initial: {
             value: resource.coConstraintsBindings,
             resource,
+            changeReason: resource.coConstraintBindingsChangeLog,
           },
         });
         this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));

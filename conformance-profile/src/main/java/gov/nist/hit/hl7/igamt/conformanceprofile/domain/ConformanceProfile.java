@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
@@ -47,7 +49,8 @@ public class ConformanceProfile extends Resource {
   private List<MessageProfileIdentifier> profileIdentifier;
   private MessageProfileIdentifier preCoordinatedMessageIdentifier;
   private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
-  private List<CoConstraintBinding> coConstraintsBindings; 
+  private List<CoConstraintBinding> coConstraintsBindings;
+  private List<ChangeReason> coConstraintBindingsChangeLog;
   private ResourceBinding binding;
   private Set<Slicing> slicings;
 
@@ -227,5 +230,13 @@ public void setPreCoordinatedMessageIdentifier(MessageProfileIdentifier preCoord
 
   public void setSlicings(Set<Slicing> slicings) {
     this.slicings = slicings;
+  }
+
+  public List<ChangeReason> getCoConstraintBindingsChangeLog() {
+    return coConstraintBindingsChangeLog;
+  }
+
+  public void setCoConstraintBindingsChangeLog(List<ChangeReason> coConstraintBindingsChangeLog) {
+    this.coConstraintBindingsChangeLog = coConstraintBindingsChangeLog;
   }
 }

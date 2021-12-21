@@ -14,6 +14,14 @@
     </h5>
   </div>
 </ng-template>
+<ng-template #headerControls>
+  <app-change-log-list-info
+  [changes]="changeReason$ | async"
+  (editChange)="updateChangeReasons($event)"
+  [viewOnly]="viewOnly$ | async"
+  ></app-change-log-list-info>
+</ng-template>
+
 <app-co-constraint-table
   [segment]="segment$ | async"
   [value]="group$ | async"

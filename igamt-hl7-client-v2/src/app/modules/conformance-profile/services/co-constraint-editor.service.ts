@@ -5,6 +5,7 @@ import * as _ from 'lodash';
 import { combineLatest, Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { concatMap, map, take } from 'rxjs/operators';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
+import { selectedResourceHasOrigin } from '../../../root-store/dam-igamt/igamt.selected-resource.selectors';
 import { selectDerived, selectValueSetsNodes } from '../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { CoConstraintBindingDialogComponent, IBindingDialogResult } from '../../co-constraints/components/co-constraint-binding-dialog/co-constraint-binding-dialog.component';
 import { CoConstraintEntityService } from '../../co-constraints/services/co-constraint-entity.service';
@@ -59,7 +60,7 @@ export abstract class CoConstraintEditorService extends AbstractEditorComponent 
 
   constructor(
     protected actions$: Actions,
-    private dialog: MatDialog,
+    protected dialog: MatDialog,
     protected store: Store<any>,
     public repository: StoreResourceRepositoryService,
     private pathService: PathService,
@@ -84,7 +85,14 @@ export abstract class CoConstraintEditorService extends AbstractEditorComponent 
     this.bindingsSync = new ReplaySubject<ICoConstraintBindingContext[]>(1);
     this.bindingsSync$ = this.bindingsSync.asObservable();
 
-    this.derived$ = this.store.select(selectDerived);
+    this.derived$ = combineLatest(
+      this.store.select(selectDerived),
+      this.store.select(selectedResourceHasOrigin),
+    ).pipe(
+      map(([derivedIg, elmHadOrigin]) => {
+        return derivedIg && elmHadOrigin;
+      }),
+    );
 
     this.changes = new Subject<IChange>();
     this.s_changes = this.changes.pipe(

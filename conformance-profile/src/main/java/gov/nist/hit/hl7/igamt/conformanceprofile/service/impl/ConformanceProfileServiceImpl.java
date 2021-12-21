@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1499,6 +1500,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     if (map.containsKey(PropertyType.COCONSTRAINTBINDINGS)) {
       this.applyCoConstraintsBindingChanges(conformanceProfile, map.get(PropertyType.COCONSTRAINTBINDINGS) , documentId);
     }
+    if(map.containsKey(PropertyType.COCONSTRAINTBINDINGCHANGEREASON)) {
+      this.applyCoConstraintsBindingReasonForChange(conformanceProfile, map.get(PropertyType.COCONSTRAINTBINDINGCHANGEREASON), documentId);
+    }
     applyChange.applyBindingChanges(map, conformanceProfile.getBinding(), documentId, Level.CONFORMANCEPROFILE);
     if (map.containsKey(PropertyType.SLICING)) {
       if(conformanceProfile.getSlicings() == null) {
@@ -1523,6 +1527,24 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         item.setOldPropertyValue(conformanceProfile.getCoConstraintsBindings());
         List<CoConstraintBinding> coconstraints = mapper.readValue(jsonInString, new TypeReference<List<CoConstraintBinding>>() {});
         conformanceProfile.setCoConstraintsBindings(coconstraints);
+      } catch (IOException e) {
+        throw new ApplyChangeException(item);
+      }
+    }
+  }
+
+  private void applyCoConstraintsBindingReasonForChange(
+          ConformanceProfile conformanceProfile,
+          List<ChangeItemDomain> items, String documentId
+  ) throws ApplyChangeException {
+    ObjectMapper mapper = new ObjectMapper();
+    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    for(ChangeItemDomain item : items) {
+      try {
+        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+        item.setOldPropertyValue(conformanceProfile.getCoConstraintBindingsChangeLog());
+        List<ChangeReason> ccChangeLog = mapper.readValue(jsonInString, new TypeReference<List<ChangeReason>>() {});
+        conformanceProfile.setCoConstraintBindingsChangeLog(ccChangeLog);
       } catch (IOException e) {
         throw new ApplyChangeException(item);
       }

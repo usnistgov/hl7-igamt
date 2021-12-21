@@ -5,6 +5,7 @@ import { IValuesetBinding } from './binding.interface';
 import { IAssertion, IPath } from './cs.interface';
 import { DeltaAction, IDeltaNode } from './delta';
 import { IResource } from './resource.interface';
+import { IChangeReason } from './save-change';
 
 export interface IStructureElementRef {
   pathId: string;
@@ -46,6 +47,7 @@ export interface ICoConstraintGroup extends IResource {
   headers: ICoConstraintHeaders;
   coConstraints: ICoConstraint[];
   name: string;
+  changeLog: IChangeReason[];
 }
 
 export interface ICoConstraintGroupBinding {
