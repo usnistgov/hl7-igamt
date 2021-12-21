@@ -50,7 +50,6 @@ public class Valueset extends Resource {
 	private Set<String> codeSystems = new HashSet<String>();
 	private Set<Code> codes = new HashSet<Code>();
 	
-	
 	public boolean isIncludeCodes() {
 		return includeCodes;
 	}

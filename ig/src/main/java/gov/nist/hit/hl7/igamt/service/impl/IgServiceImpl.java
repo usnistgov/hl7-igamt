@@ -694,7 +694,7 @@ public class IgServiceImpl implements IgService {
   private void addKeys(Registry reg, Type type, HashMap<RealKey, String> map) {
     if (reg != null && reg.getChildren() != null) {
       for (Link l : reg.getChildren()) {
-        if (!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD) && !l.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+        if (l.getDomainInfo().getScope().equals(Scope.USER)) {
           String newId = new ObjectId().toString();
           map.put(new RealKey(l.getId(), type), newId);
         } else {
@@ -1766,7 +1766,6 @@ public class IgServiceImpl implements IgService {
     ret.setId(id);
     Link pcLink = new Link(ret);
     ig.getCompositeProfileRegistry().getChildren().add(pcLink);
-
     return ret;
   }
 

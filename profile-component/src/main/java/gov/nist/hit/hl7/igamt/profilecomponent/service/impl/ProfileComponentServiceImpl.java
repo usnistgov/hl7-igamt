@@ -23,6 +23,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
+import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentBinding;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +62,7 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItem;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItemBinding;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentContextNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.exception.ProfileComponentNotFoundException;
 import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
@@ -104,6 +108,9 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Autowired
   ApplyChange applyChange;
+  
+  @Autowired
+  CoConstraintService coConstraintService;
 
 
   @Override
@@ -185,15 +192,6 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     if(pc  == null ) {
       throw new ProfileComponentNotFoundException(pcId);
     }
-    
-    for(ProfileComponentContext ctx: pc.getChildren()) {
-      System.out.println(ctx.getId());
-      System.out.println(contextId);
-      if(ctx.getId().equals(contextId.toString())) {
-        System.out.println("FOUND");
-      }
-    }
-    
     return pc.getChildren().stream().filter(customer -> contextId.equals(customer.getId())).findAny().orElseThrow( () -> new ProfileComponentContextNotFoundException(contextId));
 
 
@@ -268,15 +266,15 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
         if (this.hasObx2Change(newContext.getProfileComponentBindings())) {
           checkAndUpdateDynamicMapping(oldContext, newContext, s);
         } else if(oldContext.getProfileComponentDynamicMapping() != null && oldContext.getProfileComponentDynamicMapping().isOverride()){
-            oldContext.setProfileComponentDynamicMapping(null);
+          oldContext.setProfileComponentDynamicMapping(null);
         } else {
           oldContext.setProfileComponentDynamicMapping(newContext.getProfileComponentDynamicMapping());
         }
       }
     }  
   }
-  
-  
+
+
   /**
    * @param profileComponentBindings
    * @return
@@ -330,11 +328,11 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     Set<PropertyBinding> obx2Bindings = new HashSet<PropertyBinding>();
     if(ctx.getProfileComponentBindings() != null && ctx.getProfileComponentBindings().getContextBindings() !=null) {
       obx2Bindings = ctx.getProfileComponentBindings().getContextBindings().stream().filter((x) -> x.getTarget() != null && x.getTarget().equals("2")).collect(Collectors.toSet());
-    if(obx2Bindings == null || obx2Bindings.isEmpty()) {
-      return this.segmentService.findObx2VsId(s);
-    }else { 
-      return findObx2ValueSet(obx2Bindings);
-    }
+      if(obx2Bindings == null || obx2Bindings.isEmpty()) {
+        return this.segmentService.findObx2VsId(s);
+      }else { 
+        return findObx2ValueSet(obx2Bindings);
+      }
     }else return null;
   }
 
@@ -451,13 +449,56 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
               }
             }
           }
-          if(prop instanceof PropertyValueSet) {
-            PropertyValueSet propVs =  (PropertyValueSet)prop;
-            this.bindingService.processAndSubstitute(propVs.getValuesetBindings(), newKeys);          
+        }
+      }
+
+      if(context.getProfileComponentBindings()!= null) {
+        if(context.getProfileComponentBindings().getItemBindings() != null) {
+          for (ProfileComponentItemBinding profileComponentItemBinding: context.getProfileComponentBindings().getItemBindings()) {
+            if(profileComponentItemBinding.getBindings() != null) {
+              for (PropertyBinding propertyBinding : profileComponentItemBinding.getBindings() ) {
+                if(propertyBinding instanceof PropertyValueSet) {
+                  PropertyValueSet propVs =  (PropertyValueSet)propertyBinding;
+                  this.bindingService.processAndSubstitute(propVs.getValuesetBindings(), newKeys);          
+                }
+              }
+            }
+          } 
+        }
+        if(context.getProfileComponentBindings().getContextBindings() != null) {
+          for (PropertyBinding propertyBinding: context.getProfileComponentBindings().getContextBindings()) {
+            if(propertyBinding instanceof PropertyValueSet) {
+              PropertyValueSet propVs =  (PropertyValueSet)propertyBinding;
+              this.bindingService.processAndSubstitute(propVs.getValuesetBindings(), newKeys);          
+            }
           }
-          if(prop instanceof PropertySingleCode) {
-            PropertySingleCode propSingleCode = (PropertySingleCode)prop;
-            //TODO update sig
+        }
+        
+        if (context.getProfileComponentCoConstraints() != null) {
+          
+            for (CoConstraintBinding binding : context.getProfileComponentCoConstraints().getBindings()) {
+              if (binding.getBindings() != null) {
+                for (CoConstraintBindingSegment segBinding : binding.getBindings()) {
+                  if (segBinding.getTables() != null) {
+                    for (CoConstraintTableConditionalBinding ccBinding : segBinding.getTables()) {
+                      if (ccBinding.getValue() != null) {
+                        this.coConstraintService.updateDepenedencies(ccBinding.getValue(), newKeys, true);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+         }
+        if(context.getProfileComponentDynamicMapping() != null) {
+          
+          if(context.getProfileComponentDynamicMapping().getItems() != null) {
+            for( PcDynamicMappingItem item: context.getProfileComponentDynamicMapping().getItems()) {   
+              RealKey key = new RealKey(item.getFlavorId(), Type.DATATYPE);
+              if (newKeys.containsKey(key)) {
+                item.setFlavorId(newKeys.get(key));
+              }
+            }
           }
         }
       }
@@ -482,6 +523,24 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
         if(ctx.getProfileComponentItems() != null) {
           relations.addAll(collectDependencies(ctx, pc.getName(), pc.getId(), label));
         }
+        if (ctx.getProfileComponentCoConstraints() != null && ctx.getProfileComponentCoConstraints().getBindings() != null) {
+          
+         Set<RelationShip> CoConstraintsDependencies = coConstraintService.collectDependencies(new ReferenceIndentifier(pc.getId(), Type.PROFILECOMPONENT), ctx.getProfileComponentCoConstraints().getBindings());
+            
+         relations.addAll(CoConstraintsDependencies);
+         }
+        if(ctx.getProfileComponentDynamicMapping() != null) {
+          
+//          if(ctx.getProfileComponentDynamicMapping().getItems() != null) {
+//            for( PcDynamicMappingItem item: ctx.getProfileComponentDynamicMapping().getItems()) {   
+//              RealKey key = new RealKey(item.getFlavorId(), Type.DATATYPE);
+//              if (newKeys.containsKey(key)) {
+//                item.setFlavorId(newKeys.get(key));
+//              }
+//            }
+//          }
+        }
+        
       }
     }
 
@@ -526,23 +585,60 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
               relations.add(rel);
             }
           }
-          if(prop instanceof PropertyValueSet) {
-            PropertyValueSet propVs =  (PropertyValueSet)prop;
+//          if(prop instanceof PropertyValueSet) {
+//            PropertyValueSet propVs =  (PropertyValueSet)prop;
+//            if(propVs.getValuesetBindings() != null ) {
+//              Set<String> vsIds = this.bindingService.processValueSetBinding(propVs.getValuesetBindings());
+//              if(vsIds != null && !vsIds.isEmpty()) {
+//                vsIds.forEach((s) -> {
+//                  relations.add(new RelationShip(new ReferenceIndentifier(s, Type.VALUESET),
+//                      new ReferenceIndentifier(pcId, Type.PROFILECOMPONENT),
+//                      new ReferenceLocation(Type.PROFILECOMPONENTITEM, resourceName , item.getPath().replaceAll("-", "."))) );
+//                }) ;
+//              }
+//            }
+//          }
+        }
+      }
+    }
+    if(ctx.getProfileComponentBindings()!= null) {
+      if(ctx.getProfileComponentBindings().getItemBindings() != null) {
+        for (ProfileComponentItemBinding profileComponentItemBinding: ctx.getProfileComponentBindings().getItemBindings()) {
+          if(profileComponentItemBinding.getBindings() != null) {
+            for (PropertyBinding propertyBinding : profileComponentItemBinding.getBindings() ) {
+              if(propertyBinding instanceof PropertyValueSet) {
+                PropertyValueSet propVs =  (PropertyValueSet)propertyBinding;
+
+                if(propVs.getValuesetBindings() != null ) {
+                  Set<String> vsIds = this.bindingService.processValueSetBinding(propVs.getValuesetBindings());
+                  if(vsIds != null && !vsIds.isEmpty()) {
+                    vsIds.forEach((s) -> {
+                      relations.add(new RelationShip(new ReferenceIndentifier(s, Type.VALUESET),
+                          new ReferenceIndentifier(pcId, Type.PROFILECOMPONENT),
+                          new ReferenceLocation(Type.PROFILECOMPONENTITEM, resourceName , profileComponentItemBinding.getPath().replaceAll("-", "."))) );
+                    }) ;
+                  }
+                }
+              }
+            }
+          }
+        } 
+      }
+      if(ctx.getProfileComponentBindings().getContextBindings() != null) {
+        for (PropertyBinding propertyBinding: ctx.getProfileComponentBindings().getContextBindings()) {
+          if(propertyBinding instanceof PropertyValueSet) {
+            PropertyValueSet propVs =  (PropertyValueSet)propertyBinding;
+
             if(propVs.getValuesetBindings() != null ) {
               Set<String> vsIds = this.bindingService.processValueSetBinding(propVs.getValuesetBindings());
               if(vsIds != null && !vsIds.isEmpty()) {
                 vsIds.forEach((s) -> {
                   relations.add(new RelationShip(new ReferenceIndentifier(s, Type.VALUESET),
                       new ReferenceIndentifier(pcId, Type.PROFILECOMPONENT),
-                      new ReferenceLocation(Type.PROFILECOMPONENTITEM, resourceName , item.getPath().replaceAll("-", "."))) );
+                      new ReferenceLocation(Type.PROFILECOMPONENT, resourceName ,"")) );
                 }) ;
               }
-            }
-          }
-          if(prop instanceof PropertySingleCode) {
-            PropertySingleCode propSingleCode = (PropertySingleCode)prop;
-            //TODO update single code references.
-          }
+            }}
         }
       }
     }
