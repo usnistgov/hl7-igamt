@@ -112,6 +112,10 @@ export class Hl7V2TreeStructureComponent implements OnInit, OnDestroy {
     }
   }
 
+  get resource() {
+    return this._resource;
+  }
+
   @Input()
   set columns(cols: HL7v2TreeColumnType[]) {
     this.cols = cols.map((col) => {
