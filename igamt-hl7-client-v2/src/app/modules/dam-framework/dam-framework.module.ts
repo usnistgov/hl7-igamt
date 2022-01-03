@@ -40,6 +40,7 @@ import { DAM_AUTH_CONFIG, DEFAULT_MESSAGE_OPTION } from './injection-token';
 import { AuthenticationService, IAuthenticationURL } from './services/authentication.service';
 import { MessageService } from './services/message.service';
 import { AuthenticationEffects } from './store/authentication/authentication.effects';
+import { DamEffects } from './store/data/dam.effect';
 import * as fromDataReducer from './store/data/dam.reducer';
 import * as fromDataSelector from './store/data/dam.selectors';
 import * as fromLoaderReducer from './store/loader/loader.reducer';
@@ -99,6 +100,7 @@ export class DamRoutingModule {
     RouterModule,
     DamComponentsModule,
     StoreModule.forFeature(fromDataSelector.featureName, fromDataReducer.reducer),
+    EffectsModule.forFeature([DamEffects]),
   ],
   exports: [
     DamLayoutComponent,
