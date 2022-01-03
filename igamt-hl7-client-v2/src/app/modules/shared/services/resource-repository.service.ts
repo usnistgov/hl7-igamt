@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
-import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
 import { filter, map, mergeMap, take } from 'rxjs/operators';
 import * as fromIgamtResourcesSelectors from 'src/app/root-store/dam-igamt/igamt.loaded-resources.selectors';
-import { IgamtLoadedResourcesActionTypes, LoadResourceReferences } from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
+import { LoadResourceReferences } from '../../../root-store/dam-igamt/igamt.loaded-resources.actions';
 import {
   selectCoConstraintGroupsById, selectCompositeProfileById,
   selectDatatypesById,
@@ -13,11 +13,10 @@ import {
   selectValueSetById,
 } from '../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import { RxjsStoreHelperService } from '../../dam-framework/services/rxjs-store-helper.service';
-import { InsertResourcesInRepostory, RepositoryActionReduced, DamActionTypes } from '../../dam-framework/store/data/dam.actions';
+import { DamActionTypes, InsertResourcesInRepostory, RepositoryActionReduced } from '../../dam-framework/store/data/dam.actions';
 import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';
-import { ResourceService } from './resource.service';
 
 export interface IRefDataInfo {
   leaf: boolean;
