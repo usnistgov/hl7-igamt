@@ -12,9 +12,9 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 /**
- * @author ena3
+ * @author Abdelghani El Ouakili
  *
  */
-public enum Status {
-  DRAFT, PUBLISHED, SUPERSEDED, WITHDRAWN, LOCKED, ARCHIVED, DELETED
+public enum DocumentType {
+ IGDOCUMENT, DATATYPELIBRARY
 }

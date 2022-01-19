@@ -9,12 +9,34 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.base.domain;
+package gov.nist.hit.hl7.igamt.ig.model;
+
+import java.util.Set;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 
 /**
- * @author ena3
+ * @author Abdelghani El Ouakili
  *
  */
-public enum Status {
-  DRAFT, PUBLISHED, SUPERSEDED, WITHDRAWN, LOCKED, ARCHIVED, DELETED
+public class CopyRegistryReturn<T extends Resource> {
+  
+  Registry registry;
+  Set<T> savedResources;
+  
+  public Registry getRegistry() {
+    return registry;
+  }
+  public void setRegistry(Registry registry) {
+    this.registry = registry;
+  }
+  public Set<T> getSavedResources() {
+    return savedResources;
+  }
+  public void setSavedResources(Set<T> savedResources) {
+    this.savedResources = savedResources;
+  }
+
+
 }

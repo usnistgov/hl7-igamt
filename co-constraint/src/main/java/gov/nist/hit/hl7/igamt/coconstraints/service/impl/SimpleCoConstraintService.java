@@ -120,39 +120,10 @@ public class SimpleCoConstraintService implements CoConstraintService {
 
 
 
-  @Override
-  public CoConstraintGroup clone(String id, Map<String, String> datatypes, Map<String, String> valueSets) {
-    CoConstraintGroup group = this.coConstraintGroupRepository.findById(id).get();
-    CoConstraintGroup clone = group.clone();
-    clone.getCoConstraints().forEach(cc -> {
-      cc.getCells().values().forEach(cell -> {
-        this.cellIdSubstitution(cell.getType(), cell, datatypes, valueSets);
-      });
-    });
-    return clone;
-  }
-
-  void datatypeCellIdSubstitution(DatatypeCell cell, Map<String, String> datatypes) {
-    
-  }
-
   void valueSetCellIdSubstitution(ValueSetCell cell, Map<String, String> valueSets) {
     cell.getBindings().forEach(binding -> {
       binding.setValueSets(binding.getValueSets().stream().map(valueSets::get).collect(Collectors.toList()));
     });
-  }
-
-  void cellIdSubstitution(ColumnType type, CoConstraintCell cell,  Map<String, String> datatypes, Map<String, String> valueSets) {
-    if(type.equals(ColumnType.DATATYPE)) {
-      this.datatypeCellIdSubstitution((DatatypeCell) cell, datatypes);
-    } else if(type.equals(ColumnType.VALUESET)) {
-      this.valueSetCellIdSubstitution((ValueSetCell) cell, valueSets);
-    } else if(type.equals(ColumnType.VARIES)) {
-      VariesCell vc = (VariesCell) cell;
-      if(vc.getCellType() != null && vc.getCellValue() != null) {
-        this.cellIdSubstitution(vc.getCellType(), vc.getCellValue(), datatypes, valueSets);
-      }
-    }
   }
 
 

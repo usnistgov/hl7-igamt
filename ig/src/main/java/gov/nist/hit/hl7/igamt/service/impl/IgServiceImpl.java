@@ -597,18 +597,6 @@ public class IgServiceImpl implements IgService {
     return newReg;
   }
 
-  private Link updateCoConstraintsGroup(Segment oldSeg, Link cloneSegmentLink, HashMap<String, String> datatypes, HashMap<String, String> valueSets, String username, String oldDocumentId, String newDocumentId) {
-    Segment newSeg = this.segmentService.findById(cloneSegmentLink.getId());
-    this.coConstraintService.findByBaseSegmentAndDocumentIdAndUsername(oldSeg.getId(), oldDocumentId, username).stream().forEach(group -> {
-      CoConstraintGroup newGroup = this.coConstraintService.clone(group.getId(), datatypes, valueSets);
-      newGroup.setBaseSegment(cloneSegmentLink.getId());
-      newGroup.setDocumentId(newDocumentId);
-      newGroup.setId(null);
-      this.coConstraintService.saveCoConstraintGroup(newGroup);
-    });
-    return cloneSegmentLink;
-  }
-
   private DatatypeRegistry copyDatatypeRegistry(DatatypeRegistry datatypeRegistry,
       HashMap<RealKey, String> newKeys, String username, CloneMode cloneMode) {
     // TODO Auto-generated method stub

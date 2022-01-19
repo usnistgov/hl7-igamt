@@ -35,7 +35,6 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
-import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.repository.CompositeProfileStructureRepository;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageProfileIdentifier;

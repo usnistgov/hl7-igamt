@@ -9,29 +9,31 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.compositeprofile.model;
+package gov.nist.hit.hl7.resource.change.service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 
 /**
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ * @author Abdelghani El Ouakili
+ *
  */
-public class CompositeProfile extends Resource {
+public interface ApplyClone {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+	/**
+	 * @param resource
+	 * @param id
+	 * @param username
+	 * @param info
 	 */
-	@Override
-	public String getLabel() {
-		return this.getName();
-	}
+	void updateResourceAttributes(Resource resource, String id, String username, DocumentInfo info);
 
-	@Override
-	public Resource clone() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	/**
+	 * @param resource
+	 * @param id
+	 * @param username
+	 */
+	void updateAbstractDomainAttributes(AbstractDomain resource, String id, String username);
+
 }

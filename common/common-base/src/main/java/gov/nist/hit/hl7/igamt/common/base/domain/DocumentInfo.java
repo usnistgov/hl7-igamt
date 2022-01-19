@@ -12,9 +12,33 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 /**
- * @author ena3
+ * @author Abdelghani El Ouakili
  *
  */
-public enum Status {
-  DRAFT, PUBLISHED, SUPERSEDED, WITHDRAWN, LOCKED, ARCHIVED, DELETED
+public class DocumentInfo {
+
+  /**
+   * @param id
+   * @param type
+   */
+  public DocumentInfo(String id, DocumentType type) {
+    super();
+    this.id = id;
+    this.type = type;
+  }
+  public String getId() {
+    return id;
+  }
+  public void setId(String id) {
+    this.id = id;
+  }
+  public DocumentType getType() {
+    return type;
+  }
+  public void setType(DocumentType type) {
+    this.type = type;
+  }
+  private String id;
+  private DocumentType type;
+  
 }

@@ -49,8 +49,8 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 
 	RestTemplate restTemplate;
 	
-	//String url = "https://hit-dev.nist.gov:8095/vocabulary-service/";
-	String url = "https://129.6.24.81:8095/vocabulary-service/";
+	String url = "https://hit-dev.nist.gov:8095/vocabulary-service/";
+	//String url = "https://129.6.24.81:8095/vocabulary-service/";
 
 
 	@Autowired

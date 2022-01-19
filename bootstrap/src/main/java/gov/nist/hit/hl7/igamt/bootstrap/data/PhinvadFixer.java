@@ -114,7 +114,6 @@ public class PhinvadFixer {
               l.setUsername(newLink.getUsername());
               l.setParentType(newLink.getParentType());
               l.setType(newLink.getType());
-              l.setParentId(l.getParentId());
               l.setDerived(newLink.isDerived());
               l.setPosition(newLink.getPosition());
               Set<RelationShip> relations = igService.buildRelationShip(ig, Type.VALUESET);

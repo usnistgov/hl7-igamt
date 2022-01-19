@@ -9,12 +9,12 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.base.domain;
+package gov.nist.hit.hl7.igamt.common.base.service;
 
 /**
- * @author ena3
+ * @author Abdelghani El Ouakili
  *
  */
-public enum Status {
-  DRAFT, PUBLISHED, SUPERSEDED, WITHDRAWN, LOCKED, ARCHIVED, DELETED
+public class CloneService {
+
 }

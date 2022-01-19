@@ -15,7 +15,6 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 public interface CoConstraintService {
@@ -25,7 +24,6 @@ public interface CoConstraintService {
     List<CoConstraintGroup> findByBaseSegmentAndDocumentIdAndUsername(String baseSegment, String documentId, String username);
     CoConstraintGroup saveCoConstraintGroup(CoConstraintGroup group);
     CoConstraintTable resolveRefAndMerge(CoConstraintTable table);
-    CoConstraintGroup clone(String id, Map<String, String> datatypes, Map<String, String> valueSets);
     CoConstraintGroup createCoConstraintGroupPrototype(String id) throws SegmentNotFoundException;
     Link createIgLink(CoConstraintGroup group, int position, String username);
     Set<RelationShip> collectDependencies(ReferenceIndentifier referenceIndentifier,

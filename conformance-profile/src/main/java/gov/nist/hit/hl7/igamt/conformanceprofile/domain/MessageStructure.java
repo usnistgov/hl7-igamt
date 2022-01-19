@@ -102,6 +102,10 @@ public class MessageStructure extends Resource {
     elm.structID = structID;
     elm.children = children;
     elm.binding = binding;
+    elm.profileType = profileType;
+    elm.role = role;
+    elm.profileIdentifier = profileIdentifier;
+    elm.custom = custom;
   }
   public ConformanceProfile clone() {
     ConformanceProfile elm= new ConformanceProfile();
