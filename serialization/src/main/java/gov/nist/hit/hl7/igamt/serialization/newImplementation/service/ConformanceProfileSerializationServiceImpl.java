@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraintTable;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import gov.nist.hit.hl7.igamt.ig.service.CoConstraintSerializationHelper;
@@ -46,6 +47,7 @@ import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializat
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
+import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -78,6 +80,12 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
 
     @Autowired
     private CoConstraintSerializationHelper coConstraintSerializationHelper;
+    
+    @Autowired
+    SlicingSerialization slicingSerialization;
+    
+    @Autowired
+    ResourceSkeletonService resourceSkeletonService;
     
     @Override
     public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level, int position,
@@ -197,6 +205,16 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                     }
                 }
 
+                if (conformanceProfile.getSlicings()!= null) {
+                	ResourceSkeleton root = new ResourceSkeleton(
+                            new ResourceRef(Type.CONFORMANCEPROFILE, conformanceProfile.getId()),
+                            this.resourceSkeletonService
+                    );
+                    Element slicingElement = slicingSerialization.serializeSlicing(conformanceProfile.getSlicings(), root, Type.CONFORMANCEPROFILE, bindedPaths);
+                    if (slicingElement != null) {
+                        conformanceProfileElement.appendChild(slicingElement);
+                    }
+                }
 
 
                 if (conformanceProfile.getChildren() != null

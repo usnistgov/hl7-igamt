@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.GeneratedResourceMetadata;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
@@ -17,6 +18,8 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.delta.domain.ConformanceStatementDelta;
 import gov.nist.hit.hl7.igamt.delta.domain.ResourceDelta;
 import gov.nist.hit.hl7.igamt.serialization.util.SerializationTools;
+import gov.nist.hit.hl7.igamt.service.impl.ResourceSkeletonService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,6 +43,9 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.SegmentExportConfigu
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceRef;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
+import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
@@ -83,7 +89,15 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
   private SerializationTools serializationTools;
   
   @Autowired
+  SlicingSerialization slicingSerialization;
+  
+  @Autowired
   private ReasonForChangeSerializationService reasonForChangeSerializationService;
+  
+  @Autowired
+  ResourceSkeletonService resourceSkeletonService;
+  
+
 
   @Override
   public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, int position, SegmentExportConfiguration segmentExportConfiguration, ExportFilterDecision exportFilterDecision, Boolean deltaMode) throws SerializationException {
@@ -205,6 +219,23 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
         segmentElement.appendChild(bindingElement);
       }
     }
+    if (segment.getSlicings()!= null) {
+    	ResourceSkeleton root = new ResourceSkeleton(
+                new ResourceRef(Type.SEGMENT, segment.getId()),
+                this.resourceSkeletonService
+        );
+        Element slicingElement = null;
+		try {
+			slicingElement = slicingSerialization.serializeSlicing(segment.getSlicings(), root, Type.SEGMENT,bindedPaths);
+		} catch (ResourceNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        if (slicingElement != null) {
+        	segmentElement.appendChild(slicingElement);
+        }
+    
+  }
     if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
       Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
       if (constraints != null) {
