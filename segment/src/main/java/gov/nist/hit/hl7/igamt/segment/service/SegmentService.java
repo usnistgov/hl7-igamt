@@ -132,5 +132,10 @@ public interface SegmentService extends ResourceService {
    */
   String findObx2VsId(Segment s);
 
+  void updateDependencies(Segment elm, HashMap<RealKey, String> newKeys);
+  
+  List<Segment> saveAll(Set<Segment> segments);
+
+
 
 }

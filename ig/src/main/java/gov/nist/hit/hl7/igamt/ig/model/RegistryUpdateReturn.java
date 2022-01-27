@@ -9,24 +9,35 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.ig.service;
+package gov.nist.hit.hl7.igamt.ig.model;
 
-import java.util.HashMap;
+import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
-import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public interface CloneService {
-
-  public Ig clone(Ig ig, String username, CopyInfo info) throws CoConstraintGroupNotFoundException;
+public class RegistryUpdateReturn<T extends Resource> {
+  Set<Link> links; // contains all the links 
+  Set<T> savedResources; // contains only saved Resources
+  Set<String> deletedIds; 
+  
+  public Set<Link> getLinks() {
+    return links;
+  }
+  public void setLinks(Set<Link> links) {
+    this.links = links;
+  }
+  public Set<T> getSavedResources() {
+    return savedResources;
+  }
+  public void setSavedResources(Set<T> savedResources) {
+    this.savedResources = savedResources;
+  }
+  
 
 }

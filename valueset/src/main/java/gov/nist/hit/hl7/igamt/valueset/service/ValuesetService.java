@@ -87,5 +87,7 @@ public interface ValuesetService {
 	Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
 	Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
 
+	List<Valueset> saveAll(Set<Valueset> valueSets);
+
 
 }

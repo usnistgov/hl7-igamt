@@ -51,6 +51,8 @@ public interface DatatypeService {
 	public Datatype save(Datatype datatype);
 
 	public List<Datatype> findAll();
+	
+	public List<Datatype> saveAll(Set<Datatype> datatypes);
 
 	public List<Datatype> findByScope(Scope scope);
 
@@ -124,5 +126,8 @@ public interface DatatypeService {
 	DisplayElement convertDatatype(Datatype datatype);
 
 	Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry);
+
+    void updateDependencies(Datatype elm, HashMap<RealKey, String> newKeys);
+    
 
 }

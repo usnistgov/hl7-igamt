@@ -13,7 +13,6 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -114,6 +113,14 @@ public interface ConformanceProfileService {
   Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry);
 
   void subsitute(ConformanceProfile clone, List<Substitue> substitutes, String username);
+
+  /**
+   * @param elm
+   * @param newKeys
+   */
+  void updateDependencies(ConformanceProfile elm, HashMap<RealKey, String> newKeys);
+
+  public List<ConformanceProfile> saveAll(Set<ConformanceProfile> datatypes);
 
 
 

@@ -373,5 +373,11 @@ public class ValuesetServiceImpl implements ValuesetService {
         }
         return ret;
     }
+    
+    @Override
+    public List<Valueset> saveAll(Set<Valueset> valueSets){
+    	return this.valuesetRepository.saveAll(valueSets);
+    }
+    
 
 }

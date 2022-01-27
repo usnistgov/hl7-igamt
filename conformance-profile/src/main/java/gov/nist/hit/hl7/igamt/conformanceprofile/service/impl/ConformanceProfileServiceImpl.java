@@ -398,7 +398,12 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
     elm.setUsername(username);
     Link newLink = new Link(elm);
-    updateDependencies(elm, newKeys, cloneMode);
+    updateDependencies(elm, newKeys);
+    if (elm.getBinding() != null) {
+      if(cloneMode.equals(CloneMode.DERIVE)) {
+        this.bindingService.lockConformanceStatements(elm.getBinding());
+      }
+    }
     this.save(elm);
     return newLink;
   }
@@ -407,15 +412,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    * @param elm
    * @param cloneMode 
    */
-  private void updateDependencies(ConformanceProfile elm, HashMap<RealKey, String> newKeys, CloneMode cloneMode) {
+  @Override
+  public void updateDependencies(ConformanceProfile elm, HashMap<RealKey, String> newKeys) {
     // TODO Auto-generated method stub
 
     processAndSubstitute(elm, newKeys);
     if (elm.getBinding() != null) {
       this.bindingService.substitute(elm.getBinding(), newKeys);
-      if(cloneMode.equals(CloneMode.DERIVE)) {
-        this.bindingService.lockConformanceStatements(elm.getBinding());
-      }
     }
     if(elm.getSlicings() != null) {
       this.slicingService.updateSlicing(elm.getSlicings(), newKeys, Type.SEGMENT);
@@ -424,11 +427,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       for (CoConstraintBinding binding : elm.getCoConstraintsBindings()) {
         if (binding.getBindings() != null) {
           for (CoConstraintBindingSegment segBinding : binding.getBindings()) {
-            // TODO Review Line Below
-//            RealKey segKey = new RealKey(segBinding.getFlavorId(), Type.SEGMENT);
-//            if (segBinding.getFlavorId() != null && newKeys.containsKey(segKey)) {
-//              segBinding.setFlavorId(newKeys.get(segKey));
-//            }
             if (segBinding.getTables() != null) {
               for (CoConstraintTableConditionalBinding ccBinding : segBinding.getTables()) {
                 if (ccBinding.getValue() != null) {
@@ -1665,6 +1663,14 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
     this.processAndSubstitute(cp, newKeys);
 
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#saveAll(java.util.Set)
+   */
+  @Override
+  public List<ConformanceProfile> saveAll(Set<ConformanceProfile> conformanceProfiles) {
+    return this.conformanceProfileRepository.saveAll(conformanceProfiles);
   }
 
 

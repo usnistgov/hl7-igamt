@@ -1,7 +1,6 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +28,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
@@ -163,10 +161,7 @@ public class CrudServiceImpl implements CrudService {
             ret.getSegments().add(segment);
             reg.getChildren().add(link);
           } else {
-
             throw new AddingException("Could not find Segment with id" + segment.getId());
-
-
           }
         }
       }

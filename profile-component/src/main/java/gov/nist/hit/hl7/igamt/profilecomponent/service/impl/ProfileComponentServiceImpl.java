@@ -416,13 +416,13 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     elm.setOrigin(l.getId());
     elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
     Link newLink = new Link(elm);
-    updateDependencies(elm, newKeys, cloneMode);
+    updateDependencies(elm, newKeys);
     this.save(elm);
     return newLink;
 
   }
-
-  private void updateDependencies(ProfileComponent elm, HashMap<RealKey, String> newKeys, CloneMode cloneMode) {
+  @Override
+  public void updateDependencies(ProfileComponent elm, HashMap<RealKey, String> newKeys) {
 
     for(ProfileComponentContext context: elm.getChildren()) {
       RealKey contextKey = new RealKey(context.getSourceId(), context.getLevel());
@@ -482,7 +482,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
                   if (segBinding.getTables() != null) {
                     for (CoConstraintTableConditionalBinding ccBinding : segBinding.getTables()) {
                       if (ccBinding.getValue() != null) {
-                        this.coConstraintService.updateDepenedencies(ccBinding.getValue(), newKeys, true);
+                        this.coConstraintService.updateDepenedencies(ccBinding.getValue(), newKeys);
                       }
                     }
                   }
@@ -722,6 +722,15 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     this.save(pc);
     return findContextById(pcId, contextId).getProfileComponentDynamicMapping();
 
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#saveAll(java.util.Set)
+   */
+  @Override
+  public List<ProfileComponent> saveAll(Set<ProfileComponent> profileComponents) {
+    // TODO Auto-generated method stub
+    return this.profileComponentRepository.saveAll(profileComponents);
   }
 
 

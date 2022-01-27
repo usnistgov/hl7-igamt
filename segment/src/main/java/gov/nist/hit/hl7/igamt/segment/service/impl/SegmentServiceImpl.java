@@ -515,8 +515,10 @@ public class SegmentServiceImpl implements SegmentService {
     elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
     elm.setUsername(username);
     Link newLink = new Link(elm);
-    updateDependencies(elm, newKeys, username, cloneMode);
-    updateDynamicMapping(elm, newKeys);
+    updateDependencies(elm, newKeys);
+    if(cloneMode.equals(CloneMode.DERIVE)) {
+      this.bindingService.lockConformanceStatements(elm.getBinding());
+    }
     this.save(elm);
     return newLink;
   }
@@ -551,7 +553,8 @@ public class SegmentServiceImpl implements SegmentService {
    * @param valuesetsMap
    * @throws CoConstraintSaveException
    */
-  private void updateDependencies(Segment elm, HashMap<RealKey, String> newKeys, String username, CloneMode cloneMode) {
+  @Override
+  public  void updateDependencies(Segment elm, HashMap<RealKey, String> newKeys) {
     // TODO Auto-generated method stub
 
     for (Field f : elm.getChildren()) {
@@ -565,12 +568,11 @@ public class SegmentServiceImpl implements SegmentService {
       }
     }
     this.bindingService.substitute(elm.getBinding(), newKeys);
-    if(cloneMode.equals(CloneMode.DERIVE)) {
-      this.bindingService.lockConformanceStatements(elm.getBinding());
-    }
+ 
     if(elm.getSlicings() != null) {
       this.slicingService.updateSlicing(elm.getSlicings(), newKeys, Type.DATATYPE);
     }
+    updateDynamicMapping(elm, newKeys);
   }
 
   @Override
@@ -1065,13 +1067,11 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public List<Segment> findByIdIn(Set<String> ids) {
-    // TODO Auto-generated method stub
     return segmentRepository.findByIdIn(ids);
   }
 
   @Override
   public void collectResources(Segment seg, HashMap<String, Resource> used) {
-    // TODO Auto-generated method stub
     Set<String> usedDatatypesIds = this.getSegmentDatatypesDependenciesIds(seg, used);
     List<Datatype> usedDatatypes = this.datatypeService.findByIdIn(usedDatatypesIds);
     for (Datatype d : usedDatatypes) {
@@ -1081,7 +1081,6 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   private Set<String> getSegmentDatatypesDependenciesIds(Segment segment, HashMap<String, Resource> used) {
-    // TODO Auto-generated method stub
     Set<String> ids = new HashSet<String>();
     if (segment.getChildren() != null) {
 
@@ -1346,6 +1345,14 @@ public class SegmentServiceImpl implements SegmentService {
       }
     }
     return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#saveAll(java.util.Set)
+   */
+  @Override
+  public List<Segment> saveAll(Set<Segment> segments) {
+    return this.segmentRepository.saveAll(segments);
   }
 
 }

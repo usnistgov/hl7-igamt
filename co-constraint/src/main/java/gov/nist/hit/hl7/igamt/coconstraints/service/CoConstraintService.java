@@ -29,10 +29,16 @@ public interface CoConstraintService {
     Set<RelationShip> collectDependencies(ReferenceIndentifier referenceIndentifier,
                                           List<CoConstraintBinding> coConstraintsBindings);
     List<CoConstraintGroup> findByIdIn(Set<String> ids);
-    Collection<? extends RelationShip> collectDependencies(CoConstraintGroup ccGroup) ;
+    Set<RelationShip> collectDependencies(CoConstraintGroup ccGroup) ;
     Link clone(String string, HashMap<RealKey, String> newKeys, Link l, String username,
         Scope user, String documentTarget, CloneMode cloneMode);
-    void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys,
-        String username, boolean cloned);
-    void updateDepenedencies(CoConstraintTable value, HashMap<RealKey, String> newKeys, boolean cloned);
+//    void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys,
+//      String username, boolean cloned);
+
+    void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys);
+    List<CoConstraintGroup>  saveAll(Set<CoConstraintGroup> coConstraintGroups) ;
+
+    void updateDepenedencies(CoConstraintTable value, HashMap<RealKey, String> newKeys,
+        boolean cloned);
+  
 }

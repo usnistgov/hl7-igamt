@@ -55,4 +55,8 @@ public interface CompositeProfileStructureService {
   void applyChanges(CompositeProfileStructure pc, List<ChangeItemDomain> cItems, String documentId)
       throws ApplyChangeException;
 
+  void updateDependencies(CompositeProfileStructure elm, HashMap<RealKey, String> newKeys);
+  
+  List<CompositeProfileStructure> saveAll(Set<CompositeProfileStructure> compositeProfileStructures);
+
 }

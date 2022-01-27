@@ -11,22 +11,39 @@
  */
 package gov.nist.hit.hl7.igamt.ig.service;
 
-import java.util.HashMap;
-
 import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
-import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public interface CloneService {
+public interface ResourceHelper {
 
-  public Ig clone(Ig ig, String username, CopyInfo info) throws CoConstraintGroupNotFoundException;
+  <T extends Resource> T getResourceByType(String id, Type type) throws CoConstraintGroupNotFoundException;
+
+  /**
+   * @return
+   */
+  String generateAbstractDomainId();
+
+  /**
+   * @return
+   */
+  Link generateLink(Resource resource, DocumentInfo info, int position);
+
+  /**
+   * @param resource
+   * @param type
+   * @return
+   */
+  <T extends Resource> T saveByType(T resource, Type type);
+  
+  
+  
+  
 
 }

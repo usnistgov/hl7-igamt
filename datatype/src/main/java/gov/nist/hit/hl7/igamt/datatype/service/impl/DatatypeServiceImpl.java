@@ -137,6 +137,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 		return datatype;
 	}
 
+
 	@Override
 	public List<Datatype> findAll() {
 		return Stream.concat(domainExtention.getAll(Datatype.class).stream(), datatypeRepository.findAll().stream())
@@ -304,13 +305,18 @@ public class DatatypeServiceImpl implements DatatypeService {
 	    elm.setOrigin(l.getId());
 	    elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
 		Link newLink = new Link(elm);
-		updateDependencies(elm, newKey, cloneMode);
+		updateDependencies(elm, newKey);
+		  if (elm.getBinding() != null) {
+             if(cloneMode.equals(CloneMode.DERIVE)) {
+                  this.bindingService.lockConformanceStatements(elm.getBinding());
+                }
+        }
 		this.save(elm);
 		return newLink;
 
 	}
-
-	private void updateDependencies(Datatype elm, HashMap<RealKey, String> newKeys, CloneMode cloneMode) {
+	@Override
+	public void updateDependencies(Datatype elm, HashMap<RealKey, String> newKeys) {
 		// TODO Auto-generated method stub
 
 		if (elm instanceof ComplexDatatype) {
@@ -327,9 +333,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 		}
 		if (elm.getBinding() != null) {
 			this.bindingService.substitute(elm.getBinding(), newKeys);
-			 if(cloneMode.equals(CloneMode.DERIVE)) {
-		          this.bindingService.lockConformanceStatements(elm.getBinding());
-		        }
 		}
 	}
 	@Override
@@ -1161,7 +1164,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	private Set<String> getDatatypeResourceDependenciesIds(ComplexDatatype datatype, HashMap<String, Resource> used) {
-		// TODO Auto-generated method stub
 		Set<String> datatypeIds = new HashSet<String>();
 		for (Component c : datatype.getComponents()) {
 			if (c.getRef() != null) {
@@ -1240,4 +1242,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 		}
 		return ret;
 	}
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#saveAll()
+   */
+  @Override
+  public List<Datatype> saveAll(Set<Datatype> datatypes) {
+    // TODO Auto-generated method stub
+    return this.datatypeRepository.saveAll(datatypes);
+  }
 }

@@ -83,4 +83,8 @@ public interface ProfileComponentService {
       PropertyDynamicMapping pcDynamicMapping)
       throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
 
+  void updateDependencies(ProfileComponent elm, HashMap<RealKey, String> newKeys);
+  
+  List<ProfileComponent> saveAll(Set<ProfileComponent> profileComponents);
+
 }

@@ -305,7 +305,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
   }
 
   @Override
-  public Collection<? extends RelationShip> collectDependencies(CoConstraintGroup ccGroup) {
+  public Set<RelationShip> collectDependencies(CoConstraintGroup ccGroup) {
     // TODO Auto-generated method stub
     Set<RelationShip> relations= new HashSet<RelationShip>();
     ReferenceIndentifier parent = new ReferenceIndentifier(ccGroup.getId(), Type.COCONSTRAINTGROUP);
@@ -337,7 +337,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
       elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
       Link newLink = new Link(elm);
      
-      updateDependencies(elm, newKeys, username, true);
+      updateDependencies(elm, newKeys);
       this.coConstraintGroupRepository.save(elm);
       return newLink;
     } else {
@@ -351,18 +351,19 @@ public class SimpleCoConstraintService implements CoConstraintService {
    * @param username
    */
   @Override
-  public void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys,
-      String username, boolean cloned) {
+  public void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys) {
     RealKey segmentKey= new RealKey(elm.getBaseSegment(), Type.SEGMENT);
     if(elm.getBaseSegment() !=null && newKeys.containsKey(segmentKey)) {
       elm.setBaseSegment(newKeys.get(segmentKey));
     }
     if(elm.getCoConstraints() !=null) {
       for(CoConstraint cc: elm.getCoConstraints() ) {
-        cc.setCloned(cloned || cc.isCloned());
+       // cc.setCloned(cloned || cc.isCloned());
         updateDependencies(cc, newKeys);
       }
     }
+    
+    
   }
   
   private void updateDependencies(CoConstraint coconstraint, HashMap<RealKey, String> newKeys) {
@@ -434,6 +435,17 @@ public class SimpleCoConstraintService implements CoConstraintService {
         this.updateDependencies(cc, newKeys);
       });
     }
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService#saveAll(java.util.Set)
+   */
+  @Override
+  public List<CoConstraintGroup> saveAll(Set<CoConstraintGroup> coConstraintGroups) {
+    // TODO Auto-generated method stub
+    return this.coConstraintGroupRepository.saveAll(coConstraintGroups);
+  }
+
   }
 
 

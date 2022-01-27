@@ -104,7 +104,7 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
     elm.setOrigin(l.getId());
     elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
     Link newLink = new Link(elm);
-    updateDependencies(elm, newKeys, cloneMode);
+    updateDependencies(elm, newKeys);
     this.save(elm);
     return newLink;
     
@@ -115,8 +115,8 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
    * @param newKeys
    * @param cloneMode
    */
-  private void updateDependencies(CompositeProfileStructure elm, HashMap<RealKey, String> newKeys,
-      CloneMode cloneMode) {
+  @Override
+  public  void updateDependencies(CompositeProfileStructure elm, HashMap<RealKey, String> newKeys) {
     if(elm.getConformanceProfileId() != null) {
       RealKey key = new RealKey(elm.getConformanceProfileId(), Type.CONFORMANCEPROFILE);
       if(newKeys.containsKey(key)){
@@ -200,5 +200,14 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
       }
     } 
 
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService#saveAll(java.util.Set)
+   */
+  @Override
+  public List<CompositeProfileStructure> saveAll(
+      Set<CompositeProfileStructure> compositeProfileStructures) {
+    return this.compositeProfileStructureRepository.saveAll(compositeProfileStructures);
   }
 }
