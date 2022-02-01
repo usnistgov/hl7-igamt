@@ -27,6 +27,7 @@ import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.GenerationDirective;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
@@ -96,6 +97,8 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
   
   @Autowired
   ResourceSkeletonService resourceSkeletonService;
+  
+
   
 
 
@@ -288,8 +291,14 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
               }
 
             }
+            if(field.getUsage() != null && !field.getUsage().equals(Usage.CAB)) {
             fieldElement.addAttribute(
-                new Attribute("usage", field.getUsage() != null ? field.getUsage().toString() : ""));
+                new Attribute("usage", field.getUsage() != null ? field.getUsage().toString() : ""));}
+            else if(field.getUsage() != null && field.getUsage().equals(Usage.CAB)) {
+            	
+            	fieldElement.addAttribute(
+                        new Attribute("usage", field.getUsage() != null ? serializationTools.extractPredicateUsages(segmentDataModel.getPredicateMap(), field.getId()) : ""));
+            }
             if (segmentDataModel != null && segmentDataModel.getValuesetMap() != null && segmentDataModel.getValuesetMap().containsKey(field.getPosition() + "")) {
               String vs = segmentDataModel.getValuesetMap().get(field.getPosition()+"").stream().map((element) -> {
                 return element.getBindingIdentifier();
