@@ -18,6 +18,7 @@ export class StatementTarget {
   public node: IHL7v2TreeNode;
   public valid: boolean;
   public complex: boolean;
+  public resourceName: string;
   public repeatMax: number;
   public value: ISubject;
   public context: IPath;
@@ -25,6 +26,10 @@ export class StatementTarget {
 
   getValue(): ISubject {
     return this.value;
+  }
+
+  isPrimitive(): boolean {
+    return !this.isComplex();
   }
 
   isComplex(): boolean {
@@ -67,6 +72,7 @@ export class StatementTarget {
     this.name = '';
     this.valid = false;
     this.node = undefined;
+    this.resourceName = undefined;
     this.repeatMax = undefined;
     this.context = undefined;
 
@@ -99,6 +105,7 @@ export class StatementTarget {
       occurenceLocationStr: undefined,
     };
     this.repeatMax = undefined;
+    this.resourceName = undefined;
     this.context = undefined;
   }
 
@@ -134,9 +141,13 @@ export class StatementTarget {
     this.valid = true;
     if (nodeInfo) {
       this.complex = !nodeInfo.leaf;
+      this.resourceName = nodeInfo.name;
     }
     if (tree && node) {
       this.repeatMax = this.getNodeRepeatMax(node, tree[0]);
+    }
+    if (node) {
+      this.resourceName = node.data.ref.getValue().name;
     }
     this.node = node;
     this.context = context;

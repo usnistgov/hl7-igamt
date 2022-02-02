@@ -20,10 +20,10 @@
         <ng-container *ngIf="csType !== _csType.PROPOSITION">
           <span style="display: flex;
           flex-direction: row;
-          align-items: center;"> <input [name]="id + 'dec-comp'" type="radio" (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" style="margin-right: 5px; margin-left: 5px;" class="radio-inline" [value]="_statementType.DECLARATIVE"/> Declaration </span>
+          align-items: center;"> <input [name]="id + 'dec-comp'" type="radio" [(ngModel)]="statementType" (ngModelChange)="changeStatementType($event)"  style="margin-right: 5px; margin-left: 5px;" class="radio-inline" [value]="_statementType.DECLARATIVE"/> Declaration </span>
           <span style="display: flex;
           flex-direction: row;
-          align-items: center;"> <input [name]="id + 'dec-comp'" type="radio" (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" style="margin-right: 5px; margin-left: 5px;" class="radio-inline" [value]="_statementType.COMPARATIVE"/> Comparison </span>
+          align-items: center;"> <input [name]="id + 'dec-comp'" type="radio"  [(ngModel)]="statementType" (ngModelChange)="changeStatementType($event)" style="margin-right: 5px; margin-left: 5px;" class="radio-inline" [value]="_statementType.COMPARATIVE"/> Comparison </span>
         </ng-container>
       </div>
     </th>
@@ -279,7 +279,7 @@
 
     <!-- Statement -->
     <td class="table-font">
-      <ng-container  *ngFor="let complement of statementList()" >
+      <ng-container  *ngFor="let complement of statementsList" >
         <input type="radio" [name]="id + 'complement'" [value]="complement.value" [(ngModel)]="assertion.complement.complementKey" (ngModelChange)="changeStatement($event)"/> {{ complement.label }}<br>
       </ng-container>
     </td>
@@ -296,10 +296,11 @@
       <div style="height: 200px; width: 250px;">
         <app-structure-tree
           [tree]="treeDisplay.effectiveTree"
-          [filter]="treeFilter"
+          [filter]="compareTreeFilter"
           [resourceType]="resourceType"
           [repository]="repository"
-          (selection)=" comparativeElement($event)"
+          [clear]="clearCompareNode"
+          (selection)="comparativeElement($event)"
         ></app-structure-tree>
       </div>
     </td>
