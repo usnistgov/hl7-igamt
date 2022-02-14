@@ -23,6 +23,7 @@ import { IMessageStructure, IMsgStructElement } from '../../../shared/models/con
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
 import { StructureEditorService } from '../../services/structure-editor.service';
 import { FieldAddDialogComponent } from '../field-add-dialog/field-add-dialog.component';
+import { FieldImportDialogComponent } from '../field-import-dialog/field-import-dialog.component';
 import { GroupAddDialogComponent } from '../group-add-dialog/group-add-dialog.component';
 import { SegmentAddDialogComponent } from '../segment-add-dialog/segment-add-dialog.component';
 
@@ -110,6 +111,10 @@ export class Hl7V2TreeStructureComponent implements OnInit, OnDestroy {
         this.context = { resource: Type.CONFORMANCEPROFILE };
         break;
     }
+  }
+
+  get resource() {
+    return this._resource;
   }
 
   @Input()
@@ -220,6 +225,28 @@ export class Hl7V2TreeStructureComponent implements OnInit, OnDestroy {
       Type.FIELD,
       () => {
         return this.dialog.open(FieldAddDialogComponent, {
+          data: {
+            parent,
+            resources: this.datatypes,
+            position: nodes.length + 1,
+            root: this.resourceName,
+            type: this.type,
+            path: parent ? parent.data.id : undefined,
+            size: nodes.length,
+            usages: this.usageOptions,
+          },
+        }).afterClosed();
+      },
+      parent,
+    ).subscribe();
+  }
+
+  importField(path: string, nodes: IHL7v2TreeNode[], parent?: IHL7v2TreeNode) {
+    this.addStructureElement<IField>(
+      path,
+      Type.FIELD,
+      () => {
+        return this.dialog.open(FieldImportDialogComponent, {
           data: {
             parent,
             resources: this.datatypes,

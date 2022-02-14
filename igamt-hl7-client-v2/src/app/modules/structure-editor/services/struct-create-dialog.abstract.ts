@@ -19,7 +19,7 @@ export abstract class StructCreateDialog<T> {
 
   constructor(
     public dialogRef: MatDialogRef<StructCreateDialog<T>>,
-    private repository: AResourceRepositoryService,
+    readonly repository: AResourceRepositoryService,
     readonly parent: IHL7v2TreeNode,
     readonly resources: IDisplayElement,
     readonly usageOptions: IUsageOption[],
@@ -31,10 +31,14 @@ export abstract class StructCreateDialog<T> {
   ) {
     this.positionOptions = [];
     for (let i = 1; i <= containerSize + 1; i++) {
-      this.positionOptions.push({
-        label: i,
-        value: i,
-      });
+      const msh1or2 = (type === Type.SEGMENT && root === 'MSH' && (i === 1 || i === 2));
+      const msh = type === Type.MESSAGESTRUCT && i === 1;
+      if (!(msh || msh1or2)) {
+        this.positionOptions.push({
+          label: i,
+          value: i,
+        });
+      }
     }
   }
 
