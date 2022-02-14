@@ -14,10 +14,13 @@ import { AResourceRepositoryService } from './resource-repository.service';
 
 export type NamedChildrenList = INamedChildrenItem[];
 
-export interface INamedChildrenItem {
+interface INamedChildrenItem {
   name: string;
   id: string;
-  ref?: IRef;
+  ref?: {
+    type: Type;
+    id: string;
+  };
   type: Type;
   children?: NamedChildrenList;
   position: number;
@@ -30,6 +33,10 @@ export interface IPathInfo {
   type: Type;
   position: number;
   leaf: boolean;
+  ref?: {
+    type: Type;
+    id: string;
+  };
   child?: IPathInfo;
 }
 
@@ -88,6 +95,10 @@ export class ElementNamingService {
         type: elm.data.type,
         position: elm.data.position,
         leaf: elm.leaf,
+        ref: elm.data.ref ? {
+          id: elm.data.ref.getValue().id,
+          type: elm.data.ref.getValue().type,
+        } : undefined,
       };
     };
 
@@ -113,7 +124,10 @@ export class ElementNamingService {
         position: field.position,
         leaf: leafs[field.ref.id],
         type: field.type,
-        ref: field.ref,
+        ref: {
+          id: field.ref.id,
+          type: Type.DATATYPE,
+        },
       };
     };
 
@@ -124,7 +138,10 @@ export class ElementNamingService {
         position: elm.position,
         leaf: false,
         type: elm.type,
-        ref: elm.type === Type.SEGMENTREF ? (elm as ISegmentRef).ref : undefined,
+        ref: elm.type === Type.SEGMENTREF ? {
+          id: (elm as ISegmentRef).ref.id,
+          type: Type.SEGMENT,
+        } : undefined,
         children: elm.type === Type.GROUP ? ((elm as IGroup).children || []).map(itemize) : undefined,
       };
     };
@@ -182,6 +199,10 @@ export class ElementNamingService {
       type: resource.type,
       position: -1,
       leaf: false,
+      ref: {
+        id: resource.id,
+        type: resource.type,
+      },
     };
 
     const fn = (children: NamedChildrenList, cursor: IPath, pathInfo: IPathInfo, subject: Subject<IPathInfo>) => {
@@ -201,6 +222,7 @@ export class ElementNamingService {
           type: next.type,
           position: next.position,
           leaf: next.leaf,
+          ref: next.ref,
         };
 
         if (cursor.child) {
