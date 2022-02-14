@@ -1,3 +1,4 @@
+import {ResourceOrigin} from '../constants/resource-origin.enum';
 import {Type} from '../constants/type.enum';
 import {IActiveInfo, Status} from './abstract-domain.interface';
 import { SourceType } from './adding-info';
@@ -30,5 +31,6 @@ export interface IDisplayElement {
   flavorExt?: string;
   resourceName?: string;
   structureIdentifier?: string;
+  resourceOrigin?: ResourceOrigin;
 
 }

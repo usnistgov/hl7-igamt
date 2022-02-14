@@ -5,6 +5,7 @@ import { IResource } from '../../modules/shared/models/resource.interface';
 export enum IgamtLoadedResourcesActionTypes {
   LoadResourceReferences = '[Resource References] Load Resource References',
   LoadResourceReferencesSuccess = '[Resource References] Load Resource References Success',
+  LoadedResourceReferences = '[Resource References] Loaded Resource References',
   LoadResourceReferencesFailure = '[Resource References] Load Resource References Failure',
 }
 
@@ -16,6 +17,7 @@ export class LoadResourceReferences implements Action {
     id: string,
     display?: boolean,
     insert?: boolean,
+    tag?: string;
   }) {
   }
 }
@@ -23,7 +25,11 @@ export class LoadResourceReferences implements Action {
 export class LoadResourceReferencesSuccess implements Action {
   readonly type = IgamtLoadedResourcesActionTypes.LoadResourceReferencesSuccess;
 
-  constructor(readonly payload: IResource[]) {
+  constructor(readonly payload: IResource[], readonly ref: {
+    resourceType: Type,
+    id: string,
+    tag?: string;
+  }) {
   }
 }
 

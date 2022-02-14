@@ -9,6 +9,7 @@ import { CreateMessageDialogComponent } from './components/create-message-dialog
 import { CreateSegmentDialogComponent } from './components/create-segment-dialog/create-segment-dialog.component';
 import { DependencyViewerComponent } from './components/dependency-viewer/dependency-viewer.component';
 import { FieldAddDialogComponent } from './components/field-add-dialog/field-add-dialog.component';
+import { FieldImportDialogComponent } from './components/field-import-dialog/field-import-dialog.component';
 import { GroupAddDialogComponent } from './components/group-add-dialog/group-add-dialog.component';
 import { CardinalityComponent } from './components/hl7-v2-tree-structure/columns/cardinality/cardinality.component';
 import { ConformanceLengthComponent } from './components/hl7-v2-tree-structure/columns/conformance-length/conformance-length.component';
@@ -59,6 +60,7 @@ import { StructureEditorRoutingModule } from './structure-editor-routing.module'
     CreateSegmentDialogComponent,
     FieldAddDialogComponent,
     StructureNamingDuplicationDirective,
+    FieldImportDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -71,6 +73,6 @@ import { StructureEditorRoutingModule } from './structure-editor-routing.module'
     StructureEditorResourceRepositoryService,
   ],
   exports: [StructureEditorContainerComponent, StructureNamingDuplicationDirective],
-  entryComponents: [CreateMessageDialogComponent, ResourceSelectDialogComponent, SegmentAddDialogComponent, GroupAddDialogComponent, FieldAddDialogComponent, CreateSegmentDialogComponent, StructureEditorContainerComponent],
+  entryComponents: [CreateMessageDialogComponent, ResourceSelectDialogComponent, SegmentAddDialogComponent, GroupAddDialogComponent, FieldAddDialogComponent, CreateSegmentDialogComponent, StructureEditorContainerComponent, FieldImportDialogComponent],
 })
 export class StructureEditorModule { }

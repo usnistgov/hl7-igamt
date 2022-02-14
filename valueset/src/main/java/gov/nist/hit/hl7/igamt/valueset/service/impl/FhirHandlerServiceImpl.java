@@ -48,6 +48,10 @@ import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 public class FhirHandlerServiceImpl implements FhirHandlerService {
 
 	RestTemplate restTemplate;
+	
+	String url = "http://hit-dev.nist.gov:8095/vocabulary-service/";
+	//String url = "http://129.6.24.81:8095/vocabulary-service/";
+
 
 	@Autowired
 	FhirContext fhirR4Context;
@@ -80,7 +84,7 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 		System.out.println(restTemplate);
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(
-					"https://hit-dev.nist.gov:8095/vocabulary-service/phinvads/ValueSet", HttpMethod.GET, entity,
+					url+"phinvads/ValueSet", HttpMethod.GET, entity,
 					String.class);
 
 			if (response != null) {
@@ -104,7 +108,7 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		System.out.println(restTemplate);
 		ResponseEntity<String> response = restTemplate.exchange(
-				"https://hit-dev.nist.gov:8095/vocabulary-service/phinvads/ValueSet/"+oid+"/$expand", HttpMethod.GET, entity,
+				url+"phinvads/ValueSet/"+oid+"/$expand", HttpMethod.GET, entity,
 				String.class);		
 
 		if (response != null) {
@@ -148,11 +152,11 @@ public class FhirHandlerServiceImpl implements FhirHandlerService {
 		System.out.println(restTemplate);
 		try {
 			ResponseEntity<String> response = restTemplate.exchange(
-					"https://hit-dev.nist.gov:8095/vocabulary-service/hl7/ValueSet/HL70396/$expand", HttpMethod.GET, entity,
+					url+"hl7/ValueSet/HL70396/$expand", HttpMethod.GET, entity,
 					String.class);
 
 			ResponseEntity<String> responseHL7nnn = restTemplate.exchange(
-					"https://hit-dev.nist.gov:8095/vocabulary-service/hl7/ValueSet/HL7nnnn/$expand", HttpMethod.GET, entity,
+					url+"hl7/ValueSet/HL7nnnn/$expand", HttpMethod.GET, entity,
 					String.class);
 			if (response != null) {
 				IParser parser = fhirR4Context.newJsonParser();

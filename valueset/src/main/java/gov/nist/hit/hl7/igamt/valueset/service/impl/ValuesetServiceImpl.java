@@ -361,6 +361,7 @@ public class ValuesetServiceImpl implements ValuesetService {
         displayElement.setParentId(valueset.getParentId());
         displayElement.setParentType(valueset.getParentType());
         displayElement.setResourceName(valueset.getName());
+        displayElement.setResourceOrigin(valueset.getResourceOrigin());
         return displayElement;
     }
 

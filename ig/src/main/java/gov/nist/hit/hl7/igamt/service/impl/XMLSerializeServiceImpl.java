@@ -118,6 +118,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
   @Autowired
   AssertionXMLSerialization assertionXMLSerialization;
   
+  private static final int limitSizeOfVS = 1000;
+  
   /*
    * (non-Javadoc)
    * 
@@ -394,7 +396,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         Valueset t = vsm.getModel();
 
         if (t != null) {
-          if (t.getCodes() == null || t.getCodes().size() == 0 || t.getCodes().size() > 500
+          if (t.getCodes() == null || t.getCodes().size() == 0 || t.getCodes().size() > limitSizeOfVS
               || (t.getCodes().size() == 1
                   && new ArrayList<Code>(t.getCodes()).get(0).getValue().equals("..."))) {
             // || (codePresenceMap.containsKey(t.getId()) &&
@@ -411,6 +413,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             } else {
               elmBindingIdentifier.appendChild(this.str(t.getBindingIdentifier()));
             }
+            System.out.println(t.getBindingIdentifier());            
             elmNoValidation.appendChild(elmBindingIdentifier);
           }
 
@@ -475,7 +478,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             elmValueSetDefinitionsHL7Other.appendChild(elmValueSetDefinition);
           }
 
-          if (t.getCodes() != null && t.getCodes().size() <= 500) {
+          if (t.getCodes() != null && t.getCodes().size() <= limitSizeOfVS) {
             for (Code c : t.getCodes()) {
               Element elmValueElement = new Element("ValueElement");
               elmValueElement.addAttribute(new Attribute("Value", this.str(c.getValue())));
@@ -588,11 +591,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       if (dtModel.getPredicateMap() != null && dtModel.getPredicateMap().size() > 0) {
         for (String key : dtModel.getPredicateMap().keySet()) {
 
-          Predicate p = dtModel.getPredicateMap().get(key);
-
-          
+          Predicate p = dtModel.getPredicateMap().get(key);          
           String script = this.generateConditionScript(p, dtModel.getModel().getId());
-          if(script != null) {
+          Node n = this.innerXMLHandler(script);
+          
+          if(n != null) {
               Element elm_Constraint = new Element("Predicate");          
               elm_Constraint.addAttribute(new Attribute("Target", this.bindingInstanceNum(key)));
               elm_Constraint.addAttribute(new Attribute("TrueUsage", p.getTrueUsage().toString()));
@@ -600,7 +603,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
               Element elm_Description = new Element("Description");
               elm_Description.appendChild(p.generateDescription());
               elm_Constraint.appendChild(elm_Description);
-              elm_Constraint.appendChild(this.innerXMLHandler(script));
+              elm_Constraint.appendChild(n);
               elm_ByID.appendChild(elm_Constraint);        	  
           }
 
@@ -636,7 +639,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           Predicate p = segModel.getPredicateMap().get(key);
 
           String script = this.generateConditionScript(p, segModel.getModel().getId());
-          if(script != null) {
+          Node n = this.innerXMLHandler(script);
+          if(n != null) {
         	  Element elm_Constraint = new Element("Predicate");
               elm_Constraint.addAttribute(new Attribute("Target", this.bindingInstanceNum(key)));
               elm_Constraint.addAttribute(new Attribute("TrueUsage", p.getTrueUsage().toString()));
@@ -644,7 +648,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
               Element elm_Description = new Element("Description");
               elm_Description.appendChild(p.generateDescription());
               elm_Constraint.appendChild(elm_Description);
-              elm_Constraint.appendChild(this.innerXMLHandler(script));
+              elm_Constraint.appendChild(n);
               elm_ByID.appendChild(elm_Constraint);	  
           }
         }
@@ -678,7 +682,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
             Element elm_ByID = this.findOrCreatByIDElement(predicates_Group_Elm, p.getContext(), cpModel.getModel());
             p.setLevel(Level.GROUP);
             String script = this.generateConditionScript(p, cpModel.getModel().getId());
-            if(script != null) {
+            Node n = this.innerXMLHandler(script);
+            if(n != null) {
                 Element elm_Constraint = new Element("Predicate");
                 elm_Constraint.addAttribute(new Attribute("Target", this.bindingInstanceNum(groupKey)));
                 elm_Constraint.addAttribute(new Attribute("TrueUsage", p.getTrueUsage().toString()));
@@ -686,7 +691,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                 Element elm_Description = new Element("Description");
                 elm_Description.appendChild(p.generateDescription());
                 elm_Constraint.appendChild(elm_Description);
-                elm_Constraint.appendChild(this.innerXMLHandler(script));
+                elm_Constraint.appendChild(n);
                 elm_ByID.appendChild(elm_Constraint);            	
             }
             
@@ -711,7 +716,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
       	if (p.getContext() == null || p.getContext().getElementId() == null) {
       		  p.setLevel(Level.CONFORMANCEPROFILE);
         	  String script = this.generateConditionScript(p, cpModel.getModel().getId());
-        	  if(script != null) {
+        	  Node n = this.innerXMLHandler(script);
+        	  if(n != null) {
                   Element elm_Constraint = new Element("Predicate");
                   elm_Constraint.addAttribute(new Attribute("Target", this.bindingInstanceNum(key)));
                   elm_Constraint.addAttribute(new Attribute("TrueUsage", p.getTrueUsage().toString()));
@@ -719,7 +725,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
                   Element elm_Description = new Element("Description");
                   elm_Description.appendChild(p.generateDescription());
                   elm_Constraint.appendChild(elm_Description);
-                  elm_Constraint.appendChild(this.innerXMLHandler(script));
+                  elm_Constraint.appendChild(n);
                   elm_ByID.appendChild(elm_Constraint);        		  
         	  }
           }
@@ -755,14 +761,14 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         for (ConformanceStatement cs : dtModel.getConformanceStatements()) {
         	
         	String script = this.generateAssertionScript(cs, dtModel.getModel().getId());
-        	
-        	if(script != null) {
+        	Node n = this.innerXMLHandler(script);
+        	if(n != null) {
                 Element elm_Constraint = new Element("Constraint");
                 elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
                 Element elm_Description = new Element("Description");
                 elm_Description.appendChild(cs.generateDescription());
                 elm_Constraint.appendChild(elm_Description);
-                elm_Constraint.appendChild(this.innerXMLHandler(script));
+                elm_Constraint.appendChild(n);
                 elm_ByID.appendChild(elm_Constraint);        		
         	}
         }
@@ -860,18 +866,15 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         	
         	String script = this.generateAssertionScript(cs, segModel.getModel().getId());
 
-        	
-        	if(script != null) {
-            	Node scriptNode = this.innerXMLHandler(script);
-            	if(scriptNode != null) {
+        	Node n = this.innerXMLHandler(script);
+        	if(n != null) {
             		Element elm_Constraint = new Element("Constraint");
                     elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
                     Element elm_Description = new Element("Description");
                     elm_Description.appendChild(cs.generateDescription());
                     elm_Constraint.appendChild(elm_Description);
-                    elm_Constraint.appendChild(this.innerXMLHandler(script));
-                    elm_ByID.appendChild(elm_Constraint);      	
-            	}  		
+                    elm_Constraint.appendChild(n);
+                    elm_ByID.appendChild(elm_Constraint);      		
         	}
         }
       }
@@ -891,14 +894,16 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
           if (cs.getContext() != null && cs.getContext().getElementId() != null) {
             Element elm_ByID = this.findOrCreatByIDElement(constraints_group_Elm, cs.getContext(), cpModel.getModel());
             cs.setLevel(Level.GROUP);
-            String script = this.generateAssertionScript(cs, cpModel.getModel().getId());
-            if (script != null) {
+            String script = this.generateAssertionScript(cs, cpModel.getModel().getId());            
+            Node n = this.innerXMLHandler(script);
+            
+            if (n != null) {
             	Element elm_Constraint = new Element("Constraint");
                 elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
                 Element elm_Description = new Element("Description");
                 elm_Description.appendChild(cs.generateDescription());
                 elm_Constraint.appendChild(elm_Description);
-                elm_Constraint.appendChild(this.innerXMLHandler(script));
+                elm_Constraint.appendChild(n);
                 elm_ByID.appendChild(elm_Constraint);	
             }
           }
@@ -919,13 +924,14 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
         	if (cs.getContext() == null || cs.getContext().getElementId() == null) {
         	  cs.setLevel(Level.CONFORMANCEPROFILE);
         	  String script = this.generateAssertionScript(cs, cpModel.getModel().getId());
-        	  if(script != null) {
+        	  Node n = this.innerXMLHandler(script);
+        	  if(n != null) {
         		  Element elm_Constraint = new Element("Constraint");
                   elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
                   Element elm_Description = new Element("Description");
                   elm_Description.appendChild(cs.generateDescription());
                   elm_Constraint.appendChild(elm_Description);
-                  elm_Constraint.appendChild(this.innerXMLHandler(script));
+                  elm_Constraint.appendChild(n);
                   elm_ByID.appendChild(elm_Constraint);	  
         	  }
             

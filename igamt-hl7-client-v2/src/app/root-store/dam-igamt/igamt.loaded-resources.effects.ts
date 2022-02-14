@@ -72,8 +72,9 @@ export class LoadedResourcesEffects {
                 new fromDAM.TurnOffLoader(),
                 new RepoAction({
                   collections,
+                  tag: action.payload.tag,
                 }),
-                new LoadResourceReferencesSuccess(resources),
+                new LoadResourceReferencesSuccess(resources, action.payload),
               ];
             }),
             catchError((error: HttpErrorResponse) => {

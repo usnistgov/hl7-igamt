@@ -17,7 +17,10 @@
               <i class="fa fa-plus"></i> Add Group
             </button>
             <button *ngIf="type === 'SEGMENT' && !viewOnly && !delta" class="btn btn-sm btn-primary" style="margin-left: 10px;" (click)="addField('', nodes)">
-              <i class="fa fa-plus"></i> Add Field
+              <i class="fa fa-plus"></i> Create Field
+            </button>
+            <button *ngIf="type === 'SEGMENT' && !viewOnly && !delta" class="btn btn-sm btn-primary" style="margin-left: 10px;" (click)="importField('', nodes)">
+              <i class="fa fa-plus"></i> Import Field
             </button>
           </div>
         </ng-template>
@@ -68,7 +71,7 @@
                       </td>
                       <td style="white-space: normal;">
                         <app-name-simplified
-                          [viewOnly]="viewOnly || !rowData.changeable"
+                          [viewOnly]="viewOnly || !rowData.changeable || (type === 'SEGMENT' && resource.name === 'MSH' && (rowData.pathId === '1' || rowData.pathId === '2'))"
                           [structure]="_resource"
                           [globalViewOnly]="viewOnly"
                           [location]="rowData.pathId"
@@ -89,7 +92,7 @@
                 <ng-container *ngSwitchCase="columnTypes.USAGE">
                   <app-usage-simplified
                     [changeEvent]="changes$"
-                    [viewOnly]="viewOnly || !rowData.changeable"
+                    [viewOnly]="viewOnly || !rowData.changeable || (type === 'SEGMENT' && resource.name === 'MSH' && (rowData.pathId === '1' || rowData.pathId === '2'))"
                     [globalViewOnly]="viewOnly"
                     [structure]="_resource"
 
@@ -114,7 +117,7 @@
                 <ng-container *ngSwitchCase="columnTypes.CARDINALITY">
                   <app-cardinality-simplified
                     [changeEvent]="changes$"
-                    [viewOnly]="viewOnly || !rowData.changeable"
+                    [viewOnly]="viewOnly || !rowData.changeable || (type === 'SEGMENT' && resource.name === 'MSH' && (rowData.pathId === '1' || rowData.pathId === '2'))"
                     [globalViewOnly]="viewOnly"
                     [structure]="_resource"
                     [location]="rowData.pathId"
@@ -130,7 +133,7 @@
                   <app-length-simplified
                     [changeEvent]="changes$"
                     *ngIf="rowNode.node.leaf"
-                    [viewOnly]="viewOnly || !rowData.changeable"
+                    [viewOnly]="viewOnly || !rowData.changeable || (type === 'SEGMENT' && resource.name === 'MSH' && (rowData.pathId === '1' || rowData.pathId === '2'))"
                     [globalViewOnly]="viewOnly"
                     [type]="rowData.type"
                     [location]="rowData.pathId"
@@ -152,7 +155,7 @@
                     [changeEvent]="changes$"
                     *ngIf="rowNode.node.leaf"
                     [globalViewOnly]="viewOnly"
-                    [viewOnly]="viewOnly || !rowData.changeable"
+                    [viewOnly]="viewOnly || !rowData.changeable || (type === 'SEGMENT' && resource.name === 'MSH' && (rowData.pathId === '1' || rowData.pathId === '2'))"
                     [structure]="_resource"
 
                     [location]="rowData.pathId"
@@ -175,7 +178,7 @@
                       *ngIf="reference.type === types.DATATYPE"
                       [globalViewOnly]="viewOnly"
                       [type]="rowData.type"
-                      [viewOnly]="viewOnly || !rowData.changeable"
+                      [viewOnly]="viewOnly || !rowData.changeable || (type === 'SEGMENT' && resource.name === 'MSH' && (rowData.pathId === '1' || rowData.pathId === '2'))"
                       [repository]="repository"
                       [location]="rowData.pathId"
                       [position]="rowData.position"
@@ -194,7 +197,7 @@
                       <app-segment-simplified
                         [changeEvent]="changes$"
                         *ngIf="reference.type === types.SEGMENT"
-                        [viewOnly]="viewOnly || !rowData.changeable"
+                        [viewOnly]="viewOnly || !rowData.changeable || (type === 'SEGMENT' && resource.name === 'MSH' && (rowData.pathId === '1' || rowData.pathId === '2'))"
                         [type]="rowData.type"
                         [globalViewOnly]="viewOnly"
                         [repository]="repository"
@@ -213,7 +216,7 @@
                 <ng-container *ngSwitchCase="columnTypes.VALUESET">
                   <app-valueset-simplified
                     [changeEvent]="changes$"
-                    [viewOnly]="viewOnly || !rowData.changeable"
+                    [viewOnly]="viewOnly || !rowData.changeable || (type === 'SEGMENT' && resource.name === 'MSH' && (rowData.pathId === '1' || rowData.pathId === '2'))"
                     [globalViewOnly]="viewOnly"
                     [context]="type"
                     [type]="rowData.type"

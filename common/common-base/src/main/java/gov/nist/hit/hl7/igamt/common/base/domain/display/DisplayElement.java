@@ -7,6 +7,7 @@ import gov.nist.diff.domain.DeltaAction;
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.ResourceOrigin;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -35,6 +36,7 @@ public class DisplayElement {
   private String flavorExt;
   private String resourceName;
   private String structureIdentifier;
+  private ResourceOrigin resourceOrigin;
 
   public DisplayElement() {
   }
@@ -220,6 +222,14 @@ public class DisplayElement {
 
   public void setStructureIdentifier(String structureIdentifier) {
     this.structureIdentifier = structureIdentifier;
+  }
+
+  public ResourceOrigin getResourceOrigin() {
+    return resourceOrigin;
+  }
+
+  public void setResourceOrigin(ResourceOrigin resourceOrigin) {
+    this.resourceOrigin = resourceOrigin;
   }
 
 

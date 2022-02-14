@@ -139,6 +139,9 @@
           <app-display-section [contextMenu]="conformanceProfileContextMenu" [element]="node.data" #rla="routerLinkActive"
                                [routerLink]="getElementUrl(node.data)" routerLinkActive [inline]="true" [hideDescription]="true"></app-display-section>
           <context-menu #conformanceProfileContextMenu [disabled]="viewOnly||delta">
+            <ng-template (execute)="exportDiffProfileXML(node)" contextMenuItem>
+              <i class="fa fa-download"></i> Export Diff. Profile XML
+            </ng-template>
             <ng-template (execute)="copyResource(node)" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-copy"></i> Create Flavor
             </ng-template>
@@ -246,7 +249,6 @@
             </ng-template>
           </context-menu>
         </ng-container>
-
       </ng-container>
     </ng-template>
 
