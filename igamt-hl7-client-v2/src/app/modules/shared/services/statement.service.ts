@@ -1,9 +1,11 @@
+import { EventEmitter } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { flatMap, map, take } from 'rxjs/operators';
 import { ICardinalityRange, IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { OccurrenceType } from '../models/conformance-statements.domain';
 import { IPath, ISubject } from '../models/cs.interface';
+import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';
 import { ElementNamingService, IPathInfo } from './element-naming.service';
 import { PathService } from './path.service';
@@ -93,7 +95,7 @@ export class StatementTarget {
     }
   }
 
-  clear() {
+  clear(treeClearEvent?: EventEmitter<boolean>) {
     this.name = '';
     this.valid = false;
     this.node = undefined;
@@ -107,6 +109,9 @@ export class StatementTarget {
     this.repeatMax = undefined;
     this.resourceName = undefined;
     this.context = undefined;
+    if (treeClearEvent) {
+      treeClearEvent.emit(true);
+    }
   }
 
   clearOccurrenceValue() {
@@ -136,12 +141,12 @@ export class StatementTarget {
     }
   }
 
-  setAttibutes({ name, nodeInfo }: { name: string, nodeInfo: IPathInfo }, context: IPath, tree?: IHL7v2TreeNode[], node?: IHL7v2TreeNode) {
+  setAttibutes({ name, nodeInfo, resourceDisplay }: { name: string, nodeInfo: IPathInfo, resourceDisplay: IDisplayElement }, context: IPath, tree?: IHL7v2TreeNode[], node?: IHL7v2TreeNode) {
     this.name = name;
     this.valid = true;
     if (nodeInfo) {
       this.complex = !nodeInfo.leaf;
-      this.resourceName = nodeInfo.name;
+      this.resourceName = resourceDisplay.resourceName;
     }
     if (tree && node) {
       this.repeatMax = this.getNodeRepeatMax(node, tree[0]);
@@ -195,24 +200,30 @@ export class StatementTarget {
   getNameFullPath(pre: IPath, post: IPath, resource: IResource, repository: AResourceRepositoryService, relativeName: boolean = false): Observable<{
     name: string;
     nodeInfo: IPathInfo;
+    resourceDisplay: IDisplayElement;
   }> {
     return this.getPathName(this.pathService.straightConcatPath(pre, post), resource, repository, relativeName ? post ? post.elementId : undefined : undefined);
   }
 
-  getPathName(path: IPath, resource: IResource, repository: AResourceRepositoryService, startFrom?: string): Observable<{ name: string, nodeInfo: IPathInfo }> {
+  getPathName(path: IPath, resource: IResource, repository: AResourceRepositoryService, startFrom?: string): Observable<{ name: string, nodeInfo: IPathInfo, resourceDisplay: IDisplayElement }> {
     if (!path) {
-      return of({ name: '', nodeInfo: undefined });
+      return of({ name: '', nodeInfo: undefined, resourceDisplay: undefined });
     }
 
     return this.elementNamingService.getPathInfoFromPath(resource, repository, path).pipe(
       take(1),
-      map((pathInfo) => {
+      flatMap((pathInfo) => {
         const name = this.elementNamingService.getStringNameFromPathInfo(startFrom ? this.elementNamingService.getStartPathInfo(pathInfo, startFrom) : pathInfo);
         const nodeInfo = this.elementNamingService.getLeaf(pathInfo);
-        return {
-          name,
-          nodeInfo,
-        };
+        return repository.getResourceDisplay(nodeInfo.ref.type, nodeInfo.ref.id).pipe(
+          map((resourceDisplay) => {
+            return {
+              name,
+              nodeInfo,
+              resourceDisplay,
+            };
+          }),
+        );
       }),
     );
   }
