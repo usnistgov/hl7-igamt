@@ -631,7 +631,15 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
         elementGroupBegin.addAttribute(new Attribute("name", group.getName()));
         elementGroupBegin
                 .addAttribute(new Attribute("description", "BEGIN " + group.getName() + " GROUP"));
-        elementGroupBegin.addAttribute(new Attribute("usage", String.valueOf(group.getUsage())));
+        if(group.getUsage() != null && !group.getUsage().equals(Usage.CAB)) {
+        	elementGroupBegin.addAttribute(
+                new Attribute("usage", group.getUsage() != null ? group.getUsage().toString() : ""));}
+            else if(group.getUsage() != null && group.getUsage().equals(Usage.CAB)) {
+            	
+            	elementGroupBegin.addAttribute(
+                        new Attribute("usage", group.getUsage() != null ? serializationTools.extractPredicateUsages(conformanceProfileDataModel.getPredicateMap(), group.getId()) : ""));
+            }
+//        elementGroupBegin.addAttribute(new Attribute("usage", String.valueOf(group.getUsage())));
         elementGroupBegin.addAttribute(new Attribute("min", group.getMin() + ""));
         elementGroupBegin.addAttribute(new Attribute("max", group.getMax()));
         elementGroupBegin.addAttribute(new Attribute("ref", StringUtils.repeat(".", 4 * depth) + "["));
