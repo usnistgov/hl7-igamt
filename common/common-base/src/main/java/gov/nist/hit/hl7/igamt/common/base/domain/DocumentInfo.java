@@ -11,26 +11,26 @@
  */
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
-/**
- * @author Abdelghani El Ouakili
- *
- */
+
 public class DocumentInfo {
 
   /**
-   * @param id
+   * @param documentId
    * @param type
    */
-  public DocumentInfo(String id, DocumentType type) {
+  private String documentId;
+  private DocumentType type;
+  
+  public DocumentInfo(String documentId, DocumentType type) {
     super();
-    this.id = id;
+    this.documentId = documentId;
     this.type = type;
   }
-  public String getId() {
-    return id;
+  public String getDocumentId() {
+    return documentId;
   }
-  public void setId(String id) {
-    this.id = id;
+  public void setDocumentId(String id) {
+    this.documentId = id;
   }
   public DocumentType getType() {
     return type;
@@ -38,7 +38,6 @@ public class DocumentInfo {
   public void setType(DocumentType type) {
     this.type = type;
   }
-  private String id;
-  private DocumentType type;
+
   
 }

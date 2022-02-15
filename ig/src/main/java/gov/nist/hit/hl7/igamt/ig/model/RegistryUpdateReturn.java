@@ -23,8 +23,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
  */
 public class RegistryUpdateReturn<T extends Resource> {
   Set<Link> links; // contains all the links 
-  Set<T> savedResources; // contains only saved Resources
-  Set<String> deletedIds; 
+  Set<T> savedResources; // contains only to be saved Resources
   
   public Set<Link> getLinks() {
     return links;

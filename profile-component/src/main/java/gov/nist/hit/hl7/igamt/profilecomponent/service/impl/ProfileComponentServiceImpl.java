@@ -505,9 +505,6 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
     }
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService#collectDependencies(gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent)
-   */
   @Override
   public Set<RelationShip> collectDependencies(ProfileComponent pc) {
     Set<RelationShip> relations = new HashSet<RelationShip>();

@@ -9,17 +9,22 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -36,6 +41,7 @@ import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
+import gov.nist.hit.hl7.igamt.ig.service.ResourceManagementService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -66,6 +72,8 @@ public class CrudServiceImpl implements CrudService {
   ValuesetService valuesetService;
   @Autowired
   FhirHandlerService fhirHandlerService;
+  @Autowired
+  ResourceManagementService resourceManagementService;
 
   @Override
   public AddMessageResponseObject addConformanceProfiles(Set<String> ids, Ig ig)
@@ -439,7 +447,7 @@ public class CrudServiceImpl implements CrudService {
    * @see gov.nist.hit.hl7.igamt.ig.service.CrudService#addValueSets(java.util.List, gov.nist.hit.hl7.igamt.ig.domain.Ig)
    */
   @Override
-  public AddValueSetResponseObject addValueSets(List<AddingInfo> toAdd, Ig ig, String username) throws AddingException {
+  public AddValueSetResponseObject addValueSets(List<AddingInfo> toAdd, Ig ig, String username) throws AddingException, EntityNotFound {
     // TODO Auto-generated method stub
     Set<String> savedIds = new HashSet<String>();
     for (AddingInfo elm : toAdd) {
@@ -503,27 +511,23 @@ public class CrudServiceImpl implements CrudService {
    * @param savedIds
    * @param ig
    * @param username
+   * @throws EntityNotFound 
    */
-  private void addValueSetAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig, String username) {
-    // TODO Auto-generated method stub
+  private void addValueSetAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws EntityNotFound {
     if (elm.getOriginalId() != null) {
-      Valueset valueset = valuesetService.findById(elm.getOriginalId());
-      if (valueset != null) {
-        Valueset clone = valueset.clone();
+     // Valueset valueset = valuesetService.findById(elm.getOriginalId());
+        
+        Valueset clone =  resourceManagementService.getFlavor( username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), Type.VALUESET, elm);
+
+
         clone.getDomainInfo().setScope(Scope.USER);
-        if(valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
-          clone.setSourceType(SourceType.INTERNAL);
-          clone.setOrigin(valueset.getId());
-          Set<Code> vsCodes = fhirHandlerService.getValusetCodeForDynamicTable();
-          clone.setCodes(vsCodes);
-        }
+
         clone.setUsername(username);
         clone.setBindingIdentifier(elm.getName());
         clone.setSourceType(elm.getSourceType());
         clone = valuesetService.save(clone);
         ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
         savedIds.add(clone.getId());
-      }
     } else {
       if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
         importPhinvadsAsFlavor( elm, savedIds, ig, username);

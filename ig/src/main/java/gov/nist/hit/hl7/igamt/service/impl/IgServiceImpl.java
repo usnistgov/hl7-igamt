@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
+import static org.mockito.Matchers.anyBoolean;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -44,8 +46,10 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroupRegistry;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 //import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -403,29 +407,27 @@ public class IgServiceImpl implements IgService {
 
 
   @Override
-  public UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass) {
-    // TODO Auto-generated method stub
+  public UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate) {
     Query query = new Query();
     query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
     query.fields().include(attributeName);
     Update update = new Update();
     update.set(attributeName, value);
-    update.set("updateDate", new Date());
+    if (updateDate) {
+      update.set("updateDate", new Date());
+    }
     return mongoTemplate.updateFirst(query, update, entityClass);
-
   }
 
 
   @Override
   public List<Ig> findIgIdsForUser(String username) {
-    // TODO Auto-generated method stub
     return igRepository.findIgIdsForUser(username);
   }
 
 
   @Override
   public Ig findIgContentById(String id) {
-    // TODO Auto-generated method stub
     Query query = new Query();
     query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
     query.fields().include("id");
@@ -440,7 +442,6 @@ public class IgServiceImpl implements IgService {
 
   @Override
   public Ig findIgMetadataById(String id) {
-    // TODO Auto-generated method stub
     Query query = new Query();
     query.fields().include("id");
     query.fields().include("metadata");
@@ -457,7 +458,6 @@ public class IgServiceImpl implements IgService {
    */
   @Override
   public TextSection findSectionById(Set<TextSection> content, String sectionId) {
-    // TODO Auto-generated method stub
     for (TextSection s : content) {
       TextSection ret = findSectionInside(s, sectionId);
       if (ret != null) {
@@ -468,7 +468,6 @@ public class IgServiceImpl implements IgService {
   }
 
   private TextSection findSectionInside(TextSection s, String sectionId) {
-    // TODO Auto-generated method stub
     if (s.getId().equals(sectionId)) {
       return s;
     }
@@ -1226,7 +1225,7 @@ public class IgServiceImpl implements IgService {
     ZipOutputStream out = new ZipOutputStream(outputStream);
 
     String profileXMLStr = this.xmlSerializeService.serializeProfileToDoc(igModel).toXML();
-    
+
     System.out.println(profileXMLStr);
     String constraintXMLStr = this.xmlSerializeService.serializeConstraintsXML(igModel).toXML();
 
@@ -1463,11 +1462,10 @@ public class IgServiceImpl implements IgService {
    */
   @Override
   public void publishIG(Ig ig)  throws IGNotFoundException, IGUpdateException{
-    // TODO Auto-generated method stub
 
     for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
       if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, ConformanceProfile.class);
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, ConformanceProfile.class, true);
         if(! updateResult.wasAcknowledged()) {
           throw new IGUpdateException("Could not publish Conformance profile:" +l.getId());
         }
@@ -1475,7 +1473,7 @@ public class IgServiceImpl implements IgService {
     }
     for ( Link l: ig.getSegmentRegistry().getChildren()) {
       if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Segment.class);
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Segment.class, true);
         if(! updateResult.wasAcknowledged()) {
           throw new IGUpdateException("Could not publish segment:" +l.getId());
         }
@@ -1484,7 +1482,7 @@ public class IgServiceImpl implements IgService {
 
     for ( Link l: ig.getDatatypeRegistry().getChildren()) {
       if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Datatype.class);
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Datatype.class, true);
         if(! updateResult.wasAcknowledged()) {
           throw new IGUpdateException("Could not publish Datatype:" +l.getId());
         }
@@ -1492,7 +1490,7 @@ public class IgServiceImpl implements IgService {
     }
     for ( Link l: ig.getValueSetRegistry().getChildren()) {
       if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Valueset.class);
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Valueset.class, true);
         if(! updateResult.wasAcknowledged()) {
           throw new IGUpdateException("Could not publish Value set:" +l.getId());
         }
@@ -1500,8 +1498,8 @@ public class IgServiceImpl implements IgService {
     }
 
     for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
-      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Valueset.class);
+      if(l.getId() != null && l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, Valueset.class, true);
         if(! updateResult.wasAcknowledged()) {
           throw new IGUpdateException("Could not publish Value set:" +l.getId());
         }
@@ -1509,19 +1507,19 @@ public class IgServiceImpl implements IgService {
     }
 
     for ( Link l: ig.getProfileComponentRegistry().getChildren()) {
-      UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, ProfileComponent.class);
+      UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, ProfileComponent.class, true);
       if(! updateResult.wasAcknowledged()) {
         throw new IGUpdateException("Could not publish Profile Components:" +l.getId());
       }
     }
     for ( Link l: ig.getCompositeProfileRegistry().getChildren()) {
-      UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, CompositeProfileStructure.class);
+      UpdateResult updateResult = this.updateAttribute(l.getId(), "status", Status.PUBLISHED, CompositeProfileStructure.class, true);
       if(! updateResult.wasAcknowledged()) {
         throw new IGUpdateException("Could not publish Composite Profile:" +l.getId());
       }
     }
 
-    UpdateResult updateResult = this.updateAttribute(ig.getId(), "status", Status.PUBLISHED, Ig.class);
+    UpdateResult updateResult = this.updateAttribute(ig.getId(), "status", Status.PUBLISHED, Ig.class, true);
     if(! updateResult.wasAcknowledged()) {
       throw new IGUpdateException("Could not publish Ig:" +ig.getId());
     }
@@ -1714,6 +1712,7 @@ public class IgServiceImpl implements IgService {
   public ProfileComponent createProfileComponent(Ig ig, String name,
       List<DisplayElement> children) {
     ProfileComponent ret = new ProfileComponent();
+    ret.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
     ret.setUsername(ig.getUsername());
     ret.setCurrentAuthor(ig.getCurrentAuthor());
     ret.setDomainInfo(new DomainInfo("*", Scope.USER));
@@ -1723,7 +1722,6 @@ public class IgServiceImpl implements IgService {
     ret.setChildren(new HashSet<ProfileComponentContext>());
     for(int i=0; i < children.size(); i++) {
       DisplayElement elm = children.get(i);
-      // TODO set struct ID 
       ProfileComponentContext ctx = new ProfileComponentContext(elm.getId(), elm.getType(), elm.getId(), elm.getFixedName(), i+1, new HashSet<ProfileComponentItem>(), new ProfileComponentBinding());
       ret.getChildren().add(ctx);
     }
@@ -1757,6 +1755,83 @@ public class IgServiceImpl implements IgService {
     return ret;
   }
 
+  void deleteChildren(Ig ig){
 
+
+  }
+
+  @Override
+  public void removeChildren(String id) {
+    Query query = new Query();
+    query.addCriteria(Criteria.where("documentInfo.documentId").is(id));
+    this.mongoTemplate.findAllAndRemove(query, ConformanceProfile.class);
+    this.mongoTemplate.findAllAndRemove(query, Segment.class);
+    this.mongoTemplate.findAllAndRemove(query, Datatype.class);
+    this.mongoTemplate.findAllAndRemove(query, Valueset.class);
+    this.mongoTemplate.findAllAndRemove(query, CompositeProfileStructure.class);
+    this.mongoTemplate.findAllAndRemove(query, CoConstraintGroup.class);
+    this.mongoTemplate.findAllAndRemove(query, ProfileComponent.class);
+
+  }
+
+
+  @Override
+  public void updateChildrenAttribute( Ig ig, String attributeName, Object value, boolean updateDate) throws IGUpdateException {
+    for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, ConformanceProfile.class, updateDate);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not update Conformance profile:" +l.getId());
+        }
+      }
+    }
+    for ( Link l: ig.getSegmentRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, Segment.class, updateDate);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not update segment:" +l.getId());
+        }
+      }
+    }
+
+    for ( Link l: ig.getDatatypeRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, Datatype.class, updateDate);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not update Datatype:" +l.getId());
+        }
+      }
+    }
+    for ( Link l: ig.getValueSetRegistry().getChildren()) {
+      if(l.getDomainInfo() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, Valueset.class, updateDate);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not update Value set:" +l.getId());
+        }
+      }
+    }
+
+    for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
+      if(l.getId() !=null && l.getDomainInfo().getScope() !=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, CoConstraintGroup.class, updateDate);
+        if(! updateResult.wasAcknowledged()) {
+          throw new IGUpdateException("Could not update coConstraint set:" +l.getId());
+        }
+      }
+    }
+
+    for ( Link l: ig.getProfileComponentRegistry().getChildren()) {
+      UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, ProfileComponent.class, updateDate);
+      if(! updateResult.wasAcknowledged()) {
+        throw new IGUpdateException("Could not update Profile Components:" +l.getId());
+      }
+    }
+    for ( Link l: ig.getCompositeProfileRegistry().getChildren()) {
+      UpdateResult updateResult = this.updateAttribute(l.getId(), attributeName, value, CompositeProfileStructure.class, updateDate);
+      if(! updateResult.wasAcknowledged()) {
+        throw new IGUpdateException("Could not update Composite Profile:" +l.getId());
+      }
+    }
+  }
 
 }

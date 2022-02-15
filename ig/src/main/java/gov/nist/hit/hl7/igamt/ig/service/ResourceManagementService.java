@@ -11,12 +11,12 @@
  */
 package gov.nist.hit.hl7.igamt.ig.service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 
 /**
  * @author Abdelghani El Ouakili
@@ -25,10 +25,10 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 public interface ResourceManagementService {
 
   <T extends Resource> T createFlavor(Registry reg, String username, DocumentInfo documentInfo, Type resourceType,
-      AddingInfo selected) throws CoConstraintGroupNotFoundException;
+      AddingInfo selected) throws EntityNotFound;
 
   <T extends Resource> T getFlavor(String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected)
-      throws CoConstraintGroupNotFoundException;
+      throws EntityNotFound;
    
   
   

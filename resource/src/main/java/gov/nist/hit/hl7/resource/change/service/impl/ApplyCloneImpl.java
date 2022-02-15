@@ -31,7 +31,7 @@ public class ApplyCloneImpl implements ApplyClone {
 	    resource.setCreatedFrom(resource.getId());
 	    resource.setStatus(null);
 	    resource.setFrom(resource.getId());
-	    resource.setVersion(1L);
+	    resource.setVersion(null);
 	    resource.setSharedUsers(new ArrayList<String>());
 	    resource.getSharedUsers().add(username);// TODO Move to document level
 	    resource.setCurrentAuthor(username); // TODO Move to document level

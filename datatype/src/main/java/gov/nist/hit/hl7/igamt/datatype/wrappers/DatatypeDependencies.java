@@ -9,12 +9,37 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.base.service;
+package gov.nist.hit.hl7.igamt.datatype.wrappers;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import gov.nist.hit.hl7.igamt.common.base.wrappers.DependencyWrapper;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public class CloneService {
+public class DatatypeDependencies extends DependencyWrapper {
+  
+  HashMap<String, Datatype> datatypes;
+  HashMap<String, Valueset> valuesets;
+  
+  public HashMap<String, Datatype> getDatatypes() {
+    return datatypes;
+  }
+  public void setDatatypes(HashMap<String, Datatype> datatypes) {
+    this.datatypes = datatypes;
+  }
+  public HashMap<String, Valueset> getValuesets() {
+    return valuesets;
+  }
+  public void setValuesets(HashMap<String, Valueset> valuesets) {
+    this.valuesets = valuesets;
+  }
 
 }

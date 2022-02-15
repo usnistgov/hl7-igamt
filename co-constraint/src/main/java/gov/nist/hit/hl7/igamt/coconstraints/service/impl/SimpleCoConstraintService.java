@@ -1,6 +1,5 @@
 package gov.nist.hit.hl7.igamt.coconstraints.service.impl;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.repository.CoConstraintGroupRepository;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
@@ -14,6 +13,7 @@ import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -37,8 +37,8 @@ public class SimpleCoConstraintService implements CoConstraintService {
   private DatatypeService datatypeService;
 
   @Override
-  public CoConstraintGroup findById(String id) throws CoConstraintGroupNotFoundException {
-    return this.coConstraintGroupRepository.findById(id).orElseThrow(() -> new CoConstraintGroupNotFoundException(id));
+  public CoConstraintGroup findById(String id) throws EntityNotFound {
+    return this.coConstraintGroupRepository.findById(id).orElseThrow(() -> new EntityNotFound(id));
   }
 
   @Override
@@ -83,7 +83,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
           contained.setCoConstraints(group.getCoConstraints());
           this.mergeHeaders(headers, group.getHeaders(), ((CoConstraintGroupBindingRef) binding));
           bindings.add(contained);
-        } catch (CoConstraintGroupNotFoundException e) {
+        } catch (EntityNotFound e) {
           e.printStackTrace();
         }
       }
@@ -336,7 +336,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
       elm.setId(id);
       elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
       Link newLink = new Link(elm);
-     
+
       updateDependencies(elm, newKeys);
       this.coConstraintGroupRepository.save(elm);
       return newLink;
@@ -358,14 +358,14 @@ public class SimpleCoConstraintService implements CoConstraintService {
     }
     if(elm.getCoConstraints() !=null) {
       for(CoConstraint cc: elm.getCoConstraints() ) {
-       // cc.setCloned(cloned || cc.isCloned());
+        // cc.setCloned(cloned || cc.isCloned());
         updateDependencies(cc, newKeys);
       }
     }
-    
-    
+
+
   }
-  
+
   private void updateDependencies(CoConstraint coconstraint, HashMap<RealKey, String> newKeys) {
     if(coconstraint.getCells() !=null && coconstraint.getCells().values() !=null) {
       coconstraint.getCells().values().stream().forEach(cell -> {
@@ -381,14 +381,14 @@ public class SimpleCoConstraintService implements CoConstraintService {
       if(vsCell.getBindings() !=null) {        
         for(ValuesetBinding vsb : vsCell.getBindings()) {
           if(vsb.getValueSets() !=null ) {
-           vsb.setValueSets(vsb.getValueSets().stream().map(vs -> {
-             RealKey vsKey = new RealKey(vs, Type.VALUESET);
-             if(newKeys.containsKey(vsKey)) {
-                 return newKeys.get(vsKey);
-             }else {
-               return vs;
-             }
-           }).collect(Collectors.toList()));
+            vsb.setValueSets(vsb.getValueSets().stream().map(vs -> {
+              RealKey vsKey = new RealKey(vs, Type.VALUESET);
+              if(newKeys.containsKey(vsKey)) {
+                return newKeys.get(vsKey);
+              }else {
+                return vs;
+              }
+            }).collect(Collectors.toList()));
           }
         }
       }
@@ -408,15 +408,14 @@ public class SimpleCoConstraintService implements CoConstraintService {
   }
   @Override
   public void updateDepenedencies(
-      CoConstraintTable value, HashMap<RealKey, String> newKeys, boolean cloned) {
-    // TODO Auto-generated method stub
+      CoConstraintTable value, HashMap<RealKey, String> newKeys) {
     if(value.getGroups() !=null) {
       for(CoConstraintGroupBinding groupBinding : value.getGroups()) {
         if(groupBinding instanceof CoConstraintGroupBindingContained) {
           CoConstraintGroupBindingContained  contained = (CoConstraintGroupBindingContained)(groupBinding);
           if(contained.getCoConstraints() !=null) {
             contained.getCoConstraints().stream().forEach( cc -> {
-              cc.setCloned(cloned || cc.isCloned());
+             // cc.setCloned(cloned || cc.isCloned());
               this.updateDependencies(cc, newKeys);
             });
           }
@@ -431,8 +430,31 @@ public class SimpleCoConstraintService implements CoConstraintService {
     };
     if(value.getCoConstraints() !=null) {
       value.getCoConstraints().stream().forEach( cc -> {
-        cc.setCloned(cloned || cc.isCloned());
         this.updateDependencies(cc, newKeys);
+      });
+    }
+  }
+  
+  
+  @Override
+  public void updateCloneTag(
+      CoConstraintTable value, boolean cloned) {
+    // TODO Auto-generated method stub
+    if(value.getGroups() !=null) {
+      for(CoConstraintGroupBinding groupBinding : value.getGroups()) {
+        if(groupBinding instanceof CoConstraintGroupBindingContained) {
+          CoConstraintGroupBindingContained  contained = (CoConstraintGroupBindingContained)(groupBinding);
+          if(contained.getCoConstraints() !=null) {
+            contained.getCoConstraints().stream().forEach( cc -> {
+              cc.setCloned(cloned || cc.isCloned());
+            });
+          }
+        }
+      }
+    };
+    if(value.getCoConstraints() !=null) {
+      value.getCoConstraints().stream().forEach( cc -> {
+       cc.setCloned(cloned || cc.isCloned());
       });
     }
   }
@@ -445,9 +467,5 @@ public class SimpleCoConstraintService implements CoConstraintService {
     // TODO Auto-generated method stub
     return this.coConstraintGroupRepository.saveAll(coConstraintGroups);
   }
-
-  }
-
-
 
 }

@@ -39,7 +39,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
 import com.opencsv.CSVReader;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.impl.SimpleCoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
@@ -75,6 +74,7 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileState;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.ProfileComponentsEvaluationResult;
@@ -136,6 +136,7 @@ import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
+import gov.nist.hit.hl7.igamt.ig.service.CloneService;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -238,8 +239,11 @@ public class IGDocumentController extends BaseController {
   
   @Autowired
   ResourceManagementService resourceManagementService;
+  
+  @Autowired
+  CloneService cloneService;
 
-private String token;
+  private String token;
 
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
@@ -457,7 +461,7 @@ private String token;
 
     Set<TextSection> content = displayConverter.convertTocToDomain(toc);
 
-    UpdateResult updateResult = igService.updateAttribute(id, "content", content, Ig.class);
+    UpdateResult updateResult = igService.updateAttribute(id, "content", content, Ig.class, true);
     if (!updateResult.wasAcknowledged()) {
       throw new IGUpdateException(id);
     }
@@ -838,7 +842,7 @@ private String token;
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
   public ResponseMessage<AddResourceResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("conformanceProfileId") String conformanceProfileId,
-      Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, CoConstraintGroupNotFoundException {
+      Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
     Ig ig = findIgById(id);
     String username = authentication.getName();
 
@@ -859,7 +863,7 @@ private String token;
   @RequestMapping(value = "/api/igdocuments/{id}/composite-profile/{compositeProfileId}/clone", method = RequestMethod.POST, produces = {"application/json"})
   public ResponseMessage<AddResourceResponse> cloneProfileComposite(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("compositeProfileId") String compositeProfileId,
-      Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, CoConstraintGroupNotFoundException {
+      Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     String username = authentication.getName();
@@ -880,7 +884,7 @@ private String token;
   @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/clone", method = RequestMethod.POST, produces = {"application/json"})
   public ResponseMessage<AddResourceResponse> cloneProfileComponent(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("pcId") String pcId,
-      Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, CoConstraintGroupNotFoundException {
+      Authentication authentication) throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     String username = authentication.getName();
@@ -904,7 +908,7 @@ private String token;
   "application/json" })
   public ResponseMessage<AddResourceResponse> cloneSegment(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("segmentId") String segmentId, Authentication authentication)
-          throws IGNotFoundException, ValidationException, CloneException, ForbiddenOperationException, CoConstraintGroupNotFoundException {
+          throws IGNotFoundException, ValidationException, CloneException, ForbiddenOperationException, EntityNotFound {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
@@ -925,7 +929,7 @@ private String token;
   "application/json" })
   public ResponseMessage<AddResourceResponse> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("datatypeId") String datatypeId, Authentication authentication)
-          throws IGNotFoundException, CloneException, ForbiddenOperationException, CoConstraintGroupNotFoundException {
+          throws IGNotFoundException, CloneException, ForbiddenOperationException, EntityNotFound {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
 
@@ -946,7 +950,7 @@ private String token;
 
   public ResponseMessage<AddResourceResponse> cloneValueSet(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
       @PathVariable("valuesetId") String valuesetId, Authentication authentication)
-          throws CloneException, IGNotFoundException, ForbiddenOperationException, CoConstraintGroupNotFoundException {
+          throws CloneException, IGNotFoundException, ForbiddenOperationException, EntityNotFound {
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     String username = authentication.getPrincipal().toString();
@@ -1002,19 +1006,16 @@ private String token;
   @RequestMapping(value = "/api/igdocuments/{id}/segments/add", method = RequestMethod.POST, produces = {
   "application/json" })
   public ResponseMessage<IGDisplayInfo> addSegments(@PathVariable("id") String id, @RequestBody AddingWrapper wrapper,
-      Authentication authentication) throws IGNotFoundException, ValidationException, AddingException {
+      Authentication authentication) throws IGNotFoundException, ValidationException, AddingException, EntityNotFound {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     Set<String> savedIds = new HashSet<String>();
     for (AddingInfo elm : wrapper.getSelected()) {
+
       if (elm.isFlavor()) {
         Segment segment = segmentService.findById(elm.getOriginalId());
         if (segment != null) {
-          Segment clone = segment.clone();
-          clone.getDomainInfo().setScope(Scope.USER);
-          clone.setUsername(username);
-          clone.setName(segment.getName());
-          clone.setExt(elm.getExt());
+          Segment clone =  resourceManagementService.getFlavor(username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.SEGMENT, elm);
           clone = segmentService.save(clone);
           savedIds.add(clone.getId());
         }
@@ -1051,6 +1052,7 @@ private String token;
     group.setUpdateDate(new Date());
     group.setName(coConstraintGroupCreateWrapper.getName());
     group.setDocumentId(id);
+    group.setDocumentInfo(new DocumentInfo(id, DocumentType.IGDOCUMENT));
     this.coConstraintService.saveCoConstraintGroup(group);
     ig.getCoConstraintGroupRegistry().getChildren().add(this.coConstraintService.createIgLink(group, ig.getCoConstraintGroupRegistry().getChildren().size(), username));
 
@@ -1082,7 +1084,7 @@ private String token;
           this.coConstraintService.delete(coConstraintGroup);
         }
       }
-    } catch (CoConstraintGroupNotFoundException e) {
+    } catch (EntityNotFound e) {
       e.printStackTrace();
     }
     igService.save(ig);
@@ -1152,40 +1154,10 @@ private String token;
         ig.getUpdateDate(), createChildResponse);
   }
 
-
-  //
-  //  @RequestMapping(value = "/api/igdocuments/{id}/profile-component/{pcId}/delete", method = RequestMethod.DELETE, produces = {
-  //          "application/json" })
-  //  public ResponseMessage deleteProfileComponent(
-  //          @PathVariable("id") String id,
-  //          @PathVariable("pcIf") String pcId,
-  //          Authentication authentication) throws IGNotFoundException, ForbiddenOperationException {
-  //    Ig ig = findIgById(id);
-  //    commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
-  //
-  //    Link found = findLinkById(ccGroupId, ig.getCoConstraintGroupRegistry().getChildren());
-  //    if (found != null) {
-  //      ig.getCoConstraintGroupRegistry().getChildren().remove(found);
-  //    }
-  //    try {
-  //      CoConstraintGroup coConstraintGroup = this.coConstraintService.findById(ccGroupId);
-  //      if (coConstraintGroup != null) {
-  //        if (coConstraintGroup.getDomainInfo().getScope().equals(Scope.USER)) {
-  //          this.coConstraintService.delete(coConstraintGroup);
-  //        }
-  //      }
-  //    } catch (CoConstraintGroupNotFoundException e) {
-  //      e.printStackTrace();
-  //    }
-  //    igService.save(ig);
-  //    return new ResponseMessage(Status.SUCCESS, CC_GROUP_DELETED, ccGroupId, new Date());
-  //  }
-
-
   @RequestMapping(value = "/api/igdocuments/{documentId}/coconstraints/group/segment/{id}", method = RequestMethod.GET, produces = {"application/json" })
   public List<DisplayElement> getCoConstraintGroupForSegment(@PathVariable("id") String id,
       @PathVariable("documentId") String documentId,
-      Authentication authentication) throws CoConstraintGroupNotFoundException {
+      Authentication authentication) throws EntityNotFound {
     List<CoConstraintGroup> groups = this.coConstraintService.findByBaseSegmentAndDocumentIdAndUsername(id, documentId, authentication.getName());
     return groups.stream().map(this.displayInfoService::convertCoConstraintGroup).collect(Collectors.toList());
   }
@@ -1194,7 +1166,7 @@ private String token;
   "application/json" })
   public ResponseMessage<IGDisplayInfo> addDatatypes(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
-          throws IGNotFoundException, AddingException, ForbiddenOperationException {
+          throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
@@ -1204,11 +1176,7 @@ private String token;
       if (elm.isFlavor()) {
         Datatype datatype = datatypeService.findById(elm.getOriginalId());
         if (datatype != null) {
-          Datatype clone = datatype.clone();
-          clone.setDomainInfo(new DomainInfo(clone.getDomainInfo().getVersion(),Scope.USER ));
-          clone.setUsername(username);
-          clone.setName(datatype.getLabel());
-          clone.setExt(elm.getExt());
+          Datatype clone =  resourceManagementService.getFlavor(username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.DATATYPE, elm);
           clone = datatypeService.save(clone);
           savedIds.add(clone.getId());
         }else {
@@ -1233,7 +1201,7 @@ private String token;
   "application/json" })
   public ResponseMessage<IGDisplayInfo> addValueSets(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
-          throws IGNotFoundException, AddingException, ForbiddenOperationException {
+          throws IGNotFoundException, AddingException, ForbiddenOperationException, EntityNotFound {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
@@ -1257,10 +1225,11 @@ private String token;
   @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.POST, produces = {
   "application/json" })
   public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, @RequestBody CopyInfo info,  Authentication authentication)
-      throws IGNotFoundException {
+      throws IGNotFoundException, EntityNotFound {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
-    Ig clone = this.igService.clone(ig, username, info);
+    Ig clone = cloneService.clone(ig, username, info);
+    //Ig clone = this.igService.clone(ig, username, info);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", clone.getId(), false,
         clone.getUpdateDate(), clone.getId());
   }
@@ -1491,8 +1460,9 @@ private String token;
         newVS.setCurrentAuthor(ig.getCurrentAuthor());
         newVS.setSharedUsers(ig.getSharedUsers());
         newVS.setSharePermission(ig.getSharePermission());
+        newVS.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
         newVS = this.valuesetService.save(newVS);
-   
+        
 
 
         ig.getValueSetRegistry().getChildren()

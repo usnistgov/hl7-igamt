@@ -23,7 +23,6 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
@@ -34,21 +33,19 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.wrappers.AddResourceResponse;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
-import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
-import gov.nist.hit.hl7.igamt.ig.model.RegistryUpdateReturn;
+
 import gov.nist.hit.hl7.igamt.ig.service.ResourceHelper;
 import gov.nist.hit.hl7.igamt.ig.service.ResourceManagementService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.resource.change.service.ApplyClone;
 
 /**
@@ -56,7 +53,7 @@ import gov.nist.hit.hl7.resource.change.service.ApplyClone;
  *
  */
 @Service
-public class ResourceManagementServiceImpl implements ResourceManagementService{
+public class ResourceManagementServiceImpl implements ResourceManagementService {
   
   @Autowired
   ResourceHelper resourceHelper;
@@ -64,8 +61,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService{
   @Autowired
   ApplyClone applyClone;
   
+  @Autowired
+  FhirHandlerService fhirHandlerService;
+  
   @Override
-  public <T extends Resource> T createFlavor(Registry reg, String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws CoConstraintGroupNotFoundException {
+  public <T extends Resource> T createFlavor(Registry reg, String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound {
 
       T resource = this.getFlavor(username, documentInfo, resourceType, selected);
       resource = this.resourceHelper.saveByType(resource, resourceType);
@@ -76,7 +76,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService{
   }
   
   @Override
-  public <T extends Resource> T getFlavor(String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws CoConstraintGroupNotFoundException {
+  public <T extends Resource> T getFlavor(String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound {
 
       T resource = this.resourceHelper.getResourceByType(selected.getOriginalId(), resourceType); 
       applyClone.updateResourceAttributes(resource, this.resourceHelper.generateAbstractDomainId(), username, documentInfo);
@@ -93,7 +93,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService{
    */
   private void applyFlavorInfo(Resource resource, AddingInfo addingInfo) {
 
-    resource.getDomainInfo().setScope(Scope.USER);
     if(resource instanceof Datatype ) {
       ((Datatype) resource).setExt(addingInfo.getExt());
       if(resource.getDomainInfo().getScope().equals(Scope.SDTF)) {
@@ -110,18 +109,19 @@ public class ResourceManagementServiceImpl implements ResourceManagementService{
     }else if (resource instanceof ConformanceProfile) {
       ((ConformanceProfile)resource).setName(addingInfo.getExt());
     }
+    resource.getDomainInfo().setScope(Scope.USER);
 
   }
 
 // TODDOO review requirment
   private void applyValueSetFlavorInfo(Valueset valueset, AddingInfo addingInfo) {
     valueset.setBindingIdentifier(addingInfo.getExt());
-    
     if(valueset.getBindingIdentifier().equals("HL70396") && valueset.getSourceType().equals(SourceType.EXTERNAL)) {
       valueset.setSourceType(SourceType.INTERNAL);
       valueset.setOrigin(valueset.getId());
-      //Set<Code> vsCodes = fhirHandlerService.getValusetCodeForDynamicTable();
-  //    valueset.setCodes(vsCodes);
+      Set<Code> vsCodes = fhirHandlerService.getValusetCodeForDynamicTable();
+      valueset.setCodes(vsCodes);
+      
     }
 
   }

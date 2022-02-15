@@ -16,12 +16,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -64,7 +64,7 @@ public class IgFixer {
   @Autowired
   private CoConstraintService coConstraintService;
 
-  public void fixIgComponents() throws CoConstraintGroupNotFoundException {
+  public void fixIgComponents() throws EntityNotFound {
     List<Ig> igs=  igService.findAll();
     for(Ig ig: igs) {
       if(ig.getDomainInfo().getScope() != Scope.ARCHIVED) {
@@ -110,9 +110,9 @@ public class IgFixer {
   /**
    * @param id
    * @param username
-   * @throws CoConstraintGroupNotFoundException 
+   * @throws EntityNotFound 
    */
-  private void fixCoConstraintGroup(String id, String username) throws CoConstraintGroupNotFoundException {
+  private void fixCoConstraintGroup(String id, String username) throws EntityNotFound {
     // TODO Auto-generated method stub
     CoConstraintGroup c= coConstraintService.findById(id);
     if(c != null) {

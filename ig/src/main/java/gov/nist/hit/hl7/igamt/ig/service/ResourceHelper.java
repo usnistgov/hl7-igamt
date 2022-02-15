@@ -11,11 +11,11 @@
  */
 package gov.nist.hit.hl7.igamt.ig.service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 
 /**
  * @author Abdelghani El Ouakili
@@ -23,7 +23,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
  */
 public interface ResourceHelper {
 
-  <T extends Resource> T getResourceByType(String id, Type type) throws CoConstraintGroupNotFoundException;
+  <T extends Resource> T getResourceByType(String id, Type type) throws EntityNotFound;
 
   /**
    * @return

@@ -1,6 +1,5 @@
 package gov.nist.hit.hl7.igamt.delta.service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
@@ -25,6 +24,7 @@ import gov.nist.diff.domain.DeltaMode;
 import gov.nist.diff.domain.DeltaObject;
 import gov.nist.diff.service.DeltaProcessor;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
@@ -78,7 +78,7 @@ public class DeltaServiceImpl implements DeltaService {
   @Autowired
   CompositeProfileStructureService compositeProfileStructureService;
 
-  public Delta delta(Type type, String documentId, String entityId) throws CoConstraintGroupNotFoundException {
+  public Delta delta(Type type, String documentId, String entityId) throws EntityNotFound {
     Ig targetIg = this.igService.findById(documentId);
     Ig sourceIg = this.igService.findById(targetIg.getFrom());
 

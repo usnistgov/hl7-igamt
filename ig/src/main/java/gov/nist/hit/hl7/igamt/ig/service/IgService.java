@@ -102,7 +102,7 @@ public interface IgService {
   
   public void publishIG(Ig ig) throws IGNotFoundException, IGUpdateException;
   
-  UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass);
+  UpdateResult updateAttribute(String id, String attributeName, Object value, Class<?> entityClass, boolean updateDate);
   
   public void updateSharedUser(String id, SharedUsersInfo sharedUsersInfo);
   public Ig makeSelectedIg(Ig ig, ReqId reqIds);
@@ -115,6 +115,11 @@ public interface IgService {
 
   public CompositeProfileStructure createCompositeProfileSercice(Ig ig,
       CompositeProfileCreationWrapper wrapper);
+
+  void removeChildren(String id);
+
+  void updateChildrenAttribute(Ig ig, String attributeName, Object value, boolean updateDate)
+      throws IGUpdateException;
 
 
 }

@@ -114,10 +114,6 @@ public interface ConformanceProfileService {
 
   void subsitute(ConformanceProfile clone, List<Substitue> substitutes, String username);
 
-  /**
-   * @param elm
-   * @param newKeys
-   */
   void updateDependencies(ConformanceProfile elm, HashMap<RealKey, String> newKeys);
 
   public List<ConformanceProfile> saveAll(Set<ConformanceProfile> datatypes);

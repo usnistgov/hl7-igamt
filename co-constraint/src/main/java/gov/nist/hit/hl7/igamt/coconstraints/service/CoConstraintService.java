@@ -1,6 +1,5 @@
 package gov.nist.hit.hl7.igamt.coconstraints.service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
@@ -10,6 +9,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 
 import java.util.Collection;
@@ -19,7 +19,7 @@ import java.util.Set;
 
 public interface CoConstraintService {
 
-    CoConstraintGroup findById(String id) throws CoConstraintGroupNotFoundException;
+    CoConstraintGroup findById(String id) throws EntityNotFound;
     void delete(CoConstraintGroup ccGroup);
     List<CoConstraintGroup> findByBaseSegmentAndDocumentIdAndUsername(String baseSegment, String documentId, String username);
     CoConstraintGroup saveCoConstraintGroup(CoConstraintGroup group);
@@ -37,8 +37,7 @@ public interface CoConstraintService {
 
     void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys);
     List<CoConstraintGroup>  saveAll(Set<CoConstraintGroup> coConstraintGroups) ;
-
-    void updateDepenedencies(CoConstraintTable value, HashMap<RealKey, String> newKeys,
-        boolean cloned);
+    void updateCloneTag(CoConstraintTable value, boolean cloned);
+    void updateDepenedencies(CoConstraintTable value, HashMap<RealKey, String> newKeys);
   
 }

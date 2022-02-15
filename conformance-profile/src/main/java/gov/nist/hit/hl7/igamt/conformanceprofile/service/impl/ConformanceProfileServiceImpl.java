@@ -430,7 +430,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             if (segBinding.getTables() != null) {
               for (CoConstraintTableConditionalBinding ccBinding : segBinding.getTables()) {
                 if (ccBinding.getValue() != null) {
-                  this.coConstraintService.updateDepenedencies(ccBinding.getValue(), newKeys, true);
+                  this.coConstraintService.updateDepenedencies(ccBinding.getValue(), newKeys);
                 }
               }
             }

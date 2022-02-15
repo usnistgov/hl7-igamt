@@ -15,7 +15,6 @@ import java.util.HashMap;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 
 /**
  * @author Harold Affo

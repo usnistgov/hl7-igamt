@@ -1,11 +1,11 @@
 package gov.nist.hit.hl7.igamt.coconstraints.controller;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.segment.exception.CoConstraintNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class CoConstraintController extends BaseController {
     @RequestMapping(value = "/api/coconstraints/group/{id}", method = RequestMethod.GET, produces = {
             "application/json" })
     public CoConstraintGroup getCoConstraintGroup(@PathVariable("id") String id,
-                                                  Authentication authentication) throws CoConstraintGroupNotFoundException {
+                                                  Authentication authentication) throws EntityNotFound {
         CoConstraintGroup group = ccService.findById(id);
         return group;
     }
@@ -40,7 +40,7 @@ public class CoConstraintController extends BaseController {
 
     @RequestMapping(value = "/api/coconstraints/group/{id}/resources", method = RequestMethod.GET, produces = {
             "application/json" })
-    public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) throws CoConstraintGroupNotFoundException {
+    public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) throws EntityNotFound {
         CoConstraintGroup group = ccService.findById(id);
         Set<Resource> resources = new HashSet<>();
         resources.add(group);

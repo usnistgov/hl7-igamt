@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xlsx4j.sml.CTX;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
@@ -34,6 +33,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -93,7 +93,7 @@ public class PhinvadFixer {
     }
   }
 
-  public void update() throws CoConstraintGroupNotFoundException {
+  public void update() throws EntityNotFound {
     List<Ig> igs = igService.findAll();
     for(Ig ig: igs) {
       HashMap<RealKey, String> newKeys= new HashMap<RealKey, String>();
@@ -134,9 +134,9 @@ public class PhinvadFixer {
   /**
    * @param ig
    * @param newKeys
-   * @throws CoConstraintGroupNotFoundException 
+   * @throws EntityNotFound 
    */
-  private void replace(Set<RelationShip> relations, HashMap<RealKey, String> newKeys, String username) throws CoConstraintGroupNotFoundException {
+  private void replace(Set<RelationShip> relations, HashMap<RealKey, String> newKeys, String username) throws EntityNotFound {
     for(RelationShip relation : relations) {
       if( relation.getParent().getType().equals(Type.CONFORMANCEPROFILE)) {
         ConformanceProfile elm = conformanceProfileService.findById(relation.getParent().getId());
@@ -177,7 +177,7 @@ public class PhinvadFixer {
       }else if(relation.getParent().getType().equals(Type.COCONSTRAINTGROUP)) {
         CoConstraintGroup cc =  coConstraintService.findById(relation.getParent().getId());
         coConstraintService.updateDependencies(cc, newKeys,
-            username,  false); 
+            username); 
         coConstraintService.saveCoConstraintGroup(cc);
       }else if (relation.getParent().getType().equals(Type.PROFILECOMPONENT)) {
         ProfileComponent elm = profileComponentService.findById(relation.getParent().getId());
