@@ -99,7 +99,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     this.s_workspace = this.currentSynchronized$.pipe(
       map((data: IConformanceStatementEditorData) => {
         this.conformanceStatementWorkspace$.next(data);
-        this.changeReason$.next(data.changeReasons ? data.changeReasons.reasons : undefined);
+        this.changeReason$.next(data.changeReasons ? _.cloneDeep(data.changeReasons.reasons) : undefined);
         this.dependants = data.dependants;
       }),
     ).subscribe();
