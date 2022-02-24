@@ -111,7 +111,10 @@ export class StructureEditorEffects extends DamWidgetEffect {
         take(1),
         flatMap(([ms, display]) => {
           return [
-            new LoadResourceReferencesSuccess(ms.resources),
+            new LoadResourceReferencesSuccess(ms.resources, {
+              resourceType: Type.CONFORMANCEPROFILE,
+              id: action.payload.id,
+            }),
             new LoadResourcesInRepostory({
               collections: [{
                 key: 'datatypes',
@@ -158,7 +161,10 @@ export class StructureEditorEffects extends DamWidgetEffect {
         take(1),
         flatMap(([ss, display]) => {
           return [
-            new LoadResourceReferencesSuccess(ss.resources),
+            new LoadResourceReferencesSuccess(ss.resources, {
+              resourceType: Type.CONFORMANCEPROFILE,
+              id: action.payload.id,
+            }),
             new LoadResourcesInRepostory({
               collections: [{
                 key: 'datatypes',

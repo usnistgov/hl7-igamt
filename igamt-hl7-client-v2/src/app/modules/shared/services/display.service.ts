@@ -39,6 +39,7 @@ export class DisplayService {
       type: resource.type,
       flavorExt: resource.fixedExtension,
       structureIdentifier: resource.structureIdentifier,
+      resourceName: resource.name,
       isExpanded: false,
       resourceName: resource.name,
     };
@@ -59,6 +60,7 @@ export class DisplayService {
       type: resource.type,
       flavorExt: resource.fixedExtension,
       structureIdentifier: resource.structureIdentifier,
+      resourceName: resource.name,
       isExpanded: false,
       resourceName: resource.name,
     };
@@ -75,6 +77,7 @@ export class DisplayService {
       parentId: resource.parentId,
       parentType: resource.parentType,
       variableName: resource.bindingIdentifier,
+      resourceName: resource.name,
       leaf: true,
       type: resource.type,
       isExpanded: false,
