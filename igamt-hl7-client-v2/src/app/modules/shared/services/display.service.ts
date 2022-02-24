@@ -41,7 +41,6 @@ export class DisplayService {
       structureIdentifier: resource.structureIdentifier,
       resourceName: resource.name,
       isExpanded: false,
-      resourceName: resource.name,
     };
   }
 
@@ -62,7 +61,6 @@ export class DisplayService {
       structureIdentifier: resource.structureIdentifier,
       resourceName: resource.name,
       isExpanded: false,
-      resourceName: resource.name,
     };
   }
 
@@ -81,7 +79,6 @@ export class DisplayService {
       leaf: true,
       type: resource.type,
       isExpanded: false,
-      resourceName: resource.name,
     };
   }
 
