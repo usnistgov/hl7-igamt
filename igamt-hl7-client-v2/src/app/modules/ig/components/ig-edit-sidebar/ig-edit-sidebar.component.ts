@@ -3,14 +3,15 @@ import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { Hl7Config } from 'src/app/modules/shared/models/config.class';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectAllMessages } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { AddResourceSuccess } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   AddProfileComponentContext,
@@ -31,6 +32,7 @@ import {
   UpdateSections,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
+import { getHl7ConfigState } from '../../../../root-store/config/config.reducer';
 import {
   CreateCoConstraintGroup,
   CreateCoConstraintGroupSuccess,
@@ -74,6 +76,8 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
   nodes$: Observable<any[]>;
   hl7Version$: Observable<string[]>;
   documentRef$: Observable<IDocumentRef>;
+  conformanceProfiles$: Observable<IDisplayElement[]>;
+  config$: Observable<Hl7Config>;
   version$: Observable<string>;
   delta: boolean;
   viewOnly$: Observable<boolean>;
@@ -87,6 +91,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
   selectedTargetId = 'IG';
   derived: boolean;
   selectedSubscription: Subscription;
+  @BlockUI('toc') blockUIView: NgBlockUI;
 
   constructor(
     private store: Store<IDocumentDisplayInfo<IgDocument>>,
@@ -100,6 +105,8 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.nodes$ = this.getNodes();
     this.hl7Version$ = store.select(config.getHl7Versions);
+    this.conformanceProfiles$ = store.select(selectAllMessages);
+    this.config$ = store.select(getHl7ConfigState);
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
     this.viewOnly$ = this.store.select(fromIgamtSelectors.selectViewOnly);
