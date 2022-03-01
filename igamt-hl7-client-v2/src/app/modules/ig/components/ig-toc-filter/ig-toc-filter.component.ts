@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import * as _ from 'lodash';
 import { SelectItem } from 'primeng/api';
 import { IUsageOption } from '../../../shared/components/hl7-v2-tree/columns/usage/usage.component';
 import { Scope } from '../../../shared/constants/scope.enum';
@@ -6,7 +7,6 @@ import { Type } from '../../../shared/constants/type.enum';
 import { Hl7Config } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IIgTocFilterConfiguration } from '../../services/ig-toc-filter.service';
-import * as _ from 'lodash';
 
 @Component({
   selector: 'app-ig-toc-filter',
