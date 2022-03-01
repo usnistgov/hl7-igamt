@@ -1241,7 +1241,7 @@ public class IGDocumentController extends BaseController {
 
   }
   
-  @RequestMapping(value = "/api/igdocuments/{id}/filter/", method = RequestMethod.GET, produces = {
+  @RequestMapping(value = "/api/igdocuments/{id}/filter/", method = RequestMethod.POST, produces = {
   "application/json" })
   public @ResponseBody FilterResponse filter(@PathVariable("id") String id , @RequestBody FilterIGInput filter , Authentication authentication)
       throws IGNotFoundException, ValuesetNotFoundException, EntityNotFound {

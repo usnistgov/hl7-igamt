@@ -18,7 +18,7 @@ export const VERBS = [
   // { label: 'MAY NOT', value: VerbType.MAY_NOT },
 ];
 
-export const DECLARATIVES = [
+export const DECLARATIVES: IStatementOption[] = [
   { label: 'contain the value \'VALUE\'.', value: DeclarativeType.CONTAINS_VALUE },
   { label: 'contain the value \'VALUE\' (DESCRIPTION).', value: DeclarativeType.CONTAINS_VALUE_DESC },
   { label: 'contain the value \‘VALUE\’ (DESCRIPTION) drawn from the code system \'CODE SYSTEM\'.', value: DeclarativeType.CONTAINS_CODE_DESC },
@@ -33,7 +33,7 @@ export const DECLARATIVES = [
   { label: 'be valued with an ISO-compliant OID.', value: DeclarativeType.ISO },
 ];
 
-export const COMPARATIVES = [
+export const COMPARATIVES: IStatementOption[] = [
   { label: 'be identical to', value: ComparativeType.IDENTICAL },
   { label: 'be earlier than', value: ComparativeType.EARLIER },
   { label: 'be earlier than or equivalent to', value: ComparativeType.EARLIER_EQUIVALENT },
@@ -47,7 +47,7 @@ export const COMPARATIVES = [
   { label: 'be truncated later than', value: ComparativeType.TRUNCATED_LATER },
 ];
 
-export const PROPOSITIONS = [
+export const PROPOSITIONS: IStatementOption[] = [
   { label: 'is valued', value: PropositionType.VALUED },
   { label: 'is not valued', value: PropositionType.NOT_VALUED },
   { label: 'contains the value \'VALUE\'.', value: PropositionType.CONTAINS_VALUE },
@@ -59,3 +59,8 @@ export const PROPOSITIONS = [
   { label: 'does not contain one of the values in the list: { \'VALUE 1\', \'VALUE 2\', \'VALUE N\' }.', value: PropositionType.NOT_CONTAINS_VALUES },
   { label: 'does not contain one of the values in the list: { \‘VALUE 1\’ (DESCRIPTION), \'VALUE 2\' (DESCRIPTION), \'VALUE N\' (DESCRIPTION) }.', value: PropositionType.NOT_CONTAINS_VALUES_DESC },
 ];
+
+export interface IStatementOption {
+  label: string;
+  value: string;
+}

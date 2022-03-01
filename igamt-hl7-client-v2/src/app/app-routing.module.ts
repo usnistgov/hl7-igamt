@@ -42,8 +42,11 @@ const routes: Routes = [
     path: 'user-management',
     component: UserManagementComponent,
   },
-  { path: 'reset-password-confirm/:token', component: NewPasswordComponent, resolve: { valid: NewPasswordResolver } },
-
+  {
+    path: 'reset-password-confirm/:token',
+    component: NewPasswordComponent,
+    resolve: { valid: NewPasswordResolver },
+  },
   {
     path: 'reset-password', component: ResetPasswordRequestComponent, canActivate: [NotAuthenticatedGuard],
   },

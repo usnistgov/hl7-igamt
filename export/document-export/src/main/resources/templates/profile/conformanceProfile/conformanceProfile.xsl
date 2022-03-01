@@ -14,6 +14,7 @@
     <xsl:import href="/templates/profile/resource/type.xsl"/>
     <xsl:import href="/templates/profile/definitionText2.xsl"/>
     <xsl:import href="/templates/profile/reasonForChange.xsl"/>
+                    <xsl:import href="/templates/profile/slicing.xsl"/>
     <xsl:include href="/templates/profile/conformanceProfile/messageSegment.xsl"/>
     <xsl:include href="/templates/profile/messageConstraint.xsl"/>
     <xsl:include
@@ -150,11 +151,16 @@
         <xsl:call-template name="ValueSetBindingList"/>
         <xsl:call-template name="InternalSingleCode"/>
 		<xsl:call-template name="Reasons"/>
+				<xsl:call-template name="Slicings"/>
+	
 
 
         <xsl:if test="$columnDisplay.message.comment = 'true'">
             <xsl:apply-templates select="./Binding/CommentList"/>
         </xsl:if>
+        
+        		<xsl:apply-templates select="./DynamicMappingForProfileComponent"/>
+        
 
         <xsl:call-template name="PostDef"/>
 

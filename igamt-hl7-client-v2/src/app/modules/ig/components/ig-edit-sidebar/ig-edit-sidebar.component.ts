@@ -1,16 +1,17 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
+import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
 import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { Hl7Config } from 'src/app/modules/shared/models/config.class';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectAllMessages } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { AddResourceSuccess } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   AddProfileComponentContext,
@@ -31,6 +32,7 @@ import {
   UpdateSections,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
+import { getHl7ConfigState } from '../../../../root-store/config/config.reducer';
 import {
   CreateCoConstraintGroup,
   CreateCoConstraintGroupSuccess,
@@ -62,6 +64,7 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
 import { CrossReferencesService } from '../../../shared/services/cross-references.service';
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
+import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from '../../services/ig-toc-filter.service';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
 
 @Component({
@@ -69,11 +72,13 @@ import { IgTocComponent } from '../ig-toc/ig-toc.component';
   templateUrl: './ig-edit-sidebar.component.html',
   styleUrls: ['./ig-edit-sidebar.component.scss'],
 })
-export class IgEditSidebarComponent implements OnInit, OnDestroy {
+export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit {
 
   nodes$: Observable<any[]>;
   hl7Version$: Observable<string[]>;
   documentRef$: Observable<IDocumentRef>;
+  conformanceProfiles$: Observable<IDisplayElement[]>;
+  config$: Observable<Hl7Config>;
   version$: Observable<string>;
   delta: boolean;
   viewOnly$: Observable<boolean>;
@@ -87,6 +92,8 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
   selectedTargetId = 'IG';
   derived: boolean;
   selectedSubscription: Subscription;
+  tocFilterSubscription: Subscription;
+  @BlockUI('toc') blockUIView: NgBlockUI;
 
   constructor(
     private store: Store<IDocumentDisplayInfo<IgDocument>>,
@@ -94,12 +101,15 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
     private crossReferencesService: CrossReferencesService,
     private router: Router,
     private activeRoute: ActivatedRoute,
+    private igTocFilterService: IgTocFilterService,
     private actions: Actions) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.nodes$ = this.getNodes();
     this.hl7Version$ = store.select(config.getHl7Versions);
+    this.conformanceProfiles$ = store.select(selectAllMessages);
+    this.config$ = store.select(getHl7ConfigState);
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
     this.viewOnly$ = this.store.select(fromIgamtSelectors.selectViewOnly);
@@ -114,6 +124,10 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
           this.selectedTargetId = 'IG';
         }
       })).subscribe();
+  }
+
+  updateTocFilter(tocFilter: IIgTocFilterConfiguration) {
+    this.igTocFilterService.setFilter(tocFilter);
   }
 
   getNodes() {
@@ -578,6 +592,28 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
     if (this.selectedSubscription) {
       this.selectedSubscription.unsubscribe();
     }
+    if (this.tocFilterSubscription) {
+      this.tocFilterSubscription.unsubscribe();
+    }
+  }
+
+  ngAfterViewInit() {
+    this.tocFilterSubscription = this.store.select(selectIgTocFilter).pipe(
+      tap((tocFilter) => {
+        if (tocFilter) {
+          this.blockUIView.start();
+          setTimeout(() => {
+            this.toc.filterNode((display) => {
+              return this.igTocFilterService.isFiltered(display, tocFilter);
+            });
+            setTimeout(() => {
+              this.blockUIView.stop();
+            }, 200);
+          }, 200);
+
+        }
+      }),
+    ).subscribe();
   }
 
 }

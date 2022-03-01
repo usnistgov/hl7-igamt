@@ -451,3 +451,11 @@ body .ui-dropdown-panel {
 .popover {
   max-width: fit-content !important;
 }
+
+.dropdown {
+  z-index: 10;
+}
+
+block-ui-content {
+  display: contents;
+}

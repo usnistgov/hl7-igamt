@@ -26,6 +26,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
   selectedNode: TreeNode | TreeNode[] = undefined;
   structure: IHL7v2TreeNode[];
   treeSubscriptions: Subscription[] = [];
+  s_clear: Subscription;
   s_resource: Subscription;
   _selectionMode = 'single';
   @Input()
@@ -34,6 +35,14 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
   selection = new EventEmitter<IStructureTreeSelect>();
   @Output()
   unselect = new EventEmitter<IStructureTreeSelect>();
+  @Input()
+  set clear(e: EventEmitter<boolean>) {
+    this.s_clear = e.subscribe((c) => {
+      if (c) {
+        this.selectedNode = undefined;
+      }
+    });
+  }
 
   @Input()
   configuration: {
@@ -178,6 +187,7 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
     for (const sub of this.treeSubscriptions) {
       this.close(sub);
     }
+    this.close(this.s_clear);
   }
 
   close(s: Subscription) {
