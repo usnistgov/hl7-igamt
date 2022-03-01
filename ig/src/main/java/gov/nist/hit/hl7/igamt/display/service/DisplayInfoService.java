@@ -13,6 +13,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
@@ -39,5 +40,11 @@ public interface DisplayInfoService {
 	Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles, ConformanceProfileRegistry conformanceProfileRegistry);
 	DisplayElement convertCompositeProfile(CompositeProfileStructure compositeProfile,  int integer);
 	DisplayElement convertProfileComponent(ProfileComponent pc, int integer);
+  /**
+   * @param ig
+   * @param objects
+   * @return
+   */
+  IGDisplayInfo createReturn(Ig ig, AddMessageResponseObject objects);
 
 }

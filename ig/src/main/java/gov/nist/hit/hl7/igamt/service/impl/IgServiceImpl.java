@@ -1,7 +1,5 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
-import static org.mockito.Matchers.anyBoolean;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -74,6 +72,7 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileState;
 //import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 //import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
@@ -86,7 +85,9 @@ import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructure
 import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileDependencyService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.wrappers.ConformanceProfileDependencies;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
@@ -114,6 +115,8 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
+import gov.nist.hit.hl7.igamt.ig.model.FilterIGInput;
+import gov.nist.hit.hl7.igamt.ig.model.FilterResponse;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService;
@@ -139,6 +142,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
+import gov.nist.hit.hl7.resource.dependency.DependencyFilter;
 
 @Service("igService")
 public class IgServiceImpl implements IgService {
@@ -200,6 +204,8 @@ public class IgServiceImpl implements IgService {
 
   @Autowired
   InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
+  @Autowired
+  ConformanceProfileDependencyService conformanceProfileDependencyService;
 
   @Override
   public Ig findById(String id) {
@@ -1832,6 +1838,38 @@ public class IgServiceImpl implements IgService {
         throw new IGUpdateException("Could not update Composite Profile:" +l.getId());
       }
     }
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.ig.service.IgService#getFilterResponse(java.lang.String, gov.nist.hit.hl7.igamt.ig.model.FilterIGInput)
+   */
+  @Override
+  public FilterResponse getFilterResponse(String id, FilterIGInput filter) throws EntityNotFound {
+    Ig ig = this.findById(id);
+    List<ConformanceProfile> profiles; 
+    FilterResponse response = new FilterResponse();
+    DependencyFilter generalFilter = new DependencyFilter(filter.getUsageFilter());
+    
+    if(filter.getConformanceProfiles() != null) {
+      profiles = this.conformanceProfileService.findByIdIn(filter.getConformanceProfiles());
+      response.setMessages(filter.getConformanceProfiles());
+    }else {
+      profiles =  this.conformanceProfileService.findByIdIn(ig.getConformanceProfileRegistry().getLinksAsIds());
+      response.setMessages(ig.getConformanceProfileRegistry().getLinksAsIds());
+    }
+
+    ConformanceProfileDependencies conformanceProfileDependencies = new ConformanceProfileDependencies();
+
+    for(ConformanceProfile p: profiles) {
+      this.conformanceProfileDependencyService.process(p, conformanceProfileDependencies, generalFilter);
+    }
+    
+    response.setSegments(conformanceProfileDependencies.getSegments().keySet());
+    response.setDatatypes(conformanceProfileDependencies.getDatatypes().keySet());
+    response.setValueSets(conformanceProfileDependencies.getValuesets().keySet());
+    response.setCoConstraintsGroup(conformanceProfileDependencies.getCoConstraintGroups().keySet());
+
+    return response;
   }
 
 }

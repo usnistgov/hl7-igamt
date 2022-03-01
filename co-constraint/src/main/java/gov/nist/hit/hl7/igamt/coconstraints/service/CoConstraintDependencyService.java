@@ -11,10 +11,20 @@
  */
 package gov.nist.hit.hl7.igamt.coconstraints.service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintCell;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.coconstraints.wrappers.CoConstraintsDependencies;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.datatype.wrappers.DatatypeDependencies;
 import gov.nist.hit.hl7.resource.dependency.DependencyFilter;
 import gov.nist.hit.hl7.resource.dependency.DependencyService;
@@ -26,11 +36,18 @@ import gov.nist.hit.hl7.resource.dependency.DependencyService;
 public interface CoConstraintDependencyService extends DependencyService< CoConstraintGroup, CoConstraintsDependencies> {
 
 
-  void process(CoConstraintGroup ccGroup, CoConstraintsDependencies used, DependencyFilter filter);
+  void process(CoConstraintGroup ccGroup, CoConstraintsDependencies used, DependencyFilter filter) throws EntityNotFound;
 
-  void process(CoConstraint cc, CoConstraintsDependencies used, DependencyFilter filter);
+  void process(CoConstraint cc, CoConstraintsDependencies used, DependencyFilter filter) throws EntityNotFound;
 
-  void process(CoConstraintCell cell, DatatypeDependencies used, DependencyFilter filter);
+  void process(CoConstraintCell cell, DatatypeDependencies used, DependencyFilter filter) throws EntityNotFound;
+
+  void updateDepenedencies(CoConstraintTable value, HashMap<RealKey, String> newKeys);
+
+  void updateDepenedencies(CoConstraintCell cell, HashMap<RealKey, String> newKeys);
+
+  Set<RelationShip> collectDependencies(ReferenceIndentifier parent,
+      List<CoConstraintBinding> coConstraintsBindings);
 
 
 

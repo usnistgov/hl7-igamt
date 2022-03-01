@@ -12,9 +12,12 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
@@ -28,23 +31,27 @@ import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyServic
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonFilteringService;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.binding.service.ResourceBindingProcessor;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+import gov.nist.hit.hl7.igamt.common.slicing.service.SlicingService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
-import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileDependency;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileDependencyService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.wrappers.ConformanceProfileDependencies;
-import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentDependencyService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.resource.dependency.DependencyFilter;
 
-/**
- * @author Abdelghani El Ouakili
- *
- */
-public class ConformanceProfileDependencyServiceImpl implements ConformanceProfileDependency {
+@Service
+public class ConformanceProfileDependencyServiceImpl implements ConformanceProfileDependencyService {
 
 
   @Autowired
@@ -52,68 +59,99 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
 
   @Autowired
   SegmentService segmentService;
-  
+
   @Autowired
   CoConstraintDependencyService coConstraintDependencyService;
+
   @Autowired
   CoConstraintService coConstraintService;
+
+  @Autowired
+  CommonFilteringService commonFilteringService;
+  
+  @Autowired
+  SlicingService slicingService;
+  
+  @Autowired
+  BindingService bindingService;
   
 
+
   @Override
-  public void updateDependencies(ConformanceProfile resource, HashMap<RealKey, String> newKeys) {
+  public void updateDependencies(ConformanceProfile elm, HashMap<RealKey, String> newKeys) {
+    
+    processAndSubstitute(elm, newKeys);
+    if (elm.getBinding() != null) {
+      this.bindingService.substitute(elm.getBinding(), newKeys);
+    }
+    if(elm.getSlicings() != null) {
+      this.slicingService.updateSlicing(elm.getSlicings(), newKeys, Type.SEGMENT);
+    }
+    if (elm.getCoConstraintsBindings() != null) {
+      for (CoConstraintBinding binding : elm.getCoConstraintsBindings()) {
+        if (binding.getBindings() != null) {
+          for (CoConstraintBindingSegment segBinding : binding.getBindings()) {
+            if (segBinding.getTables() != null) {
+              for (CoConstraintTableConditionalBinding ccBinding : segBinding.getTables()) {
+                if (ccBinding.getValue() != null) {
+                  this.coConstraintDependencyService.updateDepenedencies(ccBinding.getValue(), newKeys);
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
+
+
 
   @Override
   public ConformanceProfileDependencies getDependencies(ConformanceProfile resource, DependencyFilter filter) throws EntityNotFound {
     ConformanceProfileDependencies conformanceProfileDependencies = new ConformanceProfileDependencies();
 
+    this.process(resource, conformanceProfileDependencies, filter);
 
-    ResourceBindingProcessor rb = new ResourceBindingProcessor(resource.getBinding());
-
-
-    for(MsgStructElement segOrgroup:  resource.getChildren()) {
-      if (segOrgroup instanceof SegmentRef) {
-        SegmentRef ref = (SegmentRef) segOrgroup;
-        if (ref.getRef() != null && ref.getRef().getId() != null ) {
-          if(conformanceProfileDependencies.getSegments().containsKey(ref.getRef().getId())) {
-            Segment s = segmentService.findById(ref.getRef().getId());
-            conformanceProfileDependencies.getSegments().put(ref.getRef().getId(), s);
-            rb.addChild(s.getBinding(), segOrgroup.getId());
-            this.segmentDependencyService.process(s, conformanceProfileDependencies, filter, rb, segOrgroup.getId());
-          }
-        }
-      } else if (segOrgroup instanceof Group) {
-        Group g = (Group) segOrgroup;
-        for (MsgStructElement child : g.getChildren()) {
-          processSegmentorGroup(child, conformanceProfileDependencies, filter, rb, g.getId());
-        }
-      }
-    }
-    if(resource.getCoConstraintsBindings() != null) {
-      
-      
-      this.processCoConstraintsBinding(resource.getCoConstraintsBindings(),conformanceProfileDependencies, filter);
-      
-    }
-
-    
-    
     return conformanceProfileDependencies;
   }
 
+  @Override
+  public ConformanceProfileDependencies process(ConformanceProfile resource, ConformanceProfileDependencies conformanceProfileDependencies, DependencyFilter filter) throws EntityNotFound {
 
-  /**
-   * @param coConstraintsBindings
-   * @param conformanceProfileDependencies
-   * @param filter
-   * @throws EntityNotFound 
-   */
+
+    ResourceBindingProcessor rb = new ResourceBindingProcessor(resource.getBinding());
+
+    for(MsgStructElement segOrgroup:  resource.getChildren()) {
+      if(commonFilteringService.allow(filter.getUsageFilter(), segOrgroup)) {
+        if (segOrgroup instanceof SegmentRef) {
+
+          SegmentRef ref = (SegmentRef) segOrgroup;
+          if (ref.getRef() != null && ref.getRef().getId() != null ) {
+            this.segmentDependencyService.visit(ref.getRef().getId(), conformanceProfileDependencies.getSegments(), conformanceProfileDependencies, filter, rb, segOrgroup.getId());
+          }
+        } else if (segOrgroup instanceof Group) {
+
+          Group g = (Group) segOrgroup;
+          for (MsgStructElement child : g.getChildren()) {
+            processSegmentorGroup(child, conformanceProfileDependencies, filter, rb, g.getId());
+          }
+        }
+      }
+    }
+    if(resource.getCoConstraintsBindings() != null) {      
+      this.processCoConstraintsBinding(resource.getCoConstraintsBindings(),conformanceProfileDependencies, filter);
+    }
+
+    return conformanceProfileDependencies;
+  }
+
+  @Override
   public void processCoConstraintsBinding(List<CoConstraintBinding> coConstraintsBindings,
       ConformanceProfileDependencies conformanceProfileDependencies, DependencyFilter filter) throws EntityNotFound {
     for(CoConstraintBinding binding:coConstraintsBindings) {
       if(binding.getBindings()!=null) {
         for(CoConstraintBindingSegment segBinding: binding.getBindings()) {
-    
+
           if(segBinding.getTables() !=null) {
             for( CoConstraintTableConditionalBinding CoConstraintTableConditionalBinding : segBinding.getTables()) {
               if(CoConstraintTableConditionalBinding.getValue() !=null) {
@@ -126,35 +164,35 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
     }
   }
 
-  public void processSegmentorGroup(MsgStructElement segOrgroup,  ConformanceProfileDependencies used, DependencyFilter filter, ResourceBindingProcessor rb, String parent) {
-    if (segOrgroup instanceof SegmentRef) {
-      SegmentRef ref = (SegmentRef) segOrgroup;
-      if (ref.getRef() != null && ref.getRef().getId() != null ) {
-        if(used.getSegments().containsKey(ref.getRef().getId())) {
-          Segment s = segmentService.findById(ref.getRef().getId());
-          rb.addChild(s.getBinding(), segOrgroup.getId());
-          this.segmentDependencyService.process(s, used, filter, rb, parent+'-'+ segOrgroup.getId());
-          rb.addChild(s.getBinding(), parent+'-'+ segOrgroup.getId());
-          used.getSegments().put(ref.getRef().getId(), s);
+  public void processSegmentorGroup(MsgStructElement segOrgroup,  ConformanceProfileDependencies used, DependencyFilter filter, ResourceBindingProcessor rb, String parent) throws EntityNotFound {
+    if(commonFilteringService.allow(filter.getUsageFilter(), segOrgroup)) {
+      if (segOrgroup instanceof SegmentRef) {
+        SegmentRef ref = (SegmentRef) segOrgroup;
+        if (ref.getRef() != null && ref.getRef().getId() != null ) {
+          this.segmentDependencyService.visit(ref.getRef().getId(), used.getSegments(), used, filter, rb, parent+'-'+ segOrgroup.getId());
         }
-      }
-    } else if (segOrgroup instanceof Group) {
-      Group g = (Group) segOrgroup;
-      for (MsgStructElement child : g.getChildren()) {
-        processSegmentorGroup(child, used, filter, rb, parent+'-'+ child.getId() );
+      } else if (segOrgroup instanceof Group) {
+        Group g = (Group) segOrgroup;
+        for (MsgStructElement child : g.getChildren()) {
+          processSegmentorGroup(child, used, filter, rb, parent+'-'+ child.getId() );
+        }
       }
     }
   }
-  
+
   public void process(
-      CoConstraintTable value,  ConformanceProfileDependencies used, DependencyFilter filter) throws EntityNotFound {
+      CoConstraintTable value, ConformanceProfileDependencies used, DependencyFilter filter) throws EntityNotFound{
     if(value.getGroups() !=null) {
       for(CoConstraintGroupBinding groupBinding : value.getGroups()) {
         if(groupBinding instanceof CoConstraintGroupBindingContained) {
           CoConstraintGroupBindingContained  contained = (CoConstraintGroupBindingContained)(groupBinding);
           if(contained.getCoConstraints() !=null) {
             contained.getCoConstraints().stream().forEach( cc -> {
-              this.coConstraintDependencyService.process(cc, used, filter);
+              try {
+                this.coConstraintDependencyService.process(cc, used, filter);
+              } catch (EntityNotFound e) {
+                e.printStackTrace();
+              }
             });
           }
         }else if(groupBinding instanceof CoConstraintGroupBindingRef) {
@@ -168,14 +206,109 @@ public class ConformanceProfileDependencyServiceImpl implements ConformanceProfi
     };
     if(value.getCoConstraints() !=null) {
       value.getCoConstraints().stream().forEach( cc -> {
-        this.coConstraintDependencyService.process(cc, used, filter);
+        try {
+          this.coConstraintDependencyService.process(cc, used, filter);
+        } catch (EntityNotFound e) {
+          e.printStackTrace();
+        }
       });
     }
   }
   
+  private void processAndSubstitute(ConformanceProfile cp, HashMap<RealKey, String> newKeys) {
+    // TODO Auto-generated method stub
+    for (MsgStructElement segOrgroup : cp.getChildren()) {
+      processAndSubstituteSegmentorGroup(segOrgroup, newKeys);
+    }
+
+  }
+
+  private void processAndSubstituteSegmentorGroup(MsgStructElement segOrgroup, HashMap<RealKey, String> newKeys) {
+    // TODO Auto-generated method stub
+    if (segOrgroup instanceof SegmentRef) {
+      SegmentRef ref = (SegmentRef) segOrgroup;
+      if (ref.getRef() != null && ref.getRef().getId() != null) {
+        RealKey key = new RealKey(ref.getRef().getId(), Type.SEGMENT);
+        if (newKeys.containsKey(key)) {
+          ref.getRef().setId(newKeys.get(key));
+        }
+      }
+    } else if (segOrgroup instanceof Group) {
+      Group g = (Group) segOrgroup;
+      for (MsgStructElement child : g.getChildren()) {
+        processAndSubstituteSegmentorGroup(child, newKeys);
+      }
+    }
+  }
+  
+  @Override
+  public Set<RelationShip> collectDependencies(ConformanceProfile cp) {
+    Set<RelationShip> used = new HashSet<RelationShip>();
+    HashMap<String, Usage> usageMap = new HashMap<String, Usage>();
+    for (MsgStructElement segOrgroup : cp.getChildren()) {
+      if (segOrgroup instanceof SegmentRef) {
+        usageMap.put(segOrgroup.getId(), segOrgroup.getUsage());
+        usageMap.put(segOrgroup.getId(), segOrgroup.getUsage());
+        SegmentRef ref = (SegmentRef) segOrgroup;
+
+        if (ref.getRef() != null && ref.getRef().getId() != null) {
+          RelationShip rel = new RelationShip(new ReferenceIndentifier(ref.getRef().getId(), Type.SEGMENT),
+              new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE),
+              new ReferenceLocation(Type.CONFORMANCEPROFILE, ref.getPosition() + "", ref.getName()));
+          rel.setUsage(ref.getUsage());
+          used.add(rel);
+        }
+
+      } else {
+        processSegmentorGroup(cp.getId(), segOrgroup, used, "");
+      }
+    }
+    if (cp.getBinding() != null) {
+
+      Set<RelationShip> bindingDependencies = bindingService.collectDependencies(
+          new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE), cp.getBinding(), usageMap);
+      used.addAll(bindingDependencies);
+    }
+    if (cp.getCoConstraintsBindings() != null) {
+
+      Set<RelationShip> CoConstraintsDependencies = coConstraintDependencyService.collectDependencies(
+          new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE), cp.getCoConstraintsBindings());
+
+      used.addAll(CoConstraintsDependencies);
+    }
+
+    if(cp.getSlicings() != null ) {
+      Set<RelationShip> slicingDependencies = this.slicingService.collectDependencies(
+          new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE), cp.getSlicings(), Type.SEGMENT);
+      used.addAll(slicingDependencies);  
+    }
+    return used;
+
+  }
+
+
+  private void processSegmentorGroup(String profileId, MsgStructElement segOrgroup, Set<RelationShip> used,
+      String path) {
+    // TODO Auto-generated method stub
+    if (segOrgroup instanceof SegmentRef) {
+      SegmentRef ref = (SegmentRef) segOrgroup;
+      if (ref.getRef() != null && ref.getRef().getId() != null) {
+
+        RelationShip rel = new RelationShip(new ReferenceIndentifier(ref.getRef().getId(), Type.SEGMENT),
+            new ReferenceIndentifier(profileId, Type.CONFORMANCEPROFILE),
+
+            new ReferenceLocation(Type.GROUP, path + "." + ref.getPosition(), ref.getName()));
+        rel.setUsage(ref.getUsage());
+        used.add(rel);
+      }
+    } else if (segOrgroup instanceof Group) {
+      Group g = (Group) segOrgroup;
+      path += g.getName();
+      for (MsgStructElement child : g.getChildren()) {
+        processSegmentorGroup(profileId, child, used, path);
+      }
+    }
+  }
   
   
-
-
-
 }

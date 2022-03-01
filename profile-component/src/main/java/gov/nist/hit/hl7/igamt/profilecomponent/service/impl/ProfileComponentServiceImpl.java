@@ -528,14 +528,16 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
          }
         if(ctx.getProfileComponentDynamicMapping() != null) {
           
-//          if(ctx.getProfileComponentDynamicMapping().getItems() != null) {
-//            for( PcDynamicMappingItem item: ctx.getProfileComponentDynamicMapping().getItems()) {   
-//              RealKey key = new RealKey(item.getFlavorId(), Type.DATATYPE);
-//              if (newKeys.containsKey(key)) {
-//                item.setFlavorId(newKeys.get(key));
-//              }
-//            }
-//          }
+          
+          if(ctx.getProfileComponentDynamicMapping().getItems() != null) {
+            for( PcDynamicMappingItem item: ctx.getProfileComponentDynamicMapping().getItems()) {   
+              
+              
+              relations.add(new RelationShip(new ReferenceIndentifier(item.getFlavorId(), Type.DATATYPE ),
+                  new ReferenceIndentifier(pc.getId(), Type.PROFILECOMPONENT),
+                  new ReferenceLocation(Type.DYNAMICMAPPING, "Profile Component Dynamic mapping", label))); 
+            }
+          }
         }
         
       }

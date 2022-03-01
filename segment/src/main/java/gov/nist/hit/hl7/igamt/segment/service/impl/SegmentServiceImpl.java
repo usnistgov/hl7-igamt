@@ -987,7 +987,6 @@ public class SegmentServiceImpl implements SegmentService {
 
   private void collectDynamicMappingDependencies(String id, DynamicMappingInfo dynamicMappingInfo,
       Set<RelationShip> used) {
-    // TODO Auto-generated method stub
     if (dynamicMappingInfo.getItems() != null) {
       for (DynamicMappingItem item : dynamicMappingInfo.getItems()) {
         if (item.getDatatypeId() != null) {

@@ -13,66 +13,90 @@ package gov.nist.hit.hl7.igamt.datatype.service.impl;
 
 
 import java.util.HashMap;
-
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonFilteringService;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.binding.service.ResourceBindingProcessor;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeDependencyService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatype.wrappers.DatatypeDependencies;
-
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.resource.dependency.DependencyFilter;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
+@Service
 public class DatatypeDependencyServiceImpl implements DatatypeDependencyService {
 
 
   @Autowired
   DatatypeService datatypeService;
+  @Autowired
+  BindingService bindingService;
+  @Autowired
+  CommonFilteringService commonFilteringService;
 
   @Override
   public void updateDependencies(Datatype resource, HashMap<RealKey, String> newKeys) {
+
+    if (resource instanceof ComplexDatatype) {
+      for (Component c : ((ComplexDatatype) resource).getComponents()) {
+        if (c.getRef() != null) {
+          if (c.getRef().getId() != null) {
+            RealKey key = new RealKey(c.getRef().getId(), Type.DATATYPE);
+            if (newKeys.containsKey(key)) {
+              c.getRef().setId(newKeys.get(key));
+            }
+          }
+        }
+      }
+    }
+    if (resource.getBinding() != null) {
+      this.bindingService.substitute(resource.getBinding(), newKeys);
+    }
 
   }
 
 
   @Override
-  public DatatypeDependencies getDependencies(Datatype resource, DependencyFilter filter) {
+  public DatatypeDependencies getDependencies(Datatype resource, DependencyFilter filter) throws EntityNotFound {
     DatatypeDependencies ret = new DatatypeDependencies();
     ResourceBindingProcessor rb = new ResourceBindingProcessor(resource.getBinding());
     if (resource instanceof ComplexDatatype) {
       this.process((ComplexDatatype)resource, ret, filter, rb, null);
     }
-
-
     return ret;
   }
 
   @Override
-  public void process(Datatype datatype, DatatypeDependencies used, DependencyFilter filter,  ResourceBindingProcessor rb, String path) {
+  public void process(Datatype datatype, DatatypeDependencies used, DependencyFilter filter,  ResourceBindingProcessor rb, String path) throws EntityNotFound {
     if (datatype instanceof ComplexDatatype) {
       ComplexDatatype complex =  (ComplexDatatype)datatype;
       for (Component c : complex.getComponents()) {
-        String pathId = path != null? path + '-' + c.getId(): c.getId();
-        if (c.getRef() != null) {
-          if (c.getRef().getId() != null) {
-            if(used.getDatatypes().containsKey(c.getRef().getId()) && !this.filter(c, filter)) {
-              Datatype child = this.datatypeService.findById(c.getRef().getId());
-              rb.addChild(child.getBinding(), pathId);
-              used.getDatatypes().put(child.getId(), child);
-              if (child instanceof ComplexDatatype) {
-                this.process((ComplexDatatype)child, used, filter, rb, pathId);
-              }                
+        if(commonFilteringService.allow(filter.getUsageFilter(), c)) {
+          String pathId = path != null? path + '-' + c.getId(): c.getId();
+          bindingService.processValueSetBinding(rb.getValueSetBindings(pathId), used.getValuesets(), filter.getExcluded());  
+
+          if (c.getRef() != null) {
+            if (c.getRef().getId() != null) {
+              this.visit(c.getRef().getId(), used.getDatatypes(), used, filter, rb, pathId);
             }
           }
         }
@@ -80,32 +104,51 @@ public class DatatypeDependencyServiceImpl implements DatatypeDependencyService 
     }
   }
 
+  @Override
+  public void visit(String id, Map<String, Datatype> existing, DatatypeDependencies used,
+      DependencyFilter filter, ResourceBindingProcessor rb, String parentPath) throws EntityNotFound {
 
-  /**
-   * @param binding
-   * @param path
-   * @param valuesets
-   */
-  private void processBinding(ResourceBinding binding, String path,
-      HashMap<String, Valueset> valuesets) {
-
-
+    if(id != null && !existing.containsKey(id)) {
+      Datatype d = datatypeService.findById(id);
+      if(d!= null) {
+        existing.put(d.getId(), d);
+        if(d instanceof ComplexDatatype) {
+          rb.addChild(d.getBinding(), parentPath);
+          this.process(d, used , filter, rb, parentPath);
+        }
+      }else throw new EntityNotFound(id);
+    }
   }
 
 
-  /**
-   * @param c
-   * @param filter
-   * @return
-   */
-  private boolean filter(Component c, DependencyFilter filter) {
-    // TODO Auto-generated method stub
-    return false;
+  @Override
+  public Set<RelationShip> collectDependencies(Datatype elm) {
+
+    Set<RelationShip> used = new HashSet<RelationShip>();
+    HashMap<String, Usage> usageMap = new HashMap<String, Usage>();
+
+    if (elm instanceof ComplexDatatype) {
+      ComplexDatatype complex = (ComplexDatatype) elm;
+      for (Component c : complex.getComponents()) {
+        if (c.getRef() != null && c.getRef().getId() != null) {
+          RelationShip rel = new RelationShip(new ReferenceIndentifier(c.getRef().getId(), Type.DATATYPE),
+              new ReferenceIndentifier(elm.getId(), Type.DATATYPE),
+              new ReferenceLocation(Type.COMPONENT, c.getPosition()+ "" , c.getName())
+              );
+          rel.setUsage(c.getUsage());
+          usageMap.put(elm.getId()+"-"+c.getId(), c.getUsage());
+          used.add(rel);
+        }
+      }
+
+    }
+    if (elm.getBinding() != null) {
+      Set<RelationShip> bindingDependencies = bindingService
+          .collectDependencies(new ReferenceIndentifier(elm.getId(), Type.DATATYPE), elm.getBinding(),usageMap);
+      used.addAll(bindingDependencies);
+    }
+    return used;
   }
-
-
-
-
 
 
 

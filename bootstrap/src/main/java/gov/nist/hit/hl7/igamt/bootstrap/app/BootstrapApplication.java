@@ -39,7 +39,6 @@ import gov.nist.hit.hl7.igamt.bootstrap.data.DataFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.DynamicMappingFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.FixIGAttribute;
 import gov.nist.hit.hl7.igamt.bootstrap.data.IgFixer;
-import gov.nist.hit.hl7.igamt.bootstrap.data.PhinvadFixer;
 import gov.nist.hit.hl7.igamt.bootstrap.data.TablesFixes;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.BindingCollector;
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
@@ -131,9 +130,6 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   MessageEventFacory messageEventFactory;
   
-  @Autowired
-  PhinvadFixer phinvadFixer;
-
   @Autowired
   Environment env;
 
@@ -504,13 +500,6 @@ public class BootstrapApplication implements CommandLineRunner {
     this.pcConformanceStatementsIdFixes.fix();
   }
 
-  //@PostConstruct
-  void updateValueSets() throws EntityNotFound {
-    
-    phinvadFixer.update();
-    phinvadFixer.setValueSetOrigins();
-
-  }
   
   @PostConstruct
   void addDocumentInfo() throws IGUpdateException {

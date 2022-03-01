@@ -11,10 +11,50 @@
  */
 package gov.nist.hit.hl7.resource.dependency;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
+import gov.nist.hit.hl7.igamt.common.base.util.UsageFilter;
+
 /**
  * @author Abdelghani El Ouakili
  *
  */
 public class DependencyFilter {
+	
+	Map<RealKey, Boolean> excluded = new HashMap<RealKey,Boolean>();
+	UsageFilter usageFilter;
+	/**
+	 * @param excluded2
+	 */
+	public DependencyFilter(HashMap<RealKey, Boolean> excluded) {
+		this.excluded = excluded;
+	}
+
+	/**
+	 * @param usageFilter2
+	 */
+	public DependencyFilter(UsageFilter usageFilter2) {
+		this.usageFilter = usageFilter2;
+		excluded = new HashMap<RealKey,Boolean>();
+	}
+
+	public Map<RealKey, Boolean> getExcluded() {
+		return excluded;
+	}
+
+	public void setExcluded(Map<RealKey, Boolean> excluded) {
+		this.excluded = excluded;
+	}
+
+	public UsageFilter getUsageFilter() {
+		return usageFilter;
+	}
+
+	public void setUsageFilter(UsageFilter usageFilter) {
+		this.usageFilter = usageFilter;
+	}
+
 
 }

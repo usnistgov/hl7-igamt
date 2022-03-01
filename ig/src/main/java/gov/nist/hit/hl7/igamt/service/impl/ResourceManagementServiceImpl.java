@@ -11,23 +11,13 @@
  */
 package gov.nist.hit.hl7.igamt.service.impl;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -37,6 +27,9 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
+import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 
 import gov.nist.hit.hl7.igamt.ig.service.ResourceHelper;
@@ -63,24 +56,32 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
   
   @Autowired
   FhirHandlerService fhirHandlerService;
+  @Autowired
+  MessageStructureRepository messageStructureRepository;
+  @Autowired
+  ConformanceProfileService conformanceProfileService;
   
   @Override
   public <T extends Resource> T createFlavor(Registry reg, String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound {
 
-      T resource = this.getFlavor(username, documentInfo, resourceType, selected);
+      T resource = this.getElmentFormAddingInfo(username, documentInfo, resourceType, selected);
+      if(selected.isFlavor()) {
+      this.applyFlavorInfo(resource, selected);
       resource = this.resourceHelper.saveByType(resource, resourceType);
+      }
       Link link = resourceHelper.generateLink(resource, documentInfo, reg.getChildren().size()+1);
       reg.getChildren().add(link);
-      this.applyFlavorInfo(resource, selected);   
       return resource;
   }
   
   @Override
-  public <T extends Resource> T getFlavor(String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound {
+  public <T extends Resource> T getElmentFormAddingInfo(String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound {
 
       T resource = this.resourceHelper.getResourceByType(selected.getOriginalId(), resourceType); 
+      if(selected.isFlavor()) {
       applyClone.updateResourceAttributes(resource, this.resourceHelper.generateAbstractDomainId(), username, documentInfo);
       this.applyFlavorInfo(resource, selected);   
+      }
       return resource;
   }
   
@@ -124,6 +125,27 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
       
     }
 
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.ig.service.ResourceManagementService#createProfile(java.lang.String, gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo, gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo)
+   */
+  @Override
+  public ConformanceProfile createProfile(String username, DocumentInfo documentInfo,
+      AddingInfo ev) {
+  MessageStructure profile = messageStructureRepository.findOneById(ev.getOriginalId());
+
+  ConformanceProfile clone = new ConformanceProfile(profile, ev.getName());
+  if(ev.getSubstitutes() != null && !ev.getSubstitutes().isEmpty()) {
+    this.conformanceProfileService.subsitute(clone, ev.getSubstitutes(), username);
+  }
+  clone.setUsername(username);
+  clone.getDomainInfo().setScope(Scope.USER);
+  clone.setDescription(ev.getDescription());
+  clone.setIdentifier(ev.getExt());
+  clone.setName(ev.getExt());
+  conformanceProfileService.save(clone);
+  return clone;
   }
 
 

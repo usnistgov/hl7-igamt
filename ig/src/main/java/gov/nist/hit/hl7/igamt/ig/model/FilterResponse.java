@@ -9,37 +9,53 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.datatype.wrappers;
+package gov.nist.hit.hl7.igamt.ig.model;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.common.base.wrappers.DependencyWrapper;
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public class DatatypeDependencies extends DependencyWrapper {
+public class FilterResponse {
+
+  Set<String> messages;
+  Set<String> segments;
+  Set<String> datatypes;
+  Set<String> valueSets;
+  Set<String> CoConstraintsGroup;
+
   
-  HashMap<String, Datatype> datatypes = new HashMap<String, Datatype>();
-  HashMap<String, Boolean> valuesets = new HashMap<String, Boolean>();
-  
-  public HashMap<String, Datatype> getDatatypes() {
+  public Set<String> getMessages() {
+    return messages;
+  }
+  public void setMessages(Set<String> messages) {
+    this.messages = messages;
+  }
+  public Set<String> getSegments() {
+    return segments;
+  }
+  public void setSegments(Set<String> segments) {
+    this.segments = segments;
+  }
+  public Set<String> getDatatypes() {
     return datatypes;
   }
-  public void setDatatypes(HashMap<String, Datatype> datatypes) {
+  public void setDatatypes(Set<String> datatypes) {
     this.datatypes = datatypes;
   }
-  public HashMap<String, Boolean> getValuesets() {
-    return valuesets;
+  public Set<String> getValueSets() {
+    return valueSets;
   }
-  public void setValuesets(HashMap<String, Boolean> valuesets) {
-    this.valuesets = valuesets;
+  public void setValueSets(Set<String> valueSets) {
+    this.valueSets = valueSets;
   }
+  public Set<String> getCoConstraintsGroup() {
+    return CoConstraintsGroup;
+  }
+  public void setCoConstraintsGroup(Set<String> coConstraintsGroup) {
+    CoConstraintsGroup = coConstraintsGroup;
+  }
+
 
 }

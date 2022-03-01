@@ -9,21 +9,33 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.resource.dependency;
+package gov.nist.hit.hl7.igamt.ig.model;
 
-import java.util.HashMap;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
-import gov.nist.hit.hl7.igamt.common.base.wrappers.DependencyWrapper;
-import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+import gov.nist.hit.hl7.igamt.common.base.util.UsageFilter;
 
-public interface DependencyService <T extends Resource, Y extends DependencyWrapper> {
-	
-	void updateDependencies(T resource, HashMap<RealKey, String> newKeys);
-	Y getDependencies(T resource, DependencyFilter filter) throws EntityNotFound;
-	Set<RelationShip> collectDependencies(T elm);
+/**
+ * @author Abdelghani El Ouakili
+ *
+ */
+public class FilterIGInput {
 
+  private UsageFilter usageFilter;
+  private Set<String> conformanceProfiles;
+  
+  
+  public UsageFilter getUsageFilter() {
+    return usageFilter;
+  }
+  public void setUsageFilter(UsageFilter usageFilter) {
+    this.usageFilter = usageFilter;
+  }
+  public Set<String> getConformanceProfiles() {
+    return conformanceProfiles;
+  }
+  public void setConformanceProfiles(Set<String> conformanceProfiles) {
+    this.conformanceProfiles = conformanceProfiles;
+  }
+  
 }

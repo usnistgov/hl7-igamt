@@ -1392,7 +1392,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         processSegmentorGroup(profileId, child, used, path);
       }
     }
-
   }
 
   public List<ConformanceProfile> findByIdIn(Set<String> ids) {

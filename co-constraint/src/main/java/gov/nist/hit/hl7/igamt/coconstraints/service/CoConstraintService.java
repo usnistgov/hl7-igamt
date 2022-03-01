@@ -12,7 +12,6 @@ import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;

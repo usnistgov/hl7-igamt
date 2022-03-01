@@ -11,7 +11,11 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service;
 
+import java.util.Map;
+
 import gov.nist.hit.hl7.igamt.common.binding.service.ResourceBindingProcessor;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.wrappers.SegmentDependencies;
 import gov.nist.hit.hl7.resource.dependency.DependencyFilter;
@@ -24,6 +28,11 @@ import gov.nist.hit.hl7.resource.dependency.DependencyService;
 public interface SegmentDependencyService extends DependencyService<Segment, SegmentDependencies> {
 
 
-  void process(Segment segment, SegmentDependencies used, DependencyFilter filter, ResourceBindingProcessor rb, String path);
+  void process(Segment segment, SegmentDependencies used, DependencyFilter filter, ResourceBindingProcessor rb, String path) throws EntityNotFound;
 
+  void process(DynamicMappingInfo dynamicMappingInfo, SegmentDependencies used, DependencyFilter filter) throws EntityNotFound;
+  
+  void visit(String id, Map<String, Segment> existing,  SegmentDependencies used, DependencyFilter filter, ResourceBindingProcessor rb, String path) throws EntityNotFound;
+
+  
 }

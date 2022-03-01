@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.common.binding.service;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
@@ -39,6 +40,14 @@ public interface BindingService {
       HashMap<RealKey, String> newKeys);
 
   public Set<String> processValueSetBinding(Set<ValuesetBinding> valuesetBindings);
+
+  /**
+   * @param valueSetBindings
+   * @param valuesets
+   * @param excluded
+   */
+  public void processValueSetBinding(Set<ValuesetBinding> valueSetBindings,
+      HashMap<String, Boolean> valuesets, Map<RealKey, Boolean> excluded);
   
 
 

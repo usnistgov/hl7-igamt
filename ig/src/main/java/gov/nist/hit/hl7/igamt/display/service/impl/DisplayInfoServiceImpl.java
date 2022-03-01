@@ -33,6 +33,7 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
 import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
@@ -282,6 +283,20 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     displayElement.setParentType(compositeProfile.getParentType());
     List<DisplayElement> children = new ArrayList<DisplayElement>();
     return displayElement;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.display.service.DisplayInfoService#createReturn(gov.nist.hit.hl7.igamt.ig.domain.Ig, gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject)
+   */
+  @Override
+  public IGDisplayInfo createReturn(Ig ig, AddMessageResponseObject objects) {
+    IGDisplayInfo info = new IGDisplayInfo();
+    info.setIg(ig);
+    info.setMessages(this.convertConformanceProfiles(objects.getConformanceProfiles(), ig.getConformanceProfileRegistry()));
+    info.setSegments(this.convertSegments(objects.getSegments()));
+    info.setDatatypes(this.convertDatatypes(objects.getDatatypes()));
+    info.setValueSets(this.convertValueSets(objects.getValueSets()));
+    return info;
   }
 
 }

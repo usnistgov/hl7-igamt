@@ -185,33 +185,33 @@ public class IgFixer {
       for ( Link l: ig.getConformanceProfileRegistry().getChildren()) {
         if(l.isComparable()) {
           l.setDerived(true);
-           this.igService.updateAttribute(l.getId(), "derived", true, ConformanceProfile.class);
+           this.igService.updateAttribute(l.getId(), "derived", true, ConformanceProfile.class, false);
         }
       }
       for ( Link l: ig.getSegmentRegistry().getChildren()) {
         if(l.isComparable()) {
           l.setDerived(true);
-          this.igService.updateAttribute(l.getId(), "derived", true, Segment.class);
+          this.igService.updateAttribute(l.getId(), "derived", true, Segment.class, false);
         }
       }
 
       for ( Link l: ig.getDatatypeRegistry().getChildren()) {
         if(l.isComparable()) {
           l.setDerived(true);
-          this.igService.updateAttribute(l.getId(), "derived", true, Datatype.class);
+          this.igService.updateAttribute(l.getId(), "derived", true, Datatype.class, false);
         }
       }
       for ( Link l: ig.getValueSetRegistry().getChildren()) {
         if(l.isComparable()) {
           l.setDerived(true);
-          this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);
+          this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class, false);
         }
       }
 
       for ( Link l: ig.getCoConstraintGroupRegistry().getChildren()) {
         if(l.isComparable()) {
           l.setDerived(true);
-          this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class);     
+          this.igService.updateAttribute(l.getId(), "derived", true, Valueset.class, false);     
         }
       }
       igRepo.save(ig);

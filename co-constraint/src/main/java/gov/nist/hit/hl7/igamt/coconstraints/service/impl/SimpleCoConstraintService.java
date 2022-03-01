@@ -238,7 +238,7 @@ public class SimpleCoConstraintService implements CoConstraintService {
           rel.add(new RelationShip(new ReferenceIndentifier(ref.getRefId(), Type.COCONSTRAINTGROUP), parent, new ReferenceLocation(parent.getType(), tableName,"Co-Constraint Table")));
         }
       }
-    };
+    }
     if(value.getCoConstraints() !=null) {
       rel.addAll(this.collectDependencies(value.getCoConstraints(), parent, tableName));
     }
@@ -248,7 +248,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
   private Collection<? extends RelationShip> collectDependencies(List<CoConstraint> coConstraints,
       ReferenceIndentifier parent, String path) {
     HashSet<RelationShip> rel = new HashSet<RelationShip>();
-    // TODO Auto-generated method stub
     for(CoConstraint cc: coConstraints) {
       rel.addAll(collectDependencies(cc, parent, path));
     }
@@ -365,8 +364,8 @@ public class SimpleCoConstraintService implements CoConstraintService {
 
 
   }
-
-  private void updateDependencies(CoConstraint coconstraint, HashMap<RealKey, String> newKeys) {
+  
+  public void updateDependencies(CoConstraint coconstraint, HashMap<RealKey, String> newKeys) {
     if(coconstraint.getCells() !=null && coconstraint.getCells().values() !=null) {
       coconstraint.getCells().values().stream().forEach(cell -> {
         this.updateDepenedencies( cell, newKeys);
@@ -404,7 +403,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
         updateDepenedencies(vrCell.getCellValue(), newKeys);
       }
     }   
-
   }
   @Override
   public void updateDepenedencies(
@@ -459,12 +457,9 @@ public class SimpleCoConstraintService implements CoConstraintService {
     }
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService#saveAll(java.util.Set)
-   */
+
   @Override
   public List<CoConstraintGroup> saveAll(Set<CoConstraintGroup> coConstraintGroups) {
-    // TODO Auto-generated method stub
     return this.coConstraintGroupRepository.saveAll(coConstraintGroups);
   }
 

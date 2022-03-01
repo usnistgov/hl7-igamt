@@ -17,6 +17,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 
 /**
  * @author Abdelghani El Ouakili
@@ -27,8 +28,17 @@ public interface ResourceManagementService {
   <T extends Resource> T createFlavor(Registry reg, String username, DocumentInfo documentInfo, Type resourceType,
       AddingInfo selected) throws EntityNotFound;
 
-  <T extends Resource> T getFlavor(String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected)
+  <T extends Resource> T getElmentFormAddingInfo(String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected)
       throws EntityNotFound;
+
+  /**
+   * @param username
+   * @param documentInfo
+   * @param addingInfo
+   * @return
+   */
+  ConformanceProfile createProfile(String username, DocumentInfo documentInfo,
+      AddingInfo addingInfo);
    
   
   

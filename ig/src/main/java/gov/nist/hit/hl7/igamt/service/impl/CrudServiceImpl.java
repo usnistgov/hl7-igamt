@@ -517,7 +517,7 @@ public class CrudServiceImpl implements CrudService {
     if (elm.getOriginalId() != null) {
      // Valueset valueset = valuesetService.findById(elm.getOriginalId());
         
-        Valueset clone =  resourceManagementService.getFlavor( username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), Type.VALUESET, elm);
+        Valueset clone =  resourceManagementService.getElmentFormAddingInfo( username, new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT), Type.VALUESET, elm);
 
 
         clone.getDomainInfo().setScope(Scope.USER);

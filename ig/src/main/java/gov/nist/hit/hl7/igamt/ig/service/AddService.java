@@ -9,20 +9,41 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.conformanceprofile.service;
+package gov.nist.hit.hl7.igamt.ig.service;
 
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.MessageStructure;
-import gov.nist.hit.hl7.igamt.conformanceprofile.wrappers.ConformanceProfileDependencies;
-import gov.nist.hit.hl7.resource.dependency.DependencyFilter;
-import gov.nist.hit.hl7.resource.dependency.DependencyService;
+import java.util.List;
+
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 
 /**
  * @author Abdelghani El Ouakili
  *
  */
-public interface ConformanceProfileDependency extends DependencyService<ConformanceProfile, ConformanceProfileDependencies> {
+public interface AddService {
 
+AddMessageResponseObject addConformanceProfiles(Ig ig, List<AddingInfo> added, String username) throws EntityNotFound;
+
+/**
+ * @param ig
+ * @param added
+ * @param username
+ * @return
+ * @throws EntityNotFound
+ */
+AddMessageResponseObject addSegments(Ig ig, List<AddingInfo> added, String username)
+    throws EntityNotFound;
+
+/**
+ * @param ig
+ * @param added
+ * @param username
+ * @return
+ * @throws EntityNotFound
+ */
+AddMessageResponseObject addDatatypes(Ig ig, List<AddingInfo> added, String username)
+    throws EntityNotFound;
   
-
 }

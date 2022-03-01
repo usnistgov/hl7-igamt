@@ -162,8 +162,7 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
             new ReferenceLocation(Type.PROFILECOMPONENT, "Profile Component #"+ pc.getPosition(),  "" )); 
         relations.add(rel);
       }
-    }
-    
+    }   
     return relations;
   }
   

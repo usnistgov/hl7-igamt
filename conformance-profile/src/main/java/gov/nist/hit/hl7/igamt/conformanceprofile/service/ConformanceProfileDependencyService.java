@@ -9,14 +9,14 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.datatype.service;
+package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 
-import java.util.Map;
+import java.util.List;
 
-import gov.nist.hit.hl7.igamt.common.binding.service.ResourceBindingProcessor;
+import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.wrappers.DatatypeDependencies;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.wrappers.ConformanceProfileDependencies;
 import gov.nist.hit.hl7.resource.dependency.DependencyFilter;
 import gov.nist.hit.hl7.resource.dependency.DependencyService;
 
@@ -24,20 +24,27 @@ import gov.nist.hit.hl7.resource.dependency.DependencyService;
  * @author Abdelghani El Ouakili
  *
  */
-public interface DatatypeDependencyService extends DependencyService<Datatype, DatatypeDependencies> {
+public interface ConformanceProfileDependencyService extends DependencyService<ConformanceProfile, ConformanceProfileDependencies> {
 
   /**
-   * @param d
-   * @param used
+   * @param resource
    * @param filter
-   * @param rb
-   * @param string
-   * @throws EntityNotFound 
+   * @param conformanceProfileDependencies
+   * @return
+   * @throws EntityNotFound
    */
-  void process(Datatype d, DatatypeDependencies used, DependencyFilter filter,
-      ResourceBindingProcessor rb, String string) throws EntityNotFound;
+  ConformanceProfileDependencies process(ConformanceProfile resource,  ConformanceProfileDependencies conformanceProfileDependencies,  DependencyFilter filter) throws EntityNotFound;
 
-  void visit(String id, Map<String, Datatype> existing, DatatypeDependencies used,
-      DependencyFilter filter, ResourceBindingProcessor rb, String path) throws EntityNotFound;
-   
+  /**
+   * @param coConstraintsBindings
+   * @param conformanceProfileDependencies
+   * @param filter
+   * @throws EntityNotFound
+   */
+  void processCoConstraintsBinding(List<CoConstraintBinding> coConstraintsBindings,
+      ConformanceProfileDependencies conformanceProfileDependencies, DependencyFilter filter)
+      throws EntityNotFound;
+
+  
+
 }
