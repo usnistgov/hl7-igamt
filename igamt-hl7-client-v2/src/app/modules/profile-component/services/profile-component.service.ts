@@ -26,8 +26,7 @@ import {
 } from '../../shared/models/profile.component';
 import { IResource } from '../../shared/models/resource.interface';
 import { IChange, PropertyType } from '../../shared/models/save-change';
-import { IDynamicMappingInfo, ISegment } from '../../shared/models/segment.interface';
-import { DisplayService } from '../../shared/services/display.service';
+import { ISegment } from '../../shared/models/segment.interface';
 import { ElementNamingService, IPathInfo } from '../../shared/services/element-naming.service';
 import { Hl7V2TreeService } from '../../shared/services/hl7-v2-tree.service';
 import { PathService } from '../../shared/services/path.service';
@@ -68,7 +67,6 @@ export class ProfileComponentService {
     private elementNamingService: ElementNamingService,
     private segmentService: SegmentService,
     private valueSetService: ValueSetService,
-    private display: DisplayService,
   ) { }
 
   getById(id: string): Observable<IProfileComponent> {
