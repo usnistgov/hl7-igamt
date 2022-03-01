@@ -17,6 +17,7 @@ import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import gov.nist.hit.hl7.igamt.ig.service.VerificationEntryService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -33,7 +34,7 @@ public abstract class VerificationUtils {
         try {
             ResourceSkeletonBone target = context.get(pathId);
             if(target == null) {
-                return Collections.singletonList(
+                return Arrays.asList(
                         this.entry.PathNotFound(
                                 new Location(pathId, propertyType),
                                 context.getResource().getId(),
@@ -46,7 +47,7 @@ public abstract class VerificationUtils {
                 return verify.apply(target);
             }
         } catch (ResourceNotFoundException e) {
-            return Collections.singletonList(
+            return Arrays.asList(
                     this.entry.ResourceNotFound(
                             new Location(pathId, propertyType),
                             e.getId(),
@@ -61,7 +62,7 @@ public abstract class VerificationUtils {
             try {
                 ResourceSkeletonBone target = context.get(child);
                 if(target == null) {
-                    return Collections.singletonList(
+                    return Arrays.asList(
                             this.entry.PathNotFound(
                                     new Location(pathId, name, propertyType),
                                     context.getResource().getId(),
@@ -74,7 +75,7 @@ public abstract class VerificationUtils {
                     return verify.apply(target);
                 }
             } catch (ResourceNotFoundException e) {
-                return Collections.singletonList(
+                return Arrays.asList(
                         this.entry.ResourceNotFound(
                                 new Location(pathId, name, propertyType),
                                 e.getId(),
@@ -84,7 +85,7 @@ public abstract class VerificationUtils {
             }
         } else {
             if(use == null) {
-                return Collections.singletonList(
+                return Arrays.asList(
                         this.entry.PathNotFound(
                                 new Location(pathId, name, propertyType),
                                 context.getResource().getId(),

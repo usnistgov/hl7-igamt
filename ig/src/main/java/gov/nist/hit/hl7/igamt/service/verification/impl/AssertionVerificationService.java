@@ -10,6 +10,7 @@ import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeleton;
 import gov.nist.hit.hl7.igamt.ig.model.ResourceSkeletonBone;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -66,7 +67,8 @@ public class AssertionVerificationService extends VerificationUtils {
     }
 
     public List<IgamtObjectError> checkSingleAssertion(ResourceSkeleton skeleton, Location location, SingleAssertion assertion) {
-        List<IgamtObjectError> issues = this.getTargetOrFailAndVerify(
+        List<IgamtObjectError> issues = new ArrayList<>();
+        issues.addAll(this.getTargetOrFailAndVerify(
                 skeleton,
                 location.getProperty(),
                 location.getPathId(),
@@ -77,7 +79,7 @@ public class AssertionVerificationService extends VerificationUtils {
                     if(!Arrays.asList(ComplementKey.valued, ComplementKey.notValued)
                             .contains(assertion.getComplement().getComplementKey())) {
                         if(!subject.getResource().isLeaf() && subject instanceof ResourceSkeletonBone) {
-                            return Collections.singletonList(
+                            return Arrays.asList(
                                     this.entry.PathShouldBePrimitive(
                                             location,
                                             subject.getResource().getId(),
@@ -90,11 +92,10 @@ public class AssertionVerificationService extends VerificationUtils {
                     }
                     return this.NoErrors();
                 }
-        );
+        ));
 
         if(assertion.getComplement().getPath() != null) {
-            issues.addAll(
-                    this.getTargetOrFailAndVerify(
+            issues.addAll(this.getTargetOrFailAndVerify(
                             skeleton,
                             location.getProperty(),
                             location.getPathId(),

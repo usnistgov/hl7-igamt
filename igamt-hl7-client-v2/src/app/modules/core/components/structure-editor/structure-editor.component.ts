@@ -8,7 +8,6 @@ import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectedSelectors from 'src/app/root-store/dam-igamt/igamt.selected-resource.selectors';
 import { getHl7ConfigState, selectBindingConfig } from '../../../../root-store/config/config.reducer';
-import { LoadResourceReferences } from '../../../../root-store/dam-igamt/igamt.loaded-resources.actions';
 import { selectDerived, selectValueSetsNodes } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Message } from '../../../dam-framework/models/messages/message.class';
 import { MessageService } from '../../../dam-framework/services/message.service';
@@ -154,7 +153,6 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
               flatMap((resource) => {
                 this.changes.next({});
                 this.resourceSubject.next(resource as T);
-                // new LoadResourceReferences({ resourceType: this.editor.resourceType, id }),
                 return [this.messageService.messageToAction(message), new fromDam.EditorUpdate({ value: { changes: {}, resource }, updateDate: false }), new fromDam.SetValue({ selected: resource })];
               }),
             );
