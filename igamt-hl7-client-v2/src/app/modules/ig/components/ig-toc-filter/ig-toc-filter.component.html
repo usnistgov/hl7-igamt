@@ -23,7 +23,7 @@
     ></p-checkbox>
     <hr style="margin-top: 3px;">
     <div style="display: flex; flex-direction: column;"  #anchor *ngIf="activeFilter.usedInConformanceProfiles.active">
-      <div class="btn-group btn-group-toggle" style="margin-bottom: 10px;" role="group" ngbRadioGroup name="usedInConformanceProfilesKF" [(ngModel)]="activeFilter.usedInConformanceProfiles.exclude">
+      <div class="btn-group btn-group-toggle" style="margin-bottom: 10px;" role="group" ngbRadioGroup name="usedInConformanceProfilesKF" [(ngModel)]="activeFilter.usedInConformanceProfiles.allow">
         <label ngbButtonLabel class="btn-light no-focus" style="cursor: pointer;">
           <input ngbButton type="radio" class="btn-check" [value]="true"> Keep Only
         </label>
@@ -45,6 +45,7 @@
           <tr>
             <td>
               <p-multiSelect
+                appendTo="body"
                 [options]="conformanceProfileOptions"
                 [(ngModel)]="activeFilter.usedInConformanceProfiles.conformanceProfiles"
                 [style]="{'width':'100%'}">
@@ -66,6 +67,7 @@
           <tr>
             <td>
               <p-multiSelect
+              appendTo="body"
               [options]="usages" [(ngModel)]="activeFilter.usedInConformanceProfiles.usages" [style]="{'width':'100%'}">
               <ng-template let-selected pTemplate="selectedItems">
                 <span *ngIf="!selected || selected.length === 0">Any Usage</span>
@@ -99,6 +101,7 @@
         </label>
       </div>
       <p-multiSelect
+      appendTo="body"
       [options]="typeOptions" [(ngModel)]="activeFilter.filterByType.types" [style]="{'width':'100%'}">
       <ng-template let-selected pTemplate="selectedItems">
         <span *ngIf="!selected || selected.length === 0">Any Type</span>
@@ -123,7 +126,8 @@
         </label>
       </div>
       <p-multiSelect
-      [options]="scopeOptions" [(ngModel)]="activeFilter.filterByScope.types" [style]="{'width':'100%'}">
+      appendTo="body"
+      [options]="scopeOptions" [(ngModel)]="activeFilter.filterByScope.scopes" [style]="{'width':'100%'}">
       <ng-template let-selected pTemplate="selectedItems">
         <span *ngIf="!selected || selected.length === 0">Any Scope</span>
         <span *ngIf="selected && selected.length > 0">{{selected.length}} Scopes Selected</span>
@@ -132,6 +136,7 @@
     </div>
 
     <div style="display: flex; width: 100%; align-items: flex-end; justify-content: flex-end;">
+      <button (click)="clear(); dd.close()" style="margin-right: 5px;" class="btn btn-secondary">Clear</button>
       <button (click)="apply(); dd.close()" class="btn btn-primary">Apply</button>
     </div>
   </div>

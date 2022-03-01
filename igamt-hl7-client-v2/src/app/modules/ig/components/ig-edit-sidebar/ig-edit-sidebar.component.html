@@ -25,7 +25,7 @@
     <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername"
             placeholder="Search" required style="background-color: #f0f0f0;" type="text">
   </div>
-  <app-ig-toc-filter [conformanceProfiles]="conformanceProfiles$ | async" [config]="config$ | async"></app-ig-toc-filter>
+  <app-ig-toc-filter (update)="updateTocFilter($event)" [conformanceProfiles]="conformanceProfiles$ | async" [config]="config$ | async"></app-ig-toc-filter>
 </div>
 
 <div class="sidebar-controls">

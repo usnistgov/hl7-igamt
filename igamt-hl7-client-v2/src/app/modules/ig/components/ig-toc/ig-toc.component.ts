@@ -226,6 +226,12 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     });
   }
 
+  filterNode(fn: (data: IDisplayElement) => boolean) {
+    this.tree.treeModel.filterNodes((node) => {
+      return !fn(node.data);
+    });
+  }
+
   update() {
     this.nodeState.emit(this.tree.treeModel.nodes);
   }

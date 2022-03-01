@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
@@ -64,6 +64,7 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
 import { CrossReferencesService } from '../../../shared/services/cross-references.service';
 import { IDocumentDisplayInfo, IgDocument } from '../../models/ig/ig-document.class';
+import { IgTocFilterService, IIgTocFilterConfiguration, selectIgTocFilter } from '../../services/ig-toc-filter.service';
 import { IgTocComponent } from '../ig-toc/ig-toc.component';
 
 @Component({
@@ -71,7 +72,7 @@ import { IgTocComponent } from '../ig-toc/ig-toc.component';
   templateUrl: './ig-edit-sidebar.component.html',
   styleUrls: ['./ig-edit-sidebar.component.scss'],
 })
-export class IgEditSidebarComponent implements OnInit, OnDestroy {
+export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit {
 
   nodes$: Observable<any[]>;
   hl7Version$: Observable<string[]>;
@@ -91,6 +92,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
   selectedTargetId = 'IG';
   derived: boolean;
   selectedSubscription: Subscription;
+  tocFilterSubscription: Subscription;
   @BlockUI('toc') blockUIView: NgBlockUI;
 
   constructor(
@@ -99,6 +101,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
     private crossReferencesService: CrossReferencesService,
     private router: Router,
     private activeRoute: ActivatedRoute,
+    private igTocFilterService: IgTocFilterService,
     private actions: Actions) {
     this.deltaMode$ = this.store.select(fromIgEdit.selectDelta);
     this.deltaMode$.subscribe((x) => this.delta = x);
@@ -121,6 +124,10 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
           this.selectedTargetId = 'IG';
         }
       })).subscribe();
+  }
+
+  updateTocFilter(tocFilter: IIgTocFilterConfiguration) {
+    this.igTocFilterService.setFilter(tocFilter);
   }
 
   getNodes() {
@@ -585,6 +592,28 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy {
     if (this.selectedSubscription) {
       this.selectedSubscription.unsubscribe();
     }
+    if (this.tocFilterSubscription) {
+      this.tocFilterSubscription.unsubscribe();
+    }
+  }
+
+  ngAfterViewInit() {
+    this.tocFilterSubscription = this.store.select(selectIgTocFilter).pipe(
+      tap((tocFilter) => {
+        if (tocFilter) {
+          this.blockUIView.start();
+          setTimeout(() => {
+            this.toc.filterNode((display) => {
+              return this.igTocFilterService.isFiltered(display, tocFilter);
+            });
+            setTimeout(() => {
+              this.blockUIView.stop();
+            }, 200);
+          }, 200);
+
+        }
+      }),
+    ).subscribe();
   }
 
 }

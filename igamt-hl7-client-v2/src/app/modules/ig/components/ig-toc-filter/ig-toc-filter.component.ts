@@ -3,34 +3,10 @@ import { SelectItem } from 'primeng/api';
 import { IUsageOption } from '../../../shared/components/hl7-v2-tree/columns/usage/usage.component';
 import { Scope } from '../../../shared/constants/scope.enum';
 import { Type } from '../../../shared/constants/type.enum';
-import { Usage } from '../../../shared/constants/usage.enum';
 import { Hl7Config } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-
-export interface ITocFilter {
-  usedInConformanceProfiles: {
-    active: boolean;
-    conformanceProfiles: string[];
-    exclude: boolean;
-    usages: Usage[];
-  };
-  hideNarratives: boolean;
-  filterByType: {
-    active: boolean;
-    allow: boolean;
-    types: Type[];
-  };
-  filterByDerived: {
-    active: boolean;
-    allow: boolean;
-    value: boolean;
-  };
-  filterByScope: {
-    active: boolean;
-    allow: boolean;
-    scopes: Scope[];
-  };
-}
+import { IIgTocFilterConfiguration } from '../../services/ig-toc-filter.service';
+import * as _ from 'lodash';
 
 @Component({
   selector: 'app-ig-toc-filter',
@@ -53,9 +29,9 @@ export class IgTocFilterComponent implements OnInit {
     console.log(this.conformanceProfilesMap);
   }
   @Input()
-  activeFilter: ITocFilter;
+  activeFilter: IIgTocFilterConfiguration;
   @Output()
-  update: EventEmitter<ITocFilter>;
+  update: EventEmitter<IIgTocFilterConfiguration>;
   @Input()
   set config(c: Hl7Config) {
     this.usages = Hl7Config.getUsageOptions(c.usages, true, true);
@@ -66,53 +42,51 @@ export class IgTocFilterComponent implements OnInit {
   active: boolean;
   scopeOptions: SelectItem[];
   typeOptions = [{
-    value: Type.PROFILECOMPONENT,
+    value: Type.PROFILECOMPONENTREGISTRY,
     label: 'Profile Components',
   }, {
-    value: Type.COMPOSITEPROFILE,
+    value: Type.COMPOSITEPROFILEREGISTRY,
     label: 'Composite Profiles',
   }, {
-    value: Type.CONFORMANCEPROFILE,
+    value: Type.CONFORMANCEPROFILEREGISTRY,
     label: 'Conformance Profiles',
   }, {
-    value: Type.SEGMENT,
+    value: Type.SEGMENTREGISTRY,
     label: 'Segments',
   }, {
-    value: Type.DATATYPE,
+    value: Type.DATATYPEREGISTRY,
     label: 'Datatypes',
   }, {
-    value: Type.VALUESET,
+    value: Type.VALUESETREGISTRY,
     label: 'ValueSets',
   }, {
-    value: Type.COCONSTRAINTGROUP,
+    value: Type.COCONSTRAINTGROUPREGISTRY,
     label: 'Co-Constraint Group',
   }];
+
+  emptyFilter: IIgTocFilterConfiguration = {
+    usedInConformanceProfiles: {
+      active: false,
+      conformanceProfiles: [],
+      allow: true,
+      usages: [],
+    },
+    hideNarratives: false,
+    filterByType: {
+      active: false,
+      allow: true,
+      types: [],
+    },
+    filterByScope: {
+      active: false,
+      allow: true,
+      scopes: [],
+    },
+  };
+
   constructor() {
     this.update = new EventEmitter();
-    this.activeFilter = {
-      usedInConformanceProfiles: {
-        active: false,
-        conformanceProfiles: [],
-        exclude: true,
-        usages: [],
-      },
-      hideNarratives: false,
-      filterByType: {
-        active: false,
-        allow: true,
-        types: [],
-      },
-      filterByScope: {
-        active: false,
-        allow: true,
-        scopes: [],
-      },
-      filterByDerived: {
-        active: false,
-        allow: true,
-        value: false,
-      },
-    };
+    this.activeFilter = _.cloneDeep(this.emptyFilter);
     this.scopeOptions = Object.values(Scope).map((scope) => ({
       label: scope,
       value: scope,
@@ -130,14 +104,19 @@ export class IgTocFilterComponent implements OnInit {
     this.update.emit(this.activeFilter);
   }
 
+  clear() {
+    this.activeFilter = _.cloneDeep(this.emptyFilter);
+    this.active = this.isActive();
+    this.update.emit(this.activeFilter);
+  }
+
   isActive() {
     if (this.activeFilter) {
       const usedInConformanceProfile = this.activeFilter.usedInConformanceProfiles && this.activeFilter.usedInConformanceProfiles.active;
       const hideNarratives = this.activeFilter.hideNarratives;
       const filterByType = this.activeFilter.filterByType && this.activeFilter.filterByType.active;
       const filterByScopes = this.activeFilter.filterByScope && this.activeFilter.filterByScope.active;
-      const filterByDerived = this.activeFilter.filterByDerived && this.activeFilter.filterByDerived.active;
-      return usedInConformanceProfile || hideNarratives || filterByType || filterByScopes || filterByDerived;
+      return usedInConformanceProfile || hideNarratives || filterByType || filterByScopes;
     } else {
       return false;
     }

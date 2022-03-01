@@ -1,6 +1,6 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Action} from '@ngrx/store';
-import {IResource} from 'src/app/modules/shared/models/resource.interface';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Action } from '@ngrx/store';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import {
   IAddNodes, IAddProfileComponentContext,
   IAddResourceFromFile,
@@ -10,16 +10,12 @@ import {
   ICreateCoConstraintGroupResponse, ICreateCompositeProfile, ICreateProfileComponent, ICreateProfileComponentResponse,
   IDeleteNode,
 } from '../../../modules/document/models/toc/toc-operation.class';
-import {IDocumentDisplayInfo, IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
-import {Type} from '../../../modules/shared/constants/type.enum';
-import {IContent} from '../../../modules/shared/models/content.interface';
-import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
-import {IHL7EditorMetadata} from '../../../modules/shared/models/editor.enum';
-import {
-  LoadResourceReferences,
-  LoadResourceReferencesFailure,
-  LoadResourceReferencesSuccess,
-} from '../../dam-igamt/igamt.loaded-resources.actions';
+import { IDocumentDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { IIgTocFilter } from '../../../modules/ig/services/ig-toc-filter.service';
+import { Type } from '../../../modules/shared/constants/type.enum';
+import { IContent } from '../../../modules/shared/models/content.interface';
+import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
+import { IHL7EditorMetadata } from '../../../modules/shared/models/editor.enum';
 
 export enum IgEditActionTypes {
   IgEditResolverLoad = '[Ig Edit Resolver] Load Ig',
@@ -325,7 +321,7 @@ export class AddProfileComponentContextFailure implements Action {
   }
 }
 
-export class DeleteProfileComponentContextFailure  implements Action {
+export class DeleteProfileComponentContextFailure implements Action {
   readonly type = IgEditActionTypes.DeleteProfileComponentContextFailure;
   constructor(readonly error: HttpErrorResponse) {
   }
