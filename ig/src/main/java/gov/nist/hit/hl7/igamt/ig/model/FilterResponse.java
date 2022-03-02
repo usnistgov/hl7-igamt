@@ -19,18 +19,16 @@ import java.util.Set;
  */
 public class FilterResponse {
 
-  Set<String> messages;
+  Set<String> conformanceProfiles;
   Set<String> segments;
   Set<String> datatypes;
   Set<String> valueSets;
-  Set<String> CoConstraintsGroup;
-
-  
-  public Set<String> getMessages() {
-    return messages;
+  Set<String> coConstraintGroup;
+  public Set<String> getConformanceProfiles() {
+    return conformanceProfiles;
   }
-  public void setMessages(Set<String> messages) {
-    this.messages = messages;
+  public void setConformanceProfiles(Set<String> conformanceProfiles) {
+    this.conformanceProfiles = conformanceProfiles;
   }
   public Set<String> getSegments() {
     return segments;
@@ -50,12 +48,11 @@ public class FilterResponse {
   public void setValueSets(Set<String> valueSets) {
     this.valueSets = valueSets;
   }
-  public Set<String> getCoConstraintsGroup() {
-    return CoConstraintsGroup;
+  public Set<String> getCoConstraintGroup() {
+    return coConstraintGroup;
   }
-  public void setCoConstraintsGroup(Set<String> coConstraintsGroup) {
-    CoConstraintsGroup = coConstraintsGroup;
+  public void setCoConstraintGroup(Set<String> coConstraintGroup) {
+    this.coConstraintGroup = coConstraintGroup;
   }
-
 
 }

@@ -1,7 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { map, mergeMap, take } from 'rxjs/operators';
+import { selectLoadedDocumentInfo } from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { SetValue } from '../../dam-framework/store/data/dam.actions';
 import { selectValue } from '../../dam-framework/store/data/dam.selectors';
 import { Scope } from '../../shared/constants/scope.enum';
@@ -102,7 +104,7 @@ export class IgTocFilterService {
   };
   byType: Type[] = [];
 
-  constructor(private store: Store<any>) {
+  constructor(private store: Store<any>, private http: HttpClient) {
     for (const k of Object.keys(this.typeMap)) {
       this.byType = [
         ...this.byType,
@@ -135,14 +137,23 @@ export class IgTocFilterService {
     return types;
   }
 
+
+
   getResourceIds(config: IIgTocFilterConfiguration): Observable<IResourceFilter> {
-    return of({
-      conformanceProfiles: [],
-      segments: [],
-      datatypes: [],
-      valueSets: [],
-      coConstraintGroup: [],
-    });
+    return this.store.select(selectLoadedDocumentInfo).pipe(
+      take(1),
+      mergeMap((x) => {
+        return this.http.post<IResourceFilter>('/api/igdocuments/' + x.documentId + '/filter/', this.getFilterInput(config));
+      }));
+  }
+  getFilterInput(config: IIgTocFilterConfiguration): any {
+    return {
+      conformanceProfiles: config.usedInConformanceProfiles.conformanceProfiles,
+      usageFilter: {
+        values: config.usedInConformanceProfiles.usages,
+        allow: true
+      }
+    }
   }
 
   getFilter(config: IIgTocFilterConfiguration): Observable<IIgTocFilter> {

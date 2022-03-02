@@ -1852,10 +1852,10 @@ public class IgServiceImpl implements IgService {
     
     if(filter.getConformanceProfiles() != null) {
       profiles = this.conformanceProfileService.findByIdIn(filter.getConformanceProfiles());
-      response.setMessages(filter.getConformanceProfiles());
+      response.setConformanceProfiles(filter.getConformanceProfiles());
     }else {
       profiles =  this.conformanceProfileService.findByIdIn(ig.getConformanceProfileRegistry().getLinksAsIds());
-      response.setMessages(ig.getConformanceProfileRegistry().getLinksAsIds());
+      response.setConformanceProfiles(ig.getConformanceProfileRegistry().getLinksAsIds());
     }
 
     ConformanceProfileDependencies conformanceProfileDependencies = new ConformanceProfileDependencies();
@@ -1867,7 +1867,7 @@ public class IgServiceImpl implements IgService {
     response.setSegments(conformanceProfileDependencies.getSegments().keySet());
     response.setDatatypes(conformanceProfileDependencies.getDatatypes().keySet());
     response.setValueSets(conformanceProfileDependencies.getValuesets().keySet());
-    response.setCoConstraintsGroup(conformanceProfileDependencies.getCoConstraintGroups().keySet());
+    response.setCoConstraintGroup(conformanceProfileDependencies.getCoConstraintGroups().keySet());
 
     return response;
   }
