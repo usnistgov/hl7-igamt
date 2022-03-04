@@ -58,8 +58,7 @@ public class AddServiceImpl implements AddService {
   @Autowired
   ConformanceProfileDependencyService conformanceProfileDependencyService;
   @Autowired
-  SegmentDependencyService segmentDependencyService;
-  
+  SegmentDependencyService segmentDependencyService; 
   @Autowired
   MessageStructureRepository messageStructureRepository;
   @Autowired
@@ -157,13 +156,6 @@ public class AddServiceImpl implements AddService {
     }
 
   }
-  
-  
-  
-  
-  
-  
-  
 
   @SuppressWarnings("unlikely-arg-type")
   <T extends Resource> void  addLinks(Registry reg, Collection<T> added, DocumentInfo info, HashMap<RealKey, Boolean> excluded ){
@@ -189,24 +181,18 @@ public class AddServiceImpl implements AddService {
     return newKeys;
   }
 
-
-
-
   /**
    * @param conformanceProfileRegistry
    * @param conformanceprofile
    * @param newKeys
    */
-  private void addKeys(Registry reg,
-      Type type, HashMap<RealKey, Boolean> keys) {
+  private void addKeys(Registry reg, Type type, HashMap<RealKey, Boolean> keys) {
     if(reg.getChildren() != null) {
       Set<String> ids =  reg.getLinksAsIds();
-
       for(String id : ids ) {
         RealKey key = new RealKey(id, type);
         keys.put(key, true);
       }
     }
-
   }
 }

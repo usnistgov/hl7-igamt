@@ -61,7 +61,7 @@ import gov.nist.hit.hl7.resource.dependency.DependencyFilter;
  *
  */
 @Service
-public class CoConstraintDependencyServiceImp implements CoConstraintDependencyService {
+public class CoConstraintDependencyServiceImpl implements CoConstraintDependencyService {
 
   @Autowired
   SegmentService segmentService;

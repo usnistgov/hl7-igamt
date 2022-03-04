@@ -36,20 +36,23 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
-import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.common.slicing.service.SlicingService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileDependencyService;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.impl.ConformanceProfileCompositeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.repository.MessageStructureRepository;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileDependencyService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeDependencyService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -57,17 +60,20 @@ import gov.nist.hit.hl7.igamt.ig.model.RegistryUpdateReturn;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.CloneService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.ig.service.ResourceManagementService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentDependencyService;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentDependencyService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
 import gov.nist.hit.hl7.resource.change.service.ApplyClone;
-
+import   gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintDependencyService;
 /**
  * @author Abdelghani El Ouakili
  *
@@ -116,24 +122,44 @@ public class CloneServiceImpl implements  CloneService {
 
   @Autowired
   CoConstraintService coConstraintService;
-
   @Autowired
   FhirHandlerService fhirHandlerService;
   @Autowired
   SlicingService slicingService;
-
   @Autowired
   CommonService commonService;
 
   @Autowired
   CompositeProfileStructureService compositeProfileService;
+  
   @Autowired
   BindingService bindingService;
+  
   @Autowired
   ApplyClone applyClone;
+  
   @Autowired
   IgService igService;
-
+  
+  @Autowired
+  ConformanceProfileDependencyService conformanceProfileDependencyService;
+  @Autowired
+  SegmentDependencyService segmentDependencyService; 
+  @Autowired
+  MessageStructureRepository messageStructureRepository;
+  @Autowired
+  ResourceManagementService resourceManagementService;
+  @Autowired
+  DatatypeDependencyService datatypeDependencyService;
+  
+  @Autowired
+  ProfileComponentDependencyService profileComponentDependencyService;
+  @Autowired
+  CompositeProfileDependencyService compositeProfilDependencyService;
+  @Autowired
+  CoConstraintDependencyService CoConstraintDependencyService;
+  
+  
 
   @Override
   public Ig clone(Ig ig, String username, CopyInfo copyInfo) throws EntityNotFound {
@@ -187,7 +213,6 @@ public class CloneServiceImpl implements  CloneService {
         ig.getCoConstraintGroupRegistry().setChildren(coConstraintGroupClones.getLinks());
       }
 
-
       ig.setId(documentInfo.getDocumentId());
       Ig ret  = this.igRepository.save(ig);
 
@@ -197,8 +222,6 @@ public class CloneServiceImpl implements  CloneService {
       this.igRepository.deleteById(documentInfo.getDocumentId());
       throw e;
     }
-
-
   }
 
   private String generateAbstractDomainId() {
@@ -248,7 +271,6 @@ public class CloneServiceImpl implements  CloneService {
 
   }
 
-
   @SuppressWarnings("unchecked")
   public <T extends Resource> RegistryUpdateReturn<T> cloneRegistry(Registry reg, String username, HashMap<RealKey, String> newKeys, DocumentInfo documentInfo, Type resourceType, CloneMode cloneMode) throws EntityNotFound {
     RegistryUpdateReturn<T> ret = new RegistryUpdateReturn<T>();
@@ -272,8 +294,6 @@ public class CloneServiceImpl implements  CloneService {
 
   }
 
-
-
   /**
    * @param res
    * @param newKeys
@@ -281,21 +301,21 @@ public class CloneServiceImpl implements  CloneService {
   private void updateDependencies(Resource resource, HashMap<RealKey, String> newKeys) {
 
     if(resource instanceof ConformanceProfile) {
-      this.conformanceProfileService.updateDependencies((ConformanceProfile) resource, newKeys);
+      this.conformanceProfileDependencyService.updateDependencies((ConformanceProfile) resource, newKeys);
     } 
     if(resource instanceof Segment) {
-      this.segmentService.updateDependencies((Segment)resource, newKeys);
+      this.segmentDependencyService.updateDependencies((Segment)resource, newKeys);
     } 
     if(resource instanceof Datatype) {
-      this.datatypeService.updateDependencies((Datatype)resource, newKeys);
+      this.datatypeDependencyService.updateDependencies((Datatype)resource, newKeys);
 
     } 
     if(resource instanceof ProfileComponent) {
-      this.profileComponentService.updateDependencies((ProfileComponent)resource, newKeys);
+      this.profileComponentDependencyService.updateDependencies((ProfileComponent)resource, newKeys);
 
     } 
     if(resource instanceof CompositeProfileStructure) {
-      this.compositeProfileServie.updateDependencies((CompositeProfileStructure)resource, newKeys);
+      this.compositeProfilDependencyService.updateDependencies((CompositeProfileStructure)resource, newKeys);
     } 
     if(resource instanceof CoConstraintGroup) {
       this.coConstraintService.updateDependencies((CoConstraintGroup)resource, newKeys);
@@ -374,9 +394,7 @@ public class CloneServiceImpl implements  CloneService {
     return link.isUser();
   }
 
-
   private TextSection createSectionContent(SectionTemplate template) {
-    // TODO Auto-generated method stub
     TextSection section = new TextSection();
     section.setId(new ObjectId().toString());
     section.setType(Type.fromString(template.getType()));
@@ -394,9 +412,7 @@ public class CloneServiceImpl implements  CloneService {
     return section;
   }
 
-
   public  Resource getResourceByType( String id, String username, DocumentInfo parent, Type type ) throws EntityNotFound {
-
 
     switch(type) {
       case CONFORMANCEPROFILE:
@@ -417,7 +433,6 @@ public class CloneServiceImpl implements  CloneService {
         break;
     }
     return null;
-
   }
 
   private void addKeys(Registry reg, Type type, HashMap<RealKey, String> map) {

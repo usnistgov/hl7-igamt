@@ -139,8 +139,7 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
 
-  @Autowired
-  private PredicateRepository predicateRepository;
+
   @Autowired
   DynamicMappingFixer dynamicMappingFixer;
 

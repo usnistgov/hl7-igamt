@@ -64,7 +64,7 @@
 
         <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
           <div #dtLib>
-            <span [contextMenu]="addDatatypeContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
+            <span [contextMenu]="addDatatypeContextMenu"> {{node.data.path}} {{node.data.variableName}} <button (click)="print(node)"></button> {{node.children.length}}/ {{ig?.datatypeRegistry?.children?.length}}</span>
             <context-menu #addDatatypeContextMenu [disabled]="viewOnly||delta">
               <ng-template (execute)="import(node.data, 'DATATYPE', 'HL7STANDARD')" contextMenuItem [enabled]="!viewOnly&&!delta">
                 <i class="fa fa-plus"></i> Add HL7 Data Types

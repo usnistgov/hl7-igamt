@@ -25,6 +25,7 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { NodeHelperService } from '../../../shared/services/node-helper.service';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IgService } from '../../services/ig.service';
+import { IgDocument } from '../../models/ig/ig-document.class';
 
 @Component({
   selector: 'app-ig-toc',
@@ -54,6 +55,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   delta: boolean;
   @Input()
   viewOnly: boolean;
+  @Input()
+  ig: IgDocument;
 
   @Output()
   nodeState = new EventEmitter<IDisplayElement[]>();

@@ -11,7 +11,7 @@ import { Hl7Config } from 'src/app/modules/shared/models/config.class';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectAllMessages } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
-import { AddResourceSuccess } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { AddResourceSuccess, selectIgDocument } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   AddProfileComponentContext,
@@ -91,6 +91,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   deltaMode$: Observable<boolean> = of(false);
   selectedTargetId = 'IG';
   derived: boolean;
+  ig$: Observable<IgDocument>;
   selectedSubscription: Subscription;
   tocFilterSubscription: Subscription;
   @BlockUI('toc') blockUIView: NgBlockUI;
@@ -108,6 +109,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     this.store.select(selectDerived).pipe(take(1)).subscribe((x) => this.derived = x);
     this.nodes$ = this.getNodes();
     this.hl7Version$ = store.select(config.getHl7Versions);
+    this.ig$ = this.store.select(selectIgDocument);
     this.conformanceProfiles$ = store.select(selectAllMessages);
     this.config$ = store.select(getHl7ConfigState);
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
@@ -606,6 +608,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
             this.toc.filterNode((display) => {
               return this.igTocFilterService.isFiltered(display, tocFilter);
             });
+            console.log(this.toc.nodes);
             setTimeout(() => {
               this.blockUIView.stop();
             }, 200);
