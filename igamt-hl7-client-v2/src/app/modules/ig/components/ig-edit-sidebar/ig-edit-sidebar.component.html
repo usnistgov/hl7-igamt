@@ -75,7 +75,17 @@
       <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername"
               placeholder="Search" required style="background-color: #f0f0f0;" type="text">
     </div>
-    <app-ig-toc-filter (update)="updateTocFilter($event)" [conformanceProfiles]="conformanceProfiles$ | async" [config]="config$ | async"></app-ig-toc-filter>
+    <app-ig-toc-filter
+      ngbPopover="Some elements might be hidden because of your filter configuration"
+      triggers="manual"
+      #triggerPopOver="ngbPopover"
+      placement="bottom"
+      container="body"
+      popoverClass="toc-filter-pop"
+      (update)="updateTocFilter($event)"
+      [active]="filterActive$ | async"
+      [conformanceProfiles]="conformanceProfiles$ | async"
+      [config]="config$ | async"></app-ig-toc-filter>
   </div>
 
 </div>
