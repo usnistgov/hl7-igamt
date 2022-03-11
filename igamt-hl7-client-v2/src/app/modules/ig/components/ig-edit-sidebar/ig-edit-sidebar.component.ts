@@ -1,12 +1,13 @@
 import { AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Actions } from '@ngrx/effects';
+import { NgbPopover } from '@ng-bootstrap/ng-bootstrap';
+import { Actions, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { BlockUI, NgBlockUI } from 'ng-block-ui';
 import { SelectItem } from 'primeng/api';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import { concatMap, filter, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
+import { concatMap, filter, flatMap, map, switchMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { Hl7Config } from 'src/app/modules/shared/models/config.class';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
 import { selectAllMessages } from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
@@ -42,6 +43,7 @@ import { ClearResource } from '../../../../root-store/resource-loader/resource-l
 import { ConfirmDialogComponent } from '../../../dam-framework/components/fragments/confirm-dialog/confirm-dialog.component';
 import { RxjsStoreHelperService } from '../../../dam-framework/services/rxjs-store-helper.service';
 import { EditorReset, selectWorkspaceActive } from '../../../dam-framework/store/data';
+import { DamActionTypes } from '../../../dam-framework/store/data/dam.actions';
 import { selectRouterURL } from '../../../dam-framework/store/router';
 import { IAddNewWrapper, IAddWrapper } from '../../../document/models/document/add-wrapper.class';
 import { AddCoConstraintGroupComponent } from '../../../shared/components/add-co-constraint-group/add-co-constraint-group.component';
@@ -85,6 +87,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   @Input()
   deltaMode = false;
   @ViewChild(IgTocComponent) toc: IgTocComponent;
+  @ViewChild('triggerPopOver') triggerPopOver: NgbPopover;
   optionsToDisplay: any;
   deltaOptions: SelectItem[] = [{ label: 'CHANGED', value: 'UPDATED' }, { label: 'DELETED', value: 'DELETED' }, { label: 'ADDED', value: 'ADDED' }];
   selectedValues = ['UPDATED', 'DELETED', 'ADDED', 'UNCHANGED'];
@@ -94,6 +97,9 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
   ig$: Observable<IgDocument>;
   selectedSubscription: Subscription;
   tocFilterSubscription: Subscription;
+  saveSuccessSubscription: Subscription;
+  filterActive$: Observable<boolean>;
+
   @BlockUI('toc') blockUIView: NgBlockUI;
 
   constructor(
@@ -115,6 +121,11 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
     this.viewOnly$ = this.store.select(fromIgamtSelectors.selectViewOnly);
+    this.filterActive$ = this.store.select(selectIgTocFilter).pipe(
+      map((tocFilter) => {
+        return tocFilter && tocFilter.active;
+      }),
+    );
     this.selectedSubscription = this.store.select(selectRouterURL).pipe(
       map((url: string) => {
         const regex = '/ig/[a-z0-9A-Z-]+/(?<type>[a-z]+)/(?<id>[a-z0-9A-Z-]+).*';
@@ -590,6 +601,16 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
       })).subscribe();
   }
 
+  triggerTocFilterWarning() {
+    this.triggerPopOver.open();
+    setTimeout(() => {
+      this.triggerPopOver.open();
+      setTimeout(() => {
+        this.triggerPopOver.close();
+      }, 3000);
+    }, 1000);
+  }
+
   ngOnDestroy(): void {
     if (this.selectedSubscription) {
       this.selectedSubscription.unsubscribe();
@@ -597,24 +618,48 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     if (this.tocFilterSubscription) {
       this.tocFilterSubscription.unsubscribe();
     }
+    if (this.saveSuccessSubscription) {
+      this.saveSuccessSubscription.unsubscribe();
+    }
   }
 
   ngAfterViewInit() {
-    this.tocFilterSubscription = this.store.select(selectIgTocFilter).pipe(
-      tap((tocFilter) => {
+    // Filter TOC on Nodes or Filter Change
+    this.tocFilterSubscription = combineLatest(
+      this.getNodes(),
+      this.store.select(selectIgTocFilter),
+    ).pipe(
+      tap(([, tocFilter]) => {
         if (tocFilter) {
           this.blockUIView.start();
           setTimeout(() => {
             this.toc.filterNode((display) => {
               return this.igTocFilterService.isFiltered(display, tocFilter);
             });
-            console.log(this.toc.nodes);
             setTimeout(() => {
               this.blockUIView.stop();
+              if (tocFilter.active) {
+                this.triggerTocFilterWarning();
+              }
             }, 200);
           }, 200);
-
         }
+      }),
+    ).subscribe();
+
+    // Update Filter On Save
+    this.saveSuccessSubscription = this.actions.pipe(
+      ofType(DamActionTypes.EditorSaveSuccess),
+      switchMap(() => {
+        return this.store.select(selectIgTocFilter).pipe(
+          take(1),
+          tap((tocFilter) => {
+            if (tocFilter && tocFilter.usedInConformanceProfiles.active) {
+              this.igTocFilterService.setFilter(tocFilter);
+              this.triggerTocFilterWarning();
+            }
+          }),
+        );
       }),
     ).subscribe();
   }

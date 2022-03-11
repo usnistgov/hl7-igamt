@@ -24,8 +24,8 @@ import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { NodeHelperService } from '../../../shared/services/node-helper.service';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
-import { IgService } from '../../services/ig.service';
 import { IgDocument } from '../../models/ig/ig-document.class';
+import { IgService } from '../../services/ig.service';
 
 @Component({
   selector: 'app-ig-toc',

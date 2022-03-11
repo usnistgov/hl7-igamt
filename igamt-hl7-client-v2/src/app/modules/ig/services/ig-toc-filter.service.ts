@@ -42,27 +42,9 @@ export interface IResourceFilter {
   coConstraintGroup: string[];
 }
 
-export interface IIgTocFilter {
-  resources: {
-    active: boolean;
-    allow: boolean;
-    conformanceProfiles: string[];
-    segments: string[];
-    datatypes: string[];
-    valueSets: string[];
-    coConstraintGroup: string[];
-  };
-  hideNarratives: boolean;
-  filterByType: {
-    active: boolean;
-    allow: boolean;
-    types: Type[];
-  };
-  filterByScope: {
-    active: boolean;
-    allow: boolean;
-    scopes: Scope[];
-  };
+export interface IIgTocFilter extends IIgTocFilterConfiguration {
+  active: boolean;
+  resources: IResourceFilter;
 }
 
 @Injectable({
@@ -137,22 +119,42 @@ export class IgTocFilterService {
     return types;
   }
 
-
-
   getResourceIds(config: IIgTocFilterConfiguration): Observable<IResourceFilter> {
-    return this.store.select(selectLoadedDocumentInfo).pipe(
-      take(1),
-      mergeMap((x) => {
-        return this.http.post<IResourceFilter>('/api/igdocuments/' + x.documentId + '/filter/', this.getFilterInput(config));
-      }));
+    if (config.usedInConformanceProfiles.active) {
+      return this.store.select(selectLoadedDocumentInfo).pipe(
+        take(1),
+        mergeMap((x) => {
+          return this.http.post<IResourceFilter>('/api/igdocuments/' + x.documentId + '/filter/', this.getFilterInput(config));
+        }));
+    } else {
+      return of({
+        conformanceProfiles: [],
+        segments: [],
+        datatypes: [],
+        valueSets: [],
+        coConstraintGroup: [],
+      });
+    }
   }
   getFilterInput(config: IIgTocFilterConfiguration): any {
     return {
       conformanceProfiles: config.usedInConformanceProfiles.conformanceProfiles,
       usageFilter: {
         values: config.usedInConformanceProfiles.usages,
-        allow: true
-      }
+        allow: true,
+      },
+    };
+  }
+
+  isActive(config: IIgTocFilterConfiguration): boolean {
+    if (config) {
+      const usedInConformanceProfile = config.usedInConformanceProfiles && config.usedInConformanceProfiles.active;
+      const hideNarratives = config.hideNarratives;
+      const filterByType = config.filterByType && config.filterByType.active;
+      const filterByScopes = config.filterByScope && config.filterByScope.active;
+      return usedInConformanceProfile || hideNarratives || filterByType || filterByScopes;
+    } else {
+      return false;
     }
   }
 
@@ -161,9 +163,8 @@ export class IgTocFilterService {
       take(1),
       map((resources) => {
         return {
+          active: this.isActive(config),
           resources: {
-            active: config.usedInConformanceProfiles.active,
-            allow: config.usedInConformanceProfiles.allow,
             conformanceProfiles: [
               ...resources.conformanceProfiles,
             ],
@@ -180,6 +181,7 @@ export class IgTocFilterService {
               ...resources.coConstraintGroup,
             ],
           },
+          usedInConformanceProfiles: config.usedInConformanceProfiles,
           hideNarratives: config.hideNarratives,
           filterByType: {
             ...config.filterByType,
@@ -233,7 +235,7 @@ export class IgTocFilterService {
   }
 
   filterResource(display: IDisplayElement, filter: IIgTocFilter): boolean {
-    if (filter.resources.active && [
+    if (filter.usedInConformanceProfiles.active && [
       Type.CONFORMANCEPROFILE,
       Type.SEGMENT,
       Type.DATATYPE,
@@ -259,8 +261,8 @@ export class IgTocFilterService {
           break;
       }
       return this.pass(
-        used || filter.resources.conformanceProfiles.length === 0,
-        filter.resources.allow,
+        used || filter.usedInConformanceProfiles.conformanceProfiles.length === 0,
+        filter.usedInConformanceProfiles.allow,
       );
     } else {
       return false;
