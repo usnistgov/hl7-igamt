@@ -26,12 +26,13 @@ export class IgTocFilterComponent implements OnInit {
         value: item.id,
       });
     }
-    console.log(this.conformanceProfilesMap);
   }
   @Input()
   activeFilter: IIgTocFilterConfiguration;
   @Output()
   update: EventEmitter<IIgTocFilterConfiguration>;
+  @Input()
+  active: boolean;
   @Input()
   set config(c: Hl7Config) {
     this.usages = Hl7Config.getUsageOptions(c.usages, true, true);
@@ -39,7 +40,6 @@ export class IgTocFilterComponent implements OnInit {
   usages: IUsageOption[];
   conformanceProfilesMap: Record<string, IDisplayElement>;
   conformanceProfileOptions: SelectItem[];
-  active: boolean;
   scopeOptions: SelectItem[];
   typeOptions = [{
     value: Type.PROFILECOMPONENTREGISTRY,
@@ -100,26 +100,12 @@ export class IgTocFilterComponent implements OnInit {
   }
 
   apply() {
-    this.active = this.isActive();
     this.update.emit(this.activeFilter);
   }
 
   clear() {
     this.activeFilter = _.cloneDeep(this.emptyFilter);
-    this.active = this.isActive();
     this.update.emit(this.activeFilter);
-  }
-
-  isActive() {
-    if (this.activeFilter) {
-      const usedInConformanceProfile = this.activeFilter.usedInConformanceProfiles && this.activeFilter.usedInConformanceProfiles.active;
-      const hideNarratives = this.activeFilter.hideNarratives;
-      const filterByType = this.activeFilter.filterByType && this.activeFilter.filterByType.active;
-      const filterByScopes = this.activeFilter.filterByScope && this.activeFilter.filterByScope.active;
-      return usedInConformanceProfile || hideNarratives || filterByType || filterByScopes;
-    } else {
-      return false;
-    }
   }
 
   ngOnInit() {
