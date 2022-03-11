@@ -187,34 +187,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService#collectDependencies(gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier, java.util.List)
-   */
-  @Override
-  public Set<RelationShip> collectDependencies(ReferenceIndentifier parent,
-      List<CoConstraintBinding> coConstraintsBindings) {
-    // TODO Auto-generated method stub
-    HashSet<RelationShip> rel = new HashSet<RelationShip>();
-
-    for(CoConstraintBinding binding:coConstraintsBindings) {
-      if(binding.getBindings()!=null) {
-        for(CoConstraintBindingSegment segBinding: binding.getBindings()) {
-          // TODO Review Line Below :
-          //          rel.add(new RelationShip(new ReferenceIndentifier(segBinding.getFlavorId(), Type.SEGMENT), parent, new ReferenceLocation(Type.COCONSTRAINTGROUP,segBinding.getName(), null)));
-          if(segBinding.getTables() !=null) {
-            for( CoConstraintTableConditionalBinding CoConstraintTableConditionalBinding : segBinding.getTables()) {
-              if(CoConstraintTableConditionalBinding.getValue() !=null) {
-                rel.addAll(this.collectDependencies(parent, CoConstraintTableConditionalBinding.getValue(),segBinding.getName()));
-              }
-            }
-          }
-        }
-      }     
-    }
-
-    return rel; 
-
-  }
 
   /**
    * @param parent
@@ -302,68 +274,6 @@ public class SimpleCoConstraintService implements CoConstraintService {
     // TODO Auto-generated method stub
     return coConstraintGroupRepository.findByIdIn(ids);
   }
-
-  @Override
-  public Set<RelationShip> collectDependencies(CoConstraintGroup ccGroup) {
-    // TODO Auto-generated method stub
-    Set<RelationShip> relations= new HashSet<RelationShip>();
-    ReferenceIndentifier parent = new ReferenceIndentifier(ccGroup.getId(), Type.COCONSTRAINTGROUP);
-    relations.add(new RelationShip
-        (new ReferenceIndentifier(ccGroup.getBaseSegment(), Type.SEGMENT), parent, null));
-    if(ccGroup.getCoConstraints() !=null) {
-      for(CoConstraint cc :ccGroup.getCoConstraints() ) {
-        relations.addAll(collectDependencies(cc, parent,null));
-      }
-    }
-    return relations;
-  }
-
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService#clone(java.lang.String, java.util.HashMap, gov.nist.hit.hl7.igamt.common.base.domain.Link, java.lang.String, gov.nist.hit.hl7.igamt.common.base.domain.Scope)
-   */
-  @Override
-  public Link clone(String id, HashMap<RealKey, String> newKeys, Link l, String username,
-      Scope scope, String targetId, CloneMode cloneMode) {
-    // TODO Auto-generated method stub
-    Optional<CoConstraintGroup> group = this.coConstraintGroupRepository.findById(l.getId());
-    if(group.isPresent()) {
-      CoConstraintGroup elm = group.get().clone();
-      elm.setDocumentId(targetId);
-      elm.getDomainInfo().setScope(scope);
-      elm.setOrigin(l.getId());
-      elm.setUsername(username);
-      elm.setId(id);
-      elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
-      Link newLink = new Link(elm);
-
-      updateDependencies(elm, newKeys);
-      this.coConstraintGroupRepository.save(elm);
-      return newLink;
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * @param elm
-   * @param newKeys
-   * @param username
-   */
-  @Override
-  public void updateDependencies(CoConstraintGroup elm, HashMap<RealKey, String> newKeys) {
-    RealKey segmentKey= new RealKey(elm.getBaseSegment(), Type.SEGMENT);
-    if(elm.getBaseSegment() !=null && newKeys.containsKey(segmentKey)) {
-      elm.setBaseSegment(newKeys.get(segmentKey));
-    }
-    if(elm.getCoConstraints() !=null) {
-      for(CoConstraint cc: elm.getCoConstraints() ) {
-        // cc.setCloned(cloned || cc.isCloned());
-        updateDependencies(cc, newKeys);
-      }
-    }
-
-
-  }
   
   public void updateDependencies(CoConstraint coconstraint, HashMap<RealKey, String> newKeys) {
     if(coconstraint.getCells() !=null && coconstraint.getCells().values() !=null) {
@@ -404,40 +314,11 @@ public class SimpleCoConstraintService implements CoConstraintService {
       }
     }   
   }
-  @Override
-  public void updateDepenedencies(
-      CoConstraintTable value, HashMap<RealKey, String> newKeys) {
-    if(value.getGroups() !=null) {
-      for(CoConstraintGroupBinding groupBinding : value.getGroups()) {
-        if(groupBinding instanceof CoConstraintGroupBindingContained) {
-          CoConstraintGroupBindingContained  contained = (CoConstraintGroupBindingContained)(groupBinding);
-          if(contained.getCoConstraints() !=null) {
-            contained.getCoConstraints().stream().forEach( cc -> {
-             // cc.setCloned(cloned || cc.isCloned());
-              this.updateDependencies(cc, newKeys);
-            });
-          }
-        }else if(groupBinding instanceof CoConstraintGroupBindingRef) {
-          CoConstraintGroupBindingRef ref = (CoConstraintGroupBindingRef)groupBinding;
-          RealKey groupKey = new RealKey(ref.getRefId(), Type.COCONSTRAINTGROUP);
-          if(newKeys.containsKey(groupKey)) {
-            ref.setRefId(newKeys.get(groupKey));
-          }
-        }
-      }
-    };
-    if(value.getCoConstraints() !=null) {
-      value.getCoConstraints().stream().forEach( cc -> {
-        this.updateDependencies(cc, newKeys);
-      });
-    }
-  }
-  
+
   
   @Override
   public void updateCloneTag(
       CoConstraintTable value, boolean cloned) {
-    // TODO Auto-generated method stub
     if(value.getGroups() !=null) {
       for(CoConstraintGroupBinding groupBinding : value.getGroups()) {
         if(groupBinding instanceof CoConstraintGroupBindingContained) {

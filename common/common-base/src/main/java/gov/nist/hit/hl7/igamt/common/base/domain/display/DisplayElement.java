@@ -37,6 +37,7 @@ public class DisplayElement {
   private String resourceName;
   private String structureIdentifier;
   private ResourceOrigin resourceOrigin;
+  private boolean derived;
 
   public DisplayElement() {
   }
@@ -230,6 +231,14 @@ public class DisplayElement {
 
   public void setResourceOrigin(ResourceOrigin resourceOrigin) {
     this.resourceOrigin = resourceOrigin;
+  }
+
+  public boolean isDerived() {
+    return derived;
+  }
+
+  public void setDerived(boolean derived) {
+    this.derived = derived;
   }
 
 

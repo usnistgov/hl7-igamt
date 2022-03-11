@@ -15,6 +15,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -39,6 +40,16 @@ public interface ResourceManagementService {
    */
   ConformanceProfile createProfile(String username, DocumentInfo documentInfo,
       AddingInfo addingInfo);
+
+  /**
+   * @param res
+   * @param string
+   * @param username
+   * @param documentInfo
+   * @param cloneMode
+   */
+  void applyCloneResource(Resource res, String string, String username, DocumentInfo documentInfo,
+      CloneMode cloneMode);
    
   
   

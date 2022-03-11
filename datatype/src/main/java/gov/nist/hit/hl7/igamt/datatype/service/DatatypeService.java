@@ -86,9 +86,6 @@ public interface DatatypeService {
 
 	Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
 
-	public Link cloneDatatype(String newId, HashMap<RealKey, String> newKeys,  Link l,
-			String username, Scope scope, CloneMode cloneMode);
-
 	public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope);
 
 	public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype, boolean readOnly);
@@ -103,8 +100,6 @@ public interface DatatypeService {
 
 	public void applyChanges(Datatype dt, List<ChangeItemDomain> cItems, String documentId)
 			throws ApplyChangeException;
-
-	public Set<RelationShip> collectDependencies(Datatype dt);
 
 	public void collectAssoicatedConformanceStatements(Datatype datatype,
 			HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
@@ -127,7 +122,6 @@ public interface DatatypeService {
 
 	Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry);
 
-    void updateDependencies(Datatype elm, HashMap<RealKey, String> newKeys);
     
 
 }

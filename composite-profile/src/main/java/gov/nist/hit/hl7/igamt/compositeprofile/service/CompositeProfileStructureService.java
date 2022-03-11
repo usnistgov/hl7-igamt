@@ -11,16 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.compositeprofile.service;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
@@ -44,17 +36,10 @@ public interface CompositeProfileStructureService {
 
   public void removeCollection();
 
-  public Link cloneCompositeProfile(String string, HashMap<RealKey, String> newKeys, Link l,
-      String username, Scope user, CloneMode cloneMode);
-
   public List<CompositeProfileStructure> findByIdIn(Set<String> ids);
-
-  public Set<RelationShip> collectDependencies(CompositeProfileStructure composite);
   
   void applyChanges(CompositeProfileStructure pc, List<ChangeItemDomain> cItems, String documentId)
       throws ApplyChangeException;
-
-  void updateDependencies(CompositeProfileStructure elm, HashMap<RealKey, String> newKeys);
   
   List<CompositeProfileStructure> saveAll(Set<CompositeProfileStructure> compositeProfileStructures);
 

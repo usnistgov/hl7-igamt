@@ -11,11 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.datatypeLibrary.service.impl;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,10 +24,7 @@ import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -64,7 +56,6 @@ import gov.nist.hit.hl7.igamt.common.base.model.PublicationResult;
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.PublishedEntry;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 //import gov.nist.hit.hl7.igamt.common.base.model.PublicationEntry;
 //import gov.nist.hit.hl7.igamt.common.base.model.PublicationSummary;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
@@ -89,7 +80,6 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.service.LibraryDisplayInfoService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.display.model.CopyInfo;
-import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
@@ -143,40 +133,34 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
   @Override
   public DatatypeLibrary findById(String id) {
-    // TODO Auto-generated method stub
     return datatypeLibraryRepository.findById(id).orElse(null);
   }
 
   @Override
   public List<DatatypeLibrary> findAll() {
-    // TODO Auto-generated method stub
     return datatypeLibraryRepository.findAll();
   }
 
 
   @Override
   public void delete(String id) {
-    // TODO Auto-generated method stub
     datatypeLibraryRepository.deleteById(id);
   }
 
 
   @Override
   public DatatypeLibrary save(DatatypeLibrary DatatypeLibrary) {
-    // TODO Auto-generated method stub
     return datatypeLibraryRepository.save(DatatypeLibrary);
   }
 
 
   public List<DatatypeLibrary> findByUsername(String username) {
-    // TODO Auto-generated method stub
     return datatypeLibraryRepository.findByUsername(username);
   }
 
 
   @Override
   public List<DatatypeLibrary> finByScope(String scope) {
-    // TODO Auto-generated method stub
     return datatypeLibraryRepository.findByDomainInfoScope(scope);
   }
 
@@ -656,37 +640,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   	      }
   	      else throw new Exception("Datatype is missing.");
   	    }
-
-//  	    for (Link link : dl.getSegmentRegistry().getChildren()) {
-//  	      Segment s = this.segmentService.findById(link.getId());
-//  	      if (s != null) {
-//  	        SegmentDataModel segmentDataModel = new SegmentDataModel();
-//  	        segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
-//  	        // CoConstraintTable coConstraintTable =
-//  	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
-//  	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
-//  	        segments.add(segmentDataModel);
-//  	      } else
-//  	        throw new Exception("Segment is missing.");
-//  	    }
-
-//  	    for (Link link : ig.getConformanceProfileRegistry().getChildren()) {
-//  	      ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
-//  	      if (cp != null) {
-//  	        ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
-//  	        conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap,
-//  	            this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
-//  	        conformanceProfiles.add(conformanceProfileDataModel);
-//  	      } else
-//  	        throw new Exception("ConformanceProfile is missing.");
-//  	    }
-
   	    datatypeLibraryDataModel.setDatatypes(datatypes);
-//  	    igDataModel.setSegments(segments);
-//  	    igDataModel.setConformanceProfiles(conformanceProfiles);
-//  	    igDataModel.setValuesets(valuesets);
-
-
   	    return datatypeLibraryDataModel;
   	  }
 

@@ -70,11 +70,6 @@ public interface ProfileComponentService {
 
   ProfileComponentContext updateContextCoConstraintBindings(String pcId, String contextId, PropertyCoConstraintBindings coConstraintBindings) throws Exception;
 
-  Link cloneProfileComponent(String string, HashMap<RealKey, String> newKeys, Link l,
-                             String username, Scope user, CloneMode cloneMode);
-
-  Set<RelationShip> collectDependencies(ProfileComponent pc);
-
   ProfileComponent deleteContextById(String pcId, String contextId) throws ProfileComponentNotFoundException;
 
   void applyChanges(ProfileComponent pc, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException;
@@ -83,7 +78,6 @@ public interface ProfileComponentService {
       PropertyDynamicMapping pcDynamicMapping)
       throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException;
 
-  void updateDependencies(ProfileComponent elm, HashMap<RealKey, String> newKeys);
   
   List<ProfileComponent> saveAll(Set<ProfileComponent> profileComponents);
 

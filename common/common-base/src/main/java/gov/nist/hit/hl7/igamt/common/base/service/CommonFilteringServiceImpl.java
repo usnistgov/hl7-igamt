@@ -26,10 +26,14 @@ public class CommonFilteringServiceImpl implements CommonFilteringService {
   @Override
   public boolean allow(UsageFilter usage, StructureElement elm) {
     if(usage != null) {
-      if(usage.getValues() != null && usage.getValues().contains(elm.getUsage())) {
+      if(usage.getValues() == null || usage.getValues().isEmpty()) {
         return usage.isAllow();
       }
-      return !usage.isAllow();
+      else if(usage.getValues().contains(elm.getUsage())) {
+        return usage.isAllow();
+      }else {
+        return !usage.isAllow();
+      }
     }else {
       return true;
     }

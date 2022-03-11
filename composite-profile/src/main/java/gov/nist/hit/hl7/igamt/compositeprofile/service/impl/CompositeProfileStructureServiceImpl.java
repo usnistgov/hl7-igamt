@@ -92,47 +92,6 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
 
   }
   
-  @Override
-  public Link cloneCompositeProfile(String newId, HashMap<RealKey, String> newKeys, Link l,
-      String username, Scope scope, CloneMode cloneMode) {
-  
-    CompositeProfileStructure old = this.findById(l.getId());
-    CompositeProfileStructure elm = old.clone();
-    elm.setId(newId);
-    elm.getDomainInfo().setScope(scope);
-    elm.setUsername(username);
-    elm.setOrigin(l.getId());
-    elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
-    Link newLink = new Link(elm);
-    updateDependencies(elm, newKeys);
-    this.save(elm);
-    return newLink;
-    
-  }
-
-  /**
-   * @param elm
-   * @param newKeys
-   * @param cloneMode
-   */
-  @Override
-  public  void updateDependencies(CompositeProfileStructure elm, HashMap<RealKey, String> newKeys) {
-    if(elm.getConformanceProfileId() != null) {
-      RealKey key = new RealKey(elm.getConformanceProfileId(), Type.CONFORMANCEPROFILE);
-      if(newKeys.containsKey(key)){
-        elm.setConformanceProfileId(newKeys.get(key));
-      }
-    }
-    if(elm.getOrderedProfileComponents() != null) {
-      for(OrderedProfileComponentLink child: elm.getOrderedProfileComponents()) {
-        RealKey key = new RealKey(child.getProfileComponentId(), Type.PROFILECOMPONENT);
-        if(newKeys.containsKey(key)) {
-          child.setProfileComponentId(newKeys.get(key));
-        }
-      }
-    }
-  }
-
   /* (non-Javadoc)
    * @see gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService#findByIdIn(java.util.Set)
    */
@@ -142,29 +101,6 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
     return compositeProfileStructureRepository.findByIdIn(ids);
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService#collectDependencies(gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure)
-   */
-  @Override
-  public Set<RelationShip> collectDependencies(CompositeProfileStructure composite) {
-    Set<RelationShip> relations = new HashSet<RelationShip>();
-    if(composite.getConformanceProfileId() != null) {
-      RelationShip rel = new RelationShip(new ReferenceIndentifier(composite.getConformanceProfileId(), Type.CONFORMANCEPROFILE),
-          new ReferenceIndentifier(composite.getId(), Type.COMPOSITEPROFILE),
-          new ReferenceLocation(Type.PROFILECOMPONENT,"Core Profile","" ));
-      relations.add(rel);
-    }
-    
-    if(composite.getOrderedProfileComponents() != null) {
-      for(OrderedProfileComponentLink pc : composite.getOrderedProfileComponents()) {
-        RelationShip rel = new RelationShip(new ReferenceIndentifier(pc.getProfileComponentId(), Type.PROFILECOMPONENT),
-            new ReferenceIndentifier(composite.getId(), Type.COMPOSITEPROFILE),
-            new ReferenceLocation(Type.PROFILECOMPONENT, "Profile Component #"+ pc.getPosition(),  "" )); 
-        relations.add(rel);
-      }
-    }   
-    return relations;
-  }
   
   @Override
   public void applyChanges(CompositeProfileStructure pc, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {

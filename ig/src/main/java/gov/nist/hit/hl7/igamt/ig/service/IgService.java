@@ -54,8 +54,6 @@ public interface IgService {
 
   public Ig save(Ig ig);
 
-  public Ig clone(Ig ig, String username, CopyInfo info);
-
   public List<Ig> findByUsername(String username);
 
   public List<Ig> findByUsername(String username, Scope scope);
@@ -87,9 +85,6 @@ public interface IgService {
   public IgDocumentConformanceStatement convertDomainToConformanceStatement(Ig igdoument);
 
   public IGContentMap collectData(Ig igdoument);
-
-  void buildDependencies(IGContentMap contentMap);
-
 
   public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException;
 

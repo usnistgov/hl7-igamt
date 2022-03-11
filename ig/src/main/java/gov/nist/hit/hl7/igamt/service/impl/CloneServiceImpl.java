@@ -159,7 +159,6 @@ public class CloneServiceImpl implements  CloneService {
   @Autowired
   CoConstraintDependencyService CoConstraintDependencyService;
   
-  
 
   @Override
   public Ig clone(Ig ig, String username, CopyInfo copyInfo) throws EntityNotFound {
@@ -281,7 +280,7 @@ public class CloneServiceImpl implements  CloneService {
         if(this.shouldClone(l)) {
           Resource res = getResourceByType(l.getId(), username, documentInfo, resourceType);
           RealKey rel = new RealKey(l.getId(), resourceType);
-          applyCloneResource(res, newKeys.get(rel), username, documentInfo, cloneMode); // resource with new Id
+          resourceManagementService.applyCloneResource(res, newKeys.get(rel), username, documentInfo, cloneMode); // resource with new Id
           updateDependencies(res, newKeys); // resource with updated dependencies     
           l.setId(newKeys.get(rel));
           ret.getSavedResources().add((T)res);
@@ -318,77 +317,9 @@ public class CloneServiceImpl implements  CloneService {
       this.compositeProfilDependencyService.updateDependencies((CompositeProfileStructure)resource, newKeys);
     } 
     if(resource instanceof CoConstraintGroup) {
-      this.coConstraintService.updateDependencies((CoConstraintGroup)resource, newKeys);
+      this.CoConstraintDependencyService.updateDependencies((CoConstraintGroup)resource, newKeys);
     } 
   }
-
-  private void applyCloneResource(Resource resource, String newId, String username, DocumentInfo info , CloneMode mode ) {
-    this.applyClone.updateResourceAttributes(resource, newId, username, info);
-    if(resource instanceof CoConstraintGroup) {
-      applyCoConstraintCloneTag((CoConstraintGroup) resource);
-    } else if(resource instanceof ConformanceProfile) {
-      applyCoConstraintCloneTag((ConformanceProfile) resource);
-    }
-
-    if(mode.equals(CloneMode.DERIVE)) {
-      this.lockConformanceStatements(resource);
-    }       
-
-  }
-
-  /**
-   * @param resource
-   */
-  private void lockConformanceStatements(Resource resource) {
-    if(resource instanceof ConformanceProfile) {
-      ConformanceProfile profile = (ConformanceProfile)resource;
-      this.bindingService.lockConformanceStatements(profile.getBinding());
-    }
-    if(resource instanceof Segment) {
-      Segment segment = (Segment)resource;
-      this.bindingService.lockConformanceStatements(segment.getBinding());
-    }  
-    if(resource instanceof Datatype) {
-      Datatype datatype = (Datatype)resource;
-      this.bindingService.lockConformanceStatements(datatype.getBinding());
-    }  
-
-  }
-
-  /**
-   * @param resource
-   */
-  private void applyCoConstraintCloneTag(ConformanceProfile elm) {
-    if (elm.getCoConstraintsBindings() != null) {
-      for (CoConstraintBinding binding : elm.getCoConstraintsBindings()) {
-        if (binding.getBindings() != null) {
-          for (CoConstraintBindingSegment segBinding : binding.getBindings()) {
-            if (segBinding.getTables() != null) {
-              for (CoConstraintTableConditionalBinding ccBinding : segBinding.getTables()) {
-                if (ccBinding.getValue() != null) {
-                  this.coConstraintService.updateCloneTag(ccBinding.getValue(), true);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-
-  }
-
-  /**
-   * @param resource
-   */
-  private void applyCoConstraintCloneTag(CoConstraintGroup resource) {
-    if(resource.getCoConstraints() !=null) {
-      for(CoConstraint cc: resource.getCoConstraints() ) {
-        cc.setCloned(true);
-      }
-    }
-  }
-
-
 
   private boolean shouldClone(Link link) {
     return link.isUser();

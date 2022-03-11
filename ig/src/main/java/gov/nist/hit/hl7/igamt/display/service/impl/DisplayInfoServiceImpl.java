@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
@@ -165,6 +166,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     displayElement.setOrigin(group.getOrigin());
     displayElement.setParentId(base.getParentId());
     displayElement.setParentType(base.getParentType());
+    displayElement.setDerived(group.isDerived());
 
     return displayElement;
   }
@@ -204,6 +206,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
       }
     }
     displayElement.setChildren(children);
+    displayElement.setDerived(pc.isDerived());
     return displayElement;
   }
 
@@ -281,7 +284,7 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     displayElement.setOrigin(compositeProfile.getOrigin());
     displayElement.setParentId(compositeProfile.getParentId());
     displayElement.setParentType(compositeProfile.getParentType());
-    List<DisplayElement> children = new ArrayList<DisplayElement>();
+    displayElement.setDerived(compositeProfile.isDerived());
     return displayElement;
   }
 
@@ -298,5 +301,6 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
     info.setValueSets(this.convertValueSets(objects.getValueSets()));
     return info;
   }
+
 
 }
