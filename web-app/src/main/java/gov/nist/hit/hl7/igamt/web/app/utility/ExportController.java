@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.export.controller;
+package gov.nist.hit.hl7.igamt.web.app.utility;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -17,6 +17,8 @@ import gov.nist.hit.hl7.igamt.export.domain.CoConstraintExcelExportFormData;
 import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.service.impl.exception.PathNotFoundException;
+import gov.nist.hit.hl7.igamt.web.app.ig.FormData;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -58,7 +60,6 @@ import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.export.service.DlNewExportService;
 import gov.nist.hit.hl7.igamt.export.service.IgNewExportService;
-import gov.nist.hit.hl7.igamt.ig.controller.FormData;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.verification.IgamtObjectError;

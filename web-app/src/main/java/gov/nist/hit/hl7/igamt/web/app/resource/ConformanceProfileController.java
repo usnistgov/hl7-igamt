@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.conformanceprofile.controller;
+package gov.nist.hit.hl7.igamt.web.app.resource;
 
 import java.util.Date;
 import java.util.List;

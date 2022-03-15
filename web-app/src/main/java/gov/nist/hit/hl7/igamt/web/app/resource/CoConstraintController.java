@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.coconstraints.controller;
+package gov.nist.hit.hl7.igamt.web.app.resource;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;

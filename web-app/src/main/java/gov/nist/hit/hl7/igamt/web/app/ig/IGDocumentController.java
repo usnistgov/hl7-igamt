@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.ig.controller;
+package gov.nist.hit.hl7.igamt.web.app.ig;
 
 import java.io.File;
 import java.io.FileNotFoundException;

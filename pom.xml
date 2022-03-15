@@ -145,6 +145,7 @@
 		<module>documentation</module>
 		<module>bootstrap</module>
         <module>structure-editor</module>
-    </modules>
+        <module>web-app</module>
+	</modules>
   
 </project>

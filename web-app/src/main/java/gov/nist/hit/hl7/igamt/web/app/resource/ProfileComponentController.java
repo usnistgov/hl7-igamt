@@ -9,7 +9,7 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.profilecomponent.controller;
+package gov.nist.hit.hl7.igamt.web.app.resource;
 
 import java.util.Date;
 import java.util.List;

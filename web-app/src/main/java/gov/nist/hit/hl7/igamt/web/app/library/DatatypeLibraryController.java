@@ -9,7 +9,7 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.datatypeLibrary.controller;
+package gov.nist.hit.hl7.igamt.web.app.library;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

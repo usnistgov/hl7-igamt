@@ -637,6 +637,7 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
               return this.igTocFilterService.isFiltered(display, tocFilter);
             });
             console.log(this.toc.nodes);
+            this.toc.updateNumbers();
             setTimeout(() => {
               this.blockUIView.stop();
               if (tocFilter.active) {

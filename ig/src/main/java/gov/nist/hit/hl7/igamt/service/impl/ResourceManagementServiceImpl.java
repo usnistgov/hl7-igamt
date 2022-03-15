@@ -157,7 +157,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     if(ev.getSubstitutes() != null && !ev.getSubstitutes().isEmpty()) {
       this.conformanceProfileService.subsitute(clone, ev.getSubstitutes(), username);
     }
-    clone.setUsername(username);
+    this.applyClone.updateResourceAttributes(clone, clone.getId(), username, documentInfo);
     clone.getDomainInfo().setScope(Scope.USER);
     clone.setDescription(ev.getDescription());
     clone.setIdentifier(ev.getExt());
