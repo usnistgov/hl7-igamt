@@ -500,7 +500,7 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
   
-  @PostConstruct
+  //@PostConstruct
   void addDocumentInfo() throws IGUpdateException {
     List<Ig> igs = this.igService.findAll();
     for( Ig ig: igs ) {
