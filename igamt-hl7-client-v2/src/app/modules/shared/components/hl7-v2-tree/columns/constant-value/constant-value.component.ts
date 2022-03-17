@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { IChange } from 'src/app/modules/shared/models/save-change';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
@@ -15,6 +15,8 @@ export class ConstantValueComponent extends HL7v2TreeColumnComponent<IStringValu
   constant: IStringValue;
   edit: boolean;
   tmp: string;
+  @Input()
+  leaf: boolean;
 
   constructor(protected dialog: MatDialog) {
     super([PropertyType.CONSTANTVALUE], dialog);
@@ -39,6 +41,11 @@ export class ConstantValueComponent extends HL7v2TreeColumnComponent<IStringValu
       this.tmp = this.constant.value;
     }
     this.edit = !this.edit;
+  }
+
+  clear() {
+    this.constant.value = '';
+    this.onChange(this.getInputValue().value, this.constant.value, PropertyType.CONSTANTVALUE, ChangeType.UPDATE);
   }
 
   ngOnInit() {

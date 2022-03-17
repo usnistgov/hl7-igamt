@@ -135,7 +135,6 @@
                 <ng-container *ngSwitchCase="columnTypes.LENGTH">
                   <app-length
                     [changeEvent]="changes$"
-                    *ngIf="rowNode.node.leaf"
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [globalViewOnly]="viewOnly"
                     [enforceChangeReason]="derived"
@@ -144,11 +143,9 @@
                     [location]="rowData.pathId"
                     [level]="rowData.level"
                     [position]="rowData.position"
-                    [value]="{
-                      length: rowData.length,
-                      confLength: rowData.confLength,
-                      lengthType: rowData.lengthType
-                    }"
+                    [lengthType]="rowData.lengthType"
+                    [leaf]="rowNode.node.leaf"
+                    [value]="rowData.length"
                     [context]="type"
                     (updateLengthType)="updateLength($event, rowNode)"
                     (valueChange)="registerChange($event)"
@@ -157,7 +154,6 @@
                 <ng-container *ngSwitchCase="columnTypes.CONFLENGTH">
                   <app-conformance-length
                     [changeEvent]="changes$"
-                    *ngIf="rowNode.node.leaf"
                     [globalViewOnly]="viewOnly"
                     [viewOnly]="viewOnly || !rowData.changeable"
                     [enforceChangeReason]="derived"
@@ -166,10 +162,10 @@
                     [type]="rowData.type"
                     [position]="rowData.position"
                     [level]="rowData.level"
+                    [lengthType]="rowData.lengthType"
+                    [leaf]="rowNode.node.leaf"
                     [value]="{
-                      length: rowData.length,
-                      confLength: rowData.confLength,
-                      lengthType: rowData.lengthType
+                      value: rowData.confLength
                     }"
                     [context]="type"
                     (updateLengthType)="updateLength($event, rowNode)"
@@ -291,8 +287,8 @@
                     [position]="rowData.position"
                     [level]="rowData.level"
                     [value]="rowData.constantValue"
+                    [leaf]="rowNode.node.leaf"
                     [context]="type"
-                    *ngIf="rowNode.node.leaf"
                     (valueChange)="registerChange($event)"
                   >
                   </app-constant-value>
