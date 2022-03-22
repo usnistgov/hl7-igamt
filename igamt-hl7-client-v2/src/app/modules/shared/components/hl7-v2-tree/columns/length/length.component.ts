@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output, Input } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ChangeType, IChange, PropertyType } from 'src/app/modules/shared/models/save-change';
 import { LengthType } from '../../../../constants/length-type.enum';
@@ -23,9 +23,7 @@ export class LengthComponent extends HL7v2TreeColumnComponent<ILengthRange> impl
   leaf: boolean;
 
   onInitValue(value: ILengthRange): void {
-    this.val = {
-      ...value,
-    };
+    this.val = value;
   }
 
   constructor(protected dialog: MatDialog) {

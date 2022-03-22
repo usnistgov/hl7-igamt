@@ -46,7 +46,7 @@ export class ImportStructureComponent implements OnInit {
   duplicatedList = [];
   duplicated: NamingMap = {};
   constructor(public dialogRef: MatDialogRef<ImportStructureComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: IResourcePickerData, private resourceService: ResourceService, private store: Store<any>, private display: DisplayService) {
+              @Inject(MAT_DIALOG_DATA) public data: IResourcePickerData, private resourceService: ResourceService, private store: Store<any>, private display: DisplayService) {
     this.step = 1;
     this.resourceService.importResource({ type: data.type, scope: data.scope, version: data.version }).pipe(map((x) => x.data)).subscribe(
       (x) => { this.table_ = x; });

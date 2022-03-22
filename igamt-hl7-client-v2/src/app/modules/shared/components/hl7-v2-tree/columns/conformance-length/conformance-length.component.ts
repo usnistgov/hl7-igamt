@@ -24,9 +24,7 @@ export class ConformanceLengthComponent extends HL7v2TreeColumnComponent<IString
   leaf: boolean;
 
   onInitValue(value: IStringValue): void {
-    this.val = {
-      ...value,
-    };
+    this.val = value;
   }
 
   constructor(protected dialog: MatDialog) {

@@ -3,28 +3,22 @@ import { MatDialog } from '@angular/material/dialog';
 import * as _ from 'lodash';
 import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, Observable, of, Subject, Subscription } from 'rxjs';
-import { flatMap, map, take } from 'rxjs/operators';
 import { LengthType } from '../../constants/length-type.enum';
 import { Type } from '../../constants/type.enum';
 import { Usage } from '../../constants/usage.enum';
 import { IDocumentRef } from '../../models/abstract-domain.interface';
 import { IComment } from '../../models/comment.interface';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../models/config.class';
-import { IConformanceProfile, IGroup, ISegmentRef } from '../../models/conformance-profile.interface';
 import { IPath } from '../../models/cs.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
-import { ChangeType, IChange, IChangeLog, ILocationChangeLog, PropertyType } from '../../models/save-change';
-import { IField, ISegment } from '../../models/segment.interface';
-import {ISlicing} from '../../models/slicing';
+import { IChange, ILocationChangeLog, PropertyType } from '../../models/save-change';
+import { ISlicing } from '../../models/slicing';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
-import { IStructCreateDialogResult } from '../../services/struct-create-dialog.abstract';
 import { IBindingContext, IElementBinding } from '../../services/structure-element-binding.service';
 import { IBindingLocationInfo } from '../binding-selector/binding-selector.component';
-import { FieldAddDialogComponent } from '../field-add-dialog/field-add-dialog.component';
-import { SegmentAddDialogComponent } from '../segment-add-dialog/segment-add-dialog.component';
 
 export enum HL7v2TreeColumnType {
   USAGE = 'Usage',

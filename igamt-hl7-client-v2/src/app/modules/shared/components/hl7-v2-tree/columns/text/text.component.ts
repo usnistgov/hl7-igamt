@@ -26,6 +26,7 @@ export class TextComponent extends HL7v2TreeColumnComponent<IStringValue> implem
       data: {
         title: 'Definition Text',
         content: this.definition.value,
+        plain: false,
       },
     });
 

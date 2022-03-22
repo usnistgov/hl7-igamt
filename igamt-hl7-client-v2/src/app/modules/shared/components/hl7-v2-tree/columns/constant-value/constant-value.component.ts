@@ -22,9 +22,7 @@ export class ConstantValueComponent extends HL7v2TreeColumnComponent<IStringValu
     super([PropertyType.CONSTANTVALUE], dialog);
     this.value$.subscribe(
       (value) => {
-        this.constant = {
-          ...value,
-        };
+        this.constant = value;
       },
     );
   }
