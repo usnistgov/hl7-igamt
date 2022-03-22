@@ -40,9 +40,7 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
     super([PropertyType.USAGE], dialog);
     this.value$.asObservable().subscribe(
       (value) => {
-        this.usage = {
-          ...value,
-        };
+        this.usage = value;
       },
     );
   }
