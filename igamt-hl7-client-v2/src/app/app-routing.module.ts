@@ -27,6 +27,10 @@ const routes: Routes = [
     loadChildren: 'src/app/modules/export-configuration/export-configuration.module#ExportConfigurationModule',
   },
   {
+    path: 'workspaces',
+    loadChildren: 'src/app/modules/workspaces/workspaces.module#WorkspacesModule',
+  },
+  {
     path: 'home',
     component: HomeComponent,
   },

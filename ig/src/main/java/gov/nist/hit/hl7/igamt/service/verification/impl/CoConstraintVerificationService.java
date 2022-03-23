@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
+import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
@@ -12,6 +13,7 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
+import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -110,6 +112,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
                                 for (CoConstraintTableConditionalBinding tableConditionalBinding : coConstraintBindingSegment.getTables()) {
                                     errors.addAll(checkCoConstraintTableConditionalBinding(
                                             target,
+                                            context,
                                             TargetLocation.makeTableLocation(
                                                     segmentLocation,
                                                     tableConditionalBinding.getId(),
@@ -139,7 +142,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
     }
 
 
-    List<IgamtObjectError> checkCoConstraintTableConditionalBinding(ResourceSkeletonBone segmentRef, TargetLocation tableLocation, CoConstraintTableConditionalBinding binding) {
+    List<IgamtObjectError> checkCoConstraintTableConditionalBinding(ResourceSkeletonBone segmentRef, ResourceSkeleton context, TargetLocation tableLocation, CoConstraintTableConditionalBinding binding) {
         ResourceSkeleton segment = new ResourceSkeleton(
                 segmentRef.getResourceRef(),
                 this.resourceSkeletonService
@@ -151,7 +154,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
             if(binding.getCondition() != null) {
                 errors.addAll(
                         this.assertionVerificationService.checkAssertion(
-                                segment,
+                                context,
                                 new Location(conditionLocation.pathId, conditionLocation.name, PropertyType.COCONSTRAINTBINDING_CONDITION),
                                 binding.getCondition()
                         )

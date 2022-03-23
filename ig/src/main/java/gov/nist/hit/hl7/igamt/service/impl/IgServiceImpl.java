@@ -25,6 +25,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
+import gov.nist.hit.hl7.igamt.service.impl.exception.CoConstraintXMLSerializationException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -1246,13 +1247,20 @@ public class IgServiceImpl implements IgService {
 
     String valueSetXMLStr = this.xmlSerializeService.serializeValueSetXML(igModel).toXML();
 
-    //    String coConstraintsXMLStr = this.xmlSerializeService.serializeCoConstraintXML(igModel).toXML();
+    String coConstraintsXMLStr = null;
+    try {
+      coConstraintsXMLStr = this.xmlSerializeService.serializeCoConstraintXML(igModel).toXML();
+    } catch (CoConstraintXMLSerializationException e) {
+      e.printStackTrace();
+    }
 
 
     this.xmlSerializeService.generateIS(out, profileXMLStr, "Profile.xml");
     this.xmlSerializeService.generateIS(out, valueSetXMLStr, "ValueSets.xml");
     this.xmlSerializeService.generateIS(out, constraintXMLStr, "Constraints.xml");
-    //    this.xmlSerializeService.generateIS(out, coConstraintsXMLStr, "CoConstraints.xml");
+    if(coConstraintsXMLStr != null) {
+      this.xmlSerializeService.generateIS(out, coConstraintsXMLStr, "CoConstraints.xml");
+    }
 
     out.close();
     bytes = outputStream.toByteArray();
