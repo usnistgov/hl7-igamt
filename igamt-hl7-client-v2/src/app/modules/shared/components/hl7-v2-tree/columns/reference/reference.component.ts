@@ -1,11 +1,12 @@
 import { Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { Observable, of, Subscription } from 'rxjs';
-import { filter, map, tap } from 'rxjs/operators';
+import { Observable, of, Subscription, ReplaySubject } from 'rxjs';
+import { filter, map, tap, withLatestFrom } from 'rxjs/operators';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { IChange } from 'src/app/modules/shared/models/save-change';
+import { IResource } from '../../../../models/resource.interface';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
-import {ISlicing} from '../../../../models/slicing';
+import { ISlicing } from '../../../../models/slicing';
 import { IChangeReasonDialogDisplay } from '../../../change-reason-dialog/change-reason-dialog.component';
 import { IResourceRef } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
@@ -31,9 +32,14 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
   anchor: TemplateRef<any>;
   @Input()
   slicing: ISlicing;
+  @Input()
+  set resource(resource: IResource) {
+    this.resource$.next(resource);
+  }
 
   @ViewChild('display', { read: TemplateRef })
   displayTemplate: TemplateRef<any>;
+  resource$: ReplaySubject<IResource>;
 
   @Input()
   set options(opts: IDisplayElement[]) {
@@ -44,10 +50,11 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
 
     this._selection = this.value$.pipe(
       filter((value) => !!value),
-      tap((value) => {
+      withLatestFrom(this.resource$),
+      tap(([value, resource]) => {
         this.editMode = false;
         this.selected = opts.find((elm) => elm.id === value.id);
-        this._options = this.filter(opts, this.selected);
+        this._options = this.filter(opts, this.selected, resource);
       }),
     ).subscribe();
   }
@@ -78,6 +85,7 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
 
   constructor(private property: PropertyType, protected dialog: MatDialog) {
     super([property], dialog);
+    this.resource$ = new ReplaySubject(1);
     this.value$.pipe(
       map((value) => {
         this.onInitValue(value);
@@ -85,7 +93,7 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
     ).subscribe();
   }
 
-  abstract filter(opts: IDisplayElement[], selected: IDisplayElement): GroupOptions;
+  abstract filter(opts: IDisplayElement[], selected: IDisplayElement, resource?: IResource): GroupOptions;
 
   referenceChanged(event: IDisplayElement) {
     this.onChange(this.getInputValue(), {
@@ -118,10 +126,6 @@ export abstract class ReferenceComponent extends HL7v2TreeColumnComponent<IResou
         context: this.all.find((elm) => elm.id === change.oldPropertyValue.id),
       },
     });
-  }
-
-  print() {
-    console.log(this.slicing);
   }
 
   ngOnInit() {

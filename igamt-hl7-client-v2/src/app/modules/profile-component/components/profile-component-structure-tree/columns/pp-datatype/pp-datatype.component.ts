@@ -24,11 +24,11 @@ export class PpDatatypeComponent extends PpReferenceComponent implements OnInit 
   filter(opts: IDisplayElement[], selected: IDisplayElement): GroupOptions {
     opts = opts.filter((x) => this.filterByActiveInfo(x));
     const same_base = opts.filter((opt) => {
-      return opt.fixedName === selected.fixedName;
+      return opt.resourceName === selected.resourceName;
     });
 
     const different_base = opts.filter((opt) => {
-      return opt.fixedName !== selected.fixedName;
+      return opt.resourceName !== selected.resourceName;
     });
 
     const itemize = (flavor) => {

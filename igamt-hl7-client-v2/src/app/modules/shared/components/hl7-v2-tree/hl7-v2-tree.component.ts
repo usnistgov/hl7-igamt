@@ -140,7 +140,6 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   treeExpandedNodes: string[];
   resourceName: string;
   _resource: IResource;
-  structChangeType: PropertyType.STRUCTSEGMENT | PropertyType.FIELD;
 
   @Input()
   set resource(resource: IResource) {
@@ -159,11 +158,9 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
         break;
       case Type.SEGMENT:
         this.context = { resource: Type.SEGMENT };
-        this.structChangeType = PropertyType.FIELD;
         break;
       case Type.CONFORMANCEPROFILE:
         this.context = { resource: Type.CONFORMANCEPROFILE };
-        this.structChangeType = PropertyType.STRUCTSEGMENT;
         break;
     }
   }

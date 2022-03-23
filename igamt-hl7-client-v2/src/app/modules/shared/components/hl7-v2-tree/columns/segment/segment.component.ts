@@ -16,7 +16,7 @@ export class SegmentComponent extends ReferenceComponent {
 
   filter(opts: IDisplayElement[], selected: IDisplayElement): GroupOptions {
     const same_base = opts.filter((opt) => {
-      return opt.fixedName === selected.fixedName;
+      return opt.resourceName === selected.resourceName;
     });
 
     return [
