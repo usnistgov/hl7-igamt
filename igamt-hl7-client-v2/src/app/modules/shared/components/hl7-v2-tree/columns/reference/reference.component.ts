@@ -1,6 +1,6 @@
 import { Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { Observable, of, Subscription, ReplaySubject } from 'rxjs';
+import { Observable, of, ReplaySubject, Subscription } from 'rxjs';
 import { filter, map, tap, withLatestFrom } from 'rxjs/operators';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { IChange } from 'src/app/modules/shared/models/save-change';
