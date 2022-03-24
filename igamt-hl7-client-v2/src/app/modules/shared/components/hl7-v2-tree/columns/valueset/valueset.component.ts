@@ -67,6 +67,8 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
   displaySingleCodeTemplate: TemplateRef<any>;
   alive: boolean;
   activeChangeLog$: Observable<IChangeReasonSection[]>;
+  vsOrScBindings: IValueSetOrSingleCodeBindings;
+
   constructor(
     dialog: MatDialog,
     private structureElementBindingService: StructureElementBindingService,
@@ -180,9 +182,51 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
       ChangeType.UPDATE,
       skipReason,
     );
+    this.updateValueSetsBindings(change);
 
     if (change && change.length > 0) {
+      this.updateSingleCodeBindings(undefined);
       this.singleCodeChange(undefined, true);
+    }
+  }
+
+  updateValueSetsBindings(change: IValueSetBindingDisplay[]) {
+    const valueSets = this.vsOrScBindings.valueSetBindings;
+    const indexOfCurrentContext = valueSets.findIndex((b) => {
+      return this.structureElementBindingService.contextIsEqual({ resource: this.context }, b.context);
+    });
+
+    if (change && change.length > 0) {
+      valueSets.splice(indexOfCurrentContext, 1, {
+        context: { resource: this.context },
+        value: change.map(
+          (vs) => this.transform(vs),
+        ),
+        level: 0,
+      });
+    } else {
+      valueSets.splice(indexOfCurrentContext, 1);
+    }
+  }
+
+  updateSingleCodeBindings(change: ISingleCodeDisplay) {
+    const singleCodes = this.vsOrScBindings.singleCodeBindings;
+    const indexOfCurrentContext = singleCodes.findIndex((b) => {
+      return this.structureElementBindingService.contextIsEqual({ resource: this.context }, b.context);
+    });
+
+    if (change) {
+      singleCodes.splice(indexOfCurrentContext, 1, {
+        context: { resource: this.context },
+        value: {
+          code: change.code,
+          codeSystem: change.codeSystem,
+          valueSetId: change.valueSet.id,
+        },
+        level: 0,
+      });
+    } else {
+      singleCodes.splice(indexOfCurrentContext, 1);
     }
   }
 
@@ -202,8 +246,10 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
       ChangeType.UPDATE,
       skipReason,
     );
+    this.updateSingleCodeBindings(change);
     if (change) {
       this.vsBindingsChange([], true);
+      this.updateValueSetsBindings([]);
     }
   }
 
@@ -309,6 +355,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IValueSetOrSingl
       takeWhile(() => this.alive),
     ).subscribe(
       (vsOrSingleCode) => {
+        this.vsOrScBindings = vsOrSingleCode;
         const value = this.mergeBindings(vsOrSingleCode);
         const bindings = this.structureElementBindingService.getActiveAndFrozenBindings(value, { resource: this.context });
 

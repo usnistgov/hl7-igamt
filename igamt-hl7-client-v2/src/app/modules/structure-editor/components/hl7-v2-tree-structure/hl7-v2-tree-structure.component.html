@@ -79,7 +79,7 @@
                           [level]="rowData.level"
                           (valueChange)="registerChange($event)"
                           [type]="nodeType(rowNode.node)"
-                          [value]="rowData.name"
+                          [value]="rowData"
                           [required]="rowData.name === 'MSH' && rowData.type === 'SEGMENTREF'"
                           (add)="addToNode(rowNode, $event)"
                           (remove)="removeNode(rowNode.node)"
@@ -132,20 +132,16 @@
                 <ng-container *ngSwitchCase="columnTypes.LENGTH">
                   <app-length-simplified
                     [changeEvent]="changes$"
-                    *ngIf="rowNode.node.leaf"
                     [viewOnly]="viewOnly || !rowData.changeable || (type === 'SEGMENT' && resource.name === 'MSH' && (rowData.pathId === '1' || rowData.pathId === '2'))"
                     [globalViewOnly]="viewOnly"
                     [type]="rowData.type"
                     [location]="rowData.pathId"
                     [level]="rowData.level"
                     [position]="rowData.position"
-                    [value]="{
-                      length: rowData.length,
-                      confLength: rowData.confLength,
-                      lengthType: rowData.lengthType
-                    }"
+                    [lengthType]="rowData.lengthType"
+                    [leaf]="rowNode.node.leaf"
+                    [value]="rowData.length"
                     [structure]="_resource"
-
                     (updateLengthType)="updateLength($event, rowNode)"
                     (valueChange)="registerChange($event)"
                   ></app-length-simplified>
@@ -153,19 +149,17 @@
                 <ng-container *ngSwitchCase="columnTypes.CONFLENGTH">
                   <app-conformance-length-simplified
                     [changeEvent]="changes$"
-                    *ngIf="rowNode.node.leaf"
                     [globalViewOnly]="viewOnly"
                     [viewOnly]="viewOnly || !rowData.changeable || (type === 'SEGMENT' && resource.name === 'MSH' && (rowData.pathId === '1' || rowData.pathId === '2'))"
                     [structure]="_resource"
-
                     [location]="rowData.pathId"
                     [type]="rowData.type"
                     [position]="rowData.position"
                     [level]="rowData.level"
+                    [lengthType]="rowData.lengthType"
+                    [leaf]="rowNode.node.leaf"
                     [value]="{
-                      length: rowData.length,
-                      confLength: rowData.confLength,
-                      lengthType: rowData.lengthType
+                      value: rowData.confLength
                     }"
                     (updateLengthType)="updateLength($event, rowNode)"
                     (valueChange)="registerChange($event)"

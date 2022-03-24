@@ -24,7 +24,7 @@ export class PpSegmentComponent extends PpReferenceComponent implements OnInit {
   filter(opts: IDisplayElement[], selected: IDisplayElement): GroupOptions {
     opts = opts.filter((x) => this.filterByActiveInfo(x));
     const same_base = opts.filter((opt) => {
-      return opt.fixedName === selected.fixedName && opt.domainInfo.version === selected.domainInfo.version;
+      return opt.resourceName === selected.resourceName;
     });
 
     const itemize = (flavor) => {

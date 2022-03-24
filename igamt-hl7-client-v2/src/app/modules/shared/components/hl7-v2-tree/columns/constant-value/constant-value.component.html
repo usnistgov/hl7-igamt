@@ -13,6 +13,7 @@
       <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="toggleEdit()"><i class="fa fa-check" style="color: green;"></i></button>
     </div>
   </div>
-  <button class="btn btn-sm btn-primary" *ngIf="!viewOnly && !edit" (click)="toggleEdit()"><i class="fa fa-pencil"></i></button>
+  <button class="btn btn-sm btn-primary" *ngIf="!viewOnly && !edit && leaf" (click)="toggleEdit()"><i class="fa fa-pencil"></i></button>
+  <button class="btn btn-sm btn-danger" *ngIf="!viewOnly && !edit && !leaf && constant?.value" (click)="clear()"><i class="fa fa-trash"></i></button>
 </div>
 
