@@ -16,6 +16,7 @@ import java.util.Date;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 
@@ -42,6 +43,7 @@ public class SegmentBindingDataModel implements Serializable{
   private String preDef;
   private String postDef;
   private String ext;
+  private String fixedExtension;
 
 
   public SegmentBindingDataModel() {
@@ -68,6 +70,7 @@ public class SegmentBindingDataModel implements Serializable{
     this.preDef = s.getPreDef();
     this.postDef = s.getPostDef();
     this.ext = s.getExt();
+    this.fixedExtension = s.getFixedExtension();
   }
 
   public String getId() {
@@ -214,11 +217,38 @@ public class SegmentBindingDataModel implements Serializable{
     this.ext = ext;
   }
   
+//  public String getLabel() {
+//    if(ext == null) return this.name;
+//    else return this.name + "_" + this.ext;
+//  }
+
+
   public String getLabel() {
-    if(ext == null) return this.name;
-    else return this.name + "_" + this.ext;
+    String entireExt = this.getEntireExtension();
+    if (entireExt != null && !entireExt.isEmpty()) {
+      return  this.getName() + "_" + this.getEntireExtension();
+    }
+    return this.getName();
   }
 
+  public String getEntireExtension() {
+    if(this.getFixedExtension() !=null && !this.getFixedExtension().isEmpty()) {
+     String fixed = "#"+this.getFixedExtension();
+     if(this.getDomainInfo().getScope().equals(Scope.USERCUSTOM)) {
+       return fixed;
+     }else if(this.getExt() != null) {
+       return fixed+'_'+ this.getExt();
+     }     
+    }
+    return this.getExt();
+  }
 
+public String getFixedExtension() {
+	return fixedExtension;
+}
+
+public void setFixedExtension(String fixedExtension) {
+	this.fixedExtension = fixedExtension;
+}
 
 }
