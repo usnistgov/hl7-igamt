@@ -26,29 +26,33 @@ public class Registry implements Serializable{
   public Registry() {
 
   }
-  
+
   public Set<String> getLinksAsIds(){
-	  
-			Set<String> ret = this.children.stream()
-					.map( element -> {
-						return element.getId();
-					})
-					.collect(Collectors.toSet());
-			
-			return ret;
-  }
-  
-  public Map<String, Link> getLinksAsMap(){
-    
-    Map<String, Link> ret = this.children.stream().collect(
-            Collectors.toMap(x -> x.getId(), x -> x));
+
+    Set<String> ret = this.children.stream()
+        .map( element -> {
+          return element.getId();
+        })
+        .collect(Collectors.toSet());
+
     return ret;
-}
+  }
+
+  public Map<String, Link> getLinksAsMap(){
+    Map<String, Link> ret  = new HashMap<String, Link>();
+    for(Link l : this.children) {
+      if(l.getId() != null) {
+        ret.put(l.getId(), l);
+      }
+    }
+    return ret;
+  }
+
   public Link getLinkById(String id) {
-	  for(Link l : this.children) {
-		  if(l.getId().equals(id)) return l;
-	  }
-	  return null;
+    for(Link l : this.children) {
+      if(l.getId().equals(id)) return l;
+    }
+    return null;
   }
 
   /**

@@ -159,7 +159,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.elementNumbers.profileComponents = profileComponents.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
 
     const compositeProfiles = profileNodes.children.find((x) => x.type === Type.COMPOSITEPROFILEREGISTRY).children;
-    this.elementNumbers.profileComponents = compositeProfiles.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
+    this.elementNumbers.compositeProfiles = compositeProfiles.filter((n) => !this.tree.treeModel.hiddenNodeIds[n.id]).length;
 
   }
   addSectionToNode(node) {
@@ -318,7 +318,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 export class ElmentNumbers {
   conformanceProfiles?: number;
   profileComponents?: number;
-  compositeProfile?: number;
+  compositeProfiles?: number;
   segments?: number;
   datatypes?: number;
   valueSets?: number;

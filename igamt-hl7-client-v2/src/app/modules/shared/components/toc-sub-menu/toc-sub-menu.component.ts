@@ -1,9 +1,9 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {Icons} from '../../constants/icons.enum';
-import {Scope} from '../../constants/scope.enum';
-import {Type} from '../../constants/type.enum';
-import {IDisplayElement} from '../../models/display-element.interface';
-import {SubMenu} from '../../models/sub-menu.class';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { Icons } from '../../constants/icons.enum';
+import { Scope } from '../../constants/scope.enum';
+import { Type } from '../../constants/type.enum';
+import { IDisplayElement } from '../../models/display-element.interface';
+import { SubMenu } from '../../models/sub-menu.class';
 
 @Component({
   selector: 'app-toc-sub-menu',
@@ -58,7 +58,7 @@ export class TocSubMenuComponent implements OnInit {
       if (type !== Type.VALUESET.toLowerCase() && type !== Type.COMPOSITEPROFILE.toLowerCase()) {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'conformance-statement', 'Conformance statements', Icons.TABLE));
       }
-      if ((type === Type.SEGMENT.toLocaleLowerCase() || type === Type.SEGMENTCONTEXT.toLocaleLowerCase()) && this.element.fixedName === 'OBX') {
+      if ((type === Type.SEGMENT.toLocaleLowerCase() || type === Type.SEGMENTCONTEXT.toLocaleLowerCase()) && this.element.fixedName.startsWith('OBX')) {
         ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'dynamic-mapping', 'Dynamic Mapping', Icons.LIST));
       }
       if (type === Type.CONFORMANCEPROFILE.toLowerCase()) {

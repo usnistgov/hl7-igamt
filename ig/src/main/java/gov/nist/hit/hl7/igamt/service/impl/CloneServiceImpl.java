@@ -265,7 +265,7 @@ public class CloneServiceImpl implements  CloneService {
     addKeys(ig.getSegmentRegistry(), Type.SEGMENT, newKeys);
     addKeys(ig.getCoConstraintGroupRegistry(), Type.COCONSTRAINTGROUP, newKeys);
     addKeys(ig.getProfileComponentRegistry(), Type.PROFILECOMPONENT, newKeys);
-    addKeys(ig.getCompositeProfileRegistry(), Type.COMPOSITEPROFILEREGISTRY, newKeys);
+    addKeys(ig.getCompositeProfileRegistry(), Type.COMPOSITEPROFILE, newKeys);
     return newKeys;
 
   }

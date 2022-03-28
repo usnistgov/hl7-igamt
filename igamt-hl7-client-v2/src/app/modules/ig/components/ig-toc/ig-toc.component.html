@@ -54,7 +54,7 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
-          <span  #cmppLib [contextMenu]="CompositeProfileContextMenu"> {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.compositeProfile: node.children.length}} / {{node.children.length}}</span>
+          <span  #cmppLib [contextMenu]="CompositeProfileContextMenu"> {{node.data.path}} {{node.data.variableName}} {{elementNumbers?elementNumbers.compositeProfiles: node.children.length}} / {{node.children.length}}</span>
           <context-menu #CompositeProfileContextMenu [disabled]="viewOnly||delta">
             <ng-template (execute)="createNew(node.data, 'COMPOSITEPROFILE')" contextMenuItem [enabled]="!viewOnly&&!delta">
               <i class="fa fa-plus"></i> Create Composite Profile
