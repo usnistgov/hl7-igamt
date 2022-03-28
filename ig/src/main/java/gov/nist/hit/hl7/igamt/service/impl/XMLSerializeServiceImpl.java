@@ -412,8 +412,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
               }
             } else {
               elmBindingIdentifier.appendChild(this.str(t.getBindingIdentifier()));
-            }
-            System.out.println(t.getBindingIdentifier());            
+            }          
             elmNoValidation.appendChild(elmBindingIdentifier);
           }
 
@@ -1856,7 +1855,6 @@ private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, S
       SegmentDataModel sModel = igModel.findSegment(sgModel.getSegment().getId());
       if (sModel == null)
         sModel = toBeAddedSegs.get(sgModel.getSegment().getId());
-      System.out.println(sModel.getModel().getId());
 
       SegmentDataModel copySModel = XMLSerializeServiceImpl.cloneThroughJson(sModel);
       

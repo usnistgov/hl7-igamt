@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { ActiveStatus } from '../../../../models/abstract-domain.interface';
 import { IDisplayElement } from '../../../../models/display-element.interface';
+import { IResource } from '../../../../models/resource.interface';
 import { PropertyType } from '../../../../models/save-change';
 import { GroupOptions, ReferenceComponent } from '../reference/reference.component';
 
@@ -16,14 +17,14 @@ export class DatatypeComponent extends ReferenceComponent {
     super(PropertyType.DATATYPE, dialog);
   }
 
-  filter(opts: IDisplayElement[], selected: IDisplayElement): GroupOptions {
+  filter(opts: IDisplayElement[], selected: IDisplayElement, resource?: IResource): GroupOptions {
     opts = opts.filter((x) => this.filterByActiveInfo(x));
     const same_base = opts.filter((opt) => {
-      return opt.fixedName === selected.fixedName;
+      return opt.resourceName === selected.resourceName && this.notRecursive(opt, resource);
     });
 
     const different_base = opts.filter((opt) => {
-      return opt.fixedName !== selected.fixedName;
+      return opt.resourceName !== selected.resourceName && this.notRecursive(opt, resource);
     });
 
     const itemize = (flavor) => {
@@ -43,6 +44,13 @@ export class DatatypeComponent extends ReferenceComponent {
         items: different_base.map(itemize).sort(this.sort),
       },
     ];
+  }
+
+  private notRecursive(option: IDisplayElement, resource: IResource): boolean {
+    if (resource) {
+      return option.id !== resource.id;
+    }
+    return true;
   }
 
   private filterByActiveInfo(opt: IDisplayElement) {

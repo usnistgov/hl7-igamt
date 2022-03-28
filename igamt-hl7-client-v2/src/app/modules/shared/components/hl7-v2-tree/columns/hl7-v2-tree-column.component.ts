@@ -7,6 +7,7 @@ import { IDocumentRef } from '../../../models/abstract-domain.interface';
 import { ChangeType, IChange, IChangeReason, ILocationChangeLog, PropertyType } from '../../../models/save-change';
 import { ChangeLogService, IChangeReasonSection } from '../../../services/change-log.service';
 import { ChangeReasonDialogComponent, IChangeReasonDialogDisplay } from '../../change-reason-dialog/change-reason-dialog.component';
+import { IHL7v2TreeNode } from '../hl7-v2-tree.component';
 
 export abstract class HL7v2TreeColumnComponent<T> {
 
@@ -34,6 +35,9 @@ export abstract class HL7v2TreeColumnComponent<T> {
   position: number;
   @Input()
   context: Type;
+  @Input()
+  node: IHL7v2TreeNode;
+
   @Input()
   set value(val: T) {
     this.value$.next(val);

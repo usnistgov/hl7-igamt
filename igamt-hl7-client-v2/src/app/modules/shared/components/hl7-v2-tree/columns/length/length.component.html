@@ -5,13 +5,13 @@
     [viewOnly]="viewOnly"
     (editChange)="updateReasonForChange($event)"
   ></app-change-log-info>
-  <ng-container *ngIf="val && val.length" [ngSwitch]="viewOnly">
-    <ng-container *ngSwitchCase="false" [ngSwitch]="active()">
+  <ng-container *ngIf="val" [ngSwitch]="viewOnly">
+    <ng-container *ngSwitchCase="false" [ngSwitch]="lengthType === lengthTypes.Length">
       <ng-container  *ngSwitchCase="true">
         <div style="display: flex; width: 100%;">
-          <input [ngModelOptions]="{updateOn: 'blur'}" class="range-input" style="margin-right: 5px;" type="text" [name]="location + 'min-length'" [id]="location + 'min-length'" placeholder="Min" min="0" [(ngModel)]="val.length.min" (ngModelChange)="minChange($event)">
+          <input [ngModelOptions]="{updateOn: 'blur'}" class="range-input" style="margin-right: 5px;" type="text" [name]="location + 'min-length'" [id]="location + 'min-length'" placeholder="Min" min="0" [(ngModel)]="val.min" (ngModelChange)="minChange($event)">
           <span style="margin-right: 5px;"> .. </span>
-          <input [ngModelOptions]="{updateOn: 'blur'}" class="range-input" type="text" [name]="location + 'max-length'" [id]="location + 'max-length'" placeholder="Max" [(ngModel)]="val.length.max" (ngModelChange)="maxChange($event)">
+          <input [ngModelOptions]="{updateOn: 'blur'}" class="range-input" type="text" [name]="location + 'max-length'" [id]="location + 'max-length'" placeholder="Max" [(ngModel)]="val.max" (ngModelChange)="maxChange($event)">
         </div>
         <button class="btn btn-sm btn-danger" (click)="clear()">
           <i class="fa fa-times"></i>
@@ -20,13 +20,16 @@
       <div *ngSwitchCase="false">
         <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: false }"></ng-container>
       </div>
+      <button *ngIf="lengthType && lengthType === lengthTypes.UNSET && leaf" class="btn btn-sm btn-primary" (click)="set()">
+        <i class="fa fa-pencil"></i>
+      </button>
     </ng-container>
     <ng-container *ngSwitchCase="true">
-      <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: active() }"></ng-container>
+      <ng-container *ngTemplateOutlet="display; context : { $implicit : val, active: lengthType === lengthTypes.Length }"></ng-container>
     </ng-container>
   </ng-container>
 </div>
 
 <ng-template #display let-val let-active="active">
-  <strong [ngClass]="{ 'treetable-light': !active }" >[{{val.length.min}} .. {{val.length.max}}]</strong>
+  <strong [ngClass]="{ 'treetable-light': !active }" >[{{val.min}} .. {{val.max}}]</strong>
 </ng-template>

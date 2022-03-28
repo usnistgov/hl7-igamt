@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
-import { Observable} from 'rxjs';
-import {FroalaService} from '../../services/froala.service';
+import { Observable } from 'rxjs';
+import { FroalaService } from '../../services/froala.service';
 
 @Component({
   selector: 'app-text-editor-dialog',
@@ -16,6 +16,7 @@ export class TextEditorDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<TextEditorDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ITextEditorDialog, froalaService: FroalaService) {
     this.froalaConfig$ = froalaService.getConfig();
+    this.text = data.content;
   }
 
   ngOnInit() {
