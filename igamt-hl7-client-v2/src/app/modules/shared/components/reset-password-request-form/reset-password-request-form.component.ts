@@ -12,12 +12,12 @@ export class ResetPasswordRequestFormComponent implements OnInit {
 
   constructor() {
     this.resetForm = new FormGroup({
-      email: new FormControl('', [Validators.email, Validators.required]),
+      identifier: new FormControl('', [Validators.required]),
     });
   }
 
   submit() {
-    this.submitEvent.emit(this.resetForm.getRawValue().email);
+    this.submitEvent.emit(this.resetForm.getRawValue().identifier);
   }
 
   ngOnInit() {
