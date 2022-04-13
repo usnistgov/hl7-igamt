@@ -1,7 +1,6 @@
 package gov.nist.hit.hl7.igamt.web.app.ig;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +18,6 @@ import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.util.FileCopyUtils;
@@ -32,9 +30,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
 import com.opencsv.CSVReader;
@@ -1468,62 +1464,6 @@ public class IGDocumentController extends BaseController {
       throw new PredicateNotFoundException(id);
     }
   }
-
-
-  //  @RequestMapping(value = "/api/verification/xml", method = RequestMethod.POST, produces = {"application/json"})
-  //  public @ResponseBodyVerificationReport verifyXML(@RequestBody String profileXML,
-  //      @RequestBody String constraintXML, @RequestBody String valuesetXML,
-  //      Authentication authentication) {
-  //    return this.verificationService.verifyXMLs(profileXML, constraintXML, valuesetXML);
-  //  }
-  //
-  //  @RequestMapping(value = "/api/verification/valueset", method = RequestMethod.POST, produces = {"application/json"})
-  //  public @ResponseBody VerificationResult verifyValueset(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Valueset valueset, Authentication authentication) {
-  //    return this.verificationService.verifyValueset(valueset, documentId, null);
-  //  }
-  //  
-  //  @RequestMapping(value = "/api/verification/datatype", method = RequestMethod.POST, produces = {"application/json"})
-  //  public @ResponseBody VerificationResult verifyDatatype(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Datatype datatype, Authentication authentication) {
-  //    return this.verificationService.verifyDatatype(datatype, documentId, null);
-  //  }
-  //  
-  //  @RequestMapping(value = "/api/verification/segment", method = RequestMethod.POST, produces = {"application/json"})
-  //  public @ResponseBody VerificationResult verifySegment(@RequestParam(name = "dId", required = true) String documentId, @RequestBody Segment segment, Authentication authentication) {
-  //    return this.verificationService.verifySegment(segment, documentId, null);
-  //  }
-  //  
-  //  @RequestMapping(value = "/api/verification/conformance-profile", method = RequestMethod.POST, produces = {"application/json"})
-  //  public @ResponseBody VerificationResult verifyConformanceProfile(@RequestParam(name = "dId", required = true) String documentId, @RequestBody ConformanceProfile conformanceProfile, Authentication authentication) {
-  //    return this.verificationService.verifyConformanceProfile(conformanceProfile, documentId, null);
-  //  }
-  //  
-  //  @RequestMapping(value = "/api/verification/{documentId}/valueset/{valuesetId}", method = RequestMethod.GET, produces = {"application/json"})
-  //  public @ResponseBody VerificationResult verifyValuesetById(@PathVariable("documentId") String documentId, @PathVariable("valuesetId") String valuesetId, Authentication authentication) {
-  //    Valueset vs = this.valuesetService.findById(valuesetId);
-  //    if(vs != null) return this.verificationService.verifyValueset(vs, documentId, null);
-  //    return null;
-  //  }
-  //  
-  //  @RequestMapping(value = "/api/verification/{documentId}/datatype/{datatypeId}", method = RequestMethod.GET, produces = {"application/json"})
-  //  public @ResponseBody VerificationResult verifyDatatypeById(@PathVariable("documentId") String documentId, @PathVariable("datatypeId") String datatypeId, Authentication authentication) {
-  //    Datatype dt = this.datatypeService.findById(datatypeId);
-  //    if (dt != null) return this.verificationService.verifyDatatype(dt, documentId, null);
-  //    return null;
-  //  }
-  //  
-  //  @RequestMapping(value = "/api/verification/{documentId}/segment/{segmentId}", method = RequestMethod.GET, produces = {"application/json"})
-  //  public @ResponseBody VerificationResult verifySegmentById(@PathVariable("documentId") String documentId, @PathVariable("segmentId") String segmentId, Authentication authentication) {
-  //    Segment sg = this.segmentService.findById(segmentId);
-  //    if (sg != null) return this.verificationService.verifySegment(sg, documentId, null);
-  //    return null;
-  //  }
-  //  
-  //  @RequestMapping(value = "/api/verification/{documentId}/conformance-profile/{conformanceProfileId}", method = RequestMethod.GET, produces = {"application/json"})
-  //  public @ResponseBody VerificationResult verifyConformanceProfileById(@PathVariable("documentId") String documentId, @PathVariable("conformanceProfileId") String conformanceProfileId, Authentication authentication) {
-  //    ConformanceProfile cp = this.conformanceProfileService.findById(conformanceProfileId);
-  //    if (cp != null) return this.verificationService.verifyConformanceProfile(cp, documentId, null);
-  //    return null;
-  //  }
 
   @RequestMapping(value = "/api/igdocuments/{igid}/verification", method = RequestMethod.GET, produces = {"application/json"})
   public @ResponseBody VerificationReport verificationIGById(@PathVariable("igid") String igid, Authentication authentication) {

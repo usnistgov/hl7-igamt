@@ -96,26 +96,33 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   ) {
     this.options = {
       allowDrag: (node: TreeNode) => {
-        return !(this.viewOnly || this.delta) && (node.data.type === Type.TEXT ||
+        return !(this.viewOnly) && (node.data.type === Type.TEXT ||
           node.data.type === Type.CONFORMANCEPROFILE ||
           node.data.type === Type.PROFILE || node.data.type === Type.PROFILECOMPONENT || Type.COMPOSITEPROFILE);
       },
       actionMapping: {
         mouse: {
           drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
+
+            console.log(from);
+
+            console.log(to);
             if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
-            }
-            if (from.data.type === Type.CONFORMANCEPROFILE && to.parent.data.type === Type.CONFORMANCEPROFILEREGISTRY) {
+            } else if (from.data.type === Type.CONFORMANCEPROFILE && to.parent.data.type === Type.CONFORMANCEPROFILEREGISTRY) {
+              console.log(from);
+
+              console.log(to);
+              TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
+              this.update();
+              // tslint:disable-next-line:no-duplicated-branches
+            } else if (from.data.type === Type.PROFILECOMPONENT && to.parent.data.type === Type.PROFILECOMPONENTREGISTRY) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
-            if (from.data.type === Type.PROFILECOMPONENT && to.parent.data.type === Type.PROFILECOMPONENTREGISTRY) {
-              TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
-              this.update();
-            }
-            if (from.data.type === Type.COMPOSITEPROFILE && to.parent.data.type === Type.COMPOSITEPROFILEREGISTRY) {
+            // tslint:disable-next-line:no-duplicated-branches
+            else if (from.data.type === Type.COMPOSITEPROFILE && to.parent.data.type === Type.COMPOSITEPROFILEREGISTRY) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }

@@ -64,14 +64,6 @@ public class DatatypeController extends BaseController {
   public DatatypeController() {
   }
 
-  @RequestMapping(value = "/api/datatypes/{id}/structure", method = RequestMethod.GET, produces = {
-  "application/json" })
-  public DatatypeStructureDisplay getDatatypeStructure(@PathVariable("id") String id, Authentication authentication)
-      throws DatatypeNotFoundException {
-    Datatype datatype = findById(id);
-    return datatypeService.convertDomainToStructureDisplay(datatype, getReadOnly(authentication, datatype));
-  }
-
   @RequestMapping(value = "/api/datatypes/{id}/resources", method = RequestMethod.GET, produces = {
   "application/json" })
   public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) {

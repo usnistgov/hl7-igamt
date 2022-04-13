@@ -14,6 +14,9 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 public class DocumentInfo {
 
+  public DocumentInfo() {
+    super();
+  }
   /**
    * @param documentId
    * @param type

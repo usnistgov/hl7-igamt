@@ -66,15 +66,6 @@ public class SegmentController extends BaseController {
 	public SegmentController() {
 	}
 
-	@RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.GET, produces = {
-			"application/json" })
-
-	public SegmentStructureDisplay getSegmenDisplayStructure(@PathVariable("id") String id,
-			Authentication authentication) throws SegmentNotFoundException {
-		Segment segment = findById(id);
-		return segmentService.convertDomainToDisplayStructure(segment, getReadOnly(authentication, segment));
-	}
-
 	@RequestMapping(value = "/api/segments/{id}/resources", method = RequestMethod.GET, produces = {
 			"application/json" })
 	public Set<Resource> getResources(@PathVariable("id") String id, Authentication authentication) {
@@ -121,14 +112,6 @@ public class SegmentController extends BaseController {
 		}
 	}
 
-	@RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.POST, produces = {
-			"application/json" })
-	public ResponseMessage saveDynamicMapping(@PathVariable("id") String id, Authentication authentication,
-			@RequestBody SegmentDynamicMapping dynamicMapping)
-			throws SegmentValidationException, SegmentNotFoundException {
-		Segment segment = segmentService.saveDynamicMapping(dynamicMapping);
-		return new ResponseMessage(Status.SUCCESS, DYNAMICMAPPING_SAVED, id, segment.getUpdateDate());
-	}
 	@RequestMapping(value = "/api/segments/{scope}/{version:.+}", method = RequestMethod.GET, produces = {
 			"application/json" })
 	public @ResponseBody ResponseMessage<List<Segment>> find(@PathVariable String version, @PathVariable Scope scope,
@@ -173,82 +156,6 @@ public class SegmentController extends BaseController {
 			entityChangeDomain.setTargetVersion(s.getVersion());
 			entityChangeService.save(entityChangeDomain);
 			return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, s.getId(), new Date());
-		} catch (ForbiddenOperationException e) {
-			throw new SegmentException(e);
-		}
-	}
-	@RequestMapping(value = "/api/segments/{id}/preDef", method = RequestMethod.POST, produces = { "application/json" })
-	@ResponseBody
-	public ResponseMessage<?> SavePreDef(@PathVariable("id") String id,
-			@RequestParam(name = "dId", required = true) String documentId,
-			@RequestParam(name = "location", required = true) String location, @RequestBody String text,
-			Authentication authentication) throws SegmentException, IOException, ValidationException {
-		try {
-			Segment s = this.segmentService.findById(id);
-			ChangeItemDomain change = new ChangeItemDomain();
-			change.setChangeType(ChangeType.UPDATE);
-			change.setLocation(id);
-			change.setPosition(-1);
-			change.setPropertyType(PropertyType.PREDEF);
-			change.setOldPropertyValue(s.getPreDef());
-			s.setPreDef(text);
-			change.setPropertyValue(text);
-			validateSaveOperation(s);
-
-			EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-			entityChangeDomain.setDocumentId(documentId);
-			entityChangeDomain.setDocumentType(DocumentType.IG);
-			entityChangeDomain.setTargetId(id);
-			entityChangeDomain.setTargetType(EntityType.SEGMENT);
-			change.setChangeType(ChangeType.UPDATE);
-			change.setLocation(id);
-			change.setPosition(-1);
-			change.setPropertyType(PropertyType.PREDEF);
-			List<ChangeItemDomain> changeItems = new ArrayList<ChangeItemDomain>();
-			entityChangeDomain.setChangeItems(changeItems);
-			entityChangeDomain.setTargetVersion(s.getVersion());
-			Segment saved = segmentService.save(s);
-			entityChangeService.save(entityChangeDomain);
-			return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, saved.getId(), saved.getUpdateDate());
-		} catch (ForbiddenOperationException e) {
-			throw new SegmentException(e);
-		}
-	}
-
-	@RequestMapping(value = "/api/segments/{id}/postDef", method = RequestMethod.POST, produces = {
-			"application/json" })
-	@ResponseBody
-	public ResponseMessage<?> savePostDef(@PathVariable("id") String id,
-			@RequestParam(name = "dId", required = true) String documentId, @RequestBody String text,
-			Authentication authentication) throws SegmentException, IOException, ValidationException {
-		try {
-			Segment s = this.segmentService.findById(id);
-			ChangeItemDomain change = new ChangeItemDomain();
-			change.setChangeType(ChangeType.UPDATE);
-			change.setLocation(id);
-			change.setPosition(-1);
-
-			change.setPropertyType(PropertyType.POSTDEF);
-			change.setOldPropertyValue(s.getPostDef());
-			s.setPostDef(text);
-			change.setPropertyValue(text);
-			validateSaveOperation(s);
-
-			EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-			entityChangeDomain.setDocumentId(documentId);
-			entityChangeDomain.setDocumentType(DocumentType.IG);
-			entityChangeDomain.setTargetId(id);
-			entityChangeDomain.setTargetType(EntityType.SEGMENT);
-			change.setChangeType(ChangeType.UPDATE);
-			change.setLocation(id);
-			change.setPosition(-1);
-			change.setPropertyType(PropertyType.PREDEF);
-			List<ChangeItemDomain> changeItems = new ArrayList<ChangeItemDomain>();
-			entityChangeDomain.setChangeItems(changeItems);
-			entityChangeDomain.setTargetVersion(s.getVersion());
-			Segment saved = segmentService.save(s);
-			entityChangeService.save(entityChangeDomain);
-			return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, saved.getId(), saved.getUpdateDate());
 		} catch (ForbiddenOperationException e) {
 			throw new SegmentException(e);
 		}

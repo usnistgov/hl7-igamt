@@ -62,19 +62,6 @@ public class ConformanceProfileController extends BaseController {
 
     }
 
-    @RequestMapping(value = "/api/conformanceprofiles/{id}/structure", method = RequestMethod.GET, produces = {
-            "application/json" })
-
-    public ConformanceProfileStructureDisplay getConformanceProfileStructure(@PathVariable("id") String id,
-                                                                             Authentication authentication) {
-        ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
-        System.out.println("START!!!");
-        System.out.println(conformanceProfile.getBinding());
-        return conformanceProfileService.convertDomainToDisplayStructure(conformanceProfile,
-                getReadOnly(authentication, conformanceProfile));
-
-    }
-
     @RequestMapping(value = "/api/conformanceprofiles/{id}/resources", method = RequestMethod.GET, produces = {
             "application/json" })
 
