@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
+import { BlockUIModule } from 'ng-block-ui';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { ContextMenuModule, PanelModule, RadioButtonModule } from 'primeng/primeng';
 import { StepsModule } from 'primeng/steps';
@@ -30,6 +31,7 @@ import { IgListContainerComponent } from './components/ig-list-container/ig-list
 import { IgListItemCardComponent } from './components/ig-list-item-card/ig-list-item-card.component';
 import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
+import { IgTocFilterComponent } from './components/ig-toc-filter/ig-toc-filter.component';
 import { IgTocComponent } from './components/ig-toc/ig-toc.component';
 import { NarrativeSectionFormComponent } from './components/narrative-section-form/narrative-section-form.component';
 import { IgRoutingModule } from './ig-routing.module';
@@ -55,6 +57,7 @@ import { IgService } from './services/ig.service';
     DeriveDialogComponent,
     IgEditStatusBarComponent,
     IgEditDrawerComponent,
+    IgTocFilterComponent,
   ],
   imports: [
     DamFrameworkModule.forRoot(),
@@ -71,6 +74,7 @@ import { IgService } from './services/ig.service';
     ContextMenuModule,
     ExportConfigurationModule,
     PanelModule,
+    BlockUIModule,
     MatProgressSpinnerModule,
   ],
   entryComponents: [

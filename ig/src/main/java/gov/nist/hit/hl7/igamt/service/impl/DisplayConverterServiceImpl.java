@@ -28,7 +28,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
-import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;

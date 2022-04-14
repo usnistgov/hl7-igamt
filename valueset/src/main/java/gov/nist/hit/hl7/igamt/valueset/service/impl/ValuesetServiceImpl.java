@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +35,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeReason;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
@@ -221,21 +219,6 @@ public class ValuesetServiceImpl implements ValuesetService {
     }
 
     @Override
-    public Link cloneValueSet(String newkey, Link l, String username, Scope scope, CloneMode cloneMode) {
-        Valueset old = this.findById(l.getId());
-        Valueset elm = old.clone();
-        elm.setId(newkey);
-        elm.getDomainInfo().setScope(scope);
-        elm.setOrigin(l.getId());
-        elm.setFrom(l.getId());
-        elm.setUsername(username);
-        elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
-        Link newLink = new Link(elm);
-        this.save(elm);
-        return newLink;
-    }
-
-    @Override
     public List<Valueset> findByIdIn(Set<String> ids) {
         // TODO Auto-generated method stub
         return valuesetRepository.findByIdIn(ids);
@@ -362,6 +345,7 @@ public class ValuesetServiceImpl implements ValuesetService {
         displayElement.setParentType(valueset.getParentType());
         displayElement.setResourceName(valueset.getName());
         displayElement.setResourceOrigin(valueset.getResourceOrigin());
+        displayElement.setDerived(valueset.isDerived());
         return displayElement;
     }
 
@@ -373,5 +357,11 @@ public class ValuesetServiceImpl implements ValuesetService {
         }
         return ret;
     }
+    
+    @Override
+    public List<Valueset> saveAll(Set<Valueset> valueSets){
+    	return this.valuesetRepository.saveAll(valueSets);
+    }
+    
 
 }

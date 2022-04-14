@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -358,6 +359,26 @@ public class BindingServiceImpl implements BindingService {
     }
     if (toBeDeleted != null)
       binding.getConformanceStatements().remove(toBeDeleted);
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.common.binding.service.BindingService#processValueSetBinding(java.util.Set, java.util.HashMap, java.util.Map)
+   */
+  @Override
+  public void processValueSetBinding(Set<ValuesetBinding> valueSetBindings,
+      HashMap<String, Boolean> existings, Map<RealKey, Boolean> excluded) {
+    if(valueSetBindings != null) {
+    for (ValuesetBinding vs : valueSetBindings) {
+      if(vs.getValueSets() !=null) {
+        for(String s: vs.getValueSets()) {
+          RealKey key = new RealKey(s, Type.VALUESET);
+          if(!excluded.containsKey(key)) {
+            existings.put(s, true);
+          }
+        }
+      }
+    }
+    }
   }
   
 }

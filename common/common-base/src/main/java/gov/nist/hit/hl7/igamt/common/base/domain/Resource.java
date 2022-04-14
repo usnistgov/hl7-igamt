@@ -21,6 +21,7 @@ public abstract class Resource extends AbstractDomain {
   private boolean generated;
   
   private ResourceOrigin resourceOrigin;
+  private DocumentInfo documentInfo;
 
   public Resource() {
     super();
@@ -62,8 +63,11 @@ public abstract class Resource extends AbstractDomain {
       elm.purposeAndUse = purposeAndUse;
       elm.fixedExtension = fixedExtension;
       elm.setStructureIdentifier(structureIdentifier);
-      elm.setActiveInfo(new ActiveInfo());
       elm.setResourceOrigin(resourceOrigin);
+      elm.generatedUsing = generatedUsing;
+      elm.generated = generated;
+      elm.setDocumentInfo(documentInfo);
+
   }
 
 
@@ -173,5 +177,15 @@ public abstract class Resource extends AbstractDomain {
 
   public void setResourceOrigin(ResourceOrigin resourceOrigin) {
     this.resourceOrigin = resourceOrigin;
+  }
+
+
+  public DocumentInfo getDocumentInfo() {
+    return documentInfo;
+  }
+
+
+  public void setDocumentInfo(DocumentInfo documentInfo) {
+    this.documentInfo = documentInfo;
   }
 }

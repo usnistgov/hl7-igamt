@@ -22,7 +22,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
@@ -70,8 +69,6 @@ public interface ValuesetService {
 
 	public List<Valueset> findDisplayFormatByScopeAndVersion(String string, String version);
 
-	Link cloneValueSet(String newkey, Link l, String username, Scope scope, CloneMode cloneMode);
-
 	public List<Valueset> findByIdIn(Set<String> linksAsIds);
 
 	public List<Valueset> findDisplayFormatByScope(String scope);
@@ -86,6 +83,8 @@ public interface ValuesetService {
 	DisplayElement convertValueSet(Valueset valueset);
 	Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
 	Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
+
+	List<Valueset> saveAll(Set<Valueset> valueSets);
 
 
 }

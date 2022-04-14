@@ -13,7 +13,6 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -91,8 +90,6 @@ public interface ConformanceProfileService {
 
   public void validate(DisplayConformanceProfileMetadata metadata) throws ConformanceProfileValidationException;
 
-  public Link cloneConformanceProfile(String key, HashMap<RealKey, String> newKeys, Link l, String username, Scope scope, CloneMode clone);
-
   public ConformanceProfileStructureDisplay convertDomainToDisplayStructure(ConformanceProfile conformanceProfile, boolean readOnly);
   
   public ConformanceProfileStructureDisplay convertDomainToDisplayStructureFromContext(ConformanceProfile conformanceProfile, String contextId, boolean readOnly);
@@ -102,9 +99,7 @@ public interface ConformanceProfileService {
   public ConformanceProfileStructureTreeModel convertDomainToContextStructure(ConformanceProfile conformanceProfile, HashMap<String, ConformanceStatementsContainer> segMap, HashMap<String, ConformanceStatementsContainer> dtMap);
 
   public Binding makeLocationInfo(ConformanceProfile cp);
-  
-  public Set<RelationShip> collectDependencies(ConformanceProfile cp);
-  
+    
   List<ConformanceProfile> findByIdIn(Set<String> set);
   
   public Set<Resource> getDependencies(ConformanceProfile cp);
@@ -114,6 +109,8 @@ public interface ConformanceProfileService {
   Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry);
 
   void subsitute(ConformanceProfile clone, List<Substitue> substitutes, String username);
+
+  public List<ConformanceProfile> saveAll(Set<ConformanceProfile> datatypes);
 
 
 

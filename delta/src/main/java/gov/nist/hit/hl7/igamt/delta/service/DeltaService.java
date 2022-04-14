@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import gov.nist.diff.domain.DeltaAction;
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.delta.domain.*;
 import gov.nist.hit.hl7.igamt.delta.exception.IGDeltaException;
 import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
@@ -18,7 +18,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 public interface DeltaService {
 
   <T> EntityDelta<T> computeDelta(Type type, String documentId, String entityId) throws Exception;
-  public Delta delta(Type type, String documentId, String entityId) throws CoConstraintGroupNotFoundException;
+  public Delta delta(Type type, String documentId, String entityId) throws EntityNotFound;
   public List<StructureDelta> delta(Type type, String entityId) throws IGDeltaException;
   DiffableResult diffable(Type type, String ig, String source, String target);
   public IGDisplayInfo delta(Ig ig, Ig origin) throws IGDeltaException;

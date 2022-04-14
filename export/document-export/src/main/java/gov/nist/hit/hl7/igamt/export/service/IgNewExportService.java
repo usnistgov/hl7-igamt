@@ -1,7 +1,7 @@
 package gov.nist.hit.hl7.igamt.export.service;
 
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentStructure;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.delta.exception.IGDeltaException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
@@ -16,7 +16,7 @@ public interface IgNewExportService {
 	public String exportIgDocumentToDiffXml( Ig ig) throws Exception;
 	public String serializeIgDocumentToDiffXml( Ig igDocument) throws Exception;
 
-	public ExportFilterDecision getExportFilterDecision(DocumentStructure documentStructure, ExportConfiguration config) throws CoConstraintGroupNotFoundException, IGDeltaException;
+	public ExportFilterDecision getExportFilterDecision(DocumentStructure documentStructure, ExportConfiguration config) throws EntityNotFound, IGDeltaException;
 //	public  ExportedFile serializeIgDocumentToHtml(String username,
 //			ExportFormat exportFormat, ExportFilterDecision decision, ExportConfiguration exportConfiguration) throws Exception;
 //

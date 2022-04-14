@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,21 +36,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
@@ -81,6 +74,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentStructureTreeModel;
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -136,6 +130,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 		datatype = datatypeRepository.save(datatype);
 		return datatype;
 	}
+
 
 	@Override
 	public List<Datatype> findAll() {
@@ -289,48 +284,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 		ValidationUtil.validateUsage(f.getUsage(), 2);
 		ValidationUtil.validateLength(f.getMinLength(), f.getMaxLength());
 		ValidationUtil.validateConfLength(f.getConfLength());
-	}
-
-	@Override
-	public Link cloneDatatype( String newId, HashMap<RealKey, String> newKey, Link l,
-			String username, Scope scope, CloneMode cloneMode) {
-		// TODO Auto-generated method stub
-
-		Datatype old = this.findById(l.getId());
-		Datatype elm = old.clone();
-	    elm.setId(newId);
-		elm.getDomainInfo().setScope(scope);
-		elm.setUsername(username);
-	    elm.setOrigin(l.getId());
-	    elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
-		Link newLink = new Link(elm);
-		updateDependencies(elm, newKey, cloneMode);
-		this.save(elm);
-		return newLink;
-
-	}
-
-	private void updateDependencies(Datatype elm, HashMap<RealKey, String> newKeys, CloneMode cloneMode) {
-		// TODO Auto-generated method stub
-
-		if (elm instanceof ComplexDatatype) {
-			for (Component c : ((ComplexDatatype) elm).getComponents()) {
-				if (c.getRef() != null) {
-					if (c.getRef().getId() != null) {
-					  RealKey key = new RealKey(c.getRef().getId(), Type.DATATYPE);
-						if (newKeys.containsKey(key)) {
-							c.getRef().setId(newKeys.get(key));
-						}
-					}
-				}
-			}
-		}
-		if (elm.getBinding() != null) {
-			this.bindingService.substitute(elm.getBinding(), newKeys);
-			 if(cloneMode.equals(CloneMode.DERIVE)) {
-		          this.bindingService.lockConformanceStatements(elm.getBinding());
-		        }
-		}
 	}
 	@Override
 	public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope) {
@@ -1017,35 +970,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	@Override
-	public Set<RelationShip> collectDependencies(Datatype elm) {
-
-		Set<RelationShip> used = new HashSet<RelationShip>();
-		HashMap<String, Usage> usageMap = new HashMap<String, Usage>();
-
-		if (elm instanceof ComplexDatatype) {
-			ComplexDatatype complex = (ComplexDatatype) elm;
-			for (Component c : complex.getComponents()) {
-				if (c.getRef() != null && c.getRef().getId() != null) {
-					RelationShip rel = new RelationShip(new ReferenceIndentifier(c.getRef().getId(), Type.DATATYPE),
-							new ReferenceIndentifier(elm.getId(), Type.DATATYPE),
-							new ReferenceLocation(Type.COMPONENT, c.getPosition()+ "" , c.getName())
-							);
-					rel.setUsage(c.getUsage());
-					usageMap.put(elm.getId()+"-"+c.getId(), c.getUsage());
-					used.add(rel);
-				}
-			}
-
-		}
-		if (elm.getBinding() != null) {
-			Set<RelationShip> bindingDependencies = bindingService
-					.collectDependencies(new ReferenceIndentifier(elm.getId(), Type.DATATYPE), elm.getBinding(),usageMap);
-			used.addAll(bindingDependencies);
-		}
-		return used;
-	}
-
-	@Override
 	public void collectAssoicatedConformanceStatements(Datatype datatype,
 			HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
 		if (datatype.getDomainInfo().getScope().equals(Scope.USER)) {
@@ -1161,7 +1085,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	private Set<String> getDatatypeResourceDependenciesIds(ComplexDatatype datatype, HashMap<String, Resource> used) {
-		// TODO Auto-generated method stub
 		Set<String> datatypeIds = new HashSet<String>();
 		for (Component c : datatype.getComponents()) {
 			if (c.getRef() != null) {
@@ -1227,6 +1150,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 		displayElement.setParentId(datatype.getParentId());
 		displayElement.setParentType(datatype.getParentType());
 		displayElement.setResourceName(datatype.getName());
+		displayElement.setDerived(datatype.isDerived());
 		return displayElement;
 	}
 
@@ -1240,4 +1164,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 		}
 		return ret;
 	}
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#saveAll()
+   */
+  @Override
+  public List<Datatype> saveAll(Set<Datatype> datatypes) {
+    // TODO Auto-generated method stub
+    return this.datatypeRepository.saveAll(datatypes);
+  }
 }

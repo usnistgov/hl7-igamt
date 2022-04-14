@@ -11,12 +11,14 @@
  */
 package gov.nist.hit.hl7.igamt.common.base.wrappers;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
+
 /**
  * @author ena3
  *
  */
 public class CopyWrapper {
-
+    private DocumentType documentType;
 	private String documentId;
 	private AddingInfo selected;
 
@@ -35,5 +37,13 @@ public class CopyWrapper {
 	public void setDocumentId(String documentId) {
 		this.documentId = documentId;
 	}
+
+  public DocumentType getDocumentType() {
+    return documentType;
+  }
+
+  public void setDocumentType(DocumentType documentType) {
+    this.documentType = documentType;
+  }
 
 }

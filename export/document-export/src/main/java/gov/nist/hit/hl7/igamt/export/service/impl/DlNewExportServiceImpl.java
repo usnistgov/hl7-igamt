@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.diff.domain.DeltaMode;
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
@@ -30,6 +29,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -167,7 +167,7 @@ public class DlNewExportServiceImpl implements DlNewExportService {
 	
 	@Override
 	public ExportFilterDecision getExportFilterDecision(DatatypeLibrary dl, ExportConfiguration config)
-			throws CoConstraintGroupNotFoundException {
+			throws EntityNotFound {
 
 		ExportFilterDecision decision = new ExportFilterDecision();
 

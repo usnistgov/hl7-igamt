@@ -76,6 +76,7 @@ public class CompositeProfileStructure extends Resource {
     clone.setConformanceProfileId(conformanceProfileId);
     clone.setOrderedProfileComponents(orderedProfileComponents);
     clone.setFlavorsExtension(flavorsExtension);
+    clone.preCoordinatedMessageIdentifier = preCoordinatedMessageIdentifier;
     return clone;
   }
 

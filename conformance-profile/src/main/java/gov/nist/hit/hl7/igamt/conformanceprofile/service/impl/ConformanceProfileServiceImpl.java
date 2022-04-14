@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +35,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
 
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
-import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintTableConditionalBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Level;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -50,15 +47,10 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
-import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
-import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
-import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.Substitue;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
@@ -87,6 +79,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.GroupStructureTr
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.SegmentLabel;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.SegmentRefDisplayModel;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.SegmentRefStructureTreeModel;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -379,68 +372,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#
-   * cloneConformanceProfile(java.util.HashMap, java.util.HashMap,
-   * gov.nist.hit.hl7.igamt.common.base.domain.Link, java.lang.String)
-   */
-  @Override
-  public Link cloneConformanceProfile(String key, HashMap<RealKey, String> newKeys, Link l, String username,
-      Scope scope, CloneMode cloneMode) {
-    ConformanceProfile old = this.findById(l.getId());
-    ConformanceProfile elm = old.clone();
-    elm.setId(key);
-    elm.getDomainInfo().setScope(scope);
-    elm.setOrigin(l.getId());
-    elm.setDerived(cloneMode.equals(CloneMode.DERIVE));
-    elm.setUsername(username);
-    Link newLink = new Link(elm);
-    updateDependencies(elm, newKeys, cloneMode);
-    this.save(elm);
-    return newLink;
-  }
-
-  /**
-   * @param elm
-   * @param cloneMode 
-   */
-  private void updateDependencies(ConformanceProfile elm, HashMap<RealKey, String> newKeys, CloneMode cloneMode) {
-    // TODO Auto-generated method stub
-
-    processAndSubstitute(elm, newKeys);
-    if (elm.getBinding() != null) {
-      this.bindingService.substitute(elm.getBinding(), newKeys);
-      if(cloneMode.equals(CloneMode.DERIVE)) {
-        this.bindingService.lockConformanceStatements(elm.getBinding());
-      }
-    }
-    if(elm.getSlicings() != null) {
-      this.slicingService.updateSlicing(elm.getSlicings(), newKeys, Type.SEGMENT);
-    }
-    if (elm.getCoConstraintsBindings() != null) {
-      for (CoConstraintBinding binding : elm.getCoConstraintsBindings()) {
-        if (binding.getBindings() != null) {
-          for (CoConstraintBindingSegment segBinding : binding.getBindings()) {
-            // TODO Review Line Below
-//            RealKey segKey = new RealKey(segBinding.getFlavorId(), Type.SEGMENT);
-//            if (segBinding.getFlavorId() != null && newKeys.containsKey(segKey)) {
-//              segBinding.setFlavorId(newKeys.get(segKey));
-//            }
-            if (segBinding.getTables() != null) {
-              for (CoConstraintTableConditionalBinding ccBinding : segBinding.getTables()) {
-                if (ccBinding.getValue() != null) {
-                  this.coConstraintService.updateDepenedencies(ccBinding.getValue(), newKeys, true);
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 
   private void processAndSubstitute(ConformanceProfile cp, HashMap<RealKey, String> newKeys) {
     // TODO Auto-generated method stub
@@ -1327,78 +1258,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     return null;
   }
 
-  @Override
-  public Set<RelationShip> collectDependencies(ConformanceProfile cp) {
-    // TODO Auto-generated method stub
-    Set<RelationShip> used = new HashSet<RelationShip>();
-    HashMap<String, Usage> usageMap = new HashMap<String, Usage>();
-    for (MsgStructElement segOrgroup : cp.getChildren()) {
-      if (segOrgroup instanceof SegmentRef) {
-        usageMap.put(segOrgroup.getId(), segOrgroup.getUsage());
-        usageMap.put(segOrgroup.getId(), segOrgroup.getUsage());
-        SegmentRef ref = (SegmentRef) segOrgroup;
-
-        if (ref.getRef() != null && ref.getRef().getId() != null) {
-          RelationShip rel = new RelationShip(new ReferenceIndentifier(ref.getRef().getId(), Type.SEGMENT),
-              new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE),
-              new ReferenceLocation(Type.CONFORMANCEPROFILE, ref.getPosition() + "", ref.getName()));
-          rel.setUsage(ref.getUsage());
-          used.add(rel);
-        }
-
-      } else {
-        processSegmentorGroup(cp.getId(), segOrgroup, used, "");
-      }
-    }
-    if (cp.getBinding() != null) {
-
-      Set<RelationShip> bindingDependencies = bindingService.collectDependencies(
-          new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE), cp.getBinding(), usageMap);
-      used.addAll(bindingDependencies);
-    }
-    if (cp.getCoConstraintsBindings() != null) {
-
-      Set<RelationShip> CoConstraintsDependencies = coConstraintService.collectDependencies(
-          new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE), cp.getCoConstraintsBindings());
-
-      used.addAll(CoConstraintsDependencies);
-    }
-
-    if(cp.getSlicings() != null ) {
-      Set<RelationShip> slicingDependencies = this.slicingService.collectDependencies(
-          new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE), cp.getSlicings(), Type.SEGMENT);
-      used.addAll(slicingDependencies);  
-    }
-    return used;
-
-  }
-
-  private void processSegmentorGroup(String profileId, MsgStructElement segOrgroup, Set<RelationShip> used,
-      String path) {
-    // TODO Auto-generated method stub
-    if (segOrgroup instanceof SegmentRef) {
-      SegmentRef ref = (SegmentRef) segOrgroup;
-      if (ref.getRef() != null && ref.getRef().getId() != null) {
-
-        RelationShip rel = new RelationShip(new ReferenceIndentifier(ref.getRef().getId(), Type.SEGMENT),
-            new ReferenceIndentifier(profileId, Type.CONFORMANCEPROFILE),
-
-            new ReferenceLocation(Type.GROUP, path + "." + ref.getPosition(), ref.getName()));
-        rel.setUsage(ref.getUsage());
-        used.add(rel);
-      }
-    } else if (segOrgroup instanceof Group) {
-      Group g = (Group) segOrgroup;
-      path += g.getName();
-      for (MsgStructElement child : g.getChildren()) {
-        processSegmentorGroup(profileId, child, used, path);
-      }
-    }
-
-  }
-
   public List<ConformanceProfile> findByIdIn(Set<String> ids) {
-    // TODO Auto-generated method stub
     return conformanceProfileRepository.findByIdIn(ids);
   }
 
@@ -1431,6 +1291,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     displayElement.setOrigin(conformanceProfile.getOrigin());
     displayElement.setParentId(conformanceProfile.getParentId());
     displayElement.setParentType(conformanceProfile.getParentType());
+    displayElement.setDerived(conformanceProfile.isDerived());
+
     return displayElement;
   }
 
@@ -1665,6 +1527,14 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
     this.processAndSubstitute(cp, newKeys);
 
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#saveAll(java.util.Set)
+   */
+  @Override
+  public List<ConformanceProfile> saveAll(Set<ConformanceProfile> conformanceProfiles) {
+    return this.conformanceProfileRepository.saveAll(conformanceProfiles);
   }
 
 

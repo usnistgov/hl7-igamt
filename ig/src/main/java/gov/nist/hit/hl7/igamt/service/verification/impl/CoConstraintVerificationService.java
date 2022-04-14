@@ -1,7 +1,7 @@
 package gov.nist.hit.hl7.igamt.service.verification.impl;
 
 import com.google.common.base.Strings;
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
+
 import gov.nist.hit.hl7.igamt.coconstraints.model.*;
 import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.LocationInfo;
@@ -12,6 +12,7 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -228,7 +229,7 @@ public class CoConstraintVerificationService extends VerificationUtils {
             try {
                 CoConstraintGroup content = this.coConstraintService.findById(ref.getRefId());
                 return checkCoConstraintTableGroup(segment, groupLocation, ref.getRequirement(), content.getName(), content.getCoConstraints(), headers);
-            } catch (CoConstraintGroupNotFoundException e) {
+            } catch (EntityNotFound e) {
                 return Collections.singletonList(
                     this.entry.CoConstraintInvalidGroupRef(
                             groupLocation.pathId,

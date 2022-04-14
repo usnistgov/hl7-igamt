@@ -35,8 +35,6 @@ public interface DatatypeRepository extends MongoRepository<Datatype, String> {
 
   List<Datatype> findByDomainInfoVersion(String version);
 
-
-
   List<Datatype> findByDomainInfoScope(String scope);
 
   List<Datatype> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);

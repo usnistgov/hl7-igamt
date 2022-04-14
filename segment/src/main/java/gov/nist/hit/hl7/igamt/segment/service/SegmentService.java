@@ -55,82 +55,76 @@ import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
  */
 public interface SegmentService extends ResourceService {
 
-	 Segment findById(String id);
+  Segment findById(String id);
 
-	 Segment create(Segment segment);
+  Segment create(Segment segment);
 
-	 Segment save(Segment segment);
+  Segment save(Segment segment);
 
-	 List<Segment> findAll();
+  List<Segment> findAll();
 
-	 void delete(Segment segment);
+  void delete(Segment segment);
 
-	 void removeCollection();
+  void removeCollection();
 
-	 List<Segment> findByDomainInfoVersion(String version);
+  List<Segment> findByDomainInfoVersion(String version);
 
-	 List<Segment> findByDomainInfoScope(String scope);
+  List<Segment> findByDomainInfoScope(String scope);
 
-	 List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+  List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
 
-	 List<Segment> findByName(String name);
+  List<Segment> findByName(String name);
 
-	 List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
+  List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
 
-	 List<Segment> findByDomainInfoVersionAndName(String version, String name);
+  List<Segment> findByDomainInfoVersionAndName(String version, String name);
 
-	 List<Segment> findByDomainInfoScopeAndName(String scope, String name);
+  List<Segment> findByDomainInfoScopeAndName(String scope, String name);
 
-	 List<Segment> findDisplayFormatByScopeAndVersion(Scope scope, String version, String username);
+  List<Segment> findDisplayFormatByScopeAndVersion(Scope scope, String version, String username);
 
-	 Link cloneSegment(String id, HashMap<RealKey, String> newKeys, Link l, String username, Scope user, CloneMode cloneMode);
+  List<Valueset> getDependentValueSets(Set<Segment> resources);
 
-	List<Valueset> getDependentValueSets(Set<Segment> resources);
+  Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
+      throws SegmentNotFoundException, SegmentValidationException;
 
-	 Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
-			throws SegmentNotFoundException, SegmentValidationException;
-	
-	void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
+  void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
 
-	 SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly);
-	
-	 void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId)
-            throws ApplyChangeException;
-	
-	 Set<?> convertSegmentStructurForMessage(Segment segment, String idPath, String path);
+  SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly);
 
-	 List<SegmentSelectItemGroup> getSegmentFlavorsOptions(Set<String> ids, Segment s, String scope);
+  void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId)
+      throws ApplyChangeException;
 
-	 List<Segment> findFlavors(Set<String> ids, String id, String name);
+  Set<?> convertSegmentStructurForMessage(Segment segment, String idPath, String path);
 
-	 List<Segment> findNonFlavor(Set<String> ids, String id, String name);
+  List<SegmentSelectItemGroup> getSegmentFlavorsOptions(Set<String> ids, Segment s, String scope);
 
-	 Set<RelationShip> collectDependencies(Segment elm);
+  List<Segment> findFlavors(Set<String> ids, String id, String name);
 
-	 void collectAssoicatedConformanceStatements(Segment segment,
-			HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
+  List<Segment> findNonFlavor(Set<String> ids, String id, String name);
 
-	 Binding makeLocationInfo(Segment s);
+  void collectAssoicatedConformanceStatements(Segment segment,
+      HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
 
-	 LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
+  Binding makeLocationInfo(Segment s);
 
-	 List<Segment> findByIdIn(Set<String> linksAsIds);
+  LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
 
-	 void collectResources(Segment seg, HashMap<String, Resource> used);
+  List<Segment> findByIdIn(Set<String> linksAsIds);
 
-	 Set<Resource> getDependencies(Segment segment);
-	
-	 void restoreDefaultDynamicMapping(Segment segment);
+  void collectResources(Segment seg, HashMap<String, Resource> used);
 
-	Set<DisplayElement> convertSegments(Set<Segment> segments);
-	DisplayElement convertSegment(Segment segment);
-	Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
+  Set<Resource> getDependencies(Segment segment);
 
-  /**
-   * @param s
-   * @return
-   */
-  String findObx2VsId(Segment s);
+  void restoreDefaultDynamicMapping(Segment segment);
+
+  Set<DisplayElement> convertSegments(Set<Segment> segments);
+  DisplayElement convertSegment(Segment segment);
+  Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
+
+  String findObx2VsId(Segment s);  
+  List<Segment> saveAll(Set<Segment> segments);
+
 
 
 }

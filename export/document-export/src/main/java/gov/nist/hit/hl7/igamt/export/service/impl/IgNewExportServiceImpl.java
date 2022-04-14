@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.diff.domain.DeltaAction;
-import gov.nist.hit.hl7.igamt.coconstraints.exception.CoConstraintGroupNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraint;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBinding;
 import gov.nist.hit.hl7.igamt.coconstraints.model.CoConstraintBindingSegment;
@@ -30,6 +29,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -214,7 +214,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	@Override
-	public ExportFilterDecision getExportFilterDecision(DocumentStructure documentStructure, ExportConfiguration config) throws CoConstraintGroupNotFoundException, IGDeltaException {
+	public ExportFilterDecision getExportFilterDecision(DocumentStructure documentStructure, ExportConfiguration config) throws EntityNotFound, IGDeltaException {
 		ExportFilterDecision decision = new ExportFilterDecision();
 		if(documentStructure instanceof Ig) {
 			Ig ig = (Ig) documentStructure;
@@ -340,7 +340,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
     }
   }
 
-  private void processConformanceProfiles(Ig ig, ExportFilterDecision decision, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
+  private void processConformanceProfiles(Ig ig, ExportFilterDecision decision, ExportConfiguration config) throws EntityNotFound {
 		Set<String> segmentIds = new HashSet<String>();
 		Set<String> datatypesIds = new HashSet<String>();
 		List<ConformanceProfile> profiles = conformanceProfileService
@@ -413,7 +413,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	}
 
 	private Set<String> processConformanceProfile(ConformanceProfile cp, ExportFilterDecision decision,
-			ExportConfiguration config) throws CoConstraintGroupNotFoundException {
+			ExportConfiguration config) throws EntityNotFound {
 		// TODO Auto-generated method stub
 		Set<String> segmentsIds = new HashSet<String>();
 		HashMap<String, Boolean> bindedPaths = new HashMap<String, Boolean>();
@@ -517,7 +517,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 
 	  public void processCoConstraintsBinding(ExportFilterDecision decision, ExportConfiguration config,
-	      List<CoConstraintBinding> coConstraintsBindings) throws CoConstraintGroupNotFoundException {
+	      List<CoConstraintBinding> coConstraintsBindings) throws EntityNotFound {
 	    // TODO Auto-generated method stub
 	    for(CoConstraintBinding binding:coConstraintsBindings) {
 	      if(binding.getBindings()!=null) {
@@ -537,9 +537,9 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 	  /**
 	   * @param value
 	   * @return
-	   * @throws CoConstraintGroupNotFoundException 
+	   * @throws EntityNotFound 
 	   */
-	  private void processCoConstraintTable(CoConstraintTable value, ExportFilterDecision decision, ExportConfiguration config) throws CoConstraintGroupNotFoundException {
+	  private void processCoConstraintTable(CoConstraintTable value, ExportFilterDecision decision, ExportConfiguration config) throws EntityNotFound {
 	    // TODO Auto-generated method stub
 	    if(value.getGroups() !=null) {
 	      for(CoConstraintGroupBinding groupBinding : value.getGroups()) {
