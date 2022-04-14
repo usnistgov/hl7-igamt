@@ -117,7 +117,10 @@ export class IgEditSidebarComponent implements OnInit, OnDestroy, AfterViewInit 
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.ig$ = this.store.select(selectIgDocument);
     this.conformanceProfiles$ = store.select(selectAllMessages);
-    this.config$ = store.select(getHl7ConfigState);
+    this.config$ = this.store.select(getHl7ConfigState).pipe(
+      // tslint:disable-next-line: no-shadowed-variable
+      filter((config) => !!config),
+    );
     this.documentRef$ = store.select(fromIgamtSelectors.selectLoadedDocumentInfo);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
     this.viewOnly$ = this.store.select(fromIgamtSelectors.selectViewOnly);
