@@ -1,8 +1,10 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Strings;
@@ -201,8 +203,17 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
                     conformanceProfileElement.addAttribute(new Attribute("derived",String.valueOf(conformanceProfile.isDerived())));
                 }
 
-        	      Map<String, Boolean > bindedPaths = conformanceProfile.getChildren().stream().filter(  field  -> field != null && ExportTools.CheckUsage(conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), field.getUsage())).collect(Collectors.toMap( x -> x.getId(), x -> true ));
+//        	      Map<String, Boolean > bindedPaths = conformanceProfile.getChildren().stream()
+//        	    		  .filter(field  -> field != null && ExportTools
+//									        	    		  .CheckUsage(
+//									        	    				  conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), 
+//									        	    				  field.getUsage()
+//									        	    		  )
+//        	    		   ).collect(Collectors.toMap( x -> x.getId(), x -> true ));
 
+                Map<String, Boolean > bindedPaths = new HashMap<>();    
+                bindedPaths = buildBindedPath(conformanceProfile.getChildren(), bindedPaths,conformanceProfileExportConfiguration);
+                		
                 if (conformanceProfile.getBinding() != null) {
                     Element bindingElement = bindingSerializationService.serializeBinding(conformanceProfile.getBinding(), conformanceProfileDataModel.getValuesetMap(), conformanceProfileDataModel.getModel().getName(), bindedPaths);
                     if (bindingElement != null) {
@@ -945,7 +956,26 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
         return "";
     }
 
+    private  Map<String, Boolean > buildBindedPath(Set<SegmentRefOrGroup> segmentRefOrGroupList, Map<String, Boolean > bindedPaths, ConformanceProfileExportConfiguration conformanceProfileExportConfiguration){
+//    	Map<String, Boolean > bindedPaths = new HashMap<>();
+    	for( SegmentRefOrGroup segmentRefOrGroup : segmentRefOrGroupList) {
+    		if(segmentRefOrGroup != null && ExportTools
+				        	    		  .CheckUsage(
+				        	    				  conformanceProfileExportConfiguration.getSegmentORGroupsMessageExport(), 
+				        	    				  segmentRefOrGroup.getUsage()
+				        	    		  )) {
+    			if(segmentRefOrGroup instanceof SegmentRef) {
+    				bindedPaths.put(segmentRefOrGroup.getId(), true);
+    			} else if(segmentRefOrGroup instanceof Group ) {
+    				return buildBindedPath(((Group) segmentRefOrGroup).getChildren(), bindedPaths, conformanceProfileExportConfiguration);
+    			}
+    		}
+    	}
+    	return bindedPaths;
+    	
+    }
 
+   
 //	  @Override
 //	  public Map<String, String> getIdPathMap() {
 //	    ConformanceProfile conformanceProfile = (ConformanceProfile) this.getAbstractDomain();
