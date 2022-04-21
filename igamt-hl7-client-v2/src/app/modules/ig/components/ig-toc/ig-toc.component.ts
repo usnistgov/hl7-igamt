@@ -111,18 +111,14 @@ export class IgTocComponent implements OnInit, AfterViewInit {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             } else if (from.data.type === Type.CONFORMANCEPROFILE && to.parent.data.type === Type.CONFORMANCEPROFILEREGISTRY) {
-              console.log(from);
-
-              console.log(to);
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
               // tslint:disable-next-line:no-duplicated-branches
             } else if (from.data.type === Type.PROFILECOMPONENT && to.parent.data.type === Type.PROFILECOMPONENTREGISTRY) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
-            }
-            // tslint:disable-next-line:no-duplicated-branches
-            else if (from.data.type === Type.COMPOSITEPROFILE && to.parent.data.type === Type.COMPOSITEPROFILEREGISTRY) {
+              // tslint:disable-next-line:no-duplicated-branches
+            } else if (from.data.type === Type.COMPOSITEPROFILE && to.parent.data.type === Type.COMPOSITEPROFILEREGISTRY) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
@@ -144,7 +140,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     console.log(elm);
   }
   updateNumbers(): any {
-    console.log("called");
     const profileNodes = this.tree.treeModel.nodes.find((x) => x.type === Type.PROFILE);
     this.elementNumbers = {};
     const datatypeNodes = profileNodes.children.find((x) => x.type === Type.DATATYPEREGISTRY).children;

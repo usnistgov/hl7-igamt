@@ -507,7 +507,6 @@ public class BootstrapApplication implements CommandLineRunner {
       DocumentInfo info = new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT);
       igService.updateChildrenAttribute(ig, "documentInfo", info, false);
     }
-      
   }
   
 }

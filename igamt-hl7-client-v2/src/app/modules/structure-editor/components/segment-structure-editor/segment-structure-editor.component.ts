@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, take, filter } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import { HL7v2TreeColumnType } from 'src/app/modules/shared/components/hl7-v2-tree/hl7-v2-tree.component';
@@ -60,7 +60,9 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent im
       HL7v2TreeColumnType.TEXT,
       HL7v2TreeColumnType.COMMENT,
     ];
-    this.config = this.store.select(getHl7ConfigState);
+    this.config = this.store.select(getHl7ConfigState).pipe(
+      filter((config) => !!config),
+    );
     this.username = this.store.select(fromAuth.selectUsername);
     this.bindingConfig = this.store.select(selectBindingConfig);
     this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);

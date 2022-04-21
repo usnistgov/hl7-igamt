@@ -20,7 +20,7 @@ export class SelectSlicingContextComponent implements OnInit {
   selectType: ISlicingMethodType = ISlicingMethodType.ASSERTION;
 
   constructor(public dialogRef: MatDialogRef<SelectSlicingContextComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: ISlicingDialogData, readonly repository: StoreResourceRepositoryService) {
+              @Inject(MAT_DIALOG_DATA) public data: ISlicingDialogData, readonly repository: StoreResourceRepositoryService) {
     console.log(data);
   }
 

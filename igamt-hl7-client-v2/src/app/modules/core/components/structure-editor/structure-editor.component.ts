@@ -2,7 +2,7 @@ import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, take, tap, filter } from 'rxjs/operators';
 import * as fromAuth from 'src/app/modules/dam-framework/store/authentication/index';
 import * as fromDam from 'src/app/modules/dam-framework/store/index';
 import * as fromIgamtDisplaySelectors from 'src/app/root-store/dam-igamt/igamt.resource-display.selectors';
@@ -58,7 +58,9 @@ export abstract class StructureEditorComponent<T extends IResource> extends Abst
     super(editorMetadata, actions$, store);
     this.resourceType = editorMetadata.resourceType;
     this.hasOrigin$ = this.store.select(fromIgamtSelectedSelectors.selectedResourceHasOrigin);
-    this.config = this.store.select(getHl7ConfigState);
+    this.config = this.store.select(getHl7ConfigState).pipe(
+      filter((config) => !!config),
+    );
     this.datatypes = this.store.select(fromIgamtDisplaySelectors.selectAllDatatypes);
     this.segments = this.store.select(fromIgamtDisplaySelectors.selectAllSegments);
     this.valueSets = this.store.select(selectValueSetsNodes);
