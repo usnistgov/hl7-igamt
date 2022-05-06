@@ -298,6 +298,8 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
             	
             	fieldElement.addAttribute(
                         new Attribute("usage", field.getUsage() != null ? serializationTools.extractPredicateUsages(segmentDataModel.getPredicateMap(), field.getId()) : ""));
+                fieldElement.addAttribute(
+                      new Attribute("predicate", field.getUsage() != null ? serializationTools.extractPredicateDescription(segmentDataModel.getPredicateMap(), field.getId()) : ""));
             }
             if (segmentDataModel != null && segmentDataModel.getValuesetMap() != null && segmentDataModel.getValuesetMap().containsKey(field.getPosition() + "")) {
               String vs = segmentDataModel.getValuesetMap().get(field.getPosition()+"").stream().map((element) -> {

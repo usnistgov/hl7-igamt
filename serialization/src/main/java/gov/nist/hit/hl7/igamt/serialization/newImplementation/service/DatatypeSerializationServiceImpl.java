@@ -278,7 +278,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
               	
             	  componentElement.addAttribute(
                           new Attribute("usage", component.getUsage() != null ? serializationTools.extractPredicateUsages(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
-              }
+                  componentElement.addAttribute(
+                    new Attribute("predicate", component.getUsage() != null ? serializationTools.extractPredicateDescription(datatypeDataModel.getPredicateMap(), component.getId()) : ""));
+             }
         
           datatypeElement.appendChild(componentElement);
         } catch (Exception exception) {
