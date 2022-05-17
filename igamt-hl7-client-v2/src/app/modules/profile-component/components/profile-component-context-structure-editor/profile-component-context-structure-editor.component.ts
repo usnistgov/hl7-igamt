@@ -212,10 +212,10 @@ export abstract class ProfileComponentContextStructureEditor<T extends IProfileC
   }
 
   onEditorSave(action: fromDam.EditorSave): Observable<Action> {
-    return combineLatest(this.current$, this.profileComponentId$).pipe(
+    return combineLatest(this.current$, this.profileComponentId$, this.documentRef$).pipe(
       take(1),
-      concatMap(([current, pcId]) => {
-        return this.pcService.saveContext(pcId, current.data).pipe(
+      concatMap(([current, pcId, documentRef]) => {
+        return this.pcService.saveContext(pcId, current.data, documentRef).pipe(
           flatMap((value) => {
             return [
               this.messageService.messageToAction(new Message<any>(MessageType.SUCCESS, 'Context saved successfully!', null)),

@@ -1,7 +1,6 @@
 package gov.nist.hit.hl7.igamt.web.app.resource;
 
 import java.io.IOException;
-
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -25,7 +24,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
@@ -33,9 +34,6 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.exception.ValuesetException;
@@ -116,20 +114,11 @@ public class ValuesetController extends BaseController {
 	@RequestMapping(value = "/api/valuesets/{id}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
 	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id,
-			@RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+			@RequestParam(name = "dId", required = true) String documentId, @RequestParam(name = "type", required = true) DocumentType documentType, @RequestBody List<ChangeItemDomain> cItems,
 			Authentication authentication) throws ValuesetException, IOException, ForbiddenOperationException {
 		Valueset s = this.valuesetService.findById(id);
 		commonService.checkRight(authentication,s.getCurrentAuthor(), s.getUsername());
-
 		this.valuesetService.applyChanges(s, cItems, documentId);
-		EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-		entityChangeDomain.setDocumentId(documentId);
-		entityChangeDomain.setDocumentType(DocumentType.IG);
-		entityChangeDomain.setTargetId(id);
-		entityChangeDomain.setTargetType(EntityType.VALUESET);
-		entityChangeDomain.setChangeItems(cItems);
-		entityChangeDomain.setTargetVersion(s.getVersion());
-		entityChangeService.save(entityChangeDomain);
 		return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, s.getId(), new Date());
 	}
 

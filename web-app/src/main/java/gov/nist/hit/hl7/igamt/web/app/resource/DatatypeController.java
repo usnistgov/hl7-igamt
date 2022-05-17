@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -26,7 +27,6 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
@@ -144,20 +144,12 @@ public class DatatypeController extends BaseController {
   @RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.POST, produces = { "application/json" })
   @ResponseBody
   public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
-      @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+      @RequestParam(name = "dId", required = true) String documentId, @RequestParam(name = "type", required = true) DocumentType documentType, @RequestBody List<ChangeItemDomain> cItems,
       Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException, ApplyChangeException {
     Datatype dt = this.datatypeService.findById(id);
     validateSaveOperation(dt);
     commonService.checkRight(authentication, dt.getCurrentAuthor(), dt.getUsername());
     this.datatypeService.applyChanges(dt, cItems, documentId);
-    EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-    entityChangeDomain.setDocumentId(documentId);
-    entityChangeDomain.setDocumentType(DocumentType.IG);
-    entityChangeDomain.setTargetId(id);
-    entityChangeDomain.setTargetType(EntityType.DATATYPE);
-    entityChangeDomain.setChangeItems(cItems);
-    entityChangeDomain.setTargetVersion(dt.getVersion());
-    entityChangeService.save(entityChangeDomain);
     return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, dt.getId(), new Date());
   }
 

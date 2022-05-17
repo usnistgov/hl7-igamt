@@ -19,7 +19,8 @@ server:
 
 logging:
   file: hl7-igamt.log
-  path: /var/log/hl7-igamt/
+#  path: /var/log/hl7-igamt/
+  path: C:\Users\semla\Documents\yaml\logs
   exception-conversion-word: '%wEx'
   
 db:
@@ -28,7 +29,9 @@ db:
   host: localhost
   
 key: 
-  public: /usr/local/etc/hit/auth/publicKey.txt
+#  public: /usr/local/etc/hit/auth/publicKey.txt
+  public: C:\Users\semla\Documents\yaml\keys\publicKey.txt
+  
 auth:
   url: http://localhost:8090
    

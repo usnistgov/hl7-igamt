@@ -937,7 +937,7 @@ public class IGDocumentController extends BaseController {
     commonService.checkRight(authentication, ig.getCurrentAuthor(), ig.getUsername());
     String username = authentication.getPrincipal().toString();
    
-    Valueset clone =  resourceManagementService.createFlavor(ig.getDatatypeRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.VALUESET, wrapper.getSelected());
+    Valueset clone =  resourceManagementService.createFlavor(ig.getValueSetRegistry(), username, new DocumentInfo(id, DocumentType.IGDOCUMENT), Type.VALUESET, wrapper.getSelected());
     ig = igService.save(ig);
     AddResourceResponse response = new AddResourceResponse();
     response.setId(clone.getId());

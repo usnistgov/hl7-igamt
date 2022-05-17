@@ -42,6 +42,7 @@ export class SegmentService {
     return this.http.post<Message<string>>(this.URL + id, changes, {
       params: {
         dId: documentRef.documentId,
+        type: documentRef.type
       },
     });
   }

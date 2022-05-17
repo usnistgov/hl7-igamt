@@ -21,6 +21,7 @@ export class ValueSetService {
     return this.http.post<Message<string>>('api/valuesets/' + id, changes, {
       params: {
         dId: documentId,
+        type
       },
     });
   }

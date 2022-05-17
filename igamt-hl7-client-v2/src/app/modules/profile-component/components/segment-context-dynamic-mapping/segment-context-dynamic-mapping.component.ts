@@ -154,10 +154,10 @@ export class SegmentContextDynamicMappingComponent extends AbstractEditorCompone
   }
 
   onEditorSave(action: EditorSave): Observable<Action> {
-    return combineLatest(this.current$, this.profileComponentId$, this.elementId$).pipe(
+    return combineLatest(this.current$, this.profileComponentId$, this.elementId$, this.documentRef$).pipe(
       take(1),
-      concatMap(([current, pcId, id]) => {
-        return this.pcService.saveDynamicMapping(pcId, id, current.data.profileComponentDynamicMapping).pipe(
+      concatMap(([current, pcId, id, documentRef]) => {
+        return this.pcService.saveDynamicMapping(pcId, id, current.data.profileComponentDynamicMapping, documentRef).pipe(
           flatMap((value) => {
             return this.pcService.getChildById(pcId, id).pipe(
               flatMap((context) => {

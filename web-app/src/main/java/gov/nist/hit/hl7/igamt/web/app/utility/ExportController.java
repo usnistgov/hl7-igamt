@@ -99,7 +99,7 @@ public class ExportController {
   ExportDecisionRepository exportDecisionRepository;
 
   List<String> files = new ArrayList<String>();
-  Path source = Paths.get(this.getClass().getResource("/").getPath());
+  //Path source = Paths.get(this.getClass().getResource("/").getPath());
 
   @RequestMapping(value = "/api/export/ig/{igId}/{format}", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
   public @ResponseBody void exportIgDocument(@PathVariable("igId") String igId,

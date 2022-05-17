@@ -81,23 +81,48 @@ export class ProfileComponentService {
     return this.http.get<IProfileComponentContext>(this.URL + pcId + '/context/' + id + '/dynamicMappingInfo');
   }
 
-  saveContext(pcId: string, context: IProfileComponentContext): Observable<IProfileComponentContext> {
-    return this.http.post<IProfileComponentContext>(this.URL + pcId + '/context/' + context.id + '/update', context);
+  saveContext(pcId: string, context: IProfileComponentContext, documentRef: IDocumentRef): Observable<IProfileComponentContext> {
+    return this.http.post<IProfileComponentContext>(this.URL + pcId + '/context/' + context.id + '/update', context, {
+      params: {
+        dId: documentRef.documentId,
+        type: documentRef.type,
+      },
+    });
   }
 
-  saveRootConformanceStatements(pcId: string, id: string, csList: IPropertyConformanceStatement[]): Observable<IPropertyConformanceStatement[]> {
-    return this.http.post<IPropertyConformanceStatement[]>(this.URL + pcId + '/context/' + id + '/conformance-statements', csList);
+  saveRootConformanceStatements(pcId: string, id: string, csList: IPropertyConformanceStatement[], documentRef: IDocumentRef): Observable<IPropertyConformanceStatement[]> {
+    return this.http.post<IPropertyConformanceStatement[]>(this.URL + pcId + '/context/' + id + '/conformance-statements', csList, {
+      params: {
+        dId: documentRef.documentId,
+        type: documentRef.type,
+      },
+    });
   }
-  saveDynamicMapping(pcId: string, id: string, csList: IPropertyDynamicMapping): Observable<IPropertyDynamicMapping> {
-    return this.http.post<IPropertyDynamicMapping>(this.URL + pcId + '/context/' + id + '/dynamic-mapping', csList);
+  saveDynamicMapping(pcId: string, id: string, csList: IPropertyDynamicMapping, documentRef: IDocumentRef): Observable<IPropertyDynamicMapping> {
+    return this.http.post<IPropertyDynamicMapping>(this.URL + pcId + '/context/' + id + '/dynamic-mapping', csList, {
+      params: {
+        dId: documentRef.documentId,
+        type: documentRef.type,
+      },
+    });
   }
 
-  saveCoConstraintBindings(pcId: string, id: string, coConstraintsBindings: IPropertyCoConstraintBindings): Observable<IProfileComponentContext> {
-    return this.http.post<IProfileComponentContext>(this.URL + pcId + '/context/' + id + '/co-constraints', coConstraintsBindings);
+  saveCoConstraintBindings(pcId: string, id: string, coConstraintsBindings: IPropertyCoConstraintBindings, documentRef: IDocumentRef): Observable<IProfileComponentContext> {
+    return this.http.post<IProfileComponentContext>(this.URL + pcId + '/context/' + id + '/co-constraints', coConstraintsBindings,{
+      params: {
+        dId: documentRef.documentId,
+        type: documentRef.type,
+      },
+    });
   }
 
-  removeCoConstraintBindings(pcId: string, id: string): Observable<IProfileComponentContext> {
-    return this.http.delete<IProfileComponentContext>(this.URL + pcId + '/context/' + id + '/co-constraints');
+  removeCoConstraintBindings(pcId: string, id: string, documentRef: IDocumentRef): Observable<IProfileComponentContext> {
+    return this.http.delete<IProfileComponentContext>(this.URL + pcId + '/context/' + id + '/co-constraints', {
+      params: {
+        dId: documentRef.documentId,
+        type: documentRef.type,
+      },
+    });
   }
 
   removeBindings(location: IItemLocation, context: IProfileComponentContext) {
@@ -344,6 +369,7 @@ export class ProfileComponentService {
     return this.http.post<Message<string>>(this.URL + id, changes, {
       params: {
         dId: documentRef.documentId,
+        type: documentRef.type,
       },
     });
   }

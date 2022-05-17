@@ -172,13 +172,13 @@ export class CoConstraintsEditorComponent extends CoConstraintEditorService impl
   }
 
   onEditorSave(action: EditorSave): Observable<Action> {
-    return combineLatest(this.elementId$, this.profileComponentId$, this.current$).pipe(
+    return combineLatest(this.elementId$, this.profileComponentId$, this.current$, this.documentRef$).pipe(
       take(1),
-      concatMap(([id, pcId, current]) => {
+      concatMap(([id, pcId, current, documentRef]) => {
         const save = current.data.profileComponent ? this.pcService.saveCoConstraintBindings(pcId, id, {
           propertyKey: PropertyType.COCONSTRAINTBINDINGS,
           bindings: current.data.profileComponent,
-        }) : this.pcService.removeCoConstraintBindings(pcId, id);
+        }, documentRef) : this.pcService.removeCoConstraintBindings(pcId, id, documentRef);
 
         return save.pipe(
           flatMap((context) => {

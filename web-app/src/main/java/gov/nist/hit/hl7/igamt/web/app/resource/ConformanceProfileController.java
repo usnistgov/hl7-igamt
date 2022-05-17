@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
@@ -24,9 +25,6 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
@@ -122,21 +120,14 @@ public class ConformanceProfileController extends BaseController {
             "application/json" })
     @ResponseBody
     public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
-                                           @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+                                           @RequestParam(name = "dId", required = true) String documentId, @RequestParam(name = "type", required = true) DocumentType documentType, @RequestBody List<ChangeItemDomain> cItems,
                                            Authentication authentication) throws Exception {
       
         ConformanceProfile cp = this.conformanceProfileService.findById(id);
         commonService.checkRight(authentication, cp.getCurrentAuthor(), cp.getUsername());
         validateSaveOperation(cp);
         this.conformanceProfileService.applyChanges(cp, cItems, documentId);
-        EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-        entityChangeDomain.setDocumentId(documentId);
-        entityChangeDomain.setDocumentType(DocumentType.IG);
-        entityChangeDomain.setTargetId(id);
-        entityChangeDomain.setTargetType(EntityType.CONFORMANCEPROFILE);
-        entityChangeDomain.setChangeItems(cItems);
-        entityChangeDomain.setTargetVersion(cp.getVersion());
-        entityChangeService.save(entityChangeDomain);
+       
         return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, cp.getId(), new Date());
     }
 

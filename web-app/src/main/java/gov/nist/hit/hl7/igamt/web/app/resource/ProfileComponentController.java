@@ -96,7 +96,7 @@ public class ProfileComponentController extends BaseController {
   @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/update", method = RequestMethod.POST, produces = {"application/json"})
   @ResponseBody
   public ProfileComponentContext updateContext(
-          @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody ProfileComponentContext ctx,
+          @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId,  @RequestParam(name = "dId", required = true) String documentId, @RequestParam(name = "type", required = true) DocumentType documentType, @RequestBody ProfileComponentContext ctx,
           Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
       return profileComponentService.updateContext(pcId, contextId, ctx);
   }
@@ -104,7 +104,7 @@ public class ProfileComponentController extends BaseController {
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/conformance-statements", method = RequestMethod.POST, produces = {"application/json"})
     @ResponseBody
     public List<PropertyConformanceStatement> updateContextConformanceStatements(
-            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody List<PropertyConformanceStatement> conformanceStatements,
+            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestParam(name = "dId", required = true) String documentId, @RequestParam(name = "type", required = true) DocumentType documentType, @RequestBody List<PropertyConformanceStatement> conformanceStatements,
             Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
         return profileComponentService.updateContextConformanceStatements(pcId, contextId, conformanceStatements);
     }
@@ -112,7 +112,7 @@ public class ProfileComponentController extends BaseController {
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/co-constraints", method = RequestMethod.POST, produces = {"application/json"})
     @ResponseBody
     public ProfileComponentContext updateContextCoConstraints(
-            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody PropertyCoConstraintBindings coConstraintBindings,
+            @PathVariable("pcId") String pcId,  @RequestParam(name = "dId", required = true) String documentId, @RequestParam(name = "type", required = true) DocumentType documentType, @PathVariable("contextId") String contextId, @RequestBody PropertyCoConstraintBindings coConstraintBindings,
             Authentication authentication) throws Exception  {
         return profileComponentService.updateContextCoConstraintBindings(pcId, contextId, coConstraintBindings);
     }
@@ -120,7 +120,7 @@ public class ProfileComponentController extends BaseController {
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/co-constraints", method = RequestMethod.DELETE, produces = {"application/json"})
     @ResponseBody
     public ProfileComponentContext removeContextCoConstraints(
-            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId,
+            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId,  @RequestParam(name = "dId", required = true) String documentId,@RequestParam(name = "type", required = true) DocumentType documentType,
             Authentication authentication) throws Exception  {
         return profileComponentService.updateContextCoConstraintBindings(pcId, contextId, null);
     }
@@ -128,7 +128,7 @@ public class ProfileComponentController extends BaseController {
     @RequestMapping(value = "/api/profile-component/{pcId}/context/{contextId}/dynamic-mapping", method = RequestMethod.POST, produces = {"application/json"})
     @ResponseBody
     public PropertyDynamicMapping updateDynamicMapping(
-            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestBody PropertyDynamicMapping dynamicMapping,
+            @PathVariable("pcId") String pcId, @PathVariable("contextId") String contextId, @RequestParam(name = "dId", required = true) String documentId, @RequestParam(name = "type", required = true) DocumentType documentType, @RequestBody PropertyDynamicMapping dynamicMapping,
             Authentication authentication) throws ProfileComponentNotFoundException, ProfileComponentContextNotFoundException  {
         return profileComponentService.updateContextDynamicMapping(pcId, contextId, dynamicMapping);
     }
@@ -137,20 +137,12 @@ public class ProfileComponentController extends BaseController {
           "application/json" })
   @ResponseBody
   public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
-                                         @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+                                         @RequestParam(name = "dId", required = true) String documentId, @RequestParam(name = "type", required = true) DocumentType documentType, @RequestBody List<ChangeItemDomain> cItems,
                                          Authentication authentication) throws Exception {
     
       ProfileComponent cp = this.profileComponentService.findById(id);
       commonService.checkRight(authentication, cp.getCurrentAuthor(), cp.getUsername());
       this.profileComponentService.applyChanges(cp, cItems, documentId);
-      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-      entityChangeDomain.setDocumentId(documentId);
-      entityChangeDomain.setDocumentType(DocumentType.IG);
-      entityChangeDomain.setTargetId(id);
-      entityChangeDomain.setTargetType(EntityType.PROFILECOMPONENT);
-      entityChangeDomain.setChangeItems(cItems);
-      entityChangeDomain.setTargetVersion(cp.getVersion());
-      entityChangeService.save(entityChangeDomain);
       return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, cp.getId(), new Date());
   }
   
@@ -160,7 +152,7 @@ public class ProfileComponentController extends BaseController {
         throw new ProfileComponentNotFoundException(id);
     }
     return pc;
- }
+  }
 
 
 }
