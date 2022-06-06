@@ -22,6 +22,7 @@ export class StatementTarget {
   public complex: boolean;
   public resourceName: string;
   public repeatMax: number;
+  public hierarchicalRepeat: boolean;
   public value: ISubject;
   public context: IPath;
   public occurrenceValuesMap = {};
@@ -40,6 +41,10 @@ export class StatementTarget {
 
   getRepeatMax(): number {
     return this.repeatMax;
+  }
+
+  getHierarchicalRepeat(): boolean {
+    return this.hierarchicalRepeat;
   }
 
   getName(): string {
@@ -76,6 +81,7 @@ export class StatementTarget {
     this.node = undefined;
     this.resourceName = undefined;
     this.repeatMax = undefined;
+    this.hierarchicalRepeat = false;
     this.context = undefined;
 
     if (subject.path) {
@@ -107,6 +113,7 @@ export class StatementTarget {
       occurenceLocationStr: undefined,
     };
     this.repeatMax = undefined;
+    this.hierarchicalRepeat = false;
     this.resourceName = undefined;
     this.context = undefined;
     if (treeClearEvent) {
@@ -150,6 +157,7 @@ export class StatementTarget {
     }
     if (tree && node) {
       this.repeatMax = this.getNodeRepeatMax(node, tree[0]);
+      this.hierarchicalRepeat = this.getNodeHierarchyRepeat(node, tree[0]);
     }
     if (node) {
       this.resourceName = node.data.ref.getValue().name;
@@ -159,18 +167,34 @@ export class StatementTarget {
   }
 
   getNodeRepeatMax(node: IHL7v2TreeNode, root: IHL7v2TreeNode) {
-    const nodeRepeat = this.getMax(node.data.cardinality);
-    if (nodeRepeat > 0) {
-      return nodeRepeat;
-    }
-
-    if (node.data.type === Type.COMPONENT || node.data.type === Type.SUBCOMPONENT) {
-      const field = this.getFieldFrom(node);
-      if (field && field.data !== root.data) {
-        return this.getMax(field.data.cardinality);
+    const loop = (n: IHL7v2TreeNode) => {
+      if (n && n.data !== root.data) {
+        const r = this.getMax(n.data.cardinality);
+        return (r === 0 ? 1 : r) * loop(n.parent);
+      } else {
+        const r = this.getMax(n.data.cardinality);
+        return r === 0 ? 1 : r;
       }
-    }
-    return 0;
+    };
+    return loop(node);
+  }
+
+  getNodeHierarchyRepeat(node: IHL7v2TreeNode, root: IHL7v2TreeNode) {
+    const field = this.getFieldFrom(node);
+
+    const findRepeat = (n: IHL7v2TreeNode) => {
+      if (n && n.data !== root.data) {
+        if (this.getMax(n.data.cardinality) > 0) {
+          return true;
+        } else {
+          return this.getNodeHierarchyRepeat(n.parent, root);
+        }
+      } else {
+        return false;
+      }
+    };
+
+    return findRepeat(field ? field.parent : node);
   }
 
   getMax(cardinality: ICardinalityRange) {
@@ -283,7 +307,7 @@ export class StatementTarget {
         case OccurrenceType.COUNT:
           return +this.value.occurenceValue <= this.repeatMax && +this.value.occurenceValue >= 1;
         case OccurrenceType.INSTANCE:
-          return +this.value.occurenceValue <= Math.min(8, this.repeatMax) && +this.value.occurenceValue >= 1;
+          return this.hierarchicalRepeat ? false : +this.value.occurenceValue <= Math.min(8, this.repeatMax) && +this.value.occurenceValue >= 1;
       }
     }
     return true;

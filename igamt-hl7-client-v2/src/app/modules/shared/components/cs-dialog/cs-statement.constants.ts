@@ -1,12 +1,15 @@
 import { ComparativeType, DeclarativeType, OccurrenceType, PropositionType, VerbType } from '../../models/conformance-statements.domain';
 
-export const OCCURRENCES = [
+export const NB_OCCURRENCES = [
   { label: 'At least one occurrence of', value: OccurrenceType.AT_LEAST_ONE },
-  { label: 'The \'INSTANCE\' occurrence of', value: OccurrenceType.INSTANCE },
   { label: 'No occurrence of', value: OccurrenceType.NONE },
   { label: 'Exactly one occurrence of', value: OccurrenceType.ONE },
   { label: '\'COUNT\' occurrences of', value: OccurrenceType.COUNT },
   { label: 'All occurrences of', value: OccurrenceType.ALL },
+];
+
+export const TARGET_OCCURRENCES = [
+  { label: 'The \'INSTANCE\' occurrence of', value: OccurrenceType.INSTANCE },
 ];
 
 export const VERBS = [
@@ -18,7 +21,7 @@ export const VERBS = [
   // { label: 'MAY NOT', value: VerbType.MAY_NOT },
 ];
 
-export const DECLARATIVES: IStatementOption[] = [
+export const DECLARATIVES: IOption[] = [
   { label: 'contain the value \'VALUE\'.', value: DeclarativeType.CONTAINS_VALUE },
   { label: 'contain the value \'VALUE\' (DESCRIPTION).', value: DeclarativeType.CONTAINS_VALUE_DESC },
   { label: 'contain the value \‘VALUE\’ (DESCRIPTION) drawn from the code system \'CODE SYSTEM\'.', value: DeclarativeType.CONTAINS_CODE_DESC },
@@ -33,7 +36,7 @@ export const DECLARATIVES: IStatementOption[] = [
   { label: 'be valued with an ISO-compliant OID.', value: DeclarativeType.ISO },
 ];
 
-export const COMPARATIVES: IStatementOption[] = [
+export const COMPARATIVES: IOption[] = [
   { label: 'be identical to', value: ComparativeType.IDENTICAL },
   { label: 'be earlier than', value: ComparativeType.EARLIER },
   { label: 'be earlier than or equivalent to', value: ComparativeType.EARLIER_EQUIVALENT },
@@ -47,7 +50,7 @@ export const COMPARATIVES: IStatementOption[] = [
   { label: 'be truncated later than', value: ComparativeType.TRUNCATED_LATER },
 ];
 
-export const PROPOSITIONS: IStatementOption[] = [
+export const PROPOSITIONS: IOption[] = [
   { label: 'is valued', value: PropositionType.VALUED },
   { label: 'is not valued', value: PropositionType.NOT_VALUED },
   { label: 'contains the value \'VALUE\'.', value: PropositionType.CONTAINS_VALUE },
@@ -60,7 +63,7 @@ export const PROPOSITIONS: IStatementOption[] = [
   { label: 'does not contain one of the values in the list: { \‘VALUE 1\’ (DESCRIPTION), \'VALUE 2\' (DESCRIPTION), \'VALUE N\' (DESCRIPTION) }.', value: PropositionType.NOT_CONTAINS_VALUES_DESC },
 ];
 
-export interface IStatementOption {
+export interface IOption {
   label: string;
   value: string;
 }

@@ -252,7 +252,7 @@
 
     <!-- Occurrence -->
     <td *ngIf="(subject.value && subject.value.occurenceType) || subject.repeatMax > 0" class="table-font">
-      <ng-container *ngFor="let occurence of occurences">
+      <ng-container *ngFor="let occurence of subjectOccurrenceList">
         <input type="radio" [name]="id + 'target-occurences'" [value]="occurence.value" [(ngModel)]="subject.value.occurenceType" (ngModelChange)="changeOccurrenceType(subject)"/> {{ occurence.label }}<br>
       </ng-container>
     </td>
@@ -287,7 +287,7 @@
 
     <!-- Occurrence -->
     <td *ngIf="(assertion.complement && compare.value.occurenceType) || compare.repeatMax > 0" class="table-font">
-      <ng-container *ngFor="let occurence of occurences">
+      <ng-container *ngFor="let occurence of compareOccurrenceList">
         <input type="radio"  [name]="id + 'comp-occurences'" [value]="occurence.value" [(ngModel)]="compare.value.occurenceType" (ngModelChange)="changeOccurrenceType(compare)"/> {{ occurence.label }}<br>
       </ng-container>
     </td>

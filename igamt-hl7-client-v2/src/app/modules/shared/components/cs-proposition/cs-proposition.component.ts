@@ -10,8 +10,9 @@ import { PathService } from '../../services/path.service';
 import { StatementTarget } from '../../services/statement.service';
 import { IHL7v2TreeFilter, ITreeRestriction, RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { CsStatementComponent, IStatementTokenPayload } from '../cs-dialog/cs-statement.component';
-import { COMPARATIVES, DECLARATIVES, IStatementOption, OCCURRENCES, PROPOSITIONS, VERBS } from '../cs-dialog/cs-statement.constants';
+import { COMPARATIVES, DECLARATIVES, IOption, PROPOSITIONS, VERBS } from '../cs-dialog/cs-statement.constants';
 import { IToken, LeafStatementType, Statement } from '../pattern-dialog/cs-pattern.domain';
+import { NB_OCCURRENCES, TARGET_OCCURRENCES } from './../cs-dialog/cs-statement.constants';
 
 @Component({
   selector: 'app-cs-proposition',
@@ -43,7 +44,9 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     hide: false,
     restrictions: [],
   };
-  statementsList: IStatementOption[];
+  statementsList: IOption[];
+  subjectOccurrenceList: IOption[];
+  compareOccurrenceList: IOption[];
 
   private numberDatatypes: string[] = ['NM', 'SI'];
   private timeDatatypes: string[] = ['DT', 'DTM', 'TM'];
@@ -65,7 +68,6 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     }
   }
 
-  occurences = OCCURRENCES;
   verbs = VERBS;
   declarative_statements = DECLARATIVES;
   comparative_statements = COMPARATIVES;
@@ -119,10 +121,11 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
       });
     this.id = new Date().getTime() + '';
     this.csType = LeafStatementType.DECLARATION;
-    this.subject = new StatementTarget(elementNamingService, pathService, this.occurences);
-    this.compare = new StatementTarget(elementNamingService, pathService, this.occurences);
+    const allOccurrenceOptions = [...NB_OCCURRENCES, ...TARGET_OCCURRENCES];
+    this.subject = new StatementTarget(elementNamingService, pathService, allOccurrenceOptions);
+    this.compare = new StatementTarget(elementNamingService, pathService, allOccurrenceOptions);
     this.map(this.verbs);
-    this.map(this.occurences);
+    this.map(allOccurrenceOptions);
     this.map(this.declarative_statements);
     this.map(this.comparative_statements);
     this.map(this.proposition_statements);
@@ -153,6 +156,8 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     ).pipe(
       tap(() => {
         this.statementsList = this.getAllowedStatements(this.subject, token.value.data.branch, this.statementType);
+        this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject);
+        this.compareOccurrenceList = this.getAllowedOccurrenceList(this.compare);
       }),
       finalize(() => this.updateTokenStatus()),
     ).subscribe();
@@ -161,6 +166,18 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   map(list: Array<{ label: string, value: string }>) {
     for (const item of list) {
       this.labelsMap[item.value] = item.label;
+    }
+  }
+
+  getAllowedOccurrenceList(subject: StatementTarget): IOption[] {
+    if (subject && subject.repeatMax > 0) {
+      if (subject.hierarchicalRepeat) {
+        return [...NB_OCCURRENCES];
+      } else {
+        return [...NB_OCCURRENCES, ...TARGET_OCCURRENCES];
+      }
+    } else {
+      return [];
     }
   }
 
@@ -329,6 +346,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
 
   targetElement(event) {
     this.subject.reset(this.token.payload.getValue().effectiveContext, this.pathService.trimPathRoot(event.path), this.res, this.repository, this.token.payload.getValue().effectiveTree, event.node, !!this.token.dependency).pipe(tap((s) => {
+      this.subjectOccurrenceList = this.getAllowedOccurrenceList(this.subject);
       this.statementsList = this.getAllowedStatements(this.subject, this.csType, this.statementType);
       if (
         this.assertion.complement.complementKey &&
@@ -345,6 +363,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
 
   comparativeElement(event) {
     this.compare.reset(this.token.payload.getValue().effectiveContext, this.pathService.trimPathRoot(event.path), this.res, this.repository, this.token.payload.getValue().effectiveTree, event.node, !!this.token.dependency).pipe(tap((s) => {
+      this.compareOccurrenceList = this.getAllowedOccurrenceList(this.compare);
       this.changeElement(this.compare, this.assertion.complement);
     })).subscribe();
   }
