@@ -10,9 +10,10 @@ import { PathService } from '../../services/path.service';
 import { StatementTarget } from '../../services/statement.service';
 import { IHL7v2TreeFilter, ITreeRestriction, RestrictionCombinator, RestrictionType } from '../../services/tree-filter.service';
 import { CsStatementComponent, IStatementTokenPayload } from '../cs-dialog/cs-statement.component';
-import { COMPARATIVES, DECLARATIVES, IOption, PROPOSITIONS, VERBS } from '../cs-dialog/cs-statement.constants';
+import { COMPARATIVES, DECLARATIVES, IOption, PROPOSITIONS, VERBS_SHOULD } from '../cs-dialog/cs-statement.constants';
 import { IToken, LeafStatementType, Statement } from '../pattern-dialog/cs-pattern.domain';
-import { NB_OCCURRENCES, TARGET_OCCURRENCES } from './../cs-dialog/cs-statement.constants';
+import { ConformanceStatementStrength } from './../../models/conformance-statements.domain';
+import { NB_OCCURRENCES, TARGET_OCCURRENCES, VERBS_SHALL } from './../cs-dialog/cs-statement.constants';
 
 @Component({
   selector: 'app-cs-proposition',
@@ -27,6 +28,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   _propositionType = PropositionType;
   _occurrenceType = OccurrenceType;
   _csType = LeafStatementType;
+  _strength: ConformanceStatementStrength;
 
   subject: StatementTarget;
   compare: StatementTarget;
@@ -39,6 +41,25 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
 
   @Input()
   predicateMode: boolean;
+  @Input()
+  set strength(str: ConformanceStatementStrength) {
+    this._strength = str;
+    switch (str) {
+      case ConformanceStatementStrength.SHALL:
+        this.verbs = [...VERBS_SHALL];
+        break;
+      case ConformanceStatementStrength.SHOULD:
+        this.verbs = [...VERBS_SHOULD];
+        break;
+      default:
+        this.verbs = [];
+    }
+
+    if (this.assertion && this.assertion.verbKey) {
+      this.updateVerb(str, this.assertion);
+    }
+  }
+
   id: string;
   compareTreeFilter: IHL7v2TreeFilter = {
     hide: false,
@@ -47,6 +68,7 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   statementsList: IOption[];
   subjectOccurrenceList: IOption[];
   compareOccurrenceList: IOption[];
+  verbs: IOption[];
 
   private numberDatatypes: string[] = ['NM', 'SI'];
   private timeDatatypes: string[] = ['DT', 'DTM', 'TM'];
@@ -68,7 +90,6 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     }
   }
 
-  verbs = VERBS;
   declarative_statements = DECLARATIVES;
   comparative_statements = COMPARATIVES;
   proposition_statements = PROPOSITIONS;
@@ -122,13 +143,35 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
     this.id = new Date().getTime() + '';
     this.csType = LeafStatementType.DECLARATION;
     const allOccurrenceOptions = [...NB_OCCURRENCES, ...TARGET_OCCURRENCES];
+    const allVerbs = [...VERBS_SHALL, ...VERBS_SHOULD];
     this.subject = new StatementTarget(elementNamingService, pathService, allOccurrenceOptions);
     this.compare = new StatementTarget(elementNamingService, pathService, allOccurrenceOptions);
-    this.map(this.verbs);
+    this.map(allVerbs);
     this.map(allOccurrenceOptions);
     this.map(this.declarative_statements);
     this.map(this.comparative_statements);
     this.map(this.proposition_statements);
+  }
+
+  updateVerb(strength: ConformanceStatementStrength, assertion: ISimpleAssertion) {
+    if (assertion && assertion.verbKey) {
+      switch (strength) {
+        case ConformanceStatementStrength.SHALL:
+          const idxShould = VERBS_SHOULD.map((v) => v.value).findIndex((v) => assertion.verbKey === v);
+          if (idxShould !== -1) {
+            this.assertion.verbKey = VERBS_SHALL[idxShould].value;
+            this.change();
+          }
+          break;
+        case ConformanceStatementStrength.SHOULD:
+          const idxShall = VERBS_SHALL.map((v) => v.value).findIndex((v) => assertion.verbKey === v);
+          if (idxShall !== -1) {
+            this.assertion.verbKey = VERBS_SHOULD[idxShall].value;
+            this.change();
+          }
+          break;
+      }
+    }
   }
 
   getPrimitiveType(name: string): 'NUMBER' | 'TEMPORAL' | 'ANY' {
@@ -166,18 +209,6 @@ export class CsPropositionComponent extends CsStatementComponent<ISimpleAssertio
   map(list: Array<{ label: string, value: string }>) {
     for (const item of list) {
       this.labelsMap[item.value] = item.label;
-    }
-  }
-
-  getAllowedOccurrenceList(subject: StatementTarget): IOption[] {
-    if (subject && subject.repeatMax > 0) {
-      if (subject.hierarchicalRepeat) {
-        return [...NB_OCCURRENCES];
-      } else {
-        return [...NB_OCCURRENCES, ...TARGET_OCCURRENCES];
-      }
-    } else {
-      return [];
     }
   }
 

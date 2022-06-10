@@ -6,9 +6,11 @@ import { OccurrenceType } from '../../models/conformance-statements.domain';
 import { IPath } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
+import { StatementTarget } from '../../services/statement.service';
 import { IHL7v2TreeFilter, ITreeRestriction, RestrictionType } from '../../services/tree-filter.service';
 import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 import { IToken, Statement } from '../pattern-dialog/cs-pattern.domain';
+import { IOption, NB_OCCURRENCES, TARGET_OCCURRENCES } from './cs-statement.constants';
 
 export interface IStatementTokenPayload {
   effectiveTree: IHL7v2TreeNode[];
@@ -119,6 +121,18 @@ export abstract class CsStatementComponent<T> implements OnInit, OnDestroy {
     if (!payload.active) {
       this.clearStatementTargetElements();
       this.change();
+    }
+  }
+
+  getAllowedOccurrenceList(subject: StatementTarget): IOption[] {
+    if (subject && subject.repeatMax > 0) {
+      if (subject.hierarchicalRepeat) {
+        return [...NB_OCCURRENCES];
+      } else {
+        return [...NB_OCCURRENCES, ...TARGET_OCCURRENCES];
+      }
+    } else {
+      return [];
     }
   }
 

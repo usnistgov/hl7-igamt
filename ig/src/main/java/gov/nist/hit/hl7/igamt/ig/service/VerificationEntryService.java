@@ -53,4 +53,9 @@ public interface VerificationEntryService {
     IgamtObjectError CoConstraintMultiDatatypeCells(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintMultiVariesCells(String pathId, String locationName, String id, Type type);
     IgamtObjectError CoConstraintNoDatatypeCell(String pathId, String locationName, String id, Type type);
+
+    // Conformance Statements
+    IgamtObjectError AssertionOccurrenceTypeOnNotRepeatable(Location location, String id, Type type, LocationInfo path, String occurrenceType, String pathQualifier);
+    IgamtObjectError AssertionOccurrenceTypeInstanceOnNotMultiLevelRepeatable(Location location, String id, Type type, LocationInfo path, String pathQualifier);
+    IgamtObjectError AssertionOccurrenceValueOverMax(Location location, String id, Type type, LocationInfo path, String occurrenceType, int max, int value, String pathQualifier);
 }

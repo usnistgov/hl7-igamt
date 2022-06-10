@@ -12,13 +12,14 @@ export const TARGET_OCCURRENCES = [
   { label: 'The \'INSTANCE\' occurrence of', value: OccurrenceType.INSTANCE },
 ];
 
-export const VERBS = [
+export const VERBS_SHALL = [
   { label: 'SHALL', value: VerbType.SHALL },
   { label: 'SHALL NOT', value: VerbType.SHALL_NOT },
+];
+
+export const VERBS_SHOULD = [
   { label: 'SHOULD', value: VerbType.SHOULD },
   { label: 'SHOULD NOT', value: VerbType.SHOULD_NOT },
-  { label: 'MAY', value: VerbType.MAY },
-  // { label: 'MAY NOT', value: VerbType.MAY_NOT },
 ];
 
 export const DECLARATIVES: IOption[] = [

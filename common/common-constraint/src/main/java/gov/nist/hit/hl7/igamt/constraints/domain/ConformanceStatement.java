@@ -38,8 +38,6 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
 	@JsonSubTypes.Type(value = AssertionConformanceStatement.class, name = "ASSERTION")})
 public class ConformanceStatement implements Serializable{
 
-
-
 	/**
 	 * 
 	 */
@@ -57,6 +55,7 @@ public class ConformanceStatement implements Serializable{
 	private HashSet<String> sourceIds;
 	@Deprecated
 	private String igDocumentId;
+	private ConformanceStatementStrength strength;
 	
 	@Transient
 	String resourceId;
@@ -167,6 +166,14 @@ public class ConformanceStatement implements Serializable{
 		if(this.sourceIds != null) {
 			this.sourceIds.remove(sourceId);
 		}
+	}
+
+	public ConformanceStatementStrength getStrength() {
+		return strength;
+	}
+
+	public void setStrength(ConformanceStatementStrength strength) {
+		this.strength = strength;
 	}
 
 	@Override

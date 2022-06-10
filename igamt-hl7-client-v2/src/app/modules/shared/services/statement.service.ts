@@ -153,14 +153,14 @@ export class StatementTarget {
     this.valid = true;
     if (nodeInfo) {
       this.complex = !nodeInfo.leaf;
-      this.resourceName = resourceDisplay.resourceName;
+      this.resourceName = resourceDisplay ? resourceDisplay.resourceName : '';
     }
     if (tree && node) {
       this.repeatMax = this.getNodeRepeatMax(node, tree[0]);
       this.hierarchicalRepeat = this.getNodeHierarchyRepeat(node, tree[0]);
     }
     if (node) {
-      this.resourceName = node.data.ref.getValue().name;
+      this.resourceName = node.data.ref ? node.data.ref.getValue().name : '';
     }
     this.node = node;
     this.context = context;
@@ -171,12 +171,11 @@ export class StatementTarget {
       if (n && n.data !== root.data) {
         const r = this.getMax(n.data.cardinality);
         return (r === 0 ? 1 : r) * loop(n.parent);
-      } else {
-        const r = this.getMax(n.data.cardinality);
-        return r === 0 ? 1 : r;
       }
+      return 1;
     };
-    return loop(node);
+    const repeat = loop(node);
+    return repeat === 1 ? 0 : repeat;
   }
 
   getNodeHierarchyRepeat(node: IHL7v2TreeNode, root: IHL7v2TreeNode) {
@@ -187,21 +186,21 @@ export class StatementTarget {
         if (this.getMax(n.data.cardinality) > 0) {
           return true;
         } else {
-          return this.getNodeHierarchyRepeat(n.parent, root);
+          return findRepeat(n.parent);
         }
       } else {
         return false;
       }
     };
 
-    return findRepeat(field ? field.parent : node);
+    return findRepeat(field ? field.parent : node.parent);
   }
 
   getMax(cardinality: ICardinalityRange) {
     if (!cardinality) {
       return 0;
     } else if (cardinality.max === '*') {
-      return Number.MAX_VALUE;
+      return 999;
     } else if (+cardinality.max === 1) {
       return 0;
     } else {
@@ -239,6 +238,13 @@ export class StatementTarget {
       flatMap((pathInfo) => {
         const name = this.elementNamingService.getStringNameFromPathInfo(startFrom ? this.elementNamingService.getStartPathInfo(pathInfo, startFrom) : pathInfo);
         const nodeInfo = this.elementNamingService.getLeaf(pathInfo);
+        if (nodeInfo.type === Type.GROUP) {
+          return of({
+            name,
+            nodeInfo,
+            resourceDisplay: undefined,
+          });
+        }
         return repository.getResourceDisplay(nodeInfo.ref.type, nodeInfo.ref.id).pipe(
           map((resourceDisplay) => {
             return {
@@ -282,6 +288,7 @@ export class StatementTarget {
       case 2: return 'second';
       case 3: return 'third';
       case 4: return 'fourth';
+      case 5: return 'fifth';
       case 6: return 'sixth';
       case 7: return 'seventh';
       case 8: return 'eight';
