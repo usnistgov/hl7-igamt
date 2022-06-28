@@ -92,27 +92,6 @@ public class DefaultVerificationEntryService implements VerificationEntryService
                 .entry();
     }
 
-    @Override
-    public IgamtObjectError SingleCodeMissingValueSet(String pathId, LocationInfo info, String id, Type type) {
-        return new IgamtVerificationEntryBuilder("SINGLE_CODE_MISSING_VALUESET")
-                .error()
-                .handleInternally()
-                .target(id, type)
-                .locationInfo(pathId, info, PropertyType.SINGLECODE)
-                .message("Single Code binding is missing value set")
-                .entry();
-    }
-
-    @Override
-    public IgamtObjectError SingleCodeNotInValueSet(String pathId, LocationInfo info, String id, Type type, String code, String codeSystem, String bindingIdentifier) {
-        return new IgamtVerificationEntryBuilder("SINGLE_CODE_NOT_IN_VS")
-                .error()
-                .handleByUser()
-                .target(id, type)
-                .locationInfo(pathId, info, PropertyType.SINGLECODE)
-                .message("Code " + code + " in code system " + codeSystem + " not found in ValueSet " + bindingIdentifier)
-                .entry();
-    }
 
     @Override
     public IgamtObjectError ValueSetBindingNotAllowed(String pathId, LocationInfo info, String id, Type type) {
@@ -137,13 +116,13 @@ public class DefaultVerificationEntryService implements VerificationEntryService
     }
 
     @Override
-    public IgamtObjectError InvalidBindingLocation(String pathId, String name, LocationInfo target, String id, Type type, Set<Integer> bindingLocations, String reason) {
+    public IgamtObjectError InvalidBindingLocation(String pathId, String name, LocationInfo target, PropertyType prop, String id, Type type, Set<Integer> bindingLocations, String reason) {
         boolean blIsSet = bindingLocations != null && bindingLocations.size() > 0;
         return new IgamtVerificationEntryBuilder("INVALID_BINDING_LOCATION")
                 .error()
                 .handleInternally()
                 .target(id, type)
-                .locationInfo(pathId, name, PropertyType.VALUESET)
+                .locationInfo(pathId, name, prop)
                 .message("Invalid binding location : " + (blIsSet ? bindingLocations : '.') + " at " + target.getHl7Path() + (!Strings.isNullOrEmpty(reason) ? " ("+ reason +")" : ""))
                 .entry();
     }

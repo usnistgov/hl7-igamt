@@ -1247,19 +1247,20 @@ public class VerificationServiceImpl implements VerificationService {
 										position + "", "ERROR", "User"));
 				}
 
+				//TODO Fix SingleCode
 				if (this.isValueSetOrSingleCodeAllowedComponent(c, childDt)) {
 					StructureElementBinding childBinding = this.findBindingById(c.getId(), cDt.getBinding());
 					if (childBinding != null) {
 						Set<ValuesetBinding> valuesetBindings = childBinding.getValuesetBindings();
 						ExternalSingleCode externalSingleCode = childBinding.getExternalSingleCode();
-						InternalSingleCode internalSingleCode = childBinding.getInternalSingleCode();
+//						InternalSingleCode internalSingleCode = childBinding.getInternalSingleCode();
 
 						if (valuesetBindings != null)
 							this.checkingValueSetBindings(cDt, valuesetBindings, result, position, path);
 						if (externalSingleCode != null)
 							this.checkingExternalSingleCode(cDt, externalSingleCode, result, position, path);
-						if (internalSingleCode != null)
-							this.checkingInternalSingleCode(cDt, internalSingleCode, result, position, path);
+//						if (internalSingleCode != null)
+//							this.checkingInternalSingleCode(cDt, internalSingleCode, result, position, path);
 					}
 
 				} else {
@@ -1346,14 +1347,14 @@ public class VerificationServiceImpl implements VerificationService {
 					if (childBinding != null) {
 						Set<ValuesetBinding> valuesetBindings = childBinding.getValuesetBindings();
 						ExternalSingleCode externalSingleCode = childBinding.getExternalSingleCode();
-						InternalSingleCode internalSingleCode = childBinding.getInternalSingleCode();
+//						InternalSingleCode internalSingleCode = childBinding.getInternalSingleCode();
 
 						if (valuesetBindings != null)
 							this.checkingValueSetBindings(segment, valuesetBindings, result, position, path);
 						if (externalSingleCode != null)
 							this.checkingExternalSingleCode(segment, externalSingleCode, result, position, path);
-						if (internalSingleCode != null)
-							this.checkingInternalSingleCode(segment, internalSingleCode, result, position, path);
+//						if (internalSingleCode != null)
+//							this.checkingInternalSingleCode(segment, internalSingleCode, result, position, path);
 					}
 
 				} else {

@@ -213,8 +213,9 @@ public class ProfileComponentSerializationServiceImpl implements ProfileComponen
 											break;
 
 	                                    case SINGLECODE:
-	                                    	profileComponentItemElement.addAttribute(new Attribute("valueSet",
-													((PropertySingleCode) itemProperty).getInternalSingleCode() != null ? ((PropertySingleCode) itemProperty).getInternalSingleCode().getCode() : ""));
+	                                    	//TODO Fix Single Code
+//	                                    	profileComponentItemElement.addAttribute(new Attribute("valueSet",
+//													((PropertySingleCode) itemProperty).getInternalSingleCode() != null ? ((PropertySingleCode) itemProperty).getInternalSingleCode().getCode() : ""));
 										break;
 
 											case USAGE:

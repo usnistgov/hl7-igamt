@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.*;
 import gov.nist.hit.hl7.igamt.common.slicing.domain.Slicing;
 
@@ -490,11 +491,11 @@ public class ApplyChangeImpl implements ApplyChange {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			String jsonInString = mapper.writeValueAsString(change.getPropertyValue());
-			change.setOldPropertyValue(elm.getInternalSingleCode());
+			change.setOldPropertyValue(elm.getSingleCodeBindings());
 			if (change.getChangeType().equals(ChangeType.DELETE)) {
-				elm.setInternalSingleCode(null);
+				elm.setSingleCodeBindings(null);
 			} else {
-				elm.setInternalSingleCode(mapper.readValue(jsonInString, InternalSingleCode.class));
+				elm.setSingleCodeBindings(Arrays.asList(mapper.readValue(jsonInString, SingleCodeBinding[].class)));
 			}
 		} catch (IOException e) {
 			throw new ApplyChangeException(change);

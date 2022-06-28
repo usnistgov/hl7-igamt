@@ -549,15 +549,16 @@ public class SegmentServiceImpl implements SegmentService {
     if (existingBindingDisplay == null || (existingBindingDisplay.getValuesetBindingsPriority() != null
         && existingBindingDisplay.getValuesetBindingsPriority() > priority)) {
       bindingDisplay.setBindingType(BindingType.NA);
-      if(seb.getInternalSingleCode() != null 
-          && seb.getInternalSingleCode().getValueSetId() != null
-          && seb.getInternalSingleCode().getCode() != null) {
-        bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-        bindingDisplay.setValuesetBindingsPriority(priority);
-        bindingDisplay.setValuesetBindingsSourceId(sourceId);
-        bindingDisplay.setValuesetBindingsSourceType(sourceType);
-        bindingDisplay.setBindingType(BindingType.SC);
-      } else {
+      	//TODO Fix SingleCode
+//      if(seb.getInternalSingleCode() != null
+//          && seb.getInternalSingleCode().getValueSetId() != null
+//          && seb.getInternalSingleCode().getCode() != null) {
+//        bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
+//        bindingDisplay.setValuesetBindingsPriority(priority);
+//        bindingDisplay.setValuesetBindingsSourceId(sourceId);
+//        bindingDisplay.setValuesetBindingsSourceType(sourceType);
+//        bindingDisplay.setBindingType(BindingType.SC);
+//      } else {
         Set<DisplayValuesetBinding> displayValuesetBindings = this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap);
         if (displayValuesetBindings != null) {
           bindingDisplay
@@ -567,7 +568,7 @@ public class SegmentServiceImpl implements SegmentService {
           bindingDisplay.setValuesetBindingsSourceType(sourceType);
           bindingDisplay.setBindingType(BindingType.VS);
         }
-      }	
+//      }
     }
 
     bindingDisplay.setChangeLog(seb.getChangeLog());

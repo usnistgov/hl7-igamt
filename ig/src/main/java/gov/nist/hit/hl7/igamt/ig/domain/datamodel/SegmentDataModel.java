@@ -156,9 +156,10 @@ public class SegmentDataModel implements Serializable, Comparable {
 				this.predicateMap.put(key, p); 
 			}
 
-			if(seb.getInternalSingleCode() != null){
-				this.singleCodeMap.put(key, seb.getInternalSingleCode());
-			}
+			//TODO Fix SingleCode
+//			if(seb.getInternalSingleCode() != null){
+//				this.singleCodeMap.put(key, seb.getInternalSingleCode());
+//			}
 
 			if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
 				Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();

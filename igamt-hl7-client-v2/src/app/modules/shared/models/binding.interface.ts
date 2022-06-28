@@ -29,6 +29,12 @@ export interface InternalSingleCode {
   code: string;
 }
 
+export interface ISingleCodeBinding {
+  locations: number[];
+  codeSystem: string;
+  code: string;
+}
+
 export interface IExternalSingleCode {
   value: string;
   codeSystem: string;
@@ -42,6 +48,7 @@ export interface IBinding {
 
 export interface IStructureElementBindingProperties {
   valuesetBindings: IValuesetBinding[];
+  singleCodeBindings: ISingleCodeBinding[];
   internalSingleCode: InternalSingleCode;
   externalSingleCode?: IExternalSingleCode;
   predicate?: IPredicate;

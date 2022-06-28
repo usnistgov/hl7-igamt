@@ -1,14 +1,11 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { mergeMap, take } from 'rxjs/operators';
-import * as fromDAM from 'src/app/modules/dam-framework/store/index';
-import * as fromIgamtSelectors from 'src/app/root-store/dam-igamt/igamt.selectors';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IBindingType, IValuesetStrength } from '../../models/binding.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
-import { ICodes, IValueSet } from '../../models/value-set.interface';
+import { IValueSet } from '../../models/value-set.interface';
+import { ISingleCodeBinding } from './../../models/binding.interface';
 
 @Component({
   selector: 'app-binding-selector',
@@ -16,15 +13,18 @@ import { ICodes, IValueSet } from '../../models/value-set.interface';
   styleUrls: ['./binding-selector.component.css'],
 })
 export class BindingSelectorComponent<T> implements OnInit {
+
   selectedBindingType: IBindingType = IBindingType.VALUESET;
   selectedValueSet: IDisplayElement;
   currentValueSet: IValueSet;
   edit = {};
   editableBinding: IValueSetBindingDisplay;
   temp: IDisplayElement = null;
-  selectedSingleCode: ISingleCodeDisplay;
+  selectedSingleCodes: ISingleCodeBinding[] = [];
   bindingStrengthOptions = [
-    { label: 'Required', value: IValuesetStrength.R }, { label: 'Suggested', value: IValuesetStrength.S }, { label: 'Unspecified', value: IValuesetStrength.U },
+    { label: 'Required', value: IValuesetStrength.R },
+    { label: 'Suggested', value: IValuesetStrength.S },
+    { label: 'Unspecified', value: IValuesetStrength.U },
   ];
   locationInfo: IBindingLocationInfo;
   excludeBindingStrength: boolean;
@@ -37,7 +37,7 @@ export class BindingSelectorComponent<T> implements OnInit {
     private store: Store<any>) {
     this.excludeBindingStrength = data.excludeBindingStrength;
     this.selectedBindingType = this.data.existingBindingType ? this.data.existingBindingType : IBindingType.VALUESET;
-    this.selectedSingleCode = this.data.selectedSingleCode;
+    this.selectedSingleCodes = this.data.selectedSingleCodes;
     this.selectedValueSets = this.data.selectedValueSetBinding;
     this.locationInfo = this.data.locationInfo;
   }
@@ -46,7 +46,7 @@ export class BindingSelectorComponent<T> implements OnInit {
     let result: IBindingDataResult = { selectedBindingType: this.selectedBindingType };
     switch (this.selectedBindingType) {
       case IBindingType.SINGLECODE:
-        result = { ...result, selectedSingleCode: this.selectedSingleCode };
+        result = { ...result, selectedSingleCodes: this.selectedSingleCodes };
         break;
       case IBindingType.VALUESET:
         result = { ...result, selectedValueSets: this.selectedValueSets };
@@ -58,28 +58,39 @@ export class BindingSelectorComponent<T> implements OnInit {
   cancel() {
     this.dialogRef.close();
   }
-  addBinding() {
+
+  addValueSetBinding() {
     if (!this.selectedValueSets) {
       this.selectedValueSets = [];
     }
-    this.editableBinding = { valueSets: [], bindingStrength: IValuesetStrength.R, bindingLocation: this.getDefaultBindinglcation() };
-    this.selectedValueSets.push(this.editableBinding);
+    this.selectedValueSets.push({ valueSets: [], bindingStrength: IValuesetStrength.R, bindingLocation: this.getDefaultBindingLocation() });
   }
+
+  addSingleCodeBinding() {
+    if (!this.selectedSingleCodes) {
+      this.selectedSingleCodes = [];
+    }
+    this.selectedSingleCodes.push({ code: '', codeSystem: '', locations: this.getDefaultBindingLocation() });
+  }
+
   submitValueSet(binding: IValueSetBindingDisplay, vs: IDisplayElement) {
-    if (!binding.valueSets.filter((x) => x.id === vs.id).length) {
+    if (binding.valueSets.filter((x) => x.id === vs.id).length === 0) {
       binding.valueSets.push(vs);
     }
     this.temp = null;
     this.edit = {};
   }
-  addValueSet(binding: IValueSetBindingDisplay, index) {
+
+  addValueSet(binding: IValueSetBindingDisplay, index: number) {
     this.edit[index] = true;
     this.temp = null;
   }
+
   removeValueSet(binding: IValueSetBindingDisplay, index: number) {
     binding.valueSets.splice(index, 1);
   }
-  getDefaultBindinglcation() {
+
+  getDefaultBindingLocation() {
     if (this.data.locationInfo.allowedBindingLocations && this.data.locationInfo.allowedBindingLocations.length === 1) {
       return [... this.data.locationInfo.allowedBindingLocations[0].value];
     } else {
@@ -87,42 +98,15 @@ export class BindingSelectorComponent<T> implements OnInit {
     }
   }
 
-  ngOnInit() {
-  }
-
-  loadCodes($event) {
-    this.selectedSingleCode = null;
-    this.store.dispatch(new fromDAM.TurnOnLoader({ blockUI: true }));
-    this.getById($event.id).subscribe(
-      (x) => {
-        this.store.dispatch(new fromDAM.TurnOffLoader());
-        this.currentValueSet = x;
-      },
-      () => {
-        this.store.dispatch(new fromDAM.TurnOffLoader());
-      },
-    );
-  }
-
-  getById(id: string): Observable<IValueSet> {
-    return this.store.select(fromIgamtSelectors.selectLoadedDocumentInfo).pipe(
-      take(1),
-      mergeMap((x) => {
-        return this.valueSetService.getById(x, id);
-      }),
-    );
-  }
-
-  selectCode(code: ICodes) {
-    this.selectedSingleCode = { valueSet: this.selectedValueSet, code: code.value, codeSystem: code.codeSystem };
-  }
-
-  clearCode() {
-    this.selectedSingleCode = null;
-  }
-
-  removeBinding(index: number) {
+  removeValueSetBinding(index: number) {
     this.selectedValueSets.splice(index, 1);
+  }
+
+  removeSingleCodeBinding(index: number) {
+    this.selectedSingleCodes.splice(index, 1);
+  }
+
+  ngOnInit(): void {
   }
 }
 
@@ -153,7 +137,7 @@ export class ISingleCodeDisplay {
 
 export interface IBindingDataResult {
   selectedBindingType?: IBindingType;
-  selectedSingleCode?: ISingleCodeDisplay;
+  selectedSingleCodes?: ISingleCodeBinding[];
   selectedValueSets?: IValueSetBindingDisplay[];
 }
 
@@ -165,5 +149,5 @@ export interface IBindingSelectorData {
   obx2?: boolean;
   existingBindingType: IBindingType;
   selectedValueSetBinding: IValueSetBindingDisplay[];
-  selectedSingleCode: ISingleCodeDisplay;
+  selectedSingleCodes: ISingleCodeBinding[];
 }

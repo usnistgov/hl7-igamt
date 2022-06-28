@@ -495,13 +495,17 @@ public class CoConstraintVerificationService extends VerificationUtils {
             );
             errors.addAll(
                     this.vocabularyBindingVerificationService.verifyBindingLocations(
-                            segment,
-                            cellLocation.pathId,
-                            cellLocation.name,
-                            header.target,
                             valid,
                             new HashSet<>(cell.getLocations()),
-                            this.entry::CoConstraintCodeCellInvalidBindingLocation
+                            (reason) -> this.entry.CoConstraintCodeCellInvalidBindingLocation(
+                                    cellLocation.pathId,
+                                    cellLocation.name,
+                                    header.target.getLocationInfo(),
+                                    segment.getResource().getId(),
+                                    segment.getResource().getType(),
+                                    new HashSet<>(cell.getLocations()),
+                                    reason
+                            )
                     )
             );
         }
@@ -518,13 +522,18 @@ public class CoConstraintVerificationService extends VerificationUtils {
         for(ValuesetBinding vsBinding: cell.getBindings()) {
             errors.addAll(
                     this.vocabularyBindingVerificationService.verifyBindingLocations(
-                            segment,
-                            cellLocation.pathId,
-                            cellLocation.name,
-                            header.target,
                             validLocation,
                             vsBinding.getValuesetLocations(),
-                            this.entry::CoConstraintValueSetCellInvalidBindingLocation
+                            (reason) -> this.entry.CoConstraintValueSetCellInvalidBindingLocation(
+                                    cellLocation.pathId,
+                                    cellLocation.name,
+                                    header.target.getLocationInfo(),
+                                    segment.getResource().getId(),
+                                    segment.getResource().getType(),
+                                    vsBinding.getValuesetLocations(),
+                                    reason
+                            )
+
                     )
             );
             for(String vsId: vsBinding.getValueSets()) {

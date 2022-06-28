@@ -264,7 +264,7 @@
                     [bindingInfo]= "rowData.valueSetBindingsInfo | async"
                     [value]="{
                       valueSetBindings: rowData.bindings?.values?.valuesetBindings,
-                      singleCodeBindings: rowData.bindings?.values?.internalSingleCode
+                      singleCodeBindings: rowData.bindings?.values?.singleCodeBindings
                     }"
                     (valueChange)="registerChange($event)"
                   >

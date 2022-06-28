@@ -158,18 +158,19 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
                     }
 				}
 			}
-			if (structureElementBinding.getInternalSingleCode() != null) {
-				Element internalSingleCode = new Element("InternalSingleCode");
-				internalSingleCode.addAttribute(
-						new Attribute("internalSingleCodeId", structureElementBinding.getInternalSingleCode().getCode()));
-				 internalSingleCode.addAttribute(
-							new Attribute("internalSingleCodeSystem", structureElementBinding.getInternalSingleCode().getCodeSystem()));
-					 internalSingleCode.addAttribute(
-								new Attribute("internalSingleCodeVsId", structureElementBinding.getInternalSingleCode().getValueSetId()));
-					 internalSingleCode.addAttribute(
-								new Attribute("internalSingleCodeLocation", name + "-"+elementIdParent));
-						 structureElementBindingElement.appendChild(internalSingleCode);
-			}
+			//TODO Fix SingleCode
+//			if (structureElementBinding.getInternalSingleCode() != null) {
+//				Element internalSingleCode = new Element("InternalSingleCode");
+//				internalSingleCode.addAttribute(
+//						new Attribute("internalSingleCodeId", structureElementBinding.getInternalSingleCode().getCode()));
+//				 internalSingleCode.addAttribute(
+//							new Attribute("internalSingleCodeSystem", structureElementBinding.getInternalSingleCode().getCodeSystem()));
+//					 internalSingleCode.addAttribute(
+//								new Attribute("internalSingleCodeVsId", structureElementBinding.getInternalSingleCode().getValueSetId()));
+//					 internalSingleCode.addAttribute(
+//								new Attribute("internalSingleCodeLocation", name + "-"+elementIdParent));
+//						 structureElementBindingElement.appendChild(internalSingleCode);
+//			}
 			 if (structureElementBinding.getExternalSingleCode() != null) {
 			 Element externalSingleCodeElement = new Element("externalSingleCode");
 //			 this.serializeExternalSingleCode(structureElementBinding.getExternalSingleCode());

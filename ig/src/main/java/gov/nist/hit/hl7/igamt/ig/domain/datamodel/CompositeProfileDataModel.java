@@ -159,10 +159,11 @@ public class CompositeProfileDataModel implements Serializable, Comparable{
 				p.setLocation(localPath + "(" + seb.getLocationInfo().getName() + ")");
 				this.predicateMap.put(key, p); 
 			}
-
-			if (seb.getInternalSingleCode() != null) {
-				this.singleCodeMap.put(key, seb.getInternalSingleCode());
-			}
+			
+			//TODO Fix SingleCode
+//			if (seb.getInternalSingleCode() != null) {
+//				this.singleCodeMap.put(key, seb.getInternalSingleCode());
+//			}
 
 			if (seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0) {
 

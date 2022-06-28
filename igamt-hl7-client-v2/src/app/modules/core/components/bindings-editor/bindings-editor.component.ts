@@ -19,7 +19,7 @@ import { IStructureChanges } from '../../../segment/components/segment-structure
 import { ISingleCodeDisplay } from '../../../shared/components/binding-selector/binding-selector.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDocumentRef } from '../../../shared/models/abstract-domain.interface';
-import { IBindingContainer, InternalSingleCode, IValuesetBinding } from '../../../shared/models/binding.interface';
+import { IBindingContainer, IValuesetBinding } from '../../../shared/models/binding.interface';
 import { Hl7Config, IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { ConstraintType, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -137,10 +137,6 @@ export abstract class BindingsEditorComponent extends AbstractEditorComponent im
 
   getVsBindingDisplay(binding: IValuesetBinding[]): Observable<IValueSetBindingDisplay[]> {
     return this.bindingService.getValueSetBindingDisplay(binding, this.repository);
-  }
-
-  getSgBindingDisplay(binding: InternalSingleCode): Observable<ISingleCodeDisplay> {
-    return this.bindingService.getSingleCodeBindingDisplay(binding, this.repository);
   }
 
   markedForDeletion(binding: IBindingContainer<any>, type: PropertyType): Observable<{ flag: boolean }> {

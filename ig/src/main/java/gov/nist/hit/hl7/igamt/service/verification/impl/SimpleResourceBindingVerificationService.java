@@ -6,6 +6,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ConstraintType;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.SingleCodeBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
@@ -91,14 +92,20 @@ public class SimpleResourceBindingVerificationService extends VerificationUtils 
         ).collect(Collectors.toList());
     }
 
+    private <T, E extends BindingContainer<T>> List<IgamtObjectError> checkBindings(List<E> bindings,  ResourceSkeleton resourceSkeleton, TriFunction<ResourceSkeleton, String, T, List<IgamtObjectError>> verify) {
+        return bindings.stream().flatMap(
+                (bindingContainer) -> verify.apply(resourceSkeleton, bindingContainer.getPathId(), bindingContainer.getValue()).stream()
+        ).collect(Collectors.toList());
+    }
+
     @Override
     public List<IgamtObjectError> verifyValueSetBinding(ResourceSkeleton resourceSkeleton, String pathId, Set<ValuesetBinding> valuesetBinding) {
         return this.vocabularyBindingVerificationService.verifyValueSetBinding(resourceSkeleton, pathId, valuesetBinding);
     }
 
     @Override
-    public List<IgamtObjectError> verifySingleCodeBinding(ResourceSkeleton resourceSkeleton, String pathId, InternalSingleCode internalSingleCode) {
-        return this.vocabularyBindingVerificationService.verifySingleCodeBinding(resourceSkeleton, pathId, internalSingleCode);
+    public List<IgamtObjectError> verifySingleCodeBinding(ResourceSkeleton resourceSkeleton, String pathId, List<SingleCodeBinding> singleCodeBindings) {
+        return this.vocabularyBindingVerificationService.verifySingleCodeBinding(resourceSkeleton, pathId, singleCodeBindings);
     }
 
     @Override
