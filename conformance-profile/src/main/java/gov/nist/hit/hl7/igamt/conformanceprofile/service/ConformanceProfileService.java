@@ -108,9 +108,9 @@ public interface ConformanceProfileService {
   Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles, ConformanceProfileRegistry conformanceProfileRegistry);
   Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry);
 
-  void subsitute(ConformanceProfile clone, List<Substitue> substitutes, String username);
-
   public List<ConformanceProfile> saveAll(Set<ConformanceProfile> datatypes);
+
+   void processAndSubstitute(ConformanceProfile cp, HashMap<RealKey, String> newKeys);
 
 
 

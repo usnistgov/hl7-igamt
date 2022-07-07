@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
@@ -39,6 +40,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.exception.ValuesetException;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.valueset.service.impl.TableCSVGenerator;
+import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 
 @RestController
 public class ValuesetController extends BaseController {
@@ -51,7 +53,8 @@ public class ValuesetController extends BaseController {
 	EntityChangeService entityChangeService;
 	@Autowired
 	CommonService commonService;
-
+	@Autowired
+	DateUpdateService dateUpdateService;
 	private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
 
 	public ValuesetController() {
@@ -119,6 +122,7 @@ public class ValuesetController extends BaseController {
 		Valueset s = this.valuesetService.findById(id);
 		commonService.checkRight(authentication,s.getCurrentAuthor(), s.getUsername());
 		this.valuesetService.applyChanges(s, cItems, documentId);
+		dateUpdateService.updateDate(new DocumentInfo(documentId, documentType));
 		return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, s.getId(), new Date());
 	}
 

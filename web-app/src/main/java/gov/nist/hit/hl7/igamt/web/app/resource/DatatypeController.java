@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.ActiveStatus;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -41,6 +42,7 @@ import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 
 @RestController
@@ -58,6 +60,8 @@ public class DatatypeController extends BaseController {
 
   @Autowired
   private CommonService commonService;
+  @Autowired
+  DateUpdateService dateUpdateService;
 
   private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
 
@@ -150,6 +154,8 @@ public class DatatypeController extends BaseController {
     validateSaveOperation(dt);
     commonService.checkRight(authentication, dt.getCurrentAuthor(), dt.getUsername());
     this.datatypeService.applyChanges(dt, cItems, documentId);
+	dateUpdateService.updateDate(new DocumentInfo(documentId, documentType));
+
     return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, dt.getId(), new Date());
   }
 

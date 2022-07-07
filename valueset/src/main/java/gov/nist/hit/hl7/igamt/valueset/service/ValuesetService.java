@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
@@ -40,11 +41,11 @@ public interface ValuesetService {
 
 	public Valueset createFromLegacy(Valueset valueset, String legacyId);
 
-	public Valueset save(Valueset valueset);
+	public Valueset save(Valueset valueset) throws  gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 
 	public List<Valueset> findAll();
 
-	public void delete(Valueset valueset);
+	public void delete(Valueset valueset) throws ForbiddenOperationException;
 
 	public void delete(String id);
 
@@ -74,7 +75,7 @@ public interface ValuesetService {
 	public List<Valueset> findDisplayFormatByScope(String scope);
 
 	public void applyChanges(Valueset s, List<ChangeItemDomain> cItems, String documentId)
-			throws JsonProcessingException, IOException;
+			throws JsonProcessingException, IOException, ForbiddenOperationException;
 	
 	public Set<String> extractCodeSystemsFromCodes(Set<Code> codes);
 
@@ -84,7 +85,7 @@ public interface ValuesetService {
 	Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
 	Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
 
-	List<Valueset> saveAll(Set<Valueset> valueSets);
+	List<Valueset> saveAll(Set<Valueset> valueSets) throws ForbiddenOperationException;
 
 
 }

@@ -1,5 +1,4 @@
 <div id="toc-container" class="toc-container">
-  <button (click)="print(nodes)">click</button>
   <span id="TOC-IG" routerLink="metadata" routerLinkActive="active-node" style="cursor: pointer; width: fit-content;">&emsp; Implementation Guide Document Metadata</span>
   <tree-root #treeroot [nodes]="nodes" [options]="options">
     <ng-template #treeNodeTemplate let-index="index" let-node>

@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.ig.service;
 import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -26,7 +27,7 @@ public interface CrudService {
 
   public String AddConformanceProfilesToEmptyIg(Set<String> ids, Ig ig) throws AddingException;
 
-  public AddValueSetResponseObject addValueSets(List<AddingInfo> toAdd, Ig ig, String username) throws AddingException, EntityNotFound;
+  public AddValueSetResponseObject addValueSets(List<AddingInfo> toAdd, Ig ig, String username) throws AddingException, EntityNotFound, ForbiddenOperationException;
 
 
 }

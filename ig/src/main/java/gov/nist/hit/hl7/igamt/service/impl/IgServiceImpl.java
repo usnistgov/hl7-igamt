@@ -60,6 +60,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
@@ -523,7 +524,7 @@ public class IgServiceImpl implements IgService {
   }
 
   @Override
-  public void delete(Ig ig) {
+  public void delete(Ig ig) throws ForbiddenOperationException {
 
     if (ig.getDomainInfo() != null) {
       ig.getDomainInfo().setScope(Scope.ARCHIVED);
@@ -558,7 +559,7 @@ public class IgServiceImpl implements IgService {
 
   }
 
-  private void archiveValueSetRegistry(ValueSetRegistry valueSetRegistry) {
+  private void archiveValueSetRegistry(ValueSetRegistry valueSetRegistry) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     for (Link l : valueSetRegistry.getChildren()) {
       if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.USER)) {
@@ -572,7 +573,7 @@ public class IgServiceImpl implements IgService {
     }
   }
 
-  private void archiveDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
+  private void archiveDatatypeRegistry(DatatypeRegistry datatypeRegistry) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     for (Link l : datatypeRegistry.getChildren()) {
       if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.USER)) {
@@ -586,7 +587,7 @@ public class IgServiceImpl implements IgService {
     }
   }
 
-  private void archiveSegmentRegistry(SegmentRegistry segmentRegistry) throws ValidationException {
+  private void archiveSegmentRegistry(SegmentRegistry segmentRegistry) throws ValidationException, ForbiddenOperationException {
     // TODO Auto-generated method stub
     for (Link l : segmentRegistry.getChildren()) {
       if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.USER)) {
@@ -1544,6 +1545,7 @@ public class IgServiceImpl implements IgService {
 
     CompositeProfileStructure ret = new CompositeProfileStructure();
     ret.setUsername(ig.getUsername());
+    ret.setDocumentInfo(new DocumentInfo(ig.getId(), DocumentType.IGDOCUMENT));
     ret.setCurrentAuthor(ig.getCurrentAuthor());
     ret.setDomainInfo(new DomainInfo("*", Scope.USER));
     ret.setFlavorsExtension(wrapper.flavorsExtension);
@@ -1649,7 +1651,7 @@ public class IgServiceImpl implements IgService {
     if(filter.getConformanceProfiles() != null) {
       profiles = this.conformanceProfileService.findByIdIn(filter.getConformanceProfiles());
       response.setConformanceProfiles(filter.getConformanceProfiles());
-    }else {
+    } else {
       profiles =  this.conformanceProfileService.findByIdIn(ig.getConformanceProfileRegistry().getLinksAsIds());
       response.setConformanceProfiles(ig.getConformanceProfileRegistry().getLinksAsIds());
     }

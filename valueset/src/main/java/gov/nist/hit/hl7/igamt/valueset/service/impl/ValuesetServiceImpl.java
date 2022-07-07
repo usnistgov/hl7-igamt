@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import gov.nist.hit.hl7.igamt.valueset.repository.ValuesetRepository;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.resource.change.service.OperationService;
 
 /**
  * @author Jungyub Woo on Mar 1, 2018.
@@ -56,6 +58,8 @@ public class ValuesetServiceImpl implements ValuesetService {
 
     @Autowired
     private ValuesetRepository valuesetRepository;
+    @Autowired
+    private OperationService operationService;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -85,8 +89,8 @@ public class ValuesetServiceImpl implements ValuesetService {
     }
 
     @Override
-    public Valueset save(Valueset valueset) {
-        // valueset.setId(StringUtil.updateVersion(valueset.getId()));
+    public Valueset save(Valueset valueset) throws ForbiddenOperationException{
+    	operationService.verifySave(valueset);
         valueset = valuesetRepository.save(valueset);
         return valueset;
     }
@@ -97,13 +101,16 @@ public class ValuesetServiceImpl implements ValuesetService {
     }
 
     @Override
-    public void delete(Valueset valueset) {
+    public void delete(Valueset valueset) throws ForbiddenOperationException {
+    	operationService.verifyDelete(valueset);
         valuesetRepository.delete(valueset);
     }
 
     @Override
     public void delete(String id) {
-        valuesetRepository.deleteById(id);
+    	if(!id.startsWith("HL7")) {
+          valuesetRepository.deleteById(id);
+    	}
     }
 
     @Override
@@ -226,7 +233,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
     @Override
     public void applyChanges(Valueset s, List<ChangeItemDomain> cItems, String documentId)
-            throws JsonProcessingException, IOException {
+            throws JsonProcessingException, IOException, ForbiddenOperationException {
         Collections.sort(cItems);
         ObjectMapper mapper = new ObjectMapper();
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -359,7 +366,8 @@ public class ValuesetServiceImpl implements ValuesetService {
     }
     
     @Override
-    public List<Valueset> saveAll(Set<Valueset> valueSets){
+    public List<Valueset> saveAll(Set<Valueset> valueSets) throws ForbiddenOperationException{
+    	this.operationService.verifySave(valueSets);
     	return this.valuesetRepository.saveAll(valueSets);
     }
     

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -37,6 +38,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 
 @RestController
 public class SegmentController extends BaseController {
@@ -49,7 +51,8 @@ public class SegmentController extends BaseController {
 	CommonService commonService;
 	@Autowired
 	EntityChangeService entityChangeService;
-
+	@Autowired
+	DateUpdateService dateUpdateService;
 
 	public SegmentController() {
 	}
@@ -135,6 +138,8 @@ public class SegmentController extends BaseController {
 
 			validateSaveOperation(s);
 			this.segmentService.applyChanges(s, cItems, documentId);
+			dateUpdateService.updateDate(new DocumentInfo(documentId, documentType));
+
 			return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, s.getId(), new Date());
 		} catch (ForbiddenOperationException e) {
 			throw new SegmentException(e);

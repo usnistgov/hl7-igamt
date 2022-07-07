@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,14 +26,17 @@ import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.Substitue;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
@@ -49,6 +54,7 @@ import gov.nist.hit.hl7.igamt.ig.service.ResourceHelper;
 import gov.nist.hit.hl7.igamt.ig.service.ResourceManagementService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.FhirHandlerService;
@@ -77,9 +83,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
   BindingService bindingService;
   @Autowired
   CoConstraintService coConstraintService;
+  
+  @Autowired
+  SegmentService segmentService;
 
   @Override
-  public <T extends Resource> T createFlavor(Registry reg, String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound {
+  public <T extends Resource> T createFlavor(Registry reg, String username, DocumentInfo documentInfo, Type resourceType, AddingInfo selected) throws EntityNotFound, ForbiddenOperationException {
 
     T resource = this.getElmentFormAddingInfo(username, documentInfo, resourceType, selected);
     if(selected.isFlavor()) {
@@ -101,9 +110,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     }
     return resource;
   }
-
-
-
 
   /**
    * @param resource
@@ -150,12 +156,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
    */
   @Override
   public ConformanceProfile createProfile(String username, DocumentInfo documentInfo,
-      AddingInfo ev) {
+      AddingInfo ev) throws ForbiddenOperationException {
     MessageStructure profile = messageStructureRepository.findOneById(ev.getOriginalId());
 
     ConformanceProfile clone = new ConformanceProfile(profile, ev.getName());
     if(ev.getSubstitutes() != null && !ev.getSubstitutes().isEmpty()) {
-      this.conformanceProfileService.subsitute(clone, ev.getSubstitutes(), username);
+      this.subsitute(clone, ev.getSubstitutes(), username, documentInfo);
     }
     this.applyClone.updateResourceAttributes(clone, clone.getId(), username, documentInfo);
     clone.getDomainInfo().setScope(Scope.USER);
@@ -286,6 +292,29 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         cc.setCloned(true);
       }
     }
+  }
+
+  
+  
+  public void subsitute(ConformanceProfile cp, List<Substitue> substitutes, String username, DocumentInfo documentInfo) throws ForbiddenOperationException {
+    HashMap<RealKey, String> newKeys = new HashMap<RealKey, String>();
+    for(Substitue sub: substitutes) {
+      RealKey segKey = new RealKey(sub.getOriginalId(), Type.SEGMENT);
+      if(sub.isCreate()) {
+        Segment segment = this.segmentService.findById(sub.getOriginalId());
+        if(segment !=null) {
+          applyClone.updateResourceAttributes(segment, this.resourceHelper.generateAbstractDomainId(), username, documentInfo);
+          segment.getDomainInfo().setScope(Scope.USER);
+          segment.setExt(sub.getExt());
+
+          segment = segmentService.save(segment);
+          newKeys.put(segKey, segment.getId());
+        }
+      }else {
+        newKeys.put(segKey, sub.getNewId());
+      }
+    }
+    this.conformanceProfileService.processAndSubstitute(cp, newKeys);
   }
 
 }

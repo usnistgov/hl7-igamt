@@ -47,9 +47,11 @@ import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.StructureElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
@@ -58,6 +60,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -80,6 +83,7 @@ import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.repository.IgTemplateRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.IgServiceImpl;
@@ -250,7 +254,7 @@ public class BootstrapApplication implements CommandLineRunner {
 	}
 
 	//@PostConstruct
-	void fixUsage() throws ValidationException{
+	void fixUsage() throws ValidationException, ForbiddenOperationException{
 		List<Segment> segments = this.segmentService.findAll();
 		for(Segment s : segments) {
 			if(checkAndSetUsages(s.getChildren())) {
@@ -299,11 +303,12 @@ public class BootstrapApplication implements CommandLineRunner {
 	/**
 	 * @param s
 	 * @throws ValidationException 
+	 * @throws ForbiddenOperationException 
 	 */
 
 
 	//@PostConstruct
-	void fixSegmentduplicatedBinding() throws ValidationException {
+	void fixSegmentduplicatedBinding() throws ValidationException, ForbiddenOperationException {
 		tableFixes.removeSegmentsDuplicatedBinding();
 	}
 
@@ -368,12 +373,12 @@ public class BootstrapApplication implements CommandLineRunner {
 
 
 	//@PostConstruct
-	public void fixBinding() throws ValidationException {
+	public void fixBinding() throws ValidationException, ForbiddenOperationException {
 		this.dataFixer.readCsv();
 	}
 
 	//@PostConstruct
-	public void fix0396() throws ValidationException{
+	public void fix0396() throws ValidationException, ForbiddenOperationException{
 		tableFixes.fix0396();
 	}
 	//@PostConstruct
@@ -389,7 +394,12 @@ public class BootstrapApplication implements CommandLineRunner {
 					}
 				});
 			}
-			this.valuesetService.save(v);
+			try {
+				this.valuesetService.save(v);
+			} catch (ForbiddenOperationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		});
 	}
 
@@ -409,12 +419,12 @@ public class BootstrapApplication implements CommandLineRunner {
 	}
 
 	//@PostConstruct
-	private void fixIGs() throws EntityNotFound{
+	private void fixIGs() throws EntityNotFound, ForbiddenOperationException{
 		this.igFixer.fixIgComponents();
 	}
 
 	//@PostConstruct
-	void fixConformanceStatements() throws IGUpdateException, EntityNotFound {
+	void fixConformanceStatements() throws IGUpdateException, EntityNotFound, ForbiddenOperationException {
 		// this.conformanceStatementFixer.fixConformanceStatmentsId();
 		this.igFixer.deriveChildren();
 		this.conformanceStatementFixer.lockCfsForDerived();
@@ -423,13 +433,13 @@ public class BootstrapApplication implements CommandLineRunner {
 	}
 
 	//@PostConstruct
-	void addDynamicMappingInfo() {
+	void addDynamicMappingInfo() throws ForbiddenOperationException {
 		codeFixer.fixTableHL70125();
 		dynamicMappingFixer.processSegments();
 	}
 
 	//@PostConstruct
-	void fixDeprecated() throws FileNotFoundException {
+	void fixDeprecated() throws FileNotFoundException, ForbiddenOperationException {
 		codeFixer.fixFromCSV();
 	}
 
@@ -450,16 +460,16 @@ public class BootstrapApplication implements CommandLineRunner {
 
 
 	//@PostConstruct
-	void fixData() {
+	void fixData() throws ForbiddenOperationException {
 		this.dataFixer.fixDatatypeConstraintsLevel();
 		this.dataFixer.fixConformanceProfileConstaintsLevel();
 	}
 	//@PostConstruct
-	void shiftBinding() {
+	void shiftBinding() throws ForbiddenOperationException {
 		this.dataFixer.shiftAllBinding();
 	}
 	//@PostConstruct
-	void updateSegmentDatatype() {
+	void updateSegmentDatatype() throws ForbiddenOperationException {
 		this.dataFixer.changeHL7SegmentDatatype("OMC", "9", "ID", "2.8.2");
 
 	}
@@ -469,11 +479,11 @@ public class BootstrapApplication implements CommandLineRunner {
 	}
 
 	//@PostConstruct
-	void fixStructureIds() {
+	void fixStructureIds() throws ForbiddenOperationException {
 		this.dataFixer.addStructureIds();
 	}
 	//@PostConstruct
-	void addFixedExt() {
+	void addFixedExt() throws ForbiddenOperationException {
 		this.dataFixer.addFixedExt();
 	}
 
@@ -535,5 +545,43 @@ public class BootstrapApplication implements CommandLineRunner {
 			this.igService.save(ig);
 		}
 	}
+	//@PostConstruct
+	public void confLength() {
+		List<Segment> ss= this.segmentService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+		System.out.println("NAME,VERSION,POSITION");
+
+		for ( Segment s: ss) {
+			for (Field f : s.getChildren()) {
+				if ( f.getMaxLength().equalsIgnoreCase("0")&& f.getMinLength().equalsIgnoreCase("0")) {
+
+					System.out.println(s.getName() +","+ s.getDomainInfo().getVersion() +","+ f.getId());
+
+				}
+			}
+		}
+		System.out.println("END");
+
+		
+	}
+	//@PostConstruct
+	public void confLengthDT() {
+		List<Datatype> ss= this.dataypeService.findByDomainInfoScope(Scope.HL7STANDARD.toString());
+		System.out.println("NAME,VERSION,POSITION");
+		for  ( Datatype d: ss) {
+			if (d instanceof ComplexDatatype) {
+				ComplexDatatype s = (ComplexDatatype)d;				
+				for (Component f : s.getComponents()) {
+					if ( f.getMaxLength().equalsIgnoreCase("0")&& f.getMinLength().equalsIgnoreCase("0")) {
+
+						System.out.println(s.getName() +","+ s.getDomainInfo().getVersion() +","+ f.getId());
+
+					}
+				}
+			}
+		}
+		System.out.println("END");
+		
+	}
+	
 
 }

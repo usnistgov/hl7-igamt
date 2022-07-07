@@ -24,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
 import gov.nist.hit.hl7.igamt.common.base.util.CloneMode;
@@ -59,11 +60,11 @@ public interface SegmentService extends ResourceService {
 
   Segment create(Segment segment);
 
-  Segment save(Segment segment);
+  Segment save(Segment segment) throws ForbiddenOperationException;
 
   List<Segment> findAll();
 
-  void delete(Segment segment);
+  void delete(Segment segment) throws ForbiddenOperationException;
 
   void removeCollection();
 
@@ -86,14 +87,14 @@ public interface SegmentService extends ResourceService {
   List<Valueset> getDependentValueSets(Set<Segment> resources);
 
   Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
-      throws SegmentNotFoundException, SegmentValidationException;
+      throws SegmentNotFoundException, SegmentValidationException, ForbiddenOperationException;
 
   void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
 
   SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly);
 
   void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId)
-      throws ApplyChangeException;
+      throws ApplyChangeException, ForbiddenOperationException;
 
   Set<?> convertSegmentStructurForMessage(Segment segment, String idPath, String path);
 
@@ -123,7 +124,7 @@ public interface SegmentService extends ResourceService {
   Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
 
   String findObx2VsId(Segment s);  
-  List<Segment> saveAll(Set<Segment> segments);
+  List<Segment> saveAll(Set<Segment> segments) throws ForbiddenOperationException;
 
 
 

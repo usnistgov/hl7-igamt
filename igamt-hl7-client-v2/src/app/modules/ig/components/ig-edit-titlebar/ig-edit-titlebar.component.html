@@ -1,10 +1,12 @@
+<ng-container *ngIf="metadata_">
 <div class="badge">
-    <app-scope-badge [scope]="metadata?.domainInfo?.scope"></app-scope-badge>
+    <app-scope-badge [scope]="metadata_?.domainInfo?.scope"></app-scope-badge>
     <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
 </div>
 <div>
     <span class="title-text">
-      {{ metadata.title }}
+      {{ metadata_?.title }}
     </span>
-    <app-metadata-date [updateDate]="metadata.updateDate" [creationDate]="metadata.creationDate"></app-metadata-date>
+    <app-metadata-date [updateDate]="metadata_?.updateDate" [creationDate]="metadata_?.creationDate"></app-metadata-date>
 </div>
+</ng-container>

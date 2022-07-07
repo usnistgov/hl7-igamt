@@ -22,6 +22,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.RealKey;
  */
 public interface ResourceService {
 
-  public void delete(String key);
+  //public void delete(String key);
 
 }

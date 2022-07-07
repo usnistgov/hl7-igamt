@@ -21,6 +21,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Status;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.exception.EntityNotFound;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -64,7 +65,7 @@ public class IgFixer {
   @Autowired
   private CoConstraintService coConstraintService;
 
-  public void fixIgComponents() throws EntityNotFound {
+  public void fixIgComponents() throws EntityNotFound, ForbiddenOperationException {
     List<Ig> igs=  igService.findAll();
     for(Ig ig: igs) {
       if(ig.getDomainInfo().getScope() != Scope.ARCHIVED) {
@@ -125,8 +126,9 @@ public class IgFixer {
   /**
    * @param id
    * @param username
+ * @throws ForbiddenOperationException 
    */
-  private void fixValueset(String id, String username) {
+  private void fixValueset(String id, String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     Valueset vs = this.valuesetService.findById(id);
     if(vs !=null) {
@@ -140,8 +142,9 @@ public class IgFixer {
   /**
    * @param id
    * @param username
+ * @throws ForbiddenOperationException 
    */
-  private void fixDatatype(String id, String username) {
+  private void fixDatatype(String id, String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     Datatype dt = this.datatypeService.findById(id);
     if(dt !=null) {
@@ -155,8 +158,9 @@ public class IgFixer {
   /**
    * @param id
    * @param username
+ * @throws ForbiddenOperationException 
    */
-  private void fixSegment(String id, String username) {
+  private void fixSegment(String id, String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     Segment segment = this.segmentService.findById(id);
     if(segment !=null) {

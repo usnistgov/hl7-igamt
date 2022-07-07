@@ -53,9 +53,6 @@ export class IgTOCNodeHelper {
             break;
           case Type.DATATYPEREGISTRY:
             retChild.children = datatypesNodes;
-            console.log("datatypesNodes");
-
-            console.log(datatypesNodes);
             break;
           case Type.VALUESETREGISTRY:
             retChild.children = valueSetsNodes;

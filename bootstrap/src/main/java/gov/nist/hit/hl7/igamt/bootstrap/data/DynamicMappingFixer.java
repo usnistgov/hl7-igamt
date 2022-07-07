@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -64,12 +65,19 @@ public class DynamicMappingFixer {
   
   public void processSegments() {
     List<Segment> obxs = segmentsService.findByName("OBX");
-    obxs.forEach((x) -> {processSegment(x);});
+    obxs.forEach((x) -> {
+    	try {
+		processSegment(x);
+	} catch (ForbiddenOperationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}});
   }
   /**
    * @param x
+ * @throws ForbiddenOperationException 
    */
-  private void processSegment(Segment s) {
+  private void processSegment(Segment s) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     s.setDynamicMappingInfo(new DynamicMappingInfo("2", "5", null));
     String vsId =  findObx2VsId(s);

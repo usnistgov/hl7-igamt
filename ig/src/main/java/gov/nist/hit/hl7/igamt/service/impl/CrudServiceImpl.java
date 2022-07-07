@@ -21,6 +21,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -447,7 +448,7 @@ public class CrudServiceImpl implements CrudService {
    * @see gov.nist.hit.hl7.igamt.ig.service.CrudService#addValueSets(java.util.List, gov.nist.hit.hl7.igamt.ig.domain.Ig)
    */
   @Override
-  public AddValueSetResponseObject addValueSets(List<AddingInfo> toAdd, Ig ig, String username) throws AddingException, EntityNotFound {
+  public AddValueSetResponseObject addValueSets(List<AddingInfo> toAdd, Ig ig, String username) throws AddingException, EntityNotFound, ForbiddenOperationException {
     // TODO Auto-generated method stub
     Set<String> savedIds = new HashSet<String>();
     for (AddingInfo elm : toAdd) {
@@ -467,8 +468,9 @@ public class CrudServiceImpl implements CrudService {
    * @param savedIds
    * @param ig
    * @param username
+ * @throws ForbiddenOperationException 
    */
-  private void addAsIs(AddingInfo elm, Set<String> savedIds, Ig ig, String username) {
+  private void addAsIs(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     if (elm.getDomainInfo() != null && elm.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
       addPhinvadsAsIs(elm, savedIds,ig, username );
@@ -478,7 +480,7 @@ public class CrudServiceImpl implements CrudService {
     }
   }
 
-  private void addPhinvadsAsIs(AddingInfo elm, Set<String> savedIds, Ig ig, String username) {
+  private void addPhinvadsAsIs(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws ForbiddenOperationException {
     Valueset valueset = valuesetService.findExternalPhinvadsByOid(elm.getOid());
 
     if(valueset == null) {
@@ -512,8 +514,9 @@ public class CrudServiceImpl implements CrudService {
    * @param ig
    * @param username
    * @throws EntityNotFound 
+ * @throws ForbiddenOperationException 
    */
-  private void addValueSetAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws EntityNotFound {
+  private void addValueSetAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws EntityNotFound, ForbiddenOperationException {
     if (elm.getOriginalId() != null) {
      // Valueset valueset = valuesetService.findById(elm.getOriginalId());
         
@@ -542,9 +545,10 @@ public class CrudServiceImpl implements CrudService {
    * @param savedIds
    * @param ig
    * @param username
+ * @throws ForbiddenOperationException 
    */
   private void importPhinvadsAsFlavor(AddingInfo elm, Set<String> savedIds, Ig ig,
-      String username) {
+      String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
 
 
@@ -589,8 +593,9 @@ public class CrudServiceImpl implements CrudService {
    * @param savedIds
    * @param ig
    * @param username
+ * @throws ForbiddenOperationException 
    */
-  private void createNewValueSet(AddingInfo elm, Set<String> savedIds, Ig ig, String username) {
+  private void createNewValueSet(AddingInfo elm, Set<String> savedIds, Ig ig, String username) throws ForbiddenOperationException {
     // TODO Auto-generated method stub
     Valueset valueset = new Valueset();
     DomainInfo info = new DomainInfo();

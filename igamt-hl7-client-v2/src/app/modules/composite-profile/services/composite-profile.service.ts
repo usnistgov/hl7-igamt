@@ -22,8 +22,13 @@ export class CompositeProfileService {
   getById(id: string): Observable<ICompositeProfile> {
     return this.http.get<ICompositeProfile>(this.URL + id);
   }
-  public save(compositeProfile: ICompositeProfile): Observable<ICompositeProfile> {
-    return this.http.post<ICompositeProfile>(this.URL, compositeProfile);
+  public save(compositeProfile: ICompositeProfile, documentRef: IDocumentRef): Observable<ICompositeProfile> {
+    return this.http.post<ICompositeProfile>(this.URL, compositeProfile, {
+      params: {
+        dId: documentRef.documentId,
+        type: documentRef.type
+      },
+    });
   }
   getConformanceStatements(id: string, documentRef: IDocumentRef): Observable<ICPConformanceStatementList> {
     return this.http.get<ICPConformanceStatementList>(this.URL + id + '/conformancestatement/' + documentRef.documentId);

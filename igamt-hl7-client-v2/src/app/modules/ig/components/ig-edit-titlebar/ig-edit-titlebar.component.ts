@@ -8,7 +8,11 @@ import { IDomainInfo } from '../../../shared/models/domain-info.interface';
 })
 export class IgEditTitlebarComponent implements OnInit {
 
-  @Input() metadata: ITitleBarMetadata;
+  @Input()
+  set metadata($event: ITitleBarMetadata){
+    this.metadata_ = $event;
+  }
+  metadata_: ITitleBarMetadata;
 
   constructor() {
   }

@@ -22,6 +22,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -78,7 +79,7 @@ public interface IgService {
   
   public List<Ig> findAllSharedIG(String username, Scope scope);
 
-  public void delete(Ig ig);
+  public void delete(Ig ig) throws ForbiddenOperationException;
 
   Set<ConformanceStatement> conformanceStatementsSummary(Ig igdoument);
 

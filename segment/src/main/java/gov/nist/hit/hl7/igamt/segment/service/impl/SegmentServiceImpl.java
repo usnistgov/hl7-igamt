@@ -45,6 +45,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Status;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtensionService;
 import gov.nist.hit.hl7.igamt.common.binding.display.DisplayValuesetBinding;
@@ -93,6 +94,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 import gov.nist.hit.hl7.resource.change.service.ApplyChange;
+import gov.nist.hit.hl7.resource.change.service.OperationService;
 
 /**
  *
@@ -123,6 +125,8 @@ public class SegmentServiceImpl implements SegmentService {
   ApplyChange applyChange;
   @Autowired
   SlicingService slicingService;
+  @Autowired
+  private OperationService operationService;
 
 
   @Override
@@ -139,8 +143,9 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   @Override
-  public Segment save(Segment segment) {
+  public Segment save(Segment segment) throws ForbiddenOperationException {
     segment.setUpdateDate(new Date());
+	this.operationService.verifySave(segment);
     segment = segmentRepository.save(segment);
     return segment;
   }
@@ -152,13 +157,9 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   @Override
-  public void delete(Segment segment) {
+  public void delete(Segment segment) throws ForbiddenOperationException {
+	this.operationService.verifyDelete(segment);
     segmentRepository.delete(segment);
-  }
-
-  @Override
-  public void delete(String key) {
-    segmentRepository.deleteById(key);
   }
 
   @Override
@@ -501,7 +502,7 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
-      throws SegmentNotFoundException, SegmentValidationException {
+      throws SegmentNotFoundException, SegmentValidationException, ForbiddenOperationException {
     validate(dynamicMapping);
     Segment segment = findById(dynamicMapping.getId());
     if (segment == null) {
@@ -989,7 +990,7 @@ public class SegmentServiceImpl implements SegmentService {
    */
 
   @Override
-  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException, ForbiddenOperationException {
     //Resource part
     Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
     applyChange.applyResourceChanges(s, singlePropertyMap , documentId);
@@ -1226,7 +1227,8 @@ public class SegmentServiceImpl implements SegmentService {
    * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#saveAll(java.util.Set)
    */
   @Override
-  public List<Segment> saveAll(Set<Segment> segments) {
+  public List<Segment> saveAll(Set<Segment> segments) throws ForbiddenOperationException {
+  	this.operationService.verifySave(segments);
     return this.segmentRepository.saveAll(segments);
   }
 

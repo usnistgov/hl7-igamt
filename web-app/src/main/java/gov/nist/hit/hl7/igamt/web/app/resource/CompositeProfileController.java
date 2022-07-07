@@ -11,15 +11,14 @@
  */
 package gov.nist.hit.hl7.igamt.web.app.resource;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.DataFragment;
 import gov.nist.hit.hl7.igamt.common.base.service.impl.InMemoryDomainExtensionServiceImpl;
 import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
-import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.change.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileState;
@@ -33,6 +32,8 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -60,94 +61,91 @@ import java.util.stream.Stream;
  */
 @RestController
 public class CompositeProfileController {
-  @Autowired 
-  CommonService commonService;
+	@Autowired 
+	CommonService commonService;
 
-  @Autowired
-  CompositeProfileStructureService compositeProfileService;
+	@Autowired
+	CompositeProfileStructureService compositeProfileService;
 
-  @Autowired
-  ConformanceProfileCompositeService compose;
+	@Autowired
+	ConformanceProfileCompositeService compose;
 
-  @Autowired
-  ConformanceProfileService conformanceProfileService;
+	@Autowired
+	ConformanceProfileService conformanceProfileService;
 
-  @Autowired
-  SegmentService segmentService;
+	@Autowired
+	SegmentService segmentService;
 
-  @Autowired
-  DatatypeService datatypeService;
+	@Autowired
+	DatatypeService datatypeService;
 
-  @Autowired
-  InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
+	@Autowired
+	InMemoryDomainExtensionServiceImpl inMemoryDomainExtensionService;
 
-  @Autowired
-  ValuesetService valuesetService;
+	@Autowired
+	ValuesetService valuesetService;
 
-  @Autowired
-  BindingService bindingService;
-  
-  @Autowired
-  EntityChangeService entityChangeService;
+	@Autowired
+	BindingService bindingService;
 
-  @RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.GET,
-      produces = {"application/json"})
+	@Autowired
+	EntityChangeService entityChangeService;
 
-  public CompositeProfileStructure getCompositeProfile(@PathVariable("id") String id, Authentication authentication) {
-    return compositeProfileService.findById(id);
-  }
+	@Autowired
+	DateUpdateService dateUpdateService;
+	
 
-  @RequestMapping(value = "/api/composite-profile", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public CompositeProfileStructure save(Authentication authentication, @RequestBody CompositeProfileStructure compositeProfileStructure) {
-    return compositeProfileService.save(compositeProfileStructure);
-  }
+	@RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.GET,
+			produces = {"application/json"})
 
-  @RequestMapping(value = "/api/composite-profile/{id}/compose", method = RequestMethod.GET,
-          produces = {"application/json"})
-  public CompositeProfileState eval(@PathVariable("id") String id, Authentication authentication) {
-    ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = compose.create(compositeProfileService.findById(id));
+	public CompositeProfileStructure getCompositeProfile(@PathVariable("id") String id, Authentication authentication) {
+		return compositeProfileService.findById(id);
+	}
 
-    DataFragment<ConformanceProfile> df = profileComponentsEvaluationResult.getResources();
-    String token = this.inMemoryDomainExtensionService.put(df.getContext());
-    Stream<Datatype> datatypes = df.getContext().getResources().stream().filter((r) -> r instanceof Datatype).map((r) -> (Datatype) r);
-    Stream<Segment> segments = df.getContext().getResources().stream().filter((r) -> r instanceof Segment).map((r) -> (Segment) r);
+	@RequestMapping(value = "/api/composite-profile", method = RequestMethod.POST,
+			produces = {"application/json"})
+	public CompositeProfileStructure save(Authentication authentication, @RequestBody CompositeProfileStructure compositeProfileStructure) {
+		return compositeProfileService.save(compositeProfileStructure);
+	}
 
-    CompositeProfileState state = new CompositeProfileState();
-    state.setConformanceProfile(new ResourceAndDisplay<>(this.conformanceProfileService.convertConformanceProfile(df.getPayload(), 0), df.getPayload()));
-    state.setDatatypes(datatypes.map((dt) -> new ResourceAndDisplay<>(this.datatypeService.convertDatatype(dt), dt)).collect(Collectors.toList()));
-    state.setSegments(segments.map((sg) -> new ResourceAndDisplay<>(this.segmentService.convertSegment(sg), sg)).collect(Collectors.toList()));
+	@RequestMapping(value = "/api/composite-profile/{id}/compose", method = RequestMethod.GET,
+			produces = {"application/json"})
+	public CompositeProfileState eval(@PathVariable("id") String id, Authentication authentication) {
+		ProfileComponentsEvaluationResult<ConformanceProfile> profileComponentsEvaluationResult = compose.create(compositeProfileService.findById(id));
 
-    Map<PropertyType, Set<String>> refChanges = profileComponentsEvaluationResult.getChangedReferences();
-    List<Datatype> refDatatype = this.datatypeService.findByIdIn(refChanges.get(PropertyType.DATATYPE));
-    List<Segment> refSegment = this.segmentService.findByIdIn(refChanges.get(PropertyType.SEGMENTREF));
+		DataFragment<ConformanceProfile> df = profileComponentsEvaluationResult.getResources();
+		String token = this.inMemoryDomainExtensionService.put(df.getContext());
+		Stream<Datatype> datatypes = df.getContext().getResources().stream().filter((r) -> r instanceof Datatype).map((r) -> (Datatype) r);
+		Stream<Segment> segments = df.getContext().getResources().stream().filter((r) -> r instanceof Segment).map((r) -> (Segment) r);
 
-    state.setReferences(Stream.concat(refDatatype.stream(), refSegment.stream()).collect(Collectors.toList()));
+		CompositeProfileState state = new CompositeProfileState();
+		state.setConformanceProfile(new ResourceAndDisplay<>(this.conformanceProfileService.convertConformanceProfile(df.getPayload(), 0), df.getPayload()));
+		state.setDatatypes(datatypes.map((dt) -> new ResourceAndDisplay<>(this.datatypeService.convertDatatype(dt), dt)).collect(Collectors.toList()));
+		state.setSegments(segments.map((sg) -> new ResourceAndDisplay<>(this.segmentService.convertSegment(sg), sg)).collect(Collectors.toList()));
 
-    this.inMemoryDomainExtensionService.clear(token);
-    return state;
-  }
-  
-  
-  @RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.POST, produces = {
-  "application/json" })
-@ResponseBody
-public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
-                                 @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
-                                 Authentication authentication) throws Exception {
+		Map<PropertyType, Set<String>> refChanges = profileComponentsEvaluationResult.getChangedReferences();
+		List<Datatype> refDatatype = this.datatypeService.findByIdIn(refChanges.get(PropertyType.DATATYPE));
+		List<Segment> refSegment = this.segmentService.findByIdIn(refChanges.get(PropertyType.SEGMENTREF));
 
-      CompositeProfileStructure cp = this.compositeProfileService.findById(id);
-      commonService.checkRight(authentication, cp.getCurrentAuthor(), cp.getUsername());
-      this.compositeProfileService.applyChanges(cp, cItems, documentId);
-      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-      entityChangeDomain.setDocumentId(documentId);
-      entityChangeDomain.setDocumentType(DocumentType.IG);
-      entityChangeDomain.setTargetId(id);
-      entityChangeDomain.setTargetType(EntityType.COMPOSITEPROFILE);
-      entityChangeDomain.setChangeItems(cItems);
-      entityChangeDomain.setTargetVersion(cp.getVersion());
-      entityChangeService.save(entityChangeDomain);
-      return new ResponseMessage(Status.SUCCESS, "Composite Profile Saved", cp.getId(), new Date());
-}
+		state.setReferences(Stream.concat(refDatatype.stream(), refSegment.stream()).collect(Collectors.toList()));
+
+		this.inMemoryDomainExtensionService.clear(token);
+		return state;
+	}
+
+
+	@RequestMapping(value = "/api/composite-profile/{id}", method = RequestMethod.POST, produces = {
+	"application/json" })
+	@ResponseBody
+	public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
+			@RequestParam(name = "dId", required = true) String documentId, @RequestParam(name = "type", required = true) DocumentType documentType, @RequestBody List<ChangeItemDomain> cItems,
+			Authentication authentication) throws Exception {
+
+		CompositeProfileStructure cp = this.compositeProfileService.findById(id);
+		commonService.checkRight(authentication, cp.getCurrentAuthor(), cp.getUsername());
+		this.compositeProfileService.applyChanges(cp, cItems, documentId);
+		dateUpdateService.updateDate(new DocumentInfo(documentId, documentType));
+		return new ResponseMessage(Status.SUCCESS, "Composite Profile Saved", cp.getId(), new Date());
+	}
 
 }

@@ -5,7 +5,7 @@ import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { TreeNode } from 'primeng/api';
 import { combineLatest, from, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, filter, flatMap, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
+import { catchError, filter, flatMap, map, mergeMap, switchMap, take, tap, toArray, withLatestFrom } from 'rxjs/operators';
 import { AddPcToList } from 'src/app/modules/shared/components/pc-list/add-profile-component/add-pc-to-list.component';
 import { selectProfileComponentById } from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
 import * as fromIgamtDisplaySelectors from '../../../../root-store/dam-igamt/igamt.resource-display.selectors';
@@ -81,9 +81,10 @@ export class CompositionEditorComponent extends AbstractEditorComponent implemen
 
   onEditorSave(action: EditorSave): Observable<Action> {
     return this.compositeProfile$.pipe(
+      withLatestFrom(this.documentRef$),
       take(1),
-      mergeMap((composite) => {
-        return this.compositeProfileService.save(composite).pipe(
+      mergeMap(([composite, documentInfo]) => {
+        return this.compositeProfileService.save(composite, documentInfo).pipe(
           flatMap((ret) => {
             this.resourceSubject.next(ret);
             return [this.messageService.messageToAction(new Message<any>(MessageType.SUCCESS, 'Composite profile save success!', null)), new fromDam.EditorUpdate({ value: { changes: {}, resource: ret }, updateDate: false }), new fromDam.SetValue({ selected: ret })];

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -31,6 +32,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfi
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.web.app.service.DateUpdateService;
 
 @RestController
 public class ConformanceProfileController extends BaseController {
@@ -45,6 +47,9 @@ public class ConformanceProfileController extends BaseController {
 
     @Autowired 
     CommonService commonService;
+    
+	@Autowired
+	DateUpdateService dateUpdateService;
     
     public ConformanceProfileController() {
         // TODO Auto-generated constructor stub
@@ -127,7 +132,8 @@ public class ConformanceProfileController extends BaseController {
         commonService.checkRight(authentication, cp.getCurrentAuthor(), cp.getUsername());
         validateSaveOperation(cp);
         this.conformanceProfileService.applyChanges(cp, cItems, documentId);
-       
+		dateUpdateService.updateDate(new DocumentInfo(documentId, documentType));
+
         return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, cp.getId(), new Date());
     }
 

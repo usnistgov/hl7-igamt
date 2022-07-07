@@ -141,6 +141,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Autowired
   SlicingService slicingService;
+  
 
   @Override
   public ConformanceProfile create(ConformanceProfile conformanceProfile) {
@@ -372,8 +373,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
   }
 
-
-  private void processAndSubstitute(ConformanceProfile cp, HashMap<RealKey, String> newKeys) {
+  @Override
+  public void processAndSubstitute(ConformanceProfile cp, HashMap<RealKey, String> newKeys) {
     // TODO Auto-generated method stub
     for (MsgStructElement segOrgroup : cp.getChildren()) {
       processAndSubstituteSegmentorGroup(segOrgroup, newKeys);
@@ -1502,32 +1503,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#subsitute(gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile, java.util.List)
-   */
-  @Override
-  public void subsitute(ConformanceProfile cp, List<Substitue> substitutes, String username) {
-    HashMap<RealKey, String> newKeys = new HashMap<RealKey, String>();
-    for(Substitue sub: substitutes) {
-      RealKey segKey = new RealKey(sub.getOriginalId(), Type.SEGMENT);
-      if(sub.isCreate()) {
-        Segment segment = this.segmentService.findById(sub.getOriginalId());
-        if(segment !=null) {
-          Segment clone = segment.clone();
-          clone.getDomainInfo().setScope(Scope.USER);
-          clone.setUsername(username);
-          clone.setName(segment.getName());
-          clone.setExt(sub.getExt());
-          clone = segmentService.save(clone);
-          newKeys.put(segKey, clone.getId());
-        }
-      }else {
-        newKeys.put(segKey, sub.getNewId());
-      }
-    }
-    this.processAndSubstitute(cp, newKeys);
-
-  }
 
   /* (non-Javadoc)
    * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#saveAll(java.util.Set)

@@ -11,6 +11,7 @@ import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.DocumentSummary;
 import gov.nist.hit.hl7.igamt.common.base.model.PublicationResult;
@@ -86,15 +87,17 @@ Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundExceptio
    * @param id
    * @param publicationResult
    * @return
+ * @throws ForbiddenOperationException 
    */
-  public String publishLibray(String id, PublicationResult publicationResult);
+  public String publishLibray(String id, PublicationResult publicationResult) throws ForbiddenOperationException;
 
   /**
    * @param id
    * @param datatypes
    * @return
+ * @throws ForbiddenOperationException 
    */
-  void deactivateChildren(String id, Set<String> ids);
+  void deactivateChildren(String id, Set<String> ids) throws ForbiddenOperationException;
 
   /**
    * @param id
@@ -102,8 +105,9 @@ Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundExceptio
    * @param info
    * @return
    * @throws DatatypeLibraryNotFoundException 
+ * @throws ForbiddenOperationException 
    */
-  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException;
+  public DatatypeLibrary clone(String id, String username, CopyInfo info) throws DatatypeLibraryNotFoundException, ForbiddenOperationException;
 
 
 }

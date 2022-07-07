@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.service;
 
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
 
@@ -20,10 +21,10 @@ import gov.nist.hit.hl7.igamt.common.base.wrappers.SharedUsersInfo;
  */
 public interface SharingService {
 
-  public void shareIg(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException;
-  public void shareDatatype(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException;
-  public void shareSegment(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException;
-  public void shareValueset(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException;
+  public void shareIg(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException, ForbiddenOperationException;
+  public void shareDatatype(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException, ForbiddenOperationException;
+  public void shareSegment(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException, ForbiddenOperationException;
+  public void shareValueset(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException, ForbiddenOperationException;
   public void shareConformanceProfile(String id, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException;
   public void shareCoConstraintGroup(String elm, SharedUsersInfo sharedUsersInfo) throws ResourceNotFoundException;
 

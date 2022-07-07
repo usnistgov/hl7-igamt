@@ -41,6 +41,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.DisplayElement;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
@@ -82,6 +83,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.resource.change.exceptions.ApplyChangeException;
 import gov.nist.hit.hl7.resource.change.service.ApplyChange;
+import gov.nist.hit.hl7.resource.change.service.OperationService;
 
 /**
  *
@@ -110,6 +112,10 @@ public class DatatypeServiceImpl implements DatatypeService {
 	
 	@Autowired
 	ApplyChange applyChange;
+	
+    @Autowired
+	private OperationService operationService;
+
 
 	@Override
 	public Datatype findById(String key) {
@@ -117,16 +123,10 @@ public class DatatypeServiceImpl implements DatatypeService {
 		return dt == null ? datatypeRepository.findById(key).orElse(null) : dt;
 	}
 
-	@Override
-	public Datatype create(Datatype datatype) {
-		datatype.setId(new String());
-		datatype = datatypeRepository.save(datatype);
-		return datatype;
-	}
 
 	@Override
-	public Datatype save(Datatype datatype) {
-		// datatype.setId(StringUtil.updateVersion(datatype.getId()));
+	public Datatype save(Datatype datatype) throws ForbiddenOperationException {
+		this.operationService.verifySave(datatype);
 		datatype = datatypeRepository.save(datatype);
 		return datatype;
 	}
@@ -139,41 +139,28 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 
 	@Override
-	public void delete(Datatype datatype) {
+	public void delete(Datatype datatype) throws ForbiddenOperationException {
+		this.operationService.verifyDelete(datatype);
 		datatypeRepository.delete(datatype);
 	}
-
-	@Override
-	public void delete(String key) {
-		datatypeRepository.deleteById(key);
-	}
-
-	@Override
-	public void removeCollection() {
-		datatypeRepository.deleteAll();
-	}
-
+	
 	@Override
 	public List<Datatype> findByDomainInfoVersion(String version) {
-		// TODO Auto-generated method stub
 		return datatypeRepository.findByDomainInfoVersion(version);
 	}
 
 	@Override
 	public List<Datatype> findByDomainInfoScope(String scope) {
-		// TODO Auto-generated method stub
 		return datatypeRepository.findByDomainInfoScope(scope);
 	}
 
 	@Override
 	public List<Datatype> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion) {
-		// TODO Auto-generated method stub
 		return datatypeRepository.findByDomainInfoScopeAndDomainInfoVersion(scope, verion);
 	}
 
 	@Override
 	public List<Datatype> findByName(String name) {
-		// TODO Auto-generated method stub
 		return datatypeRepository.findByName(name);
 	}
 
@@ -191,7 +178,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 	@Override
 	public List<Datatype> findByDomainInfoScopeAndName(String scope, String name) {
-		// TODO Auto-generated method stub
 		return datatypeRepository.findByDomainInfoScopeAndName(scope, name);
 	}
 
@@ -770,7 +756,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 	}
 	
 	@Override
-	public void applyChanges(Datatype d, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException {
+	public void applyChanges(Datatype d, List<ChangeItemDomain> cItems, String documentId) throws ApplyChangeException, ForbiddenOperationException {
 		Map<PropertyType,ChangeItemDomain> singlePropertyMap = applyChange.convertToSingleChangeMap(cItems);
 		applyChange.applyResourceChanges(d, singlePropertyMap , documentId);
 
@@ -1169,8 +1155,8 @@ public class DatatypeServiceImpl implements DatatypeService {
    * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#saveAll()
    */
   @Override
-  public List<Datatype> saveAll(Set<Datatype> datatypes) {
-    // TODO Auto-generated method stub
+  public List<Datatype> saveAll(Set<Datatype> datatypes) throws ForbiddenOperationException {
+	this.operationService.verifySave(datatypes);
     return this.datatypeRepository.saveAll(datatypes);
   }
 }
