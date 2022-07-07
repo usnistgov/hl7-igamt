@@ -434,6 +434,10 @@ public class CoConstraintVerificationService extends VerificationUtils {
                 cell.getType()
         ));
 
+        if(this.coConstraintService.cellIsEmpty(cell)) {
+
+        }
+
         switch (header.header.getColumnType()) {
             case CODE:
                 if(cell instanceof CodeCell) {
