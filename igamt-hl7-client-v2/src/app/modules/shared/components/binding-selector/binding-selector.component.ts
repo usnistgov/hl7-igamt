@@ -1,10 +1,12 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { ValueSetService } from '../../../value-set/service/value-set.service';
 import { IBindingType, IValuesetStrength } from '../../models/binding.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
-import { IValueSet } from '../../models/value-set.interface';
+import { ICodes, IValueSet } from '../../models/value-set.interface';
+import { VsCodePickerComponent } from '../vs-code-picker/vs-code-picker.component';
 import { ISingleCodeBinding } from './../../models/binding.interface';
 
 @Component({
@@ -34,6 +36,7 @@ export class BindingSelectorComponent<T> implements OnInit {
     public dialogRef: MatDialogRef<BindingSelectorComponent<T>>,
     @Inject(MAT_DIALOG_DATA) public data: IBindingSelectorData,
     private valueSetService: ValueSetService,
+    private dialog: MatDialog,
     private store: Store<any>) {
     this.excludeBindingStrength = data.excludeBindingStrength;
     this.selectedBindingType = this.data.existingBindingType ? this.data.existingBindingType : IBindingType.VALUESET;
@@ -64,6 +67,24 @@ export class BindingSelectorComponent<T> implements OnInit {
       this.selectedValueSets = [];
     }
     this.selectedValueSets.push({ valueSets: [], bindingStrength: IValuesetStrength.R, bindingLocation: this.getDefaultBindingLocation() });
+  }
+
+  pick(index: number) {
+    this.dialog.open(VsCodePickerComponent, {
+      data: {
+        valueSets: this.data.resources,
+      },
+    }).afterClosed().subscribe(
+      (value: ICodes) => {
+        if (value) {
+          this.selectedSingleCodes[index] = {
+            ...this.selectedSingleCodes[index],
+            code: value.value,
+            codeSystem: value.codeSystem,
+          };
+        }
+      },
+    );
   }
 
   addSingleCodeBinding() {

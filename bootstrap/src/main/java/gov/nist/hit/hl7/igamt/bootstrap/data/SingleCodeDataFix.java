@@ -18,7 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class SingleCodeDataFix {
@@ -34,34 +36,59 @@ public class SingleCodeDataFix {
     @Autowired
     ProfileComponentService profileComponentService;
 
-//    @PostConstruct
+    @PostConstruct
     void check() {
-        this.checkDatatypes();
-        this.checkSegments();
-        this.checkCP();
+        Set<String> igs = new HashSet<>();
+        igs.addAll(this.checkDatatypes());
+        igs.addAll(this.checkSegments());
+        igs.addAll(this.checkCP());
         this.checkPC();
+        System.out.println(igs);
     }
 
 
-    void checkDatatypes() {
+    Set<String> checkDatatypes() {
+        Set<String> igs = new HashSet<>();
         List<Datatype> dt = this.datatypeService.findAll();
-        int i = dt.stream().map(d -> checkBinding(d.getBinding())).mapToInt(Integer::intValue)
+        int i = dt.stream().map(d -> {
+            int bindings = checkBinding(d.getBinding());
+            if(bindings > 0) {
+                igs.add(d.getDocumentInfo().getDocumentId());
+            }
+            return bindings;
+        }).mapToInt(Integer::intValue)
                 .sum();
         System.out.println("Found " + i + " in Datatypes");
+        return igs;
     }
 
-    void checkSegments() {
+    Set<String> checkSegments() {
+        Set<String> igs = new HashSet<>();
         List<Segment> sg = this.segmentsService.findAll();
-        int i = sg.stream().map(d -> checkBinding(d.getBinding())).mapToInt(Integer::intValue)
-                .sum();
+        int i = sg.stream().map(d -> {
+            int bindings = checkBinding(d.getBinding());
+            if(bindings > 0) {
+                igs.add(d.getDocumentInfo() != null ? d.getDocumentInfo().getDocumentId() : "NULLS:"+d.getId());
+            }
+            return bindings;
+        }).mapToInt(Integer::intValue).sum();
         System.out.println("Found " + i + " in Segments");
+        return igs;
     }
 
-    void checkCP() {
+    Set<String> checkCP() {
+        Set<String> igs = new HashSet<>();
         List<ConformanceProfile> cp = this.conformanceProfileService.findAll();
-        int i = cp.stream().map(d -> checkBinding(d.getBinding())).mapToInt(Integer::intValue)
+        int i = cp.stream().map(d -> {
+            int bindings = checkBinding(d.getBinding());
+            if(bindings > 0) {
+                igs.add(d.getDocumentInfo() != null ? d.getDocumentInfo().getDocumentId() : "NULLCP:"+d.getId());
+            }
+            return bindings;
+        }).mapToInt(Integer::intValue)
                 .sum();
         System.out.println("Found " + i + " in Conformance Profiles");
+        return igs;
     }
 
     void checkPC() {
@@ -97,9 +124,9 @@ public class SingleCodeDataFix {
 
     int checkStructBinding(StructureElementBinding seb) {
         int i = 0;
-//        if(seb.getInternalSingleCode() != null) {
-//            i++;
-//        }
+        if(seb.getInternalSingleCode() != null) {
+            i++;
+        }
         if(seb.getChildren() != null) {
             for(StructureElementBinding s: seb.getChildren())
             i += this.checkStructBinding(s);

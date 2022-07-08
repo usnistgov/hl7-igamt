@@ -125,6 +125,7 @@ import { ValueSetStructureComponent } from './components/value-set-structure/val
 import { ValuesetDeltaComponent } from './components/valueset-delta/valueset-delta.component';
 import { VerificationEntryTableComponent } from './components/verification-entry-table/verification-entry-table.component';
 import { VerifyIgDialogComponent } from './components/verify-ig-dialog/verify-ig-dialog.component';
+import { VsCodePickerComponent } from './components/vs-code-picker/vs-code-picker.component';
 import { GeneratedNamingDuplicationDirective } from './directives/generated-naming-duplication.directive';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
@@ -226,6 +227,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     SelectSlicingContextComponent,
     SlicingRowComponent,
     SlicingViewerComponent,
+    VsCodePickerComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -405,6 +407,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ChangeReasonListDialogComponent,
     SelectSlicingContextComponent,
     SlicingRowComponent,
+    VsCodePickerComponent,
   ],
   entryComponents: [
     ResourcePickerComponent,
@@ -434,6 +437,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ImportStructureComponent,
     ChangeReasonListDialogComponent,
     SelectSlicingContextComponent,
+    VsCodePickerComponent,
   ],
 })
 export class SharedModule {
