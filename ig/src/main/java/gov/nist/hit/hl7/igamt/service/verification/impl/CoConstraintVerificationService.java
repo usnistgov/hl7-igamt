@@ -167,6 +167,14 @@ public class CoConstraintVerificationService extends VerificationUtils {
         }
     }
 
+    List<DataHeaderElementVerified> verifyHeaders(List<CoConstraintHeader> headers, ResourceSkeleton segment, boolean selector, Map<String, List<IgamtObjectError>> selectors, Map<String, List<IgamtObjectError>> constraints) {
+        return headers.stream()
+                .filter((header) -> !selectors.containsKey(header.getKey()) && !constraints.containsKey(header.getKey()))
+                .map((header) -> this.toVerifiedDataHeaderElement(segment, header, selector))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
     List<IgamtObjectError> checkCoConstraintTable(ResourceSkeleton segment, TargetLocation tableLocation, CoConstraintTable table) {
         List<IgamtObjectError> errors = new ArrayList<>();
         TargetLocation selectorHeadersLocation = TargetLocation.makeHeadersLocation(tableLocation, "selectors", "IF Columns");
@@ -179,13 +187,9 @@ public class CoConstraintVerificationService extends VerificationUtils {
         constraints.values().forEach(errors::addAll);
 
         List<DataHeaderElementVerified> valid = Stream.concat(
-                table.getHeaders().getSelectors().stream(),
-                table.getHeaders().getConstraints().stream()
-        )
-                .filter((header) -> !selectors.containsKey(header.getKey()) && !constraints.containsKey(header.getKey()))
-                .map((header) -> this.toVerifiedDataHeaderElement(segment, header))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+                verifyHeaders(table.getHeaders().getSelectors(), segment, true, selectors, constraints).stream(),
+                verifyHeaders(table.getHeaders().getConstraints(), segment, false, selectors, constraints).stream()
+        ).collect(Collectors.toList());
 
         // Validate Co-Constraints
         errors.addAll(checkCoConstraints(segment, tableLocation, table.getCoConstraints(), valid, false));
@@ -208,11 +212,11 @@ public class CoConstraintVerificationService extends VerificationUtils {
         return errors;
     }
 
-    DataHeaderElementVerified toVerifiedDataHeaderElement(ResourceSkeleton segment, CoConstraintHeader header) {
+    DataHeaderElementVerified toVerifiedDataHeaderElement(ResourceSkeleton segment, CoConstraintHeader header, boolean selector) {
         try {
             ResourceSkeletonBone target = segment.get(header.getKey());
             BindingInfo bindingInfo = getBindingInfo(target.getResource().getFixedName());
-            return new DataHeaderElementVerified((DataElementHeader) header, target, bindingInfo);
+            return new DataHeaderElementVerified((DataElementHeader) header, target, bindingInfo, selector);
         } catch (ResourceNotFoundException e) {
             e.printStackTrace();
             return null;
@@ -434,8 +438,8 @@ public class CoConstraintVerificationService extends VerificationUtils {
                 cell.getType()
         ));
 
-        if(this.coConstraintService.cellIsEmpty(cell)) {
-
+        if(this.coConstraintService.cellIsEmpty(cell) && !header.selector) {
+            return this.NoErrors();
         }
 
         switch (header.header.getColumnType()) {
@@ -619,7 +623,8 @@ public class CoConstraintVerificationService extends VerificationUtils {
                     DataHeaderElementVerified verified = new DataHeaderElementVerified(
                             updated,
                             varies.target,
-                            bindingInfo
+                            bindingInfo,
+                            false
                     );
                     return this.checkCoConstraintCell(segment, verified, cellLocation, cell.getCellValue());
                 }
@@ -825,11 +830,13 @@ public class CoConstraintVerificationService extends VerificationUtils {
         DataElementHeader header;
         ResourceSkeletonBone target;
         BindingInfo bindingInfo;
+        boolean selector;
 
-        public DataHeaderElementVerified(DataElementHeader header, ResourceSkeletonBone target, BindingInfo bindingInfo) {
+        public DataHeaderElementVerified(DataElementHeader header, ResourceSkeletonBone target, BindingInfo bindingInfo, boolean selector) {
             this.header = header;
             this.target = target;
             this.bindingInfo = bindingInfo;
+            this.selector = selector;
         }
     }
 
