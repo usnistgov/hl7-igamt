@@ -1,11 +1,15 @@
 package gov.nist.hit.hl7.igamt.bootstrap.data;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.binding.domain.InternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentContext;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponentItemBinding;
@@ -18,12 +22,69 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SingleCodeDataFix {
+
+    public static class SingleCodeExtractData {
+        String igId;
+        String resourceId;
+        Type resourceType;
+        String name;
+        Set<InternalSingleCode> singleCodes;
+
+        public SingleCodeExtractData(String igId, String resourceId, Type resourceType, String name, Set<InternalSingleCode> singleCodes) {
+            this.igId = igId;
+            this.resourceId = resourceId;
+            this.resourceType = resourceType;
+            this.name = name;
+            this.singleCodes = singleCodes;
+        }
+
+        public String getResourceId() {
+            return resourceId;
+        }
+
+        public void setResourceId(String resourceId) {
+            this.resourceId = resourceId;
+        }
+
+        public Type getResourceType() {
+            return resourceType;
+        }
+
+        public void setResourceType(Type resourceType) {
+            this.resourceType = resourceType;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Set<InternalSingleCode> getSingleCodes() {
+            return singleCodes;
+        }
+
+        public void setSingleCodes(Set<InternalSingleCode> singleCodes) {
+            this.singleCodes = singleCodes;
+        }
+
+        public String getIgId() {
+            return igId;
+        }
+
+        public void setIgId(String igId) {
+            this.igId = igId;
+        }
+
+    }
+
     @Autowired
     SegmentService segmentsService;
 
@@ -36,59 +97,153 @@ public class SingleCodeDataFix {
     @Autowired
     ProfileComponentService profileComponentService;
 
+    @Autowired
+    IgService igService;
+
     @PostConstruct
     void check() {
-        Set<String> igs = new HashSet<>();
-        igs.addAll(this.checkDatatypes());
-        igs.addAll(this.checkSegments());
-        igs.addAll(this.checkCP());
+        Map<String, Set<SingleCodeExtractData>> merged = new HashMap<>();
+        this.checkDatatypes().forEach((k, v) -> merged.merge(k, v, (v1, v2) -> {
+            Set<SingleCodeExtractData> set = new HashSet<>(v1);
+            set.addAll(v2);
+            return set;
+        }));
+        this.checkSegments().forEach((k, v) -> merged.merge(k, v, (v1, v2) -> {
+            Set<SingleCodeExtractData> set = new HashSet<>(v1);
+            set.addAll(v2);
+            return set;
+        }));
+        this.checkCP().forEach((k, v) -> merged.merge(k, v, (v1, v2) -> {
+            Set<SingleCodeExtractData> set = new HashSet<>(v1);
+            set.addAll(v2);
+            return set;
+        }));
+
         this.checkPC();
-        System.out.println(igs);
+        for(String ig: merged.keySet()) {
+            if(ig != null) {
+                Ig igObj = this.igService.findById(ig);
+                if(igObj != null) {
+                    System.out.println(igObj.getId()+",\t"+igObj.getMetadata().getTitle()+",\t"+igObj.getUsername()+",\t"+igObj.getStatus());
+                    for(SingleCodeExtractData extract: merged.get(ig)) {
+                        System.out.println("\t"+extract.resourceId+",\t"+extract.resourceType+",\t"+extract.name);
+                        for(InternalSingleCode sc: extract.getSingleCodes()) {
+                            System.out.println("\t\t"+sc.getCode()+",\t"+sc.getCodeSystem());
+                        }
+                    }
+
+                }
+            }
+        }
     }
 
 
-    Set<String> checkDatatypes() {
-        Set<String> igs = new HashSet<>();
+    Map<String, Set<SingleCodeExtractData>> checkDatatypes() {
+        Map<String, Set<SingleCodeExtractData>> data = new HashMap<>();
+
         List<Datatype> dt = this.datatypeService.findAll();
         int i = dt.stream().map(d -> {
-            int bindings = checkBinding(d.getBinding());
-            if(bindings > 0) {
-                igs.add(d.getDocumentInfo().getDocumentId());
+            Set<InternalSingleCode> bindings = checkBinding(d.getBinding());
+            if(bindings != null && bindings.size() > 0) {
+                if(d.getDocumentInfo() != null) {
+                    SingleCodeExtractData sg = new SingleCodeExtractData(
+                            d.getDocumentInfo().getDocumentId(),
+                            d.getId(),
+                            d.getType(),
+                            d.getLabel(),
+                            bindings
+                    );
+
+                    data.compute(d.getDocumentInfo().getDocumentId(), (k, v) -> {
+                        if(v != null) {
+                            v.add(sg);
+                            return v;
+                        } else {
+                            Set<SingleCodeExtractData> set = new HashSet<>();
+                            set.add(sg);
+                            return set;
+                        }
+                    });
+                }
+                return bindings.size();
             }
-            return bindings;
+
+            return 0;
         }).mapToInt(Integer::intValue)
                 .sum();
         System.out.println("Found " + i + " in Datatypes");
-        return igs;
+        return data;
     }
 
-    Set<String> checkSegments() {
-        Set<String> igs = new HashSet<>();
+    Map<String, Set<SingleCodeExtractData>> checkSegments() {
+        Map<String, Set<SingleCodeExtractData>> data = new HashMap<>();
         List<Segment> sg = this.segmentsService.findAll();
         int i = sg.stream().map(d -> {
-            int bindings = checkBinding(d.getBinding());
-            if(bindings > 0) {
-                igs.add(d.getDocumentInfo() != null ? d.getDocumentInfo().getDocumentId() : "NULLS:"+d.getId());
+            Set<InternalSingleCode> bindings = checkBinding(d.getBinding());
+            if(bindings != null && bindings.size() > 0) {
+                if(d.getDocumentInfo() != null) {
+                    SingleCodeExtractData sc = new SingleCodeExtractData(
+                            d.getDocumentInfo().getDocumentId(),
+                            d.getId(),
+                            d.getType(),
+                            d.getLabel(),
+                            bindings
+                    );
+
+                    data.compute(d.getDocumentInfo().getDocumentId(), (k, v) -> {
+                        if(v != null) {
+                            v.add(sc);
+                            return v;
+                        } else {
+                            Set<SingleCodeExtractData> set = new HashSet<>();
+                            set.add(sc);
+                            return set;
+                        }
+                    });
+                }
+                return bindings.size();
             }
-            return bindings;
+
+            return 0;
         }).mapToInt(Integer::intValue).sum();
         System.out.println("Found " + i + " in Segments");
-        return igs;
+        return data;
     }
 
-    Set<String> checkCP() {
-        Set<String> igs = new HashSet<>();
+    Map<String, Set<SingleCodeExtractData>> checkCP() {
+        Map<String, Set<SingleCodeExtractData>> data = new HashMap<>();
         List<ConformanceProfile> cp = this.conformanceProfileService.findAll();
         int i = cp.stream().map(d -> {
-            int bindings = checkBinding(d.getBinding());
-            if(bindings > 0) {
-                igs.add(d.getDocumentInfo() != null ? d.getDocumentInfo().getDocumentId() : "NULLCP:"+d.getId());
+            Set<InternalSingleCode> bindings = checkBinding(d.getBinding());
+            if(bindings != null && bindings.size() > 0) {
+                if(d.getDocumentInfo() != null) {
+                    SingleCodeExtractData sc = new SingleCodeExtractData(
+                            d.getDocumentInfo().getDocumentId(),
+                            d.getId(),
+                            d.getType(),
+                            d.getLabel(),
+                            bindings
+                    );
+
+                    data.compute(d.getDocumentInfo().getDocumentId(), (k, v) -> {
+                        if(v != null) {
+                            v.add(sc);
+                            return v;
+                        } else {
+                            Set<SingleCodeExtractData> set = new HashSet<>();
+                            set.add(sc);
+                            return set;
+                        }
+                    });
+                }
+                return bindings.size();
             }
-            return bindings;
+
+            return 0;
         }).mapToInt(Integer::intValue)
                 .sum();
         System.out.println("Found " + i + " in Conformance Profiles");
-        return igs;
+        return data;
     }
 
     void checkPC() {
@@ -114,24 +269,26 @@ public class SingleCodeDataFix {
         System.out.println("Found " + i + " in Profile Components");
     }
 
-    int checkBinding(ResourceBinding resourceBinding) {
+
+
+    Set<InternalSingleCode> checkBinding(ResourceBinding resourceBinding) {
         if(resourceBinding != null && resourceBinding.getChildren() != null) {
-            return resourceBinding.getChildren().stream().map(this::checkStructBinding).mapToInt(Integer::intValue)
-                    .sum();
+            return resourceBinding.getChildren().stream().flatMap(seb ->
+                this.checkStructBinding(seb, new HashSet<>()).stream()
+            ).collect(Collectors.toSet());
         }
-        return 0;
+        return null;
     }
 
-    int checkStructBinding(StructureElementBinding seb) {
-        int i = 0;
+    Set<InternalSingleCode> checkStructBinding(StructureElementBinding seb, Set<InternalSingleCode> internalSingleCodes) {
         if(seb.getInternalSingleCode() != null) {
-            i++;
+            internalSingleCodes.add(seb.getInternalSingleCode());
         }
         if(seb.getChildren() != null) {
             for(StructureElementBinding s: seb.getChildren())
-            i += this.checkStructBinding(s);
+                this.checkStructBinding(s, internalSingleCodes);
         }
-        return i;
+        return internalSingleCodes;
     }
 
 }
